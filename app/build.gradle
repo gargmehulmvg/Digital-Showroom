@@ -42,13 +42,13 @@ android {
     flavorDimensions "default"
     productFlavors {
         local {
-            buildConfigField("String", "BASE_URL", "test")
+            buildConfigField('String', 'BASE_URL', '"local"')
         }
         staging {
-            buildConfigField("String", "BASE_URL", "staging")
+            buildConfigField('String', 'BASE_URL', '"staging"')
         }
         prod {
-            buildConfigField("String", "BASE_URL", "prod")
+            buildConfigField('String', 'BASE_URL', '"prod"')
         }
     }
 }
