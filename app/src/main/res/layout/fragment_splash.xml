@@ -7,13 +7,33 @@
     tools:context=".fragments.SplashFragment">
 
     <com.google.android.material.imageview.ShapeableImageView
-        android:id="@+id/splashImageView"
-        android:layout_width="@dimen/_50sdp"
-        android:layout_height="@dimen/_50sdp"
-        android:src="@drawable/ic_launcher_foreground"
+        android:id="@+id/splashLogoImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_digital_dukaan_splash"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.3" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_15sdp"
+        style="@style/common_bold_text_view"
+        android:gravity="center"
+        android:padding="@dimen/_5sdp"
+        android:text="@string/app_name"
+        app:layout_constraintTop_toBottomOf="@id/splashLogoImageView" />
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/splashBottomImageView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_splash_bottom"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
