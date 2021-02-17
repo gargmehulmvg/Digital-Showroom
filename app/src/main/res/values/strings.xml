@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Digital Dukaan</string>
+    <string name="image_view_content_description">image_view_content_description</string>
+    <string name="loading">Loading…</string>
 </resources>
