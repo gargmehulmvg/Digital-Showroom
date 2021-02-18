@@ -39,16 +39,25 @@
         android:label="OtpVerificationFragment"
         tools:layout="@layout/otp_verification_fragment" >
         <action
-            android:id="@+id/action_otpVerificationFragment_to_onBoardScreenDukaanNameFragment"
-            app:destination="@id/onBoardScreenDukaanNameFragment"
+            android:id="@+id/action_otpVerificationFragment_to_onBoardScreenDukaanNameFragment2"
+            app:destination="@id/onBoardScreenDukaanNameFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/onBoardScreenDukaanNameFragment"
+        android:name="com.digitaldukaan.fragments.OnBoardScreenDukaanNameFragment"
+        tools:layout="@layout/on_board_screen_dukaan_fragment"
+        android:label="OnBoardScreenDukaanNameFragment" >
+        <action
+            android:id="@+id/action_onBoardScreenDukaanNameFragment_to_onBoardScreenDukaanLocationFragment"
+            app:destination="@id/onBoardScreenDukaanLocationFragment"
             app:enterAnim="@anim/slide_in"
             app:exitAnim="@anim/fade_out"
             app:popEnterAnim="@anim/fade_in"
             app:popExitAnim="@anim/slide_out" />
     </fragment>
     <fragment
-        android:id="@+id/onBoardScreenDukaanNameFragment"
-        android:name="com.digitaldukaan.fragments.OnBoardScreenDukaanNameFragment"
-        tools:layout="@layout/on_board_screen_dukaan_fragment"
-        android:label="OnBoardScreenDukaanNameFragment" />
+        android:id="@+id/onBoardScreenDukaanLocationFragment"
+        tools:layout="@layout/on_board_screen_dukaan_location_fragment"
+        android:name="com.digitaldukaan.fragments.OnBoardScreenDukaanLocationFragment"
+        android:label="OnBoardScreenDukaanLocationFragment" />
 </navigation>

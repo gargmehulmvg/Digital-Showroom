@@ -33,18 +33,16 @@ class OnBoardAuthenticationFragment : BaseFragment(), IOnBackPressedListener {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        setupMobileNumberEditText()
+    }
+
+    private fun setupMobileNumberEditText() {
         mobileNumberEditText.requestFocus()
         mobileNumberEditText.showKeyboard()
         getOtpTextView.setOnClickListener {
             val mobileNumber = mobileNumberEditText.text.trim().toString()
-            val validationFailed = checkMobileNumberValidation(mobileNumber)
-            if (validationFailed) {
-                mobileNumberEditText.requestFocus()
-            } else {
-                mobileNumberEditText.hideKeyboard()
-                val action = OnBoardAuthenticationFragmentDirections.actionOnBoardAuthenticationFragmentToOtpVerificationFragment()
-                mNavController.navigate(action)
-            }
+            val validationFailed = isMobileNumberValidationNotCorrect(mobileNumber)
+            performOTPServerCall(validationFailed)
         }
         mobileNumberEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
@@ -54,7 +52,18 @@ class OnBoardAuthenticationFragment : BaseFragment(), IOnBackPressedListener {
         }
     }
 
-    private fun checkMobileNumberValidation(mobileNumber: String) : Boolean{
+    private fun performOTPServerCall(validationFailed: Boolean) {
+        if (validationFailed) {
+            mobileNumberEditText.requestFocus()
+        } else {
+            mobileNumberEditText.hideKeyboard()
+            val action =
+                OnBoardAuthenticationFragmentDirections.actionOnBoardAuthenticationFragmentToOtpVerificationFragment()
+            mNavController.navigate(action)
+        }
+    }
+
+    private fun isMobileNumberValidationNotCorrect(mobileNumber: String) : Boolean{
         return when {
             mobileNumber.isEmpty() -> {
                 mobileNumberEditText.error = getString(R.string.mandatory_field_message)

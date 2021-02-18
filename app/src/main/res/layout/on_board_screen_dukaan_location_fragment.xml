@@ -25,7 +25,7 @@
             style="@style/common_bold_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/enter_your_dukaan_name"
+            android:text="@string/enter_your_dukaan_location"
             app:layout_constraintStart_toStartOf="@+id/resendOtpTextView"
             app:layout_constraintTop_toBottomOf="@+id/resendOtpTextView" />
 
@@ -53,10 +53,10 @@
             style="@style/common_bold_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_2sdp"
             android:layout_marginTop="@dimen/_20sdp"
             android:paddingBottom="@dimen/_3sdp"
-            android:layout_marginStart="@dimen/_2sdp"
-            android:text="@string/step_1_2"
+            android:text="@string/step_2_2"
             android:textSize="@dimen/_11sdp"
             app:layout_constraintStart_toStartOf="@+id/backImageView"
             app:layout_constraintTop_toBottomOf="@+id/backImageView" />
@@ -72,14 +72,16 @@
             app:layout_constraintTop_toBottomOf="@+id/enterMobileNumberHeading">
 
             <EditText
-                android:id="@+id/dukaanNameEditText"
+                android:id="@+id/dukaanLocationEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clickable="true"
                 android:focusable="true"
-                android:hint="@string/your_shop_store_dukaan_name"
+                android:minLines="5"
+                android:gravity="start"
+                android:hint="@string/enter_location"
                 android:importantForAutofill="no"
-                android:inputType="text"
+                android:inputType="textMultiLine"
                 android:maxLength="@integer/dukaan_name_length"
                 android:textColor="@color/black"
                 android:textColorHint="@color/default_text_light_grey"

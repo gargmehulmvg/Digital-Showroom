@@ -25,6 +25,7 @@
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:src="@drawable/ic_otp_sms"
+            android:transitionName="@string/transition_name"
             app:layout_constraintBottom_toBottomOf="@id/enterMobileNumberHeading"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/enterMobileNumberHeading" />

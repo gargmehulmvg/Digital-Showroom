@@ -5,6 +5,8 @@ import android.os.CountDownTimer
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.FragmentNavigatorExtras
+import androidx.navigation.fragment.findNavController
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
@@ -18,12 +20,18 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.otp_verification_fragment, container, false)
+        mNavController = findNavController()
         return mContentView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         otpEditText.setOtpFilledListener(this)
         startCountDownTimer()
+        verifyTextView.setOnClickListener {
+            timer.cancel()
+            val extras = FragmentNavigatorExtras(smsImageView to "transitionName")
+            mNavController.navigate(R.id.onBoardScreenDukaanNameFragment, null, null, extras)
+        }
     }
 
     private fun startCountDownTimer() {
@@ -41,6 +49,11 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener {
         timer.start()
     }
 
+    override fun onStart() {
+        super.onStart()
+        otpEditText.clearOTP()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         timer.cancel()
@@ -50,8 +63,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener {
         otpEditText.hideKeyboard()
         showToast(otpStr)
         verifyTextView.isEnabled = true
-        verifyTextView.setOnClickListener {
-        }
+        verifyTextView.callOnClick()
     }
 
 }

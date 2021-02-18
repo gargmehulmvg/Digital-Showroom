@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Digital Dukaan</string>
     <string name="image_view_content_description">image_view_content_description</string>
     <string name="loading">Loading…</string>
@@ -14,7 +14,11 @@
     <string name="transition_name">transitionName</string>
     <string name="otp_auto_resend_in">OTP auto resend in</string>
     <string name="resend_otp">Resend OTP</string>
-    <string name="enter_your_dukaan_name">Enter your\ndukaan name</string>
-    <string name="step_1_2"><![CDATA[Step &#189;]]></string>
+    <string name="enter_your_dukaan_name">Enter your\nDukaan name</string>
+    <string name="enter_your_dukaan_location">Enter your\nDukaan location</string>
+    <string name="step_1_2" tools:ignore="TypographyFractions">Step 1/2</string>
     <string name="next">Next</string>
+    <string name="your_shop_store_dukaan_name">Your Shop/ Store/ Dukaan Name</string>
+    <string name="step_2_2">Step 2/2</string>
+    <string name="enter_location">Enter Location</string>
 </resources>

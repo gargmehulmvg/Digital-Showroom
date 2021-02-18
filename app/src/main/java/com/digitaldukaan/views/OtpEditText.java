@@ -109,4 +109,8 @@ public class OtpEditText extends androidx.appcompat.widget.AppCompatEditText {
             return getText().toString();
         else return "";
     }
+
+    public void clearOTP() {
+        this.setText("");
+    }
 }
