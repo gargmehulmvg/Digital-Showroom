@@ -1,6 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:padding="@dimen/_20sdp"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/enterMobileNumberHeading"
+            style="@style/common_bold_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_40sdp"
+            android:text="@string/enter_your_mobile_number"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/send4DigitOtpHeading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/_13sdp"
+            android:textColor="@color/default_text_light_grey"
+            android:text="@string/we_will_send_you_4_digit_otp"
+            app:layout_constraintStart_toStartOf="@+id/enterMobileNumberHeading"
+            app:layout_constraintTop_toBottomOf="@+id/enterMobileNumberHeading" />
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/smsImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:transitionName="@string/transition_name"
+            android:src="@drawable/ic_mobile_sms"
+            app:layout_constraintBottom_toBottomOf="@+id/send4DigitOtpHeading"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/enterMobileNumberHeading"
+            tools:targetApi="lollipop" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/usernameWrapper"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_30sdp"
+            app:layout_constraintEnd_toEndOf="@+id/smsImageView"
+            app:layout_constraintStart_toStartOf="@+id/enterMobileNumberHeading"
+            app:layout_constraintTop_toBottomOf="@+id/send4DigitOtpHeading">
+
+            <EditText
+                android:id="@+id/mobileNumberEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/enter_mobile_number"
+                android:importantForAutofill="no"
+                android:inputType="number"
+                android:focusable="true"
+                android:clickable="true"
+                android:maxLength="@integer/mobile_number_length"
+                android:textColor="@color/black"
+                android:textColorHint="@color/default_text_light_grey"
+                android:textSize="@dimen/_12sdp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/getOtpTextView"
+            android:text="@string/get_otp"
+            style="@style/common_text_view_background"
+            android:drawableEnd="@drawable/ic_arrow_forward_white"
+            android:drawablePadding="@dimen/_10sdp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/usernameWrapper"
+            app:layout_constraintTop_toBottomOf="@+id/usernameWrapper"
+            app:layout_constraintVertical_bias="0.5" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>
