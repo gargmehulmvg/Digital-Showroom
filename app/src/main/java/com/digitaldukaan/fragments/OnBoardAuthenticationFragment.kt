@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import androidx.navigation.fragment.findNavController
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.interfaces.IOnBackPressedListener
@@ -19,6 +20,7 @@ class OnBoardAuthenticationFragment : BaseFragment(), IOnBackPressedListener {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.on_board_authentication_fragment, container, false)
+        mNavController = findNavController()
         return mContentView
     }
 
@@ -31,8 +33,9 @@ class OnBoardAuthenticationFragment : BaseFragment(), IOnBackPressedListener {
             if (validationFailed) {
                 mobileNumberEditText.requestFocus()
             } else {
-                showToast("Validation success")
                 mobileNumberEditText.hideKeyboard()
+                val action = OnBoardAuthenticationFragmentDirections.actionOnBoardAuthenticationFragmentToOtpVerificationFragment()
+                mNavController.navigate(action)
             }
         }
         mobileNumberEditText.setOnEditorActionListener { _, actionId, _ ->

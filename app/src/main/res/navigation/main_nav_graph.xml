@@ -24,5 +24,18 @@
         android:id="@+id/onBoardAuthenticationFragment"
         android:name="com.digitaldukaan.fragments.OnBoardAuthenticationFragment"
         android:label="OnBoardAuthenticationFragment"
-        tools:layout="@layout/on_board_authentication_fragment" />
+        tools:layout="@layout/on_board_authentication_fragment" >
+        <action
+            android:id="@+id/action_onBoardAuthenticationFragment_to_otpVerificationFragment"
+            app:destination="@id/otpVerificationFragment"
+            app:enterAnim="@anim/slide_in"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out" />
+    </fragment>
+    <fragment
+        android:id="@+id/otpVerificationFragment"
+        android:name="com.digitaldukaan.fragments.OtpVerificationFragment"
+        android:label="OtpVerificationFragment"
+        tools:layout="@layout/otp_verification_fragment" />
 </navigation>

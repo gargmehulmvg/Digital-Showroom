@@ -3,6 +3,10 @@
 
     <item android:drawable="@drawable/curve_black_background_selected" android:state_pressed="true" />
 
+    <item android:drawable="@drawable/curve_black_background_selected" android:state_enabled="false" />
+
+    <item android:drawable="@drawable/curve_black_background" android:state_enabled="true" />
+
     <item android:drawable="@drawable/curve_black_background" android:state_pressed="false" />
 
 </selector>

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true">
@@ -68,23 +67,14 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/getOtpTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:text="@string/get_otp"
-            android:textColor="@color/white"
-            android:paddingTop="@dimen/_5sdp"
+            style="@style/common_text_view_background"
             android:drawableEnd="@drawable/ic_arrow_forward_white"
-            android:drawablePadding="@dimen/_5sdp"
-            android:paddingBottom="@dimen/_5sdp"
-            android:paddingStart="@dimen/_25sdp"
-            android:paddingEnd="@dimen/_20sdp"
-            android:background="@drawable/curve_black_background_selector"
-            android:textSize="@dimen/_16sdp"
-            app:fontFamily="@font/montserrat_bold"
+            android:drawablePadding="@dimen/_10sdp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/usernameWrapper"
             app:layout_constraintTop_toBottomOf="@+id/usernameWrapper"
-            app:layout_constraintVertical_bias="0.537" />
+            app:layout_constraintVertical_bias="0.5" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
