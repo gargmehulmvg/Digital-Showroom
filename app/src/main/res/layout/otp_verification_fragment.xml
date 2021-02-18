@@ -39,6 +39,44 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
+        <com.digitaldukaan.views.OtpEditText
+            android:id="@+id/otpEditText"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_25sdp"
+            android:cursorVisible="false"
+            android:digits="1234567890"
+            android:inputType="number"
+            android:maxLength="4"
+            android:textIsSelectable="false"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toStartOf="@id/smsImageView"
+            app:layout_constraintStart_toStartOf="@id/enterMobileNumberHeading"
+            app:layout_constraintTop_toBottomOf="@id/enterMobileNumberHeading" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/resendOtpText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/_14sdp"
+            android:padding="@dimen/_3sdp"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:textColor="@color/black"
+            android:text="@string/otp_auto_resend_in"
+            app:layout_constraintStart_toStartOf="@id/otpEditText"
+            app:layout_constraintTop_toBottomOf="@id/otpEditText" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/resendOtpTextView"
+            style="@style/common_bold_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/_3sdp"
+            android:text="30 sec"
+            android:textSize="@dimen/_13sdp"
+            app:layout_constraintBaseline_toBaselineOf="@+id/resendOtpText"
+            app:layout_constraintStart_toEndOf="@+id/resendOtpText" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.core.widget.NestedScrollView>

@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import androidx.navigation.fragment.findNavController
+import androidx.transition.TransitionInflater
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.interfaces.IOnBackPressedListener
@@ -18,9 +19,16 @@ class OnBoardAuthenticationFragment : BaseFragment(), IOnBackPressedListener {
 
     private var mIsDoublePressToExit = false
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+            sharedElementEnterTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.move)
+        }
+        mNavController = findNavController()
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.on_board_authentication_fragment, container, false)
-        mNavController = findNavController()
         return mContentView
     }
 
@@ -52,7 +60,7 @@ class OnBoardAuthenticationFragment : BaseFragment(), IOnBackPressedListener {
                 mobileNumberEditText.error = getString(R.string.mandatory_field_message)
                 true
             }
-            mobileNumber.length != resources.getInteger(R.integer.mobile_number_length) -> {
+            resources.getInteger(R.integer.mobile_number_length) != mobileNumber.length -> {
                 mobileNumberEditText.error = getString(R.string.mobile_number_length_validation_message)
                 true
             }

@@ -11,4 +11,7 @@
     <string name="mobile_number_length_validation_message">Length of Mobile number must be 10</string>
     <string name="enter_4_digit_otp_you_received">Enter 4 digit\nOTP you received</string>
     <string name="verify">Verify</string>
+    <string name="transition_name">transitionName</string>
+    <string name="otp_auto_resend_in">OTP auto resend in</string>
+    <string name="resend_otp">Resend OTP</string>
 </resources>

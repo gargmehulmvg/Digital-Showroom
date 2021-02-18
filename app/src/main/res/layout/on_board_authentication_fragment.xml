@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true">
@@ -34,10 +35,12 @@
             android:id="@+id/smsImageView"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
+            android:transitionName="@string/transition_name"
             android:src="@drawable/ic_mobile_sms"
             app:layout_constraintBottom_toBottomOf="@+id/send4DigitOtpHeading"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/enterMobileNumberHeading" />
+            app:layout_constraintTop_toTopOf="@+id/enterMobileNumberHeading"
+            tools:targetApi="lollipop" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/usernameWrapper"

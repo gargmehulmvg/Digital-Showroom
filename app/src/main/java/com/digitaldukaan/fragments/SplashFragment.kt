@@ -7,10 +7,12 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.interfaces.IOnBackPressedListener
+import kotlinx.android.synthetic.main.fragment_splash.*
 
 class SplashFragment : BaseFragment(), IOnBackPressedListener {
 
@@ -34,8 +36,8 @@ class SplashFragment : BaseFragment(), IOnBackPressedListener {
         super.onViewCreated(view, savedInstanceState)
         mActivity.hideToolbarView(false)
         Handler(Looper.getMainLooper()).postDelayed({
-            val action = SplashFragmentDirections.actionSplashFragmentToOnBoardAuthenticationFragment()
-            mNavController.navigate(action)
+            val extras = FragmentNavigatorExtras(splashLogoImageView to "transitionName")
+            mNavController.navigate(R.id.onBoardAuthenticationFragment, null, null, extras)
         }, Constants.SPLASH_TIMER)
     }
 

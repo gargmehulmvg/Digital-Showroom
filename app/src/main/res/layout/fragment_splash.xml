@@ -10,12 +10,14 @@
         android:id="@+id/splashLogoImageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:transitionName="@string/transition_name"
         android:src="@drawable/ic_digital_dukaan_splash"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.3" />
+        app:layout_constraintVertical_bias="0.3"
+        tools:targetApi="lollipop" />
 
     <com.google.android.material.textview.MaterialTextView
         android:layout_width="match_parent"
