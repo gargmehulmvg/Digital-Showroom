@@ -14,4 +14,7 @@
     <string name="transition_name">transitionName</string>
     <string name="otp_auto_resend_in">OTP auto resend in</string>
     <string name="resend_otp">Resend OTP</string>
+    <string name="enter_your_dukaan_name">Enter your\ndukaan name</string>
+    <string name="step_1_2"><![CDATA[Step &#189;]]></string>
+    <string name="next">Next</string>
 </resources>
