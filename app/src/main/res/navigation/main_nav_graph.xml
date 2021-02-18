@@ -37,5 +37,18 @@
         android:id="@+id/otpVerificationFragment"
         android:name="com.digitaldukaan.fragments.OtpVerificationFragment"
         android:label="OtpVerificationFragment"
-        tools:layout="@layout/otp_verification_fragment" />
+        tools:layout="@layout/otp_verification_fragment" >
+        <action
+            android:id="@+id/action_otpVerificationFragment_to_onBoardScreenDukaanNameFragment"
+            app:destination="@id/onBoardScreenDukaanNameFragment"
+            app:enterAnim="@anim/slide_in"
+            app:exitAnim="@anim/fade_out"
+            app:popEnterAnim="@anim/fade_in"
+            app:popExitAnim="@anim/slide_out" />
+    </fragment>
+    <fragment
+        android:id="@+id/onBoardScreenDukaanNameFragment"
+        android:name="com.digitaldukaan.fragments.OnBoardScreenDukaanNameFragment"
+        tools:layout="@layout/on_board_screen_dukaan_fragment"
+        android:label="OnBoardScreenDukaanNameFragment" />
 </navigation>

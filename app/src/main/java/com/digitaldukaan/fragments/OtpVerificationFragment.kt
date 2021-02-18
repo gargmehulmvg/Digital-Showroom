@@ -51,7 +51,6 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener {
         showToast(otpStr)
         verifyTextView.isEnabled = true
         verifyTextView.setOnClickListener {
-
         }
     }
 

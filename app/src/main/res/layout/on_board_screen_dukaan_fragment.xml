@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/_20sdp">
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/backImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:rotation="180"
+            android:src="@drawable/ic_arrow_forward_white"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/black" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/enterMobileNumberHeading"
+            style="@style/common_bold_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/enter_your_dukaan_name"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/resendOtpTextView" />
+
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/onBoardDukaanNameImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:src="@drawable/ic_on_board_dukaan_name"
+            app:layout_constraintBottom_toBottomOf="@id/enterMobileNumberHeading"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/enterMobileNumberHeading" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/nextTextView"
+            style="@style/common_text_view_background"
+            android:drawableEnd="@drawable/ic_arrow_forward_white"
+            android:drawablePadding="@dimen/_10sdp"
+            android:enabled="false"
+            android:text="@string/next"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/resendOtpTextView"
+            style="@style/common_bold_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="@dimen/_3sdp"
+            android:text="@string/step_1_2"
+            android:layout_marginTop="@dimen/_30sdp"
+            android:textSize="@dimen/_11sdp"
+            app:layout_constraintStart_toStartOf="@+id/enterMobileNumberHeading"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>
