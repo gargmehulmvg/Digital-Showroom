@@ -6,5 +6,6 @@ class Constants {
         const val BACK_PRESS_INTERVAL = 2_000L
         const val RESEND_OTP_TIMER = 30_000L
         const val TIMER_INTERVAL = 1_000L
+        const val CREDENTIAL_PICKER_REQUEST = 1001
     }
 }

@@ -82,4 +82,9 @@ dependencies {
     implementation 'android.arch.lifecycle:extensions:2.2.0'
     //Multi Dimension support
     implementation 'com.intuit.sdp:sdp-android:1.0.6'
+    //auto read Mobile number dependency
+    implementation 'com.google.android.gms:play-services-auth:18.1.0'
+    implementation 'com.google.android.gms:play-services-identity:17.0.0'
+    implementation 'com.google.android.gms:play-services-auth-api-phone:17.4.0'
+    implementation 'com.google.android.gms:play-services-base:17.3.0'
 }
