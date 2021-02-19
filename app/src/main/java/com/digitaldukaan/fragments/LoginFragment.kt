@@ -12,16 +12,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.Toast
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
-import androidx.navigation.fragment.findNavController
 import androidx.transition.TransitionInflater
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.Constants.Companion.CREDENTIAL_PICKER_REQUEST
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.interfaces.IOnBackPressedListener
-import com.digitaldukaan.viewmodel.LoginViewModel
 import com.google.android.gms.auth.api.credentials.Credential
 import com.google.android.gms.auth.api.credentials.Credentials
 import com.google.android.gms.auth.api.credentials.CredentialsApi
@@ -32,15 +28,12 @@ class LoginFragment : BaseFragment(), IOnBackPressedListener {
 
     private var mIsDoublePressToExit = false
     private var mIsMobileNumberSearchingDone = false
-    private lateinit var mLoginViewModel: LoginViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
             sharedElementEnterTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.move)
         }
-        mNavController = findNavController()
-        mLoginViewModel = ViewModelProviders.of(this).get(LoginViewModel::class.java)
     }
 
     override fun onCreateView(
@@ -64,7 +57,7 @@ class LoginFragment : BaseFragment(), IOnBackPressedListener {
             val mobileNumber = mobileNumberEditText.text.trim().toString()
             val validationFailed = isMobileNumberValidationNotCorrect(mobileNumber)
             performOTPServerCall(validationFailed, mobileNumber)
-            mLoginViewModel.mGenerateOtpResponse.observe(this, Observer {
+            /*mLoginViewModel.mGenerateOtpResponse.observe(this, Observer {
                 stopProgress()
                 if (it.mStatus) {
                     val action = LoginFragmentDirections.actionOnBoardAuthenticationFragmentToOtpVerificationFragment()
@@ -72,7 +65,7 @@ class LoginFragment : BaseFragment(), IOnBackPressedListener {
                 } else {
                     showToast(it.mMessage)
                 }
-            })
+            })*/
         }
         mobileNumberEditText.setOnEditorActionListener { _, actionId, _ ->
             if (EditorInfo.IME_ACTION_DONE == actionId) getOtpTextView.callOnClick()
@@ -86,7 +79,7 @@ class LoginFragment : BaseFragment(), IOnBackPressedListener {
         } else {
             showProgressDialog(mActivity)
             mobileNumberEditText.hideKeyboard()
-            mLoginViewModel.generateOTP(mobileNumber)
+            //mLoginViewModel.generateOTP(mobileNumber)
         }
     }
 

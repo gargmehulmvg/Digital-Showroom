@@ -11,7 +11,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
-import com.digitaldukaan.MainActivity
+import com.digitaldukaan.MainActivity2
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.google.android.material.snackbar.Snackbar
@@ -21,11 +21,11 @@ open class BaseFragment : Fragment() {
     protected lateinit var mContentView: View
     protected lateinit var mNavController: NavController
     private lateinit var mProgressDialog: Dialog
-    protected lateinit var mActivity: MainActivity
+    protected lateinit var mActivity: MainActivity2
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        mActivity = context as MainActivity
+        mActivity = context as MainActivity2
     }
 
     protected fun showProgressDialog(context: Context?) {
@@ -41,6 +41,14 @@ open class BaseFragment : Fragment() {
                 mProgressDialog.show()
             }
         }
+    }
+
+    open fun onClick(view: View?) {
+
+    }
+
+    open fun onBackPressed() : Boolean {
+        return false;
     }
 
     protected fun showCancellableProgressDialog(context: Context?) {
@@ -90,6 +98,15 @@ open class BaseFragment : Fragment() {
     fun EditText.hideKeyboard() {
         val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(this.windowToken, 0)
+    }
+
+    open fun launchFragment(fragment: Fragment?, addBackStack: Boolean) = mActivity.launchFragment(fragment, addBackStack)
+
+    open fun clearFragmentBackStack() {
+        val fm = mActivity.supportFragmentManager
+        for (i in 0 until fm.backStackEntryCount) {
+            fm.popBackStack()
+        }
     }
 
 }

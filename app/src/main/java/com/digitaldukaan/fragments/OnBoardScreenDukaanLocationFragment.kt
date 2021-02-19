@@ -42,7 +42,7 @@ class OnBoardScreenDukaanLocationFragment : BaseFragment(), View.OnClickListener
         })
     }
 
-    override fun onClick(v: View?) {
+    /*override fun onClick(v: View?) {
         when (v?.id) {
             backImageView.id -> {
                 mNavController.navigateUp()
@@ -56,6 +56,6 @@ class OnBoardScreenDukaanLocationFragment : BaseFragment(), View.OnClickListener
                 }
             }
         }
-    }
+    }*/
 
 }
