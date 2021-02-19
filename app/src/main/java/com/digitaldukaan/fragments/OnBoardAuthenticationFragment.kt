@@ -3,11 +3,10 @@ package com.digitaldukaan.fragments
 import android.app.Activity
 import android.app.PendingIntent
 import android.content.Intent
-import android.content.IntentSender.SendIntentException
+import android.content.IntentSender
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,6 +17,7 @@ import androidx.transition.TransitionInflater
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.Constants.Companion.CREDENTIAL_PICKER_REQUEST
+import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.interfaces.IOnBackPressedListener
 import com.google.android.gms.auth.api.credentials.Credential
 import com.google.android.gms.auth.api.credentials.Credentials
@@ -29,7 +29,7 @@ import kotlinx.android.synthetic.main.on_board_authentication_fragment.*
 class OnBoardAuthenticationFragment : BaseFragment(), IOnBackPressedListener {
 
     private var mIsDoublePressToExit = false
-    private val mTag = OnBoardAuthenticationFragment::class.simpleName
+    private var mIsMobileNumberSearchingDone = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,7 +46,7 @@ class OnBoardAuthenticationFragment : BaseFragment(), IOnBackPressedListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setupMobileNumberEditText()
-        initiateAutoDetectMobileNumber()
+        if (!mIsMobileNumberSearchingDone) initiateAutoDetectMobileNumber()
     }
 
     private fun setupMobileNumberEditText() {
@@ -101,31 +101,41 @@ class OnBoardAuthenticationFragment : BaseFragment(), IOnBackPressedListener {
     }
 
     private fun initiateAutoDetectMobileNumber() {
-        val hintRequest = HintRequest.Builder()
-            .setPhoneNumberIdentifierSupported(true)
-            .build()
-        val intent: PendingIntent =
-            Credentials.getClient(mActivity).getHintPickerIntent(hintRequest)
-        try {
-            startIntentSenderForResult(
-                intent.intentSender,
-                CREDENTIAL_PICKER_REQUEST,
-                null,
-                0,
-                0,
-                0,
-                Bundle()
-            )
-        } catch (e: SendIntentException) {
-            e.printStackTrace()
-        }
+        mIsMobileNumberSearchingDone = true
+        Handler(Looper.getMainLooper()).postDelayed({
+            val hintRequest = HintRequest.Builder()
+                .setPhoneNumberIdentifierSupported(true)
+                .build()
+            val intent: PendingIntent =
+                Credentials.getClient(mActivity).getHintPickerIntent(hintRequest)
+            try {
+                startIntentSenderForResult(
+                    intent.intentSender,
+                    CREDENTIAL_PICKER_REQUEST,
+                    null,
+                    0,
+                    0,
+                    0,
+                    Bundle()
+                )
+            } catch (e: IntentSender.SendIntentException) {
+                e.printStackTrace()
+            }
+        }, Constants.TIMER_INTERVAL)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == CREDENTIAL_PICKER_REQUEST && resultCode == Activity.RESULT_OK) {
             // Obtain the phone number from the result
             val credentials: Credential? = data?.getParcelableExtra(Credential.EXTRA_KEY)
-            Log.d(mTag, "onActivityResult: ${credentials?.id?.substring(3)}") //get the selected phone number
+            credentials?.let {
+                CoroutineScopeUtils().runTaskOnCoroutineMain {
+                    mobileNumberEditText.text = null
+                    mobileNumberEditText.setText(it.id.substring(3))
+                    mobileNumberEditText.setSelection(mobileNumberEditText.text.trim().length)
+                    getOtpTextView.callOnClick()
+                }
+            }
             //Do what ever you want to do with your selected phone number here
         } else if (requestCode == CREDENTIAL_PICKER_REQUEST && resultCode == CredentialsApi.ACTIVITY_RESULT_NO_HINTS_AVAILABLE) {
             // *** No phone numbers available ***
