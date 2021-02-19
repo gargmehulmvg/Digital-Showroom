@@ -22,14 +22,9 @@ class MainActivity2 : AppCompatActivity() {
 
     override fun onBackPressed() {
         val current: BaseFragment = getCurrentFragment()
-        if (current.onBackPressed()) {
-            // To flip between view in personalize card fragment onBackPressed
-            return
-        }
+        if (current.onBackPressed()) return
         val manager = supportFragmentManager
-        if (manager.backStackEntryCount > 0) {
-            super.onBackPressed()
-        }
+        if (manager.backStackEntryCount > 0) super.onBackPressed()
     }
 
     fun onClick(v: View?) {

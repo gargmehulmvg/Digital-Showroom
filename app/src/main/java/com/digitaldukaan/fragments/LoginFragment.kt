@@ -17,22 +17,28 @@ import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.Constants.Companion.CREDENTIAL_PICKER_REQUEST
 import com.digitaldukaan.constants.CoroutineScopeUtils
+import com.digitaldukaan.models.response.GenerateOtpResponse
+import com.digitaldukaan.services.LoginService
+import com.digitaldukaan.services.`interface`.ILoginServiceInterface
 import com.google.android.gms.auth.api.credentials.Credential
 import com.google.android.gms.auth.api.credentials.Credentials
 import com.google.android.gms.auth.api.credentials.CredentialsApi
 import com.google.android.gms.auth.api.credentials.HintRequest
 import kotlinx.android.synthetic.main.login_fragment.*
 
-class LoginFragment : BaseFragment() {
+class LoginFragment : BaseFragment(), ILoginServiceInterface {
 
     private var mIsDoublePressToExit = false
     private var mIsMobileNumberSearchingDone = false
+    private lateinit var mLoginService: LoginService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
             sharedElementEnterTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.move)
         }
+        mLoginService = LoginService()
+        mLoginService.setLoginServiceInterface(this)
     }
 
     override fun onCreateView(
@@ -56,15 +62,6 @@ class LoginFragment : BaseFragment() {
             val mobileNumber = mobileNumberEditText.text.trim().toString()
             val validationFailed = isMobileNumberValidationNotCorrect(mobileNumber)
             performOTPServerCall(validationFailed, mobileNumber)
-            /*mLoginViewModel.mGenerateOtpResponse.observe(this, Observer {
-                stopProgress()
-                if (it.mStatus) {
-                    val action = LoginFragmentDirections.actionOnBoardAuthenticationFragmentToOtpVerificationFragment()
-                    mNavController.navigate(action)
-                } else {
-                    showToast(it.mMessage)
-                }
-            })*/
         }
         mobileNumberEditText.setOnEditorActionListener { _, actionId, _ ->
             if (EditorInfo.IME_ACTION_DONE == actionId) getOtpTextView.callOnClick()
@@ -78,7 +75,7 @@ class LoginFragment : BaseFragment() {
         } else {
             showProgressDialog(mActivity)
             mobileNumberEditText.hideKeyboard()
-            //mLoginViewModel.generateOTP(mobileNumber)
+            mLoginService.generateOTP(mobileNumber)
         }
     }
 
@@ -149,6 +146,17 @@ class LoginFragment : BaseFragment() {
         } else if (requestCode == CREDENTIAL_PICKER_REQUEST && resultCode == CredentialsApi.ACTIVITY_RESULT_NO_HINTS_AVAILABLE) {
             // *** No phone numbers available ***
             Toast.makeText(context, "No phone numbers found", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    override fun onGenerateOTPResponse(generateOtpResponse: GenerateOtpResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            if (generateOtpResponse.mStatus) {
+                launchFragment(OtpVerificationFragment(), true)
+            } else {
+                showToast(generateOtpResponse.mMessage)
+            }
         }
     }
 }
