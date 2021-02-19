@@ -7,7 +7,7 @@ import android.widget.TextView;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 
-import com.digitaldukaan.MainActivity2;
+import com.digitaldukaan.MainActivity;
 import com.digitaldukaan.R;
 
 public class ToolBarManager {
@@ -40,7 +40,7 @@ public class ToolBarManager {
         });
     }
 
-    public void hideToolBar(MainActivity2 mActivity, boolean toHide) {
+    public void hideToolBar(MainActivity mActivity, boolean toHide) {
         if (toHide) {
             mActivity.findViewById(R.id.toolbarLayout).setVisibility(View.GONE);
         } else {
@@ -48,7 +48,7 @@ public class ToolBarManager {
         }
     }
 
-    public void hideBackPressFromToolBar(MainActivity2 mActivity, boolean toHide) {
+    public void hideBackPressFromToolBar(MainActivity mActivity, boolean toHide) {
         if (toHide) {
             mActivity.findViewById(R.id.backButtonToolbar).setVisibility(View.INVISIBLE);
         } else {

@@ -21,13 +21,16 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener {
         return mContentView
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        otpEditText.setOtpFilledListener(this)
-        startCountDownTimer()
-        verifyTextView.setOnClickListener {
+    override fun onClick(view: View?) {
+        if (view?.id == verifyTextView.id) {
             timer.cancel()
             launchFragment(OnBoardScreenDukaanNameFragment(), true)
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        otpEditText.setOtpFilledListener(this)
+        startCountDownTimer()
     }
 
     private fun startCountDownTimer() {

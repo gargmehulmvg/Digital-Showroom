@@ -11,7 +11,7 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
-import com.digitaldukaan.MainActivity2
+import com.digitaldukaan.MainActivity
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.google.android.material.snackbar.Snackbar
@@ -21,11 +21,11 @@ open class BaseFragment : Fragment() {
     protected lateinit var mContentView: View
     protected lateinit var mNavController: NavController
     private lateinit var mProgressDialog: Dialog
-    protected lateinit var mActivity: MainActivity2
+    protected lateinit var mActivity: MainActivity
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        mActivity = context as MainActivity2
+        mActivity = context as MainActivity
     }
 
     protected fun showProgressDialog(context: Context?) {
