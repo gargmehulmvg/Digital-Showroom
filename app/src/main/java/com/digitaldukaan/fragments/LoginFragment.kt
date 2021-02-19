@@ -7,11 +7,14 @@ import android.content.IntentSender
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.Toast
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import androidx.transition.TransitionInflater
 import com.digitaldukaan.R
@@ -19,17 +22,18 @@ import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.Constants.Companion.CREDENTIAL_PICKER_REQUEST
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.interfaces.IOnBackPressedListener
+import com.digitaldukaan.viewmodel.LoginViewModel
 import com.google.android.gms.auth.api.credentials.Credential
 import com.google.android.gms.auth.api.credentials.Credentials
 import com.google.android.gms.auth.api.credentials.CredentialsApi
 import com.google.android.gms.auth.api.credentials.HintRequest
-import kotlinx.android.synthetic.main.on_board_authentication_fragment.*
+import kotlinx.android.synthetic.main.login_fragment.*
 
-
-class OnBoardAuthenticationFragment : BaseFragment(), IOnBackPressedListener {
+class LoginFragment : BaseFragment(), IOnBackPressedListener {
 
     private var mIsDoublePressToExit = false
     private var mIsMobileNumberSearchingDone = false
+    private lateinit var mLoginViewModel: LoginViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +41,7 @@ class OnBoardAuthenticationFragment : BaseFragment(), IOnBackPressedListener {
             sharedElementEnterTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.move)
         }
         mNavController = findNavController()
+        mLoginViewModel = ViewModelProviders.of(this).get(LoginViewModel::class.java)
     }
 
     override fun onCreateView(
@@ -44,7 +49,7 @@ class OnBoardAuthenticationFragment : BaseFragment(), IOnBackPressedListener {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        mContentView = inflater.inflate(R.layout.on_board_authentication_fragment, container, false)
+        mContentView = inflater.inflate(R.layout.login_fragment, container, false)
         return mContentView
     }
 
@@ -59,24 +64,33 @@ class OnBoardAuthenticationFragment : BaseFragment(), IOnBackPressedListener {
         getOtpTextView.setOnClickListener {
             val mobileNumber = mobileNumberEditText.text.trim().toString()
             val validationFailed = isMobileNumberValidationNotCorrect(mobileNumber)
-            performOTPServerCall(validationFailed)
+            performOTPServerCall(validationFailed, mobileNumber)
+            mLoginViewModel.mGenerateOtpResponse.observe(this, Observer {
+                stopProgress()
+                showToast(it.mMessage)
+                it.mStatus?.let { mStatus ->
+                    {
+                        if (mStatus) {
+                            val action = LoginFragmentDirections.actionOnBoardAuthenticationFragmentToOtpVerificationFragment()
+                            mNavController.navigate(action)
+                        }
+                    }
+                }
+            })
         }
         mobileNumberEditText.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                getOtpTextView.callOnClick()
-            }
+            if (EditorInfo.IME_ACTION_DONE == actionId) getOtpTextView.callOnClick()
             true
         }
     }
 
-    private fun performOTPServerCall(validationFailed: Boolean) {
+    private fun performOTPServerCall(validationFailed: Boolean, mobileNumber: String) {
         if (validationFailed) {
             mobileNumberEditText.requestFocus()
         } else {
+            showProgressDialog(mActivity)
             mobileNumberEditText.hideKeyboard()
-            val action =
-                OnBoardAuthenticationFragmentDirections.actionOnBoardAuthenticationFragmentToOtpVerificationFragment()
-            mNavController.navigate(action)
+            mLoginViewModel.generateOTP(mobileNumber)
         }
     }
 
@@ -146,5 +160,4 @@ class OnBoardAuthenticationFragment : BaseFragment(), IOnBackPressedListener {
             Toast.makeText(context, "No phone numbers found", Toast.LENGTH_LONG).show()
         }
     }
-
 }

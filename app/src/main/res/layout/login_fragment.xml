@@ -60,6 +60,7 @@
                 android:importantForAutofill="no"
                 android:inputType="number"
                 android:focusable="true"
+                android:text="0000000000"
                 android:clickable="true"
                 android:maxLength="@integer/mobile_number_length"
                 android:textColor="@color/black"

@@ -22,9 +22,9 @@
     </fragment>
     <fragment
         android:id="@+id/onBoardAuthenticationFragment"
-        android:name="com.digitaldukaan.fragments.OnBoardAuthenticationFragment"
+        android:name="com.digitaldukaan.fragments.LoginFragment"
         android:label="OnBoardAuthenticationFragment"
-        tools:layout="@layout/on_board_authentication_fragment" >
+        tools:layout="@layout/login_fragment" >
         <action
             android:id="@+id/action_onBoardAuthenticationFragment_to_otpVerificationFragment"
             app:destination="@id/otpVerificationFragment"

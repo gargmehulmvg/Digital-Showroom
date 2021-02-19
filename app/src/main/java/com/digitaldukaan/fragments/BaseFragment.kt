@@ -66,7 +66,7 @@ open class BaseFragment : Fragment() {
         }
     }
 
-    protected fun showToast(message: String = "sample testing") {
+    protected fun showToast(message: String? = "sample testing") {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
         }

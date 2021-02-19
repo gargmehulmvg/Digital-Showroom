@@ -61,7 +61,6 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener {
 
     override fun onOTPFilledListener(otpStr: String) {
         otpEditText.hideKeyboard()
-        showToast(otpStr)
         verifyTextView.isEnabled = true
         verifyTextView.callOnClick()
     }

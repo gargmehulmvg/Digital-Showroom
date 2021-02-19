@@ -22,28 +22,25 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ProgressBar
-        android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyle"
-        android:layout_width="@dimen/_20sdp"
-        android:layout_height="@dimen/_20sdp"
-        android:layout_marginTop="@dimen/_10sdp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/logo"
-        app:layout_constraintStart_toStartOf="@+id/logo"
-        app:layout_constraintTop_toBottomOf="@+id/logo"
-        app:layout_constraintVertical_bias="0.022" />
-
     <TextView
-        android:id="@+id/progressDialogTextView"
-        style="@style/common_bold_text_view"
+        android:id="@+id/messageTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_10sdp"
         android:text="@string/please_wait"
+        android:textColor="@color/black"
         android:textSize="@dimen/_10sdp"
         app:layout_constraintBottom_toBottomOf="@+id/progressBar"
         app:layout_constraintStart_toEndOf="@+id/progressBar"
         app:layout_constraintTop_toTopOf="@+id/progressBar" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/okTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/_10sdp"
+        android:layout_marginTop="@dimen/_10sdp"
+        style="@style/common_text_view_background"
+        android:text="@string/ok" />
 
 </LinearLayout>
