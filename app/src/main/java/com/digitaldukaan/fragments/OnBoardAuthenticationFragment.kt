@@ -39,7 +39,11 @@ class OnBoardAuthenticationFragment : BaseFragment(), IOnBackPressedListener {
         mNavController = findNavController()
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         mContentView = inflater.inflate(R.layout.on_board_authentication_fragment, container, false)
         return mContentView
     }
@@ -76,7 +80,7 @@ class OnBoardAuthenticationFragment : BaseFragment(), IOnBackPressedListener {
         }
     }
 
-    private fun isMobileNumberValidationNotCorrect(mobileNumber: String) : Boolean{
+    private fun isMobileNumberValidationNotCorrect(mobileNumber: String): Boolean {
         return when {
             mobileNumber.isEmpty() -> {
                 mobileNumberEditText.error = getString(R.string.mandatory_field_message)

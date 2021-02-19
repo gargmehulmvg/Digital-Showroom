@@ -42,7 +42,7 @@ android {
     flavorDimensions "default"
     productFlavors {
         local {
-            buildConfigField('String', 'BASE_URL', '"local"')
+            buildConfigField('String', 'BASE_URL', '"https://api.dotq.in/"')
         }
         staging {
             buildConfigField('String', 'BASE_URL', '"staging"')
