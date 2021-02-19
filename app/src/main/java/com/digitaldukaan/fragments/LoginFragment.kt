@@ -7,7 +7,6 @@ import android.content.IntentSender
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -67,14 +66,11 @@ class LoginFragment : BaseFragment(), IOnBackPressedListener {
             performOTPServerCall(validationFailed, mobileNumber)
             mLoginViewModel.mGenerateOtpResponse.observe(this, Observer {
                 stopProgress()
-                showToast(it.mMessage)
-                it.mStatus?.let { mStatus ->
-                    {
-                        if (mStatus) {
-                            val action = LoginFragmentDirections.actionOnBoardAuthenticationFragmentToOtpVerificationFragment()
-                            mNavController.navigate(action)
-                        }
-                    }
+                if (it.mStatus) {
+                    val action = LoginFragmentDirections.actionOnBoardAuthenticationFragmentToOtpVerificationFragment()
+                    mNavController.navigate(action)
+                } else {
+                    showToast(it.mMessage)
                 }
             })
         }
