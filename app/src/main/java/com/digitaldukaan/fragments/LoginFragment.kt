@@ -17,14 +17,13 @@ import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.Constants.Companion.CREDENTIAL_PICKER_REQUEST
 import com.digitaldukaan.constants.CoroutineScopeUtils
-import com.digitaldukaan.interfaces.IOnBackPressedListener
 import com.google.android.gms.auth.api.credentials.Credential
 import com.google.android.gms.auth.api.credentials.Credentials
 import com.google.android.gms.auth.api.credentials.CredentialsApi
 import com.google.android.gms.auth.api.credentials.HintRequest
 import kotlinx.android.synthetic.main.login_fragment.*
 
-class LoginFragment : BaseFragment(), IOnBackPressedListener {
+class LoginFragment : BaseFragment() {
 
     private var mIsDoublePressToExit = false
     private var mIsMobileNumberSearchingDone = false
@@ -97,14 +96,17 @@ class LoginFragment : BaseFragment(), IOnBackPressedListener {
         }
     }
 
-    override fun onBackPressedToExit() {
-        if (mIsDoublePressToExit) mActivity.finish()
+    override fun onBackPressed(): Boolean {
+        if (mIsDoublePressToExit) {
+            mActivity.finish()
+        }
         showShortSnackBar(getString(R.string.msg_back_press))
         mIsDoublePressToExit = true
         Handler(Looper.getMainLooper()).postDelayed(
             { mIsDoublePressToExit = false },
             Constants.BACK_PRESS_INTERVAL
         )
+        return true
     }
 
     private fun initiateAutoDetectMobileNumber() {
