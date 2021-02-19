@@ -43,6 +43,21 @@ open class BaseFragment : Fragment() {
         }
     }
 
+    protected fun showCancellableProgressDialog(context: Context?) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            context?.run {
+                mProgressDialog = Dialog(this)
+                val inflate = LayoutInflater.from(this).inflate(R.layout.progress_dialog, null)
+                mProgressDialog.setContentView(inflate)
+                mProgressDialog.setCancelable(true)
+                mProgressDialog.window!!.setBackgroundDrawable(
+                    ColorDrawable(Color.TRANSPARENT)
+                )
+                mProgressDialog.show()
+            }
+        }
+    }
+
     protected fun stopProgress() {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             mProgressDialog.run {
