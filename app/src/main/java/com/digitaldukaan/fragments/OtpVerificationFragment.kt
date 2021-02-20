@@ -2,6 +2,7 @@ package com.digitaldukaan.fragments
 
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,10 +14,12 @@ import com.digitaldukaan.models.response.ValidateOtpErrorResponse
 import com.digitaldukaan.models.response.ValidateOtpResponse
 import com.digitaldukaan.services.OtpVerificationService
 import com.digitaldukaan.services.serviceinterface.IOtpVerificationServiceInterface
+import com.digitaldukaan.smsapi.ISmsReceivedListener
+import com.google.android.gms.auth.api.phone.SmsRetriever
 import kotlinx.android.synthetic.main.otp_verification_fragment.*
 
 
-class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerificationServiceInterface {
+class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerificationServiceInterface, ISmsReceivedListener {
 
     private lateinit var mCountDownTimer: CountDownTimer
     private lateinit var mOtpVerificationService: OtpVerificationService
@@ -27,6 +30,18 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
         val fragment = OtpVerificationFragment()
         fragment.mMobileNumberStr = mobileNumber
         return fragment
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val client = SmsRetriever.getClient(mActivity)
+        val task = client.startSmsRetriever()
+        task.addOnSuccessListener {
+            Log.d("OtpVerificationFragment", "onCreate: Auto read SMS retrieval task success")
+        }
+        task.addOnFailureListener {
+            Log.d("OtpVerificationFragment", "onCreate: Auto read SMS retrieval task failed")
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -97,5 +112,9 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
             stopProgress()
             showToast(validateOtpErrorResponse.mMessage)
         }
+    }
+
+    override fun onNewSmsReceived(sms: String?) {
+        showToast(sms)
     }
 }

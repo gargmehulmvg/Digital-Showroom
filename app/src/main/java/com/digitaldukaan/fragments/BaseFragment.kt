@@ -111,6 +111,7 @@ open class BaseFragment : Fragment() {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             val builder: AlertDialog.Builder = AlertDialog.Builder(mActivity)
             builder.apply {
+                setIcon(android.R.drawable.ic_dialog_alert)
                 setTitle("No Internet Connection")
                 setMessage("Please turn on internet connection to continue")
                 setCancelable(false)
