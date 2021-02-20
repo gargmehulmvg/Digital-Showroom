@@ -15,6 +15,7 @@ import com.digitaldukaan.models.response.ValidateOtpResponse
 import com.digitaldukaan.services.OtpVerificationService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IOtpVerificationServiceInterface
+import com.digitaldukaan.smsapi.AppSignatureHelper
 import com.digitaldukaan.smsapi.ISmsReceivedListener
 import com.google.android.gms.auth.api.phone.SmsRetriever
 import kotlinx.android.synthetic.main.otp_verification_fragment.*
@@ -43,6 +44,8 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
         task.addOnFailureListener {
             Log.d("OtpVerificationFragment", "onCreate: Auto read SMS retrieval task failed")
         }
+        showToast("App Signature is ${AppSignatureHelper(mActivity).appSignatures[0]}")
+        Log.d("OtpVerificationFragment", "App Signature is ${AppSignatureHelper(mActivity).appSignatures[0]}")
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
