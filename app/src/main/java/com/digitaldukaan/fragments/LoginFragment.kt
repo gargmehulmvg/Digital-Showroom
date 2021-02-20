@@ -19,6 +19,7 @@ import com.digitaldukaan.constants.Constants.Companion.CREDENTIAL_PICKER_REQUEST
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.models.response.GenerateOtpResponse
 import com.digitaldukaan.services.LoginService
+import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.ILoginServiceInterface
 import com.google.android.gms.auth.api.credentials.Credential
 import com.google.android.gms.auth.api.credentials.Credentials
@@ -37,7 +38,7 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
             sharedElementEnterTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.move)
         }
-        mLoginService = LoginService(mActivity)
+        mLoginService = LoginService()
         mLoginService.setLoginServiceInterface(this)
     }
 
@@ -56,8 +57,10 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
     }
 
     private fun setupMobileNumberEditText() {
-        mobileNumberEditText.requestFocus()
-        mobileNumberEditText.showKeyboard()
+        mobileNumberEditText.apply {
+            requestFocus()
+            showKeyboard()
+        }
         getOtpTextView.setOnClickListener {
             val mobileNumber = mobileNumberEditText.text.trim().toString()
             val validationFailed = isMobileNumberValidationNotCorrect(mobileNumber)
@@ -73,6 +76,10 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
         if (validationFailed) {
             mobileNumberEditText.requestFocus()
         } else {
+            if (isInternetConnectionAvailable(mActivity)) {
+                showNoInternetConnectionDialog()
+                return
+            }
             showProgressDialog(mActivity)
             mobileNumberEditText.hideKeyboard()
             mLoginService.generateOTP(mobileNumber)
@@ -132,19 +139,18 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == CREDENTIAL_PICKER_REQUEST && resultCode == Activity.RESULT_OK) {
-            // Obtain the phone number from the result
             val credentials: Credential? = data?.getParcelableExtra(Credential.EXTRA_KEY)
             credentials?.let {
                 CoroutineScopeUtils().runTaskOnCoroutineMain {
-                    mobileNumberEditText.text = null
-                    mobileNumberEditText.setText(it.id.substring(3))
-                    mobileNumberEditText.setSelection(mobileNumberEditText.text.trim().length)
+                    mobileNumberEditText.apply {
+                        text = null
+                        setText(it.id.substring(3))
+                        setSelection(mobileNumberEditText.text.trim().length)
+                    }
                     getOtpTextView.callOnClick()
                 }
             }
-            //Do what ever you want to do with your selected phone number here
         } else if (requestCode == CREDENTIAL_PICKER_REQUEST && resultCode == CredentialsApi.ACTIVITY_RESULT_NO_HINTS_AVAILABLE) {
-            // *** No phone numbers available ***
             Toast.makeText(context, "No phone numbers found", Toast.LENGTH_LONG).show()
         }
     }
@@ -159,9 +165,5 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
                 showToast(generateOtpResponse.mMessage)
             }
         }
-    }
-
-    override fun noInternetConnection() {
-        showNoInternetConnectionDialog()
     }
 }

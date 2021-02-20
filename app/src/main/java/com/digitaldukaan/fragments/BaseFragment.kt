@@ -110,10 +110,12 @@ open class BaseFragment : Fragment() {
     open fun showNoInternetConnectionDialog() {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             val builder: AlertDialog.Builder = AlertDialog.Builder(mActivity)
-            builder.setTitle("No internet Connection")
-            builder.setMessage("Please turn on internet connection to continue")
-            builder.setCancelable(false)
-            builder.setNegativeButton("close") { dialog, _ -> dialog.dismiss() }
+            builder.apply {
+                setTitle("No Internet Connection")
+                setMessage("Please turn on internet connection to continue")
+                setCancelable(false)
+                setNegativeButton("Close") {dialog, _ -> dialog.dismiss() }
+            }
             val alertDialog: AlertDialog = builder.create()
             alertDialog.show()
         }
