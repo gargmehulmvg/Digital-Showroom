@@ -8,20 +8,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.FragmentNavigatorExtras
-import androidx.navigation.fragment.findNavController
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
-import com.digitaldukaan.interfaces.IOnBackPressedListener
+import com.digitaldukaan.constants.ToolBarManager
 import kotlinx.android.synthetic.main.fragment_splash.*
 
-class SplashFragment : BaseFragment(), IOnBackPressedListener {
+class SplashFragment : BaseFragment() {
 
     private val mTagName = SplashFragment::class.simpleName
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        mNavController = findNavController()
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -34,15 +28,17 @@ class SplashFragment : BaseFragment(), IOnBackPressedListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mActivity.hideToolbarView(false)
+        ToolBarManager.getInstance().hideToolBar(mActivity, true)
         Handler(Looper.getMainLooper()).postDelayed({
             val extras = FragmentNavigatorExtras(splashLogoImageView to "transitionName")
-            mNavController.navigate(R.id.onBoardAuthenticationFragment, null, null, extras)
+            //mNavController.navigate(R.id.onBoardAuthenticationFragment, null, null, extras)
+            launchFragment(LoginFragment(), true)
         }, Constants.SPLASH_TIMER)
     }
 
-    override fun onBackPressedToExit() {
-        Log.d(mTagName, "onBackPressedToExit: do nothing")
+    override fun onBackPressed(): Boolean {
+        Log.d(mTagName, "onBackPressed: do nothing")
+        return true
     }
 
 }

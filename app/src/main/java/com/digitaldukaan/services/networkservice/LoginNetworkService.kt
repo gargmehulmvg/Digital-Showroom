@@ -1,20 +1,19 @@
-package com.digitaldukaan.viewmodel.networkrepository
+package com.digitaldukaan.services.networkservice
 
-import androidx.lifecycle.MutableLiveData
 import com.digitaldukaan.models.request.GenerateOtpRequest
-import com.digitaldukaan.models.response.GenerateOtpResponse
 import com.digitaldukaan.network.RetrofitApi
+import com.digitaldukaan.services.`interface`.ILoginServiceInterface
 
-class LoginNetworkRepo {
+class LoginNetworkService {
 
     suspend fun generateOTPServerCall(
         mobileNumber: String,
-        otpLiveData: MutableLiveData<GenerateOtpResponse>
+        loginServiceInterface: ILoginServiceInterface
     ) {
         val response = RetrofitApi().getServerCallObject()?.generateOTP(GenerateOtpRequest("Digital Dukaan", mobileNumber))
         response?.let {
             if (it.isSuccessful) {
-                it.body()?.let { generateOtpResponse -> otpLiveData.postValue(generateOtpResponse) }
+                it.body()?.let { generateOtpResponse -> loginServiceInterface.onGenerateOTPResponse(generateOtpResponse) }
             }
         }
     }

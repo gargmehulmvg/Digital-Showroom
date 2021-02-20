@@ -43,6 +43,14 @@ open class BaseFragment : Fragment() {
         }
     }
 
+    open fun onClick(view: View?) {
+
+    }
+
+    open fun onBackPressed() : Boolean {
+        return false;
+    }
+
     protected fun showCancellableProgressDialog(context: Context?) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             context?.run {
@@ -90,6 +98,15 @@ open class BaseFragment : Fragment() {
     fun EditText.hideKeyboard() {
         val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(this.windowToken, 0)
+    }
+
+    open fun launchFragment(fragment: Fragment?, addBackStack: Boolean) = mActivity.launchFragment(fragment, addBackStack)
+
+    open fun clearFragmentBackStack() {
+        val fm = mActivity.supportFragmentManager
+        for (i in 0 until fm.backStackEntryCount) {
+            fm.popBackStack()
+        }
     }
 
 }

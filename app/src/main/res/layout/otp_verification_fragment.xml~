@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true">
@@ -29,8 +28,7 @@
             android:transitionName="@string/transition_name"
             app:layout_constraintBottom_toBottomOf="@id/enterMobileNumberHeading"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/enterMobileNumberHeading"
-            tools:targetApi="lollipop" />
+            app:layout_constraintTop_toTopOf="@id/enterMobileNumberHeading" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/verifyTextView"
@@ -38,7 +36,6 @@
             android:drawableEnd="@drawable/ic_arrow_forward_white"
             android:drawablePadding="@dimen/_10sdp"
             android:enabled="false"
-            android:onClick="onClick"
             android:text="@string/verify"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />

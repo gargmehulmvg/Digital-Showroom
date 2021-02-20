@@ -6,31 +6,26 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.navigation.fragment.findNavController
 import androidx.transition.TransitionInflater
 import com.digitaldukaan.R
 import kotlinx.android.synthetic.main.on_board_screen_dukaan_fragment.*
 
 
-class OnBoardScreenDukaanNameFragment : BaseFragment(), View.OnClickListener {
+class OnBoardScreenDukaanNameFragment : BaseFragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
             sharedElementEnterTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.move)
         }
-        mNavController = findNavController()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.on_board_screen_dukaan_fragment, container, false)
-        mNavController = findNavController()
         return mContentView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        backImageView.setOnClickListener(this)
-        nextTextView.setOnClickListener(this)
         dukaanNameEditText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
              val str = s.toString()
@@ -45,10 +40,10 @@ class OnBoardScreenDukaanNameFragment : BaseFragment(), View.OnClickListener {
         })
     }
 
-    override fun onClick(v: View?) {
-        when(v?.id) {
+    override fun onClick(view: View?) {
+        when(view?.id) {
             backImageView.id -> {
-                mNavController.navigateUp()
+                mActivity.onBackPressed()
             }
             nextTextView.id -> {
                 val dukanName = dukaanNameEditText.text
@@ -57,8 +52,7 @@ class OnBoardScreenDukaanNameFragment : BaseFragment(), View.OnClickListener {
                     dukaanNameEditText.showKeyboard()
                     dukaanNameEditText.error = getString(R.string.mandatory_field_message)
                 } else {
-                    val action = OnBoardScreenDukaanNameFragmentDirections.actionOnBoardScreenDukaanNameFragmentToOnBoardScreenDukaanLocationFragment()
-                    mNavController.navigate(action)
+                    launchFragment(OnBoardScreenDukaanLocationFragment(), true)
                 }
             }
         }
