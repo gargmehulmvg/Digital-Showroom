@@ -15,6 +15,7 @@ import com.digitaldukaan.MainActivity
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.google.android.material.snackbar.Snackbar
+import java.net.UnknownHostException
 
 
 open class BaseFragment : Fragment() {
@@ -80,6 +81,12 @@ open class BaseFragment : Fragment() {
         }
     }
 
+    open fun exceptionHandlingForAPIResponse(e: Exception) {
+        if (e is UnknownHostException) {
+            showToast(e.message)
+        }
+    }
+
     protected fun showShortSnackBar(message: String = "sample testing") {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             Snackbar.make(mContentView, message, Snackbar.LENGTH_SHORT).show()
@@ -111,11 +118,10 @@ open class BaseFragment : Fragment() {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             val builder: AlertDialog.Builder = AlertDialog.Builder(mActivity)
             builder.apply {
-                setIcon(android.R.drawable.ic_dialog_alert)
-                setTitle("No Internet Connection")
-                setMessage("Please turn on internet connection to continue")
+                setTitle(getString(R.string.no_internet_connection))
+                setMessage(getString(R.string.turn_on_internet_message))
                 setCancelable(false)
-                setNegativeButton("Close") {dialog, _ -> dialog.dismiss() }
+                setNegativeButton(getString(R.string.close)) { dialog, _ -> dialog.dismiss() }
             }
             val alertDialog: AlertDialog = builder.create()
             alertDialog.show()

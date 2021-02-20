@@ -76,7 +76,7 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
         if (validationFailed) {
             mobileNumberEditText.requestFocus()
         } else {
-            if (isInternetConnectionAvailable(mActivity)) {
+            if (!isInternetConnectionAvailable(mActivity)) {
                 showNoInternetConnectionDialog()
                 return
             }
@@ -165,5 +165,10 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
                 showToast(generateOtpResponse.mMessage)
             }
         }
+    }
+
+    override fun onGenerateOTPException(e: Exception) {
+        stopProgress()
+        exceptionHandlingForAPIResponse(e)
     }
 }

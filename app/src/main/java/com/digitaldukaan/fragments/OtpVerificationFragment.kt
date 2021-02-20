@@ -13,6 +13,7 @@ import com.digitaldukaan.interfaces.IOnOTPFilledListener
 import com.digitaldukaan.models.response.ValidateOtpErrorResponse
 import com.digitaldukaan.models.response.ValidateOtpResponse
 import com.digitaldukaan.services.OtpVerificationService
+import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IOtpVerificationServiceInterface
 import com.digitaldukaan.smsapi.ISmsReceivedListener
 import com.google.android.gms.auth.api.phone.SmsRetriever
@@ -53,6 +54,10 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
 
     override fun onClick(view: View?) {
         if (view?.id == verifyTextView.id) {
+            if (!isInternetConnectionAvailable(mActivity)) {
+                showNoInternetConnectionDialog()
+                return
+            }
             mCountDownTimer.cancel()
             showCancellableProgressDialog(mActivity)
             mOtpVerificationService.verifyOTP(mMobileNumberStr, mEnteredOtpStr.toInt())
