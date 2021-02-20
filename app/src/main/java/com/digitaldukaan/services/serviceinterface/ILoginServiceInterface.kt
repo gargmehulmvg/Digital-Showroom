@@ -1,4 +1,4 @@
-package com.digitaldukaan.services.`interface`
+package com.digitaldukaan.services.serviceinterface
 
 import com.digitaldukaan.models.response.GenerateOtpResponse
 

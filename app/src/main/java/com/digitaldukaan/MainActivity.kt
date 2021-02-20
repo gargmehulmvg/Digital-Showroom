@@ -81,4 +81,37 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    fun launchFragmentWithAnimation(fragment: Fragment?, addBackStack: Boolean, animationView: View) = runOnUiThread { doSwitchToScreen(fragment, addBackStack, animationView) }
+
+    private fun doSwitchToScreen(fragment: Fragment?, addToBackStack: Boolean, animationView: View) {
+        if (null == fragment) {
+            return
+        }
+        val manager = supportFragmentManager
+        val fragmentTransaction = manager.beginTransaction()
+        val fragmentTag = fragment.javaClass.canonicalName
+        try {
+            fragmentTransaction.setCustomAnimations(
+                R.anim.fade_in,
+                R.anim.fade_out,
+                android.R.anim.slide_in_left,
+                android.R.anim.slide_out_right
+            )
+            fragmentTransaction.replace(R.id.homeFrame, fragment, fragmentTag)
+            if (addToBackStack) fragmentTransaction.addToBackStack(fragmentTag)
+            fragmentTransaction.addSharedElement(animationView, getString(R.string.transition_name))
+            fragmentTransaction.commitAllowingStateLoss()
+        } catch (e: Exception) {
+            Log.e("doSwitchToScreen ", e.message, e)
+            try {
+                fragmentTransaction.replace(R.id.homeFrame, fragment, fragmentTag)
+                if (addToBackStack) fragmentTransaction.addToBackStack(fragmentTag)
+                fragmentTransaction.addSharedElement(animationView, getString(R.string.transition_name))
+                fragmentTransaction.commitAllowingStateLoss()
+            } catch (e2: Exception) {
+                Log.e("doSwitchToScreen", e.message, e)
+            }
+        }
+    }
+
 }

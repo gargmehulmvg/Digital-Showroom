@@ -2,7 +2,7 @@ package com.digitaldukaan.services.networkservice
 
 import com.digitaldukaan.models.request.GenerateOtpRequest
 import com.digitaldukaan.network.RetrofitApi
-import com.digitaldukaan.services.`interface`.ILoginServiceInterface
+import com.digitaldukaan.services.serviceinterface.ILoginServiceInterface
 
 class LoginNetworkService {
 

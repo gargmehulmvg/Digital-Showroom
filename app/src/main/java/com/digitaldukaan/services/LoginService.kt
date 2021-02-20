@@ -1,8 +1,8 @@
 package com.digitaldukaan.services
 
 import com.digitaldukaan.constants.CoroutineScopeUtils
-import com.digitaldukaan.services.`interface`.ILoginServiceInterface
 import com.digitaldukaan.services.networkservice.LoginNetworkService
+import com.digitaldukaan.services.serviceinterface.ILoginServiceInterface
 
 class LoginService {
 
@@ -15,7 +15,7 @@ class LoginService {
     }
 
     fun generateOTP(mobileNumber: String) {
-        CoroutineScopeUtils().runTaskOnCoroutineMain {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
             mLoginNetworkService.generateOTPServerCall(mobileNumber, mLoginServiceInterface)
         }
     }

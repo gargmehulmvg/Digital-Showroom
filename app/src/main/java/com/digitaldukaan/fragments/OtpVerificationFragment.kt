@@ -9,22 +9,38 @@ import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.interfaces.IOnOTPFilledListener
+import com.digitaldukaan.models.response.ValidateOtpErrorResponse
+import com.digitaldukaan.models.response.ValidateOtpResponse
+import com.digitaldukaan.services.OtpVerificationService
+import com.digitaldukaan.services.serviceinterface.IOtpVerificationServiceInterface
 import kotlinx.android.synthetic.main.otp_verification_fragment.*
 
 
-class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener {
+class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerificationServiceInterface {
 
-    private lateinit var timer: CountDownTimer
+    private lateinit var mCountDownTimer: CountDownTimer
+    private lateinit var mOtpVerificationService: OtpVerificationService
+    private var mEnteredOtpStr = ""
+    private var mMobileNumberStr = ""
+
+    fun newInstance(mobileNumber: String): OtpVerificationFragment {
+        val fragment = OtpVerificationFragment()
+        fragment.mMobileNumberStr = mobileNumber
+        return fragment
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.otp_verification_fragment, container, false)
+        mOtpVerificationService = OtpVerificationService()
+        mOtpVerificationService.setOtpVerificationListener(this)
         return mContentView
     }
 
     override fun onClick(view: View?) {
         if (view?.id == verifyTextView.id) {
-            timer.cancel()
-            launchFragment(OnBoardScreenDukaanNameFragment(), true)
+            mCountDownTimer.cancel()
+            showCancellableProgressDialog(mActivity)
+            mOtpVerificationService.verifyOTP(mMobileNumberStr, mEnteredOtpStr.toInt())
         }
     }
 
@@ -34,7 +50,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener {
     }
 
     private fun startCountDownTimer() {
-        timer = object: CountDownTimer(Constants.RESEND_OTP_TIMER, Constants.TIMER_INTERVAL) {
+        mCountDownTimer = object: CountDownTimer(Constants.RESEND_OTP_TIMER, Constants.TIMER_INTERVAL) {
             override fun onTick(millisUntilFinished: Long) {
                 CoroutineScopeUtils().runTaskOnCoroutineMain {
                     resendOtpTextView.text = """${(millisUntilFinished / 1000)} seconds"""
@@ -45,7 +61,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener {
                 CoroutineScopeUtils().runTaskOnCoroutineMain { resendOtpTextView.text = getString(R.string.resend_otp) }
             }
         }
-        timer.start()
+        mCountDownTimer.start()
     }
 
     override fun onStart() {
@@ -55,12 +71,31 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener {
 
     override fun onDestroy() {
         super.onDestroy()
-        timer.cancel()
+        mCountDownTimer.cancel()
     }
 
     override fun onOTPFilledListener(otpStr: String) {
+        mEnteredOtpStr = otpStr
         otpEditText.hideKeyboard()
         verifyTextView.isEnabled = true
         verifyTextView.callOnClick()
+    }
+
+    override fun onOTPVerificationSuccessResponse(validateOtpResponse: ValidateOtpResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            showToast(validateOtpResponse.mMessage)
+            if (validateOtpResponse.mIsSuccessStatus) {
+                launchFragment(OnBoardScreenDukaanNameFragment(), true)
+            }
+        }
+
+    }
+
+    override fun onOTPVerificationErrorResponse(validateOtpErrorResponse: ValidateOtpErrorResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            showToast(validateOtpErrorResponse.mMessage)
+        }
     }
 }

@@ -102,6 +102,8 @@ open class BaseFragment : Fragment() {
 
     open fun launchFragment(fragment: Fragment?, addBackStack: Boolean) = mActivity.launchFragment(fragment, addBackStack)
 
+    open fun launchFragment(fragment: Fragment?, addBackStack: Boolean, animationView: View) = mActivity.launchFragmentWithAnimation(fragment, addBackStack, animationView)
+
     open fun clearFragmentBackStack() {
         val fm = mActivity.supportFragmentManager
         for (i in 0 until fm.backStackEntryCount) {

@@ -19,7 +19,7 @@ import com.digitaldukaan.constants.Constants.Companion.CREDENTIAL_PICKER_REQUEST
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.models.response.GenerateOtpResponse
 import com.digitaldukaan.services.LoginService
-import com.digitaldukaan.services.`interface`.ILoginServiceInterface
+import com.digitaldukaan.services.serviceinterface.ILoginServiceInterface
 import com.google.android.gms.auth.api.credentials.Credential
 import com.google.android.gms.auth.api.credentials.Credentials
 import com.google.android.gms.auth.api.credentials.CredentialsApi
@@ -153,7 +153,8 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             if (generateOtpResponse.mStatus) {
-                launchFragment(OtpVerificationFragment(), true)
+                val mobileNumber = mobileNumberEditText.text.trim().toString()
+                launchFragment(OtpVerificationFragment().newInstance(mobileNumber), true)
             } else {
                 showToast(generateOtpResponse.mMessage)
             }
