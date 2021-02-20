@@ -37,7 +37,7 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
             sharedElementEnterTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.move)
         }
-        mLoginService = LoginService()
+        mLoginService = LoginService(mActivity)
         mLoginService.setLoginServiceInterface(this)
     }
 
@@ -159,5 +159,9 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
                 showToast(generateOtpResponse.mMessage)
             }
         }
+    }
+
+    override fun noInternetConnection() {
+        showNoInternetConnectionDialog()
     }
 }

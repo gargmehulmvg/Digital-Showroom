@@ -9,17 +9,17 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
-import androidx.navigation.NavController
 import com.digitaldukaan.MainActivity
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.google.android.material.snackbar.Snackbar
 
+
 open class BaseFragment : Fragment() {
 
     protected lateinit var mContentView: View
-    protected lateinit var mNavController: NavController
     private lateinit var mProgressDialog: Dialog
     protected lateinit var mActivity: MainActivity
 
@@ -86,10 +86,6 @@ open class BaseFragment : Fragment() {
         }
     }
 
-    protected fun showBackButtonOnActionBar(isBackButtonAllowed:Boolean) {
-        mActivity.supportActionBar?.setDisplayHomeAsUpEnabled(isBackButtonAllowed)
-    }
-
     fun EditText.showKeyboard() {
         val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.showSoftInput(this, InputMethodManager.SHOW_IMPLICIT)
@@ -108,6 +104,18 @@ open class BaseFragment : Fragment() {
         val fm = mActivity.supportFragmentManager
         for (i in 0 until fm.backStackEntryCount) {
             fm.popBackStack()
+        }
+    }
+
+    open fun showNoInternetConnectionDialog() {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            val builder: AlertDialog.Builder = AlertDialog.Builder(mActivity)
+            builder.setTitle("No internet Connection")
+            builder.setMessage("Please turn on internet connection to continue")
+            builder.setCancelable(false)
+            builder.setNegativeButton("close") { dialog, _ -> dialog.dismiss() }
+            val alertDialog: AlertDialog = builder.create()
+            alertDialog.show()
         }
     }
 
