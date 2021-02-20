@@ -15,6 +15,7 @@ import com.digitaldukaan.MainActivity
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.google.android.material.snackbar.Snackbar
+import java.net.UnknownHostException
 
 
 open class BaseFragment : Fragment() {
@@ -77,6 +78,12 @@ open class BaseFragment : Fragment() {
     protected fun showToast(message: String? = "sample testing") {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    open fun exceptionHandlingForAPIResponse(e: Exception) {
+        if (e is UnknownHostException) {
+            showToast(e.message)
         }
     }
 
