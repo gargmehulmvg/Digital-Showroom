@@ -42,13 +42,7 @@ before_script:
   # - chmod +x ./gradlew
 # Make Project
 stages:
-  - clean
   - build
-
-clean:
-  stage: clean
-  script:
-    - ./gradlew clean
 
 build:
   stage: build
