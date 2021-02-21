@@ -1,4 +1,4 @@
-image: unitedclassifiedsapps/gitlab-ci-android-fastlane
+image: jangrewe/gitlab-ci-android
 
 stages:
   - clean
