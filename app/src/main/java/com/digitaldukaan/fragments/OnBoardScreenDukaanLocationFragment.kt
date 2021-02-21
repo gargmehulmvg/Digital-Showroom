@@ -7,12 +7,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.digitaldukaan.R
-import kotlinx.android.synthetic.main.on_board_screen_dukaan_fragment.nextTextView
 import kotlinx.android.synthetic.main.on_board_screen_dukaan_location_fragment.*
 
 
 class OnBoardScreenDukaanLocationFragment : BaseFragment() {
 
+    private val mDukaanLocationStaticData = mStaticData.mStaticData.mOnBoardStep2StaticData
+    
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -35,6 +36,14 @@ class OnBoardScreenDukaanLocationFragment : BaseFragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
             }
         })
+        setupUIFromStaticData()
+    }
+
+    private fun setupUIFromStaticData() {
+        step2TextView.text = mDukaanLocationStaticData.mStepCount
+        dukaanLocationHeading.text = mDukaanLocationStaticData.mHeading
+        dukaanLocationEditText.hint = mDukaanLocationStaticData.mTitleHinText
+        nextTextView.text = mDukaanLocationStaticData.mNextButton
     }
 
     override fun onClick(view: View?) {
