@@ -13,6 +13,8 @@ import kotlinx.android.synthetic.main.on_board_screen_dukaan_fragment.*
 
 class OnBoardScreenDukaanNameFragment : BaseFragment() {
 
+    private val mDukaanNameStaticData = mStaticData.mStaticData.mOnBoardStep1StaticData
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
@@ -38,6 +40,14 @@ class OnBoardScreenDukaanNameFragment : BaseFragment() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
             }
         })
+        setupUIFromStaticData()
+    }
+
+    private fun setupUIFromStaticData() {
+        stepOneTextView.text = mDukaanNameStaticData.mStepCount
+        enterDukaanNameHeading.text = mDukaanNameStaticData.mDukaanName
+        dukaanNameEditText.hint = mDukaanNameStaticData.mTitleHinText
+        nextTextView.text = mDukaanNameStaticData.mNextButton
     }
 
     override fun onClick(view: View?) {

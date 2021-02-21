@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:fillViewport="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -22,22 +23,23 @@
             app:tint="@color/black" />
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/enterMobileNumberHeading"
+            android:id="@+id/dukaanLocationHeading"
             style="@style/common_bold_text_view"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="@string/enter_your_dukaan_location"
-            app:layout_constraintStart_toStartOf="@+id/resendOtpTextView"
-            app:layout_constraintTop_toBottomOf="@+id/resendOtpTextView" />
+            tools:text="@string/enter_your_dukaan_location"
+            app:layout_constraintEnd_toStartOf="@+id/onBoardDukaanNameImageView"
+            app:layout_constraintStart_toStartOf="@+id/step2TextView"
+            app:layout_constraintTop_toBottomOf="@+id/step2TextView" />
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/onBoardDukaanNameImageView"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:src="@drawable/ic_on_board_dukaan_name"
-            app:layout_constraintBottom_toBottomOf="@id/enterMobileNumberHeading"
+            app:layout_constraintBottom_toBottomOf="@id/dukaanLocationHeading"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/enterMobileNumberHeading" />
+            app:layout_constraintTop_toTopOf="@id/dukaanLocationHeading" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/nextTextView"
@@ -46,19 +48,19 @@
             android:drawablePadding="@dimen/_10sdp"
             android:onClick="onClick"
             android:enabled="false"
-            android:text="@string/next"
+            tools:text="@string/next"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/resendOtpTextView"
+            android:id="@+id/step2TextView"
             style="@style/common_bold_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/_2sdp"
             android:layout_marginTop="@dimen/_20sdp"
             android:paddingBottom="@dimen/_3sdp"
-            android:text="@string/step_2_2"
+            tools:text="@string/step_2_2"
             android:textSize="@dimen/_11sdp"
             app:layout_constraintStart_toStartOf="@+id/backImageView"
             app:layout_constraintTop_toBottomOf="@+id/backImageView" />
@@ -69,9 +71,9 @@
             android:layout_width="match_parent"
             android:layout_marginTop="@dimen/_30sdp"
             android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="@+id/enterMobileNumberHeading"
-            app:layout_constraintStart_toStartOf="@+id/enterMobileNumberHeading"
-            app:layout_constraintTop_toBottomOf="@+id/enterMobileNumberHeading">
+            app:layout_constraintEnd_toEndOf="@+id/dukaanLocationHeading"
+            app:layout_constraintStart_toStartOf="@+id/dukaanLocationHeading"
+            app:layout_constraintTop_toBottomOf="@+id/dukaanLocationHeading">
 
             <EditText
                 android:id="@+id/dukaanLocationEditText"
@@ -81,7 +83,7 @@
                 android:focusable="true"
                 android:minLines="5"
                 android:gravity="start"
-                android:hint="@string/enter_location"
+                tools:hint="@string/enter_location"
                 android:importantForAutofill="no"
                 android:inputType="textMultiLine"
                 android:maxLength="@integer/dukaan_name_length"

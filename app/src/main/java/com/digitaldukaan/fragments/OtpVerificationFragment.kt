@@ -32,6 +32,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
     private var mEnteredOtpStr = ""
     private var mMobileNumberStr = ""
     private lateinit var mLoginService: LoginService
+    private val mOtpStaticResponseData = mStaticData.mStaticData.mVerifyOtpStaticData
 
     fun newInstance(mobileNumber: String): OtpVerificationFragment {
         val fragment = OtpVerificationFragment()
@@ -62,6 +63,11 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
         return mContentView
     }
 
+    private fun setupUIFromStaticResponse() {
+        enterMobileNumberHeading.text = mOtpStaticResponseData.mHeadingText
+        verifyTextView.text = mOtpStaticResponseData.mVerifyText
+    }
+
     override fun onClick(view: View?) {
         when (view?.id) {
             verifyTextView.id -> {
@@ -70,11 +76,11 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
                     return
                 }
                 mCountDownTimer.cancel()
-                showProgressDialog(mActivity)
+                showProgressDialog(mActivity, mOtpStaticResponseData.mVerifyingText)
                 mOtpVerificationService.verifyOTP(mMobileNumberStr, mEnteredOtpStr.toInt())
             }
             resendOtpTextView.id -> {
-                if (getString(R.string.resend_otp) == resendOtpTextView.text) {
+                if (mOtpStaticResponseData.mResendButtonText == resendOtpTextView.text) {
                     startCountDownTimer()
                     if (!isInternetConnectionAvailable(mActivity)) {
                         showNoInternetConnectionDialog()
@@ -88,6 +94,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        setupUIFromStaticResponse()
         otpEditText.setOtpFilledListener(this)
         startCountDownTimer()
     }
@@ -96,12 +103,12 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
         mCountDownTimer = object: CountDownTimer(Constants.RESEND_OTP_TIMER, Constants.TIMER_INTERVAL) {
             override fun onTick(millisUntilFinished: Long) {
                 CoroutineScopeUtils().runTaskOnCoroutineMain {
-                    resendOtpTextView.text = """${(millisUntilFinished / 1000)} seconds"""
+                    resendOtpTextView.text = "${(millisUntilFinished / 1000)} ${mOtpStaticResponseData.mSecondText}"
                 }
             }
 
             override fun onFinish() {
-                CoroutineScopeUtils().runTaskOnCoroutineMain { resendOtpTextView.text = getString(R.string.resend_otp) }
+                CoroutineScopeUtils().runTaskOnCoroutineMain { resendOtpTextView.text = mOtpStaticResponseData.mResendButtonText }
             }
         }
         mCountDownTimer.start()
