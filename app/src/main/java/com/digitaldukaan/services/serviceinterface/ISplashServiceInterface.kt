@@ -1,9 +1,10 @@
 package com.digitaldukaan.services.serviceinterface
 
-import com.digitaldukaan.models.response.GenerateOtpResponse
+import com.digitaldukaan.models.response.StaticTextResponse
 
-interface ILoginServiceInterface {
+interface ISplashServiceInterface {
 
-    fun onGenerateOTPResponse(generateOtpResponse: GenerateOtpResponse)
-    fun onGenerateOTPException(e: Exception)
+    fun onStaticDataResponse(staticDataResponse: StaticTextResponse)
+
+    fun onStaticDataException(e: Exception)
 }

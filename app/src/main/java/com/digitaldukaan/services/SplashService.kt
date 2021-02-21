@@ -1,22 +1,21 @@
 package com.digitaldukaan.services
 
 import com.digitaldukaan.constants.CoroutineScopeUtils
-import com.digitaldukaan.services.networkservice.LoginNetworkService
-import com.digitaldukaan.services.serviceinterface.ILoginServiceInterface
+import com.digitaldukaan.services.networkservice.SplashNetworkService
+import com.digitaldukaan.services.serviceinterface.ISplashServiceInterface
 
-class LoginService {
+class SplashService {
 
-    private val mLoginNetworkService: LoginNetworkService = LoginNetworkService()
+    private val mSplashNetworkService = SplashNetworkService()
+    private lateinit var mSplashServiceInterface: ISplashServiceInterface
 
-    private lateinit var mLoginServiceInterface: ILoginServiceInterface
-
-    fun setLoginServiceInterface(loginServiceInterface: ILoginServiceInterface) {
-        mLoginServiceInterface = loginServiceInterface
+    fun setSplashServiceInterface(serviceInterface: ISplashServiceInterface) {
+        mSplashServiceInterface = serviceInterface
     }
 
-    fun generateOTP(mobileNumber: String) {
+    fun getStaticData(languageId: String) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mLoginNetworkService.generateOTPServerCall(mobileNumber, mLoginServiceInterface)
+            mSplashNetworkService.getAppStaticTextServerCall(languageId, mSplashServiceInterface)
         }
     }
 }

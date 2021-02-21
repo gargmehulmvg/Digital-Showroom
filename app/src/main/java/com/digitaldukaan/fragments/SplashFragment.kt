@@ -1,19 +1,20 @@
 package com.digitaldukaan.fragments
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
-import com.digitaldukaan.constants.Constants
+import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.ToolBarManager
+import com.digitaldukaan.models.response.StaticTextResponse
+import com.digitaldukaan.services.SplashService
+import com.digitaldukaan.services.serviceinterface.ISplashServiceInterface
 import kotlinx.android.synthetic.main.fragment_splash.*
 
-class SplashFragment : BaseFragment() {
+class SplashFragment : BaseFragment(), ISplashServiceInterface {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.fragment_splash, container, false)
@@ -24,14 +25,25 @@ class SplashFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         ToolBarManager.getInstance().hideToolBar(mActivity, true)
         appVersionTextView.text = StringBuilder().append("v.").append(BuildConfig.VERSION_CODE)
-        Handler(Looper.getMainLooper()).postDelayed({
-            launchFragment(LoginFragment(), true, splashLogoImageView)
-        }, Constants.SPLASH_TIMER)
+        val splashService = SplashService()
+        splashService.setSplashServiceInterface(this)
+        splashService.getStaticData("0")
     }
 
     override fun onBackPressed(): Boolean {
         Log.d(SplashFragment::class.java.simpleName, "onBackPressed: do nothing")
         return true
+    }
+
+    override fun onStaticDataResponse(staticDataResponse: StaticTextResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            launchFragment(LoginFragment(), true, splashLogoImageView)
+        }
+    }
+
+    override fun onStaticDataException(e: Exception) {
+        exceptionHandlingForAPIResponse(e)
     }
 
 }

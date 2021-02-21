@@ -1,26 +1,26 @@
 package com.digitaldukaan.services.networkservice
 
 import android.util.Log
-import com.digitaldukaan.models.request.GenerateOtpRequest
 import com.digitaldukaan.network.RetrofitApi
-import com.digitaldukaan.services.serviceinterface.ILoginServiceInterface
+import com.digitaldukaan.services.serviceinterface.ISplashServiceInterface
 
-class LoginNetworkService {
+class SplashNetworkService {
 
-    suspend fun generateOTPServerCall(
-        mobileNumber: String,
-        loginServiceInterface: ILoginServiceInterface
-    ) {
+    suspend fun getAppStaticTextServerCall(
+        languageId : String,
+        splashServiceInterface: ISplashServiceInterface) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.generateOTP(GenerateOtpRequest("Digital Dukaan", mobileNumber))
+            val response = RetrofitApi().getServerCallObject()?.getAppStaticText(languageId)
             response?.let {
                 if (it.isSuccessful) {
-                    it.body()?.let { generateOtpResponse -> loginServiceInterface.onGenerateOTPResponse(generateOtpResponse) }
+                    it.body()?.let { staticTextResponse ->
+                        splashServiceInterface.onStaticDataResponse(staticTextResponse)
+                    }
                 }
             }
-        } catch (e : Exception) {
-            Log.e(LoginNetworkService::class.java.simpleName, "generateOTPServerCall: ", e)
-            loginServiceInterface.onGenerateOTPException(e)
+        } catch (e: Exception) {
+            Log.e(SplashNetworkService::class.java.simpleName, "generateOTPServerCall: ", e)
+            splashServiceInterface.onStaticDataException(e)
         }
     }
 
