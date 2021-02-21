@@ -18,7 +18,14 @@ android {
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
-
+    signingConfigs {
+        releaseBuild {
+            keyAlias 'dotpe_alias'
+            keyPassword '8377844923'
+            storePassword '8377844923'
+            storeFile file('dotpe-release-key.keystore')
+        }
+    }
     buildTypes {
         applicationVariants.all { variant ->
             variant.outputs.all {
