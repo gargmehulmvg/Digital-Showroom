@@ -2,6 +2,7 @@ package com.digitaldukaan.fragments
 
 import android.app.Dialog
 import android.content.Context
+import android.content.Context.MODE_PRIVATE
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.view.LayoutInflater
@@ -13,6 +14,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import com.digitaldukaan.MainActivity
 import com.digitaldukaan.R
+import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.google.android.material.snackbar.Snackbar
 import java.net.UnknownHostException
@@ -29,7 +31,7 @@ open class BaseFragment : Fragment() {
         mActivity = context as MainActivity
     }
 
-    protected fun showProgressDialog(context: Context?) {
+    protected fun showProgressDialog(context: Context?, message: String? = "Please wait...") {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             context?.run {
                 mProgressDialog = Dialog(this)
@@ -44,13 +46,9 @@ open class BaseFragment : Fragment() {
         }
     }
 
-    open fun onClick(view: View?) {
+    open fun onClick(view: View?) {}
 
-    }
-
-    open fun onBackPressed() : Boolean {
-        return false;
-    }
+    open fun onBackPressed() : Boolean  = false
 
     protected fun showCancellableProgressDialog(context: Context?) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
@@ -82,6 +80,7 @@ open class BaseFragment : Fragment() {
     }
 
     open fun exceptionHandlingForAPIResponse(e: Exception) {
+        stopProgress()
         if (e is UnknownHostException) {
             showToast(e.message)
         }
@@ -103,9 +102,17 @@ open class BaseFragment : Fragment() {
         imm.hideSoftInputFromWindow(this.windowToken, 0)
     }
 
-    open fun launchFragment(fragment: Fragment?, addBackStack: Boolean) = mActivity.launchFragment(fragment, addBackStack)
+    open fun launchFragment(fragment: Fragment?, addBackStack: Boolean) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            mActivity.launchFragment(fragment, addBackStack)
+        }
+    }
 
-    open fun launchFragment(fragment: Fragment?, addBackStack: Boolean, animationView: View) = mActivity.launchFragmentWithAnimation(fragment, addBackStack, animationView)
+    open fun launchFragment(fragment: Fragment?, addBackStack: Boolean, animationView: View) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            mActivity.launchFragmentWithAnimation(fragment, addBackStack, animationView)
+        }
+    }
 
     open fun clearFragmentBackStack() {
         val fm = mActivity.supportFragmentManager
@@ -128,4 +135,14 @@ open class BaseFragment : Fragment() {
         }
     }
 
+    open fun storeStringDataInSharedPref(keyName: String, value: String?) {
+        val editor = mActivity.getSharedPreferences(Constants.SHARED_PREF_NAME, MODE_PRIVATE).edit()
+        editor.putString(keyName, value)
+        editor.apply()
+    }
+
+    open fun getStringDataFromSharedPref(keyName: String?): String {
+        val prefs = mActivity.getSharedPreferences(Constants.SHARED_PREF_NAME, MODE_PRIVATE)
+        return prefs.getString(keyName, "").toString()
+    }
 }
