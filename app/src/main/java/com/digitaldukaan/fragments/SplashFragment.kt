@@ -38,7 +38,8 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
     override fun onStaticDataResponse(staticDataResponse: StaticTextResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             mStaticData = staticDataResponse
-            launchFragment(LoginFragment(), true, splashLogoImageView)
+            //launchFragment(LoginFragment(), true, splashLogoImageView)
+            launchFragment(SettingsFragment().newInstance(), true)
         }
     }
 
