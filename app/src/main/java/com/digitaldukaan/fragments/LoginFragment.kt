@@ -168,7 +168,6 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
     }
 
     override fun onGenerateOTPException(e: Exception) {
-        stopProgress()
         exceptionHandlingForAPIResponse(e)
     }
 }

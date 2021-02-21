@@ -10,10 +10,13 @@ import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.interfaces.IOnOTPFilledListener
+import com.digitaldukaan.models.response.GenerateOtpResponse
 import com.digitaldukaan.models.response.ValidateOtpErrorResponse
 import com.digitaldukaan.models.response.ValidateOtpResponse
+import com.digitaldukaan.services.LoginService
 import com.digitaldukaan.services.OtpVerificationService
 import com.digitaldukaan.services.isInternetConnectionAvailable
+import com.digitaldukaan.services.serviceinterface.ILoginServiceInterface
 import com.digitaldukaan.services.serviceinterface.IOtpVerificationServiceInterface
 import com.digitaldukaan.smsapi.AppSignatureHelper
 import com.digitaldukaan.smsapi.ISmsReceivedListener
@@ -21,12 +24,14 @@ import com.google.android.gms.auth.api.phone.SmsRetriever
 import kotlinx.android.synthetic.main.otp_verification_fragment.*
 
 
-class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerificationServiceInterface, ISmsReceivedListener {
+class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerificationServiceInterface, ISmsReceivedListener,
+    ILoginServiceInterface {
 
     private lateinit var mCountDownTimer: CountDownTimer
     private lateinit var mOtpVerificationService: OtpVerificationService
     private var mEnteredOtpStr = ""
     private var mMobileNumberStr = ""
+    private lateinit var mLoginService: LoginService
 
     fun newInstance(mobileNumber: String): OtpVerificationFragment {
         val fragment = OtpVerificationFragment()
@@ -46,6 +51,8 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
         }
         showToast("App Signature is ${AppSignatureHelper(mActivity).appSignatures[0]}")
         Log.d("OtpVerificationFragment", "App Signature is ${AppSignatureHelper(mActivity).appSignatures[0]}")
+        mLoginService = LoginService()
+        mLoginService.setLoginServiceInterface(this)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -56,14 +63,27 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
     }
 
     override fun onClick(view: View?) {
-        if (view?.id == verifyTextView.id) {
-            if (!isInternetConnectionAvailable(mActivity)) {
-                showNoInternetConnectionDialog()
-                return
+        when (view?.id) {
+            verifyTextView.id -> {
+                if (!isInternetConnectionAvailable(mActivity)) {
+                    showNoInternetConnectionDialog()
+                    return
+                }
+                mCountDownTimer.cancel()
+                showProgressDialog(mActivity)
+                mOtpVerificationService.verifyOTP(mMobileNumberStr, mEnteredOtpStr.toInt())
             }
-            mCountDownTimer.cancel()
-            showCancellableProgressDialog(mActivity)
-            mOtpVerificationService.verifyOTP(mMobileNumberStr, mEnteredOtpStr.toInt())
+            resendOtpTextView.id -> {
+                if (getString(R.string.resend_otp) == resendOtpTextView.text) {
+                    startCountDownTimer()
+                    if (!isInternetConnectionAvailable(mActivity)) {
+                        showNoInternetConnectionDialog()
+                        return
+                    }
+                    showProgressDialog(mActivity)
+                    mLoginService.generateOTP(mMobileNumberStr)
+                }
+            }
         }
     }
 
@@ -108,21 +128,49 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             showToast(validateOtpResponse.mMessage)
-            if (validateOtpResponse.mIsSuccessStatus) {
-                launchFragment(OnBoardScreenDukaanNameFragment(), true)
+            saveUserDetailsInPref(validateOtpResponse)
+            if (!isInternetConnectionAvailable(mActivity)) {
+                showNoInternetConnectionDialog()
+            } else {
+                showProgressDialog(mActivity, getString(R.string.authenticating_user))
+                CoroutineScopeUtils().runTaskOnCoroutineBackground {
+                    mOtpVerificationService.verifyUserAuthentication(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
+                }
             }
         }
 
     }
 
+    private fun saveUserDetailsInPref(validateOtpResponse: ValidateOtpResponse) {
+        storeStringDataInSharedPref(Constants.USER_AUTH_TOKEN, validateOtpResponse.mUserAuthToken)
+        storeStringDataInSharedPref(Constants.USER_ID, validateOtpResponse.mUserId)
+        storeStringDataInSharedPref(Constants.USER_MOBILE_NUMBER, validateOtpResponse.mUserPhoneNumber)
+        storeStringDataInSharedPref(Constants.STORE_NAME, validateOtpResponse.mStore)
+    }
+
     override fun onOTPVerificationErrorResponse(validateOtpErrorResponse: ValidateOtpErrorResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
+            otpEditText.clearOTP()
             showToast(validateOtpErrorResponse.mMessage)
         }
     }
 
-    override fun onNewSmsReceived(sms: String?) {
-        showToast(sms)
+    override fun onUserAuthenticationResponse(authenticationUserResponse: ValidateOtpResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            saveUserDetailsInPref(authenticationUserResponse)
+            if (authenticationUserResponse.mIsSuccessStatus) launchFragment(OnBoardScreenDukaanNameFragment(), true)
+        }
+    }
+
+    override fun onNewSmsReceived(sms: String?) = showToast(sms)
+
+    override fun onGenerateOTPResponse(generateOtpResponse: GenerateOtpResponse) {
+        stopProgress()
+    }
+
+    override fun onGenerateOTPException(e: Exception) {
+        exceptionHandlingForAPIResponse(e)
     }
 }

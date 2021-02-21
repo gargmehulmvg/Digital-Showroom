@@ -1,5 +1,6 @@
 package com.digitaldukaan.network
 
+import com.digitaldukaan.models.request.AuthenticateUserRequest
 import com.digitaldukaan.models.request.GenerateOtpRequest
 import com.digitaldukaan.models.request.ValidateOtpRequest
 import com.digitaldukaan.models.response.GenerateOtpResponse
@@ -15,5 +16,8 @@ interface Apis {
 
     @POST("api/dotk/merchant/login")
     suspend fun validateOTP(@Body request: ValidateOtpRequest) : Response<ValidateOtpResponse>
+
+    @POST("api/dotk/merchant/authenticate")
+    suspend fun authenticateUser(@Body request: AuthenticateUserRequest) : Response<ValidateOtpResponse>
 
 }
