@@ -16,6 +16,7 @@ import com.digitaldukaan.MainActivity
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
+import com.digitaldukaan.models.response.StaticTextResponse
 import com.google.android.material.snackbar.Snackbar
 import java.net.UnknownHostException
 
@@ -25,6 +26,10 @@ open class BaseFragment : Fragment() {
     protected lateinit var mContentView: View
     private lateinit var mProgressDialog: Dialog
     protected lateinit var mActivity: MainActivity
+
+    companion object {
+        lateinit var mStaticData: StaticTextResponse
+    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -67,7 +72,7 @@ open class BaseFragment : Fragment() {
 
     protected fun stopProgress() {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            mProgressDialog.run {
+            mProgressDialog.let {
                 mProgressDialog.dismiss()
             }
         }
