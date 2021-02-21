@@ -1,4 +1,4 @@
-# image: openjdk:8-jdk
+image: openjdk:8-jdk
 
 variables:
   # ANDROID_COMPILE_SDK is the version of Android you're compiling with.
