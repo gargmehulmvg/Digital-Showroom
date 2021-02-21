@@ -6,11 +6,14 @@
             <size
                 android:width="@dimen/_40sdp"
                 android:height="@dimen/_40sdp" />
+            <stroke
+                android:width="6dp"
+                android:color="#00ffffff"/>
         </shape>
     </item>
     <item android:drawable="@drawable/ic_closed"
-        android:left="@dimen/_5sdp"
-        android:right="@dimen/_5sdp"
-        android:top="@dimen/_5sdp"
-        android:bottom="@dimen/_10sdp"/>
+        android:left="@dimen/_8sdp"
+        android:right="@dimen/_8sdp"
+        android:top="@dimen/_8sdp"
+        android:bottom="@dimen/_12sdp"/>
 </layer-list>

@@ -53,7 +53,7 @@
                     android:layout_marginBottom="@dimen/_8sdp"
                     android:text="@string/edit_profile"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/_12sdp"
+                    android:textSize="@dimen/_11sdp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/dukaanNameTextView" />
@@ -105,7 +105,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_200sdp"
+            android:layout_height="wrap_content"
             android:background="@color/white"
             android:layout_marginTop="@dimen/_10sdp"
             app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
@@ -114,21 +114,22 @@
                 android:id="@+id/materialTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_12sdp"
+                android:layout_marginStart="@dimen/_15sdp"
+                android:layout_marginTop="@dimen/_13sdp"
                 android:text="@string/store_controls"
                 android:textColor="@color/black"
-                android:textSize="@dimen/_14sdp"
+                android:textSize="@dimen/_13sdp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/seperator" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/storeStatusTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="@dimen/_2sdp"
+                android:layout_marginTop="@dimen/_2sdp"
                 android:text="@string/store_controls"
                 android:textColor="@color/black"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@+id/storeSwitch"
                 app:layout_constraintStart_toStartOf="@+id/storeSwitch"
                 app:layout_constraintTop_toBottomOf="@+id/storeSwitch" />
@@ -140,10 +141,10 @@
                 android:padding="@dimen/_2sdp"
                 android:text="@string/store_controls"
                 android:textColor="@color/black"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintBottom_toBottomOf="@+id/storeStatusTextView"
                 app:layout_constraintEnd_toEndOf="@+id/deliverySwitch"
                 app:layout_constraintStart_toStartOf="@+id/deliverySwitch"
-                app:layout_constraintTop_toBottomOf="@+id/deliverySwitch" />
+                app:layout_constraintTop_toTopOf="@+id/storeStatusTextView" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/moreControlsTextView"
@@ -179,10 +180,46 @@
                 app:track="@drawable/ic_store_switch_track" />
 
             <View
-                android:id="@+id/seperater"
+                android:id="@+id/separator"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_10sdp"
-                android:background="@color/curve_grey_border" />
+                android:layout_marginTop="@dimen/_13sdp"
+                android:layout_height="@dimen/_1sdp"
+                android:background="@color/curve_grey_border"
+                app:layout_constraintTop_toBottomOf="@+id/deliveryStatusTextView" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/shareShowRoomWithCustomerTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_13sdp"
+                android:layout_marginBottom="@dimen/_13sdp"
+                android:text="@string/share_your_showroom_with_customers"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_13sdp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/textView"
+                app:layout_constraintStart_toStartOf="@+id/materialTextView"
+                app:layout_constraintTop_toBottomOf="@+id/separator" />
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/_10sdp"
+                android:background="@drawable/curve_black_border"
+                android:drawablePadding="@dimen/_10sdp"
+                android:paddingStart="@dimen/_10sdp"
+                android:gravity="center"
+                android:paddingTop="@dimen/_5sdp"
+                android:paddingEnd="@dimen/_10sdp"
+                android:paddingBottom="@dimen/_5sdp"
+                android:text="@string/share"
+                android:textSize="@dimen/_14sdp"
+                android:textColor="@color/black"
+                app:drawableStartCompat="@drawable/ic_photography"
+                app:layout_constraintBottom_toBottomOf="@+id/shareShowRoomWithCustomerTextView"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/shareShowRoomWithCustomerTextView" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
