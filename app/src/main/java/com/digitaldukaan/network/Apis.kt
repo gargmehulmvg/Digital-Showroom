@@ -4,6 +4,7 @@ import com.digitaldukaan.models.request.AuthenticateUserRequest
 import com.digitaldukaan.models.request.GenerateOtpRequest
 import com.digitaldukaan.models.request.ValidateOtpRequest
 import com.digitaldukaan.models.response.GenerateOtpResponse
+import com.digitaldukaan.models.response.ProfileResponse
 import com.digitaldukaan.models.response.StaticTextResponse
 import com.digitaldukaan.models.response.ValidateOtpResponse
 import retrofit2.Response
@@ -25,4 +26,7 @@ interface Apis {
 
     @GET("api/dotk/template/getAppStaticText")
     suspend fun getAppStaticText(@Query("lanuageId") languageId:String) : Response<StaticTextResponse>
+
+    @GET("api/dotk/template/getProfileInfo")
+    suspend fun getProfileResponse(@Query("store_id") languageId:String) : Response<ProfileResponse>
 }

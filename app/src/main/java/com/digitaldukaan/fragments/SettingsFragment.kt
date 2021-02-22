@@ -6,12 +6,17 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import com.digitaldukaan.R
+import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.interfaces.IOnToolbarIconClick
+import com.digitaldukaan.models.response.ProfileResponse
+import com.digitaldukaan.services.ProfileService
+import com.digitaldukaan.services.serviceinterface.IProfileServiceInterface
+import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.settings_fragment.*
 
 
-class SettingsFragment : BaseFragment(), IOnToolbarIconClick {
+class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInterface {
 
     fun newInstance(): SettingsFragment{
         return SettingsFragment()
@@ -19,6 +24,10 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.settings_fragment, container, false)
+        val service = ProfileService()
+        service.setProfileServiceInterface(this)
+        showProgressDialog(mActivity, "Fetching user profile...")
+        service.getUserProfile("2018")
         return mContentView
     }
 
@@ -51,5 +60,30 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick {
     override fun onStop() {
         super.onStop()
         ToolBarManager.getInstance().setSideIconVisibility(false)
+    }
+
+    override fun onProfileResponse(profileResponse: ProfileResponse) {
+        stopProgress()
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            showToast(profileResponse.mMessage)
+            if (profileResponse.mStatus) {
+                setupUIFromProfileResponse(profileResponse)
+            }
+        }
+    }
+
+    private fun setupUIFromProfileResponse(profileResponse: ProfileResponse) {
+        dukaanNameTextView.text = profileResponse.mAccountInfoResponse?.mStoreInfo?.mStoreName
+        profileResponse.mAccountInfoResponse?.mFooterImages?.forEachIndexed { index, imageUrl ->
+            if (index == 0) {
+                Picasso.get().load(imageUrl).placeholder(R.drawable.ic_auto_data_backup).into(autoDataBackupImageView)
+            } else {
+                Picasso.get().load(imageUrl).placeholder(R.drawable.ic_auto_data_backup).into(safeSecureImageView)
+            }
+        }
+    }
+
+    override fun onProfileDataException(e: Exception) {
+        exceptionHandlingForAPIResponse(e)
     }
 }

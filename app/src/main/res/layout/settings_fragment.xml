@@ -540,6 +540,7 @@
                     app:layout_constraintTop_toTopOf="parent">
 
                     <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/autoDataBackupImageView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:src="@drawable/ic_auto_data_backup" />
@@ -568,6 +569,7 @@
                     app:layout_constraintTop_toTopOf="@+id/autoDataBackupLayout">
 
                     <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/safeSecureImageView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:src="@drawable/ic_auto_data_backup" />
