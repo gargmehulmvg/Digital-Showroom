@@ -78,7 +78,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             if (index == 0) {
                 Picasso.get().load(imageUrl).placeholder(R.drawable.ic_auto_data_backup).into(autoDataBackupImageView)
             } else {
-                Picasso.get().load(imageUrl).placeholder(R.drawable.ic_auto_data_backup).into(safeSecureImageView)
+                Picasso.get().load(imageUrl).placeholder(R.drawable.safe).into(safeSecureImageView)
             }
         }
     }
