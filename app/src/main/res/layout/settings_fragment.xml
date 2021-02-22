@@ -1,34 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:fillViewport="true"
     android:layout_height="match_parent"
     android:background="@color/light_grey_background">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:fillViewport="true">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constraintLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:onClick="onClick"
-            android:background="?selectableItemBackground"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            android:layout_height="match_parent">
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraintLayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/_10sdp"
-                android:background="@drawable/curve_white_background"
+                android:background="@drawable/curve_white_selector"
                 android:elevation="@dimen/_4sdp"
+                android:onClick="onClick"
                 android:padding="@dimen/_10sdp"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -101,289 +96,496 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constraintLayout2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_10sdp"
-            android:background="@color/white"
-            app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/materialTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_15sdp"
-                android:layout_marginTop="@dimen/_13sdp"
-                android:text="@string/store_controls"
-                android:textColor="@color/black"
-                android:textSize="@dimen/_13sdp"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/storeStatusTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_2sdp"
-                android:padding="@dimen/_2sdp"
-                android:textColor="@color/black"
-                app:layout_constraintEnd_toEndOf="@+id/storeSwitch"
-                app:layout_constraintStart_toStartOf="@+id/storeSwitch"
-                app:layout_constraintTop_toBottomOf="@+id/storeSwitch"
-                tools:text="@string/store_controls" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/deliveryStatusTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="@dimen/_2sdp"
-                android:textColor="@color/black"
-                app:layout_constraintBottom_toBottomOf="@+id/storeStatusTextView"
-                app:layout_constraintEnd_toEndOf="@+id/deliverySwitch"
-                app:layout_constraintStart_toStartOf="@+id/deliverySwitch"
-                app:layout_constraintTop_toTopOf="@+id/storeStatusTextView"
-                tools:text="@string/store_controls" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/moreControlsTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:padding="@dimen/_2sdp"
-                android:text="@string/more_controls"
-                android:textColor="@color/black"
-                app:layout_constraintBottom_toBottomOf="@+id/deliveryStatusTextView"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/deliveryStatusTextView"
-                app:layout_constraintTop_toTopOf="@+id/deliveryStatusTextView" />
-
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/storeSwitch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:thumb="@drawable/ic_store_switch_selector"
-                app:layout_constraintStart_toStartOf="@+id/materialTextView"
-                app:layout_constraintTop_toBottomOf="@+id/materialTextView"
-                app:track="@drawable/ic_store_switch_track" />
-
-            <androidx.appcompat.widget.SwitchCompat
-                android:id="@+id/deliverySwitch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_20sdp"
-                android:checked="true"
-                android:thumb="@drawable/ic_delivery_switch_selector"
-                app:layout_constraintStart_toEndOf="@+id/storeSwitch"
-                app:layout_constraintTop_toTopOf="@+id/storeSwitch"
-                app:track="@drawable/ic_store_switch_track" />
-
-            <View
-                android:id="@+id/separator"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/_1sdp"
-                android:layout_marginTop="@dimen/_13sdp"
-                android:background="@color/curve_grey_border"
-                app:layout_constraintTop_toBottomOf="@+id/deliveryStatusTextView" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/shareShowRoomWithCustomerTextView"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_13sdp"
-                android:layout_marginBottom="@dimen/_13sdp"
-                android:text="@string/share_your_showroom_with_customers"
-                android:textColor="@color/black"
-                android:textSize="@dimen/_13sdp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/textView"
-                app:layout_constraintStart_toStartOf="@+id/materialTextView"
-                app:layout_constraintTop_toBottomOf="@+id/separator" />
-
-            <TextView
-                android:id="@+id/textView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/_10sdp"
-                android:background="@drawable/curve_black_border"
-                android:drawablePadding="@dimen/_10sdp"
-                android:gravity="center"
-                android:paddingStart="@dimen/_10sdp"
-                android:paddingTop="@dimen/_5sdp"
-                android:paddingEnd="@dimen/_10sdp"
-                android:paddingBottom="@dimen/_5sdp"
-                android:text="@string/share"
-                android:textColor="@color/black"
-                android:textSize="@dimen/_14sdp"
-                app:drawableStartCompat="@drawable/ic_photography"
-                app:layout_constraintBottom_toBottomOf="@+id/shareShowRoomWithCustomerTextView"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/shareShowRoomWithCustomerTextView" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <LinearLayout
-            android:id="@+id/linearLayout2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:orientation="vertical"
-            app:layout_constraintTop_toBottomOf="@+id/constraintLayout2">
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/referEarnTextView"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraintLayout2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="?android:selectableItemBackground"
-                android:drawableStart="@drawable/ic_refer_earn"
-                android:drawablePadding="@dimen/_10sdp"
-                android:onClick="onClick"
-                android:padding="@dimen/_15sdp"
-                android:textColor="@color/black"
-                android:textSize="@dimen/_13sdp"
-                tools:text="@string/refer_earn" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/_1sdp"
-                android:background="@color/light_grey_background" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/myRewardsTextView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="?android:selectableItemBackground"
-                android:drawableStart="@drawable/ic_rewards"
-                android:drawablePadding="@dimen/_10sdp"
-                android:onClick="onClick"
-                android:padding="@dimen/_15sdp"
-                android:textColor="@color/black"
-                android:textSize="@dimen/_13sdp"
-                tools:text="@string/my_rewards" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/_1sdp"
-                android:background="@color/light_grey_background" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/appSettingsTextView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="?android:selectableItemBackground"
-                android:drawableStart="@drawable/ic_settings"
-                android:drawableEnd="@drawable/ic_half_arrow_forward"
-                android:drawablePadding="@dimen/_10sdp"
-                android:onClick="onClick"
-                android:padding="@dimen/_15sdp"
-                android:textColor="@color/black"
-                android:textSize="@dimen/_13sdp"
-                tools:text="@string/app_settings" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/_1sdp"
-                android:background="@color/light_grey_background" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/feedbackTextView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="?android:selectableItemBackground"
-                android:drawableStart="@drawable/ic_feedback"
-                android:drawablePadding="@dimen/_10sdp"
-                android:onClick="onClick"
-                android:padding="@dimen/_15sdp"
-                android:textColor="@color/black"
-                android:textSize="@dimen/_13sdp"
-                tools:text="@string/feedback" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/_1sdp"
-                android:background="@color/light_grey_background" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/helpTextView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="?android:selectableItemBackground"
-                android:drawableStart="@drawable/ic_setting_toolbar"
-                android:drawablePadding="@dimen/_10sdp"
-                android:onClick="onClick"
-                android:padding="@dimen/_15sdp"
-                android:textColor="@color/black"
-                android:textSize="@dimen/_13sdp"
-                tools:text="@string/help" />
-
-        </LinearLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/dark_blackish"
-            android:padding="@dimen/_10sdp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
-
-            <LinearLayout
-                android:id="@+id/autoDataBackupLayout"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="horizontal"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/safeSecureLayout"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
-
-                <com.google.android.material.imageview.ShapeableImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_auto_data_backup" />
+                android:layout_marginTop="@dimen/_10sdp"
+                android:background="@color/white"
+                app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
 
                 <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/materialTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="@dimen/_10sdp"
-                    android:layout_marginStart="@dimen/_5sdp"
-                    android:text="@string/auto_data_backup"
-                    android:textColor="@color/white" />
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_marginTop="@dimen/_13sdp"
+                    android:text="@string/store_controls"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_13sdp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/storeStatusTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_2sdp"
+                    android:padding="@dimen/_2sdp"
+                    android:textColor="@color/black"
+                    app:layout_constraintEnd_toEndOf="@id/storeSwitch"
+                    app:layout_constraintStart_toStartOf="@id/storeSwitch"
+                    app:layout_constraintTop_toBottomOf="@id/storeSwitch"
+                    tools:text="@string/store_controls" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/deliveryStatusTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/_2sdp"
+                    android:textColor="@color/black"
+                    app:layout_constraintBottom_toBottomOf="@+id/storeStatusTextView"
+                    app:layout_constraintEnd_toEndOf="@+id/deliverySwitch"
+                    app:layout_constraintStart_toStartOf="@+id/deliverySwitch"
+                    app:layout_constraintTop_toTopOf="@+id/storeStatusTextView"
+                    tools:text="@string/store_controls" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/moreControlsTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/_2sdp"
+                    android:text="@string/more_controls"
+                    android:textColor="@color/black"
+                    app:layout_constraintBottom_toBottomOf="@+id/deliveryStatusTextView"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/deliveryStatusTextView"
+                    app:layout_constraintTop_toTopOf="@+id/deliveryStatusTextView" />
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/storeSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:thumb="@drawable/ic_store_switch_selector"
+                    app:layout_constraintStart_toStartOf="@+id/materialTextView"
+                    app:layout_constraintTop_toBottomOf="@+id/materialTextView"
+                    app:track="@drawable/ic_store_switch_track" />
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/deliverySwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_20sdp"
+                    android:checked="true"
+                    android:thumb="@drawable/ic_delivery_switch_selector"
+                    app:layout_constraintStart_toEndOf="@+id/storeSwitch"
+                    app:layout_constraintTop_toTopOf="@+id/storeSwitch"
+                    app:track="@drawable/ic_store_switch_track" />
+
+                <View
+                    android:id="@+id/separator"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_1sdp"
+                    android:layout_marginTop="@dimen/_13sdp"
+                    android:background="@color/curve_grey_border"
+                    app:layout_constraintTop_toBottomOf="@+id/deliveryStatusTextView" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/shareShowRoomWithCustomerTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_13sdp"
+                    android:layout_marginBottom="@dimen/_13sdp"
+                    android:text="@string/share_your_showroom_with_customers"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_13sdp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/textView"
+                    app:layout_constraintStart_toStartOf="@+id/materialTextView"
+                    app:layout_constraintTop_toBottomOf="@+id/separator" />
+
+                <TextView
+                    android:id="@+id/textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/_10sdp"
+                    android:background="@drawable/curve_black_border"
+                    android:drawablePadding="@dimen/_10sdp"
+                    android:gravity="center"
+                    android:paddingStart="@dimen/_10sdp"
+                    android:paddingTop="@dimen/_5sdp"
+                    android:paddingEnd="@dimen/_10sdp"
+                    android:paddingBottom="@dimen/_5sdp"
+                    android:text="@string/share"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_14sdp"
+                    app:drawableStartCompat="@drawable/ic_photography"
+                    app:layout_constraintBottom_toBottomOf="@+id/shareShowRoomWithCustomerTextView"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/shareShowRoomWithCustomerTextView" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/newReleaseLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/constraintLayout2">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/newReleaseHeading"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_marginTop="@dimen/_13sdp"
+                    android:textColor="@color/black"
+                    android:fontFamily="@font/montserrat"
+                    android:textSize="@dimen/_13sdp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="@string/new_release" />
+
+                <LinearLayout
+                    android:id="@+id/viewTopOrderLayout"
+                    android:layout_width="@dimen/_90sdp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/curve_white_selector"
+                    android:elevation="@dimen/_5sdp"
+                    android:onClick="onClick"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical"
+                    app:layout_constraintBottom_toBottomOf="@+id/digitalShowroomWebLayout"
+                    app:layout_constraintEnd_toStartOf="@+id/digitalShowroomWebLayout"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/digitalShowroomWebLayout"
+                    tools:targetApi="lollipop">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/curve_green_banner"
+                        android:fontFamily="@font/montserrat"
+                        android:gravity="center"
+                        android:padding="@dimen/_4sdp"
+                        android:text="@string/text_new"
+                        android:clickable="false"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_8sdp" />
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/viewTopStoreImageView"
+                        android:layout_width="wrap_content"
+                        android:clickable="false"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/_5sdp"
+                        android:src="@drawable/ic_auto_data_backup" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/viewTopStoreTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_2sdp"
+                        android:gravity="center"
+                        android:minLines="@integer/min_lines_two"
+                        android:padding="@dimen/_2sdp"
+                        android:clickable="false"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_10sdp"
+                        app:fontFamily="@font/montserrat"
+                        app:layout_constraintEnd_toEndOf="@+id/storeSwitch"
+                        app:layout_constraintStart_toStartOf="@+id/storeSwitch"
+                        app:layout_constraintTop_toBottomOf="@+id/storeSwitch"
+                        tools:text="@string/view_top_store" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/digitalShowroomWebLayout"
+                    android:layout_width="@dimen/_90sdp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_15sdp"
+                    android:layout_marginBottom="@dimen/_15sdp"
+                    android:background="@drawable/curve_white_selector"
+                    android:elevation="@dimen/_5sdp"
+                    android:onClick="onClick"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/bulkUploadItemLayout"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/viewTopOrderLayout"
+                    app:layout_constraintTop_toBottomOf="@+id/newReleaseHeading"
+                    tools:targetApi="lollipop">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:drawablePadding="@dimen/_5sdp"
+                        android:fontFamily="@font/montserrat"
+                        android:padding="@dimen/_4sdp"
+                        android:clickable="false"
+                        android:text="@string/trending"
+                        android:textColor="@color/red"
+                        android:textSize="@dimen/_8sdp"
+                        app:drawableStartCompat="@drawable/ic_trending" />
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/digitalShowroomWebImageView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/_5sdp"
+                        android:clickable="false"
+                        android:src="@drawable/ic_auto_data_backup" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/digitalShowroomWebTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_2sdp"
+                        android:gravity="center"
+                        android:maxLines="@integer/min_lines_two"
+                        android:minLines="@integer/min_lines_two"
+                        android:padding="@dimen/_2sdp"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_10sdp"
+                        android:clickable="false"
+                        app:fontFamily="@font/montserrat"
+                        app:layout_constraintEnd_toEndOf="@+id/storeSwitch"
+                        app:layout_constraintStart_toStartOf="@+id/storeSwitch"
+                        app:layout_constraintTop_toBottomOf="@+id/storeSwitch"
+                        tools:text="@string/digital_showroom_web" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/bulkUploadItemLayout"
+                    android:layout_width="@dimen/_90sdp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/curve_white_selector"
+                    android:elevation="@dimen/_5sdp"
+                    android:onClick="onClick"
+                    android:gravity="center_horizontal"
+                    android:orientation="vertical"
+                    app:layout_constraintBottom_toBottomOf="@+id/digitalShowroomWebLayout"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/digitalShowroomWebLayout"
+                    app:layout_constraintTop_toTopOf="@+id/digitalShowroomWebLayout"
+                    tools:targetApi="lollipop">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:drawablePadding="@dimen/_5sdp"
+                        android:fontFamily="@font/montserrat"
+                        android:padding="@dimen/_4sdp"
+                        android:clickable="false"
+                        android:textColor="@color/red"
+                        android:textSize="@dimen/_8sdp" />
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/bulkUploadItemImageView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:clickable="false"
+                        android:layout_margin="@dimen/_5sdp"
+                        android:src="@drawable/ic_auto_data_backup" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/bulkUploadItemTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_2sdp"
+                        android:gravity="center"
+                        android:clickable="false"
+                        android:maxLines="@integer/min_lines_two"
+                        android:minLines="@integer/min_lines_two"
+                        android:padding="@dimen/_2sdp"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_10sdp"
+                        app:fontFamily="@font/montserrat"
+                        app:layout_constraintEnd_toEndOf="@+id/storeSwitch"
+                        app:layout_constraintStart_toStartOf="@+id/storeSwitch"
+                        app:layout_constraintTop_toBottomOf="@+id/storeSwitch"
+                        tools:text="@string/bulk_upload_items" />
+
+                </LinearLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <LinearLayout
+                android:id="@+id/linearLayout2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:orientation="vertical"
+                app:layout_constraintTop_toBottomOf="@+id/newReleaseLayout">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/referEarnTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?android:selectableItemBackground"
+                    android:drawableStart="@drawable/ic_refer_earn"
+                    android:drawablePadding="@dimen/_10sdp"
+                    android:fontFamily="@font/montserrat"
+                    android:onClick="onClick"
+                    android:padding="@dimen/_15sdp"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_13sdp"
+                    tools:text="@string/refer_earn" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_1sdp"
+                    android:background="@color/light_grey_background" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/myRewardsTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?android:selectableItemBackground"
+                    android:drawableStart="@drawable/ic_rewards"
+                    android:drawablePadding="@dimen/_10sdp"
+                    android:fontFamily="@font/montserrat"
+                    android:onClick="onClick"
+                    android:padding="@dimen/_15sdp"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_13sdp"
+                    tools:text="@string/my_rewards" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_1sdp"
+                    android:background="@color/light_grey_background" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/appSettingsTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?android:selectableItemBackground"
+                    android:drawableStart="@drawable/ic_settings"
+                    android:drawableEnd="@drawable/ic_half_arrow_forward"
+                    android:drawablePadding="@dimen/_10sdp"
+                    android:fontFamily="@font/montserrat"
+                    android:onClick="onClick"
+                    android:padding="@dimen/_15sdp"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_13sdp"
+                    tools:text="@string/app_settings" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_1sdp"
+                    android:background="@color/light_grey_background" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/feedbackTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?android:selectableItemBackground"
+                    android:drawableStart="@drawable/ic_feedback"
+                    android:drawablePadding="@dimen/_10sdp"
+                    android:fontFamily="@font/montserrat"
+                    android:onClick="onClick"
+                    android:padding="@dimen/_15sdp"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_13sdp"
+                    tools:text="@string/feedback" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_1sdp"
+                    android:background="@color/light_grey_background" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/helpTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="?android:selectableItemBackground"
+                    android:drawableStart="@drawable/ic_setting_toolbar"
+                    android:drawablePadding="@dimen/_10sdp"
+                    android:fontFamily="@font/montserrat"
+                    android:onClick="onClick"
+                    android:padding="@dimen/_15sdp"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_13sdp"
+                    tools:text="@string/help" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_30sdp"
+                    android:background="@color/white" />
 
             </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/safeSecureLayout"
-                android:layout_width="0dp"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:orientation="horizontal"
-                app:layout_constraintBottom_toBottomOf="@+id/autoDataBackupLayout"
+                android:background="@color/dark_blackish"
+                android:paddingStart="@dimen/_25sdp"
+                android:paddingTop="@dimen/_10sdp"
+                android:paddingEnd="@dimen/_25sdp"
+                android:paddingBottom="@dimen/_10sdp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/autoDataBackupLayout"
-                app:layout_constraintTop_toTopOf="@+id/autoDataBackupLayout">
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
+                app:layout_constraintVertical_bias="1.0">
 
-                <com.google.android.material.imageview.ShapeableImageView
+                <LinearLayout
+                    android:id="@+id/autoDataBackupLayout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:src="@drawable/ic_auto_data_backup" />
+                    android:layout_marginEnd="@dimen/_20sdp"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/safeSecureLayout"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintHorizontal_chainStyle="packed"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
 
-                <com.google.android.material.textview.MaterialTextView
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_auto_data_backup" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/_5sdp"
+                        android:text="@string/auto_data_backup"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_10sdp" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/safeSecureLayout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/safe_secure"
-                    android:textSize="@dimen/_10sdp"
-                    android:layout_marginStart="@dimen/_5sdp"
-                    android:textColor="@color/white" />
+                    android:layout_marginStart="@dimen/_20sdp"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    app:layout_constraintBottom_toBottomOf="@+id/autoDataBackupLayout"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/autoDataBackupLayout"
+                    app:layout_constraintTop_toTopOf="@+id/autoDataBackupLayout">
 
-            </LinearLayout>
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_auto_data_backup" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/_5sdp"
+                        android:text="@string/safe_secure"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_10sdp" />
+
+                </LinearLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
 
-</androidx.core.widget.NestedScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

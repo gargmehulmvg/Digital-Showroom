@@ -41,4 +41,10 @@
     <string name="feedback">Feedback</string>
     <string name="auto_data_backup">100% Auto \nData Backup</string>
     <string name="safe_secure">100% Safe \nAnd Secure</string>
+    <string name="new_release">New Release</string>
+    <string name="view_top_store">View Top Stores</string>
+    <string name="text_new">New</string>
+    <string name="digital_showroom_web">Digital Showroom Web</string>
+    <string name="trending">Trending</string>
+    <string name="bulk_upload_items">Bulk Upload Items</string>
 </resources>
