@@ -83,6 +83,33 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             }
         }
         deliverySwitch.isChecked = infoResponse?.mStoreInfo?.mStoreService?.mDeliveryFlag == 1
+        infoResponse?.mStoreOptions?.forEachIndexed { index, response ->
+            if (0 == index) {
+                Picasso.get().load(response.mLogo).into(storeOptionOneLeftImageView)
+                if (response.mIsShowMore) storeOptionOneRightImageView.visibility = View.VISIBLE
+                storeOptionOneTextView.text = response.mText
+            }
+            if (1 == index) {
+                Picasso.get().load(response.mLogo).into(storeOptionTwoLeftImageView)
+                if (response.mIsShowMore) storeOptionTwoRightImageView.visibility = View.VISIBLE
+                storeOptionTwoTextView.text = response.mText
+            }
+            if (2 == index) {
+                Picasso.get().load(response.mLogo).into(storeOptionThreeLeftImageView)
+                if (response.mIsShowMore) storeOptionThreeRightImageView.visibility = View.VISIBLE
+                storeOptionThreeTextView.text = response.mText
+            }
+            if (3 == index) {
+                Picasso.get().load(response.mLogo).into(storeOptionFourLeftImageView)
+                if (response.mIsShowMore) storeOptionFourRightImageView.visibility = View.VISIBLE
+                storeOptionFourTextView.text = response.mText
+            }
+            if (4 == index) {
+                Picasso.get().load(response.mLogo).into(storeOptionFiveLeftImageView)
+                if (response.mIsShowMore) storeOptionFiveRightImageView.visibility = View.VISIBLE
+                storeOptionFiveTextView.text = response.mText
+            }
+        }
         infoResponse?.mTrendingList?.forEachIndexed { index, response ->
             if (0 == index) {
                 newTextView.text = response.mType

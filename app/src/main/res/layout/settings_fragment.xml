@@ -417,9 +417,12 @@
                 app:layout_constraintTop_toBottomOf="@+id/newReleaseLayout">
 
                 <LinearLayout
+                    android:id="@+id/storeOptionOneLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:onClick="onClick"
                     android:gravity="center_vertical"
+                    android:background="?android:selectableItemBackground"
                     android:weightSum="1"
                     android:orientation="horizontal">
 
@@ -428,16 +431,15 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.1"
-                        android:src="@drawable/ic_refer_earn" />
+                         />
 
                     <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/storeOptionOneTextView"
                         android:layout_width="0dp"
                         android:layout_weight="0.8"
+                        android:clickable="false"
                         android:layout_height="wrap_content"
-                        android:background="?android:selectableItemBackground"
                         android:fontFamily="@font/montserrat"
-                        android:onClick="onClick"
                         android:padding="@dimen/_10sdp"
                         android:textColor="@color/black"
                         android:textSize="@dimen/_13sdp"
@@ -448,6 +450,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.1"
+                        android:visibility="gone"
                         android:src="@drawable/ic_half_arrow_forward" />
 
                 </LinearLayout>
@@ -458,7 +461,10 @@
                     android:background="@color/light_grey_background" />
 
                 <LinearLayout
+                    android:id="@+id/storeOptionTwoLayout"
+                    android:background="?android:selectableItemBackground"
                     android:layout_width="match_parent"
+                    android:onClick="onClick"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
@@ -468,17 +474,16 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.1"
-                        android:src="@drawable/ic_refer_earn" />
+                         />
 
                     <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/storeOptionTwoTextView"
                         android:layout_width="0dp"
                         android:layout_weight="0.8"
                         android:layout_height="wrap_content"
-                        android:background="?android:selectableItemBackground"
                         android:fontFamily="@font/montserrat"
-                        android:onClick="onClick"
                         android:padding="@dimen/_10sdp"
+                        android:clickable="false"
                         android:textColor="@color/black"
                         android:textSize="@dimen/_13sdp"
                         tools:text="@string/refer_earn" />
@@ -488,6 +493,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.1"
+                        android:visibility="gone"
                         android:src="@drawable/ic_half_arrow_forward" />
 
                 </LinearLayout>
@@ -498,8 +504,11 @@
                     android:background="@color/light_grey_background" />
 
                 <LinearLayout
+                    android:id="@+id/storeOptionThreeLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:onClick="onClick"
+                    android:background="?android:selectableItemBackground"
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
@@ -508,16 +517,15 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.1"
-                        android:src="@drawable/ic_refer_earn" />
+                         />
 
                     <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/storeOptionThreeTextView"
                         android:layout_width="0dp"
                         android:layout_weight="0.8"
                         android:layout_height="wrap_content"
-                        android:background="?android:selectableItemBackground"
                         android:fontFamily="@font/montserrat"
-                        android:onClick="onClick"
+                        android:clickable="false"
                         android:padding="@dimen/_10sdp"
                         android:textColor="@color/black"
                         android:textSize="@dimen/_13sdp"
@@ -528,6 +536,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.1"
+                        android:visibility="gone"
                         android:src="@drawable/ic_half_arrow_forward" />
 
                 </LinearLayout>
@@ -538,8 +547,11 @@
                     android:background="@color/light_grey_background" />
 
                 <LinearLayout
+                    android:id="@+id/storeOptionFourLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="?android:selectableItemBackground"
+                    android:onClick="onClick"
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
@@ -548,16 +560,15 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.1"
-                        android:src="@drawable/ic_refer_earn" />
+                         />
 
                     <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/storeOptionFourTextView"
                         android:layout_width="0dp"
                         android:layout_weight="0.8"
                         android:layout_height="wrap_content"
-                        android:background="?android:selectableItemBackground"
                         android:fontFamily="@font/montserrat"
-                        android:onClick="onClick"
+                        android:clickable="false"
                         android:padding="@dimen/_10sdp"
                         android:textColor="@color/black"
                         android:textSize="@dimen/_13sdp"
@@ -568,6 +579,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.1"
+                        android:visibility="gone"
                         android:src="@drawable/ic_half_arrow_forward" />
 
                 </LinearLayout>
@@ -578,8 +590,11 @@
                     android:background="@color/light_grey_background" />
 
                 <LinearLayout
+                    android:id="@+id/storeOptionFiveLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="?android:selectableItemBackground"
+                    android:onClick="onClick"
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
@@ -588,16 +603,15 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.1"
-                        android:src="@drawable/ic_refer_earn" />
+                         />
 
                     <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/storeOptionFiveTextView"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.8"
-                        android:background="?android:selectableItemBackground"
+                        android:clickable="false"
                         android:fontFamily="@font/montserrat"
-                        android:onClick="onClick"
                         android:padding="@dimen/_10sdp"
                         android:textColor="@color/black"
                         android:textSize="@dimen/_13sdp"
@@ -608,6 +622,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="0.1"
+                        android:visibility="gone"
                         android:src="@drawable/ic_half_arrow_forward" />
 
                 </LinearLayout>

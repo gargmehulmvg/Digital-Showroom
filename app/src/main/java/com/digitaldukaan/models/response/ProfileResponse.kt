@@ -65,7 +65,7 @@ data class StoreOptionsResponse(
     @SerializedName("text") var mText: String?,
     @SerializedName("banner_text") var mBannerText: String?,
     @SerializedName("action") var mAction: String?,
-    @SerializedName("show_more") var mIsShowMore: Boolean?,
+    @SerializedName("show_more") var mIsShowMore: Boolean,
     @SerializedName("page") var mPage: String?
 )
 
