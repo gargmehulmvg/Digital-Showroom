@@ -11,6 +11,7 @@ import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.interfaces.IOnToolbarIconClick
 import com.digitaldukaan.models.response.ProfileResponse
 import com.digitaldukaan.services.ProfileService
+import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IProfileServiceInterface
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.settings_fragment.*
@@ -24,10 +25,6 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.settings_fragment, container, false)
-        val service = ProfileService()
-        service.setProfileServiceInterface(this)
-        showProgressDialog(mActivity, "Fetching user profile...")
-        service.getUserProfile("2018")
         return mContentView
     }
 
@@ -49,8 +46,14 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                 if (isChecked) deliveryStatusTextView.text = "Delivery : On" else deliveryStatusTextView.text = "Delivery : Off"
             }
         }
-        storeSwitch.isChecked = true
-        deliverySwitch.isChecked = false
+        if (!isInternetConnectionAvailable(mActivity)) {
+            showNoInternetConnectionDialog()
+            return
+        }
+        showProgressDialog(mActivity, "Fetching user profile...")
+        val service = ProfileService()
+        service.setProfileServiceInterface(this)
+        service.getUserProfile("2018")
     }
 
     override fun onToolbarSideIconClicked() {
@@ -73,12 +76,31 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
     }
 
     private fun setupUIFromProfileResponse(profileResponse: ProfileResponse) {
-        dukaanNameTextView.text = profileResponse.mAccountInfoResponse?.mStoreInfo?.mStoreName
-        profileResponse.mAccountInfoResponse?.mFooterImages?.forEachIndexed { index, imageUrl ->
+        val infoResponse = profileResponse.mAccountInfoResponse
+        dukaanNameTextView.text = infoResponse?.mStoreInfo?.mStoreName
+        storeSwitch.isChecked = infoResponse?.mStoreInfo?.mStoreService?.mStoreFlag == 1
+        infoResponse?.mFooterImages?.forEachIndexed { index, imageUrl ->
             if (index == 0) {
                 Picasso.get().load(imageUrl).placeholder(R.drawable.ic_auto_data_backup).into(autoDataBackupImageView)
             } else {
-                Picasso.get().load(imageUrl).placeholder(R.drawable.safe).into(safeSecureImageView)
+                Picasso.get().load(imageUrl).placeholder(R.drawable.ic_safe_secure).into(safeSecureImageView)
+            }
+        }
+        deliverySwitch.isChecked = infoResponse?.mStoreInfo?.mStoreService?.mDeliveryFlag == 1
+        infoResponse?.mTrendingList?.forEachIndexed { index, response ->
+            if (0 == index) {
+                newTextView.text = response.mType
+                Picasso.get().load(response.mCDN).placeholder(R.drawable.ic_auto_data_backup).into(viewTopStoreImageView)
+                viewTopStoreTextView.text = response.mText
+            }
+            if (1 == index) {
+                trendingTextView.text = response.mType
+                Picasso.get().load(response.mCDN).placeholder(R.drawable.ic_auto_data_backup).into(digitalShowroomWebImageView)
+                digitalShowroomWebTextView.text = response.mText
+            }
+            if (2 == index) {
+                Picasso.get().load(response.mCDN).placeholder(R.drawable.ic_auto_data_backup).into(bulkUploadItemImageView)
+                bulkUploadItemTextView.text = response.mText
             }
         }
     }

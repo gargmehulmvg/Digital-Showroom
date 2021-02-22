@@ -110,7 +110,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/_15sdp"
                     android:layout_marginTop="@dimen/_13sdp"
-                    android:text="@string/store_controls"
+                    tools:text="@string/store_controls"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_13sdp"
                     app:layout_constraintStart_toStartOf="parent"
@@ -149,6 +149,7 @@
                     android:textColor="@color/black"
                     app:layout_constraintBottom_toBottomOf="@+id/deliveryStatusTextView"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.8"
                     app:layout_constraintStart_toEndOf="@+id/deliveryStatusTextView"
                     app:layout_constraintTop_toTopOf="@+id/deliveryStatusTextView" />
 
@@ -167,7 +168,6 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/_20sdp"
-                    android:checked="true"
                     android:thumb="@drawable/ic_delivery_switch_selector"
                     app:layout_constraintStart_toEndOf="@+id/storeSwitch"
                     app:layout_constraintTop_toTopOf="@+id/storeSwitch"
@@ -253,13 +253,14 @@
                     tools:targetApi="lollipop">
 
                     <TextView
+                        android:id="@+id/newTextView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="@drawable/curve_green_banner"
                         android:fontFamily="@font/montserrat"
                         android:gravity="center"
                         android:padding="@dimen/_4sdp"
-                        android:text="@string/text_new"
+                        tools:text="@string/text_new"
                         android:clickable="false"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_8sdp" />
@@ -310,13 +311,14 @@
                     tools:targetApi="lollipop">
 
                     <TextView
+                        android:id="@+id/trendingTextView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:drawablePadding="@dimen/_5sdp"
                         android:fontFamily="@font/montserrat"
                         android:padding="@dimen/_4sdp"
                         android:clickable="false"
-                        android:text="@string/trending"
+                        tools:text="@string/trending"
                         android:textColor="@color/red"
                         android:textSize="@dimen/_8sdp"
                         app:drawableStartCompat="@drawable/ic_trending" />
