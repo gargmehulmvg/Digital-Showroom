@@ -410,99 +410,205 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/white"
+                android:padding="@dimen/_10sdp"
                 android:orientation="vertical"
                 app:layout_constraintTop_toBottomOf="@+id/newReleaseLayout">
 
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/referEarnTextView"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="?android:selectableItemBackground"
-                    android:drawableStart="@drawable/ic_refer_earn"
-                    android:drawablePadding="@dimen/_10sdp"
-                    android:fontFamily="@font/montserrat"
-                    android:onClick="onClick"
-                    android:padding="@dimen/_15sdp"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/_13sdp"
-                    tools:text="@string/refer_earn" />
+                    android:gravity="center_vertical"
+                    android:weightSum="1"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/storeOptionOneLeftImageView"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.1"
+                        android:src="@drawable/ic_refer_earn" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/storeOptionOneTextView"
+                        android:layout_width="0dp"
+                        android:layout_weight="0.8"
+                        android:layout_height="wrap_content"
+                        android:background="?android:selectableItemBackground"
+                        android:fontFamily="@font/montserrat"
+                        android:onClick="onClick"
+                        android:padding="@dimen/_10sdp"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_13sdp"
+                        tools:text="@string/refer_earn" />
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/storeOptionOneRightImageView"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.1"
+                        android:src="@drawable/ic_half_arrow_forward" />
+
+                </LinearLayout>
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/_1sdp"
                     android:background="@color/light_grey_background" />
 
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/myRewardsTextView"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="?android:selectableItemBackground"
-                    android:drawableStart="@drawable/ic_rewards"
-                    android:drawablePadding="@dimen/_10sdp"
-                    android:fontFamily="@font/montserrat"
-                    android:onClick="onClick"
-                    android:padding="@dimen/_15sdp"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/_13sdp"
-                    tools:text="@string/my_rewards" />
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/storeOptionTwoLeftImageView"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.1"
+                        android:src="@drawable/ic_refer_earn" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/storeOptionTwoTextView"
+                        android:layout_width="0dp"
+                        android:layout_weight="0.8"
+                        android:layout_height="wrap_content"
+                        android:background="?android:selectableItemBackground"
+                        android:fontFamily="@font/montserrat"
+                        android:onClick="onClick"
+                        android:padding="@dimen/_10sdp"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_13sdp"
+                        tools:text="@string/refer_earn" />
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/storeOptionTwoRightImageView"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.1"
+                        android:src="@drawable/ic_half_arrow_forward" />
+
+                </LinearLayout>
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/_1sdp"
                     android:background="@color/light_grey_background" />
 
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/appSettingsTextView"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="?android:selectableItemBackground"
-                    android:drawableStart="@drawable/ic_settings"
-                    android:drawableEnd="@drawable/ic_half_arrow_forward"
-                    android:drawablePadding="@dimen/_10sdp"
-                    android:fontFamily="@font/montserrat"
-                    android:onClick="onClick"
-                    android:padding="@dimen/_15sdp"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/_13sdp"
-                    tools:text="@string/app_settings" />
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/storeOptionThreeLeftImageView"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.1"
+                        android:src="@drawable/ic_refer_earn" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/storeOptionThreeTextView"
+                        android:layout_width="0dp"
+                        android:layout_weight="0.8"
+                        android:layout_height="wrap_content"
+                        android:background="?android:selectableItemBackground"
+                        android:fontFamily="@font/montserrat"
+                        android:onClick="onClick"
+                        android:padding="@dimen/_10sdp"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_13sdp"
+                        tools:text="@string/refer_earn" />
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/storeOptionThreeRightImageView"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.1"
+                        android:src="@drawable/ic_half_arrow_forward" />
+
+                </LinearLayout>
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/_1sdp"
                     android:background="@color/light_grey_background" />
 
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/feedbackTextView"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="?android:selectableItemBackground"
-                    android:drawableStart="@drawable/ic_feedback"
-                    android:drawablePadding="@dimen/_10sdp"
-                    android:fontFamily="@font/montserrat"
-                    android:onClick="onClick"
-                    android:padding="@dimen/_15sdp"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/_13sdp"
-                    tools:text="@string/feedback" />
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/storeOptionFourLeftImageView"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.1"
+                        android:src="@drawable/ic_refer_earn" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/storeOptionFourTextView"
+                        android:layout_width="0dp"
+                        android:layout_weight="0.8"
+                        android:layout_height="wrap_content"
+                        android:background="?android:selectableItemBackground"
+                        android:fontFamily="@font/montserrat"
+                        android:onClick="onClick"
+                        android:padding="@dimen/_10sdp"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_13sdp"
+                        tools:text="@string/refer_earn" />
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/storeOptionFourRightImageView"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.1"
+                        android:src="@drawable/ic_half_arrow_forward" />
+
+                </LinearLayout>
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/_1sdp"
                     android:background="@color/light_grey_background" />
 
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/helpTextView"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="?android:selectableItemBackground"
-                    android:drawableStart="@drawable/ic_setting_toolbar"
-                    android:drawablePadding="@dimen/_10sdp"
-                    android:fontFamily="@font/montserrat"
-                    android:onClick="onClick"
-                    android:padding="@dimen/_15sdp"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/_13sdp"
-                    tools:text="@string/help" />
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/storeOptionFiveLeftImageView"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.1"
+                        android:src="@drawable/ic_refer_earn" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/storeOptionFiveTextView"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.8"
+                        android:background="?android:selectableItemBackground"
+                        android:fontFamily="@font/montserrat"
+                        android:onClick="onClick"
+                        android:padding="@dimen/_10sdp"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_13sdp"
+                        tools:text="@string/refer_earn" />
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/storeOptionFiveRightImageView"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.1"
+                        android:src="@drawable/ic_half_arrow_forward" />
+
+                </LinearLayout>
 
                 <View
                     android:layout_width="match_parent"
