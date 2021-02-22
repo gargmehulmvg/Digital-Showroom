@@ -26,7 +26,19 @@ data class StoreInfoResponse(
     @SerializedName("store_name") var mStoreName: String?,
     @SerializedName("store_type") var mStoreType: String?,
     @SerializedName("domain") var mDomain: String?,
-    @SerializedName("store_url") var store_url: String?
+    @SerializedName("store_url") var mStoreUrl: String?,
+    @SerializedName("services") var mStoreService: StoreServicesResponse?
+)
+
+data class StoreServicesResponse(
+    @SerializedName("store_id") var mStoreId: Int?,
+    @SerializedName("store_flag") var mStoreFlag: Int?,
+    @SerializedName("delivery_flag") var mDeliveryFlag: Int?,
+    @SerializedName("pickup_flag") var mPickupFlag: Int?,
+    @SerializedName("listing_flag") var mListingFlag: Int?,
+    @SerializedName("min_order_value") var mMinOrderFlag: Int?,
+    @SerializedName("delivery_charge_type") var mDeliveryChargeType: Int?,
+    @SerializedName("free_delivery_above") var mFreeDeliveryAbove: Int?
 )
 
 data class AccountStaticTextResponse(
