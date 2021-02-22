@@ -4,10 +4,14 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.ToolBarManager
+import com.digitaldukaan.interfaces.IOnToolbarIconClick
+import kotlinx.android.synthetic.main.settings_fragment.*
 
-class SettingsFragment : BaseFragment() {
+
+class SettingsFragment : BaseFragment(), IOnToolbarIconClick {
 
     fun newInstance(): SettingsFragment{
         return SettingsFragment()
@@ -23,6 +27,29 @@ class SettingsFragment : BaseFragment() {
             hideToolBar(mActivity, false)
             onBackPressed(this@SettingsFragment)
             setHeaderTitle(getString(R.string.my_account))
+            setSideIconVisibility(true)
+            setSideIcon(ContextCompat.getDrawable(mActivity, R.drawable.ic_setting_toolbar), this@SettingsFragment)
         }
+        storeSwitch.setOnCheckedChangeListener { _, isChecked ->
+            run {
+                if (isChecked) storeStatusTextView.text = "Store : Open" else storeStatusTextView.text = "Store : Closed"
+            }
+        }
+        deliverySwitch.setOnCheckedChangeListener { _, isChecked ->
+            run {
+                if (isChecked) deliveryStatusTextView.text = "Delivery : On" else deliveryStatusTextView.text = "Delivery : Off"
+            }
+        }
+        storeSwitch.isChecked = true
+        deliverySwitch.isChecked = false
+    }
+
+    override fun onToolbarSideIconClicked() {
+        showShortSnackBar()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        ToolBarManager.getInstance().setSideIconVisibility(false)
     }
 }
