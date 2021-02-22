@@ -104,10 +104,11 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/white"
             android:layout_marginTop="@dimen/_10sdp"
+            android:background="@color/white"
             app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
 
             <com.google.android.material.textview.MaterialTextView
@@ -126,25 +127,25 @@
                 android:id="@+id/storeStatusTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="@dimen/_2sdp"
                 android:layout_marginTop="@dimen/_2sdp"
-                tools:text="@string/store_controls"
+                android:padding="@dimen/_2sdp"
                 android:textColor="@color/black"
                 app:layout_constraintEnd_toEndOf="@+id/storeSwitch"
                 app:layout_constraintStart_toStartOf="@+id/storeSwitch"
-                app:layout_constraintTop_toBottomOf="@+id/storeSwitch" />
+                app:layout_constraintTop_toBottomOf="@+id/storeSwitch"
+                tools:text="@string/store_controls" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/deliveryStatusTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:padding="@dimen/_2sdp"
-                tools:text="@string/store_controls"
                 android:textColor="@color/black"
                 app:layout_constraintBottom_toBottomOf="@+id/storeStatusTextView"
                 app:layout_constraintEnd_toEndOf="@+id/deliverySwitch"
                 app:layout_constraintStart_toStartOf="@+id/deliverySwitch"
-                app:layout_constraintTop_toTopOf="@+id/storeStatusTextView" />
+                app:layout_constraintTop_toTopOf="@+id/storeStatusTextView"
+                tools:text="@string/store_controls" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/moreControlsTextView"
@@ -162,11 +163,11 @@
                 android:id="@+id/storeSwitch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:track="@drawable/ic_store_switch_track"
                 android:layout_marginTop="@dimen/_5sdp"
                 android:thumb="@drawable/ic_store_switch_selector"
                 app:layout_constraintStart_toStartOf="@+id/materialTextView"
-                app:layout_constraintTop_toBottomOf="@+id/materialTextView" />
+                app:layout_constraintTop_toBottomOf="@+id/materialTextView"
+                app:track="@drawable/ic_store_switch_track" />
 
             <androidx.appcompat.widget.SwitchCompat
                 android:id="@+id/deliverySwitch"
@@ -182,8 +183,8 @@
             <View
                 android:id="@+id/separator"
                 android:layout_width="match_parent"
-                android:layout_marginTop="@dimen/_13sdp"
                 android:layout_height="@dimen/_1sdp"
+                android:layout_marginTop="@dimen/_13sdp"
                 android:background="@color/curve_grey_border"
                 app:layout_constraintTop_toBottomOf="@+id/deliveryStatusTextView" />
 
@@ -208,18 +209,178 @@
                 android:layout_marginEnd="@dimen/_10sdp"
                 android:background="@drawable/curve_black_border"
                 android:drawablePadding="@dimen/_10sdp"
-                android:paddingStart="@dimen/_10sdp"
                 android:gravity="center"
+                android:paddingStart="@dimen/_10sdp"
                 android:paddingTop="@dimen/_5sdp"
                 android:paddingEnd="@dimen/_10sdp"
                 android:paddingBottom="@dimen/_5sdp"
                 android:text="@string/share"
-                android:textSize="@dimen/_14sdp"
                 android:textColor="@color/black"
+                android:textSize="@dimen/_14sdp"
                 app:drawableStartCompat="@drawable/ic_photography"
                 app:layout_constraintBottom_toBottomOf="@+id/shareShowRoomWithCustomerTextView"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/shareShowRoomWithCustomerTextView" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <LinearLayout
+            android:id="@+id/linearLayout2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:orientation="vertical"
+            app:layout_constraintTop_toBottomOf="@+id/constraintLayout2">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/referEarnTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?android:selectableItemBackground"
+                android:drawableStart="@drawable/ic_refer_earn"
+                android:drawablePadding="@dimen/_10sdp"
+                android:onClick="onClick"
+                android:padding="@dimen/_15sdp"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_13sdp"
+                tools:text="@string/refer_earn" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_1sdp"
+                android:background="@color/light_grey_background" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/myRewardsTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?android:selectableItemBackground"
+                android:drawableStart="@drawable/ic_rewards"
+                android:drawablePadding="@dimen/_10sdp"
+                android:onClick="onClick"
+                android:padding="@dimen/_15sdp"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_13sdp"
+                tools:text="@string/my_rewards" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_1sdp"
+                android:background="@color/light_grey_background" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/appSettingsTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?android:selectableItemBackground"
+                android:drawableStart="@drawable/ic_settings"
+                android:drawableEnd="@drawable/ic_half_arrow_forward"
+                android:drawablePadding="@dimen/_10sdp"
+                android:onClick="onClick"
+                android:padding="@dimen/_15sdp"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_13sdp"
+                tools:text="@string/app_settings" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_1sdp"
+                android:background="@color/light_grey_background" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/feedbackTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?android:selectableItemBackground"
+                android:drawableStart="@drawable/ic_feedback"
+                android:drawablePadding="@dimen/_10sdp"
+                android:onClick="onClick"
+                android:padding="@dimen/_15sdp"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_13sdp"
+                tools:text="@string/feedback" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_1sdp"
+                android:background="@color/light_grey_background" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/helpTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="?android:selectableItemBackground"
+                android:drawableStart="@drawable/ic_setting_toolbar"
+                android:drawablePadding="@dimen/_10sdp"
+                android:onClick="onClick"
+                android:padding="@dimen/_15sdp"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_13sdp"
+                tools:text="@string/help" />
+
+        </LinearLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/dark_blackish"
+            android:padding="@dimen/_10sdp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
+
+            <LinearLayout
+                android:id="@+id/autoDataBackupLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/safeSecureLayout"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_auto_data_backup" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/_10sdp"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:text="@string/auto_data_backup"
+                    android:textColor="@color/white" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/safeSecureLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="@+id/autoDataBackupLayout"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/autoDataBackupLayout"
+                app:layout_constraintTop_toTopOf="@+id/autoDataBackupLayout">
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_auto_data_backup" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/safe_secure"
+                    android:textSize="@dimen/_10sdp"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:textColor="@color/white" />
+
+            </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -35,4 +35,10 @@
     <string name="share_your_showroom_with_customers">Share your showroom with \ncustomers</string>
     <string name="share">Share</string>
     <string name="help">Help</string>
+    <string name="refer_earn"><![CDATA[Refer & Earn]]></string>
+    <string name="my_rewards">My Rewards</string>
+    <string name="app_settings">App Settings</string>
+    <string name="feedback">Feedback</string>
+    <string name="auto_data_backup">100% Auto \nData Backup</string>
+    <string name="safe_secure">100% Safe \nAnd Secure</string>
 </resources>
