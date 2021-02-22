@@ -110,7 +110,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/_15sdp"
                     android:layout_marginTop="@dimen/_13sdp"
-                    tools:text="@string/store_controls"
+                    android:text="@string/store_controls"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_13sdp"
                     app:layout_constraintStart_toStartOf="parent"
@@ -139,6 +139,18 @@
                     app:layout_constraintStart_toStartOf="@+id/deliverySwitch"
                     app:layout_constraintTop_toTopOf="@+id/storeStatusTextView"
                     tools:text="@string/store_controls" />
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/moreControlsImageView"
+                    android:layout_width="@dimen/_33sdp"
+                    android:layout_height="0dp"
+                    android:onClick="onClick"
+                    android:background="?android:selectableItemBackground"
+                    android:src="@drawable/ic_more_controls"
+                    app:layout_constraintBottom_toTopOf="@+id/deliveryStatusTextView"
+                    app:layout_constraintEnd_toEndOf="@+id/moreControlsTextView"
+                    app:layout_constraintStart_toStartOf="@+id/moreControlsTextView"
+                    app:layout_constraintTop_toTopOf="@+id/deliverySwitch" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/moreControlsTextView"
@@ -201,16 +213,12 @@
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/_10sdp"
                     android:background="@drawable/curve_black_border"
-                    android:drawablePadding="@dimen/_10sdp"
+                    android:drawablePadding="@dimen/_5sdp"
                     android:gravity="center"
-                    android:paddingStart="@dimen/_10sdp"
-                    android:paddingTop="@dimen/_5sdp"
-                    android:paddingEnd="@dimen/_10sdp"
-                    android:paddingBottom="@dimen/_5sdp"
                     android:text="@string/share"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_14sdp"
-                    app:drawableStartCompat="@drawable/ic_photography"
+                    app:drawableStartCompat="@drawable/ic_whatsapp"
                     app:layout_constraintBottom_toBottomOf="@+id/shareShowRoomWithCustomerTextView"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/shareShowRoomWithCustomerTextView" />
@@ -229,12 +237,12 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/_15sdp"
                     android:layout_marginTop="@dimen/_13sdp"
-                    android:textColor="@color/black"
                     android:fontFamily="@font/montserrat"
+                    android:text="@string/new_release"
+                    android:textColor="@color/black"
                     android:textSize="@dimen/_13sdp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:text="@string/new_release" />
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <LinearLayout
                     android:id="@+id/viewTopOrderLayout"

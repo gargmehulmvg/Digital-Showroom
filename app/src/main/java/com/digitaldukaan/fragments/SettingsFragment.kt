@@ -96,7 +96,11 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             }
             if (2 == index) {
                 Picasso.get().load(response.mLogo).into(storeOptionThreeLeftImageView)
-                if (response.mIsShowMore) storeOptionThreeRightImageView.visibility = View.VISIBLE
+                if (response.mIsShowMore) {
+                    storeOptionThreeRightImageView.visibility = View.VISIBLE
+                    storeOptionThreeLayout.setOnClickListener{
+                        launchFragment(AppSettingsFragment().newInstance(infoResponse.mSubPages, response.mText), true) }
+                }
                 storeOptionThreeTextView.text = response.mText
             }
             if (3 == index) {

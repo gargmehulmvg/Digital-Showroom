@@ -12,7 +12,13 @@ data class StaticData(
     @SerializedName("auth_new") var mAuthNew: AuthNewResponseData,
     @SerializedName("verify_otp") var mVerifyOtpStaticData: VerifyOtpStaticResponseData,
     @SerializedName("onbording_step_one") var mOnBoardStep1StaticData: OnBoardStep1StaticResponseData,
-    @SerializedName("onboarding_step_two") var mOnBoardStep2StaticData: OnBoardStep2StaticResponseData
+    @SerializedName("onboarding_step_two") var mOnBoardStep2StaticData: OnBoardStep2StaticResponseData,
+    @SerializedName("settings") var mSettingsStaticData: SettingStaticData
+)
+
+data class SettingStaticData(
+    @SerializedName("app_version_text") var mAppVersionText: String?,
+    @SerializedName("store_id") var mStoreId: String?
 )
 
 data class AuthNewResponseData(
