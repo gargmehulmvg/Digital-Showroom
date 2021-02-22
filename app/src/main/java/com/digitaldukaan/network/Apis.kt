@@ -27,6 +27,6 @@ interface Apis {
     @GET("api/dotk/template/getAppStaticText")
     suspend fun getAppStaticText(@Query("lanuageId") languageId:String) : Response<StaticTextResponse>
 
-    @GET("api/dotk/template/getProfileInfo")
-    suspend fun getProfileResponse(@Query("store_id") languageId:String) : Response<ProfileResponse>
+    @GET("api/dotk/template/getAccountInfo")
+    suspend fun getProfileResponse(@Query("store_id") storeId:String) : Response<ProfileResponse>
 }
