@@ -1,7 +1,6 @@
 package com.digitaldukaan.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +10,7 @@ import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.models.response.StaticTextResponse
 import com.digitaldukaan.services.SplashService
+import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.ISplashServiceInterface
 import kotlinx.android.synthetic.main.fragment_splash.*
 
@@ -25,13 +25,17 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
         super.onViewCreated(view, savedInstanceState)
         ToolBarManager.getInstance().hideToolBar(mActivity, true)
         appVersionTextView.text = StringBuilder().append("v.").append(BuildConfig.VERSION_CODE)
+        if (!isInternetConnectionAvailable(mActivity)) {
+            showNoInternetConnectionDialog()
+            return
+        }
         val splashService = SplashService()
         splashService.setSplashServiceInterface(this)
         splashService.getStaticData("0")
     }
 
     override fun onBackPressed(): Boolean {
-        Log.d(SplashFragment::class.java.simpleName, "onBackPressed: do nothing")
+        mActivity.finish()
         return true
     }
 

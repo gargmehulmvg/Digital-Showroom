@@ -3,8 +3,10 @@ package com.digitaldukaan.fragments
 import android.app.Dialog
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -24,7 +26,7 @@ import java.net.UnknownHostException
 open class BaseFragment : Fragment() {
 
     protected lateinit var mContentView: View
-    private lateinit var mProgressDialog: Dialog
+    private var mProgressDialog: Dialog? = null
     protected lateinit var mActivity: MainActivity
 
     companion object {
@@ -41,12 +43,12 @@ open class BaseFragment : Fragment() {
             context?.run {
                 mProgressDialog = Dialog(this)
                 val inflate = LayoutInflater.from(this).inflate(R.layout.progress_dialog, null)
-                mProgressDialog.setContentView(inflate)
-                mProgressDialog.setCancelable(false)
-                mProgressDialog.window!!.setBackgroundDrawable(
+                mProgressDialog?.setContentView(inflate)
+                mProgressDialog?.setCancelable(false)
+                mProgressDialog?.window!!.setBackgroundDrawable(
                     ColorDrawable(Color.TRANSPARENT)
                 )
-                mProgressDialog.show()
+                mProgressDialog?.show()
             }
         }
     }
@@ -60,20 +62,22 @@ open class BaseFragment : Fragment() {
             context?.run {
                 mProgressDialog = Dialog(this)
                 val inflate = LayoutInflater.from(this).inflate(R.layout.progress_dialog, null)
-                mProgressDialog.setContentView(inflate)
-                mProgressDialog.setCancelable(true)
-                mProgressDialog.window!!.setBackgroundDrawable(
+                mProgressDialog?.setContentView(inflate)
+                mProgressDialog?.setCancelable(true)
+                mProgressDialog?.window!!.setBackgroundDrawable(
                     ColorDrawable(Color.TRANSPARENT)
                 )
-                mProgressDialog.show()
+                mProgressDialog?.show()
             }
         }
     }
 
     protected fun stopProgress() {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            mProgressDialog.let {
-                mProgressDialog.dismiss()
+            if (mProgressDialog != null) {
+                mProgressDialog?.let {
+                    mProgressDialog?.dismiss()
+                }
             }
         }
     }
@@ -149,5 +153,11 @@ open class BaseFragment : Fragment() {
     open fun getStringDataFromSharedPref(keyName: String?): String {
         val prefs = mActivity.getSharedPreferences(Constants.SHARED_PREF_NAME, MODE_PRIVATE)
         return prefs.getString(keyName, "").toString()
+    }
+
+    open fun openUrlInBrowser(url:String?) {
+        url?.let {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+        }
     }
 }

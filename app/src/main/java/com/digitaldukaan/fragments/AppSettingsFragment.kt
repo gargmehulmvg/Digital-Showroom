@@ -4,15 +4,19 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.app.AlertDialog
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.AppSettingsAdapter
+import com.digitaldukaan.constants.Constants
+import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.ToolBarManager
+import com.digitaldukaan.interfaces.IAppSettingsItemClicked
 import com.digitaldukaan.models.response.SubPagesResponse
 import kotlinx.android.synthetic.main.app_setting_fragment.*
 
-class AppSettingsFragment : BaseFragment() {
+class AppSettingsFragment : BaseFragment(), IAppSettingsItemClicked {
 
     private var mAppSettingsList: ArrayList<SubPagesResponse>? = ArrayList()
     private var mHeaderText: String? = null
@@ -36,7 +40,7 @@ class AppSettingsFragment : BaseFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val adapter = AppSettingsAdapter()
+        val adapter = AppSettingsAdapter(this)
         ToolBarManager.getInstance().apply {
             hideToolBar(mActivity, false)
             onBackPressed(this@AppSettingsFragment)
@@ -50,6 +54,25 @@ class AppSettingsFragment : BaseFragment() {
         adapter.setAppSettingsList(mAppSettingsList)
         appVersionTextView.text = "${mAppSettingsStaticData.mAppVersionText} v.${BuildConfig.VERSION_CODE}"
         storeIdTextView.text = "${mAppSettingsStaticData.mStoreId} 2018"
+    }
+
+    private fun showLogoutDialog() {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            val builder: AlertDialog.Builder = AlertDialog.Builder(mActivity)
+            builder.apply {
+                setTitle(mAppSettingsStaticData.mLogoutTitle)
+                setMessage(mAppSettingsStaticData.mLogoutBody)
+                setCancelable(false)
+                setPositiveButton(mAppSettingsStaticData.mLogoutText) { dialog, _ -> dialog.dismiss() }
+                setNegativeButton(getString(R.string.close)) { dialog, _ -> dialog.dismiss() }
+            }
+            val alertDialog: AlertDialog = builder.create()
+            alertDialog.show()
+        }
+    }
+
+    override fun onAppSettingItemClicked(subPagesResponse: SubPagesResponse) {
+        if (Constants.ACTION_LOGOUT == subPagesResponse.mAction) showLogoutDialog() else openUrlInBrowser(subPagesResponse.mPage)
     }
 
 }

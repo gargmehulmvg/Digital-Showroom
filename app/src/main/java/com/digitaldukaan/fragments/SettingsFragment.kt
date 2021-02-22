@@ -46,15 +46,15 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                 if (isChecked) deliveryStatusTextView.text = "Delivery : On" else deliveryStatusTextView.text = "Delivery : Off"
             }
         }
-        if (!isInternetConnectionAvailable(mActivity)) {
-            showNoInternetConnectionDialog()
-            return
-        }
         swipeRefreshLayout.setOnRefreshListener(this)
         fetchUserProfile()
     }
 
     private fun fetchUserProfile() {
+        if (!isInternetConnectionAvailable(mActivity)) {
+            showNoInternetConnectionDialog()
+            return
+        }
         showProgressDialog(mActivity, "Fetching user profile...")
         val service = ProfileService()
         service.setProfileServiceInterface(this)
@@ -71,9 +71,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
     override fun onProfileResponse(profileResponse: ProfileResponse) {
         stopProgress()
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            if (swipeRefreshLayout.isRefreshing) {
-                swipeRefreshLayout.isRefreshing = false
-            }
+            if (swipeRefreshLayout.isRefreshing) swipeRefreshLayout.isRefreshing = false
             showToast(profileResponse.mMessage)
             if (profileResponse.mStatus) setupUIFromProfileResponse(profileResponse)
         }
@@ -140,7 +138,10 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         }
     }
 
-    override fun onProfileDataException(e: Exception) = exceptionHandlingForAPIResponse(e)
+    override fun onProfileDataException(e: Exception) {
+        if (swipeRefreshLayout.isRefreshing) swipeRefreshLayout.isRefreshing = false
+        exceptionHandlingForAPIResponse(e)
+    }
 
     override fun onRefresh() {
         fetchUserProfile()

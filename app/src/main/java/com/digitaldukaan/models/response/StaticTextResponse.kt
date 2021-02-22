@@ -18,6 +18,9 @@ data class StaticData(
 
 data class SettingStaticData(
     @SerializedName("app_version_text") var mAppVersionText: String?,
+    @SerializedName("logout_body") var mLogoutBody: String?,
+    @SerializedName("logout_text") var mLogoutText: String?,
+    @SerializedName("logout_title") var mLogoutTitle: String?,
     @SerializedName("store_id") var mStoreId: String?
 )
 
