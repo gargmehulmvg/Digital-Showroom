@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.ToolBarManager
@@ -17,7 +18,8 @@ import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.settings_fragment.*
 
 
-class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInterface {
+class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInterface,
+    SwipeRefreshLayout.OnRefreshListener {
 
     fun newInstance(): SettingsFragment = SettingsFragment()
 
@@ -48,6 +50,11 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             showNoInternetConnectionDialog()
             return
         }
+        swipeRefreshLayout.setOnRefreshListener(this)
+        fetchUserProfile()
+    }
+
+    private fun fetchUserProfile() {
         showProgressDialog(mActivity, "Fetching user profile...")
         val service = ProfileService()
         service.setProfileServiceInterface(this)
@@ -64,10 +71,11 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
     override fun onProfileResponse(profileResponse: ProfileResponse) {
         stopProgress()
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            showToast(profileResponse.mMessage)
-            if (profileResponse.mStatus) {
-                setupUIFromProfileResponse(profileResponse)
+            if (swipeRefreshLayout.isRefreshing) {
+                swipeRefreshLayout.isRefreshing = false
             }
+            showToast(profileResponse.mMessage)
+            if (profileResponse.mStatus) setupUIFromProfileResponse(profileResponse)
         }
     }
 
@@ -133,4 +141,8 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
     }
 
     override fun onProfileDataException(e: Exception) = exceptionHandlingForAPIResponse(e)
+
+    override fun onRefresh() {
+        fetchUserProfile()
+    }
 }
