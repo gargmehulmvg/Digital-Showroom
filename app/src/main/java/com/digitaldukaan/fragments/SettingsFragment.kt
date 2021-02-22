@@ -19,9 +19,7 @@ import kotlinx.android.synthetic.main.settings_fragment.*
 
 class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInterface {
 
-    fun newInstance(): SettingsFragment{
-        return SettingsFragment()
-    }
+    fun newInstance(): SettingsFragment = SettingsFragment()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.settings_fragment, container, false)
@@ -56,9 +54,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         service.getUserProfile("2018")
     }
 
-    override fun onToolbarSideIconClicked() {
-        showShortSnackBar()
-    }
+    override fun onToolbarSideIconClicked() = showShortSnackBar()
 
     override fun onStop() {
         super.onStop()
@@ -105,7 +101,5 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         }
     }
 
-    override fun onProfileDataException(e: Exception) {
-        exceptionHandlingForAPIResponse(e)
-    }
+    override fun onProfileDataException(e: Exception) = exceptionHandlingForAPIResponse(e)
 }
