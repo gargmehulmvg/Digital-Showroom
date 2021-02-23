@@ -43,7 +43,7 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             mStaticData = staticDataResponse
             //launchFragment(LoginFragment(), true, splashLogoImageView)
-            launchFragment(SettingsFragment().newInstance(), true)
+            launchFragment(HomeFragment.newInstance(), true)
         }
     }
 

@@ -33,7 +33,10 @@ import kotlinx.android.synthetic.main.settings_fragment.*
 class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInterface,
     SwipeRefreshLayout.OnRefreshListener {
 
-    fun newInstance(): SettingsFragment = SettingsFragment()
+    companion object {
+        fun newInstance(): SettingsFragment = SettingsFragment()
+    }
+
     private val mAppSettingsStaticData = mStaticData.mStaticData.mSettingsStaticData
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -55,6 +58,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             onBackPressed(this@SettingsFragment)
             setHeaderTitle(getString(R.string.my_account))
             setSideIconVisibility(true)
+            hideBackPressFromToolBar(mActivity, false)
             setSideIcon(ContextCompat.getDrawable(mActivity, R.drawable.ic_setting_toolbar), this@SettingsFragment)
         }
         storeSwitch.setOnCheckedChangeListener { _, isChecked ->

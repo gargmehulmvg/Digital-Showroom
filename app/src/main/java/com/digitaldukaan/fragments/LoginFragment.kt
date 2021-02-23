@@ -111,9 +111,7 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
     }
 
     override fun onBackPressed(): Boolean {
-        if (mIsDoublePressToExit) {
-            mActivity.finish()
-        }
+        if (mIsDoublePressToExit) mActivity.finish()
         showShortSnackBar(getString(R.string.msg_back_press))
         mIsDoublePressToExit = true
         Handler(Looper.getMainLooper()).postDelayed(
