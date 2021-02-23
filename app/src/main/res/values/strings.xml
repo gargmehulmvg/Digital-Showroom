@@ -49,4 +49,7 @@
     <string name="bulk_upload_items">Bulk Upload Items</string>
     <string name="best_viewed_on">Best viewed on</string>
     <string name="link_copied">link copied</string>
+    <string name="start_now">Start Now</string>
+    <string name="store_name">Store Name</string>
+    <string name="profile">Profile</string>
 </resources>

@@ -71,7 +71,6 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         fetchUserProfile()
         startShinningAnimation(shinningNewTextView)
         digitalShowroomWebLayout.setOnClickListener { showTrendingOffersBottomSheet() }
-        userProfileLayout.setOnClickListener { launchFragment(ProfilePreviewFragment().newInstance("Profile"), true) }
     }
 
     private fun showTrendingOffersBottomSheet() {
@@ -210,6 +209,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         bulkUploadItemLayout.setOnClickListener{
             if (infoResponse?.mTrendingList?.size!! >=2) openUrlInBrowser(infoResponse.mTrendingList?.get(2)?.mPage)
         }
+        userProfileLayout.setOnClickListener { launchFragment(ProfilePreviewFragment().newInstance(infoResponse?.mStoreInfo?.mStoreName), true) }
     }
 
     private fun checkStoreOptionClick(response: StoreOptionsResponse) {

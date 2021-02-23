@@ -3,10 +3,7 @@ package com.digitaldukaan.network
 import com.digitaldukaan.models.request.AuthenticateUserRequest
 import com.digitaldukaan.models.request.GenerateOtpRequest
 import com.digitaldukaan.models.request.ValidateOtpRequest
-import com.digitaldukaan.models.response.GenerateOtpResponse
-import com.digitaldukaan.models.response.ProfileResponse
-import com.digitaldukaan.models.response.StaticTextResponse
-import com.digitaldukaan.models.response.ValidateOtpResponse
+import com.digitaldukaan.models.response.*
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -29,4 +26,7 @@ interface Apis {
 
     @GET("api/dotk/template/getAccountInfo")
     suspend fun getProfileResponse(@Query("store_id") storeId:String) : Response<ProfileResponse>
+
+    @GET("api/dotk/template/getProfileInfo")
+    suspend fun getProfilePreviewResponse(@Query("store_id") storeId:String) : Response<ProfilePreviewResponse>
 }

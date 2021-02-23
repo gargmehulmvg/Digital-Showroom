@@ -3,9 +3,6 @@
     <item>
         <shape android:shape="oval">
             <solid android:color="@color/black" />
-            <size
-                android:width="@dimen/_20sdp"
-                android:height="@dimen/_20sdp" />
         </shape>
     </item>
     <item android:drawable="@drawable/ic_arrow_forward_white" />

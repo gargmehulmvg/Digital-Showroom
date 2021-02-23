@@ -1,6 +1,195 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:fillViewport="true"
     android:layout_height="match_parent">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayoutBanner"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_margin="@dimen/_10sdp"
+            android:background="@drawable/curve_profile_preview_banner"
+            android:padding="@dimen/_12sdp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/profilePreviewBannerHeading"
+                style="@style/common_bold_text_view"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:textSize="@dimen/_14sdp"
+                app:layout_constraintEnd_toStartOf="@+id/profilePreviewBannerImageView"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="@string/app_name" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/profilePreviewBannerSubHeading"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:fontFamily="@font/montserrat"
+                android:paddingTop="@dimen/_5sdp"
+                android:textColor="@color/default_text_light_grey"
+                android:textSize="@dimen/_11sdp"
+                app:layout_constraintEnd_toStartOf="@+id/profilePreviewBannerImageView"
+                app:layout_constraintStart_toStartOf="@+id/profilePreviewBannerHeading"
+                app:layout_constraintTop_toBottomOf="@+id/profilePreviewBannerHeading"
+                tools:text="@string/app_name" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/profilePreviewBannerStartNow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:drawableEnd="@drawable/round_black_background"
+                android:drawablePadding="@dimen/_10sdp"
+                android:fontFamily="@font/montserrat"
+                android:gravity="center_vertical"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_12sdp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/profilePreviewBannerSubHeading"
+                app:layout_constraintTop_toBottomOf="@+id/profilePreviewBannerSubHeading"
+                tools:text="@string/start_now" />
+
+            <ImageView
+                android:id="@+id/profilePreviewBannerImageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/image_view_content_description"
+                android:minWidth="@dimen/_60sdp"
+                android:minHeight="@dimen/_60sdp"
+                android:src="@drawable/ic_auto_data_backup"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout3"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_18sdp"
+            android:paddingTop="@dimen/_5sdp"
+            android:paddingStart="@dimen/_5sdp"
+            android:paddingEnd="@dimen/_5sdp"
+            android:paddingBottom="@dimen/_15sdp"
+            app:layout_constraintEnd_toEndOf="@+id/constraintLayoutBanner"
+            app:layout_constraintStart_toStartOf="@+id/constraintLayoutBanner"
+            app:layout_constraintTop_toBottomOf="@id/constraintLayoutBanner">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/storePhotoLayout"
+                android:layout_width="@dimen/_60sdp"
+                android:layout_height="@dimen/_60sdp"
+                android:background="@drawable/curve_black_dotted_border"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <ImageView
+                    android:id="@+id/imageView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:contentDescription="@string/image_view_content_description"
+                    android:src="@drawable/ic_photography"
+                    app:layout_constraintBottom_toTopOf="@+id/materialTextView2"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/materialTextView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/montserrat"
+                    android:maxLines="1"
+                    android:paddingTop="@dimen/_2sdp"
+                    android:text="@string/add_logo"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_9sdp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.75" />
+
+                <ImageView
+                    android:id="@+id/storePhotoImageView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="@dimen/_4sdp"
+                    android:contentDescription="@string/image_view_content_description" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/profilePreviewStoreNameHeading"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_15sdp"
+                android:clickable="false"
+                android:fontFamily="@font/montserrat"
+                android:text="@string/store_name"
+                android:textColor="@color/default_text_light_grey"
+                android:textSize="@dimen/_11sdp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/storePhotoLayout"
+                app:layout_constraintTop_toTopOf="@+id/storePhotoLayout" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/profilePreviewStoreNameTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:drawableEnd="@drawable/ic_edit"
+                android:drawablePadding="@dimen/_5sdp"
+                android:fontFamily="@font/montserrat_bold"
+                android:gravity="center_vertical"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_12sdp"
+                app:layout_constraintEnd_toEndOf="@+id/profilePreviewStoreNameHeading"
+                app:layout_constraintStart_toStartOf="@+id/profilePreviewStoreNameHeading"
+                app:layout_constraintTop_toBottomOf="@+id/profilePreviewStoreNameHeading"
+                tools:text="string/start_now string /st a rt _now" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/profilePreviewStoreMobileNumber"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_12sdp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/profilePreviewStoreNameHeading"
+                app:layout_constraintStart_toStartOf="@+id/profilePreviewStoreNameHeading"
+                app:layout_constraintTop_toBottomOf="@+id/profilePreviewStoreNameTextView"
+                tools:text="@string/start_now" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/profilePreviewRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/constraintLayout3"
+            tools:listitem="@layout/profile_preview_item" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>

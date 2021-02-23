@@ -19,7 +19,7 @@ class ProfileNetworkService {
                 }
             }
         } catch (e: Exception) {
-            Log.e(ProfileNetworkService::class.java.simpleName, "generateOTPServerCall: ", e)
+            Log.e(ProfileNetworkService::class.java.simpleName, "getProfileServerCall: ", e)
             serviceInterface.onProfileDataException(e)
         }
     }

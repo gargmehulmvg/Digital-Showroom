@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:padding="@dimen/_10sdp"
+    android:onClick="onClick"
+    android:background="?android:selectableItemBackground"
+    android:layout_marginStart="@dimen/_5sdp"
+    android:layout_marginEnd="@dimen/_5sdp"
+    android:layout_height="wrap_content">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/settingKeyHeading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/montserrat"
+        android:text="@string/app_name"
+        android:layout_marginStart="@dimen/_7sdp"
+        android:clickable="false"
+        android:textColor="@color/default_text_light_grey"
+        android:textSize="@dimen/_11sdp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/addSettingKeyHeading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="false"
+        android:drawablePadding="@dimen/_10sdp"
+        android:layout_marginTop="@dimen/_3sdp"
+        android:fontFamily="@font/montserrat"
+        android:gravity="center_vertical"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_10sdp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/settingKeyHeading"
+        app:layout_constraintTop_toBottomOf="@+id/settingKeyHeading"
+        tools:text="@string/start_now" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/_12sdp"
+        android:layout_marginStart="@dimen/_2sdp"
+        android:contentDescription="@string/image_view_content_description"
+        android:src="@drawable/round_black_arrow_small"
+        app:layout_constraintBottom_toBottomOf="@+id/addSettingKeyHeading"
+        app:layout_constraintStart_toEndOf="@+id/addSettingKeyHeading"
+        app:layout_constraintTop_toTopOf="@+id/addSettingKeyHeading" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

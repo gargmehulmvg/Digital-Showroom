@@ -19,7 +19,7 @@ class SplashNetworkService {
                 }
             }
         } catch (e: Exception) {
-            Log.e(SplashNetworkService::class.java.simpleName, "generateOTPServerCall: ", e)
+            Log.e(SplashNetworkService::class.java.simpleName, "getAppStaticTextServerCall: ", e)
             splashServiceInterface.onStaticDataException(e)
         }
     }

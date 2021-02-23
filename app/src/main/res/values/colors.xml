@@ -17,4 +17,5 @@
     <color name="green_alpha">#9DEF9D</color>
     <color name="dark_blackish">#232B2E</color>
     <color name="curve_new_banner_background">#009688</color>
+    <color name="profile_preview_banner_background">#CAEFEB</color>
 </resources>

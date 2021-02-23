@@ -4,24 +4,31 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.digitaldukaan.R
+import com.digitaldukaan.adapters.ProfilePreviewAdapter
+import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.ToolBarManager
+import com.digitaldukaan.models.response.ProfilePreviewResponse
+import com.digitaldukaan.services.ProfilePreviewService
+import com.digitaldukaan.services.isInternetConnectionAvailable
+import com.digitaldukaan.services.serviceinterface.IProfilePreviewServiceInterface
+import com.squareup.picasso.Picasso
+import kotlinx.android.synthetic.main.profile_preview_fragment.*
 
-class ProfilePreviewFragment : BaseFragment() {
 
-    private lateinit var mHeaderText: String
+class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface {
 
-    fun newInstance(headerText: String): ProfilePreviewFragment {
+    private var mStoreName: String? = ""
+
+    fun newInstance(storeName: String?): ProfilePreviewFragment {
         val fragment = ProfilePreviewFragment()
-        fragment.mHeaderText = headerText
+        fragment.mStoreName = storeName
         return fragment
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.profile_preview_fragment, container, false)
         return mContentView
     }
@@ -30,7 +37,50 @@ class ProfilePreviewFragment : BaseFragment() {
         ToolBarManager.getInstance().apply {
             hideToolBar(mActivity, false)
             onBackPressed(this@ProfilePreviewFragment)
-            setHeaderTitle(mHeaderText)
+            setHeaderTitle(getString(R.string.profile))
         }
+        if (!isInternetConnectionAvailable(mActivity)) {
+            showNoInternetConnectionDialog()
+            return
+        }
+        showProgressDialog(mActivity)
+        val service = ProfilePreviewService()
+        service.setServiceInterface(this)
+        service.getProfilePreviewData("2018")
+    }
+
+    override fun onProfilePreviewResponse(profilePreviewResponse: ProfilePreviewResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            profilePreviewResponse.mProfileInfo.mProfilePreviewBanner.run {
+                profilePreviewBannerHeading.text = mHeading
+                profilePreviewBannerStartNow.text = mStartNow
+                Picasso.get().isLoggingEnabled = true
+                Picasso.get().load(mCDN).into(profilePreviewBannerImageView)
+                profilePreviewBannerSubHeading.text = mSubHeading
+            }
+            profilePreviewResponse.mProfileInfo.run {
+                profilePreviewStoreNameTextView.text = mStoreName
+                profilePreviewStoreMobileNumber.text = mPhoneNumber
+                Picasso.get().load(mStoreLogo).into(storePhotoImageView)
+            }
+            profilePreviewResponse.mProfileInfo.mSettingsKeysList.run {
+                val linearLayoutManager = LinearLayoutManager(mActivity)
+                profilePreviewRecyclerView.apply {
+                    layoutManager = linearLayoutManager
+                    setHasFixedSize(true)
+                    adapter = ProfilePreviewAdapter(this@run)
+                }
+                val dividerItemDecoration = DividerItemDecoration(
+                    profilePreviewRecyclerView.context,
+                    linearLayoutManager.orientation
+                )
+                profilePreviewRecyclerView.addItemDecoration(dividerItemDecoration)
+            }
+        }
+    }
+
+    override fun onProfilePreviewServerException(e: Exception) {
+        exceptionHandlingForAPIResponse(e)
     }
 }
