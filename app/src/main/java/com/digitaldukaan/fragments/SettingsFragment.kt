@@ -7,12 +7,15 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.ProfileStatusAdapter
+import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.interfaces.IOnToolbarIconClick
 import com.digitaldukaan.models.response.ProfileResponse
+import com.digitaldukaan.models.response.StoreOptionsResponse
 import com.digitaldukaan.services.ProfileService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IProfileServiceInterface
@@ -28,6 +31,14 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.settings_fragment, container, false)
         return mContentView
+    }
+
+    override fun onStart() {
+        super.onStart()
+        ToolBarManager.getInstance().apply {
+            setSideIconVisibility(true)
+            setSideIcon(ContextCompat.getDrawable(mActivity, R.drawable.ic_setting_toolbar), this@SettingsFragment)
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -63,7 +74,8 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         service.getUserProfile("2018")
     }
 
-    override fun onToolbarSideIconClicked() = showShortSnackBar()
+    override fun onToolbarSideIconClicked() = launchFragment(CommonWebViewFragment().newInstance(getString(R.string.help), BuildConfig.WEB_VIEW_URL + Constants.WEB_VIEW_HELP + "?storeid=2018&" + "redirectFrom=settings" + "&token=${getStringDataFromSharedPref(
+        Constants.USER_AUTH_TOKEN)}"), true)
 
     override fun onStop() {
         super.onStop()
@@ -74,7 +86,6 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         stopProgress()
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (swipeRefreshLayout.isRefreshing) swipeRefreshLayout.isRefreshing = false
-            showToast(profileResponse.mMessage)
             if (profileResponse.mStatus) setupUIFromProfileResponse(profileResponse)
         }
     }
@@ -100,11 +111,17 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                 Picasso.get().load(response.mLogo).into(storeOptionOneLeftImageView)
                 if (response.mIsShowMore) storeOptionOneRightImageView.visibility = View.VISIBLE
                 storeOptionOneTextView.text = response.mText
+                storeOptionOneLayout.setOnClickListener{
+                    checkStoreOptionClick(response)
+                }
             }
             if (1 == index) {
                 Picasso.get().load(response.mLogo).into(storeOptionTwoLeftImageView)
                 if (response.mIsShowMore) storeOptionTwoRightImageView.visibility = View.VISIBLE
                 storeOptionTwoTextView.text = response.mText
+                storeOptionTwoLayout.setOnClickListener{
+                    checkStoreOptionClick(response)
+                }
             }
             if (2 == index) {
                 Picasso.get().load(response.mLogo).into(storeOptionThreeLeftImageView)
@@ -119,11 +136,17 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                 Picasso.get().load(response.mLogo).into(storeOptionFourLeftImageView)
                 if (response.mIsShowMore) storeOptionFourRightImageView.visibility = View.VISIBLE
                 storeOptionFourTextView.text = response.mText
+                storeOptionFourLayout.setOnClickListener{
+                    checkStoreOptionClick(response)
+                }
             }
             if (4 == index) {
                 Picasso.get().load(response.mLogo).into(storeOptionFiveLeftImageView)
                 if (response.mIsShowMore) storeOptionFiveRightImageView.visibility = View.VISIBLE
                 storeOptionFiveTextView.text = response.mText
+                storeOptionFiveLayout.setOnClickListener{
+                    checkStoreOptionClick(response)
+                }
             }
         }
         infoResponse?.mTrendingList?.forEachIndexed { index, response ->
@@ -149,6 +172,21 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             val sharingStr = infoResponse?.mStoreShare?.mWaText
             if (infoResponse?.mStoreShare?.mShareStoreBanner!!) "\n\n" + sharingStr + infoResponse.mStoreShare?.mImageUrl
             shareDataOnWhatsApp(sharingStr)
+        }
+        viewTopOrderLayout.setOnClickListener{
+            if (infoResponse?.mTrendingList?.isNotEmpty()!!) openUrlInBrowser(infoResponse.mTrendingList?.get(0)?.mPage)
+        }
+        bulkUploadItemLayout.setOnClickListener{
+            if (infoResponse?.mTrendingList?.size!! >=2) openUrlInBrowser(infoResponse.mTrendingList?.get(2)?.mPage)
+        }
+    }
+
+    private fun checkStoreOptionClick(response: StoreOptionsResponse) {
+        when (response.mPage) {
+            Constants.PAGE_HELP -> onToolbarSideIconClicked()
+            Constants.PAGE_FEEDBACK -> openPlayStore()
+            Constants.PAGE_REWARDS -> launchFragment(CommonWebViewFragment().newInstance(getString(R.string.help), BuildConfig.WEB_VIEW_URL + Constants.WEB_VIEW_REWARDS + "?storeid=2018&" + "redirectFrom=settings" + "&token=${getStringDataFromSharedPref(
+                Constants.USER_AUTH_TOKEN)}"), true)
         }
     }
 

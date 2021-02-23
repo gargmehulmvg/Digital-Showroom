@@ -50,14 +50,17 @@ android {
     productFlavors {
         local {
             buildConfigField('String', 'BASE_URL', '"https://api.dotq.in/"')
+            buildConfigField('String', 'WEB_VIEW_URL', '"https://digitaldukaanwebview.dotq.in/"')
             applicationId "com.digitaldukaanlocal"
         }
         staging {
             buildConfigField('String', 'BASE_URL', '"staging"')
+            buildConfigField('String', 'WEB_VIEW_URL', '"https://digitaldukaanwebview.dotq.in/"')
             applicationId "com.digitaldukaanstaging"
         }
         prod {
             buildConfigField('String', 'BASE_URL', '"prod"')
+            buildConfigField('String', 'WEB_VIEW_URL', '"https://webview.digitaldukaan.co.in/"')
             applicationId "com.digitaldukaan"
         }
     }

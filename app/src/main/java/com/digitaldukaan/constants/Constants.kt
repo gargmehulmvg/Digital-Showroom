@@ -12,6 +12,13 @@ class Constants {
         const val USER_ID = "USER_ID"
         const val USER_MOBILE_NUMBER = "USER_MOBILE_NUMBER"
         const val STORE_NAME = "STORE_NAME"
+        const val WEB_VIEW_HELP = "help"
+        const val WEB_VIEW_REWARDS = "rewards"
+        //Actions
         const val ACTION_LOGOUT = "logout"
+        //Pages
+        const val PAGE_HELP = "help"
+        const val PAGE_FEEDBACK = "Feedback"
+        const val PAGE_REWARDS = "RewardsPage"
     }
 }

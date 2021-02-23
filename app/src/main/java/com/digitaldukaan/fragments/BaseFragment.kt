@@ -173,4 +173,23 @@ open class BaseFragment : Fragment() {
             showToast("Whatsapp have not been installed.")
         }
     }
+
+    open fun openPlayStore() {
+        val appPackageName: String = mActivity.packageName
+        try {
+            startActivity(
+                Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse("market://details?id=$appPackageName")
+                )
+            )
+        } catch (ignore: ActivityNotFoundException) {
+            startActivity(
+                Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse("https://play.google.com/store/apps/details?id=$appPackageName")
+                )
+            )
+        }
+    }
 }
