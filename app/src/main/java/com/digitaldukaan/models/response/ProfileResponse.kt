@@ -15,8 +15,8 @@ data class AccountInfoResponse(
     @SerializedName("trending_list") var mTrendingList: ArrayList<TrendingListResponse>?,
     @SerializedName("store_options") var mStoreOptions: ArrayList<StoreOptionsResponse>?,
     @SerializedName("sub_pages") var mSubPages: ArrayList<SubPagesResponse>?,
-    @SerializedName("total_steps") var mTotalSteps: String?,
-    @SerializedName("completed_steps") var mCompletedSteps: String?,
+    @SerializedName("total_steps") var mTotalSteps: Int?,
+    @SerializedName("completed_steps") var mCompletedSteps: Int,
     @SerializedName("account_static_text") var mAccountStaticText: AccountStaticTextResponse?,
     @SerializedName("footer_images") var mFooterImages: ArrayList<String>?
 )
@@ -50,7 +50,7 @@ data class AccountStaticTextResponse(
 data class StoreShareResponse(
     @SerializedName("wa_text") var mWaText: String?,
     @SerializedName("image_url") var mImageUrl: String?,
-    @SerializedName("share_store_banner") var mShareStoreBanner: String?
+    @SerializedName("share_store_banner") var mShareStoreBanner: Boolean
 )
 
 data class SubPagesResponse(

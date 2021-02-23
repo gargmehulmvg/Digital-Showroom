@@ -27,7 +27,7 @@
     <string name="turn_on_internet_message">Please turn on internet connection to continue</string>
     <string name="close">Close</string>
     <string name="authenticating_user">Authenticating User</string>
-    <string name="edit_profile">Edit Profile</string>
+    <string name="complete_profile">Complete Profile</string>
     <string name="add_logo">+ Add Logo</string>
     <string name="my_account">My Account</string>
     <string name="store_controls">Store controls</string>

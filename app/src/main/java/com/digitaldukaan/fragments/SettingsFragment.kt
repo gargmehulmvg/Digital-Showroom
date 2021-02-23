@@ -5,8 +5,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.digitaldukaan.R
+import com.digitaldukaan.adapters.ProfileStatusAdapter
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.interfaces.IOnToolbarIconClick
@@ -89,6 +91,10 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             }
         }
         deliverySwitch.isChecked = infoResponse?.mStoreInfo?.mStoreService?.mDeliveryFlag == 1
+        profileStatusRecyclerView.apply {
+            layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
+            adapter = ProfileStatusAdapter(infoResponse?.mTotalSteps, infoResponse?.mCompletedSteps)
+        }
         infoResponse?.mStoreOptions?.forEachIndexed { index, response ->
             if (0 == index) {
                 Picasso.get().load(response.mLogo).into(storeOptionOneLeftImageView)
@@ -135,6 +141,14 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                 Picasso.get().load(response.mCDN).placeholder(R.drawable.ic_auto_data_backup).into(bulkUploadItemImageView)
                 bulkUploadItemTextView.text = response.mText
             }
+        }
+        val remainingSteps = infoResponse?.mTotalSteps?.minus(infoResponse.mCompletedSteps)
+        stepsLeftTextView.text = if (remainingSteps == 1) "$remainingSteps ${infoResponse.mAccountStaticText?.mStepLeft}" else "$remainingSteps ${infoResponse?.mAccountStaticText?.mStepsLeft}"
+        completeProfileTextView.text = infoResponse?.mAccountStaticText?.mCompleteProfile
+        whatsAppTextView.setOnClickListener {
+            val sharingStr = infoResponse?.mStoreShare?.mWaText
+            if (infoResponse?.mStoreShare?.mShareStoreBanner!!) "\n\n" + sharingStr + infoResponse.mStoreShare?.mImageUrl
+            shareDataOnWhatsApp(sharingStr)
         }
     }
 

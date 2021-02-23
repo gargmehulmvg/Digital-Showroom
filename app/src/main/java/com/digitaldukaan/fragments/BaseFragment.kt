@@ -1,6 +1,7 @@
 package com.digitaldukaan.fragments
 
 import android.app.Dialog
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.Intent
@@ -158,6 +159,18 @@ open class BaseFragment : Fragment() {
     open fun openUrlInBrowser(url:String?) {
         url?.let {
             startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+        }
+    }
+
+    open fun shareDataOnWhatsApp(sharingData: String?) {
+        val whatsAppIntent = Intent(Intent.ACTION_SEND)
+        whatsAppIntent.type = "text/plain"
+        whatsAppIntent.setPackage("com.whatsapp")
+        whatsAppIntent.putExtra(Intent.EXTRA_TEXT, sharingData)
+        try {
+            mActivity.startActivity(whatsAppIntent)
+        } catch (ex: ActivityNotFoundException) {
+            showToast("Whatsapp have not been installed.")
         }
     }
 }
