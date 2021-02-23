@@ -7,8 +7,6 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.daimajia.androidanimations.library.Techniques
-import com.daimajia.androidanimations.library.YoYo
 import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.ProfileStatusAdapter
@@ -63,7 +61,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         }
         swipeRefreshLayout.setOnRefreshListener(this)
         fetchUserProfile()
-        YoYo.with(Techniques.FadeIn).duration(1000).repeat(500).playOn(newTextView)
+        startShinningAnimation(shinningNewTextView)
     }
 
     private fun fetchUserProfile() {

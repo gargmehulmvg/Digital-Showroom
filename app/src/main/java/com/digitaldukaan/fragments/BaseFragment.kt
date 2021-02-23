@@ -10,6 +10,8 @@ import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
+import android.view.animation.AccelerateDecelerateInterpolator
+import android.view.animation.TranslateAnimation
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.Toast
@@ -22,6 +24,9 @@ import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.models.response.StaticTextResponse
 import com.google.android.material.snackbar.Snackbar
 import java.net.UnknownHostException
+import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledExecutorService
+import java.util.concurrent.TimeUnit
 
 
 open class BaseFragment : Fragment() {
@@ -172,6 +177,21 @@ open class BaseFragment : Fragment() {
         } catch (ex: ActivityNotFoundException) {
             showToast("Whatsapp have not been installed.")
         }
+    }
+
+    open fun startShinningAnimation(view: View) {
+        val service:ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor()
+        service.scheduleAtFixedRate({
+            CoroutineScopeUtils().runTaskOnCoroutineMain {
+                val animation = TranslateAnimation(0f, view.width.toFloat(), 0f, 0f)
+                animation.apply {
+                    duration = 650
+                    fillAfter = true
+                    interpolator = AccelerateDecelerateInterpolator()
+                }
+                view.startAnimation(animation)
+            }
+        },Constants.SHINE_ANIMATION_INTERVAL, Constants.SHINE_ANIMATION_INTERVAL, TimeUnit.MILLISECONDS)
     }
 
     open fun openPlayStore() {
