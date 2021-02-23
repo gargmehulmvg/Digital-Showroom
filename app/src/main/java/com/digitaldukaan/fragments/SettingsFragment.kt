@@ -71,6 +71,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         fetchUserProfile()
         startShinningAnimation(shinningNewTextView)
         digitalShowroomWebLayout.setOnClickListener { showTrendingOffersBottomSheet() }
+        userProfileLayout.setOnClickListener { launchFragment(ProfilePreviewFragment().newInstance("Profile"), true) }
     }
 
     private fun showTrendingOffersBottomSheet() {
