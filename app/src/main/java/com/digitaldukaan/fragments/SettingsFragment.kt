@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -19,6 +20,7 @@ import com.digitaldukaan.models.response.StoreOptionsResponse
 import com.digitaldukaan.services.ProfileService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IProfileServiceInterface
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.settings_fragment.*
 
@@ -27,6 +29,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
     SwipeRefreshLayout.OnRefreshListener {
 
     fun newInstance(): SettingsFragment = SettingsFragment()
+    private val mAppSettingsStaticData = mStaticData.mStaticData.mSettingsStaticData
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.settings_fragment, container, false)
@@ -62,6 +65,16 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         swipeRefreshLayout.setOnRefreshListener(this)
         fetchUserProfile()
         startShinningAnimation(shinningNewTextView)
+        digitalShowroomWebLayout.setOnClickListener { showTrendingOffersBottomSheet() }
+    }
+
+    private fun showTrendingOffersBottomSheet() {
+        val bottomSheetDialog = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
+        val view = LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet_trending_offers, mActivity.findViewById(R.id.bottomSheetContainer))
+        bottomSheetDialog.setContentView(view)
+        val bottomSheetBrowserText:TextView = view.findViewById(R.id.bottomSheetBrowserText)
+        bottomSheetBrowserText.text = mAppSettingsStaticData.mBestViewedText
+        bottomSheetDialog.show()
     }
 
     private fun fetchUserProfile() {
