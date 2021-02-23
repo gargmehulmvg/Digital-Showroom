@@ -45,14 +45,14 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/profileStatusRecyclerView"
                     android:layout_width="wrap_content"
-                    tools:itemCount="5"
-                    android:orientation="horizontal"
-                    android:layout_marginTop="@dimen/_8sdp"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_8sdp"
+                    android:orientation="horizontal"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="@+id/linearLayout"
+                    app:layout_constraintStart_toStartOf="@+id/dukaanNameTextView"
                     app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+                    tools:itemCount="5"
                     tools:listitem="@layout/profile_status_item" />
 
                 <com.google.android.material.textview.MaterialTextView
@@ -242,22 +242,44 @@
                     app:layout_constraintStart_toStartOf="@+id/materialTextView"
                     app:layout_constraintTop_toBottomOf="@+id/separator" />
 
-                <TextView
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/whatsAppTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="@+id/shareShowRoomWithCustomerTextView"
                     android:layout_marginEnd="@dimen/_10sdp"
                     android:background="@drawable/curve_black_border"
-                    android:drawablePadding="@dimen/_5sdp"
                     android:gravity="center"
-                    android:text="@string/share"
                     android:onClick="onClick"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/_14sdp"
-                    app:drawableStartCompat="@drawable/ic_whatsapp"
-                    app:layout_constraintBottom_toBottomOf="@+id/shareShowRoomWithCustomerTextView"
+                    android:orientation="horizontal"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/shareShowRoomWithCustomerTextView" />
+                    app:layout_constraintTop_toTopOf="@+id/shareShowRoomWithCustomerTextView">
+
+                    <com.google.android.material.imageview.ShapeableImageView
+                        android:id="@+id/shapeableImageView2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_whatsapp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="1.0" />
+
+                    <TextView
+                        android:id="@+id/textView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:clickable="false"
+                        android:text="@string/share"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_14sdp"
+                        app:layout_constraintBottom_toBottomOf="@+id/shapeableImageView2"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/shapeableImageView2"
+                        app:layout_constraintTop_toTopOf="@+id/shapeableImageView2"
+                        app:layout_constraintVertical_bias="0.3" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

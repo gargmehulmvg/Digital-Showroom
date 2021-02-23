@@ -5,9 +5,10 @@
 
     <TextView
         android:id="@+id/profileStatusItemView"
-        android:layout_width="@dimen/_40sdp"
+        android:layout_width="@dimen/_55sdp"
         android:layout_height="@dimen/_8sdp"
-        android:layout_margin="@dimen/_5sdp"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:layout_marginEnd="@dimen/_1sdp"
         android:background="@drawable/profile_status_selector"
         android:enabled="true" />
 
