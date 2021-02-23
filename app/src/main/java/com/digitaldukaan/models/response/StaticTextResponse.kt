@@ -22,6 +22,7 @@ data class SettingStaticData(
     @SerializedName("logout_text") var mLogoutText: String?,
     @SerializedName("logout_title") var mLogoutTitle: String?,
     @SerializedName("best_view_text") var mBestViewedText: String?,
+    @SerializedName("bottom_sheet_text") var mBottomSheetText: String?,
     @SerializedName("store_id") var mStoreId: String?
 )
 

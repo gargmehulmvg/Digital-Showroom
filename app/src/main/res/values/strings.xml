@@ -48,4 +48,5 @@
     <string name="trending">Trending</string>
     <string name="bulk_upload_items">Bulk Upload Items</string>
     <string name="best_viewed_on">Best viewed on</string>
+    <string name="link_copied">link copied</string>
 </resources>

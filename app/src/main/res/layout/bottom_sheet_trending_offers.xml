@@ -18,15 +18,17 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/bottomSheetHeading"
+        android:id="@+id/bottomSheetHeadingTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_10sdp"
         android:fontFamily="@font/montserrat"
         android:gravity="center"
-        android:padding="@dimen/_10sdp"
+        android:padding="@dimen/_5sdp"
         android:textColor="@color/black"
         android:textSize="@dimen/_16sdp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/bottomSheetClose"
         tools:text="@string/app_name" />
 
@@ -43,17 +45,17 @@
         android:paddingEnd="@dimen/_15sdp"
         android:paddingBottom="@dimen/_5sdp"
         android:textColor="@color/white"
-        android:textSize="@dimen/_10sdp"
+        android:textSize="@dimen/_15sdp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/bottomSheetHeading"
+        app:layout_constraintTop_toBottomOf="@+id/bottomSheetHeadingTextView"
         tools:text="@string/app_name" />
 
     <ImageView
         android:id="@+id/bottomSheetLaptop"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/_240sdp"
-        android:layout_marginTop="@dimen/_20sdp"
+        android:layout_marginTop="@dimen/_8sdp"
         android:contentDescription="@string/image_view_content_description"
         android:src="@drawable/ic_laptop"
         app:layout_constraintEnd_toEndOf="parent"

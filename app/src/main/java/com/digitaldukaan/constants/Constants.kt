@@ -15,6 +15,9 @@ class Constants {
         const val STORE_NAME = "STORE_NAME"
         const val WEB_VIEW_HELP = "help"
         const val WEB_VIEW_REWARDS = "rewards"
+        const val CLIPBOARD_LABEL = "label"
+        const val DOTPE_OFFICIAL_URL_CLIPBOARD = "https://web.dotpe.in"
+        const val DOTPE_OFFICIAL_URL = "goto : web.dotpe.in"
         //Actions
         const val ACTION_LOGOUT = "logout"
         //Pages

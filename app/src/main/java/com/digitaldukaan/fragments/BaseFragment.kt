@@ -1,19 +1,20 @@
 package com.digitaldukaan.fragments
 
 import android.app.Dialog
-import android.content.ActivityNotFoundException
-import android.content.Context
+import android.content.*
 import android.content.Context.MODE_PRIVATE
-import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
+import android.os.Build
+import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.TranslateAnimation
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
@@ -117,6 +118,16 @@ open class BaseFragment : Fragment() {
         imm.hideSoftInputFromWindow(this.windowToken, 0)
     }
 
+    fun TextView.setHtmlData(string: String?) {
+        string?.let {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                this.text = Html.fromHtml(string, Html.FROM_HTML_MODE_COMPACT)
+            } else {
+                this.text = Html.fromHtml(string)
+            }
+        }
+    }
+
     open fun launchFragment(fragment: Fragment?, addBackStack: Boolean) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             mActivity.launchFragment(fragment, addBackStack)
@@ -134,6 +145,13 @@ open class BaseFragment : Fragment() {
         for (i in 0 until fm.backStackEntryCount) {
             fm.popBackStack()
         }
+    }
+
+    open fun copyDataToClipboard(string:String?) {
+        val clipboard: ClipboardManager = mActivity.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clip: ClipData = ClipData.newPlainText(Constants.CLIPBOARD_LABEL, string)
+        clipboard.setPrimaryClip(clip)
+        showToast(getString(R.string.link_copied))
     }
 
     open fun showNoInternetConnectionDialog() {

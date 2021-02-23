@@ -1,6 +1,10 @@
 package com.digitaldukaan.fragments
 
+import android.graphics.Typeface
 import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.StyleSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,6 +24,7 @@ import com.digitaldukaan.models.response.StoreOptionsResponse
 import com.digitaldukaan.services.ProfileService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IProfileServiceInterface
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.settings_fragment.*
@@ -72,8 +77,19 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         val bottomSheetDialog = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
         val view = LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet_trending_offers, mActivity.findViewById(R.id.bottomSheetContainer))
         bottomSheetDialog.setContentView(view)
+        bottomSheetDialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
         val bottomSheetBrowserText:TextView = view.findViewById(R.id.bottomSheetBrowserText)
+        val bottomSheetHeadingTextView:TextView = view.findViewById(R.id.bottomSheetHeadingTextView)
+        val bottomSheetUrl:TextView = view.findViewById(R.id.bottomSheetUrl)
+        val bottomSheetClose:View = view.findViewById(R.id.bottomSheetClose)
         bottomSheetBrowserText.text = mAppSettingsStaticData.mBestViewedText
+        val txtSpannable = SpannableString(Constants.DOTPE_OFFICIAL_URL)
+        val boldSpan = StyleSpan(Typeface.BOLD)
+        txtSpannable.setSpan(boldSpan, 6, txtSpannable.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        bottomSheetUrl.text = txtSpannable
+        bottomSheetHeadingTextView.setHtmlData(mAppSettingsStaticData.mBottomSheetText)
+        bottomSheetUrl.setOnClickListener { copyDataToClipboard(Constants.DOTPE_OFFICIAL_URL_CLIPBOARD) }
+        bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
         bottomSheetDialog.show()
     }
 
