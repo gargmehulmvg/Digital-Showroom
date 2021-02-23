@@ -104,4 +104,6 @@ dependencies {
     implementation 'com.squareup.picasso:picasso:2.71828'
     //Swipe refresh layout
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
+    //Animations Library
+    implementation 'com.daimajia.androidanimations:library:2.4@aar'
 }

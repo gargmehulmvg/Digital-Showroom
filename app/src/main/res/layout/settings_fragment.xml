@@ -322,13 +322,12 @@
                         android:id="@+id/newTextView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:background="@drawable/curve_green_banner"
-                        android:fontFamily="@font/montserrat"
+                        android:fontFamily="@font/montserrat_bold"
                         android:gravity="center"
                         android:padding="@dimen/_4sdp"
                         tools:text="@string/text_new"
                         android:clickable="false"
-                        android:textColor="@color/white"
+                        android:textColor="@color/red"
                         android:textSize="@dimen/_8sdp" />
 
                     <com.google.android.material.imageview.ShapeableImageView
