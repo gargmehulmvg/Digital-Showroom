@@ -36,6 +36,11 @@ data class SettingStaticData(
     @SerializedName("logout_title") var mLogoutTitle: String?,
     @SerializedName("best_view_text") var mBestViewedText: String?,
     @SerializedName("bottom_sheet_text") var mBottomSheetText: String?,
+    @SerializedName("warning_one") var mStoreLinkChangeWarningOne: String?,
+    @SerializedName("warning_two") var mStoreLinkChangeWarningTwo: String?,
+    @SerializedName("conform_text") var mStoreLinkChangeDialogHeading: String?,
+    @SerializedName("yes_text") var mYesText: String?,
+    @SerializedName("no_text") var mNoText: String?,
     @SerializedName("store_id") var mStoreId: String?
 )
 

@@ -215,7 +215,7 @@
                     android:id="@+id/deliverySwitch"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/_20sdp"
+                    android:layout_marginStart="@dimen/_25sdp"
                     android:thumb="@drawable/ic_delivery_switch_selector"
                     app:layout_constraintStart_toEndOf="@+id/storeSwitch"
                     app:layout_constraintTop_toTopOf="@+id/storeSwitch"
@@ -256,11 +256,12 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/shareShowRoomWithCustomerTextView">
 
-                    <com.google.android.material.imageview.ShapeableImageView
+                    <ImageView
                         android:id="@+id/shapeableImageView2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:src="@drawable/ic_whatsapp"
+                        android:padding="@dimen/_5sdp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
@@ -274,6 +275,7 @@
                         android:text="@string/share"
                         android:textColor="@color/black"
                         android:textSize="@dimen/_14sdp"
+                        android:padding="@dimen/_5sdp"
                         app:layout_constraintBottom_toBottomOf="@+id/shapeableImageView2"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/shapeableImageView2"
@@ -522,7 +524,7 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="0.1"
-                        android:padding="@dimen/_4sdp"
+                        android:padding="@dimen/_3sdp"
                         android:contentDescription="@string/image_view_content_description" />
 
                     <com.google.android.material.textview.MaterialTextView
@@ -566,7 +568,7 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="0.1"
-                        android:padding="@dimen/_4sdp"
+                        android:padding="@dimen/_3sdp"
                         android:contentDescription="@string/image_view_content_description" />
 
                     <com.google.android.material.textview.MaterialTextView
@@ -610,7 +612,7 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="0.1"
-                        android:padding="@dimen/_4sdp"
+                        android:padding="@dimen/_3sdp"
                         android:contentDescription="@string/image_view_content_description" />
 
                     <com.google.android.material.textview.MaterialTextView
@@ -654,7 +656,7 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="0.1"
-                        android:padding="@dimen/_4sdp"
+                        android:padding="@dimen/_3sdp"
                         android:contentDescription="@string/image_view_content_description" />
 
                     <com.google.android.material.textview.MaterialTextView
@@ -698,7 +700,7 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="0.1"
-                        android:padding="@dimen/_4sdp"
+                        android:padding="@dimen/_3sdp"
                         android:contentDescription="@string/image_view_content_description" />
 
                     <com.google.android.material.textview.MaterialTextView
