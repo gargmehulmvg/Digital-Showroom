@@ -25,6 +25,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
     IProfilePreviewItemClicked {
 
     private var mStoreName: String? = ""
+    private val mProfilePreviewStaticData = mStaticData.mStaticData.mProfileStaticData
 
     fun newInstance(storeName: String?): ProfilePreviewFragment {
         val fragment = ProfilePreviewFragment()
@@ -41,7 +42,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         ToolBarManager.getInstance().apply {
             hideToolBar(mActivity, false)
             onBackPressed(this@ProfilePreviewFragment)
-            setHeaderTitle(getString(R.string.profile))
+            setHeaderTitle(mProfilePreviewStaticData.pageHeading)
         }
         if (!isInternetConnectionAvailable(mActivity)) {
             showNoInternetConnectionDialog()

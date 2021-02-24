@@ -16,6 +16,7 @@ class StoreDescriptionFragment : BaseFragment() {
 
     private lateinit var mProfilePreviewResponse: ProfilePreviewSettingsKeyResponse
     private var mPosition: Int = 0
+    private val mStoreDescriptionStaticData = mStaticData.mStaticData.mProfileStaticData
 
     companion object {
         fun newInstance(
@@ -42,7 +43,7 @@ class StoreDescriptionFragment : BaseFragment() {
             onBackPressed(this@StoreDescriptionFragment)
             hideBackPressFromToolBar(mActivity, false)
         }
-        storeDescriptionHeading.text = "Step $mPosition ${mProfilePreviewResponse.mHeadingText}"
+        storeDescriptionHeading.text = "Step $mPosition : ${mProfilePreviewResponse.mHeadingText}"
         if (!isInternetConnectionAvailable(mActivity)) {
             showNoInternetConnectionDialog()
             return
@@ -63,6 +64,9 @@ class StoreDescriptionFragment : BaseFragment() {
             }
 
         })
+        storeDescriptionEditText.setText(mProfilePreviewResponse.mValue)
+        storeDescriptionEditText.hint = mStoreDescriptionStaticData.storeDescriptionHint
+        continueTextView.text = mStoreDescriptionStaticData.saveChanges
     }
 
 }

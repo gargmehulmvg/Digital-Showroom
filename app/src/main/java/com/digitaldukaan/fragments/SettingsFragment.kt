@@ -73,7 +73,6 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         }
         swipeRefreshLayout.setOnRefreshListener(this)
         fetchUserProfile()
-        startShinningAnimation(shinningNewTextView)
         digitalShowroomWebLayout.setOnClickListener { showTrendingOffersBottomSheet() }
     }
 
@@ -185,7 +184,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         }
         infoResponse?.mTrendingList?.forEachIndexed { index, response ->
             if (0 == index) {
-                newTextView.text = response.mType
+                //newTextView.text = response.mType
                 Picasso.get().load(response.mCDN).placeholder(R.drawable.ic_auto_data_backup).into(viewTopStoreImageView)
                 viewTopStoreTextView.text = response.mText
             }

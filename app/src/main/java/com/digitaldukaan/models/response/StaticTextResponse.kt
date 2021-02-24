@@ -10,10 +10,23 @@ data class StaticTextResponse(
 
 data class StaticData(
     @SerializedName("auth_new") var mAuthNew: AuthNewResponseData,
+    @SerializedName("profile") var mProfileStaticData: ProfileStaticData,
     @SerializedName("verify_otp") var mVerifyOtpStaticData: VerifyOtpStaticResponseData,
     @SerializedName("onbording_step_one") var mOnBoardStep1StaticData: OnBoardStep1StaticResponseData,
     @SerializedName("onboarding_step_two") var mOnBoardStep2StaticData: OnBoardStep2StaticResponseData,
     @SerializedName("settings") var mSettingsStaticData: SettingStaticData
+)
+
+data class ProfileStaticData(
+    @SerializedName("add_store_description_text") var addStoreDescription: String?,
+    @SerializedName("default_store_description_text") var defaultStoreDescriptionText: String?,
+    @SerializedName("page_heading") var pageHeading: String?,
+    @SerializedName("save_change_text") var saveChanges: String?,
+    @SerializedName("save_text") var saveText: String?,
+    @SerializedName("store_description_text") var storeDescriptionText: String?,
+    @SerializedName("store_description_title_text") var storeDescriptionTitleText: String?,
+    @SerializedName("store_desction_hint_text") var storeDescriptionHint: String?,
+    @SerializedName("no_text") var noText: String?
 )
 
 data class SettingStaticData(
