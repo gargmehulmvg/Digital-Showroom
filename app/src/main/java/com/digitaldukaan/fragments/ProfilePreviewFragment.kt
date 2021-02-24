@@ -4,9 +4,13 @@ import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
+import android.widget.EditText
 import android.widget.TextView
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,6 +25,9 @@ import com.digitaldukaan.models.response.ProfilePreviewSettingsKeyResponse
 import com.digitaldukaan.services.ProfilePreviewService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IProfilePreviewServiceInterface
+import com.digitaldukaan.views.allowOnlyAlphaNumericCharacters
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.profile_preview_fragment.*
 
@@ -107,7 +114,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             mActivity.let {
                 val warningDialog = Dialog(mActivity)
-                val view = LayoutInflater.from(mActivity).inflate(R.layout.edit_store_link_dialog, null)
+                val view = LayoutInflater.from(mActivity).inflate(R.layout.edit_store_link_warning_dialog, null)
                 warningDialog.apply {
                     setContentView(view)
                     setCancelable(true)
@@ -123,10 +130,52 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                 editStoreDialogWarningTwo.text = mProfilePreviewStaticData.mStoreLinkChangeWarningTwo
                 editStoreDialogYesTextView.text = mProfilePreviewStaticData.mYesText
                 editStoreDialogNoTextView.text = mProfilePreviewStaticData.mNoText
-                editStoreDialogYesTextView.setOnClickListener{ if (warningDialog.isShowing) warningDialog.dismiss() }
+                editStoreDialogYesTextView.setOnClickListener {
+                    if (warningDialog.isShowing) warningDialog.dismiss()
+                    showEditStoreLinkBottomSheet()
+                }
                 editStoreDialogNoTextView.setOnClickListener{ if (warningDialog.isShowing) warningDialog.dismiss() }
                 warningDialog.show()
             }
         }
+    }
+
+    private fun showEditStoreLinkBottomSheet() {
+        val bottomSheetDialog = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
+        val view = LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet_edit_store_link, mActivity.findViewById(R.id.bottomSheetContainer))
+        bottomSheetDialog.apply {
+            setContentView(view)
+            behavior.skipCollapsed = true
+            behavior.state = BottomSheetBehavior.STATE_EXPANDED
+            window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+        }
+        val bottomSheetEditStoreHeading:TextView = view.findViewById(R.id.bottomSheetEditStoreHeading)
+        val bottomSheetEditStoreTitle:TextView = view.findViewById(R.id.bottomSheetEditStoreTitle)
+        val bottomSheetEditStoreLinkDText:TextView = view.findViewById(R.id.bottomSheetEditStoreLinkDText)
+        val bottomSheetEditStoreSaveTextView:TextView = view.findViewById(R.id.bottomSheetEditStoreSaveTextView)
+        val bottomSheetEditStoreLinkEditText: EditText = view.findViewById(R.id.bottomSheetEditStoreLinkEditText)
+        val bottomSheetEditStoreLinkDotpe:TextView = view.findViewById(R.id.bottomSheetEditStoreLinkDotpe)
+        val bottomSheetEditStoreCloseImageView:View = view.findViewById(R.id.bottomSheetEditStoreCloseImageView)
+        bottomSheetEditStoreTitle.text = mProfilePreviewStaticData.currentLink
+        bottomSheetEditStoreLinkDText.text = mProfilePreviewStaticData.dText
+        bottomSheetEditStoreLinkDotpe.text = mProfilePreviewStaticData.dotPeDotInText
+        bottomSheetEditStoreSaveTextView.text = mProfilePreviewStaticData.saveText
+        bottomSheetEditStoreCloseImageView.setOnClickListener { if (bottomSheetDialog.isShowing) bottomSheetDialog.dismiss() }
+        bottomSheetEditStoreHeading.text = if (bottomSheetEditStoreLinkEditText.text.isEmpty()) mProfilePreviewStaticData.storeLinkTitle else mProfilePreviewStaticData.editStoreLink
+        bottomSheetEditStoreLinkEditText.addTextChangedListener(object : TextWatcher{
+            override fun afterTextChanged(s: Editable?) {
+                val string = s.toString()
+                bottomSheetEditStoreSaveTextView.isEnabled = string.isNotEmpty()
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            }
+
+        })
+        bottomSheetEditStoreLinkEditText.allowOnlyAlphaNumericCharacters()
+        bottomSheetDialog.show()
     }
 }

@@ -29,6 +29,15 @@ data class ProfileStaticData(
     @SerializedName("warning_one") var mStoreLinkChangeWarningOne: String?,
     @SerializedName("warning_two") var mStoreLinkChangeWarningTwo: String?,
     @SerializedName("conform_text") var mStoreLinkChangeDialogHeading: String?,
+    @SerializedName("edit_store_link") var editStoreLink: String?,
+    @SerializedName("edit_store_link_text") var editStoreLinkText: String?,
+    @SerializedName("current_link") var currentLink: String?,
+    @SerializedName("d_text") var dText: String?,
+    @SerializedName("dotpe_dot_in_text") var dotPeDotInText: String?,
+    @SerializedName("store_link_condition_one") var storeLinkConditionOne: String?,
+    @SerializedName("store_link_condition_two") var storeLinkConditionTwo: String?,
+    @SerializedName("store_link_not_found") var storeLinkNotFound: String?,
+    @SerializedName("store_link_title") var storeLinkTitle: String?,
     @SerializedName("yes_text") var mYesText: String?,
     @SerializedName("no_text") var mNoText: String?
 )
