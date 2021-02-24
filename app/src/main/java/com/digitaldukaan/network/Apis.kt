@@ -1,15 +1,10 @@
 package com.digitaldukaan.network
 
-import com.digitaldukaan.models.request.AuthenticateUserRequest
-import com.digitaldukaan.models.request.GenerateOtpRequest
-import com.digitaldukaan.models.request.StoreDeliveryStatusChangeRequest
-import com.digitaldukaan.models.request.ValidateOtpRequest
+import com.digitaldukaan.models.request.*
 import com.digitaldukaan.models.response.*
+import okhttp3.ResponseBody
 import retrofit2.Response
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.Query
+import retrofit2.http.*
 
 interface Apis {
 
@@ -33,4 +28,7 @@ interface Apis {
 
     @POST("api/dotstore/store/setServices")
     suspend fun changeStoreAndDeliveryStatus(@Body request: StoreDeliveryStatusChangeRequest) : Response<StoreDeliveryStatusChangeResponse>
+
+    @POST("api/dotstore/store/setStoreDescription")
+    suspend fun setStoreDescription(@Header("auth_token") authToken:String, @Body request: StoreDescriptionRequest) : Response<ResponseBody>
 }

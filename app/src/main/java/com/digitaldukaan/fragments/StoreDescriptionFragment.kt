@@ -7,12 +7,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.digitaldukaan.R
+import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.ToolBarManager
+import com.digitaldukaan.models.request.StoreDescriptionRequest
 import com.digitaldukaan.models.response.ProfilePreviewSettingsKeyResponse
+import com.digitaldukaan.services.StoreDescriptionService
 import com.digitaldukaan.services.isInternetConnectionAvailable
+import com.digitaldukaan.services.serviceinterface.IStoreDescriptionServiceInterface
 import kotlinx.android.synthetic.main.store_description_fragment.*
+import okhttp3.ResponseBody
 
-class StoreDescriptionFragment : BaseFragment() {
+class StoreDescriptionFragment : BaseFragment(), IStoreDescriptionServiceInterface {
 
     private lateinit var mProfilePreviewResponse: ProfilePreviewSettingsKeyResponse
     private var mPosition: Int = 0
@@ -48,9 +53,8 @@ class StoreDescriptionFragment : BaseFragment() {
             showNoInternetConnectionDialog()
             return
         }
-        /*val splashService = SplashService()
-        splashService.setSplashServiceInterface(this)
-        splashService.getStaticData("0")*/
+        val service = StoreDescriptionService()
+        service.setServiceInterface(this)
         storeDescriptionEditText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 val str = s.toString()
@@ -67,6 +71,21 @@ class StoreDescriptionFragment : BaseFragment() {
         storeDescriptionEditText.setText(mProfilePreviewResponse.mValue)
         storeDescriptionEditText.hint = mStoreDescriptionStaticData.storeDescriptionHint
         continueTextView.text = mStoreDescriptionStaticData.saveChanges
+        continueTextView.setOnClickListener {
+            val description = storeDescriptionEditText.text.trim().toString()
+            val request = StoreDescriptionRequest(2018, description)
+            showCancellableProgressDialog(mActivity)
+            service.saveStoreDescriptionData(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
+        }
+    }
+
+    override fun onStoreDescriptionResponse(response: ResponseBody) {
+        stopProgress()
+        showToast(response.string())
+    }
+
+    override fun onStoreDescriptionServerException(e: Exception) {
+        exceptionHandlingForAPIResponse(e)
     }
 
 }
