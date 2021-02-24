@@ -1,6 +1,7 @@
 package com.digitaldukaan.services
 
 import com.digitaldukaan.constants.CoroutineScopeUtils
+import com.digitaldukaan.models.request.StoreNameRequest
 import com.digitaldukaan.services.networkservice.ProfilePreviewNetworkService
 import com.digitaldukaan.services.serviceinterface.IProfilePreviewServiceInterface
 
@@ -16,6 +17,12 @@ class ProfilePreviewService {
     fun getProfilePreviewData(storeId: String) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
             mNetworkService.getProfilePreviewServerCall(storeId, mServiceInterface)
+        }
+    }
+
+    fun updateStoreName(authToken: String, request: StoreNameRequest) {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.updateStoreNameServerCall(authToken, request, mServiceInterface)
         }
     }
 

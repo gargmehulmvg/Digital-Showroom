@@ -39,6 +39,8 @@ data class ProfileStaticData(
     @SerializedName("store_link_not_found") var storeLinkNotFound: String?,
     @SerializedName("store_link_title") var storeLinkTitle: String?,
     @SerializedName("yes_text") var mYesText: String?,
+    @SerializedName("update_store_text") var mBottomSheetStoreNameHeading: String?,
+    @SerializedName("confirm_text") var mBottomSheetStoreButtonText: String?,
     @SerializedName("no_text") var mNoText: String?
 )
 

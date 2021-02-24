@@ -23,6 +23,7 @@ import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.interfaces.IProfilePreviewItemClicked
+import com.digitaldukaan.models.request.StoreNameRequest
 import com.digitaldukaan.models.response.ProfilePreviewResponse
 import com.digitaldukaan.models.response.ProfilePreviewSettingsKeyResponse
 import com.digitaldukaan.services.ProfilePreviewService
@@ -33,6 +34,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.profile_preview_fragment.*
+import okhttp3.ResponseBody
 
 
 class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
@@ -40,6 +42,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
 
     private var mStoreName: String? = ""
     private val mProfilePreviewStaticData = mStaticData.mStaticData.mProfileStaticData
+    private val service = ProfilePreviewService()
 
     fun newInstance(storeName: String?): ProfilePreviewFragment {
         val fragment = ProfilePreviewFragment()
@@ -49,6 +52,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.profile_preview_fragment, container, false)
+        service.setServiceInterface(this)
         return mContentView
     }
 
@@ -63,8 +67,6 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
             return
         }
         showProgressDialog(mActivity)
-        val service = ProfilePreviewService()
-        service.setServiceInterface(this)
         service.getProfilePreviewData("2018")
     }
 
@@ -97,6 +99,11 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                 profilePreviewRecyclerView.addItemDecoration(dividerItemDecoration)
             }
         }
+    }
+
+    override fun onStoreNameResponse(response: ResponseBody) {
+        stopProgress()
+        showToast(response.string())
     }
 
     override fun onProfilePreviewServerException(e: Exception) {
@@ -215,46 +222,31 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
             behavior.state = BottomSheetBehavior.STATE_EXPANDED
             window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
             setOnDismissListener {
-                Log.d(ProfilePreviewFragment::class.simpleName, "showEditStoreLinkBottomSheet :: dialog dismiss called")
                 Handler(Looper.getMainLooper()).postDelayed({ hideSoftKeyboard() }, Constants.TIMER_INTERVAL)
             }
         }
         val bottomSheetEditStoreHeading:TextView = view.findViewById(R.id.bottomSheetEditStoreHeading)
-        val bottomSheetEditStoreTitle:TextView = view.findViewById(R.id.bottomSheetEditStoreTitle)
-        val bottomSheetEditStoreLinkDText:TextView = view.findViewById(R.id.bottomSheetEditStoreLinkDText)
         val bottomSheetEditStoreSaveTextView:TextView = view.findViewById(R.id.bottomSheetEditStoreSaveTextView)
         val bottomSheetEditStoreLinkEditText: EditText = view.findViewById(R.id.bottomSheetEditStoreLinkEditText)
-        val bottomSheetEditStoreLinkDotpe:TextView = view.findViewById(R.id.bottomSheetEditStoreLinkDotpe)
-        val bottomSheetEditStoreLinkConditionOne:TextView = view.findViewById(R.id.bottomSheetEditStoreLinkConditionOne)
-        val bottomSheetEditStoreLinkConditionTwo:TextView = view.findViewById(R.id.bottomSheetEditStoreLinkConditionTwo)
         val bottomSheetEditStoreCloseImageView:View = view.findViewById(R.id.bottomSheetEditStoreCloseImageView)
-        bottomSheetEditStoreTitle.text = mProfilePreviewStaticData.currentLink
-        bottomSheetEditStoreLinkDText.text = mProfilePreviewStaticData.dText
-        bottomSheetEditStoreLinkDotpe.text = mProfilePreviewStaticData.dotPeDotInText
-        bottomSheetEditStoreSaveTextView.text = mProfilePreviewStaticData.saveText
-        bottomSheetEditStoreLinkConditionOne.text = mProfilePreviewStaticData.storeLinkConditionOne
-        bottomSheetEditStoreLinkConditionTwo.text = mProfilePreviewStaticData.storeLinkConditionTwo
+        bottomSheetEditStoreSaveTextView.text = mProfilePreviewStaticData.mBottomSheetStoreButtonText
         bottomSheetEditStoreCloseImageView.setOnClickListener { if (bottomSheetDialog.isShowing) bottomSheetDialog.dismiss() }
-        bottomSheetEditStoreHeading.text = if (bottomSheetEditStoreLinkEditText.text.isEmpty()) mProfilePreviewStaticData.storeLinkTitle else mProfilePreviewStaticData.editStoreLink
+        bottomSheetEditStoreSaveTextView.setOnClickListener {
+            if (!isInternetConnectionAvailable(mActivity)) {
+                showNoInternetConnectionDialog()
+            } else {
+                val newStoreName = bottomSheetEditStoreLinkEditText.text.trim().toString()
+                val request = StoreNameRequest(2018, newStoreName)
+                showProgressDialog(mActivity)
+                service.updateStoreName(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN),request)
+            }
+        }
+        bottomSheetEditStoreHeading.text = mProfilePreviewStaticData.mBottomSheetStoreNameHeading
+        bottomSheetEditStoreLinkEditText.hint = mProfilePreviewStaticData.mBottomSheetStoreNameHeading
         bottomSheetEditStoreLinkEditText.addTextChangedListener(object : TextWatcher{
             override fun afterTextChanged(s: Editable?) {
                 val string = s.toString()
                 bottomSheetEditStoreSaveTextView.isEnabled = string.isNotEmpty()
-                bottomSheetEditStoreLinkConditionOne.visibility = View.VISIBLE
-                bottomSheetEditStoreLinkConditionTwo.visibility = View.VISIBLE
-                when {
-                    string.isEmpty() -> {
-                        bottomSheetEditStoreLinkConditionOne.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_exclamation_mark, 0, 0, 0);
-                        bottomSheetEditStoreLinkConditionTwo.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_exclamation_mark, 0, 0, 0);
-                    }
-                    string.length >= 4 -> {
-                        bottomSheetEditStoreLinkConditionOne.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_check_small, 0, 0, 0);
-                        bottomSheetEditStoreLinkConditionTwo.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_check_small, 0, 0, 0);
-                    }
-                    else -> {
-                        bottomSheetEditStoreLinkConditionOne.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_check_small, 0, 0, 0);
-                    }
-                }
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -264,7 +256,6 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
             }
 
         })
-        bottomSheetEditStoreLinkEditText.allowOnlyAlphaNumericCharacters()
         bottomSheetDialog.show()
     }
 }

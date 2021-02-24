@@ -31,4 +31,7 @@ interface Apis {
 
     @POST("api/dotstore/store/setStoreDescription")
     suspend fun setStoreDescription(@Header("auth_token") authToken:String, @Body request: StoreDescriptionRequest) : Response<ResponseBody>
+
+    @POST("api/dotstore/store/setStoreName")
+    suspend fun setStoreName(@Header("auth_token") authToken:String, @Body request: StoreNameRequest) : Response<ResponseBody>
 }
