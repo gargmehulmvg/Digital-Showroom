@@ -2,6 +2,7 @@ package com.digitaldukaan.network
 
 import com.digitaldukaan.models.request.AuthenticateUserRequest
 import com.digitaldukaan.models.request.GenerateOtpRequest
+import com.digitaldukaan.models.request.StoreDeliveryStatusChangeRequest
 import com.digitaldukaan.models.request.ValidateOtpRequest
 import com.digitaldukaan.models.response.*
 import retrofit2.Response
@@ -29,4 +30,7 @@ interface Apis {
 
     @GET("api/dotk/template/getProfileInfo")
     suspend fun getProfilePreviewResponse(@Query("store_id") storeId:String) : Response<ProfilePreviewResponse>
+
+    @POST("api/dotstore/store/setServices")
+    suspend fun changeStoreAndDeliveryStatus(@Body request: StoreDeliveryStatusChangeRequest) : Response<StoreDeliveryStatusChangeResponse>
 }

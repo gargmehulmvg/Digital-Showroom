@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.StyleSpan
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,7 +20,9 @@ import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.interfaces.IOnToolbarIconClick
+import com.digitaldukaan.models.request.StoreDeliveryStatusChangeRequest
 import com.digitaldukaan.models.response.ProfileResponse
+import com.digitaldukaan.models.response.StoreDeliveryStatusChangeResponse
 import com.digitaldukaan.models.response.StoreOptionsResponse
 import com.digitaldukaan.services.ProfileService
 import com.digitaldukaan.services.isInternetConnectionAvailable
@@ -38,9 +41,11 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
     }
 
     private val mAppSettingsStaticData = mStaticData.mStaticData.mSettingsStaticData
+    private val service = ProfileService()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.settings_fragment, container, false)
+        service.setProfileServiceInterface(this)
         return mContentView
     }
 
@@ -61,19 +66,25 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             hideBackPressFromToolBar(mActivity, false)
             setSideIcon(ContextCompat.getDrawable(mActivity, R.drawable.ic_setting_toolbar), this@SettingsFragment)
         }
+        storeStatusTextView.text = "${mAppSettingsStaticData.mStoreText} : ${mAppSettingsStaticData.mOffText}"
         storeSwitch.setOnCheckedChangeListener { _, isChecked ->
             run {
-                if (isChecked) storeStatusTextView.text = "Store : Open" else storeStatusTextView.text = "Store : Closed"
+                Log.d(SettingsFragment::class.simpleName, "storeSwitch.setOnCheckedChangeListener $isChecked")
+                storeStatusTextView.text = "${mAppSettingsStaticData.mStoreText} : ${if (isChecked) mAppSettingsStaticData.mOnText else mAppSettingsStaticData.mOffText}"
             }
         }
+        deliveryStatusTextView.text = "${mAppSettingsStaticData.mDeliveryText} : ${mAppSettingsStaticData.mOffText}"
         deliverySwitch.setOnCheckedChangeListener { _, isChecked ->
             run {
-                if (isChecked) deliveryStatusTextView.text = "Delivery : On" else deliveryStatusTextView.text = "Delivery : Off"
+                Log.d(SettingsFragment::class.simpleName, "deliverySwitch.setOnCheckedChangeListener $isChecked")
+                deliveryStatusTextView.text = "${mAppSettingsStaticData.mDeliveryText} : ${if (isChecked) mAppSettingsStaticData.mOnText else mAppSettingsStaticData.mOffText}"
             }
         }
         swipeRefreshLayout.setOnRefreshListener(this)
         fetchUserProfile()
         digitalShowroomWebLayout.setOnClickListener { showTrendingOffersBottomSheet() }
+        storeSwitch.setOnClickListener { changeStoreDeliveryStatus() }
+        deliverySwitch.setOnClickListener { changeStoreDeliveryStatus() }
     }
 
     private fun showTrendingOffersBottomSheet() {
@@ -102,9 +113,17 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             return
         }
         showProgressDialog(mActivity, "Fetching user profile...")
-        val service = ProfileService()
-        service.setProfileServiceInterface(this)
         service.getUserProfile("2018")
+    }
+
+    private fun changeStoreDeliveryStatus() {
+        if (!isInternetConnectionAvailable(mActivity)) {
+            showNoInternetConnectionDialog()
+            return
+        }
+        showProgressDialog(mActivity)
+        val request = StoreDeliveryStatusChangeRequest(2018, if (storeSwitch.isChecked) 1 else 0, if (deliverySwitch.isChecked) 1 else 0, 0)
+        service.changeStoreAndDeliveryStatus(request)
     }
 
     override fun onToolbarSideIconClicked() = launchFragment(CommonWebViewFragment().newInstance(getString(R.string.help), BuildConfig.WEB_VIEW_URL + Constants.WEB_VIEW_HELP + "?storeid=2018&" + "redirectFrom=settings" + "&token=${getStringDataFromSharedPref(
@@ -123,7 +142,22 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         }
     }
 
+    override fun onChangeStoreAndDeliveryStatusResponse(response: StoreDeliveryStatusChangeResponse) {
+        stopProgress()
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            if (response.mIsSuccessStatus) {
+                response.mStoreDeliveryService.let {
+                    storeSwitch.isChecked = (it.mStoreFlag == 1)
+                    deliverySwitch.isChecked = (it.mDeliveryFlag == 1)
+                }
+            } else {
+                showToast(response.mMessage)
+            }
+        }
+    }
+
     private fun setupUIFromProfileResponse(profileResponse: ProfileResponse) {
+        Log.e(SettingsFragment::class.simpleName, "setupUIFromProfileResponse ${profileResponse.mMessage}")
         val infoResponse = profileResponse.mAccountInfoResponse
         dukaanNameTextView.text = infoResponse?.mStoreInfo?.mStoreName
         storeSwitch.isChecked = infoResponse?.mStoreInfo?.mStoreService?.mStoreFlag == 1
@@ -225,6 +259,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
     }
 
     override fun onProfileDataException(e: Exception) {
+        Log.e(SettingsFragment::class.simpleName, "onProfileDataException", e)
         if (swipeRefreshLayout.isRefreshing) swipeRefreshLayout.isRefreshing = false
         exceptionHandlingForAPIResponse(e)
     }

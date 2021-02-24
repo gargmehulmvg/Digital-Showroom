@@ -49,13 +49,18 @@ open class BaseFragment : Fragment() {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             context?.run {
                 mProgressDialog = Dialog(this)
-                val inflate = LayoutInflater.from(this).inflate(R.layout.progress_dialog, null)
-                mProgressDialog?.setContentView(inflate)
-                mProgressDialog?.setCancelable(false)
-                mProgressDialog?.window!!.setBackgroundDrawable(
-                    ColorDrawable(Color.TRANSPARENT)
-                )
-                mProgressDialog?.show()
+                mProgressDialog?.apply {
+                    val view = LayoutInflater.from(context).inflate(R.layout.progress_dialog, null)
+                    message?.run {
+                        val messageTextView : TextView = view.findViewById(R.id.progressDialogTextView)
+                        messageTextView.text = this
+                    }
+                    setContentView(view)
+                    setCancelable(false)
+                    window!!.setBackgroundDrawable(
+                        ColorDrawable(Color.TRANSPARENT)
+                    )
+                }?.show()
             }
         }
     }
@@ -97,9 +102,8 @@ open class BaseFragment : Fragment() {
 
     open fun exceptionHandlingForAPIResponse(e: Exception) {
         stopProgress()
-        if (e is UnknownHostException) {
-            showToast(e.message)
-        }
+        if (e is UnknownHostException) showToast(e.message)
+        else showToast(e.message)
     }
 
     protected fun showShortSnackBar(message: String = "sample testing") {
