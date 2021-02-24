@@ -64,7 +64,7 @@ public class ToolBarManager {
 
     public void hideBackPressFromToolBar(MainActivity mActivity, boolean toHide) {
         if (toHide) {
-            mActivity.findViewById(R.id.backButtonToolbar).setVisibility(View.INVISIBLE);
+            mActivity.findViewById(R.id.backButtonToolbar).setVisibility(View.GONE);
         } else {
             mActivity.findViewById(R.id.backButtonToolbar).setVisibility(View.VISIBLE);
         }

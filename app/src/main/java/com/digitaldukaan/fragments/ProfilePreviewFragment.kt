@@ -1,9 +1,13 @@
 package com.digitaldukaan.fragments
 
+import android.app.Dialog
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.digitaldukaan.R
@@ -95,6 +99,34 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
             Constants.ACTION_STORE_DESCRIPTION -> launchFragment(StoreDescriptionFragment.newInstance(profilePreviewResponse, position), true)
             Constants.ACTION_BANK_ACCOUNT -> launchFragment(BankAccountFragment.newInstance(profilePreviewResponse), true)
             Constants.ACTION_BUSINESS_TYPE -> launchFragment(BusinessTypeFragment.newInstance(profilePreviewResponse), true)
+            Constants.ACTION_EDIT_STORE_LINK -> showEditStoreWarningDialog()
+        }
+    }
+
+    private fun showEditStoreWarningDialog() {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            mActivity.let {
+                val warningDialog = Dialog(mActivity)
+                val view = LayoutInflater.from(mActivity).inflate(R.layout.edit_store_link_dialog, null)
+                warningDialog.apply {
+                    setContentView(view)
+                    setCancelable(true)
+                    window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                }
+                val editStoreDialogConfirmTextView: TextView = view.findViewById(R.id.editStoreDialogConfirmTextView)
+                val editStoreDialogWarningOne: TextView = view.findViewById(R.id.editStoreDialogWarningOne)
+                val editStoreDialogWarningTwo: TextView = view.findViewById(R.id.editStoreDialogWarningTwo)
+                val editStoreDialogYesTextView: TextView = view.findViewById(R.id.editStoreDialogYesTextView)
+                val editStoreDialogNoTextView: TextView = view.findViewById(R.id.editStoreDialogNoTextView)
+                editStoreDialogConfirmTextView.text = mProfilePreviewStaticData.mStoreLinkChangeDialogHeading
+                editStoreDialogWarningOne.text = mProfilePreviewStaticData.mStoreLinkChangeWarningOne
+                editStoreDialogWarningTwo.text = mProfilePreviewStaticData.mStoreLinkChangeWarningTwo
+                editStoreDialogYesTextView.text = mProfilePreviewStaticData.mYesText
+                editStoreDialogNoTextView.text = mProfilePreviewStaticData.mNoText
+                editStoreDialogYesTextView.setOnClickListener{ if (warningDialog.isShowing) warningDialog.dismiss() }
+                editStoreDialogNoTextView.setOnClickListener{ if (warningDialog.isShowing) warningDialog.dismiss() }
+                warningDialog.show()
+            }
         }
     }
 }
