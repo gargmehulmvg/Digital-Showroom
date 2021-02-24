@@ -20,6 +20,9 @@ class Constants {
         const val DOTPE_OFFICIAL_URL = "goto : web.dotpe.in"
         //Actions
         const val ACTION_LOGOUT = "logout"
+        const val ACTION_STORE_DESCRIPTION = "store_description"
+        const val ACTION_BANK_ACCOUNT = "bank_account"
+        const val ACTION_BUSINESS_TYPE = "bussiness_type"
         //Pages
         const val PAGE_HELP = "help"
         const val PAGE_FEEDBACK = "Feedback"

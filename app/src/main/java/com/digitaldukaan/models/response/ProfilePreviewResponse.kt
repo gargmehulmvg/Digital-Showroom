@@ -14,18 +14,18 @@ data class ProfileInfoResponse(
     @SerializedName("completed_steps") var mCompletedSteps: String?,
     @SerializedName("total_steps") var mTotalSteps: String?,
     @SerializedName("is_profile_completed") var mIsProfileCompleted: Boolean,
-    @SerializedName("banner") var mProfilePreviewBanner: ProfilePreviewBanner,
-    @SerializedName("setting_keys") var mSettingsKeysList: ArrayList<ProfilePreviewSettingsKey>
+    @SerializedName("banner") var mProfilePreviewBanner: ProfilePreviewBannerResponse,
+    @SerializedName("setting_keys") var mSettingsKeysList: ArrayList<ProfilePreviewSettingsKeyResponse>
 )
 
-data class ProfilePreviewBanner(
+data class ProfilePreviewBannerResponse(
     @SerializedName("cdn") var mCDN: String?,
     @SerializedName("heading") var mHeading: String?,
     @SerializedName("sub_heading") var mSubHeading: String?,
     @SerializedName("start_now") var mStartNow: String?
 )
 
-data class ProfilePreviewSettingsKey(
+data class ProfilePreviewSettingsKeyResponse(
     @SerializedName("heading_text") var mHeadingText: String?,
     @SerializedName("value") var mValue: String?,
     @SerializedName("default_text") var mDefaultText: String?,

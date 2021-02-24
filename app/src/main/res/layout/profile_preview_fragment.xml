@@ -55,8 +55,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_5sdp"
-                android:drawableEnd="@drawable/round_black_background"
-                android:drawablePadding="@dimen/_10sdp"
                 android:fontFamily="@font/montserrat"
                 android:gravity="center_vertical"
                 android:textColor="@color/black"
@@ -65,6 +63,16 @@
                 app:layout_constraintStart_toStartOf="@+id/profilePreviewBannerSubHeading"
                 app:layout_constraintTop_toBottomOf="@+id/profilePreviewBannerSubHeading"
                 tools:text="@string/start_now" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/_12sdp"
+                android:layout_marginStart="@dimen/_2sdp"
+                android:contentDescription="@string/image_view_content_description"
+                android:src="@drawable/round_black_arrow_small"
+                app:layout_constraintBottom_toBottomOf="@+id/profilePreviewBannerStartNow"
+                app:layout_constraintStart_toEndOf="@+id/profilePreviewBannerStartNow"
+                app:layout_constraintTop_toTopOf="@+id/profilePreviewBannerStartNow" />
 
             <ImageView
                 android:id="@+id/profilePreviewBannerImageView"

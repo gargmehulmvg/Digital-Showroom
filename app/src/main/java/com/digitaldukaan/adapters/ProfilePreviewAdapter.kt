@@ -6,21 +6,25 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
-import com.digitaldukaan.models.response.ProfilePreviewSettingsKey
+import com.digitaldukaan.interfaces.IProfilePreviewItemClicked
+import com.digitaldukaan.models.response.ProfilePreviewSettingsKeyResponse
 
-class ProfilePreviewAdapter(private var mSettingsKeysList: ArrayList<ProfilePreviewSettingsKey>) :
+class ProfilePreviewAdapter(
+    private var mSettingsKeysList: ArrayList<ProfilePreviewSettingsKeyResponse>,
+    private val mProfilePreviewListener: IProfilePreviewItemClicked
+) :
     RecyclerView.Adapter<ProfilePreviewAdapter.ProfilePreviewViewHolder>() {
 
     inner class ProfilePreviewViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val settingKeyHeading: TextView = itemView.findViewById(R.id.settingKeyHeading)
         val addSettingKeyHeading: TextView = itemView.findViewById(R.id.addSettingKeyHeading)
+        val profilePreviewContainer: View = itemView.findViewById(R.id.profilePreviewContainer)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProfilePreviewViewHolder {
-        return ProfilePreviewViewHolder(
-            LayoutInflater.from(parent.context)
-                .inflate(R.layout.profile_preview_item, parent, false)
-        )
+        val view = ProfilePreviewViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.profile_preview_item, parent, false))
+        view.profilePreviewContainer.setOnClickListener{ mProfilePreviewListener.onProfilePreviewItemClicked(mSettingsKeysList[view.adapterPosition]) }
+        return view
     }
 
     override fun getItemCount(): Int = mSettingsKeysList.size

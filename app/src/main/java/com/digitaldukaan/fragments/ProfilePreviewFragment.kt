@@ -8,9 +8,12 @@ import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.ProfilePreviewAdapter
+import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.ToolBarManager
+import com.digitaldukaan.interfaces.IProfilePreviewItemClicked
 import com.digitaldukaan.models.response.ProfilePreviewResponse
+import com.digitaldukaan.models.response.ProfilePreviewSettingsKeyResponse
 import com.digitaldukaan.services.ProfilePreviewService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IProfilePreviewServiceInterface
@@ -18,7 +21,8 @@ import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.profile_preview_fragment.*
 
 
-class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface {
+class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
+    IProfilePreviewItemClicked {
 
     private var mStoreName: String? = ""
 
@@ -69,7 +73,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface {
                 profilePreviewRecyclerView.apply {
                     layoutManager = linearLayoutManager
                     setHasFixedSize(true)
-                    adapter = ProfilePreviewAdapter(this@run)
+                    adapter = ProfilePreviewAdapter(this@run, this@ProfilePreviewFragment)
                 }
                 val dividerItemDecoration = DividerItemDecoration(
                     profilePreviewRecyclerView.context,
@@ -82,5 +86,14 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface {
 
     override fun onProfilePreviewServerException(e: Exception) {
         exceptionHandlingForAPIResponse(e)
+    }
+
+    override fun onProfilePreviewItemClicked(profilePreviewResponse: ProfilePreviewSettingsKeyResponse) {
+        showToast(profilePreviewResponse.mHeadingText)
+        when (profilePreviewResponse.mAction) {
+            Constants.ACTION_STORE_DESCRIPTION -> launchFragment(StoreDescriptionFragment.newInstance(profilePreviewResponse), true)
+            Constants.ACTION_BANK_ACCOUNT -> launchFragment(BankAccountFragment.newInstance(profilePreviewResponse), true)
+            Constants.ACTION_BUSINESS_TYPE -> launchFragment(BusinessTypeFragment.newInstance(profilePreviewResponse), true)
+        }
     }
 }
