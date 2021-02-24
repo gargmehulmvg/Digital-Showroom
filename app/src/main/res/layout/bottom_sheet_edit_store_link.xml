@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:orientation="vertical"
+    android:animateLayoutChanges="true"
     android:layout_height="wrap_content"
     android:background="@drawable/upper_curve_white_background"
     android:padding="@dimen/_10sdp">
@@ -88,31 +89,33 @@
         android:id="@+id/bottomSheetEditStoreLinkConditionOne"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="start"
+        android:layout_marginStart="@dimen/_35sdp"
         android:layout_marginTop="@dimen/_15sdp"
         android:drawablePadding="@dimen/_5sdp"
+        android:gravity="start"
         android:paddingTop="@dimen/_2sdp"
-        android:textSize="@dimen/_10sdp"
         android:paddingBottom="@dimen/_2sdp"
-        android:layout_marginStart="@dimen/_35sdp"
         android:textColor="@color/black"
-        tools:text="app_name"
-        app:drawableStartCompat="@drawable/ic_exclamation_mark" />
+        android:textSize="@dimen/_10sdp"
+        android:visibility="visible"
+        app:drawableStartCompat="@drawable/ic_exclamation_mark"
+        tools:text="app_name" />
 
     <TextView
         android:id="@+id/bottomSheetEditStoreLinkConditionTwo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:gravity="start"
-        android:textSize="@dimen/_10sdp"
+        android:layout_marginStart="@dimen/_35sdp"
         android:layout_marginTop="@dimen/_2sdp"
         android:drawablePadding="@dimen/_5sdp"
+        android:gravity="start"
         android:paddingTop="@dimen/_2sdp"
         android:paddingBottom="@dimen/_2sdp"
-        android:layout_marginStart="@dimen/_35sdp"
         android:textColor="@color/black"
-        tools:text="app_name"
-        app:drawableStartCompat="@drawable/ic_check_small" />
+        android:textSize="@dimen/_10sdp"
+        android:visibility="visible"
+        app:drawableStartCompat="@drawable/ic_exclamation_mark"
+        tools:text="app_name" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/bottomSheetEditStoreSaveTextView"

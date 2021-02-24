@@ -4,8 +4,11 @@ import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -148,6 +151,10 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
             behavior.skipCollapsed = true
             behavior.state = BottomSheetBehavior.STATE_EXPANDED
             window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+            setOnDismissListener {
+                Log.d(ProfilePreviewFragment::class.simpleName, "showEditStoreLinkBottomSheet :: dialog dismiss called")
+                Handler(Looper.getMainLooper()).postDelayed({ hideSoftKeyboard() }, Constants.TIMER_INTERVAL)
+            }
         }
         val bottomSheetEditStoreHeading:TextView = view.findViewById(R.id.bottomSheetEditStoreHeading)
         val bottomSheetEditStoreTitle:TextView = view.findViewById(R.id.bottomSheetEditStoreTitle)
@@ -155,17 +162,36 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         val bottomSheetEditStoreSaveTextView:TextView = view.findViewById(R.id.bottomSheetEditStoreSaveTextView)
         val bottomSheetEditStoreLinkEditText: EditText = view.findViewById(R.id.bottomSheetEditStoreLinkEditText)
         val bottomSheetEditStoreLinkDotpe:TextView = view.findViewById(R.id.bottomSheetEditStoreLinkDotpe)
+        val bottomSheetEditStoreLinkConditionOne:TextView = view.findViewById(R.id.bottomSheetEditStoreLinkConditionOne)
+        val bottomSheetEditStoreLinkConditionTwo:TextView = view.findViewById(R.id.bottomSheetEditStoreLinkConditionTwo)
         val bottomSheetEditStoreCloseImageView:View = view.findViewById(R.id.bottomSheetEditStoreCloseImageView)
         bottomSheetEditStoreTitle.text = mProfilePreviewStaticData.currentLink
         bottomSheetEditStoreLinkDText.text = mProfilePreviewStaticData.dText
         bottomSheetEditStoreLinkDotpe.text = mProfilePreviewStaticData.dotPeDotInText
         bottomSheetEditStoreSaveTextView.text = mProfilePreviewStaticData.saveText
+        bottomSheetEditStoreLinkConditionOne.text = mProfilePreviewStaticData.storeLinkConditionOne
+        bottomSheetEditStoreLinkConditionTwo.text = mProfilePreviewStaticData.storeLinkConditionTwo
         bottomSheetEditStoreCloseImageView.setOnClickListener { if (bottomSheetDialog.isShowing) bottomSheetDialog.dismiss() }
         bottomSheetEditStoreHeading.text = if (bottomSheetEditStoreLinkEditText.text.isEmpty()) mProfilePreviewStaticData.storeLinkTitle else mProfilePreviewStaticData.editStoreLink
         bottomSheetEditStoreLinkEditText.addTextChangedListener(object : TextWatcher{
             override fun afterTextChanged(s: Editable?) {
                 val string = s.toString()
                 bottomSheetEditStoreSaveTextView.isEnabled = string.isNotEmpty()
+                bottomSheetEditStoreLinkConditionOne.visibility = View.VISIBLE
+                bottomSheetEditStoreLinkConditionTwo.visibility = View.VISIBLE
+                when {
+                    string.isEmpty() -> {
+                        bottomSheetEditStoreLinkConditionOne.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_exclamation_mark, 0, 0, 0);
+                        bottomSheetEditStoreLinkConditionTwo.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_exclamation_mark, 0, 0, 0);
+                    }
+                    string.length >= 4 -> {
+                        bottomSheetEditStoreLinkConditionOne.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_check_small, 0, 0, 0);
+                        bottomSheetEditStoreLinkConditionTwo.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_check_small, 0, 0, 0);
+                    }
+                    else -> {
+                        bottomSheetEditStoreLinkConditionOne.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_check_small, 0, 0, 0);
+                    }
+                }
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {

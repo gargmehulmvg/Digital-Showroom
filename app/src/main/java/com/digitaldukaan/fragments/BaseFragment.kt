@@ -118,6 +118,11 @@ open class BaseFragment : Fragment() {
         imm.hideSoftInputFromWindow(this.windowToken, 0)
     }
 
+    open fun hideSoftKeyboard() {
+        val imm = mActivity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(mContentView.windowToken, 0)
+    }
+
     fun TextView.setHtmlData(string: String?) {
         string?.let {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
