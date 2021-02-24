@@ -61,8 +61,8 @@ class MainActivity : AppCompatActivity() {
         val fragmentTag = fragment.javaClass.canonicalName
         try {
             fragmentTransaction.setCustomAnimations(
-                R.anim.fade_in,
-                R.anim.fade_out,
+                R.anim.enter_from_right,
+                R.anim.exit_to_left,
                 android.R.anim.slide_in_left,
                 android.R.anim.slide_out_right
             )
@@ -92,8 +92,8 @@ class MainActivity : AppCompatActivity() {
         val fragmentTag = fragment.javaClass.canonicalName
         try {
             fragmentTransaction.setCustomAnimations(
-                R.anim.fade_in,
-                R.anim.fade_out,
+                R.anim.enter_from_right,
+                R.anim.exit_to_left,
                 android.R.anim.slide_in_left,
                 android.R.anim.slide_out_right
             )

@@ -52,4 +52,6 @@
     <string name="start_now">Start Now</string>
     <string name="store_name">Store Name</string>
     <string name="profile">Profile</string>
+    <string name="step_1_store_description">Step 1: Store Description</string>
+    <string name="save_n_continue"><![CDATA[Save & Continue]]></string>
 </resources>

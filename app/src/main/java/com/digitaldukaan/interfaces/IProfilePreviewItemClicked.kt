@@ -4,5 +4,5 @@ import com.digitaldukaan.models.response.ProfilePreviewSettingsKeyResponse
 
 interface IProfilePreviewItemClicked {
 
-    fun onProfilePreviewItemClicked(profilePreviewResponse: ProfilePreviewSettingsKeyResponse)
+    fun onProfilePreviewItemClicked(profilePreviewResponse: ProfilePreviewSettingsKeyResponse, position: Int)
 }

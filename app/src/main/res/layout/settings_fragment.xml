@@ -515,8 +515,7 @@
                     android:background="?android:selectableItemBackground"
                     android:gravity="center_vertical"
                     android:onClick="onClick"
-                    android:orientation="horizontal"
-                    >
+                    android:orientation="horizontal">
 
                     <ImageView
                         android:id="@+id/storeOptionOneLeftImageView"

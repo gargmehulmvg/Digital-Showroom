@@ -29,6 +29,12 @@ class BankAccountFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         ToolBarManager.getInstance().hideToolBar(mActivity, true)
+        ToolBarManager.getInstance().apply {
+            hideToolBar(mActivity, false)
+            setHeaderTitle("")
+            onBackPressed(this@BankAccountFragment)
+            hideBackPressFromToolBar(mActivity, false)
+        }
         if (!isInternetConnectionAvailable(mActivity)) {
             showNoInternetConnectionDialog()
             return

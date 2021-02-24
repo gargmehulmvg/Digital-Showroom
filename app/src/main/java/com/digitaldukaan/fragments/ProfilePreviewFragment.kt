@@ -88,10 +88,10 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         exceptionHandlingForAPIResponse(e)
     }
 
-    override fun onProfilePreviewItemClicked(profilePreviewResponse: ProfilePreviewSettingsKeyResponse) {
+    override fun onProfilePreviewItemClicked(profilePreviewResponse: ProfilePreviewSettingsKeyResponse, position: Int) {
         showToast(profilePreviewResponse.mHeadingText)
         when (profilePreviewResponse.mAction) {
-            Constants.ACTION_STORE_DESCRIPTION -> launchFragment(StoreDescriptionFragment.newInstance(profilePreviewResponse), true)
+            Constants.ACTION_STORE_DESCRIPTION -> launchFragment(StoreDescriptionFragment.newInstance(profilePreviewResponse, position), true)
             Constants.ACTION_BANK_ACCOUNT -> launchFragment(BankAccountFragment.newInstance(profilePreviewResponse), true)
             Constants.ACTION_BUSINESS_TYPE -> launchFragment(BusinessTypeFragment.newInstance(profilePreviewResponse), true)
         }
