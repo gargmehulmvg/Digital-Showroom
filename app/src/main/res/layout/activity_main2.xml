@@ -71,6 +71,7 @@
                 android:padding="@dimen/_4sdp"
                 android:background="?selectableItemBackground"
                 android:layout_marginEnd="@dimen/_4sdp"
+                android:visibility="invisible"
                 android:src="@drawable/ic_setting_toolbar"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
