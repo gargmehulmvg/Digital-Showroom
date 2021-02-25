@@ -63,7 +63,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
             return
         }
         showProgressDialog(mActivity)
-        service.getProfilePreviewData("2018")
+        service.getProfilePreviewData(getStringDataFromSharedPref(Constants.STORE_ID))
     }
 
     override fun onProfilePreviewResponse(profilePreviewResponse: ProfilePreviewResponse) {
@@ -79,7 +79,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
             profilePreviewResponse.mProfileInfo.run {
                 profilePreviewStoreNameTextView.text = mStoreName
                 profilePreviewStoreMobileNumber.text = mPhoneNumber
-                Picasso.get().load(mStoreLogo).into(storePhotoImageView)
+                if (mStoreLogo?.isNotEmpty() == true) Picasso.get().load(mStoreLogo).into(storePhotoImageView)
             }
             profilePreviewResponse.mProfileInfo.mSettingsKeysList.run {
                 val linearLayoutManager = LinearLayoutManager(mActivity)
@@ -275,7 +275,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                 showNoInternetConnectionDialog()
             } else {
                 val newStoreName = bottomSheetEditStoreLinkEditText.text.trim().toString()
-                val request = StoreNameRequest(2018, newStoreName)
+                val request = StoreNameRequest(getStringDataFromSharedPref(Constants.STORE_ID).toInt(), newStoreName)
                 showProgressDialog(mActivity)
                 service.updateStoreName(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN),request)
             }

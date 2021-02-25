@@ -113,7 +113,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             return
         }
         showProgressDialog(mActivity, "Fetching user profile...")
-        service.getUserProfile("2018")
+        service.getUserProfile(getStringDataFromSharedPref(Constants.STORE_ID))
     }
 
     private fun changeStoreDeliveryStatus() {
@@ -122,11 +122,11 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             return
         }
         showProgressDialog(mActivity)
-        val request = StoreDeliveryStatusChangeRequest(2018, if (storeSwitch.isChecked) 1 else 0, if (deliverySwitch.isChecked) 1 else 0, 0)
+        val request = StoreDeliveryStatusChangeRequest(getStringDataFromSharedPref(Constants.STORE_ID).toInt(), if (storeSwitch.isChecked) 1 else 0, if (deliverySwitch.isChecked) 1 else 0, 0)
         service.changeStoreAndDeliveryStatus(request)
     }
 
-    override fun onToolbarSideIconClicked() = launchFragment(CommonWebViewFragment().newInstance(getString(R.string.help), BuildConfig.WEB_VIEW_URL + Constants.WEB_VIEW_HELP + "?storeid=2018&" + "redirectFrom=settings" + "&token=${getStringDataFromSharedPref(
+    override fun onToolbarSideIconClicked() = launchFragment(CommonWebViewFragment().newInstance(getString(R.string.help), BuildConfig.WEB_VIEW_URL + Constants.WEB_VIEW_HELP + "?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&" + "redirectFrom=settings" + "&token=${getStringDataFromSharedPref(
         Constants.USER_AUTH_TOKEN)}"), true)
 
     override fun onStop() {
@@ -253,7 +253,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         when (response.mPage) {
             Constants.PAGE_HELP -> onToolbarSideIconClicked()
             Constants.PAGE_FEEDBACK -> openPlayStore()
-            Constants.PAGE_REWARDS -> launchFragment(CommonWebViewFragment().newInstance(getString(R.string.help), BuildConfig.WEB_VIEW_URL + Constants.WEB_VIEW_REWARDS + "?storeid=2018&" + "redirectFrom=settings" + "&token=${getStringDataFromSharedPref(
+            Constants.PAGE_REWARDS -> launchFragment(CommonWebViewFragment().newInstance(getString(R.string.help), BuildConfig.WEB_VIEW_URL + Constants.WEB_VIEW_REWARDS + "?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&" + "redirectFrom=settings" + "&token=${getStringDataFromSharedPref(
                 Constants.USER_AUTH_TOKEN)}"), true)
         }
     }

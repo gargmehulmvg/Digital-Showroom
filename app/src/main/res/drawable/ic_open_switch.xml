@@ -11,9 +11,9 @@
                 android:color="#00ffffff"/>
         </shape>
     </item>
-    <item android:drawable="@drawable/ic_closed"
+    <item android:drawable="@drawable/ic_open"
         android:left="@dimen/_10sdp"
         android:right="@dimen/_10sdp"
         android:top="@dimen/_10sdp"
-        android:bottom="@dimen/_12sdp"/>
+        android:bottom="@dimen/_10sdp"/>
 </layer-list>

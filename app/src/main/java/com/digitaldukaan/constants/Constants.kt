@@ -10,7 +10,7 @@ class Constants {
         const val CREDENTIAL_PICKER_REQUEST = 1001
         const val SHARED_PREF_NAME = "DigitalDukaanPrefs"
         const val USER_AUTH_TOKEN = "USER_AUTH_TOKEN"
-        const val USER_ID = "USER_ID"
+        const val STORE_ID = "STORE_ID"
         const val USER_MOBILE_NUMBER = "USER_MOBILE_NUMBER"
         const val STORE_NAME = "STORE_NAME"
         const val WEB_VIEW_HELP = "help"

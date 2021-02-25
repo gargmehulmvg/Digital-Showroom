@@ -150,9 +150,11 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
 
     private fun saveUserDetailsInPref(validateOtpResponse: ValidateOtpResponse) {
         storeStringDataInSharedPref(Constants.USER_AUTH_TOKEN, validateOtpResponse.mUserAuthToken)
-        storeStringDataInSharedPref(Constants.USER_ID, validateOtpResponse.mUserId)
         storeStringDataInSharedPref(Constants.USER_MOBILE_NUMBER, validateOtpResponse.mUserPhoneNumber)
-        storeStringDataInSharedPref(Constants.STORE_NAME, validateOtpResponse.mStore)
+        validateOtpResponse.mStore?.run {
+            storeStringDataInSharedPref(Constants.STORE_ID, storeId.toString())
+            storeStringDataInSharedPref(Constants.STORE_NAME, storeInfo.name)
+        }
     }
 
     override fun onOTPVerificationErrorResponse(validateOtpErrorResponse: ValidateOtpErrorResponse) {

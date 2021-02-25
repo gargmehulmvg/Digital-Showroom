@@ -29,9 +29,9 @@ interface Apis {
     @POST("api/dotstore/store/setServices")
     suspend fun changeStoreAndDeliveryStatus(@Body request: StoreDeliveryStatusChangeRequest) : Response<StoreDeliveryStatusChangeResponse>
 
-    @POST("api/dotstore/store/setStoreDescription")
-    suspend fun setStoreDescription(@Header("auth_token") authToken:String, @Body request: StoreDescriptionRequest) : Response<ResponseBody>
+    @POST("api/dotk/merchant/setStoreDescription")
+    suspend fun setStoreDescription(@Header("auth_token") authToken:String, @Body request: StoreDescriptionRequest) : Response<StoreDescriptionResponse>
 
-    @POST("api/dotstore/store/setStoreName")
+    @POST("api/dotk/merchant/setStoreName")
     suspend fun setStoreName(@Header("auth_token") authToken:String, @Body request: StoreNameRequest) : Response<ResponseBody>
 }

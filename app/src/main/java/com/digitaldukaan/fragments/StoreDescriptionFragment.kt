@@ -8,14 +8,15 @@ import android.view.View
 import android.view.ViewGroup
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
+import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.models.request.StoreDescriptionRequest
 import com.digitaldukaan.models.response.ProfilePreviewSettingsKeyResponse
+import com.digitaldukaan.models.response.StoreDescriptionResponse
 import com.digitaldukaan.services.StoreDescriptionService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IStoreDescriptionServiceInterface
 import kotlinx.android.synthetic.main.store_description_fragment.*
-import okhttp3.ResponseBody
 
 class StoreDescriptionFragment : BaseFragment(), IStoreDescriptionServiceInterface {
 
@@ -73,15 +74,19 @@ class StoreDescriptionFragment : BaseFragment(), IStoreDescriptionServiceInterfa
         continueTextView.text = mStoreDescriptionStaticData.saveChanges
         continueTextView.setOnClickListener {
             val description = storeDescriptionEditText.text.trim().toString()
-            val request = StoreDescriptionRequest(2018, description)
+            val request = StoreDescriptionRequest(getStringDataFromSharedPref(Constants.STORE_ID).toInt(), description)
             showCancellableProgressDialog(mActivity)
             service.saveStoreDescriptionData(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
         }
     }
 
-    override fun onStoreDescriptionResponse(response: ResponseBody) {
+    override fun onStoreDescriptionResponse(response: StoreDescriptionResponse) {
         stopProgress()
-        showToast(response.string())
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            if (response.mStatus) {
+
+            }
+        }
     }
 
     override fun onStoreDescriptionServerException(e: Exception) {
