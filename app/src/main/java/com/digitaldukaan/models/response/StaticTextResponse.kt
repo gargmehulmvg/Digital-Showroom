@@ -41,6 +41,7 @@ data class ProfileStaticData(
     @SerializedName("yes_text") var mYesText: String?,
     @SerializedName("update_store_text") var mBottomSheetStoreNameHeading: String?,
     @SerializedName("confirm_text") var mBottomSheetStoreButtonText: String?,
+    @SerializedName("conform_desc_text") var mBottomSheetCloseConfirmationMessage: String?,
     @SerializedName("no_text") var mNoText: String?
 )
 

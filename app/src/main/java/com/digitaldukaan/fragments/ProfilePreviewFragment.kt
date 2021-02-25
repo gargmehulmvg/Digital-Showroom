@@ -8,11 +8,7 @@ import android.os.Handler
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.view.WindowManager
+import android.view.*
 import android.widget.EditText
 import android.widget.TextView
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -128,89 +124,132 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                 val view = LayoutInflater.from(mActivity).inflate(R.layout.edit_store_link_warning_dialog, null)
                 warningDialog.apply {
                     setContentView(view)
-                    setCancelable(true)
+                    setCancelable(false)
                     window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
                 }
-                val editStoreDialogConfirmTextView: TextView = view.findViewById(R.id.editStoreDialogConfirmTextView)
-                val editStoreDialogWarningOne: TextView = view.findViewById(R.id.editStoreDialogWarningOne)
-                val editStoreDialogWarningTwo: TextView = view.findViewById(R.id.editStoreDialogWarningTwo)
-                val editStoreDialogYesTextView: TextView = view.findViewById(R.id.editStoreDialogYesTextView)
-                val editStoreDialogNoTextView: TextView = view.findViewById(R.id.editStoreDialogNoTextView)
-                editStoreDialogConfirmTextView.text = mProfilePreviewStaticData.mStoreLinkChangeDialogHeading
-                editStoreDialogWarningOne.text = mProfilePreviewStaticData.mStoreLinkChangeWarningOne
-                editStoreDialogWarningTwo.text = mProfilePreviewStaticData.mStoreLinkChangeWarningTwo
-                editStoreDialogYesTextView.text = mProfilePreviewStaticData.mYesText
-                editStoreDialogNoTextView.text = mProfilePreviewStaticData.mNoText
-                editStoreDialogYesTextView.setOnClickListener {
-                    if (warningDialog.isShowing) warningDialog.dismiss()
-                    showEditStoreLinkBottomSheet()
+                view?.run {
+                    val editStoreDialogConfirmTextView: TextView = findViewById(R.id.editStoreDialogConfirmTextView)
+                    val editStoreDialogWarningOne: TextView = findViewById(R.id.editStoreDialogWarningOne)
+                    val editStoreDialogWarningTwo: TextView = findViewById(R.id.editStoreDialogWarningTwo)
+                    val editStoreDialogYesTextView: TextView = findViewById(R.id.editStoreDialogYesTextView)
+                    val editStoreDialogNoTextView: TextView = findViewById(R.id.editStoreDialogNoTextView)
+                    editStoreDialogConfirmTextView.text = mProfilePreviewStaticData.mStoreLinkChangeDialogHeading
+                    editStoreDialogWarningOne.text = mProfilePreviewStaticData.mStoreLinkChangeWarningOne
+                    editStoreDialogWarningTwo.text = mProfilePreviewStaticData.mStoreLinkChangeWarningTwo
+                    editStoreDialogYesTextView.text = mProfilePreviewStaticData.mYesText
+                    editStoreDialogNoTextView.text = mProfilePreviewStaticData.mNoText
+                    editStoreDialogYesTextView.setOnClickListener {
+                        if (warningDialog.isShowing) warningDialog.dismiss()
+                        showEditStoreLinkBottomSheet()
+                    }
+                    editStoreDialogNoTextView.setOnClickListener{ if (warningDialog.isShowing) warningDialog.dismiss() }
                 }
-                editStoreDialogNoTextView.setOnClickListener{ if (warningDialog.isShowing) warningDialog.dismiss() }
+                warningDialog.show()
+            }
+        }
+    }
+
+    private var mStoreLinkBottomSheet: BottomSheetDialog? = null
+
+    private fun showBottomSheetCancelDialog() {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            mActivity.let {
+                val warningDialog = Dialog(mActivity)
+                val view = LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet_cancel_dialog, null)
+                warningDialog.apply {
+                    setContentView(view)
+                    setCancelable(false)
+                    window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                }
+                view?.run {
+                    val bottomSheetCancelDialogHeading: TextView = findViewById(R.id.bottomSheetCancelDialogHeading)
+                    val bottomSheetCancelDialogMessage: TextView = findViewById(R.id.bottomSheetCancelDialogMessage)
+                    val bottomSheetCancelDialogYes: TextView = findViewById(R.id.bottomSheetCancelDialogYes)
+                    val bottomSheetCancelDialogNo: TextView = findViewById(R.id.bottomSheetCancelDialogNo)
+                    bottomSheetCancelDialogHeading.text = mProfilePreviewStaticData.mStoreLinkChangeDialogHeading
+                    bottomSheetCancelDialogMessage.text = mProfilePreviewStaticData.mBottomSheetCloseConfirmationMessage
+                    bottomSheetCancelDialogYes.text = mProfilePreviewStaticData.mYesText
+                    bottomSheetCancelDialogNo.text = mProfilePreviewStaticData.mNoText
+                    bottomSheetCancelDialogYes.setOnClickListener {
+                        if (warningDialog.isShowing) {
+                            warningDialog.dismiss()
+                            mStoreLinkBottomSheet?.dismiss()
+                        }
+                    }
+                    bottomSheetCancelDialogNo.setOnClickListener{ if (warningDialog.isShowing) warningDialog.dismiss() }
+                }
                 warningDialog.show()
             }
         }
     }
 
     private fun showEditStoreLinkBottomSheet() {
-        val bottomSheetDialog = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
+        mStoreLinkBottomSheet = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
         val view = LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet_edit_store_link, mActivity.findViewById(R.id.bottomSheetContainer))
-        bottomSheetDialog.apply {
+        mStoreLinkBottomSheet?.apply {
             setContentView(view)
             behavior.skipCollapsed = true
             behavior.state = BottomSheetBehavior.STATE_EXPANDED
             window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+            setCancelable(false)
             setOnDismissListener {
-                Log.d(ProfilePreviewFragment::class.simpleName, "showEditStoreLinkBottomSheet :: dialog dismiss called")
                 Handler(Looper.getMainLooper()).postDelayed({ hideSoftKeyboard() }, Constants.TIMER_INTERVAL)
             }
+            view?.run {
+                val bottomSheetEditStoreHeading:TextView = findViewById(R.id.bottomSheetEditStoreHeading)
+                val bottomSheetEditStoreTitle:TextView = findViewById(R.id.bottomSheetEditStoreTitle)
+                val bottomSheetEditStoreLinkDText:TextView = findViewById(R.id.bottomSheetEditStoreLinkDText)
+                val bottomSheetEditStoreSaveTextView:TextView = findViewById(R.id.bottomSheetEditStoreSaveTextView)
+                val bottomSheetEditStoreLinkEditText: EditText = findViewById(R.id.bottomSheetEditStoreLinkEditText)
+                val bottomSheetEditStoreLinkDotpe:TextView = findViewById(R.id.bottomSheetEditStoreLinkDotpe)
+                val bottomSheetEditStoreLinkConditionOne:TextView = findViewById(R.id.bottomSheetEditStoreLinkConditionOne)
+                val bottomSheetEditStoreLinkConditionTwo:TextView = findViewById(R.id.bottomSheetEditStoreLinkConditionTwo)
+                val bottomSheetEditStoreCloseImageView:View = findViewById(R.id.bottomSheetEditStoreCloseImageView)
+                bottomSheetEditStoreTitle.text = mProfilePreviewStaticData.currentLink
+                bottomSheetEditStoreLinkDText.text = mProfilePreviewStaticData.dText
+                bottomSheetEditStoreLinkDotpe.text = mProfilePreviewStaticData.dotPeDotInText
+                bottomSheetEditStoreSaveTextView.text = mProfilePreviewStaticData.saveText
+                bottomSheetEditStoreLinkConditionOne.text = mProfilePreviewStaticData.storeLinkConditionOne
+                bottomSheetEditStoreLinkConditionTwo.text = mProfilePreviewStaticData.storeLinkConditionTwo
+                bottomSheetEditStoreCloseImageView.setOnClickListener { showBottomSheetCancelDialog() }
+                bottomSheetEditStoreHeading.text = if (bottomSheetEditStoreLinkEditText.text.isEmpty()) mProfilePreviewStaticData.storeLinkTitle else mProfilePreviewStaticData.editStoreLink
+                bottomSheetEditStoreLinkEditText.addTextChangedListener(object : TextWatcher{
+                    override fun afterTextChanged(s: Editable?) {
+                        val string = s.toString()
+                        bottomSheetEditStoreSaveTextView.isEnabled = string.isNotEmpty()
+                        bottomSheetEditStoreLinkConditionOne.visibility = View.VISIBLE
+                        bottomSheetEditStoreLinkConditionTwo.visibility = View.VISIBLE
+                        when {
+                            string.isEmpty() -> {
+                                bottomSheetEditStoreLinkConditionOne.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_exclamation_mark, 0, 0, 0);
+                                bottomSheetEditStoreLinkConditionTwo.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_exclamation_mark, 0, 0, 0);
+                            }
+                            string.length >= 4 -> {
+                                bottomSheetEditStoreLinkConditionOne.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_check_small, 0, 0, 0);
+                                bottomSheetEditStoreLinkConditionTwo.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_check_small, 0, 0, 0);
+                            }
+                            else -> {
+                                bottomSheetEditStoreLinkConditionOne.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_check_small, 0, 0, 0);
+                            }
+                        }
+                    }
+
+                    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                    }
+
+                    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                    }
+
+                })
+                bottomSheetEditStoreLinkEditText.allowOnlyAlphaNumericCharacters()
+            }
+        }?.show()
+        mStoreLinkBottomSheet?.setOnKeyListener { _, keyCode, _ ->
+            if (KeyEvent.KEYCODE_BACK == keyCode) {
+                showBottomSheetCancelDialog()
+                true
+            } else false
         }
-        val bottomSheetEditStoreHeading:TextView = view.findViewById(R.id.bottomSheetEditStoreHeading)
-        val bottomSheetEditStoreTitle:TextView = view.findViewById(R.id.bottomSheetEditStoreTitle)
-        val bottomSheetEditStoreLinkDText:TextView = view.findViewById(R.id.bottomSheetEditStoreLinkDText)
-        val bottomSheetEditStoreSaveTextView:TextView = view.findViewById(R.id.bottomSheetEditStoreSaveTextView)
-        val bottomSheetEditStoreLinkEditText: EditText = view.findViewById(R.id.bottomSheetEditStoreLinkEditText)
-        val bottomSheetEditStoreLinkDotpe:TextView = view.findViewById(R.id.bottomSheetEditStoreLinkDotpe)
-        val bottomSheetEditStoreLinkConditionOne:TextView = view.findViewById(R.id.bottomSheetEditStoreLinkConditionOne)
-        val bottomSheetEditStoreLinkConditionTwo:TextView = view.findViewById(R.id.bottomSheetEditStoreLinkConditionTwo)
-        val bottomSheetEditStoreCloseImageView:View = view.findViewById(R.id.bottomSheetEditStoreCloseImageView)
-        bottomSheetEditStoreTitle.text = mProfilePreviewStaticData.currentLink
-        bottomSheetEditStoreLinkDText.text = mProfilePreviewStaticData.dText
-        bottomSheetEditStoreLinkDotpe.text = mProfilePreviewStaticData.dotPeDotInText
-        bottomSheetEditStoreSaveTextView.text = mProfilePreviewStaticData.saveText
-        bottomSheetEditStoreLinkConditionOne.text = mProfilePreviewStaticData.storeLinkConditionOne
-        bottomSheetEditStoreLinkConditionTwo.text = mProfilePreviewStaticData.storeLinkConditionTwo
-        bottomSheetEditStoreCloseImageView.setOnClickListener { if (bottomSheetDialog.isShowing) bottomSheetDialog.dismiss() }
-        bottomSheetEditStoreHeading.text = if (bottomSheetEditStoreLinkEditText.text.isEmpty()) mProfilePreviewStaticData.storeLinkTitle else mProfilePreviewStaticData.editStoreLink
-        bottomSheetEditStoreLinkEditText.addTextChangedListener(object : TextWatcher{
-            override fun afterTextChanged(s: Editable?) {
-                val string = s.toString()
-                bottomSheetEditStoreSaveTextView.isEnabled = string.isNotEmpty()
-                bottomSheetEditStoreLinkConditionOne.visibility = View.VISIBLE
-                bottomSheetEditStoreLinkConditionTwo.visibility = View.VISIBLE
-                when {
-                    string.isEmpty() -> {
-                        bottomSheetEditStoreLinkConditionOne.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_exclamation_mark, 0, 0, 0);
-                        bottomSheetEditStoreLinkConditionTwo.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_exclamation_mark, 0, 0, 0);
-                    }
-                    string.length >= 4 -> {
-                        bottomSheetEditStoreLinkConditionOne.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_check_small, 0, 0, 0);
-                        bottomSheetEditStoreLinkConditionTwo.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_check_small, 0, 0, 0);
-                    }
-                    else -> {
-                        bottomSheetEditStoreLinkConditionOne.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_check_small, 0, 0, 0);
-                    }
-                }
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            }
-
-        })
-        bottomSheetEditStoreLinkEditText.allowOnlyAlphaNumericCharacters()
-        bottomSheetDialog.show()
     }
 
     private fun showEditStoreNameBottomSheet() {
