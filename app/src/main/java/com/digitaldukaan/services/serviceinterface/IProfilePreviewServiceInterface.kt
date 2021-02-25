@@ -1,13 +1,15 @@
 package com.digitaldukaan.services.serviceinterface
 
 import com.digitaldukaan.models.response.ProfilePreviewResponse
-import okhttp3.ResponseBody
+import com.digitaldukaan.models.response.StoreDescriptionResponse
 
 interface IProfilePreviewServiceInterface {
 
     fun onProfilePreviewResponse(profilePreviewResponse: ProfilePreviewResponse)
 
-    fun onStoreNameResponse(response: ResponseBody)
+    fun onStoreNameResponse(response: StoreDescriptionResponse)
+
+    fun onStoreLinkResponse(response: StoreDescriptionResponse)
 
     fun onProfilePreviewServerException(e: Exception)
 }

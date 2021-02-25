@@ -16,7 +16,7 @@ class SplashNetworkService {
                     it.body()?.let { staticTextResponse ->
                         splashServiceInterface.onStaticDataResponse(staticTextResponse)
                     }
-                }
+                } else splashServiceInterface.onStaticDataException(Exception(response.message()))
             }
         } catch (e: Exception) {
             Log.e(SplashNetworkService::class.java.simpleName, "getAppStaticTextServerCall: ", e)

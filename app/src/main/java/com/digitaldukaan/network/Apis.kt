@@ -2,7 +2,6 @@ package com.digitaldukaan.network
 
 import com.digitaldukaan.models.request.*
 import com.digitaldukaan.models.response.*
-import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -33,5 +32,8 @@ interface Apis {
     suspend fun setStoreDescription(@Header("auth_token") authToken:String, @Body request: StoreDescriptionRequest) : Response<StoreDescriptionResponse>
 
     @POST("api/dotk/merchant/setStoreName")
-    suspend fun setStoreName(@Header("auth_token") authToken:String, @Body request: StoreNameRequest) : Response<ResponseBody>
+    suspend fun setStoreName(@Header("auth_token") authToken:String, @Body request: StoreNameRequest) : Response<StoreDescriptionResponse>
+
+    @POST("api/dotk/merchant/updateStoreDomain")
+    suspend fun updateStoreDomain(@Header("auth_token") authToken:String, @Body request: StoreLinkRequest) : Response<StoreDescriptionResponse>
 }

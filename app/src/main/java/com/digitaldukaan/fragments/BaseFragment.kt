@@ -107,21 +107,25 @@ open class BaseFragment : Fragment() {
         else showToast(e.message)
     }
 
-    protected fun showShortSnackBar(message: String = "sample testing") {
+    protected fun showShortSnackBar(message: String? = "sample testing", showDrawable: Boolean = false, drawableID : Int = 0) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            Snackbar.make(mContentView, message, Snackbar.LENGTH_SHORT).apply {
-                val snackBarView = view
-                val snackBarTextView:TextView = snackBarView.findViewById(com.google.android.material.R.id.snackbar_text)
-                snackBarTextView.setCompoundDrawablesWithIntrinsicBounds(
-                    0,
-                    0,
-                    R.drawable.ic_check_circle,
-                    0
-                )
-                snackBarTextView.compoundDrawablePadding = resources.getDimensionPixelOffset(R.dimen._5sdp)
-                setBackgroundTint(ContextCompat.getColor(mActivity, R.color.snack_bar_background))
-                setTextColor(ContextCompat.getColor(mActivity, R.color.white))
-            }.show()
+            message?.let {
+                Snackbar.make(mContentView, message, Snackbar.LENGTH_SHORT).apply {
+                    if (showDrawable) {
+                        val snackBarView = view
+                        val snackBarTextView:TextView = snackBarView.findViewById(com.google.android.material.R.id.snackbar_text)
+                        snackBarTextView.setCompoundDrawablesWithIntrinsicBounds(
+                            0,
+                            0,
+                            drawableID,
+                            0
+                        )
+                        snackBarTextView.compoundDrawablePadding = resources.getDimensionPixelOffset(R.dimen._5sdp)
+                    }
+                    setBackgroundTint(ContextCompat.getColor(mActivity, R.color.snack_bar_background))
+                    setTextColor(ContextCompat.getColor(mActivity, R.color.white))
+                }.show()
+            }
         }
     }
 

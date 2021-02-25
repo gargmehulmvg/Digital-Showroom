@@ -84,8 +84,9 @@ class StoreDescriptionFragment : BaseFragment(), IStoreDescriptionServiceInterfa
         stopProgress()
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (response.mStatus) {
-
-            }
+                showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
+                mActivity.onBackPressed()
+            } else showToast(response.mMessage)
         }
     }
 

@@ -16,7 +16,7 @@ class LoginNetworkService {
             response?.let {
                 if (it.isSuccessful) {
                     it.body()?.let { generateOtpResponse -> loginServiceInterface.onGenerateOTPResponse(generateOtpResponse) }
-                }
+                } else loginServiceInterface.onGenerateOTPException(Exception(response.message()))
             }
         } catch (e : Exception) {
             Log.e(LoginNetworkService::class.java.simpleName, "generateOTPServerCall: ", e)
