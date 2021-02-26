@@ -23,7 +23,6 @@ import kotlinx.android.synthetic.main.on_board_screen_dukaan_fragment.*
 class OnBoardScreenDukaanNameFragment : BaseFragment(), IProfilePreviewServiceInterface {
 
     private val mDukaanNameStaticData = mStaticData.mStaticData.mOnBoardStep1StaticData
-    private val service = ProfilePreviewService()
 
     companion object {
         private val TAG = OnBoardScreenDukaanNameFragment::class.simpleName
@@ -38,7 +37,6 @@ class OnBoardScreenDukaanNameFragment : BaseFragment(), IProfilePreviewServiceIn
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.on_board_screen_dukaan_fragment, container, false)
-        service.setServiceInterface(this)
         return mContentView
     }
 
@@ -80,6 +78,8 @@ class OnBoardScreenDukaanNameFragment : BaseFragment(), IProfilePreviewServiceIn
                     if (!isInternetConnectionAvailable(mActivity)) {
                         showNoInternetConnectionDialog()
                     } else {
+                        val service = ProfilePreviewService()
+                        service.setServiceInterface(this)
                         val request = StoreNameRequest(getStringDataFromSharedPref(Constants.STORE_ID).toInt(), dukanName)
                         showProgressDialog(mActivity)
                         service.updateStoreName(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN),request)

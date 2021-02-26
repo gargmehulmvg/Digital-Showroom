@@ -7,10 +7,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.digitaldukaan.R
+import com.digitaldukaan.constants.Constants
+import com.digitaldukaan.constants.CoroutineScopeUtils
+import com.digitaldukaan.models.request.StoreAddressRequest
+import com.digitaldukaan.services.StoreAddressService
+import com.digitaldukaan.services.isInternetConnectionAvailable
+import com.digitaldukaan.services.serviceinterface.IStoreAddressServiceInterface
 import kotlinx.android.synthetic.main.on_board_screen_dukaan_location_fragment.*
+import okhttp3.ResponseBody
 
 
-class OnBoardScreenDukaanLocationFragment : BaseFragment() {
+class OnBoardScreenDukaanLocationFragment : BaseFragment(), IStoreAddressServiceInterface {
 
     private val mDukaanLocationStaticData = mStaticData.mStaticData.mOnBoardStep2StaticData
     
@@ -52,13 +59,38 @@ class OnBoardScreenDukaanLocationFragment : BaseFragment() {
                 mActivity.onBackPressed()
             }
             nextTextView.id -> {
-                val dukanName = dukaanLocationEditText.text
-                if (dukanName.isEmpty()) {
+                val storeLocation = dukaanLocationEditText.text.trim().toString()
+                if (storeLocation.isEmpty()) {
                     dukaanLocationEditText.requestFocus()
                     dukaanLocationEditText.showKeyboard()
                     dukaanLocationEditText.error = getString(R.string.mandatory_field_message)
+                } else {
+                    if (!isInternetConnectionAvailable(mActivity)) {
+                        showNoInternetConnectionDialog()
+                    } else {
+                        val service = StoreAddressService()
+                        service.setServiceInterface(this)
+                        val request = StoreAddressRequest(getStringDataFromSharedPref(Constants.STORE_ID).toInt(), storeLocation)
+                        showProgressDialog(mActivity)
+                        service.updateStoreAddress(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN),request)
+                    }
                 }
             }
         }
+    }
+
+    override fun onStoreAddressResponse(response: ResponseBody) {
+        stopProgress()
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            /*if (response.mStatus) {
+                showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
+                launchFragment(OnBoardScreenDukaanLocationFragment(), true)
+            } else showToast(response.mMessage)*/
+            showToast(response.string())
+        }
+    }
+
+    override fun onStoreAddressServerException(e: Exception) {
+        exceptionHandlingForAPIResponse(e)
     }
 }
