@@ -1,11 +1,11 @@
 package com.digitaldukaan.services.serviceinterface
 
-import okhttp3.ResponseBody
+import com.digitaldukaan.models.response.StoreAddressResponse
 
 interface IStoreAddressServiceInterface {
 
 
-    fun onStoreAddressResponse(response: ResponseBody)
+    fun onStoreAddressResponse(response: StoreAddressResponse)
 
     fun onStoreAddressServerException(e: Exception)
 }

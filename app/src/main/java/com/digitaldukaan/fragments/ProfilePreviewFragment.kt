@@ -64,6 +64,15 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
             setHeaderTitle(mProfilePreviewStaticData.pageHeading)
         }
         fetchProfilePreviewCall()
+        profilePreviewStoreNameTextView.setOnClickListener {
+            var settingKeyNameResponse: ProfilePreviewSettingsKeyResponse? = null
+            mProfilePreviewResponse?.mProfileInfo?.mSettingsKeysList?.forEachIndexed { _, settingsKeyResponse ->
+                if (settingsKeyResponse.mAction == Constants.ACTION_STORE_NAME) {
+                    settingKeyNameResponse = settingsKeyResponse
+                }
+            }
+            showEditStoreNameBottomSheet(settingKeyNameResponse)
+        }
     }
 
     private fun fetchProfilePreviewCall() {
@@ -288,7 +297,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         }
     }
 
-    private fun showEditStoreNameBottomSheet(profilePreviewResponse: ProfilePreviewSettingsKeyResponse) {
+    private fun showEditStoreNameBottomSheet(previewSettingsKeyResponse: ProfilePreviewSettingsKeyResponse?) {
         mStoreNameEditBottomSheet = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
         val view = LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet_edit_store_name, mActivity.findViewById(R.id.bottomSheetContainer))
         mStoreNameEditBottomSheet?.apply {
@@ -313,7 +322,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         }
         bottomSheetEditStoreHeading.text = mProfilePreviewStaticData.mBottomSheetStoreNameHeading
         bottomSheetEditStoreLinkEditText.hint = mProfilePreviewStaticData.mBottomSheetStoreNameHeading
-        if (profilePreviewResponse.mValue?.isNotEmpty() == true) bottomSheetEditStoreLinkEditText.setText(profilePreviewResponse.mValue)
+        if (previewSettingsKeyResponse?.mValue?.isNotEmpty() == true) bottomSheetEditStoreLinkEditText.setText(previewSettingsKeyResponse.mValue)
         bottomSheetEditStoreLinkEditText.addTextChangedListener(object : TextWatcher{
             override fun afterTextChanged(s: Editable?) {
                 val string = s.toString()

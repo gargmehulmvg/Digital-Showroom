@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
+import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.models.response.StaticTextResponse
@@ -42,9 +43,7 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
     override fun onStaticDataResponse(staticDataResponse: StaticTextResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             mStaticData = staticDataResponse
-            //launchFragment(LoginFragment(), true, splashLogoImageView)
-            launchFragment(OnBoardScreenDukaanLocationFragment(), true)
-            //launchFragment(HomeFragment.newInstance(), true)
+            if (getStringDataFromSharedPref(Constants.STORE_ID) == "") launchFragment(LoginFragment(), true, splashLogoImageView) else launchFragment(HomeFragment.newInstance(), true)
         }
     }
 

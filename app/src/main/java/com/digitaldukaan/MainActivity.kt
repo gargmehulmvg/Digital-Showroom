@@ -54,6 +54,14 @@ class MainActivity : AppCompatActivity() {
 
     fun launchFragment(fragment: Fragment?, addBackStack: Boolean) = runOnUiThread { doSwitchToScreen(fragment, addBackStack) }
 
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        getCurrentFragment().onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+
     private fun doSwitchToScreen(fragment: Fragment?, addToBackStack: Boolean) {
         if (null == fragment) {
             return
