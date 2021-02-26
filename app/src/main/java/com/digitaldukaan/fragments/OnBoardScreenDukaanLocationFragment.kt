@@ -1,5 +1,6 @@
 package com.digitaldukaan.fragments
 
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -20,6 +21,13 @@ import okhttp3.ResponseBody
 class OnBoardScreenDukaanLocationFragment : BaseFragment(), IStoreAddressServiceInterface {
 
     private val mDukaanLocationStaticData = mStaticData.mStaticData.mOnBoardStep2StaticData
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        if (mActivity.isGPSEnableForUser() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            mActivity.requestPermission()
+        }
+    }
     
     override fun onCreateView(
         inflater: LayoutInflater,
