@@ -17,7 +17,9 @@ data class StoreResponse (
     @SerializedName("store_id") var storeId: Int,
     @SerializedName("spotlight_flag") var spotlightFlag: Int,
     @SerializedName("score") var score: Int,
-    @SerializedName("store_info") var storeInfo: UserStoreInfoResponse
+    @SerializedName("store_info") var storeInfo: UserStoreInfoResponse,
+    @SerializedName("address") var storeAddress: UserAddressResponse,
+    @SerializedName("services") var storeServices: StoreServicesResponse
 )
 
 data class UserStoreInfoResponse (

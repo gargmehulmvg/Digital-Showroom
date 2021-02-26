@@ -107,4 +107,6 @@ dependencies {
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
     //Animations Library
     //implementation 'com.daimajia.androidanimations:library:2.4@aar'
+    //maps dependency
+    implementation 'com.google.android.gms:play-services-maps:17.0.0'
 }

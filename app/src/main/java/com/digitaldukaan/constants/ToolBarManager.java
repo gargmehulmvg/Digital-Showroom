@@ -1,7 +1,6 @@
 package com.digitaldukaan.constants;
 
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -40,12 +39,6 @@ public class ToolBarManager {
 
     public void setSideIconVisibility(boolean isVisible) {
         mToolbar.findViewById(R.id.sideIconToolbar).setVisibility(isVisible ? View.VISIBLE : View.GONE);
-    }
-
-    public void setToolbarElevation(float elevationValue) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            mToolbar.setElevation(elevationValue);
-        }
     }
 
     public void setupToolbar(Toolbar mToolbar) {

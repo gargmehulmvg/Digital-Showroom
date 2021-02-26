@@ -79,6 +79,7 @@ class OnBoardScreenDukaanLocationFragment : BaseFragment(), IStoreAddressService
             Constants.LOCATION_REQUEST_CODE
         )
     }
+
     private fun requestPermissions() {
         val shouldProvideRationale = ActivityCompat.shouldShowRequestPermissionRationale(
             mActivity,
@@ -88,8 +89,7 @@ class OnBoardScreenDukaanLocationFragment : BaseFragment(), IStoreAddressService
             showCustomSnackBar(
                 "Location permission is needed for core functionality"
             )
-        }
-        else {
+        } else {
             startLocationPermissionRequest()
         }
     }

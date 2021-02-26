@@ -52,7 +52,6 @@ class StoreDescriptionFragment : BaseFragment(), IStoreDescriptionServiceInterfa
             setHeaderTitle("$stepStr${mProfilePreviewResponse.mHeadingText}")
             onBackPressed(this@StoreDescriptionFragment)
             hideBackPressFromToolBar(mActivity, false)
-            setToolbarElevation(0f)
         }
         if (!isInternetConnectionAvailable(mActivity)) {
             showNoInternetConnectionDialog()

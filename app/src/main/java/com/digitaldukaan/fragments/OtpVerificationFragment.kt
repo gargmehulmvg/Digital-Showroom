@@ -32,6 +32,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
     private var mEnteredOtpStr = ""
     private var mMobileNumberStr = ""
     private lateinit var mLoginService: LoginService
+    private var mIsNewUser: Boolean = false
     private val mOtpStaticResponseData = mStaticData.mStaticData.mVerifyOtpStaticData
 
     fun newInstance(mobileNumber: String): OtpVerificationFragment {
@@ -133,6 +134,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
 
     override fun onOTPVerificationSuccessResponse(validateOtpResponse: ValidateOtpResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
+            mIsNewUser = validateOtpResponse.mIsNewUser
             stopProgress()
             showToast(validateOtpResponse.mMessage)
             saveUserDetailsInPref(validateOtpResponse)
@@ -169,7 +171,9 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             saveUserDetailsInPref(authenticationUserResponse)
-            if (authenticationUserResponse.mIsSuccessStatus) launchFragment(OnBoardScreenDukaanNameFragment(), true)
+            if (authenticationUserResponse.mIsSuccessStatus) {
+                if (authenticationUserResponse.mStore == null || mIsNewUser) launchFragment(OnBoardScreenDukaanNameFragment(), true) else launchFragment(HomeFragment(), true)
+            }
         }
     }
 
