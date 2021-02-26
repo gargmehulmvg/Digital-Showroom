@@ -63,6 +63,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
             hideToolBar(mActivity, false)
             onBackPressed(this@ProfilePreviewFragment)
             setHeaderTitle(mProfilePreviewStaticData.pageHeading)
+            setToolbarElevation(R.dimen._5sdp.toFloat())
         }
         fetchProfilePreviewCall()
         profilePreviewStoreNameTextView.setOnClickListener {
@@ -166,7 +167,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         mProfileInfoSettingKeyResponse = profilePreviewResponse
         showToast(profilePreviewResponse.mHeadingText)
         when (profilePreviewResponse.mAction) {
-            Constants.ACTION_STORE_DESCRIPTION -> launchFragment(StoreDescriptionFragment.newInstance(profilePreviewResponse, position), true)
+            Constants.ACTION_STORE_DESCRIPTION -> launchFragment(StoreDescriptionFragment.newInstance(profilePreviewResponse, position, true), true)
             Constants.ACTION_BANK_ACCOUNT -> launchFragment(BankAccountFragment.newInstance(profilePreviewResponse), true)
             Constants.ACTION_BUSINESS_TYPE -> launchFragment(BusinessTypeFragment.newInstance(profilePreviewResponse), true)
             Constants.ACTION_EDIT_STORE_LINK -> showEditStoreWarningDialog(profilePreviewResponse)

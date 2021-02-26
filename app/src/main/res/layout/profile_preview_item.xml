@@ -45,6 +45,7 @@
         android:layout_marginTop="@dimen/_3sdp"
         android:clickable="false"
         android:maxLines="@integer/min_lines_two"
+        android:ellipsize="end"
         android:drawableEnd="@drawable/ic_edit"
         android:fontFamily="sans-serif-medium"
         android:drawablePadding="@dimen/_10sdp"

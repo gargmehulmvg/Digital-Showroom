@@ -22,16 +22,19 @@ class StoreDescriptionFragment : BaseFragment(), IStoreDescriptionServiceInterfa
 
     private lateinit var mProfilePreviewResponse: ProfilePreviewSettingsKeyResponse
     private var mPosition: Int = 0
+    private var mIsSingleStep: Boolean = false
     private val mStoreDescriptionStaticData = mStaticData.mStaticData.mProfileStaticData
 
     companion object {
         fun newInstance(
             profilePreviewResponse: ProfilePreviewSettingsKeyResponse,
-            position: Int
+            position: Int,
+            isSingleStep: Boolean
         ): StoreDescriptionFragment {
             val fragment = StoreDescriptionFragment()
             fragment.mProfilePreviewResponse = profilePreviewResponse
             fragment.mPosition = position
+            fragment.mIsSingleStep = isSingleStep
             return fragment
         }
     }
@@ -45,11 +48,12 @@ class StoreDescriptionFragment : BaseFragment(), IStoreDescriptionServiceInterfa
         super.onViewCreated(view, savedInstanceState)
         ToolBarManager.getInstance().apply {
             hideToolBar(mActivity, false)
-            setHeaderTitle("")
+            val stepStr = if (mIsSingleStep) "" else "Step $mPosition : "
+            setHeaderTitle("$stepStr${mProfilePreviewResponse.mHeadingText}")
             onBackPressed(this@StoreDescriptionFragment)
             hideBackPressFromToolBar(mActivity, false)
+            setToolbarElevation(0f)
         }
-        storeDescriptionHeading.text = "Step $mPosition : ${mProfilePreviewResponse.mHeadingText}"
         if (!isInternetConnectionAvailable(mActivity)) {
             showNoInternetConnectionDialog()
             return
