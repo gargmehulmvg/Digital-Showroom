@@ -45,6 +45,7 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener {
     private val mMapStaticData = mStaticData.mStaticData.mMapStaticData
     private lateinit var mapBottomSheetLayout: View
     private lateinit var setLocationTextView: TextView
+    private lateinit var stateTextView: TextView
 
     companion object {
 
@@ -92,7 +93,7 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener {
         val completeAddressEditText: EditText = view.findViewById(R.id.completeAddressEditText)
         val pinCodeEditText: EditText = view.findViewById(R.id.pinCodeEditText)
         val cityEditText: EditText = view.findViewById(R.id.cityEditText)
-        val stateTextView: TextView = view.findViewById(R.id.stateTextView)
+        stateTextView = view.findViewById(R.id.stateTextView)
         val saveTextView: TextView = view.findViewById(R.id.saveTextView)
         val cityLayout: TextInputLayout = view.findViewById(R.id.cityLayout)
         val completeAddressLayout: TextInputLayout = view.findViewById(R.id.completeAddressLayout)
@@ -109,6 +110,14 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener {
             mapBottomSheetLayout.visibility = View.VISIBLE
             setLocationTextView.visibility = View.GONE
         }
+        stateTextView.setOnClickListener {
+            showStateSelectionDialog()
+        }
+    }
+
+    override fun onAlertDialogItemClicked(selectedStr: String?, id: Int, position: Int) {
+        showToast(selectedStr)
+        stateTextView.text = selectedStr
     }
 
     private fun getCurrentLocationOfDevice() {

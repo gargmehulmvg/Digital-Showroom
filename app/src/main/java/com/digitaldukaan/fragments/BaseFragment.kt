@@ -273,4 +273,20 @@ open class BaseFragment : Fragment() {
             )
         }
     }
+
+    protected open fun showStateSelectionDialog() {
+        val builder = AlertDialog.Builder(mActivity)
+        builder.setTitle("Select State")
+        builder.setItems(R.array.state_array) { dialogInterface: DialogInterface, i: Int ->
+            val stateList = resources.getStringArray(R.array.state_array).toList()
+            onAlertDialogItemClicked(stateList[i], id, i)
+            dialogInterface.dismiss()
+        }
+        builder.setCancelable(false)
+        val alertDialog = builder.create()
+        alertDialog.show()
+    }
+
+    open fun onAlertDialogItemClicked(selectedStr: String?, id: Int, position: Int) {
+    }
 }
