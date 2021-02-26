@@ -11,16 +11,20 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.ProfileStatusAdapter
+import com.digitaldukaan.adapters.SettingsStoreAdapter
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.interfaces.IOnToolbarIconClick
+import com.digitaldukaan.interfaces.IStoreSettingsItemClicked
 import com.digitaldukaan.models.request.StoreDeliveryStatusChangeRequest
+import com.digitaldukaan.models.response.AccountInfoResponse
 import com.digitaldukaan.models.response.ProfileResponse
 import com.digitaldukaan.models.response.StoreDeliveryStatusChangeResponse
 import com.digitaldukaan.models.response.StoreOptionsResponse
@@ -34,7 +38,7 @@ import kotlinx.android.synthetic.main.settings_fragment.*
 
 
 class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInterface,
-    SwipeRefreshLayout.OnRefreshListener {
+    SwipeRefreshLayout.OnRefreshListener, IStoreSettingsItemClicked {
 
     companion object {
         fun newInstance(): SettingsFragment = SettingsFragment()
@@ -156,9 +160,12 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         }
     }
 
+    private var mProfileResponse:AccountInfoResponse? = null
+
     private fun setupUIFromProfileResponse(profileResponse: ProfileResponse) {
         Log.e(SettingsFragment::class.simpleName, "setupUIFromProfileResponse ${profileResponse.mMessage}")
         val infoResponse = profileResponse.mAccountInfoResponse
+        mProfileResponse = infoResponse
         dukaanNameTextView.text = infoResponse?.mStoreInfo?.mStoreName
         storeSwitch.isChecked = infoResponse?.mStoreInfo?.mStoreService?.mStoreFlag == 1
         infoResponse?.mFooterImages?.forEachIndexed { index, imageUrl ->
@@ -173,52 +180,20 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
             adapter = ProfileStatusAdapter(infoResponse?.mTotalSteps, infoResponse?.mCompletedSteps)
         }
-        infoResponse?.mStoreOptions?.forEachIndexed { index, response ->
-            if (0 == index) {
-                Picasso.get().load(response.mLogo).into(storeOptionOneLeftImageView)
-                if (response.mIsShowMore) storeOptionOneRightImageView.visibility = View.VISIBLE
-                storeOptionOneTextView.text = response.mText
-                storeOptionOneLayout.setOnClickListener{
-                    checkStoreOptionClick(response)
-                }
-            }
-            if (1 == index) {
-                Picasso.get().load(response.mLogo).into(storeOptionTwoLeftImageView)
-                if (response.mIsShowMore) storeOptionTwoRightImageView.visibility = View.VISIBLE
-                storeOptionTwoTextView.text = response.mText
-                storeOptionTwoLayout.setOnClickListener{
-                    checkStoreOptionClick(response)
-                }
-            }
-            if (2 == index) {
-                Picasso.get().load(response.mLogo).into(storeOptionThreeLeftImageView)
-                if (response.mIsShowMore) {
-                    storeOptionThreeRightImageView.visibility = View.VISIBLE
-                    storeOptionThreeLayout.setOnClickListener{
-                        launchFragment(AppSettingsFragment().newInstance(infoResponse.mSubPages, response.mText), true) }
-                }
-                storeOptionThreeTextView.text = response.mText
-            }
-            if (3 == index) {
-                Picasso.get().load(response.mLogo).into(storeOptionFourLeftImageView)
-                if (response.mIsShowMore) storeOptionFourRightImageView.visibility = View.VISIBLE
-                storeOptionFourTextView.text = response.mText
-                storeOptionFourLayout.setOnClickListener{
-                    checkStoreOptionClick(response)
-                }
-            }
-            if (4 == index) {
-                Picasso.get().load(response.mLogo).into(storeOptionFiveLeftImageView)
-                if (response.mIsShowMore) storeOptionFiveRightImageView.visibility = View.VISIBLE
-                storeOptionFiveTextView.text = response.mText
-                storeOptionFiveLayout.setOnClickListener{
-                    checkStoreOptionClick(response)
-                }
-            }
+        settingStoreOptionRecyclerView.apply {
+            val settingsAdapter = SettingsStoreAdapter(this@SettingsFragment)
+            val linearLayoutManager = LinearLayoutManager(mActivity)
+            layoutManager = linearLayoutManager
+            adapter = settingsAdapter
+            settingsAdapter.setSettingsList(infoResponse?.mStoreOptions)
+            val dividerItemDecoration = DividerItemDecoration(
+                context,
+                linearLayoutManager.orientation
+            )
+            addItemDecoration(dividerItemDecoration)
         }
         infoResponse?.mTrendingList?.forEachIndexed { index, response ->
             if (0 == index) {
-                //newTextView.text = response.mType
                 Picasso.get().load(response.mCDN).placeholder(R.drawable.ic_auto_data_backup).into(viewTopStoreImageView)
                 viewTopStoreTextView.text = response.mText
             }
@@ -253,6 +228,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         when (response.mPage) {
             Constants.PAGE_HELP -> onToolbarSideIconClicked()
             Constants.PAGE_FEEDBACK -> openPlayStore()
+            Constants.PAGE_APP_SETTINGS -> launchFragment(AppSettingsFragment().newInstance(mProfileResponse?.mSubPages, response.mText), true)
             Constants.PAGE_REWARDS -> launchFragment(CommonWebViewFragment().newInstance(getString(R.string.help), BuildConfig.WEB_VIEW_URL + Constants.WEB_VIEW_REWARDS + "?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&" + "redirectFrom=settings" + "&token=${getStringDataFromSharedPref(
                 Constants.USER_AUTH_TOKEN)}"), true)
         }
@@ -266,5 +242,10 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
 
     override fun onRefresh() {
         fetchUserProfile()
+    }
+
+    override fun onStoreSettingItemClicked(storeOptionResponse: StoreOptionsResponse) {
+        showToast(storeOptionResponse.mText)
+        checkStoreOptionClick(storeOptionResponse)
     }
 }
