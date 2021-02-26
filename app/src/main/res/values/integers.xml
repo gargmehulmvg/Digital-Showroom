@@ -3,4 +3,5 @@
     <integer name="mobile_number_length">10</integer>
     <integer name="dukaan_name_length">300</integer>
     <integer name="min_lines_two">2</integer>
+    <integer name="pin_code_length">6</integer>
 </resources>

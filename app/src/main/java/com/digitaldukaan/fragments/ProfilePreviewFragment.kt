@@ -4,11 +4,12 @@ import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.*
+import android.view.KeyEvent
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -29,7 +30,6 @@ import com.digitaldukaan.services.ProfilePreviewService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IProfilePreviewServiceInterface
 import com.digitaldukaan.views.allowOnlyAlphaNumericCharacters
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.profile_preview_fragment.*
@@ -306,7 +306,6 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                     }
 
                 })
-
                 if (isErrorResponse) {
                     bottomSheetEditStoreLinkConditionOne.visibility = View.GONE
                     bottomSheetEditStoreLinkConditionTwo.visibility = View.GONE
@@ -316,7 +315,6 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                         else -> mProfilePreviewStaticData.mDomainUnAvailableError
                     }
                 }
-
                 bottomSheetEditStoreLinkEditText.allowOnlyAlphaNumericCharacters()
             }
         }?.show()
@@ -368,18 +366,6 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
             }
         })
         mStoreNameEditBottomSheet?.show()
-    }
-
-    private fun BottomSheetDialog.setBottomSheetCommonProperty() {
-        behavior.skipCollapsed = true
-        behavior.state = BottomSheetBehavior.STATE_EXPANDED
-        window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
-        setOnDismissListener {
-            Handler(Looper.getMainLooper()).postDelayed(
-                { hideSoftKeyboard() },
-                Constants.TIMER_INTERVAL
-            )
-        }
     }
 
     override fun onRefresh() {

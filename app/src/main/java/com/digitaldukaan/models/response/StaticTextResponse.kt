@@ -14,6 +14,7 @@ data class StaticData(
     @SerializedName("verify_otp") var mVerifyOtpStaticData: VerifyOtpStaticResponseData,
     @SerializedName("onbording_step_one") var mOnBoardStep1StaticData: OnBoardStep1StaticResponseData,
     @SerializedName("onboarding_step_two") var mOnBoardStep2StaticData: OnBoardStep2StaticResponseData,
+    @SerializedName("merchant_address") var mMapStaticData: MapLocationStaticResponseData,
     @SerializedName("settings") var mSettingsStaticData: SettingStaticData
 )
 
@@ -59,6 +60,18 @@ data class SettingStaticData(
     @SerializedName("off_text") var mOffText: String?,
     @SerializedName("on_text") var mOnText: String?,
     @SerializedName("store_id") var mStoreId: String?
+)
+
+data class MapLocationStaticResponseData(
+    @SerializedName("address_error") var addressError: String?,
+    @SerializedName("city_text_hint") var cityTextHint: String?,
+    @SerializedName("complete_address_text_hint") var completeAddressHint: String?,
+    @SerializedName("enable_location") var enableLocation: String?,
+    @SerializedName("pin_drag_text") var pinDragText: String?,
+    @SerializedName("pincode_text_hint") var pinCodeTextHint: String?,
+    @SerializedName("save_changes_text") var saveChangesText: String?,
+    @SerializedName("set_location_text") var setLocationText: String?,
+    @SerializedName("store_location_text") var storeLocationText: String?
 )
 
 data class AuthNewResponseData(

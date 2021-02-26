@@ -12,6 +12,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
@@ -25,6 +27,8 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.material.textfield.TextInputLayout
+import kotlinx.android.synthetic.main.fragment_store_map_location.*
 
 class StoreMapLocationFragment : BaseFragment(), LocationListener {
 
@@ -38,6 +42,7 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener {
     private lateinit var locationManager: LocationManager
     private lateinit var supportMapFragment: SupportMapFragment
     private var lastLocation: Location? = null
+    private val mMapStaticData = mStaticData.mStaticData.mMapStaticData
 
     companion object {
 
@@ -81,7 +86,48 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener {
             }
         }
         getLastLocation()
+        currentLocationImageView.setOnClickListener { getCurrentLocationOfDevice() }
+        val completeAddressEditText: EditText = view.findViewById(R.id.completeAddressEditText)
+        val pinCodeEditText: EditText = view.findViewById(R.id.pinCodeEditText)
+        val cityEditText: EditText = view.findViewById(R.id.cityEditText)
+        val stateTextView: TextView = view.findViewById(R.id.stateTextView)
+        val saveTextView: TextView = view.findViewById(R.id.saveTextView)
+        val cityLayout: TextInputLayout = view.findViewById(R.id.cityLayout)
+        val completeAddressLayout: TextInputLayout = view.findViewById(R.id.completeAddressLayout)
+        val pinCodeLayout: TextInputLayout = view.findViewById(R.id.pinCodeLayout)
+        val setLocationTextView: TextView = view.findViewById(R.id.setLocationTextView)
+        val mapBottomSheetLayout: View = view.findViewById(R.id.mapBottomSheetLayout)
+        completeAddressLayout.hint = mMapStaticData.completeAddressHint
+        pinCodeLayout.hint = mMapStaticData.pinCodeTextHint
+        cityLayout.hint = mMapStaticData.cityTextHint
+        setLocationTextView.text = mMapStaticData.setLocationText
+        stateTextView.text = "Select State"
+        saveTextView.text = mMapStaticData.saveChangesText
+        setLocationTextView.setOnClickListener {
+            mapBottomSheetLayout.visibility = View.VISIBLE
+            setLocationTextView.visibility = View.GONE
+        }
+    }
 
+    private fun getCurrentLocationOfDevice() {
+        if (ActivityCompat.checkSelfPermission(mActivity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(mActivity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                requestPermissions()
+                return
+            }
+        }
+        mGoogleApiClient?.lastLocation
+            ?.addOnCompleteListener { task ->
+                val location = task.result
+                if (location != null) {
+                    mCurrentLatitude = location.latitude
+                    mCurrentLongitude = location.longitude
+                    showCurrentLocationMarkers(location.latitude, location.longitude)
+                } else {
+                    showToast("Location is detecting as null")
+                }
+            }
     }
 
     private fun getLastLocation() {
@@ -136,7 +182,7 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener {
     }
 
     private fun showCurrentLocationMarkers(lat: Double, lng: Double) {
-        val markerOptions = MarkerOptions().title("current location").position(LatLng(lat, lng)).icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_location_bitmap))
+        val markerOptions = MarkerOptions().title("current location").position(LatLng(lat, lng)).icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_location_marker))
         val cameraUpdate = CameraUpdateFactory.newLatLngZoom(LatLng(lat, lng), 11f)
         mGoogleMap?.animateCamera(cameraUpdate)
         mGoogleMap?.addMarker(markerOptions)
@@ -168,5 +214,27 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener {
         showToast("onLocationChanged() Latitude: " + location.latitude + " , Longitude: " + location.longitude)
     }
 
+
+    private fun showEditStoreNameBottomSheet() {
+        /*val locationBottomSheet = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
+        val view = LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet_map_location, mActivity.findViewById(R.id.bottomSheetContainer))
+        locationBottomSheet.apply {
+            setContentView(view)
+            setBottomSheetCommonProperty()
+            val completeAddressEditText: EditText = view.findViewById(R.id.completeAddressEditText)
+            val pinCodeEditText: EditText = view.findViewById(R.id.pinCodeEditText)
+            val cityEditText: EditText = view.findViewById(R.id.cityEditText)
+            val stateTextView: TextView = view.findViewById(R.id.stateTextView)
+            val saveTextView: View = view.findViewById(R.id.saveTextView)
+            completeAddressEditText.hint = mMapStaticData.completeAddressHint
+            pinCodeEditText.hint = mMapStaticData.pinCodeTextHint
+            cityEditText.hint = mMapStaticData.cityTextHint
+            stateTextView.text = "Select State"
+            saveTextView.setOnClickListener {
+
+            }
+            show()
+        }*/
+    }
 
 }

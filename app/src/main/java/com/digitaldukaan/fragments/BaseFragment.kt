@@ -7,9 +7,12 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
+import android.view.WindowManager
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.TranslateAnimation
 import android.view.inputmethod.InputMethodManager
@@ -24,6 +27,8 @@ import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.models.response.StaticTextResponse
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import java.net.UnknownHostException
 import java.util.concurrent.Executors
@@ -253,6 +258,18 @@ open class BaseFragment : Fragment() {
                     Intent.ACTION_VIEW,
                     Uri.parse("https://play.google.com/store/apps/details?id=$appPackageName")
                 )
+            )
+        }
+    }
+
+    open fun BottomSheetDialog.setBottomSheetCommonProperty() {
+        behavior.skipCollapsed = true
+        behavior.state = BottomSheetBehavior.STATE_EXPANDED
+        window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+        setOnDismissListener {
+            Handler(Looper.getMainLooper()).postDelayed(
+                { hideSoftKeyboard() },
+                Constants.TIMER_INTERVAL
             )
         }
     }
