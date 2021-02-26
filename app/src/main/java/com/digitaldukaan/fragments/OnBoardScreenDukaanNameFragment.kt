@@ -3,17 +3,31 @@ package com.digitaldukaan.fragments
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.transition.TransitionInflater
 import com.digitaldukaan.R
+import com.digitaldukaan.constants.Constants
+import com.digitaldukaan.constants.CoroutineScopeUtils
+import com.digitaldukaan.models.request.StoreNameRequest
+import com.digitaldukaan.models.response.ProfilePreviewResponse
+import com.digitaldukaan.models.response.StoreDescriptionResponse
+import com.digitaldukaan.services.ProfilePreviewService
+import com.digitaldukaan.services.isInternetConnectionAvailable
+import com.digitaldukaan.services.serviceinterface.IProfilePreviewServiceInterface
 import kotlinx.android.synthetic.main.on_board_screen_dukaan_fragment.*
 
 
-class OnBoardScreenDukaanNameFragment : BaseFragment() {
+class OnBoardScreenDukaanNameFragment : BaseFragment(), IProfilePreviewServiceInterface {
 
     private val mDukaanNameStaticData = mStaticData.mStaticData.mOnBoardStep1StaticData
+    private val service = ProfilePreviewService()
+
+    companion object {
+        private val TAG = OnBoardScreenDukaanNameFragment::class.simpleName
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,6 +38,7 @@ class OnBoardScreenDukaanNameFragment : BaseFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.on_board_screen_dukaan_fragment, container, false)
+        service.setServiceInterface(this)
         return mContentView
     }
 
@@ -56,16 +71,44 @@ class OnBoardScreenDukaanNameFragment : BaseFragment() {
                 mActivity.onBackPressed()
             }
             nextTextView.id -> {
-                val dukanName = dukaanNameEditText.text
+                val dukanName = dukaanNameEditText.text.trim().toString()
                 if (dukanName.isEmpty()) {
                     dukaanNameEditText.requestFocus()
                     dukaanNameEditText.showKeyboard()
                     dukaanNameEditText.error = getString(R.string.mandatory_field_message)
                 } else {
-                    launchFragment(OnBoardScreenDukaanLocationFragment(), true)
+                    if (!isInternetConnectionAvailable(mActivity)) {
+                        showNoInternetConnectionDialog()
+                    } else {
+                        val request = StoreNameRequest(getStringDataFromSharedPref(Constants.STORE_ID).toInt(), dukanName)
+                        showProgressDialog(mActivity)
+                        service.updateStoreName(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN),request)
+                    }
                 }
             }
         }
+    }
+
+    override fun onProfilePreviewResponse(profilePreviewResponse: ProfilePreviewResponse) {
+        Log.d(TAG, "onProfilePreviewResponse: do nothing")
+    }
+
+    override fun onStoreNameResponse(response: StoreDescriptionResponse) {
+        stopProgress()
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            if (response.mStatus) {
+                showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
+                launchFragment(OnBoardScreenDukaanLocationFragment(), true)
+            } else showToast(response.mMessage)
+        }
+    }
+
+    override fun onStoreLinkResponse(response: StoreDescriptionResponse) {
+        Log.d(TAG, "onStoreLinkResponse: do nothing")
+    }
+
+    override fun onProfilePreviewServerException(e: Exception) {
+        exceptionHandlingForAPIResponse(e)
     }
 
 }
