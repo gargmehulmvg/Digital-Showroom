@@ -525,7 +525,7 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="0.1"
-                        android:padding="@dimen/_3sdp"
+                        android:padding="@dimen/_4sdp"
                         android:contentDescription="@string/image_view_content_description" />
 
                     <com.google.android.material.textview.MaterialTextView
@@ -569,7 +569,7 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="0.1"
-                        android:padding="@dimen/_3sdp"
+                        android:padding="@dimen/_4sdp"
                         android:contentDescription="@string/image_view_content_description" />
 
                     <com.google.android.material.textview.MaterialTextView
@@ -613,7 +613,7 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="0.1"
-                        android:padding="@dimen/_3sdp"
+                        android:padding="@dimen/_4sdp"
                         android:contentDescription="@string/image_view_content_description" />
 
                     <com.google.android.material.textview.MaterialTextView
@@ -657,7 +657,7 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="0.1"
-                        android:padding="@dimen/_3sdp"
+                        android:padding="@dimen/_4sdp"
                         android:contentDescription="@string/image_view_content_description" />
 
                     <com.google.android.material.textview.MaterialTextView
@@ -701,7 +701,7 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="0.1"
-                        android:padding="@dimen/_3sdp"
+                        android:padding="@dimen/_4sdp"
                         android:contentDescription="@string/image_view_content_description" />
 
                     <com.google.android.material.textview.MaterialTextView
@@ -737,9 +737,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/dark_blackish"
-                android:paddingStart="@dimen/_25sdp"
+                android:paddingStart="@dimen/_10sdp"
                 android:paddingTop="@dimen/_10sdp"
-                android:paddingEnd="@dimen/_25sdp"
+                android:paddingEnd="@dimen/_10sdp"
                 android:paddingBottom="@dimen/_10sdp"
                 android:orientation="horizontal"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -748,19 +748,21 @@
                 app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
                 app:layout_constraintVertical_bias="1.0">
 
-                <com.google.android.material.imageview.ShapeableImageView
+                <ImageView
                     android:id="@+id/autoDataBackupImageView"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:src="@drawable/ic_auto_data_backup" />
+                    android:src="@drawable/ic_auto_data_backup"
+                    android:contentDescription="@string/image_view_content_description" />
 
-                <com.google.android.material.imageview.ShapeableImageView
+                <ImageView
                     android:id="@+id/safeSecureImageView"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:src="@drawable/ic_auto_data_backup" />
+                    android:src="@drawable/ic_auto_data_backup"
+                    android:contentDescription="@string/image_view_content_description" />
 
             </LinearLayout>
 

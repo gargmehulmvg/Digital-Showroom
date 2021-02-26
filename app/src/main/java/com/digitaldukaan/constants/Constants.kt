@@ -31,5 +31,7 @@ class Constants {
         const val PAGE_HELP = "help"
         const val PAGE_FEEDBACK = "Feedback"
         const val PAGE_REWARDS = "RewardsPage"
+        //ERROR_CODES
+        const val ERROR_DOMAIN_ALREADY_EXISTS = "domain_already_exists"
     }
 }

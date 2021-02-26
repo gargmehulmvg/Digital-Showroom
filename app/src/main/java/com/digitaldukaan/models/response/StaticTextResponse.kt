@@ -42,6 +42,8 @@ data class ProfileStaticData(
     @SerializedName("update_store_text") var mBottomSheetStoreNameHeading: String?,
     @SerializedName("confirm_text") var mBottomSheetStoreButtonText: String?,
     @SerializedName("conform_desc_text") var mBottomSheetCloseConfirmationMessage: String?,
+    @SerializedName("domain_already_exists_error") var mDomainAlreadyExistError: String?,
+    @SerializedName("domain_unavailable_error") var mDomainUnAvailableError: String?,
     @SerializedName("no_text") var mNoText: String?
 )
 
