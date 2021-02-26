@@ -26,6 +26,7 @@ class Constants {
         const val ACTION_BUSINESS_TYPE = "bussiness_type"
         const val ACTION_EDIT_STORE_LINK = "edit_store_link"
         const val ACTION_STORE_NAME = "store_name"
+        const val ACTION_STORE_LOCATION = "store_location"
         //Pages
         const val PAGE_HELP = "help"
         const val PAGE_FEEDBACK = "Feedback"

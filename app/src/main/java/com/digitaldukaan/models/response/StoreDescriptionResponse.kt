@@ -5,5 +5,6 @@ import com.google.gson.annotations.SerializedName
 data class StoreDescriptionResponse(
     @SerializedName("status") var mStatus: Boolean,
     @SerializedName("message") var mMessage: String?,
-    @SerializedName("store") var mStoreInfo: StoreResponse?
+    @SerializedName("store") var mStoreInfo: StoreResponse?,
+    @SerializedName("error_string") var mErrorString: StoreResponse?
 )

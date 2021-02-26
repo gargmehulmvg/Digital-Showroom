@@ -126,6 +126,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                     if (isShowing) dismiss()
                 }
                 showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
+                onRefresh()
             } else showToast(response.mMessage)
         }
     }
@@ -138,6 +139,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                     if (isShowing) dismiss()
                 }
                 showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
+                onRefresh()
             } else showToast(response.mMessage)
         }
     }
@@ -155,12 +157,12 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
             Constants.ACTION_STORE_DESCRIPTION -> launchFragment(StoreDescriptionFragment.newInstance(profilePreviewResponse, position), true)
             Constants.ACTION_BANK_ACCOUNT -> launchFragment(BankAccountFragment.newInstance(profilePreviewResponse), true)
             Constants.ACTION_BUSINESS_TYPE -> launchFragment(BusinessTypeFragment.newInstance(profilePreviewResponse), true)
-            Constants.ACTION_EDIT_STORE_LINK -> showEditStoreWarningDialog()
+            Constants.ACTION_EDIT_STORE_LINK -> showEditStoreWarningDialog(profilePreviewResponse)
             Constants.ACTION_STORE_NAME -> showEditStoreNameBottomSheet(profilePreviewResponse)
         }
     }
 
-    private fun showEditStoreWarningDialog() {
+    private fun showEditStoreWarningDialog(profilePreviewResponse: ProfilePreviewSettingsKeyResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             mActivity.let {
                 val warningDialog = Dialog(mActivity)
@@ -183,7 +185,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                     editStoreDialogNoTextView.text = mProfilePreviewStaticData.mNoText
                     editStoreDialogYesTextView.setOnClickListener {
                         if (warningDialog.isShowing) warningDialog.dismiss()
-                        showEditStoreLinkBottomSheet()
+                        showEditStoreLinkBottomSheet(profilePreviewResponse)
                     }
                     editStoreDialogNoTextView.setOnClickListener{ if (warningDialog.isShowing) warningDialog.dismiss() }
                 }
@@ -224,7 +226,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         }
     }
 
-    private fun showEditStoreLinkBottomSheet() {
+    private fun showEditStoreLinkBottomSheet(profilePreviewResponse: ProfilePreviewSettingsKeyResponse) {
         mStoreLinkBottomSheet = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
         val view = LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet_edit_store_link, mActivity.findViewById(R.id.bottomSheetContainer))
         mStoreLinkBottomSheet?.apply {
@@ -258,6 +260,11 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                     }
                 }
                 bottomSheetEditStoreHeading.text = if (bottomSheetEditStoreLinkEditText.text.isEmpty()) mProfilePreviewStaticData.storeLinkTitle else mProfilePreviewStaticData.editStoreLink
+                val requiredString = profilePreviewResponse.mValue?.run {
+                    substring(indexOf("-") + 1, indexOf("."))
+                }
+                bottomSheetEditStoreLinkEditText.setText(requiredString)
+                bottomSheetEditStoreLinkEditText.isEnabled = profilePreviewResponse.mIsEditable ?: true
                 bottomSheetEditStoreLinkEditText.addTextChangedListener(object : TextWatcher{
                     override fun afterTextChanged(s: Editable?) {
                         val string = s.toString()
@@ -323,6 +330,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         bottomSheetEditStoreHeading.text = mProfilePreviewStaticData.mBottomSheetStoreNameHeading
         bottomSheetEditStoreLinkEditText.hint = mProfilePreviewStaticData.mBottomSheetStoreNameHeading
         if (previewSettingsKeyResponse?.mValue?.isNotEmpty() == true) bottomSheetEditStoreLinkEditText.setText(previewSettingsKeyResponse.mValue)
+        bottomSheetEditStoreLinkEditText.isEnabled = previewSettingsKeyResponse?.mIsEditable ?: true
         bottomSheetEditStoreLinkEditText.addTextChangedListener(object : TextWatcher{
             override fun afterTextChanged(s: Editable?) {
                 val string = s.toString()
