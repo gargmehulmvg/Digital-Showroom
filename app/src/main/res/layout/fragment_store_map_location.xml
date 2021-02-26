@@ -41,6 +41,7 @@
             android:layout_marginBottom="@dimen/_15sdp"
             android:drawablePadding="@dimen/_10sdp"
             android:onClick="onClick"
+            android:elevation="@dimen/_5sdp"
             android:layout_marginEnd="@dimen/_15sdp"
             android:layout_marginStart="@dimen/_15sdp"
             android:gravity="center"
@@ -48,7 +49,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/stateTextView"
             app:layout_constraintTop_toBottomOf="@+id/stateTextView"
-            map:text="@string/get_otp" />
+            map:text="@string/get_otp"
+            map:targetApi="lollipop" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/mapBottomSheetLayout"

@@ -43,6 +43,8 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener {
     private lateinit var supportMapFragment: SupportMapFragment
     private var lastLocation: Location? = null
     private val mMapStaticData = mStaticData.mStaticData.mMapStaticData
+    private lateinit var mapBottomSheetLayout: View
+    private lateinit var setLocationTextView: TextView
 
     companion object {
 
@@ -95,8 +97,8 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener {
         val cityLayout: TextInputLayout = view.findViewById(R.id.cityLayout)
         val completeAddressLayout: TextInputLayout = view.findViewById(R.id.completeAddressLayout)
         val pinCodeLayout: TextInputLayout = view.findViewById(R.id.pinCodeLayout)
-        val setLocationTextView: TextView = view.findViewById(R.id.setLocationTextView)
-        val mapBottomSheetLayout: View = view.findViewById(R.id.mapBottomSheetLayout)
+        setLocationTextView = view.findViewById(R.id.setLocationTextView)
+        mapBottomSheetLayout = view.findViewById(R.id.mapBottomSheetLayout)
         completeAddressLayout.hint = mMapStaticData.completeAddressHint
         pinCodeLayout.hint = mMapStaticData.pinCodeTextHint
         cityLayout.hint = mMapStaticData.cityTextHint
@@ -151,6 +153,14 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener {
                 supportMapFragment.getMapAsync{
                     mGoogleMap = it
                     showCurrentLocationMarkers(mCurrentLatitude, mCurrentLongitude)
+                    mGoogleMap?.setOnCameraMoveListener { Log.d(TAG, "dragging start setOnCameraMoveListener()") }
+                    mGoogleMap?.setOnCameraMoveStartedListener {
+                        Log.d(TAG,"dragging start setOnCameraMoveStartedListener()")
+                        if (mapBottomSheetLayout.visibility  == View.VISIBLE) {
+                            mapBottomSheetLayout.visibility = View.GONE
+                            setLocationTextView.visibility = View.VISIBLE
+                        }
+                    }
                 }
             } else {
                 showToast("No location detected. Make sure location is enabled on the device.")
@@ -212,29 +222,6 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener {
 
     override fun onLocationChanged(location: Location) {
         showToast("onLocationChanged() Latitude: " + location.latitude + " , Longitude: " + location.longitude)
-    }
-
-
-    private fun showEditStoreNameBottomSheet() {
-        /*val locationBottomSheet = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
-        val view = LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet_map_location, mActivity.findViewById(R.id.bottomSheetContainer))
-        locationBottomSheet.apply {
-            setContentView(view)
-            setBottomSheetCommonProperty()
-            val completeAddressEditText: EditText = view.findViewById(R.id.completeAddressEditText)
-            val pinCodeEditText: EditText = view.findViewById(R.id.pinCodeEditText)
-            val cityEditText: EditText = view.findViewById(R.id.cityEditText)
-            val stateTextView: TextView = view.findViewById(R.id.stateTextView)
-            val saveTextView: View = view.findViewById(R.id.saveTextView)
-            completeAddressEditText.hint = mMapStaticData.completeAddressHint
-            pinCodeEditText.hint = mMapStaticData.pinCodeTextHint
-            cityEditText.hint = mMapStaticData.cityTextHint
-            stateTextView.text = "Select State"
-            saveTextView.setOnClickListener {
-
-            }
-            show()
-        }*/
     }
 
 }
