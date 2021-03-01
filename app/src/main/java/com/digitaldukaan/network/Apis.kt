@@ -39,4 +39,7 @@ interface Apis {
 
     @POST("api/dotk/merchant/setAddress")
     suspend fun updateStoreAddress(@Header("auth_token") authToken:String, @Body request: StoreAddressRequest) : Response<StoreAddressResponse>
+
+    @GET("api/dotk/merchant/getbusinessList")
+    suspend fun getBusinessList() : Response<BusinessTypeResponse>
 }
