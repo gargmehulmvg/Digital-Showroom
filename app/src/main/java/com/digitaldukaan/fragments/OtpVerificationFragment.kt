@@ -138,16 +138,8 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
             stopProgress()
             showToast(validateOtpResponse.mMessage)
             saveUserDetailsInPref(validateOtpResponse)
-            if (!isInternetConnectionAvailable(mActivity)) {
-                showNoInternetConnectionDialog()
-            } else {
-                showProgressDialog(mActivity, getString(R.string.authenticating_user))
-                CoroutineScopeUtils().runTaskOnCoroutineBackground {
-                    mOtpVerificationService.verifyUserAuthentication(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
-                }
-            }
+            if (validateOtpResponse.mStore == null || mIsNewUser) launchFragment(OnBoardScreenDukaanNameFragment(), true) else launchFragment(HomeFragment(), true)
         }
-
     }
 
     private fun saveUserDetailsInPref(validateOtpResponse: ValidateOtpResponse) {
@@ -164,16 +156,6 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
             stopProgress()
             otpEditText.clearOTP()
             showToast(validateOtpErrorResponse.mMessage)
-        }
-    }
-
-    override fun onUserAuthenticationResponse(authenticationUserResponse: ValidateOtpResponse) {
-        CoroutineScopeUtils().runTaskOnCoroutineMain {
-            stopProgress()
-            saveUserDetailsInPref(authenticationUserResponse)
-            if (authenticationUserResponse.mIsSuccessStatus) {
-                if (authenticationUserResponse.mStore == null || mIsNewUser) launchFragment(OnBoardScreenDukaanNameFragment(), true) else launchFragment(HomeFragment(), true)
-            }
         }
     }
 

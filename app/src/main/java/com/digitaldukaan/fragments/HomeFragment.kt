@@ -8,12 +8,20 @@ import android.view.View
 import android.view.ViewGroup
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
+import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.ToolBarManager
+import com.digitaldukaan.models.response.ValidateOtpErrorResponse
+import com.digitaldukaan.models.response.ValidateOtpResponse
+import com.digitaldukaan.services.HomeFragmentService
+import com.digitaldukaan.services.isInternetConnectionAvailable
+import com.digitaldukaan.services.serviceinterface.IHomeFragmentServiceInterface
 import kotlinx.android.synthetic.main.home_fragment.*
+import kotlinx.android.synthetic.main.otp_verification_fragment.*
 
-class HomeFragment : BaseFragment() {
+class HomeFragment : BaseFragment(), IHomeFragmentServiceInterface{
 
     private var mIsDoublePressToExit = false
+    private lateinit var mHomeFragmentService: HomeFragmentService
 
     companion object {
         fun newInstance(): HomeFragment {
@@ -26,6 +34,8 @@ class HomeFragment : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        mHomeFragmentService = HomeFragmentService()
+        mHomeFragmentService.setHomeFragmentServiceListener(this)
         mContentView = inflater.inflate(R.layout.home_fragment, container, false)
         return mContentView
     }
@@ -36,6 +46,14 @@ class HomeFragment : BaseFragment() {
             hideBackPressFromToolBar(mActivity, true)
             setHeaderTitle(getString(R.string.app_name))
             setSideIconVisibility(false)
+        }
+        if (!isInternetConnectionAvailable(mActivity)) {
+            showNoInternetConnectionDialog()
+        } else {
+            showProgressDialog(mActivity, getString(R.string.authenticating_user))
+            CoroutineScopeUtils().runTaskOnCoroutineBackground {
+                mHomeFragmentService.verifyUserAuthentication(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
+            }
         }
     }
 
@@ -55,4 +73,30 @@ class HomeFragment : BaseFragment() {
         )
         return true
     }
+
+    override fun onUserAuthenticationResponse(authenticationUserResponse: ValidateOtpResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            saveUserDetailsInPref(authenticationUserResponse)
+            if (!authenticationUserResponse.mIsSuccessStatus) showShortSnackBar(authenticationUserResponse.mMessage, true, R.drawable.ic_close_red)
+        }
+    }
+
+    private fun saveUserDetailsInPref(validateOtpResponse: ValidateOtpResponse) {
+        storeStringDataInSharedPref(Constants.USER_AUTH_TOKEN, validateOtpResponse.mUserAuthToken)
+        storeStringDataInSharedPref(Constants.USER_MOBILE_NUMBER, validateOtpResponse.mUserPhoneNumber)
+        validateOtpResponse.mStore?.run {
+            storeStringDataInSharedPref(Constants.STORE_ID, storeId.toString())
+            storeStringDataInSharedPref(Constants.STORE_NAME, storeInfo.name)
+        }
+    }
+
+    override fun onOTPVerificationErrorResponse(validateOtpErrorResponse: ValidateOtpErrorResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            otpEditText.clearOTP()
+            showToast(validateOtpErrorResponse.mMessage)
+        }
+    }
+
 }

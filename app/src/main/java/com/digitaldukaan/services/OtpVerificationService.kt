@@ -20,10 +20,4 @@ class OtpVerificationService {
         }
     }
 
-    fun verifyUserAuthentication(authToken:String) {
-        CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mOtpVerificationNetwork.authenticateUserServerCall(authToken, mOtpVerificationInterface)
-        }
-    }
-
 }
