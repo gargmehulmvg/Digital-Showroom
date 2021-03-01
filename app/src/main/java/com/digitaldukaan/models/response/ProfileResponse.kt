@@ -27,6 +27,7 @@ data class StoreInfoResponse(
     @SerializedName("store_type") var mStoreType: String?,
     @SerializedName("domain") var mDomain: String?,
     @SerializedName("store_url") var mStoreUrl: String?,
+    @SerializedName("logo_image") var mStoreLogoStr: String?,
     @SerializedName("address") var mStoreAddress: UserAddressResponse?,
     @SerializedName("store_businesses") var mStoreBusinessTypeList: ArrayList<BusinessTypeItemResponse>?,
     @SerializedName("services") var mStoreService: StoreServicesResponse?

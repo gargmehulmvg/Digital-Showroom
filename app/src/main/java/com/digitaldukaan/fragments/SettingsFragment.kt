@@ -169,6 +169,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         val infoResponse = profileResponse.mAccountInfoResponse
         mProfileResponse = infoResponse
         dukaanNameTextView.text = infoResponse?.mStoreInfo?.mStoreName
+        if (infoResponse?.mStoreInfo?.mStoreLogoStr?.isNotEmpty() == true) Picasso.get().load(infoResponse.mStoreInfo.mStoreLogoStr).into(storePhotoImageView)
         storeSwitch.isChecked = infoResponse?.mStoreInfo?.mStoreService?.mStoreFlag == 1
         infoResponse?.mFooterImages?.forEachIndexed { index, imageUrl ->
             if (index == 0) {

@@ -113,7 +113,6 @@
                     android:layout_height="@dimen/_60sdp"
                     android:background="@drawable/curve_black_dotted_border"
                     android:gravity="center_horizontal"
-                    android:orientation="vertical"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
@@ -149,7 +148,11 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_margin="@dimen/_4sdp"
-                        android:contentDescription="@string/image_view_content_description" />
+                        android:contentDescription="@string/image_view_content_description"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 

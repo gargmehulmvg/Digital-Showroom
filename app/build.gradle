@@ -15,6 +15,7 @@ android {
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -109,4 +110,6 @@ dependencies {
     //implementation 'com.daimajia.androidanimations:library:2.4@aar'
     //maps dependency
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
+    //image pick dependency
+    implementation 'com.github.dhaval2404:imagepicker-support:1.7.1'
 }

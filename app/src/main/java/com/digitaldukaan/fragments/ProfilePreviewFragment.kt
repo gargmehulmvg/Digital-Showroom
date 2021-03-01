@@ -1,11 +1,13 @@
 package com.digitaldukaan.fragments
 
 import android.app.Dialog
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
@@ -22,6 +24,7 @@ import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.interfaces.IProfilePreviewItemClicked
 import com.digitaldukaan.models.request.StoreLinkRequest
+import com.digitaldukaan.models.request.StoreLogoRequest
 import com.digitaldukaan.models.request.StoreNameRequest
 import com.digitaldukaan.models.response.ProfilePreviewResponse
 import com.digitaldukaan.models.response.ProfilePreviewSettingsKeyResponse
@@ -75,7 +78,31 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
             showEditStoreNameBottomSheet(settingKeyNameResponse)
         }
         storePhotoLayout.setOnClickListener {
-            showImagePickerDialog()
+            askCameraPermission()
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        Log.d(ProfilePreviewFragment::class.simpleName, "onRequestPermissionResult")
+        if (requestCode == Constants.IMAGE_PICK_REQUEST_CODE) {
+            when {
+                grantResults.isEmpty() -> {
+                    // If user interaction was interrupted, the permission request is cancelled and you
+                    // receive empty arrays.
+                    Log.i(ProfilePreviewFragment::class.simpleName, "User interaction was cancelled.")
+                }
+                grantResults[0] == PackageManager.PERMISSION_GRANTED -> {
+                    // Permission granted.
+                    showImagePickerDialog()
+                }
+                else -> {
+                    showShortSnackBar("Permission was denied")
+                }
+            }
         }
     }
 
@@ -104,7 +131,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
             profilePreviewResponse.mProfileInfo.run {
                 profilePreviewStoreNameTextView.text = mStoreName
                 profilePreviewStoreMobileNumber.text = mPhoneNumber
-                if (mStoreLogo?.isNotEmpty() == true) Picasso.get().load(mStoreLogo).into(storePhotoImageView)
+                if (this.mStoreLogo?.isNotEmpty() == true) Picasso.get().load(this.mStoreLogo).into(storePhotoImageView)
             }
             profilePreviewResponse.mProfileInfo.mSettingsKeysList.run {
                 val linearLayoutManager = LinearLayoutManager(mActivity)
@@ -373,5 +400,26 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
 
     override fun onRefresh() {
         fetchProfilePreviewCall()
+    }
+
+    override fun onImageSelectionResult(base64Str: String?) {
+        if (!isInternetConnectionAvailable(mActivity)) {
+            showNoInternetConnectionDialog()
+        }
+        showProgressDialog(mActivity)
+        val request = StoreLogoRequest(getStringDataFromSharedPref(Constants.STORE_ID).toInt(), base64Str)
+        service.updateStoreLogo(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
+    }
+
+    override fun onStoreLogoResponse(response: StoreDescriptionResponse) {
+        stopProgress()
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            if (response.mStatus) {
+                val mStoreLogo = response.mStoreInfo?.storeInfo?.logoImage
+                if (mStoreLogo?.isNotEmpty() == true) Picasso.get().load(mStoreLogo).into(storePhotoImageView)
+                showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
+            } else showToast(response.mMessage)
+        }
+        Log.d(ProfilePreviewFragment::class.simpleName, "onStoreLogoResponse: do nothing")
     }
 }

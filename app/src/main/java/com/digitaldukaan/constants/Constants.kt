@@ -9,6 +9,7 @@ class Constants {
         const val RESEND_OTP_TIMER = 30_000L
         const val TIMER_INTERVAL = 1_000L
         const val CREDENTIAL_PICKER_REQUEST = 1001
+        const val IMAGE_PICK_REQUEST_CODE = 1002
         const val SHARED_PREF_NAME = "DigitalDukaanPrefs"
         const val USER_AUTH_TOKEN = "USER_AUTH_TOKEN"
         const val STORE_ID = "STORE_ID"

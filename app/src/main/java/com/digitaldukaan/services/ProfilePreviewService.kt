@@ -2,6 +2,7 @@ package com.digitaldukaan.services
 
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.models.request.StoreLinkRequest
+import com.digitaldukaan.models.request.StoreLogoRequest
 import com.digitaldukaan.models.request.StoreNameRequest
 import com.digitaldukaan.services.networkservice.ProfilePreviewNetworkService
 import com.digitaldukaan.services.serviceinterface.IProfilePreviewServiceInterface
@@ -30,6 +31,12 @@ class ProfilePreviewService {
     fun updateStoreLink(authToken: String, request: StoreLinkRequest) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
             mNetworkService.updateStoreLinkServerCall(authToken, request, mServiceInterface)
+        }
+    }
+
+    fun updateStoreLogo(authToken: String, request: StoreLogoRequest) {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.updateStoreLogoServerCall(authToken, request, mServiceInterface)
         }
     }
 

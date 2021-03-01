@@ -1,8 +1,11 @@
 package com.digitaldukaan.fragments
 
+import android.Manifest
+import android.app.Activity
 import android.app.Dialog
 import android.content.*
 import android.content.Context.MODE_PRIVATE
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
@@ -10,6 +13,8 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.text.Html
+import android.util.Base64
+import android.util.Base64OutputStream
 import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
@@ -21,6 +26,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.digitaldukaan.MainActivity
@@ -28,9 +34,13 @@ import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.models.response.StaticTextResponse
+import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.android.synthetic.main.bottom_sheet_image_pick.view.*
+import java.io.ByteArrayOutputStream
+import java.io.File
 import java.net.UnknownHostException
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
@@ -288,7 +298,26 @@ open class BaseFragment : Fragment() {
         alertDialog.show()
     }
 
-    open fun onAlertDialogItemClicked(selectedStr: String?, id: Int, position: Int) {
+    open fun onAlertDialogItemClicked(selectedStr: String?, id: Int, position: Int) = Unit
+
+    open fun onImageSelectionResult(base64Str : String?) = Unit
+
+    open fun askCameraPermission() {
+        if (ActivityCompat.checkSelfPermission(mActivity, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(mActivity, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(mActivity, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                mActivity,
+                arrayOf(
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                    Manifest.permission.CAMERA
+                ),
+                Constants.IMAGE_PICK_REQUEST_CODE
+            )
+            return
+        }
+        showImagePickerDialog()
     }
 
     open fun showImagePickerDialog() {
@@ -307,6 +336,32 @@ open class BaseFragment : Fragment() {
                 bottomSheetUploadImageHeading.text = imageUploadStaticData.uploadImageHeading
                 bottomSheetUploadImageCameraTextView.text = imageUploadStaticData.takePhoto
                 bottomSheetUploadImageCloseImageView.setOnClickListener { if (imagePickBottomSheet.isShowing) imagePickBottomSheet.dismiss() }
+                bottomSheetUploadImageCamera.setOnClickListener {
+                    ImagePicker.with(mActivity)
+                        .crop()                    //Crop image(Optional), Check Customization for more option
+                        .compress(1024)            //Final image size will be less than 1 MB(Optional)
+                        .maxResultSize(
+                            1080,
+                            1080
+                        )    //Final image resolution will be less than 1080 x 1080(Optional)
+                        .start()
+                }
+                bottomSheetUploadImageCamera.setOnClickListener {
+                    imagePickBottomSheet.dismiss()
+                    openCamera()
+                }
+                bottomSheetUploadImageCameraTextView.setOnClickListener {
+                    imagePickBottomSheet.dismiss()
+                    openCamera()
+                }
+                bottomSheetUploadImageGallery.setOnClickListener {
+                    imagePickBottomSheet.dismiss()
+                    openGallery()
+                }
+                bottomSheetUploadImageGalleryTextView.setOnClickListener {
+                    imagePickBottomSheet.dismiss()
+                    openGallery()
+                }
             }
         }.show()
         /*imagePickBottomSheet.setOnKeyListener { _, keyCode, _ ->
@@ -314,5 +369,64 @@ open class BaseFragment : Fragment() {
                 true
             } else false
         }*/
+    }
+
+    private fun openGallery() {
+        ImagePicker.with(mActivity)
+            .galleryOnly()
+            .crop()                    //Crop image(Optional), Check Customization for more option
+            .compress(1024)            //Final image size will be less than 1 MB(Optional)
+            .maxResultSize(
+                1080,
+                1080
+            ) //Final image resolution will be less than 1080 x 1080(Optional)
+            .start()
+    }
+
+    private fun openCamera() {
+        ImagePicker.with(mActivity)
+            .cameraOnly()
+            .crop()                    //Crop image(Optional), Check Customization for more option
+            .compress(1024)            //Final image size will be less than 1 MB(Optional)
+            .maxResultSize(
+                1080,
+                1080
+            ) //Final image resolution will be less than 1080 x 1080(Optional)
+            .start()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        when (resultCode) {
+            Activity.RESULT_OK -> {
+                //Image Uri will not be null for RESULT_OK
+                val fileUri = data?.data
+                //imgProfile.setImageURI(fileUri)
+
+                //You can get File object from intent
+                val file: File? = ImagePicker.getFile(data)
+
+                //You can also get File Path from intent
+                val filePath: String? = ImagePicker.getFilePath(data)
+                onImageSelectionResult(convertImageFileToBase64(file))
+            }
+            ImagePicker.RESULT_ERROR -> {
+                Toast.makeText(context, ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
+            }
+            else -> {
+                Toast.makeText(context, "Task Cancelled", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    open fun convertImageFileToBase64(imageFile: File?): String {
+        if (imageFile == null) return ""
+        return ByteArrayOutputStream().use { outputStream ->
+            Base64OutputStream(outputStream, Base64.DEFAULT).use { base64FilterStream ->
+                imageFile.inputStream().use { inputStream ->
+                    inputStream.copyTo(base64FilterStream)
+                }
+            }
+            return@use outputStream.toString()
+        }
     }
 }
