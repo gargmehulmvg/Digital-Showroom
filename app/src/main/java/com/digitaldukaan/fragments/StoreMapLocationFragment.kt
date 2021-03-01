@@ -17,6 +17,7 @@ import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
+import com.digitaldukaan.constants.StaticInstances
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.models.response.ProfilePreviewSettingsKeyResponse
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -173,6 +174,9 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener {
                 }
             } else {
                 showToast("No location detected. Make sure location is enabled on the device.")
+                mCurrentLatitude = StaticInstances.sStoreInfo?.mStoreAddress?.latitude ?: 0.0
+                mCurrentLongitude = StaticInstances.sStoreInfo?.mStoreAddress?.longitude ?: 0.0
+                showCurrentLocationMarkers(mCurrentLatitude, mCurrentLongitude)
             }
         }
     }

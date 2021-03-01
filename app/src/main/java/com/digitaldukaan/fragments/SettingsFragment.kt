@@ -20,6 +20,7 @@ import com.digitaldukaan.adapters.ProfileStatusAdapter
 import com.digitaldukaan.adapters.SettingsStoreAdapter
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
+import com.digitaldukaan.constants.StaticInstances
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.interfaces.IOnToolbarIconClick
 import com.digitaldukaan.interfaces.IStoreSettingsItemClicked
@@ -45,11 +46,11 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
     }
 
     private val mAppSettingsStaticData = mStaticData.mStaticData.mSettingsStaticData
-    private val service = ProfileService()
+    private val mProfileService = ProfileService()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.settings_fragment, container, false)
-        service.setProfileServiceInterface(this)
+        mProfileService.setProfileServiceInterface(this)
         return mContentView
     }
 
@@ -117,7 +118,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             return
         }
         showProgressDialog(mActivity, "Fetching user profile...")
-        service.getUserProfile(getStringDataFromSharedPref(Constants.STORE_ID))
+        mProfileService.getUserProfile(getStringDataFromSharedPref(Constants.STORE_ID))
     }
 
     private fun changeStoreDeliveryStatus() {
@@ -127,7 +128,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         }
         showProgressDialog(mActivity)
         val request = StoreDeliveryStatusChangeRequest(getStringDataFromSharedPref(Constants.STORE_ID).toInt(), if (storeSwitch.isChecked) 1 else 0, if (deliverySwitch.isChecked) 1 else 0, 0)
-        service.changeStoreAndDeliveryStatus(request)
+        mProfileService.changeStoreAndDeliveryStatus(request)
     }
 
     override fun onToolbarSideIconClicked() = launchFragment(CommonWebViewFragment().newInstance(getString(R.string.help), BuildConfig.WEB_VIEW_URL + Constants.WEB_VIEW_HELP + "?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&" + "redirectFrom=settings" + "&token=${getStringDataFromSharedPref(
@@ -163,6 +164,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
     private var mProfileResponse:AccountInfoResponse? = null
 
     private fun setupUIFromProfileResponse(profileResponse: ProfileResponse) {
+        StaticInstances.sStoreInfo = profileResponse.mAccountInfoResponse?.mStoreInfo
         Log.e(SettingsFragment::class.simpleName, "setupUIFromProfileResponse ${profileResponse.mMessage}")
         val infoResponse = profileResponse.mAccountInfoResponse
         mProfileResponse = infoResponse
