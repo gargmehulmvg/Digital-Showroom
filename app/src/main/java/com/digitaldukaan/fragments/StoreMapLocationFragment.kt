@@ -18,9 +18,15 @@ import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
+import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.StaticInstances
 import com.digitaldukaan.constants.ToolBarManager
+import com.digitaldukaan.models.request.StoreAddressRequest
 import com.digitaldukaan.models.response.ProfilePreviewSettingsKeyResponse
+import com.digitaldukaan.models.response.StoreAddressResponse
+import com.digitaldukaan.services.StoreAddressService
+import com.digitaldukaan.services.isInternetConnectionAvailable
+import com.digitaldukaan.services.serviceinterface.IStoreAddressServiceInterface
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -34,7 +40,7 @@ import com.google.android.material.textfield.TextInputLayout
 import kotlinx.android.synthetic.main.fragment_store_map_location.*
 import java.util.*
 
-class StoreMapLocationFragment : BaseFragment(), LocationListener {
+class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddressServiceInterface {
 
     private lateinit var mProfilePreviewResponse: ProfilePreviewSettingsKeyResponse
     private var mPosition: Int = 0
@@ -84,10 +90,18 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener {
             onBackPressed(this@StoreMapLocationFragment)
             hideBackPressFromToolBar(mActivity, false)
         }
-        supportMapFragment = childFragmentManager.findFragmentById(R.id.mapFragment) as SupportMapFragment
+        supportMapFragment =
+            childFragmentManager.findFragmentById(R.id.mapFragment) as SupportMapFragment
         mGoogleApiClient = LocationServices.getFusedLocationProviderClient(mActivity)
-        if (ActivityCompat.checkSelfPermission(mActivity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-            ActivityCompat.checkSelfPermission(mActivity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(
+                mActivity,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(
+                mActivity,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 requestPermissions()
                 return
@@ -118,6 +132,39 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener {
         stateTextView.setOnClickListener {
             showStateSelectionDialog()
         }
+        saveTextView.setOnClickListener {
+            if (!isInternetConnectionAvailable(mActivity)) {
+                showNoInternetConnectionDialog()
+            } else {
+                val service = StoreAddressService()
+                service.setServiceInterface(this)
+                val address = completeAddressEditText.text.trim().toString()
+                if (address.isEmpty()) {
+                    completeAddressEditText.error =  getString(R.string.mandatory_field_message)
+                    completeAddressEditText.requestFocus()
+                    return@setOnClickListener
+                }
+                val request = StoreAddressRequest(
+                    getStringDataFromSharedPref(Constants.STORE_ID).toInt(),
+                    address,
+                    mGoogleDrivenAddress,
+                    mCurrentLatitude,
+                    mCurrentLongitude,
+                    pinCodeEditText.text.toString(),
+                    cityEditText.text.toString(),
+                    stateTextView.text.toString()
+                )
+                showProgressDialog(mActivity)
+                service.updateStoreAddress(
+                    getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN),
+                    request
+                )
+            }
+        }
+        pinCodeEditText.setText(StaticInstances.sStoreInfo?.mStoreAddress?.pinCode)
+        cityEditText.setText(StaticInstances.sStoreInfo?.mStoreAddress?.city)
+        completeAddressEditText.setText(StaticInstances.sStoreInfo?.mStoreAddress?.address1)
+        stateTextView.text = StaticInstances.sStoreInfo?.mStoreAddress?.state
     }
 
     override fun onAlertDialogItemClicked(selectedStr: String?, id: Int, position: Int) {
@@ -219,8 +266,11 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener {
         }
     }
 
+    private var mGoogleDrivenAddress :String ? = ""
+
     private fun showCurrentLocationMarkers(lat: Double, lng: Double) {
-        val markerOptions = MarkerOptions().title("current location").position(LatLng(lat, lng)).icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_location_marker)).draggable(true).snippet(getAddress())
+        mGoogleDrivenAddress = getAddress()
+        val markerOptions = MarkerOptions().title("current location").position(LatLng(lat, lng)).icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_location_marker)).draggable(true).snippet(mGoogleDrivenAddress)
         val cameraUpdate = CameraUpdateFactory.newLatLngZoom(LatLng(lat, lng), 11f)
         mGoogleMap?.animateCamera(cameraUpdate)
         mCurrentMarker = mGoogleMap?.addMarker(markerOptions)
@@ -257,6 +307,21 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener {
 
     override fun onLocationChanged(location: Location) {
         showToast("onLocationChanged() Latitude: " + location.latitude + " , Longitude: " + location.longitude)
+    }
+
+    override fun onStoreAddressResponse(response: StoreAddressResponse) {
+        stopProgress()
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            if (response.mIsSuccessStatus) {
+                StaticInstances.sStoreInfo?.mStoreAddress = response.mUserAddressResponse
+                showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
+                mActivity.onBackPressed()
+            } else showToast(response.mMessage)
+        }
+    }
+
+    override fun onStoreAddressServerException(e: Exception) {
+        exceptionHandlingForAPIResponse(e)
     }
 
 }
