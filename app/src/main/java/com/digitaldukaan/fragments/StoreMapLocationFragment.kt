@@ -3,6 +3,7 @@ package com.digitaldukaan.fragments
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import android.location.Geocoder
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
@@ -27,9 +28,11 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.android.synthetic.main.fragment_store_map_location.*
+import java.util.*
 
 class StoreMapLocationFragment : BaseFragment(), LocationListener {
 
@@ -47,6 +50,7 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener {
     private lateinit var mapBottomSheetLayout: View
     private lateinit var setLocationTextView: TextView
     private lateinit var stateTextView: TextView
+    private var mCurrentMarker: Marker? = null
 
     companion object {
 
@@ -129,8 +133,7 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener {
                 return
             }
         }
-        mGoogleApiClient?.lastLocation
-            ?.addOnCompleteListener { task ->
+        mGoogleApiClient?.lastLocation?.addOnCompleteListener { task ->
                 val location = task.result
                 if (location != null) {
                     mCurrentLatitude = location.latitude
@@ -151,9 +154,7 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener {
             }
         }
         val lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-        lastKnownLocation?.run {
-            showToast("getLocation() Latitude: $latitude , Longitude: $longitude")
-        }
+        lastKnownLocation?.run { showToast("getLocation() Latitude: $latitude , Longitude: $longitude") }
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 1f, this)
         mGoogleApiClient?.lastLocation?.addOnCompleteListener(mActivity) { task ->
             if (task.isSuccessful && task.result != null) {
@@ -171,6 +172,20 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener {
                             setLocationTextView.visibility = View.VISIBLE
                         }
                     }
+                    mGoogleMap?.setOnMarkerDragListener(object :GoogleMap.OnMarkerDragListener {
+
+                        override fun onMarkerDragEnd(marker: Marker?) {
+                            if (null != mCurrentMarker) mCurrentMarker?.remove()
+                            showCurrentLocationMarkers(marker?.position?.latitude ?: 0.0, marker?.position?.longitude ?: 0.0)
+                        }
+
+                        override fun onMarkerDragStart(marker: Marker?) {
+                        }
+
+                        override fun onMarkerDrag(marker: Marker?) {
+                        }
+
+                    })
                 }
             } else {
                 showToast("No location detected. Make sure location is enabled on the device.")
@@ -205,10 +220,17 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener {
     }
 
     private fun showCurrentLocationMarkers(lat: Double, lng: Double) {
-        val markerOptions = MarkerOptions().title("current location").position(LatLng(lat, lng)).icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_location_marker))
+        val markerOptions = MarkerOptions().title("current location").position(LatLng(lat, lng)).icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_location_marker)).draggable(true).snippet(getAddress())
         val cameraUpdate = CameraUpdateFactory.newLatLngZoom(LatLng(lat, lng), 11f)
         mGoogleMap?.animateCamera(cameraUpdate)
-        mGoogleMap?.addMarker(markerOptions)
+        mCurrentMarker = mGoogleMap?.addMarker(markerOptions)
+        mCurrentMarker?.showInfoWindow()
+    }
+
+    private fun getAddress(): String? {
+        val geoCoder = Geocoder(mActivity, Locale.getDefault())
+        val addressList = geoCoder.getFromLocation(mCurrentLatitude, mCurrentLongitude, 1)
+        return addressList[0].getAddressLine(0).toString()
     }
 
     private fun requestPermissions() {
