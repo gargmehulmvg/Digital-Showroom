@@ -7,10 +7,14 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.GridLayoutManager
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.BusinessTypeAdapter
+import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.ToolBarManager
+import com.digitaldukaan.models.request.BusinessTypeRequest
+import com.digitaldukaan.models.response.BusinessTypeItemResponse
 import com.digitaldukaan.models.response.BusinessTypeResponse
 import com.digitaldukaan.models.response.ProfilePreviewSettingsKeyResponse
+import com.digitaldukaan.models.response.StoreDescriptionResponse
 import com.digitaldukaan.services.BusinessTypeService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IBusinessTypeServiceInterface
@@ -21,6 +25,8 @@ class BusinessTypeFragment : BaseFragment(), IBusinessTypeServiceInterface {
     private lateinit var mProfilePreviewResponse: ProfilePreviewSettingsKeyResponse
     private var mPosition: Int = 0
     private var mIsSingleStep: Boolean = false
+    private lateinit var businessTypeService: BusinessTypeService
+    private var mBusinessSelectedList: ArrayList<BusinessTypeItemResponse> = ArrayList()
 
     companion object {
         fun newInstance(
@@ -55,20 +61,64 @@ class BusinessTypeFragment : BaseFragment(), IBusinessTypeServiceInterface {
             showNoInternetConnectionDialog()
             return
         }
-        val service = BusinessTypeService()
-        service.setServiceInterface(this)
+        businessTypeService = BusinessTypeService()
+        businessTypeService.setServiceInterface(this)
         showProgressDialog(mActivity)
-        service.getBusinessListData()
+        businessTypeService.getBusinessListData()
+        verifyTextView.setOnClickListener {
+            if (!isInternetConnectionAvailable(mActivity)) {
+                showNoInternetConnectionDialog()
+                return@setOnClickListener
+            }
+            businessTypeService = BusinessTypeService()
+            businessTypeService.setServiceInterface(this)
+            val businessTypeSelectedList:ArrayList<Int> = ArrayList()
+            mBusinessSelectedList.forEachIndexed { _, itemResponse ->
+                if (itemResponse.isBusinessTypeSelected) businessTypeSelectedList.add(itemResponse.businessId)
+            }
+            if (businessTypeSelectedList.isEmpty()) {
+                showToast("Please select at least 1 business type")
+                return@setOnClickListener
+            }
+            val businessTypRequest = BusinessTypeRequest(getStringDataFromSharedPref(Constants.STORE_ID).toInt(), businessTypeSelectedList)
+            showProgressDialog(mActivity)
+            businessTypeService.setStoreBusinesses(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), businessTypRequest)
+        }
     }
 
     override fun onBusinessTypeResponse(response: BusinessTypeResponse) {
         stopProgress()
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (response.mIsSuccessStatus) {
+                val businessTypeValueSplitArray = mProfilePreviewResponse.mValue?.split(",")
+                mBusinessSelectedList = response.mBusinessList
+                businessTypeValueSplitArray?.run {
+                    if (isNotEmpty()) {
+                        mBusinessSelectedList.forEachIndexed { _, itemResponse ->
+                            forEachIndexed { _, value ->
+                                if (itemResponse.businessName.trim() == value.trim()) {
+                                    itemResponse.isBusinessTypeSelected = true
+                                    return@forEachIndexed
+                                }
+                            }
+                        }
+
+                    }
+                }
                 businessTypeRecyclerView.apply {
                     layoutManager = GridLayoutManager(mActivity, 2)
-                    adapter = BusinessTypeAdapter(mActivity, response.mBusinessList)
+                    adapter = BusinessTypeAdapter(mActivity, mBusinessSelectedList)
                 }
+            } else showToast(response.mMessage)
+        }
+    }
+
+    override fun onSavingBusinessTypeResponse(response: StoreDescriptionResponse) {
+        stopProgress()
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            if (response.mStatus) {
+                showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
+                mActivity.onBackPressed()
             } else showToast(response.mMessage)
         }
     }

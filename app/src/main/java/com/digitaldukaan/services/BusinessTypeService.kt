@@ -1,6 +1,7 @@
 package com.digitaldukaan.services
 
 import com.digitaldukaan.constants.CoroutineScopeUtils
+import com.digitaldukaan.models.request.BusinessTypeRequest
 import com.digitaldukaan.services.networkservice.BusinessTypeNetworkService
 import com.digitaldukaan.services.serviceinterface.IBusinessTypeServiceInterface
 
@@ -16,6 +17,12 @@ class BusinessTypeService {
     fun getBusinessListData() {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
             mNetworkService.getBusinessListServerCall(mServiceInterface)
+        }
+    }
+
+    fun setStoreBusinesses(authToken:String, businessTypeRequest : BusinessTypeRequest) {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.setStoreBusinessesServerCall(authToken, businessTypeRequest, mServiceInterface)
         }
     }
 

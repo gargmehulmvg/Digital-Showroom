@@ -8,8 +8,9 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/businessTypeRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -17,11 +18,12 @@
         tools:listitem="@layout/business_type_item" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
         android:layout_height="@dimen/_60sdp"
-        app:layout_constraintBottom_toBottomOf="parent"
         android:background="@color/white"
         android:elevation="@dimen/_10sdp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         tools:targetApi="lollipop">
@@ -30,10 +32,10 @@
             android:id="@+id/verifyTextView"
             style="@style/common_text_view_background"
             android:onClick="onClick"
+            android:text="@string/complete_profile"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:text="@string/complete_profile" />
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

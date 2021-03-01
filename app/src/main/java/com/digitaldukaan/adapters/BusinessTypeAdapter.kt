@@ -35,9 +35,11 @@ class BusinessTypeAdapter(
             val animation = AnimationUtils.loadAnimation(mContext, R.anim.zoom_out)
             it.startAnimation(animation)
             if (it.isSelected) {
+                mBusinessList[view.adapterPosition].isBusinessTypeSelected = false
                 it.isSelected = false
                 view.businessTypeCheckBox.isChecked = false
             } else {
+                mBusinessList[view.adapterPosition].isBusinessTypeSelected = true
                 it.isSelected = true
                 view.businessTypeCheckBox.isChecked = true
             }
@@ -53,6 +55,10 @@ class BusinessTypeAdapter(
     ) {
         val itemResponse = mBusinessList[position]
         holder.apply {
+            if (itemResponse.isBusinessTypeSelected) {
+                businessTypeContainer.isSelected = true
+                businessTypeCheckBox.isChecked = true
+            }
             businessTypeTextView.text = itemResponse.businessName
             if (itemResponse.businessImage.isNotEmpty()) Picasso.get().load(itemResponse.businessImage).into(businessTypeImageView)
         }
