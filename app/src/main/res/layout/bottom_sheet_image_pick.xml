@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/bottomSheetContainer"
+    android:layout_width="match_parent"
+    android:minHeight="@dimen/_300sdp"
+    android:paddingTop="@dimen/_8sdp"
+    android:paddingStart="@dimen/_15sdp"
+    android:paddingEnd="@dimen/_15sdp"
+    android:background="@drawable/upper_curve_white_background"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/bottomSheetUploadImageCloseImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:contentDescription="@string/image_view_content_description"
+        android:src="@drawable/ic_black_close"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/bottomSheetUploadImageHeading"
+        style="@style/common_bold_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:textSize="@dimen/_18sdp"
+        app:layout_constraintEnd_toStartOf="@id/bottomSheetUploadImageCloseImageView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/bottomSheetUploadImageCloseImageView"
+        tools:text="Confirmation" />
+
+    <ImageView
+        android:id="@+id/bottomSheetUploadImageCamera"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:padding="@dimen/_5sdp"
+        android:layout_marginTop="@dimen/_15sdp"
+        android:contentDescription="@string/image_view_content_description"
+        android:src="@drawable/ic_auto_data_backup"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.25"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/bottomSheetUploadImageHeading" />
+
+    <TextView
+        android:id="@+id/bottomSheetUploadImageCameraTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/_12sdp"
+        android:fontFamily="@font/montserrat"
+        app:layout_constraintEnd_toEndOf="@+id/bottomSheetUploadImageCamera"
+        app:layout_constraintStart_toStartOf="@+id/bottomSheetUploadImageCamera"
+        app:layout_constraintTop_toBottomOf="@+id/bottomSheetUploadImageCamera"
+        tools:text="Take a photo" />
+
+    <ImageView
+        android:id="@+id/bottomSheetUploadImageGallery"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:padding="@dimen/_5sdp"
+        android:layout_marginTop="@dimen/_15sdp"
+        android:contentDescription="@string/image_view_content_description"
+        android:src="@drawable/ic_auto_data_backup"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.75"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/bottomSheetUploadImageHeading" />
+
+    <TextView
+        android:id="@+id/bottomSheetUploadImageGalleryTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/_12sdp"
+        android:fontFamily="@font/montserrat"
+        app:layout_constraintEnd_toEndOf="@+id/bottomSheetUploadImageGallery"
+        app:layout_constraintStart_toStartOf="@+id/bottomSheetUploadImageGallery"
+        app:layout_constraintTop_toBottomOf="@+id/bottomSheetUploadImageGallery"
+        tools:text="Take a photo" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

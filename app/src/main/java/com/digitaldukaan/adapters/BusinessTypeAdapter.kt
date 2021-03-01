@@ -4,7 +4,6 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AnimationUtils
 import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
@@ -32,8 +31,6 @@ class BusinessTypeAdapter(
             LayoutInflater.from(parent.context).inflate(R.layout.business_type_item, parent, false)
         )
         view.businessTypeContainer.setOnClickListener {
-            val animation = AnimationUtils.loadAnimation(mContext, R.anim.zoom_out)
-            it.startAnimation(animation)
             if (it.isSelected) {
                 mBusinessList[view.adapterPosition].isBusinessTypeSelected = false
                 it.isSelected = false

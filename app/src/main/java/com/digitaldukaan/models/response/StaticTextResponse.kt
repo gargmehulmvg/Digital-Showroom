@@ -15,6 +15,7 @@ data class StaticData(
     @SerializedName("onbording_step_one") var mOnBoardStep1StaticData: OnBoardStep1StaticResponseData,
     @SerializedName("onboarding_step_two") var mOnBoardStep2StaticData: OnBoardStep2StaticResponseData,
     @SerializedName("merchant_address") var mMapStaticData: MapLocationStaticResponseData,
+    @SerializedName("catalog_add") var mCatalogStaticData: CatalogStaticData,
     @SerializedName("settings") var mSettingsStaticData: SettingStaticData
 )
 
@@ -46,6 +47,12 @@ data class ProfileStaticData(
     @SerializedName("domain_already_exists_error") var mDomainAlreadyExistError: String?,
     @SerializedName("domain_unavailable_error") var mDomainUnAvailableError: String?,
     @SerializedName("no_text") var mNoText: String?
+)
+
+data class CatalogStaticData(
+    @SerializedName("upload_img_heading") var uploadImageHeading: String?,
+    @SerializedName("take_photo") var takePhoto: String?,
+    @SerializedName("add_gallery") var addGallery: String?
 )
 
 data class SettingStaticData(

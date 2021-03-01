@@ -17,6 +17,7 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.TranslateAnimation
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -288,5 +289,30 @@ open class BaseFragment : Fragment() {
     }
 
     open fun onAlertDialogItemClicked(selectedStr: String?, id: Int, position: Int) {
+    }
+
+    open fun showImagePickerDialog() {
+        val imageUploadStaticData = mStaticData.mStaticData.mCatalogStaticData
+        val imagePickBottomSheet = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
+        val view = LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet_image_pick, mActivity.findViewById(R.id.bottomSheetContainer))
+        imagePickBottomSheet.apply {
+            setContentView(view)
+            setBottomSheetCommonProperty()
+            view?.run {
+                val bottomSheetUploadImageCloseImageView: ImageView = findViewById(R.id.bottomSheetUploadImageCloseImageView)
+                val bottomSheetUploadImageHeading: TextView = findViewById(R.id.bottomSheetUploadImageHeading)
+                val bottomSheetUploadImageCameraTextView: TextView = findViewById(R.id.bottomSheetUploadImageCameraTextView)
+                val bottomSheetUploadImageGalleryTextView: TextView = findViewById(R.id.bottomSheetUploadImageGalleryTextView)
+                bottomSheetUploadImageGalleryTextView.text = imageUploadStaticData.addGallery
+                bottomSheetUploadImageHeading.text = imageUploadStaticData.uploadImageHeading
+                bottomSheetUploadImageCameraTextView.text = imageUploadStaticData.takePhoto
+                bottomSheetUploadImageCloseImageView.setOnClickListener { if (imagePickBottomSheet.isShowing) imagePickBottomSheet.dismiss() }
+            }
+        }.show()
+        /*imagePickBottomSheet.setOnKeyListener { _, keyCode, _ ->
+            if (KeyEvent.KEYCODE_BACK == keyCode) {
+                true
+            } else false
+        }*/
     }
 }

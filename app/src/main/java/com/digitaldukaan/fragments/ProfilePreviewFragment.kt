@@ -74,6 +74,9 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
             }
             showEditStoreNameBottomSheet(settingKeyNameResponse)
         }
+        storePhotoLayout.setOnClickListener {
+            showImagePickerDialog()
+        }
     }
 
     private fun fetchProfilePreviewCall() {
