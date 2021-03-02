@@ -15,6 +15,7 @@
     <color name="red_alpha">#FDA8A8</color>
     <color name="open_green">#1E981E</color>
     <color name="green_alpha">#9DEF9D</color>
+    <color name="default_bg">#F7F8F8</color>
     <color name="dark_blackish">#232B2E</color>
     <color name="snack_bar_background">#434D4D</color>
     <color name="curve_new_banner_background">#009688</color>
