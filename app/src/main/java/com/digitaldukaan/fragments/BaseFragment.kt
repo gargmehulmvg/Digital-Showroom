@@ -29,16 +29,24 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.MainActivity
 import com.digitaldukaan.R
+import com.digitaldukaan.adapters.ImagesSearchAdapter
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
+import com.digitaldukaan.constants.StaticInstances
+import com.digitaldukaan.interfaces.ISearchImageItemClicked
 import com.digitaldukaan.models.response.StaticTextResponse
+import com.digitaldukaan.network.RetrofitApi
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.bottom_sheet_image_pick.view.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.net.UnknownHostException
@@ -47,7 +55,7 @@ import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
 
 
-open class BaseFragment : Fragment() {
+open class BaseFragment : Fragment(), ISearchImageItemClicked {
 
     protected lateinit var mContentView: View
     private var mProgressDialog: Dialog? = null
@@ -320,6 +328,8 @@ open class BaseFragment : Fragment() {
         showImagePickerDialog()
     }
 
+    private var mImageAdapter = ImagesSearchAdapter()
+
     open fun showImagePickerDialog() {
         val imageUploadStaticData = mStaticData.mStaticData.mCatalogStaticData
         val imagePickBottomSheet = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
@@ -332,19 +342,22 @@ open class BaseFragment : Fragment() {
                 val bottomSheetUploadImageHeading: TextView = findViewById(R.id.bottomSheetUploadImageHeading)
                 val bottomSheetUploadImageCameraTextView: TextView = findViewById(R.id.bottomSheetUploadImageCameraTextView)
                 val bottomSheetUploadImageGalleryTextView: TextView = findViewById(R.id.bottomSheetUploadImageGalleryTextView)
+                val bottomSheetUploadImageSearchHeading: TextView = findViewById(R.id.bottomSheetUploadImageSearchHeading)
+                val bottomSheetUploadImageRemovePhotoTextView: TextView = findViewById(R.id.bottomSheetUploadImageRemovePhotoTextView)
+                val searchImageEditText: EditText = findViewById(R.id.searchImageEditText)
+                val searchImageImageView: View = findViewById(R.id.searchImageImageView)
+                val bottomSheetUploadImageRemovePhoto: View = findViewById(R.id.bottomSheetUploadImageRemovePhoto)
+                val searchImageRecyclerView: RecyclerView = findViewById(R.id.searchImageRecyclerView)
                 bottomSheetUploadImageGalleryTextView.text = imageUploadStaticData.addGallery
+                bottomSheetUploadImageSearchHeading.text = imageUploadStaticData.searchImageSubTitle
+                bottomSheetUploadImageRemovePhotoTextView.text = imageUploadStaticData.removeImageText
                 bottomSheetUploadImageHeading.text = imageUploadStaticData.uploadImageHeading
                 bottomSheetUploadImageCameraTextView.text = imageUploadStaticData.takePhoto
+                searchImageEditText.hint = imageUploadStaticData.searchImageHint
                 bottomSheetUploadImageCloseImageView.setOnClickListener { if (imagePickBottomSheet.isShowing) imagePickBottomSheet.dismiss() }
-                bottomSheetUploadImageCamera.setOnClickListener {
-                    ImagePicker.with(mActivity)
-                        .crop()                    //Crop image(Optional), Check Customization for more option
-                        .compress(1024)            //Final image size will be less than 1 MB(Optional)
-                        .maxResultSize(
-                            1080,
-                            1080
-                        )    //Final image resolution will be less than 1080 x 1080(Optional)
-                        .start()
+                if (!StaticInstances.sIsStoreImageUploaded) {
+                    bottomSheetUploadImageRemovePhotoTextView.visibility = View.GONE
+                    bottomSheetUploadImageRemovePhoto.visibility = View.GONE
                 }
                 bottomSheetUploadImageCamera.setOnClickListener {
                     imagePickBottomSheet.dismiss()
@@ -362,13 +375,38 @@ open class BaseFragment : Fragment() {
                     imagePickBottomSheet.dismiss()
                     openGallery()
                 }
+                mImageAdapter.setSearchImageListener(this@BaseFragment)
+                searchImageImageView.setOnClickListener {
+                    if (searchImageEditText.text.trim().toString().isEmpty()) {
+                        searchImageEditText.error = getString(R.string.mandatory_field_message)
+                        searchImageEditText.requestFocus()
+                        return@setOnClickListener
+                    }
+                    showProgressDialog(mActivity)
+                    CoroutineScopeUtils().runTaskOnCoroutineBackground {
+                        val response = RetrofitApi().getServerCallObject()?.searchImagesFromBing(
+                            getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), searchImageEditText.text.trim().toString(), getStringDataFromSharedPref(Constants.STORE_ID)
+                        )
+                        response?.let {
+                            if (it.isSuccessful) {
+                                it.body()?.let {
+                                    withContext(Dispatchers.Main) {
+                                        stopProgress()
+                                        val list = it.mImagesList
+                                        searchImageRecyclerView.apply {
+                                            layoutManager = GridLayoutManager(mActivity, 3)
+                                            adapter = mImageAdapter
+                                            mImageAdapter.setSearchImageList(list)
+                                        }
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+                }
             }
         }.show()
-        /*imagePickBottomSheet.setOnKeyListener { _, keyCode, _ ->
-            if (KeyEvent.KEYCODE_BACK == keyCode) {
-                true
-            } else false
-        }*/
     }
 
     private fun openGallery() {
@@ -428,5 +466,9 @@ open class BaseFragment : Fragment() {
             }
             return@use outputStream.toString()
         }
+    }
+
+    override fun onSearchImageItemClicked(photoStr: String) {
+        onImageSelectionResult(photoStr)
     }
 }

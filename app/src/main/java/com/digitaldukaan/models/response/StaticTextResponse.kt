@@ -52,6 +52,9 @@ data class ProfileStaticData(
 data class CatalogStaticData(
     @SerializedName("upload_img_heading") var uploadImageHeading: String?,
     @SerializedName("take_photo") var takePhoto: String?,
+    @SerializedName("search_img") var searchImageSubTitle: String?,
+    @SerializedName("remove_image") var removeImageText: String?,
+    @SerializedName("search_img_placeholder") var searchImageHint: String?,
     @SerializedName("add_gallery") var addGallery: String?
 )
 

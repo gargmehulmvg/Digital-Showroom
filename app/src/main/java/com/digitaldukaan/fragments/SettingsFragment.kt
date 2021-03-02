@@ -90,6 +90,8 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         digitalShowroomWebLayout.setOnClickListener { showTrendingOffersBottomSheet() }
         storeSwitch.setOnClickListener { changeStoreDeliveryStatus() }
         deliverySwitch.setOnClickListener { changeStoreDeliveryStatus() }
+        moreControlsTextView.setOnClickListener { launchFragment(MoreControlsFragment.newInstance(), true) }
+        moreControlsImageView.setOnClickListener { launchFragment(MoreControlsFragment.newInstance(), true) }
     }
 
     private fun showTrendingOffersBottomSheet() {
@@ -165,6 +167,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
 
     private fun setupUIFromProfileResponse(profileResponse: ProfileResponse) {
         StaticInstances.sStoreInfo = profileResponse.mAccountInfoResponse?.mStoreInfo
+        StaticInstances.sIsStoreImageUploaded = (StaticInstances.sStoreInfo?.mStoreLogoStr?.isNotEmpty() == true)
         Log.e(SettingsFragment::class.simpleName, "setupUIFromProfileResponse ${profileResponse.mMessage}")
         val infoResponse = profileResponse.mAccountInfoResponse
         mProfileResponse = infoResponse

@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
+import com.digitaldukaan.constants.StaticInstances
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.models.response.ValidateOtpErrorResponse
 import com.digitaldukaan.models.response.ValidateOtpResponse
@@ -88,6 +89,7 @@ class HomeFragment : BaseFragment(), IHomeFragmentServiceInterface{
         validateOtpResponse.mStore?.run {
             storeStringDataInSharedPref(Constants.STORE_ID, storeId.toString())
             storeStringDataInSharedPref(Constants.STORE_NAME, storeInfo.name)
+            if (this.storeInfo.logoImage?.isNotEmpty() == true) StaticInstances.sIsStoreImageUploaded = true
         }
     }
 

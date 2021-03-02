@@ -14,7 +14,7 @@ class ProfilePreviewNetworkService {
         serviceInterface: IProfilePreviewServiceInterface
     ) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.getProfilePreviewResponse("4252")
+            val response = RetrofitApi().getServerCallObject()?.getProfilePreviewResponse(storeId)
             response?.let {
                 if (it.isSuccessful) {
                     it.body()?.let { profilePreviewResponse ->

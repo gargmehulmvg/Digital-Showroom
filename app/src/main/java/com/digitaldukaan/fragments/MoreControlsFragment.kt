@@ -6,23 +6,19 @@ import android.view.View
 import android.view.ViewGroup
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.ToolBarManager
-import com.digitaldukaan.models.response.ProfilePreviewSettingsKeyResponse
 import com.digitaldukaan.services.isInternetConnectionAvailable
 
-class BankAccountFragment : BaseFragment() {
-
-    private lateinit var mProfilePreviewResponse: ProfilePreviewSettingsKeyResponse
+class MoreControlsFragment : BaseFragment() {
 
     companion object {
-        fun newInstance(profilePreviewResponse: ProfilePreviewSettingsKeyResponse): BankAccountFragment {
-            val fragment = BankAccountFragment()
-            fragment.mProfilePreviewResponse = profilePreviewResponse
+        fun newInstance(): MoreControlsFragment {
+            val fragment = MoreControlsFragment()
             return fragment
         }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        mContentView = inflater.inflate(R.layout.bank_account_fragment, container, false)
+        mContentView = inflater.inflate(R.layout.more_control_fragment, container, false)
         return mContentView
     }
 
@@ -32,7 +28,7 @@ class BankAccountFragment : BaseFragment() {
         ToolBarManager.getInstance().apply {
             hideToolBar(mActivity, false)
             setHeaderTitle("")
-            onBackPressed(this@BankAccountFragment)
+            onBackPressed(this@MoreControlsFragment)
             hideBackPressFromToolBar(mActivity, false)
         }
         if (!isInternetConnectionAvailable(mActivity)) {
