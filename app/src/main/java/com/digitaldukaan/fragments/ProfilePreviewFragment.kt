@@ -131,7 +131,10 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
             profilePreviewResponse.mProfileInfo.run {
                 profilePreviewStoreNameTextView.text = mStoreName
                 profilePreviewStoreMobileNumber.text = mPhoneNumber
-                if (this.mStoreLogo?.isNotEmpty() == true) Picasso.get().load(this.mStoreLogo).into(storePhotoImageView)
+                if (this.mStoreLogo?.isNotEmpty() == true) {
+                    storePhotoImageView.visibility = View.VISIBLE
+                    Picasso.get().load(this.mStoreLogo).into(storePhotoImageView)
+                } else storePhotoImageView.visibility = View.GONE
             }
             profilePreviewResponse.mProfileInfo.mSettingsKeysList.run {
                 val linearLayoutManager = LinearLayoutManager(mActivity)
@@ -416,7 +419,10 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (response.mStatus) {
                 val mStoreLogo = response.mStoreInfo?.storeInfo?.logoImage
-                if (mStoreLogo?.isNotEmpty() == true) Picasso.get().load(mStoreLogo).into(storePhotoImageView)
+                if (mStoreLogo?.isNotEmpty() == true) {
+                    storePhotoImageView.visibility = View.VISIBLE
+                    Picasso.get().load(mStoreLogo).into(storePhotoImageView)
+                } else storePhotoImageView.visibility = View.GONE
                 showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
             } else showToast(response.mMessage)
         }

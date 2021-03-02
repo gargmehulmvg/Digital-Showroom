@@ -6,8 +6,10 @@ import android.app.Dialog
 import android.content.*
 import android.content.Context.MODE_PRIVATE
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.os.Handler
@@ -15,6 +17,7 @@ import android.os.Looper
 import android.text.Html
 import android.util.Base64
 import android.util.Base64OutputStream
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
@@ -37,6 +40,7 @@ import com.digitaldukaan.adapters.ImagesSearchAdapter
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.StaticInstances
+import com.digitaldukaan.constants.getImageFileFromBitmap
 import com.digitaldukaan.interfaces.ISearchImageItemClicked
 import com.digitaldukaan.models.response.StaticTextResponse
 import com.digitaldukaan.network.RetrofitApi
@@ -44,6 +48,7 @@ import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
+import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.bottom_sheet_image_pick.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -329,12 +334,13 @@ open class BaseFragment : Fragment(), ISearchImageItemClicked {
     }
 
     private var mImageAdapter = ImagesSearchAdapter()
+    private lateinit var mImagePickBottomSheet: BottomSheetDialog
 
     open fun showImagePickerDialog() {
         val imageUploadStaticData = mStaticData.mStaticData.mCatalogStaticData
-        val imagePickBottomSheet = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
+        mImagePickBottomSheet = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
         val view = LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet_image_pick, mActivity.findViewById(R.id.bottomSheetContainer))
-        imagePickBottomSheet.apply {
+        mImagePickBottomSheet.apply {
             setContentView(view)
             setBottomSheetCommonProperty()
             view?.run {
@@ -354,26 +360,34 @@ open class BaseFragment : Fragment(), ISearchImageItemClicked {
                 bottomSheetUploadImageHeading.text = imageUploadStaticData.uploadImageHeading
                 bottomSheetUploadImageCameraTextView.text = imageUploadStaticData.takePhoto
                 searchImageEditText.hint = imageUploadStaticData.searchImageHint
-                bottomSheetUploadImageCloseImageView.setOnClickListener { if (imagePickBottomSheet.isShowing) imagePickBottomSheet.dismiss() }
+                bottomSheetUploadImageCloseImageView.setOnClickListener { if (mImagePickBottomSheet.isShowing) mImagePickBottomSheet.dismiss() }
                 if (!StaticInstances.sIsStoreImageUploaded) {
                     bottomSheetUploadImageRemovePhotoTextView.visibility = View.GONE
                     bottomSheetUploadImageRemovePhoto.visibility = View.GONE
                 }
                 bottomSheetUploadImageCamera.setOnClickListener {
-                    imagePickBottomSheet.dismiss()
+                    mImagePickBottomSheet.dismiss()
                     openCamera()
                 }
                 bottomSheetUploadImageCameraTextView.setOnClickListener {
-                    imagePickBottomSheet.dismiss()
+                    mImagePickBottomSheet.dismiss()
                     openCamera()
                 }
                 bottomSheetUploadImageGallery.setOnClickListener {
-                    imagePickBottomSheet.dismiss()
+                    mImagePickBottomSheet.dismiss()
                     openGallery()
                 }
                 bottomSheetUploadImageGalleryTextView.setOnClickListener {
-                    imagePickBottomSheet.dismiss()
+                    mImagePickBottomSheet.dismiss()
                     openGallery()
+                }
+                bottomSheetUploadImageRemovePhoto.setOnClickListener {
+                    mImagePickBottomSheet.dismiss()
+                    onImageSelectionResult("")
+                }
+                bottomSheetUploadImageRemovePhotoTextView.setOnClickListener {
+                    mImagePickBottomSheet.dismiss()
+                    onImageSelectionResult("")
                 }
                 mImageAdapter.setSearchImageListener(this@BaseFragment)
                 searchImageImageView.setOnClickListener {
@@ -469,6 +483,25 @@ open class BaseFragment : Fragment(), ISearchImageItemClicked {
     }
 
     override fun onSearchImageItemClicked(photoStr: String) {
-        onImageSelectionResult(photoStr)
+        showProgressDialog(mActivity)
+        Picasso.get().load(photoStr).into(object : com.squareup.picasso.Target {
+            override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
+                // loaded bitmap is here (bitmap)
+                bitmap?.let {
+                    val file = getImageFileFromBitmap(it, mActivity)
+                    stopProgress()
+                    mImagePickBottomSheet.dismiss()
+                    onImageSelectionResult(convertImageFileToBase64(file))
+                }
+            }
+
+            override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
+                Log.d("TAG", "onPrepareLoad: ")
+            }
+
+            override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
+                Log.d("TAG", "onBitmapFailed: ")
+            }
+        })
     }
 }
