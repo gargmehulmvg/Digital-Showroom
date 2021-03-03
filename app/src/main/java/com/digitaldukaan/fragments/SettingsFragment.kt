@@ -9,14 +9,17 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.ProfileStatusAdapter
+import com.digitaldukaan.adapters.ReferAndEarnAdapter
 import com.digitaldukaan.adapters.SettingsStoreAdapter
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
@@ -25,10 +28,7 @@ import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.interfaces.IOnToolbarIconClick
 import com.digitaldukaan.interfaces.IStoreSettingsItemClicked
 import com.digitaldukaan.models.request.StoreDeliveryStatusChangeRequest
-import com.digitaldukaan.models.response.AccountInfoResponse
-import com.digitaldukaan.models.response.ProfileResponse
-import com.digitaldukaan.models.response.StoreDeliveryStatusChangeResponse
-import com.digitaldukaan.models.response.StoreOptionsResponse
+import com.digitaldukaan.models.response.*
 import com.digitaldukaan.services.ProfileService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IProfileServiceInterface
@@ -48,7 +48,11 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
     private val mAppSettingsStaticData = mStaticData.mStaticData.mSettingsStaticData
     private val mProfileService = ProfileService()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         mContentView = inflater.inflate(R.layout.settings_fragment, container, false)
         mProfileService.setProfileServiceInterface(this)
         return mContentView
@@ -58,7 +62,10 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         super.onStart()
         ToolBarManager.getInstance().apply {
             setSideIconVisibility(true)
-            setSideIcon(ContextCompat.getDrawable(mActivity, R.drawable.ic_setting_toolbar), this@SettingsFragment)
+            setSideIcon(
+                ContextCompat.getDrawable(mActivity, R.drawable.ic_setting_toolbar),
+                this@SettingsFragment
+            )
         }
     }
 
@@ -69,20 +76,33 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             setHeaderTitle(getString(R.string.my_account))
             setSideIconVisibility(true)
             hideBackPressFromToolBar(mActivity, false)
-            setSideIcon(ContextCompat.getDrawable(mActivity, R.drawable.ic_setting_toolbar), this@SettingsFragment)
+            setSideIcon(
+                ContextCompat.getDrawable(mActivity, R.drawable.ic_setting_toolbar),
+                this@SettingsFragment
+            )
         }
-        storeStatusTextView.text = "${mAppSettingsStaticData.mStoreText} : ${mAppSettingsStaticData.mOffText}"
+        storeStatusTextView.text =
+            "${mAppSettingsStaticData.mStoreText} : ${mAppSettingsStaticData.mOffText}"
         storeSwitch.setOnCheckedChangeListener { _, isChecked ->
             run {
-                Log.d(SettingsFragment::class.simpleName, "storeSwitch.setOnCheckedChangeListener $isChecked")
-                storeStatusTextView.text = "${mAppSettingsStaticData.mStoreText} : ${if (isChecked) mAppSettingsStaticData.mOnText else mAppSettingsStaticData.mOffText}"
+                Log.d(
+                    SettingsFragment::class.simpleName,
+                    "storeSwitch.setOnCheckedChangeListener $isChecked"
+                )
+                storeStatusTextView.text =
+                    "${mAppSettingsStaticData.mStoreText} : ${if (isChecked) mAppSettingsStaticData.mOnText else mAppSettingsStaticData.mOffText}"
             }
         }
-        deliveryStatusTextView.text = "${mAppSettingsStaticData.mDeliveryText} : ${mAppSettingsStaticData.mOffText}"
+        deliveryStatusTextView.text =
+            "${mAppSettingsStaticData.mDeliveryText} : ${mAppSettingsStaticData.mOffText}"
         deliverySwitch.setOnCheckedChangeListener { _, isChecked ->
             run {
-                Log.d(SettingsFragment::class.simpleName, "deliverySwitch.setOnCheckedChangeListener $isChecked")
-                deliveryStatusTextView.text = "${mAppSettingsStaticData.mDeliveryText} : ${if (isChecked) mAppSettingsStaticData.mOnText else mAppSettingsStaticData.mOffText}"
+                Log.d(
+                    SettingsFragment::class.simpleName,
+                    "deliverySwitch.setOnCheckedChangeListener $isChecked"
+                )
+                deliveryStatusTextView.text =
+                    "${mAppSettingsStaticData.mDeliveryText} : ${if (isChecked) mAppSettingsStaticData.mOnText else mAppSettingsStaticData.mOffText}"
             }
         }
         swipeRefreshLayout.setOnRefreshListener(this)
@@ -97,20 +117,32 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             deliverySwitch.id -> changeStoreDeliveryStatus()
             moreControlsTextView.id -> launchFragment(MoreControlsFragment.newInstance(), true)
             moreControlsImageView.id -> launchFragment(MoreControlsFragment.newInstance(), true)
-            userProfileLayout.id -> launchFragment(ProfilePreviewFragment().newInstance(mProfileResponse?.mStoreInfo?.mStoreName), true)
-            userProfileLayout.id -> launchFragment(ProfilePreviewFragment().newInstance(mProfileResponse?.mStoreInfo?.mStoreName), true)
+            userProfileLayout.id -> launchFragment(
+                ProfilePreviewFragment().newInstance(
+                    mProfileResponse?.mStoreInfo?.mStoreName
+                ), true
+            )
+            userProfileLayout.id -> launchFragment(
+                ProfilePreviewFragment().newInstance(
+                    mProfileResponse?.mStoreInfo?.mStoreName
+                ), true
+            )
         }
     }
 
     private fun showTrendingOffersBottomSheet() {
         val bottomSheetDialog = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
-        val view = LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet_trending_offers, mActivity.findViewById(R.id.bottomSheetContainer))
+        val view = LayoutInflater.from(mActivity).inflate(
+            R.layout.bottom_sheet_trending_offers,
+            mActivity.findViewById(R.id.bottomSheetContainer)
+        )
         bottomSheetDialog.setContentView(view)
         bottomSheetDialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
-        val bottomSheetBrowserText:TextView = view.findViewById(R.id.bottomSheetBrowserText)
-        val bottomSheetHeadingTextView:TextView = view.findViewById(R.id.bottomSheetHeadingTextView)
-        val bottomSheetUrl:TextView = view.findViewById(R.id.bottomSheetUrl)
-        val bottomSheetClose:View = view.findViewById(R.id.bottomSheetClose)
+        val bottomSheetBrowserText: TextView = view.findViewById(R.id.bottomSheetBrowserText)
+        val bottomSheetHeadingTextView: TextView =
+            view.findViewById(R.id.bottomSheetHeadingTextView)
+        val bottomSheetUrl: TextView = view.findViewById(R.id.bottomSheetUrl)
+        val bottomSheetClose: View = view.findViewById(R.id.bottomSheetClose)
         bottomSheetBrowserText.text = mAppSettingsStaticData.mBestViewedText
         val txtSpannable = SpannableString(Constants.DOTPE_OFFICIAL_URL)
         val boldSpan = StyleSpan(Typeface.BOLD)
@@ -119,6 +151,34 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         bottomSheetHeadingTextView.setHtmlData(mAppSettingsStaticData.mBottomSheetText)
         bottomSheetUrl.setOnClickListener { copyDataToClipboard(Constants.DOTPE_OFFICIAL_URL_CLIPBOARD) }
         bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
+        bottomSheetDialog.show()
+    }
+
+    private fun showReferAndEarnBottomSheet(response: ReferEarnResponse?) {
+        val bottomSheetDialog = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
+        val view = LayoutInflater.from(mActivity).inflate(
+            R.layout.bottom_sheet_refer_and_earn,
+            mActivity.findViewById(R.id.bottomSheetContainer)
+        )
+        bottomSheetDialog.apply {
+            setContentView(view)
+            setBottomSheetCommonProperty()
+            view.run {
+                val bottomSheetClose: View = findViewById(R.id.bottomSheetClose)
+                val bottomSheetUpperImageView: ImageView = findViewById(R.id.bottomSheetUpperImageView)
+                val bottomSheetHeadingTextView: TextView = findViewById(R.id.bottomSheetHeadingTextView)
+                val verifyTextView: TextView = findViewById(R.id.verifyTextView)
+                val referAndEarnRecyclerView: RecyclerView = findViewById(R.id.referAndEarnRecyclerView)
+                Picasso.get().load(response?.mReferAndEarnData?.imageUrl).into(bottomSheetUpperImageView)
+                bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
+                bottomSheetHeadingTextView.text = "${response?.mReferAndEarnData?.heading1}\n${response?.mReferAndEarnData?.heading2}"
+                verifyTextView.text = response?.mReferAndEarnData?.settingsTxt
+                referAndEarnRecyclerView.apply {
+                    layoutManager = LinearLayoutManager(mActivity)
+                    adapter = ReferAndEarnAdapter(response?.mReferAndEarnData?.workJourneyList)
+                }
+            }
+        }.show()
         bottomSheetDialog.show()
     }
 
@@ -137,12 +197,25 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             return
         }
         showProgressDialog(mActivity)
-        val request = StoreDeliveryStatusChangeRequest(getStringDataFromSharedPref(Constants.STORE_ID).toInt(), if (storeSwitch.isChecked) 1 else 0, if (deliverySwitch.isChecked) 1 else 0, 0)
+        val request = StoreDeliveryStatusChangeRequest(
+            getStringDataFromSharedPref(Constants.STORE_ID).toInt(),
+            if (storeSwitch.isChecked) 1 else 0,
+            if (deliverySwitch.isChecked) 1 else 0,
+            0
+        )
         mProfileService.changeStoreAndDeliveryStatus(request)
     }
 
-    override fun onToolbarSideIconClicked() = launchFragment(CommonWebViewFragment().newInstance(getString(R.string.help), BuildConfig.WEB_VIEW_URL + Constants.WEB_VIEW_HELP + "?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&" + "redirectFrom=settings" + "&token=${getStringDataFromSharedPref(
-        Constants.USER_AUTH_TOKEN)}"), true)
+    override fun onToolbarSideIconClicked() = launchFragment(
+        CommonWebViewFragment().newInstance(
+            getString(R.string.help),
+            BuildConfig.WEB_VIEW_URL + Constants.WEB_VIEW_HELP + "?storeid=${getStringDataFromSharedPref(
+                Constants.STORE_ID
+            )}&" + "redirectFrom=settings" + "&token=${getStringDataFromSharedPref(
+                Constants.USER_AUTH_TOKEN
+            )}"
+        ), true
+    )
 
     override fun onStop() {
         super.onStop()
@@ -155,6 +228,14 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             if (swipeRefreshLayout.isRefreshing) swipeRefreshLayout.isRefreshing = false
             if (profileResponse.mStatus) setupUIFromProfileResponse(profileResponse)
         }
+    }
+
+    private var mReferAndEarnResponse: ReferEarnResponse? = null
+
+    override fun onReferAndEarnResponse(response: ReferEarnResponse) {
+        stopProgress()
+        mReferAndEarnResponse = response
+        CoroutineScopeUtils().runTaskOnCoroutineMain { showReferAndEarnBottomSheet(response) }
     }
 
     override fun onChangeStoreAndDeliveryStatusResponse(response: StoreDeliveryStatusChangeResponse) {
@@ -171,22 +252,29 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         }
     }
 
-    private var mProfileResponse:AccountInfoResponse? = null
+    private var mProfileResponse: AccountInfoResponse? = null
 
     private fun setupUIFromProfileResponse(profileResponse: ProfileResponse) {
         StaticInstances.sStoreInfo = profileResponse.mAccountInfoResponse?.mStoreInfo
-        StaticInstances.sIsStoreImageUploaded = (StaticInstances.sStoreInfo?.mStoreLogoStr?.isNotEmpty() == true)
-        Log.e(SettingsFragment::class.simpleName, "setupUIFromProfileResponse ${profileResponse.mMessage}")
+        StaticInstances.sIsStoreImageUploaded =
+            (StaticInstances.sStoreInfo?.mStoreLogoStr?.isNotEmpty() == true)
+        Log.e(
+            SettingsFragment::class.simpleName,
+            "setupUIFromProfileResponse ${profileResponse.mMessage}"
+        )
         val infoResponse = profileResponse.mAccountInfoResponse
         mProfileResponse = infoResponse
         dukaanNameTextView.text = infoResponse?.mStoreInfo?.mStoreName
-        if (infoResponse?.mStoreInfo?.mStoreLogoStr?.isNotEmpty() == true) Picasso.get().load(infoResponse.mStoreInfo.mStoreLogoStr).into(storePhotoImageView)
+        if (infoResponse?.mStoreInfo?.mStoreLogoStr?.isNotEmpty() == true) Picasso.get()
+            .load(infoResponse.mStoreInfo.mStoreLogoStr).into(storePhotoImageView)
         storeSwitch.isChecked = infoResponse?.mStoreInfo?.mStoreService?.mStoreFlag == 1
         infoResponse?.mFooterImages?.forEachIndexed { index, imageUrl ->
             if (index == 0) {
-                Picasso.get().load(imageUrl).placeholder(R.drawable.ic_auto_data_backup).into(autoDataBackupImageView)
+                Picasso.get().load(imageUrl).placeholder(R.drawable.ic_auto_data_backup)
+                    .into(autoDataBackupImageView)
             } else {
-                Picasso.get().load(imageUrl).placeholder(R.drawable.ic_safe_secure).into(safeSecureImageView)
+                Picasso.get().load(imageUrl).placeholder(R.drawable.ic_safe_secure)
+                    .into(safeSecureImageView)
             }
         }
         deliverySwitch.isChecked = infoResponse?.mStoreInfo?.mStoreService?.mDeliveryFlag == 1
@@ -208,42 +296,79 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         }
         infoResponse?.mTrendingList?.forEachIndexed { index, response ->
             if (0 == index) {
-                Picasso.get().load(response.mCDN).placeholder(R.drawable.ic_auto_data_backup).into(viewTopStoreImageView)
+                Picasso.get().load(response.mCDN).placeholder(R.drawable.ic_auto_data_backup)
+                    .into(viewTopStoreImageView)
                 viewTopStoreTextView.text = response.mText
             }
             if (1 == index) {
                 trendingTextView.text = response.mType
-                Picasso.get().load(response.mCDN).placeholder(R.drawable.ic_auto_data_backup).into(digitalShowroomWebImageView)
+                Picasso.get().load(response.mCDN).placeholder(R.drawable.ic_auto_data_backup)
+                    .into(digitalShowroomWebImageView)
                 digitalShowroomWebTextView.text = response.mText
             }
             if (2 == index) {
-                Picasso.get().load(response.mCDN).placeholder(R.drawable.ic_auto_data_backup).into(bulkUploadItemImageView)
+                Picasso.get().load(response.mCDN).placeholder(R.drawable.ic_auto_data_backup)
+                    .into(bulkUploadItemImageView)
                 bulkUploadItemTextView.text = response.mText
             }
         }
         val remainingSteps = infoResponse?.mTotalSteps?.minus(infoResponse.mCompletedSteps)
-        stepsLeftTextView.text = if (remainingSteps == 1) "$remainingSteps ${infoResponse.mAccountStaticText?.mStepLeft}" else "$remainingSteps ${infoResponse?.mAccountStaticText?.mStepsLeft}"
+        stepsLeftTextView.text =
+            if (remainingSteps == 1) "$remainingSteps ${infoResponse.mAccountStaticText?.mStepLeft}" else "$remainingSteps ${infoResponse?.mAccountStaticText?.mStepsLeft}"
         completeProfileTextView.text = infoResponse?.mAccountStaticText?.mCompleteProfile
         whatsAppTextView.setOnClickListener {
             val sharingStr = infoResponse?.mStoreShare?.mWaText
             if (infoResponse?.mStoreShare?.mShareStoreBanner!!) "\n\n" + sharingStr + infoResponse.mStoreShare?.mImageUrl
             shareDataOnWhatsApp(sharingStr)
         }
-        viewTopOrderLayout.setOnClickListener{
-            if (infoResponse?.mTrendingList?.isNotEmpty()!!) openUrlInBrowser(infoResponse.mTrendingList?.get(0)?.mPage)
+        viewTopOrderLayout.setOnClickListener {
+            if (infoResponse?.mTrendingList?.isNotEmpty()!!) openUrlInBrowser(
+                infoResponse.mTrendingList?.get(
+                    0
+                )?.mPage
+            )
         }
-        bulkUploadItemLayout.setOnClickListener{
-            if (infoResponse?.mTrendingList?.size!! >=2) openUrlInBrowser(infoResponse.mTrendingList?.get(2)?.mPage)
+        bulkUploadItemLayout.setOnClickListener {
+            if (infoResponse?.mTrendingList?.size!! >= 2) openUrlInBrowser(
+                infoResponse.mTrendingList?.get(
+                    2
+                )?.mPage
+            )
         }
     }
 
     private fun checkStoreOptionClick(response: StoreOptionsResponse) {
         when (response.mPage) {
+            Constants.PAGE_REFER -> {
+                if (mReferAndEarnResponse != null) {
+                    showReferAndEarnBottomSheet(mReferAndEarnResponse)
+                    return
+                }
+                if (!isInternetConnectionAvailable(mActivity)) {
+                    showNoInternetConnectionDialog()
+                    return
+                }
+                showProgressDialog(mActivity)
+                mProfileService.getReferAndEarnData()
+            }
             Constants.PAGE_HELP -> onToolbarSideIconClicked()
             Constants.PAGE_FEEDBACK -> openPlayStore()
-            Constants.PAGE_APP_SETTINGS -> launchFragment(AppSettingsFragment().newInstance(mProfileResponse?.mSubPages, response.mText), true)
-            Constants.PAGE_REWARDS -> launchFragment(CommonWebViewFragment().newInstance(getString(R.string.help), BuildConfig.WEB_VIEW_URL + Constants.WEB_VIEW_REWARDS + "?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&" + "redirectFrom=settings" + "&token=${getStringDataFromSharedPref(
-                Constants.USER_AUTH_TOKEN)}"), true)
+            Constants.PAGE_APP_SETTINGS -> launchFragment(
+                AppSettingsFragment().newInstance(
+                    mProfileResponse?.mSubPages,
+                    response.mText
+                ), true
+            )
+            Constants.PAGE_REWARDS -> launchFragment(
+                CommonWebViewFragment().newInstance(
+                    getString(R.string.help),
+                    BuildConfig.WEB_VIEW_URL + Constants.WEB_VIEW_REWARDS + "?storeid=${getStringDataFromSharedPref(
+                        Constants.STORE_ID
+                    )}&" + "redirectFrom=settings" + "&token=${getStringDataFromSharedPref(
+                        Constants.USER_AUTH_TOKEN
+                    )}"
+                ), true
+            )
         }
     }
 

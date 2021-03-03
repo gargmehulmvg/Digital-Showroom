@@ -29,6 +29,7 @@ class Constants {
         const val ACTION_STORE_NAME = "store_name"
         const val ACTION_STORE_LOCATION = "store_location"
         //Pages
+        const val PAGE_REFER = "refer"
         const val PAGE_HELP = "help"
         const val PAGE_FEEDBACK = "Feedback"
         const val PAGE_APP_SETTINGS = "Sitemap"

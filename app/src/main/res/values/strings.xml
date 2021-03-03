@@ -55,6 +55,7 @@
     <string name="step_1_store_description">Step 1: Store Description</string>
     <string name="save_n_continue"><![CDATA[Save & Continue]]></string>
     <string name="map_api_key">AIzaSyA9UIK8Gfrvs0JTLjaGKeEB8w7hb_RXKWM</string>
+    <string name="how_it_works">How it works?</string>
     <string-array name="state_array">
         <item >Andhra Pradesh</item>
         <item >Arunachal Pradesh</item>

@@ -43,4 +43,21 @@ class ProfileNetworkService {
         }
     }
 
+    suspend fun getReferAndEarnDataServerCall(
+        serviceInterface: IProfileServiceInterface) {
+        try {
+            val response = RetrofitApi().getServerCallObject()?.getReferAndEarnData()
+            response?.let {
+                if (it.isSuccessful) {
+                    it.body()?.let { responseBody ->
+                        serviceInterface.onReferAndEarnResponse(responseBody)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(ProfileNetworkService::class.java.simpleName, "changeStoreAndDeliveryStatusServerCall: ", e)
+            serviceInterface.onProfileDataException(e)
+        }
+    }
+
 }

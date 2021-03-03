@@ -25,4 +25,10 @@ class ProfileService {
             mNetworkService.changeStoreAndDeliveryStatusServerCall(request, mProfileServiceInterface)
         }
     }
+
+    fun getReferAndEarnData() {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.getReferAndEarnDataServerCall(mProfileServiceInterface)
+        }
+    }
 }
