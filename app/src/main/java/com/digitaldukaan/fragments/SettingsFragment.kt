@@ -87,11 +87,19 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         }
         swipeRefreshLayout.setOnRefreshListener(this)
         fetchUserProfile()
-        digitalShowroomWebLayout.setOnClickListener { showTrendingOffersBottomSheet() }
-        storeSwitch.setOnClickListener { changeStoreDeliveryStatus() }
-        deliverySwitch.setOnClickListener { changeStoreDeliveryStatus() }
-        moreControlsTextView.setOnClickListener { launchFragment(MoreControlsFragment.newInstance(), true) }
-        moreControlsImageView.setOnClickListener { launchFragment(MoreControlsFragment.newInstance(), true) }
+    }
+
+    override fun onClick(view: View?) {
+        super.onClick(view)
+        when (view?.id) {
+            digitalShowroomWebLayout.id -> showTrendingOffersBottomSheet()
+            storeSwitch.id -> changeStoreDeliveryStatus()
+            deliverySwitch.id -> changeStoreDeliveryStatus()
+            moreControlsTextView.id -> launchFragment(MoreControlsFragment.newInstance(), true)
+            moreControlsImageView.id -> launchFragment(MoreControlsFragment.newInstance(), true)
+            userProfileLayout.id -> launchFragment(ProfilePreviewFragment().newInstance(mProfileResponse?.mStoreInfo?.mStoreName), true)
+            userProfileLayout.id -> launchFragment(ProfilePreviewFragment().newInstance(mProfileResponse?.mStoreInfo?.mStoreName), true)
+        }
     }
 
     private fun showTrendingOffersBottomSheet() {
@@ -227,7 +235,6 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         bulkUploadItemLayout.setOnClickListener{
             if (infoResponse?.mTrendingList?.size!! >=2) openUrlInBrowser(infoResponse.mTrendingList?.get(2)?.mPage)
         }
-        userProfileLayout.setOnClickListener { launchFragment(ProfilePreviewFragment().newInstance(infoResponse?.mStoreInfo?.mStoreName), true) }
     }
 
     private fun checkStoreOptionClick(response: StoreOptionsResponse) {
