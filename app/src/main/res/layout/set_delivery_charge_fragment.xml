@@ -1,6 +1,232 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
+    android:background="@color/default_bg"
+    android:fillViewport="true">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:animateLayoutChanges="true"
+        android:padding="@dimen/_15sdp">
+
+        <LinearLayout
+            android:id="@+id/freeDeliveryContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/curve_white_background"
+            android:orientation="vertical"
+            android:animateLayoutChanges="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <RadioButton
+                android:id="@+id/freeDeliveryRadioButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/_5sdp"
+                android:onClick="onClick"
+                android:padding="@dimen/_10sdp"
+                tools:text="Free Delivery" />
+
+            <View
+                android:id="@+id/freeDeliverySeparator"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_1sdp"
+                android:background="@color/light_grey_background" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/freeDeliveryTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:layout_marginEnd="@dimen/_10sdp"
+                android:layout_marginBottom="@dimen/_15sdp"
+                android:textColor="@color/default_text_light_grey"
+                android:textSize="@dimen/_10sdp"
+                tools:text="Free info text for merchant will come here max 2 lines." />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/fixedDeliveryChargeContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_15sdp"
+            android:animateLayoutChanges="true"
+            android:background="@drawable/curve_white_background"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/freeDeliveryContainer">
+
+            <RadioButton
+                android:id="@+id/fixedDeliveryRadioButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/_5sdp"
+                android:onClick="onClick"
+                android:padding="@dimen/_10sdp"
+                tools:text="Free Delivery" />
+
+            <View
+                android:id="@+id/fixedDeliverySeparator"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_1sdp"
+                android:background="@color/light_grey_background" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/fixedDeliveryChargeLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_40sdp"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:layout_marginEnd="@dimen/_10sdp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/minDeliveryHeadingTextView"
+                app:layout_constraintTop_toBottomOf="@+id/minDeliveryHeadingTextView"
+                tools:hint="Fixed Delivery Charge">
+
+                <EditText
+                    android:id="@+id/fixedDeliveryChargeEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="start"
+                    android:importantForAutofill="no"
+                    android:inputType="number"
+                    android:maxLength="@integer/amount_length"
+                    android:minLines="1"
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/default_text_light_grey"
+                    android:textSize="@dimen/_10sdp"
+                    tools:ignore="LabelFor" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/freeDeliveryAboveLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_40sdp"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginEnd="@dimen/_10sdp"
+                android:layout_marginBottom="@dimen/_10sdp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/minDeliveryHeadingTextView"
+                app:layout_constraintTop_toBottomOf="@+id/minDeliveryHeadingTextView"
+                tools:hint="Free Delivery Above (optional)">
+
+                <EditText
+                    android:id="@+id/freeDeliveryAboveEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="start"
+                    android:importantForAutofill="no"
+                    android:inputType="number"
+                    android:maxLength="@integer/amount_length"
+                    android:minLines="1"
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/default_text_light_grey"
+                    android:textSize="@dimen/_10sdp"
+                    tools:ignore="LabelFor" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/customDeliveryContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
+            android:layout_marginTop="@dimen/_15sdp"
+            android:background="@drawable/curve_white_background"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/fixedDeliveryChargeContainer">
+
+            <RadioButton
+                android:id="@+id/customDeliveryRadioButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/_5sdp"
+                android:onClick="onClick"
+                android:padding="@dimen/_10sdp"
+                tools:text="Free Delivery" />
+
+            <View
+                android:id="@+id/customDeliverySeparator"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_1sdp"
+                android:background="@color/light_grey_background" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/customDeliveryAboveLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_40sdp"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginEnd="@dimen/_10sdp"
+                android:layout_marginBottom="@dimen/_10sdp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/minDeliveryHeadingTextView"
+                app:layout_constraintTop_toBottomOf="@+id/minDeliveryHeadingTextView"
+                tools:hint="Free Delivery Above (optional)">
+
+                <EditText
+                    android:id="@+id/customDeliveryAboveEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="start"
+                    android:importantForAutofill="no"
+                    android:inputType="number"
+                    android:maxLength="@integer/amount_length"
+                    android:minLines="1"
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/default_text_light_grey"
+                    android:textSize="@dimen/_10sdp"
+                    tools:ignore="LabelFor" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/customDeliveryTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_12sdp"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:layout_marginEnd="@dimen/_12sdp"
+                android:layout_marginBottom="@dimen/_15sdp"
+                android:lineSpacingMultiplier="1.2"
+                android:textSize="@dimen/_11sdp"
+                tools:text="You can set your delivery charges at the time of sending bill" />
+
+            <ImageView
+                android:id="@+id/customDeliveryImageView"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/_275sdp"
+                android:layout_marginBottom="@dimen/_10sdp"
+                android:contentDescription="@string/image_view_content_description"
+                android:src="@drawable/ic_custom_delivery_help" />
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>
