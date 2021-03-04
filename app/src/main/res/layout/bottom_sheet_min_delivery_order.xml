@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/bottomSheetContainer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/upper_curve_white_background"
+    android:padding="@dimen/_15sdp">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/minDeliveryHeadingTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:lineSpacingMultiplier="1.3"
+        android:minLines="2"
+        android:paddingTop="@dimen/_5sdp"
+        android:layout_marginStart="@dimen/_10sdp"
+        android:paddingBottom="@dimen/_10sdp"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_16sdp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Set minimum order value \nfor delivery" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/minDeliveryAmountContainer"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/_10sdp"
+        android:layout_marginTop="@dimen/_10sdp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/minDeliveryHeadingTextView"
+        app:layout_constraintTop_toBottomOf="@+id/minDeliveryHeadingTextView"
+        tools:hint="Minimum order value (optional)">
+
+        <EditText
+            android:id="@+id/minDeliveryAmountEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="start"
+            android:importantForAutofill="no"
+            android:inputType="number"
+            android:maxLength="@integer/amount_length"
+            android:minLines="1"
+            android:textColor="@color/black"
+            android:textColorHint="@color/default_text_light_grey"
+            android:textSize="@dimen/_12sdp" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/verifyTextView"
+        style="@style/common_text_view_background"
+        android:gravity="center"
+        android:minWidth="@dimen/_150sdp"
+        android:onClick="onClick"
+        android:layout_marginTop="@dimen/_19sdp"
+        android:layout_marginBottom="@dimen/_10sdp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/minDeliveryAmountContainer"
+        app:layout_constraintTop_toBottomOf="@+id/minDeliveryAmountContainer"
+        tools:text="@string/save_n_continue" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
