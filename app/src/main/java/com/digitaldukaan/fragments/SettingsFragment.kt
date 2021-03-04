@@ -173,6 +173,15 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                 bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
                 bottomSheetHeadingTextView.text = "${response?.mReferAndEarnData?.heading1}\n${response?.mReferAndEarnData?.heading2}"
                 verifyTextView.text = response?.mReferAndEarnData?.settingsTxt
+                verifyTextView.setOnClickListener{
+                    mReferEarnOverWhatsAppResponse.run {
+                        if (mReferAndEarnData.isShareStoreBanner == true) {
+                            shareDataOnWhatsAppWithImage(mReferAndEarnData.whatsAppText, mReferAndEarnData.imageUrl)
+                        } else {
+                            shareDataOnWhatsApp(mReferAndEarnData.whatsAppText)
+                        }
+                    }
+                }
                 referAndEarnRecyclerView.apply {
                     layoutManager = LinearLayoutManager(mActivity)
                     adapter = ReferAndEarnAdapter(response?.mReferAndEarnData?.workJourneyList)
@@ -236,6 +245,12 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         stopProgress()
         mReferAndEarnResponse = response
         CoroutineScopeUtils().runTaskOnCoroutineMain { showReferAndEarnBottomSheet(response) }
+    }
+
+    private lateinit var mReferEarnOverWhatsAppResponse: ReferEarnOverWhatsAppResponse
+
+    override fun onReferAndEarnOverWhatsAppResponse(response: ReferEarnOverWhatsAppResponse) {
+        mReferEarnOverWhatsAppResponse = response
     }
 
     override fun onChangeStoreAndDeliveryStatusResponse(response: StoreDeliveryStatusChangeResponse) {
@@ -350,6 +365,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                 }
                 showProgressDialog(mActivity)
                 mProfileService.getReferAndEarnData()
+                mProfileService.getReferAndEarnDataOverWhatsApp()
             }
             Constants.PAGE_HELP -> onToolbarSideIconClicked()
             Constants.PAGE_FEEDBACK -> openPlayStore()

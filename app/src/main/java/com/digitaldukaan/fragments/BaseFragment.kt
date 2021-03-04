@@ -37,10 +37,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.MainActivity
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.ImagesSearchAdapter
-import com.digitaldukaan.constants.Constants
-import com.digitaldukaan.constants.CoroutineScopeUtils
-import com.digitaldukaan.constants.StaticInstances
-import com.digitaldukaan.constants.getImageFileFromBitmap
+import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.ISearchImageItemClicked
 import com.digitaldukaan.models.response.StaticTextResponse
 import com.digitaldukaan.network.RetrofitApi
@@ -250,6 +247,41 @@ open class BaseFragment : Fragment(), ISearchImageItemClicked {
         } catch (ex: ActivityNotFoundException) {
             showToast("Whatsapp have not been installed.")
         }
+    }
+
+    open fun shareDataOnWhatsAppWithImage(sharingData: String?, photoStr: String?) {
+        Picasso.get().load(photoStr).into(object : com.squareup.picasso.Target {
+            override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
+                // loaded bitmap is here (bitmap)
+                bitmap?.let {
+                    val imgUri = it.getImageUri(mActivity)
+                    imgUri?.let {
+                        val whatsAppIntent = Intent(Intent.ACTION_SEND)
+                        whatsAppIntent.apply {
+                            type = "text/plain"
+                            setPackage("com.whatsapp")
+                            putExtra(Intent.EXTRA_TEXT, sharingData)
+                            putExtra(Intent.EXTRA_STREAM, imgUri)
+                            type = "image/jpeg"
+                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            try {
+                                mActivity.startActivity(whatsAppIntent)
+                            } catch (ex: ActivityNotFoundException) {
+                                showToast("WhatsApp have not been installed.")
+                            }
+                        }
+                    }
+                }
+            }
+
+            override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
+                Log.d("TAG", "onPrepareLoad: ")
+            }
+
+            override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
+                Log.d("TAG", "onBitmapFailed: ")
+            }
+        })
     }
 
     open fun startShinningAnimation(view: View) {

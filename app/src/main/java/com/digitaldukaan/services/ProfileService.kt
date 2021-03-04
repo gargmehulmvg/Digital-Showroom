@@ -31,4 +31,10 @@ class ProfileService {
             mNetworkService.getReferAndEarnDataServerCall(mProfileServiceInterface)
         }
     }
+
+    fun getReferAndEarnDataOverWhatsApp() {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.getReferAndEarnDataForWhatsAppServerCall(mProfileServiceInterface)
+        }
+    }
 }

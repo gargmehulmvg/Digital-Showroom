@@ -60,4 +60,21 @@ class ProfileNetworkService {
         }
     }
 
+    suspend fun getReferAndEarnDataForWhatsAppServerCall(
+        serviceInterface: IProfileServiceInterface) {
+        try {
+            val response = RetrofitApi().getServerCallObject()?.getReferAndEarnDataOverWhatsApp()
+            response?.let {
+                if (it.isSuccessful) {
+                    it.body()?.let { responseBody ->
+                        serviceInterface.onReferAndEarnOverWhatsAppResponse(responseBody)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(ProfileNetworkService::class.java.simpleName, "changeStoreAndDeliveryStatusServerCall: ", e)
+            serviceInterface.onProfileDataException(e)
+        }
+    }
+
 }
