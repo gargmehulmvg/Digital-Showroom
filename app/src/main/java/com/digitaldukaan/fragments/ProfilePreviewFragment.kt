@@ -21,6 +21,7 @@ import com.digitaldukaan.R
 import com.digitaldukaan.adapters.ProfilePreviewAdapter
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
+import com.digitaldukaan.constants.StaticInstances
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.interfaces.IProfilePreviewItemClicked
 import com.digitaldukaan.models.request.StoreLinkRequest
@@ -47,6 +48,10 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
     private var mStoreLinkBottomSheet: BottomSheetDialog? = null
     private var mStoreNameEditBottomSheet: BottomSheetDialog? = null
     private var mProfilePreviewResponse: ProfilePreviewResponse? = null
+    private lateinit var mStoreLinkErrorResponse:StoreDescriptionResponse
+    private lateinit var mProfileInfoSettingKeyResponse: ProfilePreviewSettingsKeyResponse
+    private lateinit var cancelWarningDialog:Dialog
+    private var mStoreLogo: String? = ""
 
     fun newInstance(storeName: String?): ProfilePreviewFragment {
         val fragment = ProfilePreviewFragment()
@@ -67,6 +72,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
             onBackPressed(this@ProfilePreviewFragment)
             setHeaderTitle(mProfilePreviewStaticData.pageHeading)
         }
+        mStoreLogo = ""
         fetchProfilePreviewCall()
         profilePreviewStoreNameTextView.setOnClickListener {
             var settingKeyNameResponse: ProfilePreviewSettingsKeyResponse? = null
@@ -78,7 +84,9 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
             showEditStoreNameBottomSheet(settingKeyNameResponse)
         }
         storePhotoLayout.setOnClickListener {
-            askCameraPermission()
+            var storeLogo = mProfilePreviewResponse?.mProfileInfo?.mStoreLogo
+            if (mStoreLogo?.isNotEmpty() == true) storeLogo = mStoreLogo
+            if (storeLogo?.isNotEmpty() == true) launchFragment(ProfilePhotoFragment.newInstance(storeLogo), true) else askCameraPermission()
         }
     }
 
@@ -97,7 +105,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                 }
                 grantResults[0] == PackageManager.PERMISSION_GRANTED -> {
                     // Permission granted.
-                    showImagePickerDialog()
+                    showImagePickerBottomSheet()
                 }
                 else -> {
                     showShortSnackBar("Permission was denied")
@@ -132,9 +140,15 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                 profilePreviewStoreNameTextView.text = mStoreName
                 profilePreviewStoreMobileNumber.text = mPhoneNumber
                 if (this.mStoreLogo?.isNotEmpty() == true) {
+                    hiddenImageView.visibility = View.INVISIBLE
+                    hiddenTextView.visibility = View.INVISIBLE
                     storePhotoImageView.visibility = View.VISIBLE
                     Picasso.get().load(this.mStoreLogo).into(storePhotoImageView)
-                } else storePhotoImageView.visibility = View.GONE
+                } else {
+                    hiddenImageView.visibility = View.VISIBLE
+                    hiddenTextView.visibility = View.VISIBLE
+                    storePhotoImageView.visibility = View.GONE
+                }
             }
             profilePreviewResponse.mProfileInfo.mSettingsKeysList.run {
                 val linearLayoutManager = LinearLayoutManager(mActivity)
@@ -167,8 +181,6 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         }
     }
 
-    private lateinit var mStoreLinkErrorResponse:StoreDescriptionResponse
-
     override fun onStoreLinkResponse(response: StoreDescriptionResponse) {
         mStoreLinkErrorResponse = response
         stopProgress()
@@ -192,8 +204,6 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
             exceptionHandlingForAPIResponse(e)
         }
     }
-
-    private lateinit var mProfileInfoSettingKeyResponse: ProfilePreviewSettingsKeyResponse
 
     override fun onProfilePreviewItemClicked(profilePreviewResponse: ProfilePreviewSettingsKeyResponse, position: Int) {
         mProfileInfoSettingKeyResponse = profilePreviewResponse
@@ -239,8 +249,6 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
             }
         }
     }
-
-    private lateinit var cancelWarningDialog:Dialog
 
     private fun showBottomSheetCancelDialog() {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
@@ -418,11 +426,18 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         stopProgress()
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (response.mStatus) {
-                val mStoreLogo = response.mStoreInfo?.storeInfo?.logoImage
+                mStoreLogo = response.mStoreInfo?.storeInfo?.logoImage
                 if (mStoreLogo?.isNotEmpty() == true) {
                     storePhotoImageView.visibility = View.VISIBLE
+                    hiddenImageView.visibility = View.INVISIBLE
+                    hiddenTextView.visibility = View.INVISIBLE
                     Picasso.get().load(mStoreLogo).into(storePhotoImageView)
-                } else storePhotoImageView.visibility = View.GONE
+                } else {
+                    StaticInstances.sIsStoreImageUploaded = false
+                    storePhotoImageView.visibility = View.GONE
+                    hiddenImageView.visibility = View.VISIBLE
+                    hiddenTextView.visibility = View.VISIBLE
+                }
                 showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
             } else showToast(response.mMessage)
         }

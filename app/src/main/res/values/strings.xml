@@ -56,6 +56,8 @@
     <string name="save_n_continue"><![CDATA[Save & Continue]]></string>
     <string name="map_api_key">AIzaSyA9UIK8Gfrvs0JTLjaGKeEB8w7hb_RXKWM</string>
     <string name="how_it_works">How it works?</string>
+    <string name="text_no">NO</string>
+    <string name="txt_yes">YES</string>
     <string-array name="state_array">
         <item >Andhra Pradesh</item>
         <item >Arunachal Pradesh</item>

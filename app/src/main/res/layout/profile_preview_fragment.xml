@@ -117,18 +117,18 @@
                     app:layout_constraintTop_toTopOf="parent">
 
                     <ImageView
-                        android:id="@+id/imageView"
+                        android:id="@+id/hiddenImageView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:contentDescription="@string/image_view_content_description"
                         android:src="@drawable/ic_photography"
-                        app:layout_constraintBottom_toTopOf="@+id/materialTextView2"
+                        app:layout_constraintBottom_toTopOf="@+id/hiddenTextView"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
                     <com.google.android.material.textview.MaterialTextView
-                        android:id="@+id/materialTextView2"
+                        android:id="@+id/hiddenTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/montserrat"

@@ -362,13 +362,13 @@ open class BaseFragment : Fragment(), ISearchImageItemClicked {
             )
             return
         }
-        showImagePickerDialog()
+        showImagePickerBottomSheet()
     }
 
     private var mImageAdapter = ImagesSearchAdapter()
     private lateinit var mImagePickBottomSheet: BottomSheetDialog
 
-    open fun showImagePickerDialog() {
+    open fun showImagePickerBottomSheet() {
         val imageUploadStaticData = mStaticData.mStaticData.mCatalogStaticData
         mImagePickBottomSheet = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
         val view = LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet_image_pick, mActivity.findViewById(R.id.bottomSheetContainer))

@@ -83,7 +83,7 @@ class ProfilePreviewNetworkService {
                 } else throw Exception(response.message())
             }
         } catch (e: Exception) {
-            Log.e(ProfilePreviewNetworkService::class.java.simpleName, "updateStoreLinkServerCall: ", e)
+            Log.e(ProfilePreviewNetworkService::class.java.simpleName, "updateStoreLogoServerCall: ", e)
             serviceInterface.onProfilePreviewServerException(e)
         }
     }
