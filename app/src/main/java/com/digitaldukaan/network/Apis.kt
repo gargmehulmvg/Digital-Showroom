@@ -50,7 +50,7 @@ interface Apis {
     suspend fun setStoreLogo(@Header("auth_token") authToken:String, @Body request: StoreLogoRequest) : Response<StoreDescriptionResponse>
 
     @GET("api/dotk/merchant/searchImages")
-    suspend fun searchImagesFromBing(@Header("auth_token") authToken:String, @Query("search_text") searchText: String, @Query("store_id") storeId: String) : Response<ImagesSearchResponse>
+    suspend fun searchImagesFromBing(@Header("auth_token") authToken: String, @Query("search_text") searchText: String, @Query("store_id") storeId: String) : Response<ImagesSearchResponse>
 
     @GET("api/dotk/template/referApp")
     suspend fun getReferAndEarnData() : Response<ReferEarnResponse>

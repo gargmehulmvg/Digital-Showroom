@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.fragments.BaseFragment
+import com.digitaldukaan.fragments.MarketingFragment
 import com.digitaldukaan.fragments.SettingsFragment
 import com.digitaldukaan.fragments.SplashFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -142,9 +143,8 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.menuSettings -> {
-                launchFragment(SettingsFragment.newInstance(), true)
-            }
+            R.id.menuSettings -> launchFragment(SettingsFragment.newInstance(), true)
+            R.id.menuMarketing -> launchFragment(MarketingFragment.newInstance(), true)
         }
         return true
     }
