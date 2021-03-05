@@ -57,4 +57,7 @@ interface Apis {
 
     @GET("api/dotk/template/referAppWa")
     suspend fun getReferAndEarnDataOverWhatsApp() : Response<ReferEarnOverWhatsAppResponse>
+
+    @GET("api/dotk/template/storeMarketingTextV3")
+    suspend fun getMarketingCardsData(): Response<MarketingCardsResponse>
 }
