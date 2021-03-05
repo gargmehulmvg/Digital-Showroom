@@ -46,6 +46,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import com.squareup.picasso.Picasso
+import kotlinx.android.synthetic.main.activity_main2.*
 import kotlinx.android.synthetic.main.bottom_sheet_image_pick.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -89,6 +90,12 @@ open class BaseFragment : Fragment(), ISearchImageItemClicked {
                     )
                 }?.show()
             }
+        }
+    }
+
+    open fun showBottomNavigationView(isHidden: Boolean) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            mActivity.bottomNavigationView.visibility = if (isHidden) View.GONE else View.VISIBLE
         }
     }
 

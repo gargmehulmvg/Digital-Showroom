@@ -16,7 +16,6 @@ import com.digitaldukaan.models.response.ValidateOtpResponse
 import com.digitaldukaan.services.HomeFragmentService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IHomeFragmentServiceInterface
-import kotlinx.android.synthetic.main.home_fragment.*
 import kotlinx.android.synthetic.main.otp_verification_fragment.*
 
 class HomeFragment : BaseFragment(), IHomeFragmentServiceInterface{
@@ -48,6 +47,7 @@ class HomeFragment : BaseFragment(), IHomeFragmentServiceInterface{
             setHeaderTitle(getString(R.string.app_name))
             setSideIconVisibility(false)
         }
+        showBottomNavigationView(false)
         if (!isInternetConnectionAvailable(mActivity)) {
             showNoInternetConnectionDialog()
         } else {
@@ -60,7 +60,6 @@ class HomeFragment : BaseFragment(), IHomeFragmentServiceInterface{
 
     override fun onClick(view: View?) {
         when (view?.id) {
-            settingsImageView.id -> launchFragment(SettingsFragment.newInstance(), true)
         }
     }
 

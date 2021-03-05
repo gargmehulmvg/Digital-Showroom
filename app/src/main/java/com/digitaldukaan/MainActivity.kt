@@ -4,23 +4,33 @@ import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.util.Log
+import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.fragments.BaseFragment
+import com.digitaldukaan.fragments.SettingsFragment
 import com.digitaldukaan.fragments.SplashFragment
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.bottomnavigation.LabelVisibilityMode.LABEL_VISIBILITY_UNLABELED
 import kotlinx.android.synthetic.main.activity_main2.*
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main2)
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         ToolBarManager.getInstance().setupToolbar(toolbarLayout)
+        setupBottomNavigation()
         launchFragment(SplashFragment(), true)
+    }
+
+    private fun setupBottomNavigation() {
+        bottomNavigationView.labelVisibilityMode = LABEL_VISIBILITY_UNLABELED
+        bottomNavigationView.setOnNavigationItemSelectedListener(this)
     }
 
     override fun onBackPressed() {
@@ -128,6 +138,15 @@ class MainActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         getCurrentFragment().onActivityResult(requestCode, resultCode, data)
+    }
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.menuSettings -> {
+                launchFragment(SettingsFragment.newInstance(), true)
+            }
+        }
+        return true
     }
 
 }
