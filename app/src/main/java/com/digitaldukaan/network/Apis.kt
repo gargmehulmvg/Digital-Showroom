@@ -2,6 +2,7 @@ package com.digitaldukaan.network
 
 import com.digitaldukaan.models.request.*
 import com.digitaldukaan.models.response.*
+import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -63,4 +64,10 @@ interface Apis {
 
     @POST("api/dotk/template/shareStore")
     suspend fun getShareStoreData(@Header("auth_token") authToken: String, @Body request: StoreLogoRequest): Response<AppShareDataResponse>
+
+    @GET("api/dotk/template/shareStorePdfText")
+    suspend fun getShareStorePdfText(): Response<ShareStorePDFDataResponse>
+
+    @POST("api/dotk/catalog/generateStorePdf")
+    suspend fun generateStorePdf(@Header("auth_token") authToken: String, @Body request: StoreLogoRequest): Response<ResponseBody>
 }

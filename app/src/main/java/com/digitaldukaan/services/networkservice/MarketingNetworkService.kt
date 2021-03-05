@@ -41,4 +41,38 @@ class MarketingNetworkService {
         }
     }
 
+    suspend fun generateStorePdfServerCall(
+        authToken: String,
+        request: StoreLogoRequest,
+        serviceInterface: IMarketingServiceInterface
+    ) {
+        try {
+            val response = RetrofitApi().getServerCallObject()?.generateStorePdf(authToken, request)
+            response?.let {
+                if (it.isSuccessful) {
+                    it.body()?.let { responseBody -> serviceInterface.onGenerateStorePdfResponse(responseBody) }
+                } else serviceInterface.onMarketingErrorResponse(Exception(response.message()))
+            }
+        } catch (e : Exception) {
+            Log.e(MarketingNetworkService::class.java.simpleName, "getShareStoreDataServerCall: ", e)
+            serviceInterface.onMarketingErrorResponse(e)
+        }
+    }
+
+    suspend fun getShareStorePdfTextServerCall(
+        serviceInterface: IMarketingServiceInterface
+    ) {
+        try {
+            val response = RetrofitApi().getServerCallObject()?.getShareStorePdfText()
+            response?.let {
+                if (it.isSuccessful) {
+                    it.body()?.let { responseBody -> serviceInterface.onShareStorePdfDataResponse(responseBody) }
+                } else serviceInterface.onMarketingErrorResponse(Exception(response.message()))
+            }
+        } catch (e : Exception) {
+            Log.e(MarketingNetworkService::class.java.simpleName, "getShareStoreDataServerCall: ", e)
+            serviceInterface.onMarketingErrorResponse(e)
+        }
+    }
+
 }

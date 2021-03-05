@@ -3,6 +3,8 @@ package com.digitaldukaan.services.serviceinterface
 import com.digitaldukaan.models.response.AppShareDataResponse
 import com.digitaldukaan.models.response.MarketingCardsItemResponse
 import com.digitaldukaan.models.response.MarketingCardsResponse
+import com.digitaldukaan.models.response.ShareStorePDFDataResponse
+import okhttp3.ResponseBody
 
 interface IMarketingServiceInterface {
 
@@ -11,6 +13,10 @@ interface IMarketingServiceInterface {
     fun onMarketingResponse(response: MarketingCardsResponse)
 
     fun onAppShareDataResponse(response: AppShareDataResponse)
+
+    fun onGenerateStorePdfResponse(response: ResponseBody)
+
+    fun onShareStorePdfDataResponse(response: ShareStorePDFDataResponse)
 
     fun onMarketingItemClick(response: MarketingCardsItemResponse?)
 

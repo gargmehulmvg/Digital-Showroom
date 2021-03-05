@@ -27,4 +27,16 @@ class MarketingService {
         }
     }
 
+    fun generateStorePdf(authToken:String, request: StoreLogoRequest) {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.generateStorePdfServerCall(authToken, request, mServiceInterface)
+        }
+    }
+
+    fun getShareStorePdfText() {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.getShareStorePdfTextServerCall(mServiceInterface)
+        }
+    }
+
 }
