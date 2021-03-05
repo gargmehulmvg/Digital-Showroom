@@ -6,7 +6,6 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.provider.MediaStore
 import com.digitaldukaan.BuildConfig
-import com.digitaldukaan.R
 import com.digitaldukaan.fragments.BaseFragment
 import com.digitaldukaan.fragments.CommonWebViewFragment
 import java.io.ByteArrayOutputStream
@@ -43,12 +42,10 @@ fun Bitmap.getImageUri(inContext: Context): Uri? {
     return Uri.parse(path)
 }
 
-fun openHelpFromToolbar(fragment: BaseFragment) {
+fun openWebViewFragment(fragment: BaseFragment, title: String, webViewType: String, redirectFromStr: String) {
     fragment.launchFragment(
-        CommonWebViewFragment().newInstance(fragment.getString(R.string.help),
-            BuildConfig.WEB_VIEW_URL + Constants.WEB_VIEW_HELP + "?storeid=${fragment.getStringDataFromSharedPref(
-                Constants.STORE_ID
-            )}&" + "redirectFrom=settings" + "&token=${fragment.getStringDataFromSharedPref(
+        CommonWebViewFragment().newInstance(title,
+            BuildConfig.WEB_VIEW_URL + webViewType + "?storeid=${fragment.getStringDataFromSharedPref(Constants.STORE_ID)}&" + "redirectFrom=$redirectFromStr" + "&token=${fragment.getStringDataFromSharedPref(
                 Constants.USER_AUTH_TOKEN
             )}"
         ), true

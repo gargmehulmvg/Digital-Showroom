@@ -60,4 +60,7 @@ interface Apis {
 
     @GET("api/dotk/template/storeMarketingTextV3")
     suspend fun getMarketingCardsData(): Response<MarketingCardsResponse>
+
+    @POST("api/dotk/template/shareStore")
+    suspend fun getShareStoreData(@Header("auth_token") authToken: String, @Body request: StoreLogoRequest): Response<AppShareDataResponse>
 }

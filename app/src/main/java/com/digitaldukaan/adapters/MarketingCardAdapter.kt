@@ -10,14 +10,17 @@ import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.models.response.MarketingCardsItemResponse
+import com.digitaldukaan.services.serviceinterface.IMarketingServiceInterface
 import com.squareup.picasso.Picasso
 
 class MarketingCardAdapter(
-    private var mMarketingItemList: ArrayList<MarketingCardsItemResponse>?
+    private var mMarketingItemList: ArrayList<MarketingCardsItemResponse>?,
+    private var mMarketItemClickListener: IMarketingServiceInterface
 ) :
     RecyclerView.Adapter<MarketingCardAdapter.MarketingCardViewHolder>() {
 
     inner class MarketingCardViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val marketingCardParentContainer: View = itemView.findViewById(R.id.marketingCardParentContainer)
         val singleSpanContainer: View = itemView.findViewById(R.id.singleSpanContainer)
         val singleSpanBackgroundView: View = itemView.findViewById(R.id.singleSpanBackgroundView)
         val singleSpanImageView: ImageView = itemView.findViewById(R.id.singleSpanImageView)
@@ -29,7 +32,9 @@ class MarketingCardAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MarketingCardViewHolder {
-        return MarketingCardViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.marketing_card_item, parent, false))
+        val view = MarketingCardViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.marketing_card_item, parent, false))
+        view.marketingCardParentContainer.setOnClickListener { mMarketItemClickListener.onMarketingItemClick(mMarketingItemList?.get(view.adapterPosition)) }
+        return view
     }
 
     override fun getItemCount(): Int = mMarketingItemList?.size ?: 0
