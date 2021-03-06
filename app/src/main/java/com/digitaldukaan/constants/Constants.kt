@@ -47,5 +47,8 @@ class Constants {
         const val ERROR_DOMAIN_ALREADY_EXISTS = "domain_already_exists"
         //GRID_LAYOUT_SPAN_TYPE
         const val SPAN_TYPE_FULL_WIDTH = "fullWidth"
+        //STICKY_HEADER_VIEW_TYPE
+        const val VIEW_TYPE_HEADER = 0
+        const val VIEW_TYPE_ITEM = 1
     }
 }

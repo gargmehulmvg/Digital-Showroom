@@ -1,5 +1,6 @@
 package com.digitaldukaan.fragments
 
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -11,14 +12,19 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.OrderAdapter
 import com.digitaldukaan.constants.*
+import com.digitaldukaan.models.response.OrderItemResponse
 import com.digitaldukaan.models.response.OrdersResponse
 import com.digitaldukaan.models.response.ValidateOtpErrorResponse
 import com.digitaldukaan.models.response.ValidateOtpResponse
 import com.digitaldukaan.services.HomeFragmentService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IHomeFragmentServiceInterface
+import com.digitaldukaan.views.StickHeaderItemDecoration
 import kotlinx.android.synthetic.main.home_fragment.*
 import kotlinx.android.synthetic.main.otp_verification_fragment.*
+import java.util.*
+import java.util.stream.Collectors
+import kotlin.collections.ArrayList
 
 class HomeFragment : BaseFragment(), IHomeFragmentServiceInterface,
     SwipeRefreshLayout.OnRefreshListener {
@@ -91,12 +97,38 @@ class HomeFragment : BaseFragment(), IHomeFragmentServiceInterface,
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (swipeRefreshLayout.isRefreshing) swipeRefreshLayout.isRefreshing = false
             stopProgress()
-            ordersRecyclerView.apply {
-                showToast(getOrderResponse.mOrdersList.size.toString())
-                layoutManager = LinearLayoutManager(mActivity)
-                adapter = OrderAdapter(getOrderResponse.mOrdersList)
+            val list = getOrderResponse.mOrdersList
+            val updatedOrdersList = ArrayList<OrderItemResponse>()
+            val updatedOrdersHeaderList = ArrayList<OrderItemResponse>()
+            convertDateStringOfOrders(list)
+            val groupMap : HashMap<Date?, ArrayList<OrderItemResponse>?>? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                list.stream().collect(Collectors.groupingBy(OrderItemResponse::updatedDate)) as HashMap<Date?, ArrayList<OrderItemResponse>?>
+            } else null
+            groupMap?.run {
+                this.forEach { (key, value) ->
+                    val headerItem = OrderItemResponse()
+                    headerItem.updatedDate = key
+                    headerItem.viewType = Constants.VIEW_TYPE_HEADER
+                    updatedOrdersList.add(headerItem)
+                    updatedOrdersHeaderList.add(headerItem)
+                    value?.forEachIndexed { _, itemResponse ->
+                        itemResponse.viewType = Constants.VIEW_TYPE_ITEM
+                        updatedOrdersList.add(itemResponse)
+                    }
+                }
+                ordersRecyclerView.apply {
+                    val orderAdapter = OrderAdapter(updatedOrdersList, updatedOrdersHeaderList)
+                    showToast(list.size.toString())
+                    layoutManager = LinearLayoutManager(mActivity)
+                    adapter = orderAdapter
+                    addItemDecoration(StickHeaderItemDecoration(orderAdapter))
+                }
             }
         }
+    }
+
+    private fun convertDateStringOfOrders(list: ArrayList<OrderItemResponse>) {
+        list.forEachIndexed { _, itemResponse -> itemResponse.updatedDate = getDateFromOrderString(itemResponse.updatedAt) }
     }
 
     override fun onHomePageException(e: Exception) {

@@ -12,7 +12,9 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.net.URL
-
+import java.text.DateFormat
+import java.text.SimpleDateFormat
+import java.util.*
 
 fun getBitmapFromURL(src: String?): Bitmap? {
     return try {
@@ -50,4 +52,14 @@ fun openWebViewFragment(fragment: BaseFragment, title: String, webViewType: Stri
             )}"
         ), true
     )
+}
+
+fun getDateFromOrderString(dateStr: String): Date? {
+    val format: DateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    return format.parse(dateStr)
+}
+
+fun getStringFromOrderDate(date: Date): String {
+    val dateFormat = SimpleDateFormat("dd MMM yy", Locale.getDefault());
+    return dateFormat.format(date)
 }
