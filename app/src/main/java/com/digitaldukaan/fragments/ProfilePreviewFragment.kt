@@ -74,6 +74,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         }
         mStoreLogo = ""
         fetchProfilePreviewCall()
+        showBottomNavigationView(true)
         profilePreviewStoreNameTextView.setOnClickListener {
             var settingKeyNameResponse: ProfilePreviewSettingsKeyResponse? = null
             mProfilePreviewResponse?.mProfileInfo?.mSettingsKeysList?.forEachIndexed { _, settingsKeyResponse ->

@@ -58,6 +58,9 @@
     <string name="how_it_works">How it works?</string>
     <string name="text_no">NO</string>
     <string name="txt_yes">YES</string>
+    <string name="today_s_sale">Today\'s Sale</string>
+    <string name="week_s_sale">Week\'s Sale</string>
+    <string name="amount">Amount</string>
     <string-array name="state_array">
         <item >Andhra Pradesh</item>
         <item >Arunachal Pradesh</item>

@@ -55,6 +55,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
     ): View? {
         mContentView = inflater.inflate(R.layout.settings_fragment, container, false)
         mProfileService.setProfileServiceInterface(this)
+        fetchUserProfile()
         return mContentView
     }
 
@@ -105,8 +106,8 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                     "${mAppSettingsStaticData.mDeliveryText} : ${if (isChecked) mAppSettingsStaticData.mOnText else mAppSettingsStaticData.mOffText}"
             }
         }
+        showBottomNavigationView(false)
         swipeRefreshLayout.setOnRefreshListener(this)
-        fetchUserProfile()
     }
 
     override fun onClick(view: View?) {

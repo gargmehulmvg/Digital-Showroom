@@ -159,6 +159,10 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
         }
     }
 
+    override fun onOTPVerificationDataException(e: Exception) {
+        exceptionHandlingForAPIResponse(e)
+    }
+
     override fun onNewSmsReceived(sms: String?) = showToast(sms)
 
     override fun onGenerateOTPResponse(generateOtpResponse: GenerateOtpResponse) {

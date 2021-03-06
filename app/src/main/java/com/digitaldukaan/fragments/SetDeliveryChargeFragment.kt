@@ -32,6 +32,7 @@ class SetDeliveryChargeFragment : BaseFragment() {
             onBackPressed(this@SetDeliveryChargeFragment)
             hideBackPressFromToolBar(mActivity, false)
         }
+        showBottomNavigationView(true)
         if (!isInternetConnectionAvailable(mActivity)) {
             showNoInternetConnectionDialog()
             return

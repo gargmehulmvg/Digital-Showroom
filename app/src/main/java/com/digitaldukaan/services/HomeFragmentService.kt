@@ -6,7 +6,7 @@ import com.digitaldukaan.services.serviceinterface.IHomeFragmentServiceInterface
 
 class HomeFragmentService {
 
-    private lateinit var mServiceInterface : IHomeFragmentServiceInterface
+    private lateinit var mServiceInterface: IHomeFragmentServiceInterface
 
     private val mNetworkService = HomeFragmentNetworkService()
 
@@ -14,9 +14,15 @@ class HomeFragmentService {
         mServiceInterface = listener
     }
 
-    fun verifyUserAuthentication(authToken:String) {
+    fun verifyUserAuthentication(authToken: String) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
             mNetworkService.authenticateUserServerCall(authToken, mServiceInterface)
+        }
+    }
+
+    fun getOrders(storeId: String, page: Int) {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.getOrdersServerCall(storeId , page, mServiceInterface)
         }
     }
 

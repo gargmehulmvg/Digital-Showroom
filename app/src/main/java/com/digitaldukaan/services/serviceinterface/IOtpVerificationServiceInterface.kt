@@ -9,4 +9,6 @@ interface IOtpVerificationServiceInterface {
 
     fun onOTPVerificationErrorResponse(validateOtpErrorResponse: ValidateOtpErrorResponse)
 
+    fun onOTPVerificationDataException(e: Exception)
+
 }

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:elevation="@dimen/_4sdp"
+    android:layout_margin="@dimen/_5sdp"
+    android:background="@drawable/curve_grey_background"
+    android:paddingStart="@dimen/_15sdp"
+    android:paddingTop="@dimen/_10sdp"
+    android:paddingEnd="@dimen/_15sdp"
+    android:paddingBottom="@dimen/_10sdp"
+    tools:targetApi="lollipop">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/todaySaleHeading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/today_s_sale"
+        android:textColor="@color/default_text_light_grey"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/amountHeading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/amount"
+        android:textColor="@color/default_text_light_grey"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.65"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/todaySaleHeading" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/weekSaleHeading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_20sdp"
+        android:text="@string/week_s_sale"
+        android:textColor="@color/default_text_light_grey"
+        app:layout_constraintStart_toStartOf="@+id/todaySaleValue"
+        app:layout_constraintTop_toBottomOf="@+id/todaySaleValue" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/weekAmountHeading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_20sdp"
+        android:text="@string/amount"
+        android:textColor="@color/default_text_light_grey"
+        app:layout_constraintStart_toStartOf="@+id/amountValue"
+        app:layout_constraintTop_toBottomOf="@+id/todaySaleValue" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/todaySaleValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:text="@string/step_1_2"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_13sdp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/todaySaleHeading"
+        app:layout_constraintTop_toBottomOf="@+id/todaySaleHeading" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/amountValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:text="@string/step_1_2"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_13sdp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/amountHeading"
+        app:layout_constraintTop_toBottomOf="@+id/todaySaleHeading" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/weekSaleValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:text="@string/step_1_2"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_13sdp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/weekSaleHeading"
+        app:layout_constraintTop_toBottomOf="@+id/weekSaleHeading" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/weekAmountValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:text="@string/step_1_2"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_13sdp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/weekAmountHeading"
+        app:layout_constraintTop_toBottomOf="@+id/weekSaleHeading" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

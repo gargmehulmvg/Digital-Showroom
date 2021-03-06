@@ -7,16 +7,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.digitaldukaan.R
-import com.digitaldukaan.constants.Constants
-import com.digitaldukaan.constants.CoroutineScopeUtils
-import com.digitaldukaan.constants.StaticInstances
-import com.digitaldukaan.constants.ToolBarManager
+import com.digitaldukaan.constants.*
 import com.digitaldukaan.models.response.ValidateOtpErrorResponse
 import com.digitaldukaan.models.response.ValidateOtpResponse
 import com.digitaldukaan.services.HomeFragmentService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IHomeFragmentServiceInterface
+import kotlinx.android.synthetic.main.home_fragment.*
 import kotlinx.android.synthetic.main.otp_verification_fragment.*
+import okhttp3.ResponseBody
 
 class HomeFragment : BaseFragment(), IHomeFragmentServiceInterface{
 
@@ -41,25 +40,21 @@ class HomeFragment : BaseFragment(), IHomeFragmentServiceInterface{
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        ToolBarManager.getInstance().apply {
-            hideToolBar(mActivity, false)
-            hideBackPressFromToolBar(mActivity, true)
-            setHeaderTitle(getString(R.string.app_name))
-            setSideIconVisibility(false)
-        }
+        ToolBarManager.getInstance().hideToolBar(mActivity, true)
         showBottomNavigationView(false)
         if (!isInternetConnectionAvailable(mActivity)) {
             showNoInternetConnectionDialog()
         } else {
             showProgressDialog(mActivity, getString(R.string.authenticating_user))
-            CoroutineScopeUtils().runTaskOnCoroutineBackground {
-                mHomeFragmentService.verifyUserAuthentication(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
-            }
+            mHomeFragmentService.verifyUserAuthentication(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
+            mHomeFragmentService.getOrders(getStringDataFromSharedPref(Constants.STORE_ID), 0)
         }
     }
 
     override fun onClick(view: View?) {
         when (view?.id) {
+            helpImageView.id -> openWebViewFragment(this, getString(R.string.help), Constants.WEB_VIEW_HELP, Constants.SETTINGS)
+            analyticsImageView.id -> analyticsContainer.visibility = (if (analyticsContainer.visibility == View.VISIBLE) View.GONE else View.VISIBLE)
         }
     }
 
@@ -80,6 +75,15 @@ class HomeFragment : BaseFragment(), IHomeFragmentServiceInterface{
             saveUserDetailsInPref(authenticationUserResponse)
             if (!authenticationUserResponse.mIsSuccessStatus) showShortSnackBar(authenticationUserResponse.mMessage, true, R.drawable.ic_close_red)
         }
+    }
+
+    override fun onGetOrdersResponse(getOrderResponse: ResponseBody) {
+        stopProgress()
+        showToast(getOrderResponse.string())
+    }
+
+    override fun onHomePageException(e: Exception) {
+        exceptionHandlingForAPIResponse(e)
     }
 
     private fun saveUserDetailsInPref(validateOtpResponse: ValidateOtpResponse) {

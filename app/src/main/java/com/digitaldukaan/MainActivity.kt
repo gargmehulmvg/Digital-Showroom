@@ -9,10 +9,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.digitaldukaan.constants.ToolBarManager
-import com.digitaldukaan.fragments.BaseFragment
-import com.digitaldukaan.fragments.MarketingFragment
-import com.digitaldukaan.fragments.SettingsFragment
-import com.digitaldukaan.fragments.SplashFragment
+import com.digitaldukaan.fragments.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomnavigation.LabelVisibilityMode.LABEL_VISIBILITY_UNLABELED
 import kotlinx.android.synthetic.main.activity_main2.*
@@ -143,8 +140,9 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.menuSettings -> launchFragment(SettingsFragment.newInstance(), true)
-            R.id.menuMarketing -> launchFragment(MarketingFragment.newInstance(), true)
+            R.id.menuHome -> if (getCurrentFragment() !is HomeFragment) launchFragment(HomeFragment.newInstance(), true)
+            R.id.menuSettings -> if (getCurrentFragment() !is SettingsFragment) launchFragment(SettingsFragment.newInstance(), true)
+            R.id.menuMarketing -> if (getCurrentFragment() !is MarketingFragment) launchFragment(MarketingFragment.newInstance(), true)
         }
         return true
     }
