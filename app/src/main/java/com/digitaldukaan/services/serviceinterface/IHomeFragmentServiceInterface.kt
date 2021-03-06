@@ -1,8 +1,8 @@
 package com.digitaldukaan.services.serviceinterface
 
+import com.digitaldukaan.models.response.OrdersResponse
 import com.digitaldukaan.models.response.ValidateOtpErrorResponse
 import com.digitaldukaan.models.response.ValidateOtpResponse
-import okhttp3.ResponseBody
 
 interface IHomeFragmentServiceInterface {
 
@@ -10,7 +10,7 @@ interface IHomeFragmentServiceInterface {
 
     fun onUserAuthenticationResponse(authenticationUserResponse: ValidateOtpResponse)
 
-    fun onGetOrdersResponse(getOrderResponse: ResponseBody)
+    fun onGetOrdersResponse(getOrderResponse: OrdersResponse)
 
     fun onHomePageException(e: Exception)
 

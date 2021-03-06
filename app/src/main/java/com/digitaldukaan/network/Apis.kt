@@ -72,5 +72,5 @@ interface Apis {
     suspend fun generateStorePdf(@Header("auth_token") authToken: String, @Body request: StoreLogoRequest): Response<ResponseBody>
 
     @GET("api/remoteOrder/getPendingOrders")
-    suspend fun getPendingOrders(@Query("store_id") storeId: String, @Query("page") page: Int): Response<ResponseBody>
+    suspend fun getPendingOrders(@Query("store_id") storeId: String, @Query("page") page: Int): Response<OrdersResponse>
 }

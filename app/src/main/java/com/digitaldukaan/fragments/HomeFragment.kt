@@ -6,8 +6,12 @@ import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.digitaldukaan.R
+import com.digitaldukaan.adapters.OrderAdapter
 import com.digitaldukaan.constants.*
+import com.digitaldukaan.models.response.OrdersResponse
 import com.digitaldukaan.models.response.ValidateOtpErrorResponse
 import com.digitaldukaan.models.response.ValidateOtpResponse
 import com.digitaldukaan.services.HomeFragmentService
@@ -15,9 +19,9 @@ import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IHomeFragmentServiceInterface
 import kotlinx.android.synthetic.main.home_fragment.*
 import kotlinx.android.synthetic.main.otp_verification_fragment.*
-import okhttp3.ResponseBody
 
-class HomeFragment : BaseFragment(), IHomeFragmentServiceInterface{
+class HomeFragment : BaseFragment(), IHomeFragmentServiceInterface,
+    SwipeRefreshLayout.OnRefreshListener {
 
     private var mIsDoublePressToExit = false
     private lateinit var mHomeFragmentService: HomeFragmentService
@@ -42,13 +46,19 @@ class HomeFragment : BaseFragment(), IHomeFragmentServiceInterface{
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         ToolBarManager.getInstance().hideToolBar(mActivity, true)
         showBottomNavigationView(false)
+        swipeRefreshLayout.setOnRefreshListener(this)
         if (!isInternetConnectionAvailable(mActivity)) {
             showNoInternetConnectionDialog()
         } else {
-            showProgressDialog(mActivity, getString(R.string.authenticating_user))
-            mHomeFragmentService.verifyUserAuthentication(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
-            mHomeFragmentService.getOrders(getStringDataFromSharedPref(Constants.STORE_ID), 0)
+            fetchLatestOrders()
         }
+    }
+
+    private fun fetchLatestOrders() {
+        showProgressDialog(mActivity, getString(R.string.authenticating_user))
+        mHomeFragmentService.verifyUserAuthentication(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
+        //mHomeFragmentService.getOrders(getStringDataFromSharedPref(Constants.STORE_ID), 0)
+        mHomeFragmentService.getOrders("4252", 1)
     }
 
     override fun onClick(view: View?) {
@@ -77,9 +87,16 @@ class HomeFragment : BaseFragment(), IHomeFragmentServiceInterface{
         }
     }
 
-    override fun onGetOrdersResponse(getOrderResponse: ResponseBody) {
-        stopProgress()
-        showToast(getOrderResponse.string())
+    override fun onGetOrdersResponse(getOrderResponse: OrdersResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            if (swipeRefreshLayout.isRefreshing) swipeRefreshLayout.isRefreshing = false
+            stopProgress()
+            ordersRecyclerView.apply {
+                showToast(getOrderResponse.mOrdersList.size.toString())
+                layoutManager = LinearLayoutManager(mActivity)
+                adapter = OrderAdapter(getOrderResponse.mOrdersList)
+            }
+        }
     }
 
     override fun onHomePageException(e: Exception) {
@@ -102,6 +119,10 @@ class HomeFragment : BaseFragment(), IHomeFragmentServiceInterface{
             otpEditText.clearOTP()
             showToast(validateOtpErrorResponse.mMessage)
         }
+    }
+
+    override fun onRefresh() {
+        fetchLatestOrders()
     }
 
 }

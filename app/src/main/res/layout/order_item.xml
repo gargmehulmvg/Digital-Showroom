@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:paddingStart="@dimen/_15sdp"
+    android:paddingEnd="@dimen/_15sdp"
+    android:layout_height="wrap_content">
+
+    <CheckBox
+        android:id="@+id/orderCheckBox"
+        android:layout_width="wrap_content"
+        android:text=""
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/materialTextView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/app_name"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_15sdp"
+        app:layout_constraintBottom_toBottomOf="@+id/orderCheckBox"
+        app:layout_constraintStart_toEndOf="@+id/orderCheckBox"
+        app:layout_constraintTop_toTopOf="@+id/orderCheckBox" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/materialTextView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/_5sdp"
+        android:text="@string/app_name"
+        android:textColor="@color/default_text_light_grey"
+        app:layout_constraintStart_toEndOf="@+id/orderCheckBox"
+        app:layout_constraintTop_toBottomOf="@+id/orderCheckBox" />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="@dimen/_1sdp"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:layout_marginEnd="@dimen/_10sdp"
+        android:background="@color/light_grey_background"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/materialTextView4"
+        app:layout_constraintTop_toBottomOf="@+id/materialTextView4" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
