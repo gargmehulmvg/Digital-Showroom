@@ -316,19 +316,16 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         }
         infoResponse?.mTrendingList?.forEachIndexed { index, response ->
             if (0 == index) {
-                Picasso.get().load(response.mCDN).placeholder(R.drawable.ic_auto_data_backup)
-                    .into(viewTopStoreImageView)
+                Picasso.get().load(response.mCDN).placeholder(R.drawable.ic_auto_data_backup).into(viewTopStoreImageView)
                 viewTopStoreTextView.text = response.mText
             }
             if (1 == index) {
                 trendingTextView.text = response.mType
-                Picasso.get().load(response.mCDN).placeholder(R.drawable.ic_auto_data_backup)
-                    .into(digitalShowroomWebImageView)
+                Picasso.get().load(response.mCDN).placeholder(R.drawable.ic_auto_data_backup).into(digitalShowroomWebImageView)
                 digitalShowroomWebTextView.text = response.mText
             }
             if (2 == index) {
-                Picasso.get().load(response.mCDN).placeholder(R.drawable.ic_auto_data_backup)
-                    .into(bulkUploadItemImageView)
+                Picasso.get().load(response.mCDN).placeholder(R.drawable.ic_auto_data_backup).into(bulkUploadItemImageView)
                 bulkUploadItemTextView.text = response.mText
             }
         }
@@ -341,8 +338,8 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             if (infoResponse?.mStoreShare?.mShareStoreBanner!!) "\n\n" + sharingStr + infoResponse.mStoreShare?.mImageUrl
             shareDataOnWhatsApp(sharingStr)
         }
-        viewTopOrderLayout.setOnClickListener {
-            if (infoResponse?.mTrendingList?.isNotEmpty()!!) openUrlInBrowser(
+        viewTopOrderLayout2.setOnClickListener {
+            if (infoResponse?.mTrendingList?.isNotEmpty() == true) openUrlInBrowser(
                 infoResponse.mTrendingList?.get(
                     0
                 )?.mPage

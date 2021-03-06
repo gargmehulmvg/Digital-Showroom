@@ -73,4 +73,7 @@ interface Apis {
 
     @GET("api/remoteOrder/getPendingOrders")
     suspend fun getPendingOrders(@Query("store_id") storeId: String, @Query("page") page: Int): Response<OrdersResponse>
+
+    @GET("api/remoteOrder/getCompletedOrders")
+    suspend fun getCompletedOrders(@Query("store_id") storeId: String, @Query("page") page: Int): Response<OrdersResponse>
 }

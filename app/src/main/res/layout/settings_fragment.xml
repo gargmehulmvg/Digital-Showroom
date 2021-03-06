@@ -341,6 +341,7 @@
                     app:layout_constraintTop_toTopOf="@+id/digitalShowroomWebLayout" >
 
                     <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/viewTopOrderLayout2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content">
 
@@ -349,7 +350,7 @@
                             android:layout_height="wrap_content"
                             android:background="@drawable/curve_white_selector"
                             android:gravity="center_horizontal"
-                            android:onClick="onClick"
+                            android:clickable="false"
                             android:orientation="vertical"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"

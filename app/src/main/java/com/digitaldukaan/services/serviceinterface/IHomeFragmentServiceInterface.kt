@@ -12,6 +12,8 @@ interface IHomeFragmentServiceInterface {
 
     fun onGetOrdersResponse(getOrderResponse: OrdersResponse)
 
+    fun onCompletedOrdersResponse(getOrderResponse: OrdersResponse)
+
     fun onHomePageException(e: Exception)
 
 }

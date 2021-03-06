@@ -125,7 +125,6 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
             showNoInternetConnectionDialog()
             return
         }
-        showToast(response?.text)
         when (response?.action) {
             Constants.ACTION_BUSINESS_CREATIVE -> openWebViewFragment(this, "", Constants.WEB_VIEW_CREATIVE_LIST, Constants.SETTINGS)
             Constants.ACTION_SOCIAL_CREATIVE -> openWebViewFragment(this, "", Constants.WEB_VIEW_SOCIAL_CREATIVE_LIST, Constants.SETTINGS)

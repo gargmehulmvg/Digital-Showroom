@@ -73,4 +73,35 @@ class HomeFragmentNetworkService {
         }
     }
 
+    suspend fun getCompletedOrdersServerCall(
+        storeId: String,
+        page: Int,
+        serviceInterface: IHomeFragmentServiceInterface
+    ) {
+        try {
+            val response = RetrofitApi().getServerCallObject()?.getCompletedOrders(storeId, page)
+            response?.let {
+                if (it.isSuccessful) {
+                    it.body()?.let { validateUserResponse ->
+                        serviceInterface.onCompletedOrdersResponse(validateUserResponse)
+                    }
+                } else {
+                    val validateOtpError = it.errorBody()
+                    validateOtpError?.let {
+                        val validateOtpErrorResponse = Gson().fromJson(
+                            validateOtpError.string(),
+                            ValidateOtpErrorResponse::class.java
+                        )
+                        serviceInterface.onOTPVerificationErrorResponse(
+                            validateOtpErrorResponse
+                        )
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(HomeFragmentNetworkService::class.java.simpleName, "getOrdersServerCall: ", e)
+            serviceInterface.onHomePageException(e)
+        }
+    }
+
 }

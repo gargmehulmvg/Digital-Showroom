@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:elevation="@dimen/_4sdp"
+    android:animateLayoutChanges="true"
     android:layout_margin="@dimen/_5sdp"
     android:background="@drawable/curve_grey_background"
     android:paddingStart="@dimen/_15sdp"

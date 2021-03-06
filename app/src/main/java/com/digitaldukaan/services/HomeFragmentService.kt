@@ -26,4 +26,10 @@ class HomeFragmentService {
         }
     }
 
+    fun getCompletedOrders(storeId: String, page: Int) {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.getCompletedOrdersServerCall(storeId , page, mServiceInterface)
+        }
+    }
+
 }

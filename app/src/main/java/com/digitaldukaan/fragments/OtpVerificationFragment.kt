@@ -33,6 +33,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
     private var mMobileNumberStr = ""
     private lateinit var mLoginService: LoginService
     private var mIsNewUser: Boolean = false
+    private var mIsServerCallInitiated: Boolean = false
     private val mOtpStaticResponseData = mStaticData.mStaticData.mVerifyOtpStaticData
 
     fun newInstance(mobileNumber: String): OtpVerificationFragment {
@@ -76,7 +77,8 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
                     showNoInternetConnectionDialog()
                     return
                 }
-                mCountDownTimer.cancel()
+                Log.d(OtpVerificationFragment::class.simpleName, "onClick: clicked")
+                mIsServerCallInitiated = true
                 showProgressDialog(mActivity, mOtpStaticResponseData.mVerifyingText)
                 mOtpVerificationService.verifyOTP(mMobileNumberStr, mEnteredOtpStr.toInt())
             }
@@ -129,11 +131,13 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
         mEnteredOtpStr = otpStr
         otpEditText.hideKeyboard()
         verifyTextView.isEnabled = true
-        verifyTextView.callOnClick()
+        if (!mIsServerCallInitiated) verifyTextView.callOnClick()
     }
 
     override fun onOTPVerificationSuccessResponse(validateOtpResponse: ValidateOtpResponse) {
+        mIsServerCallInitiated = false
         CoroutineScopeUtils().runTaskOnCoroutineMain {
+            mCountDownTimer.cancel()
             mIsNewUser = validateOtpResponse.mIsNewUser
             stopProgress()
             showToast(validateOtpResponse.mMessage)
@@ -152,6 +156,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
     }
 
     override fun onOTPVerificationErrorResponse(validateOtpErrorResponse: ValidateOtpErrorResponse) {
+        mIsServerCallInitiated = false
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             otpEditText.clearOTP()
@@ -160,6 +165,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
     }
 
     override fun onOTPVerificationDataException(e: Exception) {
+        mIsServerCallInitiated = false
         exceptionHandlingForAPIResponse(e)
     }
 

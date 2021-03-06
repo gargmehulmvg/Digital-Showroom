@@ -90,22 +90,12 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
             onBackPressed(this@StoreMapLocationFragment)
             hideBackPressFromToolBar(mActivity, false)
         }
-        supportMapFragment =
-            childFragmentManager.findFragmentById(R.id.mapFragment) as SupportMapFragment
+        supportMapFragment = childFragmentManager.findFragmentById(R.id.mapFragment) as SupportMapFragment
         mGoogleApiClient = LocationServices.getFusedLocationProviderClient(mActivity)
-        if (ActivityCompat.checkSelfPermission(
-                mActivity,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED &&
-            ActivityCompat.checkSelfPermission(
-                mActivity,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                requestPermissions()
-                return
-            }
+        if (ActivityCompat.checkSelfPermission(mActivity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+            ActivityCompat.checkSelfPermission(mActivity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions()
+            return
         }
         getLastLocation()
         currentLocationImageView.setOnClickListener { getCurrentLocationOfDevice() }
@@ -298,11 +288,7 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
     }
 
     private fun startLocationPermissionRequest() {
-        ActivityCompat.requestPermissions(
-            mActivity,
-            arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION),
-            Constants.LOCATION_REQUEST_CODE
-        )
+        ActivityCompat.requestPermissions(mActivity, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION), Constants.LOCATION_REQUEST_CODE)
     }
 
     override fun onLocationChanged(location: Location) {

@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.OrderAdapter
@@ -65,6 +66,7 @@ class HomeFragment : BaseFragment(), IHomeFragmentServiceInterface,
         mHomeFragmentService.verifyUserAuthentication(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
         //mHomeFragmentService.getOrders(getStringDataFromSharedPref(Constants.STORE_ID), 0)
         mHomeFragmentService.getOrders("4252", 1)
+        mHomeFragmentService.getCompletedOrders("4252", 1)
     }
 
     override fun onClick(view: View?) {
@@ -97,33 +99,46 @@ class HomeFragment : BaseFragment(), IHomeFragmentServiceInterface,
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (swipeRefreshLayout.isRefreshing) swipeRefreshLayout.isRefreshing = false
             stopProgress()
-            val list = getOrderResponse.mOrdersList
-            val updatedOrdersList = ArrayList<OrderItemResponse>()
-            val updatedOrdersHeaderList = ArrayList<OrderItemResponse>()
-            convertDateStringOfOrders(list)
-            val groupMap : HashMap<Date?, ArrayList<OrderItemResponse>?>? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                list.stream().collect(Collectors.groupingBy(OrderItemResponse::updatedDate)) as HashMap<Date?, ArrayList<OrderItemResponse>?>
+            showOrderDataOnRecyclerView(getOrderResponse, ordersRecyclerView)
+        }
+    }
+
+    private fun showOrderDataOnRecyclerView(getOrderResponse: OrdersResponse, recyclerView: RecyclerView) {
+        val list = getOrderResponse.mOrdersList
+        val updatedOrdersList = ArrayList<OrderItemResponse>()
+        val updatedOrdersHeaderList = ArrayList<OrderItemResponse>()
+        convertDateStringOfOrders(list)
+        val groupMap: HashMap<Date?, ArrayList<OrderItemResponse>?>? =
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                list.stream()
+                    .collect(Collectors.groupingBy(OrderItemResponse::updatedDate)) as HashMap<Date?, ArrayList<OrderItemResponse>?>
             } else null
-            groupMap?.run {
-                this.forEach { (key, value) ->
-                    val headerItem = OrderItemResponse()
-                    headerItem.updatedDate = key
-                    headerItem.viewType = Constants.VIEW_TYPE_HEADER
-                    updatedOrdersList.add(headerItem)
-                    updatedOrdersHeaderList.add(headerItem)
-                    value?.forEachIndexed { _, itemResponse ->
-                        itemResponse.viewType = Constants.VIEW_TYPE_ITEM
-                        updatedOrdersList.add(itemResponse)
-                    }
-                }
-                ordersRecyclerView.apply {
-                    val orderAdapter = OrderAdapter(updatedOrdersList, updatedOrdersHeaderList)
-                    showToast(list.size.toString())
-                    layoutManager = LinearLayoutManager(mActivity)
-                    adapter = orderAdapter
-                    addItemDecoration(StickHeaderItemDecoration(orderAdapter))
+        groupMap?.run {
+            this.forEach { (key, value) ->
+                val headerItem = OrderItemResponse()
+                headerItem.updatedDate = key
+                headerItem.viewType = Constants.VIEW_TYPE_HEADER
+                updatedOrdersList.add(headerItem)
+                updatedOrdersHeaderList.add(headerItem)
+                value?.forEachIndexed { _, itemResponse ->
+                    itemResponse.viewType = Constants.VIEW_TYPE_ITEM
+                    updatedOrdersList.add(itemResponse)
                 }
             }
+            recyclerView.apply {
+                val orderAdapter = OrderAdapter(updatedOrdersList, updatedOrdersHeaderList)
+                showToast(list.size.toString())
+                layoutManager = LinearLayoutManager(mActivity)
+                adapter = orderAdapter
+                addItemDecoration(StickHeaderItemDecoration(orderAdapter))
+            }
+        }
+    }
+
+    override fun onCompletedOrdersResponse(getOrderResponse: OrdersResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            if (swipeRefreshLayout.isRefreshing) swipeRefreshLayout.isRefreshing = false
+            showOrderDataOnRecyclerView(getOrderResponse, completedOrdersRecyclerView)
         }
     }
 
