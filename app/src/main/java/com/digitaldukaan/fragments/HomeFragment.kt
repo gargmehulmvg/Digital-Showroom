@@ -1,6 +1,9 @@
 package com.digitaldukaan.fragments
 
+import android.app.Dialog
 import android.content.pm.PackageManager
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -92,6 +95,7 @@ class HomeFragment : BaseFragment(), IHomeFragmentServiceInterface,
         when (view?.id) {
             helpImageView.id -> openWebViewFragment(this, getString(R.string.help), Constants.WEB_VIEW_HELP, Constants.SETTINGS)
             analyticsImageView.id -> analyticsContainer.visibility = (if (analyticsContainer.visibility == View.VISIBLE) View.GONE else View.VISIBLE)
+            searchImageView.id -> showSearchDialog()
         }
     }
 
@@ -209,6 +213,34 @@ class HomeFragment : BaseFragment(), IHomeFragmentServiceInterface,
                     if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else fetchLatestOrders()
                 }
                 else -> showShortSnackBar("Permission was denied")
+            }
+        }
+    }
+
+    private fun showSearchDialog() {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            mActivity.let {
+                val view = LayoutInflater.from(mActivity).inflate(R.layout.search_dialog, null)
+                val dialog = Dialog(mActivity)
+                dialog.apply {
+                    setContentView(view)
+                    window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                    view?.run {
+//                        val bottomSheetCancelDialogHeading: TextView = findViewById(R.id.bottomSheetCancelDialogHeading)
+//                        val bottomSheetCancelDialogMessage: TextView = findViewById(R.id.bottomSheetCancelDialogMessage)
+//                        val bottomSheetCancelDialogYes: TextView = findViewById(R.id.bottomSheetCancelDialogYes)
+//                        val bottomSheetCancelDialogNo: TextView = findViewById(R.id.bottomSheetCancelDialogNo)
+//                        bottomSheetCancelDialogHeading.text = mProfilePreviewStaticData.mStoreLinkChangeDialogHeading
+//                        bottomSheetCancelDialogMessage.text = mProfilePreviewStaticData.mBottomSheetCloseConfirmationMessage
+//                        bottomSheetCancelDialogYes.text = mProfilePreviewStaticData.mYesText
+//                        bottomSheetCancelDialogNo.text = mProfilePreviewStaticData.mNoText
+//                        bottomSheetCancelDialogYes.setOnClickListener {
+//                            dialog.dismiss()
+//                            mStoreLinkBottomSheet?.dismiss()
+//                        }bottomSheetCancelDialogNo
+//                        bottomSheetCancelDialogNo.setOnClickListener { dialog.dismiss() }
+                    }
+                }.show()
             }
         }
     }
