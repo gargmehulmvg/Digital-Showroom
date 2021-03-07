@@ -1,10 +1,12 @@
 package com.digitaldukaan.adapters
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
@@ -18,6 +20,7 @@ import java.util.*
 
 
 class OrderAdapter(
+    private var mContext: Context,
     private var mOrderList: ArrayList<OrderItemResponse>?,
     private var mOrderHeadersList: ArrayList<OrderItemResponse>?
 ) :
@@ -29,13 +32,30 @@ class OrderAdapter(
         val orderCheckBox: CheckBox = itemView.findViewById(R.id.orderCheckBox)
         private val orderAddressTextView: TextView = itemView.findViewById(R.id.orderAddressTextView)
         private val orderDetailsTextView: TextView = itemView.findViewById(R.id.orderDetailsTextView)
-        val orderStatusTextView: TextView = itemView.findViewById(R.id.orderStatusTextView)
+        private val orderStatusTextView: TextView = itemView.findViewById(R.id.orderStatusTextView)
         private val orderTimeTextView: TextView = itemView.findViewById(R.id.orderTimeTextView)
 
         fun bindData(item: OrderItemResponse?) {
             orderDetailsTextView.text = "#${item?.orderId} | ${getNameFromContactList(item?.phone) ?: item?.phone}"
             orderTimeTextView.text = getTimeFromOrderString(item?.updatedCompleteDate)
             orderAddressTextView.text = getAddress(item)
+            getOrderStatus(item, orderStatusTextView)
+        }
+
+        private fun getOrderStatus(item: OrderItemResponse?, orderAddressTextView: TextView) {
+            when (item?.displayStatus) {
+                Constants.DS_NEW -> {
+                    orderAddressTextView.text = mOrderListStaticData.newText
+                    orderAddressTextView.setTextColor(mContext.getColor(R.color.open_green))
+                    orderAddressTextView.background = ContextCompat.getDrawable(mContext, R.drawable.curve_green_border)
+                }
+                Constants.DS_SEND_BILL -> {
+                    orderAddressTextView.setTextColor(mContext.getColor(R.color.orange))
+                    orderAddressTextView.background = ContextCompat.getDrawable(mContext, R.drawable.curve_orange_border)
+                    orderAddressTextView.text = mOrderListStaticData.sendBillText
+                }
+                else -> {}
+            }
         }
 
         private fun getAddress(item: OrderItemResponse?): String {

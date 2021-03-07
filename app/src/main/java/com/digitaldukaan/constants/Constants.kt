@@ -56,7 +56,7 @@ class Constants {
         const val ORDER_TYPE_PICK_UP = 2
         const val ORDER_TYPE_SELF = 3
         //DELIVERY_STATUS
-        const val DSN_NEW = "new"
+        const val DS_NEW = "new"
         const val DS_SEND_BILL = "sendBill"
         const val DS_BILL_SENT = "billSent"
         const val DS_CASH_MARKED = "cashMarked"

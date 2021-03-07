@@ -22,6 +22,8 @@ data class StaticData(
 )
 
 data class OrderListStaticData(
+    @SerializedName("new") var newText: String?,
+    @SerializedName("send_bill_text") var sendBillText: String?,
     @SerializedName("pending_text") var pendingText: String?,
     @SerializedName("completed_text") var completedText: String?,
     @SerializedName("self_billed_text") var selfBilled: String?,

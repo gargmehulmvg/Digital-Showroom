@@ -145,7 +145,7 @@ class HomeFragment : BaseFragment(), IHomeFragmentServiceInterface,
                 }
             }
             recyclerView.apply {
-                val orderAdapter = OrderAdapter(updatedOrdersList, updatedOrdersHeaderList)
+                val orderAdapter = OrderAdapter(mActivity ,updatedOrdersList, updatedOrdersHeaderList)
                 showToast(list.size.toString())
                 layoutManager = LinearLayoutManager(mActivity)
                 adapter = orderAdapter
