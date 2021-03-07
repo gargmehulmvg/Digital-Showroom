@@ -77,6 +77,9 @@ data class CatalogStaticData(
 )
 
 data class SettingStaticData(
+    @SerializedName("save_changes_text") var mSaveChanges: String?,
+    @SerializedName("minimum_order_value") var mMinOrderValue: String?,
+    @SerializedName("minimum_order_value_optional") var mMinOrderValueOptional: String?,
     @SerializedName("app_version_text") var mAppVersionText: String?,
     @SerializedName("logout_body") var mLogoutBody: String?,
     @SerializedName("logout_text") var mLogoutText: String?,

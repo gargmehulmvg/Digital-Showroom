@@ -71,6 +71,9 @@ interface Apis {
     @POST("api/dotk/catalog/generateStorePdf")
     suspend fun generateStorePdf(@Header("auth_token") authToken: String, @Body request: StoreLogoRequest): Response<ResponseBody>
 
+    @POST("api/dotk/merchant/updateDeliveryInfo")
+    suspend fun updateDeliveryInfo(@Header("auth_token") authToken: String, @Body request: MoreControlsRequest): Response<MoreControlsResponse>
+
     @GET("api/remoteOrder/getPendingOrders")
     suspend fun getPendingOrders(@Query("store_id") storeId: String, @Query("page") page: Int): Response<OrdersResponse>
 
