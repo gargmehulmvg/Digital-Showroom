@@ -17,7 +17,18 @@ data class StaticData(
     @SerializedName("merchant_address") var mMapStaticData: MapLocationStaticResponseData,
     @SerializedName("catalog_add") var mCatalogStaticData: CatalogStaticData,
     @SerializedName("marketing") var mMarketingStaticData: MarketingStaticData,
+    @SerializedName("order_list_and_item") var mOrderListStaticData: OrderListStaticData,
     @SerializedName("settings") var mSettingsStaticData: SettingStaticData
+)
+
+data class OrderListStaticData(
+    @SerializedName("pending_text") var pendingText: String?,
+    @SerializedName("completed_text") var completedText: String?,
+    @SerializedName("self_billed_text") var selfBilled: String?,
+    @SerializedName("pickup_order_text") var pickUpOrder: String?,
+    @SerializedName("todays_sale_text") var todaySale: String?,
+    @SerializedName("sale_amount_text") var amount: String?,
+    @SerializedName("weeks_sale_text") var weekSale: String?
 )
 
 data class ProfileStaticData(

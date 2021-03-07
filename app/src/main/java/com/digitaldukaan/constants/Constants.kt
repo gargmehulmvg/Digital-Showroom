@@ -2,7 +2,7 @@ package com.digitaldukaan.constants
 
 class Constants {
     companion object {
-        const val SPLASH_TIMER = 1500L
+        const val SPLASH_TIMER = 1_000L
         const val LOCATION_REQUEST_CODE = 1001
         const val BACK_PRESS_INTERVAL = 2_000L
         const val SHINE_ANIMATION_INTERVAL = 2_000L
@@ -10,6 +10,7 @@ class Constants {
         const val TIMER_INTERVAL = 1_000L
         const val CREDENTIAL_PICKER_REQUEST = 1001
         const val IMAGE_PICK_REQUEST_CODE = 1002
+        const val CONTACT_REQUEST_CODE = 1003
         const val SHARED_PREF_NAME = "DigitalDukaanPrefs"
         const val USER_AUTH_TOKEN = "USER_AUTH_TOKEN"
         const val STORE_ID = "STORE_ID"
@@ -50,5 +51,18 @@ class Constants {
         //STICKY_HEADER_VIEW_TYPE
         const val VIEW_TYPE_HEADER = 0
         const val VIEW_TYPE_ITEM = 1
+        //ORDER_TYPE
+        const val ORDER_TYPE_ADDRESS = 1
+        const val ORDER_TYPE_PICK_UP = 2
+        const val ORDER_TYPE_SELF = 3
+        //DELIVERY_STATUS
+        const val DSN_NEW = "new"
+        const val DS_SEND_BILL = "sendBill"
+        const val DS_BILL_SENT = "billSent"
+        const val DS_CASH_MARKED = "cashMarked"
+        const val DS_PAID_ONLINE = "paidOnline"
+        const val DS_REJECTED = "rejected"
+        const val DS_COMPLETED_CASH = "completedCash"
+        const val DS_COMPLETED_ONLINE= "completedOnline"
     }
 }

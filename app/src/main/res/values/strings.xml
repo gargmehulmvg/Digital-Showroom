@@ -1,5 +1,5 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="app_name">Digital Dukaan</string>
+    <string name="app_name">Digital Showroom</string>
     <string name="image_view_content_description">image_view_content_description</string>
     <string name="loading">Loading…</string>
     <string name="msg_back_press">Double click to exit the application</string>

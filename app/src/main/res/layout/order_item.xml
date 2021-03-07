@@ -2,47 +2,90 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:paddingStart="@dimen/_15sdp"
-    android:paddingEnd="@dimen/_15sdp"
-    android:layout_height="wrap_content">
+    android:paddingEnd="@dimen/_15sdp">
 
     <CheckBox
         android:id="@+id/orderCheckBox"
         android:layout_width="wrap_content"
-        android:text=""
         android:layout_height="wrap_content"
+        android:scaleX="0.85"
+        android:scaleY="0.85"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/materialTextView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/app_name"
-        android:textColor="@color/black"
-        android:textSize="@dimen/_15sdp"
-        app:layout_constraintBottom_toBottomOf="@+id/orderCheckBox"
-        app:layout_constraintStart_toEndOf="@+id/orderCheckBox"
-        app:layout_constraintTop_toTopOf="@+id/orderCheckBox" />
-
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/materialTextView4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingTop="@dimen/_5sdp"
-        android:text="@string/app_name"
-        android:textColor="@color/default_text_light_grey"
-        app:layout_constraintStart_toEndOf="@+id/orderCheckBox"
-        app:layout_constraintTop_toBottomOf="@+id/orderCheckBox" />
-
-    <View
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="0dp"
-        android:layout_height="@dimen/_1sdp"
-        android:layout_marginTop="@dimen/_10sdp"
-        android:layout_marginEnd="@dimen/_10sdp"
-        android:background="@color/light_grey_background"
+        android:layout_height="wrap_content"
+        android:onClick="onClick"
+        android:background="?selectableItemBackground"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/materialTextView4"
-        app:layout_constraintTop_toBottomOf="@+id/materialTextView4" />
+        app:layout_constraintStart_toEndOf="@+id/orderCheckBox"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/orderAddressTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textColor="@color/black"
+            android:fontFamily="sans-serif-medium"
+            android:clickable="false"
+            android:textSize="@dimen/_12sdp"
+            app:layout_constraintEnd_toStartOf="@+id/orderTimeTextView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="@string/app_name" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/orderDetailsTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:fontFamily="@font/montserrat"
+            android:paddingTop="@dimen/_5sdp"
+            android:paddingBottom="@dimen/_2sdp"
+            android:textColor="@color/default_text_light_grey"
+            android:textSize="@dimen/_10sdp"
+            app:layout_constraintEnd_toStartOf="@+id/orderStatusTextView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/orderAddressTextView"
+            tools:text="@string/app_name" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/orderStatusTextView"
+            android:layout_width="wrap_content"
+            android:clickable="false"
+            android:layout_height="wrap_content"
+            android:textColor="@color/default_text_light_grey"
+            app:layout_constraintBaseline_toBaselineOf="@+id/orderDetailsTextView"
+            app:layout_constraintEnd_toEndOf="@+id/orderTimeTextView"
+            tools:text="@string/app_name" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/orderTimeTextView"
+            android:layout_width="wrap_content"
+            android:clickable="false"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat_bold"
+            android:textColor="@color/default_text_light_grey"
+            android:textSize="@dimen/_9sdp"
+            app:layout_constraintBaseline_toBaselineOf="@+id/orderAddressTextView"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="8:12 PM" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="@dimen/_1sdp"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:layout_marginEnd="@dimen/_10sdp"
+            android:background="@color/light_grey_background"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/orderDetailsTextView"
+            app:layout_constraintTop_toBottomOf="@+id/orderDetailsTextView" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

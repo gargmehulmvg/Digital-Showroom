@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         ToolBarManager.getInstance().setupToolbar(toolbarLayout)
         setupBottomNavigation()
-        launchFragment(SplashFragment(), true)
+        launchFragment(SplashFragment.newInstance(), true)
     }
 
     private fun setupBottomNavigation() {

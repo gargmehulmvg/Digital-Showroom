@@ -27,9 +27,11 @@ class OrderItemResponse {
     @SerializedName("transaction_id") var transactionId: String = ""
     @SerializedName("image_link") var imageLink: String = ""
     @SerializedName("phone") var phone: String = ""
+    @SerializedName("delivery_info") lateinit var deliveryInfo: DeliveryInfoItemResponse
     @SerializedName("updated_at") var updatedAt: String = ""
     @SerializedName("created_at") var createdAt: String = ""
     var updatedDate: Date? = Date()
+    var updatedCompleteDate: Date? = Date()
     var viewType: Int = 0
 
     override fun equals(other: Any?): Boolean {
@@ -45,6 +47,14 @@ class OrderItemResponse {
     override fun toString(): String {
         return "OrderItemResponse(items='$items', storeId=$storeId, orderId=$orderId, merchantId=$merchantId, orderType=$orderType, amount=$amount, discount=$discount, payAmount=$payAmount, status=$status, paymentStatus=$paymentStatus, displayStatus='$displayStatus', statusMessage='$statusMessage', orderHash='$orderHash', transactionId='$transactionId', imageLink='$imageLink', phone='$phone', updatedAt='$updatedAt', createdAt='$createdAt', updatedDate=$updatedDate, viewType=$viewType)"
     }
-
-
 }
+
+data class DeliveryInfoItemResponse(
+    @SerializedName("fulfillment_id") var fulfillmentId: Int,
+    @SerializedName("latitude") var latitude: Double,
+    @SerializedName("longitude") var longitude: Double,
+    @SerializedName("address1") var address1: String,
+    @SerializedName("address2") var address2: String,
+    @SerializedName("slot_start") var slotStart: String?,
+    @SerializedName("slot_end") var slotEnd: String?
+)

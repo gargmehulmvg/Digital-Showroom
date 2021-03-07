@@ -372,6 +372,17 @@ open class BaseFragment : Fragment(), ISearchImageItemClicked {
         showImagePickerBottomSheet()
     }
 
+    open fun askContactPermission(): Boolean {
+        if (ActivityCompat.checkSelfPermission(mActivity, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(mActivity, arrayOf(Manifest.permission.READ_CONTACTS), Constants.CONTACT_REQUEST_CODE)
+            return true
+        }
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            getContactsFromStorage2(mActivity)
+        }
+        return false
+    }
+
     private var mImageAdapter = ImagesSearchAdapter()
     private lateinit var mImagePickBottomSheet: BottomSheetDialog
 

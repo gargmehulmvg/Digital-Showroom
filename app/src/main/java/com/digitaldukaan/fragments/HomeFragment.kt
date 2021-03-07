@@ -1,12 +1,15 @@
 package com.digitaldukaan.fragments
 
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -30,13 +33,22 @@ import kotlin.collections.ArrayList
 class HomeFragment : BaseFragment(), IHomeFragmentServiceInterface,
     SwipeRefreshLayout.OnRefreshListener {
 
-    private var mIsDoublePressToExit = false
-    private lateinit var mHomeFragmentService: HomeFragmentService
-
     companion object {
+        private const val TAG = "HomeFragment"
+        private val mOrderListStaticData = mStaticData.mStaticData.mOrderListStaticData
+        private var mIsDoublePressToExit = false
+        private lateinit var mHomeFragmentService: HomeFragmentService
+
         fun newInstance(): HomeFragment {
             return HomeFragment()
         }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        mHomeFragmentService = HomeFragmentService()
+        mHomeFragmentService.setHomeFragmentServiceListener(this)
+        if (!askContactPermission()) if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else fetchLatestOrders()
     }
 
     override fun onCreateView(
@@ -44,8 +56,6 @@ class HomeFragment : BaseFragment(), IHomeFragmentServiceInterface,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        mHomeFragmentService = HomeFragmentService()
-        mHomeFragmentService.setHomeFragmentServiceListener(this)
         mContentView = inflater.inflate(R.layout.home_fragment, container, false)
         return mContentView
     }
@@ -54,11 +64,20 @@ class HomeFragment : BaseFragment(), IHomeFragmentServiceInterface,
         ToolBarManager.getInstance().hideToolBar(mActivity, true)
         showBottomNavigationView(false)
         swipeRefreshLayout.setOnRefreshListener(this)
-        if (!isInternetConnectionAvailable(mActivity)) {
-            showNoInternetConnectionDialog()
-        } else {
-            fetchLatestOrders()
-        }
+        setupAnalyticsLayout()
+        completedOrderTextView.text = mOrderListStaticData.completedText
+        pendingOrderTextView.text = mOrderListStaticData.pendingText
+    }
+
+    private fun setupAnalyticsLayout() {
+        val todaySaleHeading: TextView = mContentView.findViewById(R.id.todaySaleHeading)
+        val weekSaleHeading: TextView = mContentView.findViewById(R.id.weekSaleHeading)
+        val amountHeading: TextView = mContentView.findViewById(R.id.amountHeading)
+        val weekAmountHeading: TextView = mContentView.findViewById(R.id.weekAmountHeading)
+        todaySaleHeading.text = mOrderListStaticData.todaySale
+        weekSaleHeading.text = mOrderListStaticData.weekSale
+        amountHeading.text = mOrderListStaticData.amount
+        weekAmountHeading.text = mOrderListStaticData.amount
     }
 
     private fun fetchLatestOrders() {
@@ -143,7 +162,10 @@ class HomeFragment : BaseFragment(), IHomeFragmentServiceInterface,
     }
 
     private fun convertDateStringOfOrders(list: ArrayList<OrderItemResponse>) {
-        list.forEachIndexed { _, itemResponse -> itemResponse.updatedDate = getDateFromOrderString(itemResponse.updatedAt) }
+        list.forEachIndexed { _, itemResponse ->
+            itemResponse.updatedDate = getDateFromOrderString(itemResponse.updatedAt)
+            itemResponse.updatedCompleteDate = getCompleteDateFromOrderString(itemResponse.updatedAt)
+        }
     }
 
     override fun onHomePageException(e: Exception) {
@@ -170,6 +192,25 @@ class HomeFragment : BaseFragment(), IHomeFragmentServiceInterface,
 
     override fun onRefresh() {
         fetchLatestOrders()
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int, permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        Log.i(TAG, "$TAG onRequestPermissionResult")
+        if (requestCode == Constants.CONTACT_REQUEST_CODE) {
+            when {
+                grantResults.isEmpty() -> Log.i(TAG, "User interaction was cancelled.")
+                grantResults[0] == PackageManager.PERMISSION_GRANTED -> {
+                    CoroutineScopeUtils().runTaskOnCoroutineBackground {
+                        getContactsFromStorage2(mActivity)
+                    }
+                    if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else fetchLatestOrders()
+                }
+                else -> showShortSnackBar("Permission was denied")
+            }
+        }
     }
 
 }

@@ -1,14 +1,20 @@
 package com.digitaldukaan.fragments
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.app.ActivityCompat
 import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.ToolBarManager
+import com.digitaldukaan.constants.getContactsFromStorage2
 import com.digitaldukaan.models.response.StaticTextResponse
 import com.digitaldukaan.services.SplashService
 import com.digitaldukaan.services.isInternetConnectionAvailable
@@ -16,6 +22,12 @@ import com.digitaldukaan.services.serviceinterface.ISplashServiceInterface
 import kotlinx.android.synthetic.main.fragment_splash.*
 
 class SplashFragment : BaseFragment(), ISplashServiceInterface {
+
+    companion object {
+        fun newInstance(): SplashFragment{
+            return SplashFragment()
+        }
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.fragment_splash, container, false)
@@ -31,9 +43,18 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
             showNoInternetConnectionDialog()
             return
         }
+        fetchContactsIfPermissionGranted()
         val splashService = SplashService()
         splashService.setSplashServiceInterface(this)
         splashService.getStaticData("0")
+    }
+
+    private fun fetchContactsIfPermissionGranted() {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            if (ActivityCompat.checkSelfPermission(mActivity, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
+                getContactsFromStorage2(mActivity)
+            }
+        }
     }
 
     override fun onBackPressed(): Boolean {
@@ -43,9 +64,20 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
 
     override fun onStaticDataResponse(staticDataResponse: StaticTextResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            mStaticData = staticDataResponse
-            if (getStringDataFromSharedPref(Constants.STORE_ID) == "") launchFragment(LoginFragment(), true, splashLogoImageView) else launchFragment(HomeFragment.newInstance(), true)
+            Handler(Looper.getMainLooper()).postDelayed({
+                mStaticData = staticDataResponse
+                stopProgress()
+                launchHomeFragment()
+            }, Constants.SPLASH_TIMER)
         }
+    }
+
+    private fun launchHomeFragment() {
+        if ("" == getStringDataFromSharedPref(Constants.STORE_ID)) launchFragment(
+            LoginFragment(),
+            true,
+            splashLogoImageView
+        ) else launchFragment(HomeFragment.newInstance(), true)
     }
 
     override fun onStaticDataException(e: Exception) {
