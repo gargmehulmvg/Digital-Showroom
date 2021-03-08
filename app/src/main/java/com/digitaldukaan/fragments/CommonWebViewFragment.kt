@@ -44,7 +44,6 @@ class CommonWebViewFragment : BaseFragment() {
         commonWebView.apply {
             commonWebView.webViewClient = WebViewController()
             settings.javaScriptEnabled = true
-            Log.d(CommonWebViewFragment::class.simpleName, "onViewCreated: $url")
             loadUrl(mLoadUrl)
         }
         showCancellableProgressDialog(mActivity)
@@ -52,7 +51,7 @@ class CommonWebViewFragment : BaseFragment() {
         Handler(Looper.getMainLooper()).postDelayed({ stopProgress() }, Constants.TIMER_INTERVAL)
     }
 
-    inner class WebViewController : WebViewClient() {
+    class WebViewController : WebViewClient() {
 
         override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
             view.loadUrl(url)

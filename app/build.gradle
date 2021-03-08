@@ -32,7 +32,7 @@ android {
             variant.outputs.all {
                 def flavor = variant.name
                 def versionCode = variant.versionCode
-                outputFileName = "digital_dukaan_${flavor}_${versionCode}.apk"
+                outputFileName = "digital_showroom_${flavor}_${versionCode}.apk"
             }
         }
         release {

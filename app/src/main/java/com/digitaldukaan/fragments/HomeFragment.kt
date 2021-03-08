@@ -16,6 +16,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.OrderAdapter
 import com.digitaldukaan.constants.*
@@ -37,7 +38,7 @@ class HomeFragment : BaseFragment(), IHomeFragmentServiceInterface,
     SwipeRefreshLayout.OnRefreshListener {
 
     companion object {
-        private const val TAG = "HomeFragment"
+        private val TAG = HomeFragment::class.simpleName
         private val mOrderListStaticData = mStaticData.mStaticData.mOrderListStaticData
         private var mIsDoublePressToExit = false
         private lateinit var mHomeFragmentService: HomeFragmentService
@@ -51,7 +52,6 @@ class HomeFragment : BaseFragment(), IHomeFragmentServiceInterface,
         super.onCreate(savedInstanceState)
         mHomeFragmentService = HomeFragmentService()
         mHomeFragmentService.setHomeFragmentServiceListener(this)
-        if (!askContactPermission()) if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else fetchLatestOrders()
     }
 
     override fun onCreateView(
@@ -60,6 +60,7 @@ class HomeFragment : BaseFragment(), IHomeFragmentServiceInterface,
         savedInstanceState: Bundle?
     ): View? {
         mContentView = inflater.inflate(R.layout.home_fragment, container, false)
+        if (!askContactPermission()) if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else fetchLatestOrders()
         return mContentView
     }
 
@@ -86,9 +87,9 @@ class HomeFragment : BaseFragment(), IHomeFragmentServiceInterface,
     private fun fetchLatestOrders() {
         showProgressDialog(mActivity, getString(R.string.authenticating_user))
         mHomeFragmentService.verifyUserAuthentication(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
-        //mHomeFragmentService.getOrders(getStringDataFromSharedPref(Constants.STORE_ID), 0)
-        mHomeFragmentService.getOrders("4252", 1)
-        mHomeFragmentService.getCompletedOrders("4252", 1)
+        mHomeFragmentService.getOrders(getStringDataFromSharedPref(Constants.STORE_ID), 1)
+        //mHomeFragmentService.getOrders("4252", 1)
+        //mHomeFragmentService.getCompletedOrders("4252", 1)
     }
 
     override fun onClick(view: View?) {
@@ -122,7 +123,29 @@ class HomeFragment : BaseFragment(), IHomeFragmentServiceInterface,
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (swipeRefreshLayout.isRefreshing) swipeRefreshLayout.isRefreshing = false
             stopProgress()
-            showOrderDataOnRecyclerView(getOrderResponse, ordersRecyclerView)
+            if (getOrderResponse.mOrdersList.isEmpty()) {
+                homePageWebViewLayout.visibility = View.VISIBLE
+                orderLayout.visibility = View.GONE
+                setupHomePageWebView()
+                swipeRefreshLayout.isEnabled = false
+            } else {
+                homePageWebViewLayout.visibility = View.GONE
+                orderLayout.visibility = View.VISIBLE
+                swipeRefreshLayout.isEnabled = true
+                showOrderDataOnRecyclerView(getOrderResponse, ordersRecyclerView)
+            }
+        }
+    }
+
+    private fun setupHomePageWebView() {
+        homePageWebView.apply {
+            webViewClient = CommonWebViewFragment.WebViewController()
+            settings.javaScriptEnabled = true
+            Log.d(TAG, "setupHomePageWebView: $url")
+            val url = BuildConfig.WEB_VIEW_URL + Constants.WEB_VIEW_NO_ORDER_PAGE + "?storeid=${getStringDataFromSharedPref(
+                Constants.STORE_ID
+            )}&" + "storeName=${getStringDataFromSharedPref(Constants.STORE_NAME)}" + "&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"
+            loadUrl(url)
         }
     }
 
@@ -133,8 +156,7 @@ class HomeFragment : BaseFragment(), IHomeFragmentServiceInterface,
         convertDateStringOfOrders(list)
         val groupMap: HashMap<Date?, ArrayList<OrderItemResponse>?>? =
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                list.stream()
-                    .collect(Collectors.groupingBy(OrderItemResponse::updatedDate)) as HashMap<Date?, ArrayList<OrderItemResponse>?>
+                list.stream().collect(Collectors.groupingBy(OrderItemResponse::updatedDate)) as HashMap<Date?, ArrayList<OrderItemResponse>?>
             } else null
         groupMap?.run {
             this.forEach { (key, value) ->
@@ -225,21 +247,6 @@ class HomeFragment : BaseFragment(), IHomeFragmentServiceInterface,
                 dialog.apply {
                     setContentView(view)
                     window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-                    view?.run {
-//                        val bottomSheetCancelDialogHeading: TextView = findViewById(R.id.bottomSheetCancelDialogHeading)
-//                        val bottomSheetCancelDialogMessage: TextView = findViewById(R.id.bottomSheetCancelDialogMessage)
-//                        val bottomSheetCancelDialogYes: TextView = findViewById(R.id.bottomSheetCancelDialogYes)
-//                        val bottomSheetCancelDialogNo: TextView = findViewById(R.id.bottomSheetCancelDialogNo)
-//                        bottomSheetCancelDialogHeading.text = mProfilePreviewStaticData.mStoreLinkChangeDialogHeading
-//                        bottomSheetCancelDialogMessage.text = mProfilePreviewStaticData.mBottomSheetCloseConfirmationMessage
-//                        bottomSheetCancelDialogYes.text = mProfilePreviewStaticData.mYesText
-//                        bottomSheetCancelDialogNo.text = mProfilePreviewStaticData.mNoText
-//                        bottomSheetCancelDialogYes.setOnClickListener {
-//                            dialog.dismiss()
-//                            mStoreLinkBottomSheet?.dismiss()
-//                        }bottomSheetCancelDialogNo
-//                        bottomSheetCancelDialogNo.setOnClickListener { dialog.dismiss() }
-                    }
                 }.show()
             }
         }
