@@ -12,6 +12,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.RadioButton
+import android.widget.RadioGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -28,6 +31,7 @@ import com.digitaldukaan.services.HomeFragmentService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IHomeFragmentServiceInterface
 import com.digitaldukaan.views.StickHeaderItemDecoration
+import com.google.android.material.textfield.TextInputLayout
 import kotlinx.android.synthetic.main.home_fragment.*
 import kotlinx.android.synthetic.main.otp_verification_fragment.*
 import java.util.*
@@ -247,6 +251,25 @@ class HomeFragment : BaseFragment(), IHomeFragmentServiceInterface,
                 dialog.apply {
                     setContentView(view)
                     window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                    view?.run {
+                        val searchRadioGroup: RadioGroup = findViewById(R.id.searchRadioGroup)
+                        val orderIdRadioButton: RadioButton = findViewById(R.id.orderIdRadioButton)
+                        val phoneRadioButton: RadioButton = findViewById(R.id.phoneNumberRadioButton)
+                        val searchInputLayout: TextInputLayout = findViewById(R.id.searchInputLayout)
+                        val mobileNumberEditText: EditText = findViewById(R.id.mobileNumberEditText)
+                        searchRadioGroup.setOnCheckedChangeListener { _, checkedId ->
+                            when(checkedId) {
+                                orderIdRadioButton.id -> {
+                                    searchInputLayout.hint = "Enter Search ID"
+                                }
+                                phoneRadioButton.id -> {
+                                    searchInputLayout.hint = "Enter Mobile Number"
+                                }
+                            }
+                            mobileNumberEditText.setText("")
+                        }
+                        orderIdRadioButton.isChecked = true
+                    }
                 }.show()
             }
         }
