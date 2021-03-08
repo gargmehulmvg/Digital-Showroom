@@ -74,7 +74,7 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
 
     private fun launchHomeFragment() {
         if ("" == getStringDataFromSharedPref(Constants.STORE_ID)) launchFragment(
-            LoginFragment(),
+            LoginFragment.newInstance(),
             true,
             splashLogoImageView
         ) else launchFragment(HomeFragment.newInstance(), true)

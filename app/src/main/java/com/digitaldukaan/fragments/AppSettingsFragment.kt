@@ -1,5 +1,6 @@
 package com.digitaldukaan.fragments
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -64,7 +65,12 @@ class AppSettingsFragment : BaseFragment(), IAppSettingsItemClicked {
                 setTitle(mAppSettingsStaticData.mLogoutTitle)
                 setMessage(mAppSettingsStaticData.mLogoutBody)
                 setCancelable(false)
-                setPositiveButton(mAppSettingsStaticData.mLogoutText) { dialog, _ -> dialog.dismiss() }
+                setPositiveButton(mAppSettingsStaticData.mLogoutText) { dialog, _ ->
+                    mActivity.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE).edit().clear().apply()
+                    dialog.dismiss()
+                    clearFragmentBackStack()
+                    launchFragment(LoginFragment.newInstance(), false)
+                }
                 setNegativeButton(getString(R.string.close)) { dialog, _ -> dialog.dismiss() }
             }
             val alertDialog: AlertDialog = builder.create()

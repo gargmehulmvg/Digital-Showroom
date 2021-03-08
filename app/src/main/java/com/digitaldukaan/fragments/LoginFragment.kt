@@ -17,6 +17,7 @@ import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.Constants.Companion.CREDENTIAL_PICKER_REQUEST
 import com.digitaldukaan.constants.CoroutineScopeUtils
+import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.models.response.AuthNewResponseData
 import com.digitaldukaan.models.response.GenerateOtpResponse
 import com.digitaldukaan.services.LoginService
@@ -34,6 +35,12 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
     private var mIsMobileNumberSearchingDone = false
     private lateinit var mLoginService: LoginService
     private val mAuthStaticData: AuthNewResponseData = mStaticData.mStaticData.mAuthNew
+
+    companion object {
+        fun newInstance(): LoginFragment{
+            return LoginFragment()
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,6 +61,10 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        ToolBarManager.getInstance().apply {
+            setHeaderTitle("")
+            hideToolBar(mActivity, true)
+        }
         setupDataFromStaticResponse()
         setupMobileNumberEditText()
         if (!mIsMobileNumberSearchingDone) initiateAutoDetectMobileNumber()
