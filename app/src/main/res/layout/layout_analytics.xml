@@ -4,10 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:elevation="@dimen/_4sdp"
     android:animateLayoutChanges="true"
-    android:layout_margin="@dimen/_5sdp"
-    android:background="@drawable/curve_grey_background"
+    android:background="@color/black"
+    android:elevation="@dimen/_4sdp"
     android:paddingStart="@dimen/_15sdp"
     android:paddingTop="@dimen/_10sdp"
     android:paddingEnd="@dimen/_15sdp"
@@ -18,53 +17,78 @@
         android:id="@+id/todaySaleHeading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:text="@string/today_s_sale"
-        android:textColor="@color/default_text_light_grey"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_10sdp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="0.05"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="@string/today_s_sale" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/amountHeading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:text="@string/amount"
-        android:textColor="@color/default_text_light_grey"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_10sdp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.65"
+        app:layout_constraintHorizontal_bias="0.55"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/todaySaleHeading" />
+        app:layout_constraintTop_toTopOf="@+id/todaySaleHeading"
+        tools:text="@string/amount" />
+
+    <View
+        android:id="@+id/view2"
+        android:layout_width="@dimen/_1sdp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="@dimen/_35sdp"
+        android:background="@color/light_grey_background"
+        app:layout_constraintBottom_toBottomOf="@+id/amountValue"
+        app:layout_constraintEnd_toStartOf="@+id/amountHeading"
+        app:layout_constraintTop_toTopOf="@+id/amountHeading" />
+
+    <View
+        android:id="@+id/view3"
+        android:layout_width="@dimen/_1sdp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="@dimen/_35sdp"
+        android:background="@color/light_grey_background"
+        app:layout_constraintBottom_toBottomOf="@+id/weekAmountValue"
+        app:layout_constraintEnd_toStartOf="@+id/weekAmountHeading"
+        app:layout_constraintTop_toTopOf="@+id/weekAmountHeading" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/weekSaleHeading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_20sdp"
-        tools:text="@string/week_s_sale"
-        android:textColor="@color/default_text_light_grey"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_10sdp"
         app:layout_constraintStart_toStartOf="@+id/todaySaleValue"
-        app:layout_constraintTop_toBottomOf="@+id/todaySaleValue" />
+        app:layout_constraintTop_toBottomOf="@+id/todaySaleValue"
+        tools:text="@string/week_s_sale" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/weekAmountHeading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_20sdp"
-        tools:text="@string/amount"
-        android:textColor="@color/default_text_light_grey"
-        app:layout_constraintStart_toStartOf="@+id/amountValue"
-        app:layout_constraintTop_toBottomOf="@+id/todaySaleValue" />
+        android:textColor="@color/white"
+        android:textSize="@dimen/_10sdp"
+        app:layout_constraintStart_toStartOf="@+id/amountHeading"
+        app:layout_constraintTop_toBottomOf="@+id/todaySaleValue"
+        tools:text="@string/amount" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/todaySaleValue"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_5sdp"
+        android:layout_marginTop="@dimen/_2sdp"
         android:text="@string/step_1_2"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         android:textSize="@dimen/_13sdp"
         android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/view2"
         app:layout_constraintStart_toStartOf="@+id/todaySaleHeading"
         app:layout_constraintTop_toBottomOf="@+id/todaySaleHeading" />
 
@@ -72,9 +96,9 @@
         android:id="@+id/amountValue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_5sdp"
+        android:layout_marginTop="@dimen/_2sdp"
         android:text="@string/step_1_2"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         android:textSize="@dimen/_13sdp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="@+id/amountHeading"
@@ -82,14 +106,15 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/weekSaleValue"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_5sdp"
+        android:layout_marginTop="@dimen/_2sdp"
         android:text="@string/step_1_2"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         android:textSize="@dimen/_13sdp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/view3"
         app:layout_constraintStart_toStartOf="@+id/weekSaleHeading"
         app:layout_constraintTop_toBottomOf="@+id/weekSaleHeading" />
 
@@ -97,13 +122,28 @@
         android:id="@+id/weekAmountValue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_5sdp"
+        android:layout_marginTop="@dimen/_2sdp"
         android:text="@string/step_1_2"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         android:textSize="@dimen/_13sdp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@+id/weekAmountHeading"
         app:layout_constraintTop_toBottomOf="@+id/weekSaleHeading" />
+
+    <ImageView
+        android:id="@+id/closeAnalyticsImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/image_view_content_description"
+        android:padding="@dimen/_10sdp"
+        android:background="?selectableItemBackground"
+        android:onClick="onClick"
+        android:rotation="-90"
+        android:src="@drawable/ic_half_arrow_forward"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/amountHeading"
+        app:tint="@color/white" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

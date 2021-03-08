@@ -22,7 +22,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:text="Confirmation" />
+        tools:text="Confirmation" />
 
     <RadioGroup
         android:id="@+id/searchRadioGroup"
@@ -37,7 +37,7 @@
             android:layout_height="wrap_content"
             android:paddingStart="@dimen/_10sdp"
             android:paddingEnd="@dimen/_10sdp"
-            android:text="Order ID" />
+            tools:text="Order ID" />
 
         <RadioButton
             android:id="@+id/phoneNumberRadioButton"
@@ -45,7 +45,7 @@
             android:layout_height="wrap_content"
             android:paddingStart="@dimen/_10sdp"
             android:paddingEnd="@dimen/_10sdp"
-            android:text="Phone Number" />
+            tools:text="Phone Number" />
 
     </RadioGroup>
 
@@ -58,7 +58,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/searchRadioGroup"
-        android:hint="Enter Phone Number">
+        tools:hint="Enter Phone Number">
 
         <EditText
             android:id="@+id/mobileNumberEditText"

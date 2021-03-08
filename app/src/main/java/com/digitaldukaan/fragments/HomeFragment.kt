@@ -16,6 +16,7 @@ import android.widget.EditText
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -33,6 +34,7 @@ import com.digitaldukaan.services.serviceinterface.IHomeFragmentServiceInterface
 import com.digitaldukaan.views.StickHeaderItemDecoration
 import com.google.android.material.textfield.TextInputLayout
 import kotlinx.android.synthetic.main.home_fragment.*
+import kotlinx.android.synthetic.main.layout_analytics.*
 import kotlinx.android.synthetic.main.otp_verification_fragment.*
 import java.util.*
 import java.util.stream.Collectors
@@ -99,8 +101,15 @@ class HomeFragment : BaseFragment(), IHomeFragmentServiceInterface,
     override fun onClick(view: View?) {
         when (view?.id) {
             helpImageView.id -> openWebViewFragment(this, getString(R.string.help), Constants.WEB_VIEW_HELP, Constants.SETTINGS)
-            analyticsImageView.id -> analyticsContainer.visibility = (if (analyticsContainer.visibility == View.VISIBLE) View.GONE else View.VISIBLE)
+            analyticsImageView.id -> {
+                analyticsContainer.visibility = View.VISIBLE
+                analyticsImageView.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.ic_analytics_green))
+            }
             searchImageView.id -> showSearchDialog()
+            closeAnalyticsImageView.id -> {
+                analyticsImageView.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.ic_analytics_black))
+                analyticsContainer.visibility = View.GONE
+            }
         }
     }
 

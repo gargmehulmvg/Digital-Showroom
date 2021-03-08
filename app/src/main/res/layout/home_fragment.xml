@@ -11,6 +11,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:animateLayoutChanges="true"
+        android:background="@color/default_bg"
         android:layout_height="match_parent">
 
         <androidx.cardview.widget.CardView
@@ -34,11 +35,10 @@
                     android:background="?selectableItemBackground"
                     android:contentDescription="@string/image_view_content_description"
                     android:onClick="onClick"
-                    android:src="@drawable/ic_analytics"
+                    android:src="@drawable/ic_analytics_black"
                     app:layout_constraintBottom_toBottomOf="@+id/searchImageView"
                     app:layout_constraintEnd_toStartOf="@+id/searchImageView"
-                    app:layout_constraintTop_toTopOf="@+id/searchImageView"
-                    app:tint="@color/black" />
+                    app:layout_constraintTop_toTopOf="@+id/searchImageView" />
 
                 <ImageView
                     android:id="@+id/searchImageView"
@@ -147,6 +147,11 @@
                     app:layout_constraintTop_toBottomOf="@+id/analyticsContainer"
                     tools:itemCount="3"
                     tools:listitem="@layout/order_item" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_4sdp"
+                    android:background="@color/light_grey_background" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/completedOrderTextView"
