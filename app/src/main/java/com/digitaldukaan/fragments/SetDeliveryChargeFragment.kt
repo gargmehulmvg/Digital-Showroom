@@ -37,7 +37,7 @@ class SetDeliveryChargeFragment : BaseFragment() {
             showNoInternetConnectionDialog()
             return
         }
-        showFreeDeliveryContainer(false)
+        showFreeDeliveryContainer(true)
         showFixedDeliveryContainer(false)
         showCustomDeliveryContainer(false)
     }

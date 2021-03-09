@@ -150,8 +150,8 @@
             android:id="@+id/customDeliveryContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:animateLayoutChanges="true"
             android:layout_marginTop="@dimen/_15sdp"
+            android:animateLayoutChanges="true"
             android:background="@drawable/curve_white_background"
             android:orientation="vertical"
             app:layout_constraintEnd_toEndOf="parent"
@@ -226,6 +226,18 @@
                 android:src="@drawable/ic_custom_delivery_help" />
 
         </LinearLayout>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/getOtpTextView"
+            style="@style/common_text_view_background"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:drawableEnd="@drawable/ic_arrow_forward_white"
+            android:drawablePadding="@dimen/_10sdp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/customDeliveryContainer"
+            app:layout_constraintVertical_bias="1.0"
+            tools:text="@string/get_otp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
