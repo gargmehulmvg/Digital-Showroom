@@ -106,12 +106,16 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
         mCountDownTimer = object: CountDownTimer(Constants.RESEND_OTP_TIMER, Constants.TIMER_INTERVAL) {
             override fun onTick(millisUntilFinished: Long) {
                 CoroutineScopeUtils().runTaskOnCoroutineMain {
+                    resendOtpText.text = getString(R.string.otp_auto_resend_in)
                     resendOtpTextView.text = "${(millisUntilFinished / 1000)} ${mOtpStaticResponseData.mSecondText}"
                 }
             }
 
             override fun onFinish() {
-                CoroutineScopeUtils().runTaskOnCoroutineMain { resendOtpTextView.text = mOtpStaticResponseData.mResendButtonText }
+                CoroutineScopeUtils().runTaskOnCoroutineMain {
+                    resendOtpText.text = ""
+                    resendOtpTextView.text = mOtpStaticResponseData.mResendButtonText
+                }
             }
         }
         mCountDownTimer.start()
