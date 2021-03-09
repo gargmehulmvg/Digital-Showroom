@@ -61,6 +61,7 @@
     <string name="today_s_sale">Today\'s Sale</string>
     <string name="week_s_sale">Week\'s Sale</string>
     <string name="amount">Amount</string>
+    <string name="i_will_do_later"><u>I will do it later</u></string>
     <string-array name="state_array">
         <item >Andhra Pradesh</item>
         <item >Arunachal Pradesh</item>

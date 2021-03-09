@@ -71,6 +71,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        updateNavigationBarState(R.id.menuSettings)
         ToolBarManager.getInstance().apply {
             hideToolBar(mActivity, false)
             onBackPressed(this@SettingsFragment)

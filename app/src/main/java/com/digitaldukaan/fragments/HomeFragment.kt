@@ -71,6 +71,7 @@ class HomeFragment : BaseFragment(), IHomeFragmentServiceInterface,
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        updateNavigationBarState(R.id.menuHome)
         ToolBarManager.getInstance().hideToolBar(mActivity, true)
         showBottomNavigationView(false)
         swipeRefreshLayout.setOnRefreshListener(this)

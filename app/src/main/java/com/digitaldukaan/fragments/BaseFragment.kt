@@ -19,6 +19,7 @@ import android.util.Base64
 import android.util.Base64OutputStream
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.Menu
 import android.view.View
 import android.view.WindowManager
 import android.view.animation.AccelerateDecelerateInterpolator
@@ -553,5 +554,10 @@ open class BaseFragment : Fragment(), ISearchImageItemClicked {
                 Log.d("TAG", "onBitmapFailed: ")
             }
         })
+    }
+
+    protected fun updateNavigationBarState(actionId: Int) {
+        val menu: Menu = mActivity.bottomNavigationView.menu
+        menu.findItem(actionId).isChecked = true
     }
 }
