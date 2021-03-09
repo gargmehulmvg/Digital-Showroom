@@ -179,7 +179,7 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
             stopProgress()
             if (generateOtpResponse.mStatus) {
                 val mobileNumber = mobileNumberEditText.text.trim().toString()
-                launchFragment(OtpVerificationFragment().newInstance(mobileNumber), true)
+                launchFragment(OtpVerificationFragment.newInstance(mobileNumber), true)
             } else {
                 showToast(generateOtpResponse.mMessage)
             }

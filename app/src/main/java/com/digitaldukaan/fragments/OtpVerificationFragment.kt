@@ -20,6 +20,7 @@ import com.digitaldukaan.services.serviceinterface.ILoginServiceInterface
 import com.digitaldukaan.services.serviceinterface.IOtpVerificationServiceInterface
 import com.digitaldukaan.smsapi.AppSignatureHelper
 import com.digitaldukaan.smsapi.ISmsReceivedListener
+import com.digitaldukaan.smsapi.MySMSBroadcastReceiver
 import com.google.android.gms.auth.api.phone.SmsRetriever
 import kotlinx.android.synthetic.main.otp_verification_fragment.*
 
@@ -36,16 +37,19 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
     private var mIsServerCallInitiated: Boolean = false
     private val mOtpStaticResponseData = mStaticData.mStaticData.mVerifyOtpStaticData
 
-    fun newInstance(mobileNumber: String): OtpVerificationFragment {
-        val fragment = OtpVerificationFragment()
-        fragment.mMobileNumberStr = mobileNumber
-        return fragment
+    companion object {
+        fun newInstance(mobileNumber: String): OtpVerificationFragment {
+            val fragment = OtpVerificationFragment()
+            fragment.mMobileNumberStr = mobileNumber
+            return fragment
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val client = SmsRetriever.getClient(mActivity)
         val task = client.startSmsRetriever()
+        MySMSBroadcastReceiver.mSmsReceiverListener = this
         task.addOnSuccessListener {
             Log.d("OtpVerificationFragment", "onCreate: Auto read SMS retrieval task success")
         }
@@ -173,7 +177,11 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
         exceptionHandlingForAPIResponse(e)
     }
 
-    override fun onNewSmsReceived(sms: String?) = showToast(sms)
+    override fun onNewSmsReceived(sms: String?) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            otpEditText.setText(sms)
+        }
+    }
 
     override fun onGenerateOTPResponse(generateOtpResponse: GenerateOtpResponse) {
         stopProgress()
