@@ -8,6 +8,7 @@ import com.digitaldukaan.R
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.models.response.ProfilePreviewSettingsKeyResponse
 import com.digitaldukaan.services.isInternetConnectionAvailable
+import kotlinx.android.synthetic.main.bank_account_fragment.*
 
 class BankAccountFragment : BaseFragment() {
 
@@ -21,14 +22,17 @@ class BankAccountFragment : BaseFragment() {
         }
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         mContentView = inflater.inflate(R.layout.bank_account_fragment, container, false)
         return mContentView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        ToolBarManager.getInstance().hideToolBar(mActivity, true)
         ToolBarManager.getInstance().apply {
             hideToolBar(mActivity, false)
             setHeaderTitle("")
@@ -38,6 +42,12 @@ class BankAccountFragment : BaseFragment() {
         if (!isInternetConnectionAvailable(mActivity)) {
             showNoInternetConnectionDialog()
             return
+        }
+    }
+
+    override fun onClick(view: View?) {
+        when (view?.id) {
+            saveTextView.id -> launchFragment(CreateStoreFragment.newInstance(), true)
         }
     }
 
