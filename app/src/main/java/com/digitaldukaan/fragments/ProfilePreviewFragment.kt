@@ -87,7 +87,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         storePhotoLayout.setOnClickListener {
             var storeLogo = mProfilePreviewResponse?.mProfileInfo?.mStoreLogo
             if (mStoreLogo?.isNotEmpty() == true) storeLogo = mStoreLogo
-            if (storeLogo?.isNotEmpty() == true) launchFragment(ProfilePhotoFragment.newInstance(storeLogo), true) else askCameraPermission()
+            if (storeLogo?.isNotEmpty() == true) launchFragment(ProfilePhotoFragment.newInstance(storeLogo), true, storePhotoImageView) else askCameraPermission()
         }
     }
 

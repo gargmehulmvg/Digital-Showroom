@@ -148,6 +148,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_margin="@dimen/_4sdp"
+                        android:transitionName="@string/transition_name"
                         android:contentDescription="@string/image_view_content_description"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"

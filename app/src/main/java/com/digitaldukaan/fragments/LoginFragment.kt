@@ -44,9 +44,7 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            sharedElementEnterTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.move)
-        }
+        sharedElementEnterTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.move)
         mLoginService = LoginService()
         mLoginService.setLoginServiceInterface(this)
     }

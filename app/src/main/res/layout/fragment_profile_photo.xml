@@ -45,6 +45,7 @@
             android:id="@+id/profilePhotoImageView"
             android:layout_width="match_parent"
             android:layout_height="@dimen/_315sdp"
+            android:transitionName="@string/transition_name"
             android:contentDescription="@string/image_view_content_description"
             android:src="@drawable/ic_auto_data_backup" />
 
