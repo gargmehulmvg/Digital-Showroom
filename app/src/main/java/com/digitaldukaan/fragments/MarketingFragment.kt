@@ -28,6 +28,7 @@ import com.digitaldukaan.models.response.ShareStorePDFDataResponse
 import com.digitaldukaan.services.MarketingService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IMarketingServiceInterface
+import com.digitaldukaan.webviews.WebViewBridge
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.android.synthetic.main.marketing_fragment.*
 import okhttp3.ResponseBody
@@ -75,6 +76,7 @@ class MarketingFragment : BaseChildFragment(), IOnToolbarIconClick, IMarketingSe
         }
         showProgressDialog(mActivity)
         service.getMarketingCardsData()
+        WebViewBridge.mWebViewListener = this
     }
 
     override fun onToolbarSideIconClicked() = openWebViewFragment(this, getString(R.string.help), Constants.WEB_VIEW_HELP, Constants.SETTINGS)

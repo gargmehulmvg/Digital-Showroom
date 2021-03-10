@@ -1,5 +1,6 @@
 package com.digitaldukaan.webviews
 
+import android.util.Log
 import android.webkit.JavascriptInterface
 import com.digitaldukaan.interfaces.IWebViewCallbacks
 
@@ -12,6 +13,7 @@ class WebViewBridge {
 
     @JavascriptInterface
     fun onNativeBackPress() {
+        Log.d(WebViewBridge::class.simpleName, "onNativeBackPress")
         mWebViewListener?.onNativeBackPressed()
     }
 }

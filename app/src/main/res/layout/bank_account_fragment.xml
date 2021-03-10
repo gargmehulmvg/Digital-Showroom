@@ -79,7 +79,7 @@
                 android:focusable="true"
                 android:importantForAutofill="no"
                 android:inputType="number"
-                android:maxLength="@integer/user_name_length"
+                android:maxLength="@integer/account_number_length"
                 android:textColor="@color/black"
                 android:textColorHint="@color/default_text_light_grey"
                 android:textSize="@dimen/_12sdp" />
@@ -105,7 +105,7 @@
                 android:focusable="true"
                 android:importantForAutofill="no"
                 android:inputType="number"
-                android:maxLength="@integer/user_name_length"
+                android:maxLength="@integer/account_number_length"
                 android:textColor="@color/black"
                 android:textColorHint="@color/default_text_light_grey"
                 android:textSize="@dimen/_12sdp" />
@@ -131,7 +131,7 @@
                 android:focusable="true"
                 android:importantForAutofill="no"
                 android:inputType="number"
-                android:maxLength="@integer/user_name_length"
+                android:maxLength="@integer/ifsc_length"
                 android:textColor="@color/black"
                 android:textColorHint="@color/default_text_light_grey"
                 android:textSize="@dimen/_12sdp" />

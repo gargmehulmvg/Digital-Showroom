@@ -63,7 +63,10 @@ class BankAccountFragment : BaseFragment() {
 
     override fun onClick(view: View?) {
         when (view?.id) {
-            saveTextView.id -> launchFragment(CreateStoreFragment.newInstance(), true)
+            saveTextView.id -> {
+                //launchFragment(CreateStoreFragment.newInstance(), true)
+                val accountHolderName = accountHolderNameEditText.text.trim().toString()
+            }
         }
     }
 

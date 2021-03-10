@@ -45,12 +45,15 @@ class CommonWebViewFragment : BaseFragment() {
         commonWebView.apply {
             commonWebView.webViewClient = WebViewController()
             settings.javaScriptEnabled = true
-            addJavascriptInterface(WebViewBridge(), "AndroidBridge")
+            addJavascriptInterface(WebViewBridge(), "Android")
+            Log.d(CommonWebViewFragment::class.simpleName, "onViewCreated: $mLoadUrl")
             loadUrl(mLoadUrl)
         }
         showCancellableProgressDialog(mActivity)
         Log.d(CommonWebViewFragment::class.simpleName, "onViewCreated: $mLoadUrl")
-        Handler(Looper.getMainLooper()).postDelayed({ stopProgress() }, Constants.TIMER_INTERVAL)
+        Handler(Looper.getMainLooper()).postDelayed({
+            stopProgress()
+        }, Constants.TIMER_INTERVAL)
     }
 
     class WebViewController : WebViewClient() {

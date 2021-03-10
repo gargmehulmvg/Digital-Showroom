@@ -2,6 +2,8 @@
 <resources>
     <integer name="mobile_number_length">10</integer>
     <integer name="user_name_length">100</integer>
+    <integer name="account_number_length">16</integer>
+    <integer name="ifsc_length">11</integer>
     <integer name="dukaan_name_length">300</integer>
     <integer name="amount_length">7</integer>
     <integer name="min_lines_two">2</integer>
