@@ -12,11 +12,13 @@ import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.interfaces.IProfilePreviewItemClicked
 import com.digitaldukaan.models.response.ProfilePreviewSettingsKeyResponse
+import com.digitaldukaan.models.response.StoreBusinessResponse
 
 class ProfilePreviewAdapter(
     private val mActivity: MainActivity,
     private var mSettingsKeysList: ArrayList<ProfilePreviewSettingsKeyResponse>,
-    private val mProfilePreviewListener: IProfilePreviewItemClicked
+    private val mProfilePreviewListener: IProfilePreviewItemClicked,
+    private val mBusinessList: ArrayList<StoreBusinessResponse>?
 ) :
     RecyclerView.Adapter<ProfilePreviewAdapter.ProfilePreviewViewHolder>() {
 
@@ -69,7 +71,7 @@ class ProfilePreviewAdapter(
                         stackFromEnd = true
                     }
                     profilePreviewBusinessTypeRecyclerView.layoutManager = layoutManager
-                    val profilePreviewBusinessTypeAdapter = ProfilePreviewBusinessTypeAdapter(mActivity)
+                    val profilePreviewBusinessTypeAdapter = ProfilePreviewBusinessTypeAdapter(mBusinessList)
                     profilePreviewBusinessTypeRecyclerView.apply {
                         adapter = profilePreviewBusinessTypeAdapter
                         addItemDecoration(OverlapDecoration())

@@ -27,14 +27,13 @@ import com.digitaldukaan.interfaces.IProfilePreviewItemClicked
 import com.digitaldukaan.models.request.StoreLinkRequest
 import com.digitaldukaan.models.request.StoreLogoRequest
 import com.digitaldukaan.models.request.StoreNameRequest
-import com.digitaldukaan.models.response.ProfilePreviewResponse
-import com.digitaldukaan.models.response.ProfilePreviewSettingsKeyResponse
-import com.digitaldukaan.models.response.StoreDescriptionResponse
+import com.digitaldukaan.models.response.*
 import com.digitaldukaan.services.ProfilePreviewService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IProfilePreviewServiceInterface
 import com.digitaldukaan.views.allowOnlyAlphaNumericCharacters
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.gson.Gson
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.profile_preview_fragment.*
 
@@ -43,11 +42,11 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
     IProfilePreviewItemClicked, SwipeRefreshLayout.OnRefreshListener {
 
     private var mStoreName: String? = ""
-    private val mProfilePreviewStaticData = mStaticData.mStaticData.mProfileStaticData
+    private lateinit var mProfilePreviewStaticData: ProfileStaticTextResponse
     private val service = ProfilePreviewService()
     private var mStoreLinkBottomSheet: BottomSheetDialog? = null
     private var mStoreNameEditBottomSheet: BottomSheetDialog? = null
-    private var mProfilePreviewResponse: ProfilePreviewResponse? = null
+    private var mProfilePreviewResponse: ProfileInfoResponse? = null
     private lateinit var mStoreLinkErrorResponse:StoreDescriptionResponse
     private lateinit var mProfileInfoSettingKeyResponse: ProfilePreviewSettingsKeyResponse
     private lateinit var cancelWarningDialog:Dialog
@@ -70,14 +69,14 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         ToolBarManager.getInstance().apply {
             hideToolBar(mActivity, false)
             onBackPressed(this@ProfilePreviewFragment)
-            setHeaderTitle(mProfilePreviewStaticData.pageHeading)
+            setHeaderTitle("")
         }
         mStoreLogo = ""
         fetchProfilePreviewCall()
         showBottomNavigationView(true)
         profilePreviewStoreNameTextView.setOnClickListener {
             var settingKeyNameResponse: ProfilePreviewSettingsKeyResponse? = null
-            mProfilePreviewResponse?.mProfileInfo?.mSettingsKeysList?.forEachIndexed { _, settingsKeyResponse ->
+            mProfilePreviewResponse?.mSettingsKeysList?.forEachIndexed { _, settingsKeyResponse ->
                 if (settingsKeyResponse.mAction == Constants.ACTION_STORE_NAME) {
                     settingKeyNameResponse = settingsKeyResponse
                 }
@@ -85,7 +84,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
             showEditStoreNameBottomSheet(settingKeyNameResponse)
         }
         storePhotoLayout.setOnClickListener {
-            var storeLogo = mProfilePreviewResponse?.mProfileInfo?.mStoreLogo
+            var storeLogo = mProfilePreviewResponse?.mStoreItemResponse?.storeInfo?.logoImage
             if (mStoreLogo?.isNotEmpty() == true) storeLogo = mStoreLogo
             if (storeLogo?.isNotEmpty() == true) launchFragment(ProfilePhotoFragment.newInstance(storeLogo), true, storePhotoImageView) else askCameraPermission()
         }
@@ -121,42 +120,49 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
             return
         }
         showProgressDialog(mActivity)
-        service.getProfilePreviewData(getStringDataFromSharedPref(Constants.STORE_ID))
+        service.getProfilePreviewData(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
         swipeRefreshLayout.setOnRefreshListener(this)
     }
 
     override fun onProfilePreviewResponse(profilePreviewResponse: ProfilePreviewResponse) {
-        mProfilePreviewResponse = profilePreviewResponse
+        val response = Gson().fromJson<ProfileInfoResponse>(
+            profilePreviewResponse.mProfileDataStr,
+            ProfileInfoResponse::class.java
+        )
+        mProfilePreviewResponse = response
+        mProfilePreviewStaticData = response?.mProfileStaticText!!
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (swipeRefreshLayout.isRefreshing) swipeRefreshLayout.isRefreshing = false
             stopProgress()
-            profilePreviewResponse.mProfileInfo.mProfilePreviewBanner.run {
+            mProfilePreviewResponse?.mProfilePreviewBanner?.run {
                 profilePreviewBannerHeading.text = mHeading
                 profilePreviewBannerStartNow.text = mStartNow
                 Picasso.get().isLoggingEnabled = true
                 Picasso.get().load(mCDN).into(profilePreviewBannerImageView)
                 profilePreviewBannerSubHeading.text = mSubHeading
             }
-            profilePreviewResponse.mProfileInfo.run {
-                profilePreviewStoreNameTextView.text = mStoreName
-                profilePreviewStoreMobileNumber.text = mPhoneNumber
-                if (this.mStoreLogo?.isNotEmpty() == true) {
+            ToolBarManager.getInstance().setHeaderTitle(mProfilePreviewResponse?.mProfileStaticText?.pageHeading)
+            mProfilePreviewResponse?.mStoreItemResponse?.run {
+                profilePreviewStoreNameTextView.text = storeInfo.name
+                profilePreviewStoreMobileNumber.text = storeOwner?.phone
+                mStoreLogo = storeInfo.logoImage
+                if (mStoreLogo?.isNotEmpty() == true) {
                     hiddenImageView.visibility = View.INVISIBLE
                     hiddenTextView.visibility = View.INVISIBLE
                     storePhotoImageView.visibility = View.VISIBLE
-                    Picasso.get().load(this.mStoreLogo).into(storePhotoImageView)
+                    Picasso.get().load(mStoreLogo).into(storePhotoImageView)
                 } else {
                     hiddenImageView.visibility = View.VISIBLE
                     hiddenTextView.visibility = View.VISIBLE
                     storePhotoImageView.visibility = View.GONE
                 }
             }
-            profilePreviewResponse.mProfileInfo.mSettingsKeysList.run {
+            mProfilePreviewResponse?.mSettingsKeysList?.run {
                 val linearLayoutManager = LinearLayoutManager(mActivity)
                 profilePreviewRecyclerView.apply {
                     layoutManager = linearLayoutManager
                     setHasFixedSize(true)
-                    adapter = ProfilePreviewAdapter(mActivity, this@run, this@ProfilePreviewFragment)
+                    adapter = ProfilePreviewAdapter(mActivity, this@run, this@ProfilePreviewFragment, mProfilePreviewResponse?.mStoreItemResponse?.storeBusiness)
                 }
                 val dividerItemDecoration = DividerItemDecoration(
                     profilePreviewRecyclerView.context,
@@ -328,15 +334,15 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                         bottomSheetEditStoreLinkConditionTwo.visibility = View.VISIBLE
                         when {
                             string.isEmpty() -> {
-                                bottomSheetEditStoreLinkConditionOne.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_exclamation_mark, 0, 0, 0);
-                                bottomSheetEditStoreLinkConditionTwo.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_exclamation_mark, 0, 0, 0);
+                                bottomSheetEditStoreLinkConditionOne.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_exclamation_mark, 0, 0, 0)
+                                bottomSheetEditStoreLinkConditionTwo.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_exclamation_mark, 0, 0, 0)
                             }
                             string.length >= 4 -> {
-                                bottomSheetEditStoreLinkConditionOne.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_check_small, 0, 0, 0);
-                                bottomSheetEditStoreLinkConditionTwo.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_check_small, 0, 0, 0);
+                                bottomSheetEditStoreLinkConditionOne.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_check_small, 0, 0, 0)
+                                bottomSheetEditStoreLinkConditionTwo.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_check_small, 0, 0, 0)
                             }
                             else -> {
-                                bottomSheetEditStoreLinkConditionOne.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_check_small, 0, 0, 0);
+                                bottomSheetEditStoreLinkConditionOne.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_check_small, 0, 0, 0)
                             }
                         }
                     }

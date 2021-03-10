@@ -23,8 +23,8 @@ interface Apis {
     @GET("api/dotk/template/getAccountInfo")
     suspend fun getProfileResponse(@Query("store_id") storeId:String) : Response<ProfileResponse>
 
-    @GET("api/dotk/template/getProfileInfo")
-    suspend fun getProfilePreviewResponse(@Query("store_id") storeId:String) : Response<ProfilePreviewResponse>
+    @GET("api/dotk/settings/getProfileInfo")
+    suspend fun getProfilePreviewResponse(@Header("auth_token") authToken:String) : Response<ProfilePreviewResponse>
 
     @POST("api/dotstore/store/setServices")
     suspend fun changeStoreAndDeliveryStatus(@Body request: StoreDeliveryStatusChangeRequest) : Response<StoreDeliveryStatusChangeResponse>

@@ -34,13 +34,8 @@ data class OrderListStaticData(
 )
 
 data class ProfileStaticData(
-    @SerializedName("add_store_description_text") var addStoreDescription: String?,
-    @SerializedName("default_store_description_text") var defaultStoreDescriptionText: String?,
-    @SerializedName("page_heading") var pageHeading: String?,
     @SerializedName("save_change_text") var saveChanges: String?,
     @SerializedName("save_text") var saveText: String?,
-    @SerializedName("store_description_text") var storeDescriptionText: String?,
-    @SerializedName("store_description_title_text") var storeDescriptionTitleText: String?,
     @SerializedName("store_desction_hint_text") var storeDescriptionHint: String?,
     @SerializedName("warning_one") var mStoreLinkChangeWarningOne: String?,
     @SerializedName("warning_two") var mStoreLinkChangeWarningTwo: String?,
@@ -52,7 +47,6 @@ data class ProfileStaticData(
     @SerializedName("dotpe_dot_in_text") var dotPeDotInText: String?,
     @SerializedName("store_link_condition_one") var storeLinkConditionOne: String?,
     @SerializedName("store_link_condition_two") var storeLinkConditionTwo: String?,
-    @SerializedName("store_link_not_found") var storeLinkNotFound: String?,
     @SerializedName("store_link_title") var storeLinkTitle: String?,
     @SerializedName("yes_text") var mYesText: String?,
     @SerializedName("update_store_text") var mBottomSheetStoreNameHeading: String?,

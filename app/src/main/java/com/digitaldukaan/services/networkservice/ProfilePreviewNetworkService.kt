@@ -10,11 +10,11 @@ import com.digitaldukaan.services.serviceinterface.IProfilePreviewServiceInterfa
 class ProfilePreviewNetworkService {
 
     suspend fun getProfilePreviewServerCall(
-        storeId : String,
+        authToken : String,
         serviceInterface: IProfilePreviewServiceInterface
     ) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.getProfilePreviewResponse(storeId)
+            val response = RetrofitApi().getServerCallObject()?.getProfilePreviewResponse(authToken)
             response?.let {
                 if (it.isSuccessful) {
                     it.body()?.let { profilePreviewResponse ->

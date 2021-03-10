@@ -19,6 +19,8 @@ data class StoreResponse (
     @SerializedName("score") var score: Int,
     @SerializedName("store_info") var storeInfo: UserStoreInfoResponse,
     @SerializedName("address") var storeAddress: UserAddressResponse,
+    @SerializedName("owner") var storeOwner: StoreOwnerResponse?,
+    @SerializedName("store_businesses") var storeBusiness: ArrayList<StoreBusinessResponse>?,
     @SerializedName("services") var storeServices: StoreServicesResponse
 )
 
@@ -31,6 +33,19 @@ data class UserStoreInfoResponse (
     @SerializedName("logo_image") var logoImage: String?,
     @SerializedName("reference_store_id") var referenceStoreId: Int?,
     @SerializedName("description") var description: String?
+)
+
+data class StoreOwnerResponse (
+    @SerializedName("user_id") var userId: String,
+    @SerializedName("verify_phone") var verifyPhone: String?,
+    @SerializedName("phone") var phone: String?,
+    @SerializedName("language_id") var languageId: String?
+)
+
+data class StoreBusinessResponse (
+    @SerializedName("business_id") var businessId: String,
+    @SerializedName("business_name") var businessName: String?,
+    @SerializedName("image") var image: String?
 )
 
 data class ValidateOtpErrorResponse (
