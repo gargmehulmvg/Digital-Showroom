@@ -11,7 +11,9 @@ import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.models.request.MoreControlsRequest
+import com.digitaldukaan.models.response.AccountStaticTextResponse
 import com.digitaldukaan.models.response.MoreControlsResponse
+import com.digitaldukaan.models.response.StoreServicesResponse
 import com.digitaldukaan.services.MoreControlsService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IMoreControlsServiceInterface
@@ -21,16 +23,24 @@ import kotlinx.android.synthetic.main.more_control_fragment.*
 
 class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
 
-    companion object {
-        private lateinit var mMoreControlsService: MoreControlsService
-        private val mMoreControlsStaticData = mStaticData.mStaticData.mSettingsStaticData
-        private var mMinOrderValue = 0.0
-        private var mDeliveryPrice = 0.0
-        private var mFreeDeliveryAbove = 0.0
-        private var mDeliveryChargeType = 0
+    private lateinit var mMoreControlsStaticData: AccountStaticTextResponse
+    private lateinit var mMoreControlsService: MoreControlsService
+    private var mMinOrderValue = 0.0
+    private var mDeliveryPrice = 0.0
+    private var mFreeDeliveryAbove = 0.0
+    private var mDeliveryChargeType = 0
 
-        fun newInstance(): MoreControlsFragment {
-            return MoreControlsFragment()
+    companion object {
+        fun newInstance(appSettingsResponseStaticData: AccountStaticTextResponse, appStoreServicesResponse: StoreServicesResponse): MoreControlsFragment {
+            val fragment = MoreControlsFragment()
+            fragment.mMoreControlsStaticData = appSettingsResponseStaticData
+            appStoreServicesResponse.apply {
+                fragment.mMinOrderValue = mMinOrderValue ?: 0.0
+                fragment.mDeliveryPrice = mDeliveryPrice ?: 0.0
+                fragment.mFreeDeliveryAbove = mFreeDeliveryAbove ?: 0.0
+                fragment.mDeliveryChargeType = mDeliveryChargeType ?: 0
+            }
+            return fragment
         }
     }
 
@@ -50,21 +60,31 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
         ToolBarManager.getInstance().hideToolBar(mActivity, true)
         ToolBarManager.getInstance().apply {
             hideToolBar(mActivity, false)
-            setHeaderTitle("")
+            setHeaderTitle(mMoreControlsStaticData.page_heading_more_controls)
             onBackPressed(this@MoreControlsFragment)
             hideBackPressFromToolBar(mActivity, false)
         }
+        setUIDataFromResponse()
         if (!isInternetConnectionAvailable(mActivity)) {
             showNoInternetConnectionDialog()
             return
         }
     }
 
+    private fun setUIDataFromResponse() {
+        minOrderValueHeadingTextView.text = if (0.0 == mMinOrderValue) mMoreControlsStaticData.heading_set_min_order_value_for_delivery else mMoreControlsStaticData.heading_edit_min_order_value
+        minOrderValueOptionalTextView.text = if (0.0 == mMinOrderValue) mMoreControlsStaticData.text_optional else
+                "${mMoreControlsStaticData.sub_heading_success_set_min_order_value_for_delivery} ${mMoreControlsStaticData.text_ruppee_symbol}"
+        minOrderValueAmountTextView.text = if (0.0 != mMinOrderValue) mMinOrderValue.toString() else ""
+        deliveryChargeHeadingTextView.text = mMoreControlsStaticData.heading_set_delivery_charge
+        deliveryChargeTypeTextView.text = mMoreControlsStaticData.sub_heading_set_delivery_charge
+    }
+
     override fun onClick(view: View?) {
         super.onClick(view)
         when (view?.id) {
             minOrderValueContainer.id -> showMinimumDeliveryOrderBottomSheet()
-            deliveryChargeContainer.id -> launchFragment(SetDeliveryChargeFragment.newInstance(), true)
+            deliveryChargeContainer.id -> launchFragment(SetDeliveryChargeFragment.newInstance(mMoreControlsStaticData), true)
         }
     }
 
@@ -82,9 +102,9 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
                 val minDeliveryHeadingTextView: TextView = findViewById(R.id.minDeliveryHeadingTextView)
                 val minDeliveryAmountContainer: TextInputLayout = findViewById(R.id.minDeliveryAmountContainer)
                 val minDeliveryAmountEditText: EditText = findViewById(R.id.minDeliveryAmountEditText)
-                minDeliveryAmountContainer.hint = mMoreControlsStaticData.mMinOrderValueOptional
-                minDeliveryHeadingTextView.text = mMoreControlsStaticData.mMinOrderValue
-                verifyTextView.text = mMoreControlsStaticData.mSaveChanges
+                minDeliveryAmountContainer.hint = mMoreControlsStaticData.bottom_sheet_heading
+                minDeliveryHeadingTextView.text = mMoreControlsStaticData.bottom_sheet_hint
+                verifyTextView.text = mMoreControlsStaticData.save_changes
                 verifyTextView.setOnClickListener {
                     val amount = minDeliveryAmountEditText.text.trim().toString()
                     if (amount.isEmpty()) {

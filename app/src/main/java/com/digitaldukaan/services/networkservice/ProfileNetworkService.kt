@@ -8,10 +8,10 @@ import com.digitaldukaan.services.serviceinterface.IProfileServiceInterface
 class ProfileNetworkService {
 
     suspend fun getProfileServerCall(
-        storeId : String,
+        authToken : String,
         serviceInterface: IProfileServiceInterface) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.getProfileResponse(storeId)
+            val response = RetrofitApi().getServerCallObject()?.getProfileResponse(authToken)
             response?.let {
                 if (it.isSuccessful) {
                     it.body()?.let { staticTextResponse ->

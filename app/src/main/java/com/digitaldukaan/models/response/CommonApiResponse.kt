@@ -2,11 +2,11 @@ package com.digitaldukaan.models.response
 
 import com.google.gson.annotations.SerializedName
 
-data class ProfilePreviewResponse(
+data class CommonApiResponse(
     @SerializedName("status") var mIsSuccessStatus: Boolean,
     @SerializedName("message") var mMessage: String?,
     @SerializedName("error_type") var mErrorType: String?,
-    @SerializedName("data") var mProfileDataStr: String
+    @SerializedName("data") var mCommonDataStr: String
 )
 
 data class ProfileInfoResponse(

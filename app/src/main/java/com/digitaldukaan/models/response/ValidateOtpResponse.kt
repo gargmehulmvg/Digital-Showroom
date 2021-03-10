@@ -13,17 +13,6 @@ data class ValidateOtpResponse (
     @SerializedName("auto_verify_time") var mAutoVerifyTime: Int?
 )
 
-data class StoreResponse (
-    @SerializedName("store_id") var storeId: Int,
-    @SerializedName("spotlight_flag") var spotlightFlag: Int,
-    @SerializedName("score") var score: Int,
-    @SerializedName("store_info") var storeInfo: UserStoreInfoResponse,
-    @SerializedName("address") var storeAddress: UserAddressResponse,
-    @SerializedName("owner") var storeOwner: StoreOwnerResponse?,
-    @SerializedName("store_businesses") var storeBusiness: ArrayList<StoreBusinessResponse>?,
-    @SerializedName("services") var storeServices: StoreServicesResponse
-)
-
 data class UserStoreInfoResponse (
     @SerializedName("status") var mIsSuccessStatus: Boolean?,
     @SerializedName("name") var name: String?,

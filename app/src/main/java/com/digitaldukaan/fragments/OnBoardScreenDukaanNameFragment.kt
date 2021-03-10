@@ -12,7 +12,7 @@ import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.models.request.StoreNameRequest
-import com.digitaldukaan.models.response.ProfilePreviewResponse
+import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.StoreDescriptionResponse
 import com.digitaldukaan.services.ProfilePreviewService
 import com.digitaldukaan.services.isInternetConnectionAvailable
@@ -89,7 +89,7 @@ class OnBoardScreenDukaanNameFragment : BaseFragment(), IProfilePreviewServiceIn
         }
     }
 
-    override fun onProfilePreviewResponse(profilePreviewResponse: ProfilePreviewResponse) {
+    override fun onProfilePreviewResponse(commonApiResponse: CommonApiResponse) {
         Log.d(TAG, "onProfilePreviewResponse: do nothing")
     }
 

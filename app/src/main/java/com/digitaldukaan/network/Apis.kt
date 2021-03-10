@@ -20,11 +20,11 @@ interface Apis {
     @GET("api/dotk/template/getAppStaticText")
     suspend fun getAppStaticText(@Query("lanuageId") languageId:String) : Response<StaticTextResponse>
 
-    @GET("api/dotk/template/getAccountInfo")
-    suspend fun getProfileResponse(@Query("store_id") storeId:String) : Response<ProfileResponse>
+    @GET("api/dotk/settings/getAccountInfo")
+    suspend fun getProfileResponse(@Header("auth_token") authToken:String) : Response<CommonApiResponse>
 
     @GET("api/dotk/settings/getProfileInfo")
-    suspend fun getProfilePreviewResponse(@Header("auth_token") authToken:String) : Response<ProfilePreviewResponse>
+    suspend fun getProfilePreviewResponse(@Header("auth_token") authToken:String) : Response<CommonApiResponse>
 
     @POST("api/dotstore/store/setServices")
     suspend fun changeStoreAndDeliveryStatus(@Body request: StoreDeliveryStatusChangeRequest) : Response<StoreDeliveryStatusChangeResponse>

@@ -14,9 +14,9 @@ class ProfileService {
         mProfileServiceInterface = serviceInterface
     }
 
-    fun getUserProfile(storeId: String) {
+    fun getUserProfile(authToken: String) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.getProfileServerCall(storeId, mProfileServiceInterface)
+            mNetworkService.getProfileServerCall(authToken, mProfileServiceInterface)
         }
     }
 

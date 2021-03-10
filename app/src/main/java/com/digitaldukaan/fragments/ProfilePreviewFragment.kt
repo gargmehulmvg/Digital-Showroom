@@ -124,9 +124,9 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         swipeRefreshLayout.setOnRefreshListener(this)
     }
 
-    override fun onProfilePreviewResponse(profilePreviewResponse: ProfilePreviewResponse) {
+    override fun onProfilePreviewResponse(commonApiResponse: CommonApiResponse) {
         val response = Gson().fromJson<ProfileInfoResponse>(
-            profilePreviewResponse.mProfileDataStr,
+            commonApiResponse.mCommonDataStr,
             ProfileInfoResponse::class.java
         )
         mProfilePreviewResponse = response

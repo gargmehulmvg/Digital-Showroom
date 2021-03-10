@@ -34,6 +34,7 @@ import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IProfileServiceInterface
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.gson.Gson
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.settings_fragment.*
 
@@ -46,7 +47,10 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
     }
 
     private val mAppSettingsStaticData = mStaticData.mStaticData.mSettingsStaticData
+    private lateinit var mAppSettingsResponseStaticData: AccountStaticTextResponse
+    private lateinit var mAppStoreServicesResponse: StoreServicesResponse
     private val mProfileService = ProfileService()
+    private var mReferAndEarnResponse: ReferEarnResponse? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -117,16 +121,16 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             digitalShowroomWebLayout.id -> showTrendingOffersBottomSheet()
             storeSwitch.id -> changeStoreDeliveryStatus()
             deliverySwitch.id -> changeStoreDeliveryStatus()
-            moreControlsTextView.id -> launchFragment(MoreControlsFragment.newInstance(), true)
-            moreControlsImageView.id -> launchFragment(MoreControlsFragment.newInstance(), true)
+            moreControlsTextView.id -> launchFragment(MoreControlsFragment.newInstance(mAppSettingsResponseStaticData, mAppStoreServicesResponse), true)
+            moreControlsImageView.id -> launchFragment(MoreControlsFragment.newInstance(mAppSettingsResponseStaticData, mAppStoreServicesResponse), true)
             userProfileLayout.id -> launchFragment(
                 ProfilePreviewFragment().newInstance(
-                    mProfileResponse?.mStoreInfo?.mStoreName
+                    mProfileResponse?.mStoreInfo?.storeInfo?.name
                 ), true
             )
             userProfileLayout.id -> launchFragment(
                 ProfilePreviewFragment().newInstance(
-                    mProfileResponse?.mStoreInfo?.mStoreName
+                    mProfileResponse?.mStoreInfo?.storeInfo?.name
                 ), true
             )
         }
@@ -200,7 +204,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             return
         }
         showProgressDialog(mActivity, "Fetching user profile...")
-        mProfileService.getUserProfile(getStringDataFromSharedPref(Constants.STORE_ID))
+        mProfileService.getUserProfile(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
     }
 
     private fun changeStoreDeliveryStatus() {
@@ -234,15 +238,21 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         ToolBarManager.getInstance().setSideIconVisibility(false)
     }
 
-    override fun onProfileResponse(profileResponse: ProfileResponse) {
+    override fun onProfileResponse(commonResponse: CommonApiResponse) {
         stopProgress()
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (swipeRefreshLayout.isRefreshing) swipeRefreshLayout.isRefreshing = false
-            if (profileResponse.mStatus) setupUIFromProfileResponse(profileResponse)
+            if (commonResponse.mIsSuccessStatus) {
+                val response = Gson().fromJson<AccountInfoResponse>(
+                    commonResponse.mCommonDataStr,
+                    AccountInfoResponse::class.java
+                )
+                setupUIFromProfileResponse(response)
+                response?.mAccountStaticText?.run { mAppSettingsResponseStaticData = this }
+                response?.mStoreInfo?.storeServices?.run { mAppStoreServicesResponse = this }
+            }
         }
     }
-
-    private var mReferAndEarnResponse: ReferEarnResponse? = null
 
     override fun onReferAndEarnResponse(response: ReferEarnResponse) {
         stopProgress()
@@ -272,24 +282,17 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
 
     private var mProfileResponse: AccountInfoResponse? = null
 
-    private fun setupUIFromProfileResponse(profileResponse: ProfileResponse) {
-        StaticInstances.sStoreInfo = profileResponse.mAccountInfoResponse?.mStoreInfo
-        StaticInstances.sIsStoreImageUploaded =
-            (StaticInstances.sStoreInfo?.mStoreLogoStr?.isNotEmpty() == true)
-        Log.e(
-            SettingsFragment::class.simpleName,
-            "setupUIFromProfileResponse ${profileResponse.mMessage}"
-        )
-        val infoResponse = profileResponse.mAccountInfoResponse
+    private fun setupUIFromProfileResponse(infoResponse: AccountInfoResponse) {
+        StaticInstances.sIsStoreImageUploaded = (StaticInstances.sStoreInfo?.mStoreLogoStr?.isNotEmpty() == true)
         mProfileResponse = infoResponse
-        dukaanNameTextView.text = infoResponse?.mStoreInfo?.mStoreName
-        if (infoResponse?.mStoreInfo?.mStoreLogoStr?.isNotEmpty() == true) {
-            Picasso.get().load(infoResponse.mStoreInfo.mStoreLogoStr).into(storePhotoImageView)
+        dukaanNameTextView.text = infoResponse.mStoreInfo.storeInfo.name
+        if (infoResponse.mStoreInfo.storeInfo.logoImage?.isNotEmpty() == true) {
+            Picasso.get().load(infoResponse.mStoreInfo.storeInfo.logoImage).into(storePhotoImageView)
             hiddenImageView.visibility = View.INVISIBLE
             hiddenTextView.visibility = View.INVISIBLE
         }
-        storeSwitch.isChecked = infoResponse?.mStoreInfo?.mStoreService?.mStoreFlag == 1
-        infoResponse?.mFooterImages?.forEachIndexed { index, imageUrl ->
+        storeSwitch.isChecked = infoResponse.mStoreInfo.storeServices.mStoreFlag == 1
+        infoResponse.mFooterImages?.forEachIndexed { index, imageUrl ->
             if (index == 0) {
                 Picasso.get().load(imageUrl).placeholder(R.drawable.ic_auto_data_backup)
                     .into(autoDataBackupImageView)
@@ -298,24 +301,24 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                     .into(safeSecureImageView)
             }
         }
-        deliverySwitch.isChecked = infoResponse?.mStoreInfo?.mStoreService?.mDeliveryFlag == 1
+        deliverySwitch.isChecked = infoResponse.mStoreInfo.storeServices.mDeliveryFlag == 1
         profileStatusRecyclerView.apply {
             layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
-            adapter = ProfileStatusAdapter(infoResponse?.mTotalSteps, infoResponse?.mCompletedSteps)
+            adapter = ProfileStatusAdapter(infoResponse.mTotalSteps, infoResponse.mCompletedSteps)
         }
         settingStoreOptionRecyclerView.apply {
             val settingsAdapter = SettingsStoreAdapter(this@SettingsFragment)
             val linearLayoutManager = LinearLayoutManager(mActivity)
             layoutManager = linearLayoutManager
             adapter = settingsAdapter
-            settingsAdapter.setSettingsList(infoResponse?.mStoreOptions)
+            settingsAdapter.setSettingsList(infoResponse.mStoreOptions)
             val dividerItemDecoration = DividerItemDecoration(
                 context,
                 linearLayoutManager.orientation
             )
             addItemDecoration(dividerItemDecoration)
         }
-        infoResponse?.mTrendingList?.forEachIndexed { index, response ->
+        infoResponse.mTrendingList?.forEachIndexed { index, response ->
             if (0 == index) {
                 Picasso.get().load(response.mCDN).placeholder(R.drawable.ic_auto_data_backup).into(viewTopStoreImageView)
                 viewTopStoreTextView.text = response.mText
@@ -330,24 +333,24 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                 bulkUploadItemTextView.text = response.mText
             }
         }
-        val remainingSteps = infoResponse?.mTotalSteps?.minus(infoResponse.mCompletedSteps)
+        val remainingSteps = infoResponse.mTotalSteps?.minus(infoResponse.mCompletedSteps)
         stepsLeftTextView.text =
-            if (remainingSteps == 1) "$remainingSteps ${infoResponse.mAccountStaticText?.mStepLeft}" else "$remainingSteps ${infoResponse?.mAccountStaticText?.mStepsLeft}"
-        completeProfileTextView.text = infoResponse?.mAccountStaticText?.mCompleteProfile
+            if (remainingSteps == 1) "$remainingSteps ${infoResponse.mAccountStaticText?.mStepLeft}" else "$remainingSteps ${infoResponse.mAccountStaticText?.mStepsLeft}"
+        completeProfileTextView.text = infoResponse.mAccountStaticText?.mCompleteProfile
         whatsAppTextView.setOnClickListener {
-            val sharingStr = infoResponse?.mStoreShare?.mWaText
-            if (infoResponse?.mStoreShare?.mShareStoreBanner!!) "\n\n" + sharingStr + infoResponse.mStoreShare?.mImageUrl
+            val sharingStr = infoResponse.mStoreShare?.mWaText
+            if (infoResponse.mStoreShare?.mShareStoreBanner!!) "\n\n" + sharingStr + infoResponse.mStoreShare?.mImageUrl
             shareDataOnWhatsApp(sharingStr)
         }
         viewTopOrderLayout2.setOnClickListener {
-            if (infoResponse?.mTrendingList?.isNotEmpty() == true) openUrlInBrowser(
+            if (infoResponse.mTrendingList?.isNotEmpty() == true) openUrlInBrowser(
                 infoResponse.mTrendingList?.get(
                     0
                 )?.mPage
             )
         }
         bulkUploadItemLayout.setOnClickListener {
-            if (infoResponse?.mTrendingList?.size!! >= 2) openUrlInBrowser(
+            if (infoResponse.mTrendingList?.size!! >= 2) openUrlInBrowser(
                 infoResponse.mTrendingList?.get(
                     2
                 )?.mPage
@@ -401,8 +404,8 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         fetchUserProfile()
     }
 
-    override fun onStoreSettingItemClicked(storeOptionResponse: StoreOptionsResponse) {
-        showToast(storeOptionResponse.mText)
-        checkStoreOptionClick(storeOptionResponse)
+    override fun onStoreSettingItemClicked(storeResponse: StoreOptionsResponse) {
+        showToast(storeResponse.mText)
+        checkStoreOptionClick(storeResponse)
     }
 }

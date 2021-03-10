@@ -6,14 +6,18 @@ import android.view.View
 import android.view.ViewGroup
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.ToolBarManager
+import com.digitaldukaan.models.response.AccountStaticTextResponse
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import kotlinx.android.synthetic.main.set_delivery_charge_fragment.*
 
 class SetDeliveryChargeFragment : BaseFragment() {
 
+    private lateinit var mMoreControlsStaticData: AccountStaticTextResponse
+
     companion object {
-        fun newInstance(): SetDeliveryChargeFragment {
+        fun newInstance(appSettingsResponseStaticData: AccountStaticTextResponse): SetDeliveryChargeFragment {
             val fragment = SetDeliveryChargeFragment()
+            fragment.mMoreControlsStaticData = appSettingsResponseStaticData
             return fragment
         }
     }
@@ -28,7 +32,7 @@ class SetDeliveryChargeFragment : BaseFragment() {
         ToolBarManager.getInstance().hideToolBar(mActivity, true)
         ToolBarManager.getInstance().apply {
             hideToolBar(mActivity, false)
-            setHeaderTitle("")
+            setHeaderTitle(mMoreControlsStaticData.page_heading_set_delivery_charge)
             onBackPressed(this@SetDeliveryChargeFragment)
             hideBackPressFromToolBar(mActivity, false)
         }
@@ -40,6 +44,19 @@ class SetDeliveryChargeFragment : BaseFragment() {
         showFreeDeliveryContainer(true)
         showFixedDeliveryContainer(false)
         showCustomDeliveryContainer(false)
+        setupTextFromResponse()
+    }
+
+    private fun setupTextFromResponse() {
+        freeDeliveryRadioButton.text = mMoreControlsStaticData.heading_free_delivery
+        freeDeliveryTextView.text = mMoreControlsStaticData.free_delivery_description
+        fixedDeliveryRadioButton.text = mMoreControlsStaticData.heading_fixed_delivery_charge
+        fixedDeliveryChargeLayout.hint = mMoreControlsStaticData.hint_free_delivery_charge
+        freeDeliveryAboveLayout.hint = mMoreControlsStaticData.hint_free_delivery_above_optional
+        customDeliveryRadioButton.text = mMoreControlsStaticData.heading_custom_delivery_charge
+        customDeliveryAboveLayout.hint = mMoreControlsStaticData.hint_custom_delivery_charge
+        customDeliveryTextView.text = mMoreControlsStaticData.custom_delivery_charge_description
+        continueTextView.text = mMoreControlsStaticData.bottom_sheet_save_changes
     }
 
     override fun onClick(view: View?) {

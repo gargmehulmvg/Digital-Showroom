@@ -1,11 +1,11 @@
 package com.digitaldukaan.services.serviceinterface
 
-import com.digitaldukaan.models.response.ProfilePreviewResponse
+import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.StoreDescriptionResponse
 
 interface IProfilePreviewServiceInterface {
 
-    fun onProfilePreviewResponse(profilePreviewResponse: ProfilePreviewResponse)
+    fun onProfilePreviewResponse(commonApiResponse: CommonApiResponse)
 
     fun onStoreNameResponse(response: StoreDescriptionResponse)
 

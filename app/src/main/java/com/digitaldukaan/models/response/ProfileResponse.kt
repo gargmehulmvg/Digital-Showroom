@@ -10,14 +10,15 @@ data class ProfileResponse(
 )
 
 data class AccountInfoResponse(
-    @SerializedName("StoreInfo") var mStoreInfo: StoreInfoResponse,
+    @SerializedName("store") var mStoreInfo: StoreResponse,
     @SerializedName("store_share") var mStoreShare: StoreShareResponse?,
-    @SerializedName("trending_list") var mTrendingList: ArrayList<TrendingListResponse>?,
+    @SerializedName("wa_share") var waShare: String?,
+    @SerializedName("new_releases") var mTrendingList: ArrayList<TrendingListResponse>?,
     @SerializedName("store_options") var mStoreOptions: ArrayList<StoreOptionsResponse>?,
-    @SerializedName("sub_pages") var mSubPages: ArrayList<SubPagesResponse>?,
+    @SerializedName("app_settings") var mSubPages: ArrayList<SubPagesResponse>?,
     @SerializedName("total_steps") var mTotalSteps: Int?,
     @SerializedName("completed_steps") var mCompletedSteps: Int,
-    @SerializedName("account_static_text") var mAccountStaticText: AccountStaticTextResponse?,
+    @SerializedName("static_text") var mAccountStaticText: AccountStaticTextResponse?,
     @SerializedName("footer_images") var mFooterImages: ArrayList<String>?
 )
 
@@ -48,7 +49,47 @@ data class StoreServicesResponse(
 data class AccountStaticTextResponse(
     @SerializedName("complete_profile") var mCompleteProfile: String?,
     @SerializedName("step_left") var mStepLeft: String?,
-    @SerializedName("steps_left") var mStepsLeft: String?
+    @SerializedName("steps_left") var mStepsLeft: String?,
+    @SerializedName("bottom_sheet_hint") var bottom_sheet_hint: String?,
+    @SerializedName("bottom_sheet_save_changes") var bottom_sheet_save_changes: String?,
+    @SerializedName("custom_delivery_charge_description") var custom_delivery_charge_description: String?,
+    @SerializedName("error_amount_must_greater_than_min_order_value") var error_amount_must_greater_than_min_order_value: String?,
+    @SerializedName("error_amount_must_greater_than_zero") var error_amount_must_greater_than_zero: String?,
+    @SerializedName("error_mandatory_field") var error_mandatory_field: String?,
+    @SerializedName("error_store_link_bottom_sheet_one") var error_store_link_bottom_sheet_one: String?,
+    @SerializedName("error_store_link_bottom_sheet_two") var error_store_link_bottom_sheet_two: String?,
+    @SerializedName("error_store_name_empty") var error_store_name_empty: String?,
+    @SerializedName("free_delivery_description") var free_delivery_description: String?,
+    @SerializedName("heading_custom_delivery_charge") var heading_custom_delivery_charge: String?,
+    @SerializedName("heading_fixed_delivery_charge") var heading_fixed_delivery_charge: String?,
+    @SerializedName("heading_free_delivery") var heading_free_delivery: String?,
+    @SerializedName("heading_set_delivery_charge") var heading_set_delivery_charge: String?,
+    @SerializedName("heading_set_min_order_value_for_delivery") var heading_set_min_order_value_for_delivery: String?,
+    @SerializedName("heading_store_link_bottom_sheet") var heading_store_link_bottom_sheet: String?,
+    @SerializedName("heading_store_link_dialog") var heading_store_link_dialog: String?,
+    @SerializedName("heading_store_name_bottom_sheet") var heading_store_name_bottom_sheet: String?,
+    @SerializedName("hint_custom_delivery_charge") var hint_custom_delivery_charge: String?,
+    @SerializedName("hint_free_delivery_above_optional") var hint_free_delivery_above_optional: String?,
+    @SerializedName("hint_free_delivery_charge") var hint_free_delivery_charge: String?,
+    @SerializedName("hint_store_name_bottom_sheet") var hint_store_name_bottom_sheet: String?,
+    @SerializedName("message_store_link_dialog_one") var message_store_link_dialog_one: String?,
+    @SerializedName("message_store_link_dialog_two") var message_store_link_dialog_two: String?,
+    @SerializedName("page_heading") var page_heading: String?,
+    @SerializedName("page_heading_more_controls") var page_heading_more_controls: String?,
+    @SerializedName("page_heading_set_delivery_charge") var page_heading_set_delivery_charge: String?,
+    @SerializedName("save_changes") var save_changes: String?,
+    @SerializedName("sub_heading_set_delivery_charge") var sub_heading_set_delivery_charge: String?,
+    @SerializedName("sub_heading_set_min_order_value_for_delivery") var sub_heading_set_min_order_value_for_delivery: String?,
+    @SerializedName("sub_heading_success_set_delivery_charge") var sub_heading_success_set_delivery_charge: String?,
+    @SerializedName("sub_heading_success_set_delivery_charge_amount") var sub_heading_success_set_delivery_charge_amount: String?,
+    @SerializedName("sub_heading_success_set_min_order_value_for_delivery") var sub_heading_success_set_min_order_value_for_delivery: String?,
+    @SerializedName("heading_edit_min_order_value") var heading_edit_min_order_value: String?,
+    @SerializedName("text_confirm") var text_confirm: String?,
+    @SerializedName("text_no") var text_no: String?,
+    @SerializedName("text_optional") var text_optional: String?,
+    @SerializedName("text_yes") var text_yes: String?,
+    @SerializedName("text_ruppee_symbol") var text_ruppee_symbol: String?,
+    @SerializedName("bottom_sheet_heading") var bottom_sheet_heading: String?
 )
 
 data class StoreShareResponse(
@@ -74,10 +115,10 @@ data class StoreOptionsResponse(
 )
 
 data class TrendingListResponse(
-    @SerializedName("cdn") var mCDN: String?,
+    @SerializedName("image_url") var mCDN: String?,
     @SerializedName("text") var mText: String?,
-    @SerializedName("type") var mType: String?,
     @SerializedName("action") var mAction: String?,
+    @SerializedName("type") var mType: String?,
     @SerializedName("lock_text") var mLockText: String?,
     @SerializedName("page") var mPage: String?
 )
