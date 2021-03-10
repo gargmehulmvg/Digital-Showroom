@@ -156,7 +156,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                 profilePreviewRecyclerView.apply {
                     layoutManager = linearLayoutManager
                     setHasFixedSize(true)
-                    adapter = ProfilePreviewAdapter(this@run, this@ProfilePreviewFragment)
+                    adapter = ProfilePreviewAdapter(mActivity, this@run, this@ProfilePreviewFragment)
                 }
                 val dividerItemDecoration = DividerItemDecoration(
                     profilePreviewRecyclerView.context,

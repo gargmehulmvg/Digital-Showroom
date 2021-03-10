@@ -49,6 +49,8 @@
                     android:layout_marginTop="@dimen/_8sdp"
                     android:orientation="horizontal"
                     android:clickable="false"
+                    android:layout_marginStart="@dimen/_10sdp"
+                    android:layout_marginEnd="@dimen/_10sdp"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_constraintEnd_toEndOf="@+id/linearLayout"
                     app:layout_constraintStart_toStartOf="@+id/dukaanNameTextView"

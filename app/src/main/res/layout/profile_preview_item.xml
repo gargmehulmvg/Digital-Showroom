@@ -42,20 +42,19 @@
         android:id="@+id/addSettingKeyDataTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_3sdp"
         android:clickable="false"
-        android:maxLines="@integer/min_lines_two"
-        android:ellipsize="end"
         android:drawableEnd="@drawable/ic_edit"
-        android:fontFamily="sans-serif-medium"
         android:drawablePadding="@dimen/_10sdp"
+        android:ellipsize="end"
+        android:fontFamily="sans-serif-medium"
         android:gravity="center_vertical"
+        android:maxLines="@integer/min_lines_two"
         android:textColor="@color/dark_blackish"
         android:textSize="@dimen/_12sdp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/settingKeyHeading"
-        app:layout_constraintTop_toBottomOf="@+id/settingKeyHeading"
+        app:layout_constraintTop_toBottomOf="@+id/profilePreviewBusinessTypeRecyclerView"
         tools:text="@string/start_now" />
 
     <androidx.constraintlayout.widget.Group
@@ -82,5 +81,18 @@
         app:layout_constraintBottom_toBottomOf="@+id/addSettingKeyHeading"
         app:layout_constraintStart_toEndOf="@+id/addSettingKeyHeading"
         app:layout_constraintTop_toTopOf="@+id/addSettingKeyHeading" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/profilePreviewBusinessTypeRecyclerView"
+        android:layout_width="0dp"
+        android:visibility="gone"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/settingKeyHeading"
+        app:layout_constraintTop_toBottomOf="@+id/settingKeyHeading"
+        tools:listitem="@layout/profile_preview_business_type_item" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

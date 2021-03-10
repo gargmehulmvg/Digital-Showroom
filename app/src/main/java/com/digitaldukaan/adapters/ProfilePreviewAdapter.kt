@@ -1,16 +1,20 @@
 package com.digitaldukaan.adapters
 
+import android.graphics.Rect
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.digitaldukaan.MainActivity
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.interfaces.IProfilePreviewItemClicked
 import com.digitaldukaan.models.response.ProfilePreviewSettingsKeyResponse
 
 class ProfilePreviewAdapter(
+    private val mActivity: MainActivity,
     private var mSettingsKeysList: ArrayList<ProfilePreviewSettingsKeyResponse>,
     private val mProfilePreviewListener: IProfilePreviewItemClicked
 ) :
@@ -23,6 +27,7 @@ class ProfilePreviewAdapter(
         val profilePreviewDefaultScreenGroup: View = itemView.findViewById(R.id.profilePreviewDefaultScreenGroup)
         val profilePreviewDataGroup: View = itemView.findViewById(R.id.profilePreviewDataGroup)
         val addSettingKeyDataTextView: TextView = itemView.findViewById(R.id.addSettingKeyDataTextView)
+        val profilePreviewBusinessTypeRecyclerView: RecyclerView = itemView.findViewById(R.id.profilePreviewBusinessTypeRecyclerView)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProfilePreviewViewHolder {
@@ -57,9 +62,30 @@ class ProfilePreviewAdapter(
                         R.drawable.ic_edit,
                         0
                     )
+                } else if (settingKeyItem.mAction == Constants.ACTION_BUSINESS_TYPE) {
+                    profilePreviewBusinessTypeRecyclerView.visibility = View.VISIBLE
+                    val layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false).apply {
+                        reverseLayout = true
+                        stackFromEnd = true
+                    }
+                    profilePreviewBusinessTypeRecyclerView.layoutManager = layoutManager
+                    val profilePreviewBusinessTypeAdapter = ProfilePreviewBusinessTypeAdapter(mActivity)
+                    profilePreviewBusinessTypeRecyclerView.apply {
+                        adapter = profilePreviewBusinessTypeAdapter
+                        addItemDecoration(OverlapDecoration())
+                    }
                 }
             }
         }
     }
 
+}
+
+class OverlapDecoration : RecyclerView.ItemDecoration() {
+
+    override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
+        val position = parent.getChildAdapterPosition(view)
+        val itemCount = state.itemCount
+        if (position == (itemCount - 1)) outRect.set(0, 0, 0, 0) else outRect.set(-25, 0, 0, 0)
+    }
 }

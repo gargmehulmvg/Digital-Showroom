@@ -29,7 +29,11 @@ class CreateStoreFragment : BaseFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         ToolBarManager.getInstance().hideToolBar(mActivity, true)
-        val progressAnimation: ObjectAnimator = ObjectAnimator.ofInt(progressBarStyleHorizontal,"progress", 0,100).setDuration(Constants.STORE_CREATION_PROGRESS_ANIMATION_INTERVAL)
+        val progressAnimation: ObjectAnimator = ObjectAnimator.ofInt(progressBarStyleHorizontal, "progress", 0, 25)
+        progressAnimation.apply {
+            setAutoCancel(true)
+            duration = Constants.STORE_CREATION_PROGRESS_ANIMATION_INTERVAL
+        }
         progressAnimation.addListener(object : Animator.AnimatorListener {
             override fun onAnimationRepeat(animation: Animator?) {
                 Log.d(TAG, "onAnimationRepeat: do nothing")

@@ -64,6 +64,8 @@ open class BaseFragment : Fragment(), ISearchImageItemClicked {
     protected lateinit var mContentView: View
     private var mProgressDialog: Dialog? = null
     protected lateinit var mActivity: MainActivity
+    private var mImageAdapter = ImagesSearchAdapter()
+    private lateinit var mImagePickBottomSheet: BottomSheetDialog
 
     companion object {
         lateinit var mStaticData: StaticTextResponse
@@ -383,9 +385,6 @@ open class BaseFragment : Fragment(), ISearchImageItemClicked {
         }
         return false
     }
-
-    private var mImageAdapter = ImagesSearchAdapter()
-    private lateinit var mImagePickBottomSheet: BottomSheetDialog
 
     open fun showImagePickerBottomSheet() {
         val imageUploadStaticData = mStaticData.mStaticData.mCatalogStaticData
