@@ -74,8 +74,8 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
     private fun setUIDataFromResponse() {
         minOrderValueHeadingTextView.text = if (0.0 == mMinOrderValue) mMoreControlsStaticData.heading_set_min_order_value_for_delivery else mMoreControlsStaticData.heading_edit_min_order_value
         minOrderValueOptionalTextView.text = if (0.0 == mMinOrderValue) mMoreControlsStaticData.text_optional else
-                "${mMoreControlsStaticData.sub_heading_success_set_min_order_value_for_delivery} ${mMoreControlsStaticData.text_ruppee_symbol}"
-        minOrderValueAmountTextView.text = if (0.0 != mMinOrderValue) mMinOrderValue.toString() else ""
+                "${mMoreControlsStaticData.sub_heading_success_set_min_order_value_for_delivery}"
+        minOrderValueAmountTextView.text = if (0.0 != mMinOrderValue) "${mMoreControlsStaticData.text_ruppee_symbol}$mMinOrderValue" else ""
         deliveryChargeHeadingTextView.text = mMoreControlsStaticData.heading_set_delivery_charge
         deliveryChargeTypeTextView.text = mMoreControlsStaticData.sub_heading_set_delivery_charge
     }
@@ -113,8 +113,13 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
                         requestFocus()
                         return@setOnClickListener
                     }
-                    if (amount.toDouble() == 0.0) {
+                    if (0.0 == amount.toDouble()) {
                         minDeliveryAmountEditText.error = mMoreControlsStaticData.error_amount_must_greater_than_zero
+                        requestFocus()
+                        return@setOnClickListener
+                    }
+                    if (0.0 != mFreeDeliveryAbove && amount.toDouble() < mFreeDeliveryAbove) {
+                        minDeliveryAmountEditText.error = mMoreControlsStaticData.error_amount_must_greater_than_free_delivery_above
                         requestFocus()
                         return@setOnClickListener
                     }

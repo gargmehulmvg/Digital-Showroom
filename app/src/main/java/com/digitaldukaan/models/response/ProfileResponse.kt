@@ -54,6 +54,7 @@ data class AccountStaticTextResponse(
     @SerializedName("bottom_sheet_save_changes") var bottom_sheet_save_changes: String?,
     @SerializedName("custom_delivery_charge_description") var custom_delivery_charge_description: String?,
     @SerializedName("error_amount_must_greater_than_min_order_value") var error_amount_must_greater_than_min_order_value: String?,
+    @SerializedName("error_amount_must_greater_than_free_delivery_above") var error_amount_must_greater_than_free_delivery_above: String?,
     @SerializedName("error_amount_must_greater_than_zero") var error_amount_must_greater_than_zero: String?,
     @SerializedName("error_mandatory_field") var error_mandatory_field: String?,
     @SerializedName("error_store_link_bottom_sheet_one") var error_store_link_bottom_sheet_one: String?,

@@ -41,6 +41,16 @@ data class ProfileStaticTextResponse(
     @SerializedName("text_confirm_desc_lose_changes") var mBottomSheetCloseConfirmationMessage: String?,
     @SerializedName("error_domain_already_exists") var mDomainAlreadyExistError: String?,
     @SerializedName("error_domain_unavailable") var mDomainUnAvailableError: String?,
+
+    @SerializedName("heading_bank_page") var heading_bank_page: String?,
+    @SerializedName("sub_heading_bank_page") var sub_heading_bank_page: String?,
+    @SerializedName("hint_bank_account_holder_name") var hint_bank_account_holder_name: String?,
+    @SerializedName("hint_bank_account_number") var hint_bank_account_number: String?,
+    @SerializedName("hint_bank_verify_account_number") var hint_bank_verify_account_number: String?,
+    @SerializedName("hint_bank_ifsc_code") var hint_bank_ifsc_code: String?,
+    @SerializedName("hint_bank_registered_mobile_number") var hint_bank_registered_mobile_number: String?,
+    @SerializedName("bank_save_changes") var hint_bank_save_changes: String?,
+
     @SerializedName("text_no") var mNoText: String?
 )
 

@@ -15,7 +15,7 @@
         android:paddingStart="@dimen/_25sdp">
 
         <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/materialTextView2"
+            android:id="@+id/bankHeadingTextView"
             style="@style/common_bold_text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -30,8 +30,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/default_text_light_grey"
-            app:layout_constraintStart_toStartOf="@+id/materialTextView2"
-            app:layout_constraintTop_toBottomOf="@+id/materialTextView2"
+            app:layout_constraintStart_toStartOf="@+id/bankHeadingTextView"
+            app:layout_constraintTop_toBottomOf="@+id/bankHeadingTextView"
             tools:text="And Get Instant Settlements" />
 
         <com.google.android.material.textfield.TextInputLayout
@@ -40,8 +40,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_15sdp"
-            app:layout_constraintEnd_toEndOf="@+id/materialTextView2"
-            app:layout_constraintStart_toStartOf="@+id/materialTextView2"
+            app:layout_constraintEnd_toEndOf="@+id/bankHeadingTextView"
+            app:layout_constraintStart_toStartOf="@+id/bankHeadingTextView"
             app:layout_constraintTop_toBottomOf="@+id/materialTextView3"
             tools:hint="Account Holder Name">
 
@@ -66,8 +66,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_10sdp"
-            app:layout_constraintEnd_toEndOf="@+id/materialTextView2"
-            app:layout_constraintStart_toStartOf="@+id/materialTextView2"
+            app:layout_constraintEnd_toEndOf="@+id/bankHeadingTextView"
+            app:layout_constraintStart_toStartOf="@+id/bankHeadingTextView"
             app:layout_constraintTop_toBottomOf="@+id/accountHolderNameLayout"
             tools:hint="Account Number">
 
@@ -92,8 +92,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_10sdp"
-            app:layout_constraintEnd_toEndOf="@+id/materialTextView2"
-            app:layout_constraintStart_toStartOf="@+id/materialTextView2"
+            app:layout_constraintEnd_toEndOf="@+id/bankHeadingTextView"
+            app:layout_constraintStart_toStartOf="@+id/bankHeadingTextView"
             app:layout_constraintTop_toBottomOf="@+id/accountNumberLayout"
             tools:hint="Verify Account Number">
 
@@ -118,8 +118,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_10sdp"
-            app:layout_constraintEnd_toEndOf="@+id/materialTextView2"
-            app:layout_constraintStart_toStartOf="@+id/materialTextView2"
+            app:layout_constraintEnd_toEndOf="@+id/bankHeadingTextView"
+            app:layout_constraintStart_toStartOf="@+id/bankHeadingTextView"
             app:layout_constraintTop_toBottomOf="@+id/verifyAccountNumberLayout"
             tools:hint="IFSC CODE">
 
@@ -144,8 +144,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_10sdp"
-            app:layout_constraintEnd_toEndOf="@+id/materialTextView2"
-            app:layout_constraintStart_toStartOf="@+id/materialTextView2"
+            app:layout_constraintEnd_toEndOf="@+id/bankHeadingTextView"
+            app:layout_constraintStart_toStartOf="@+id/bankHeadingTextView"
             app:layout_constraintTop_toBottomOf="@+id/ifscLayout"
             tools:hint="Registered Mobile Number">
 
