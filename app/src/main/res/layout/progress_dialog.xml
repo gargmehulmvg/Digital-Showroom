@@ -2,37 +2,23 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/relativeLayout"
-    android:layout_width="match_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:gravity="center"
     android:layout_gravity="center"
     android:background="@drawable/curve_white_background"
-    android:minWidth="@dimen/_200sdp"
-    android:padding="@dimen/_10sdp">
+    android:minWidth="@dimen/_175sdp"
+    android:padding="@dimen/_25sdp">
 
-    <ImageView
+    <pl.droidsonroids.gif.GifImageView
         android:id="@+id/logo"
-        android:layout_width="@dimen/_50sdp"
-        android:layout_height="@dimen/_50sdp"
-        android:layout_marginTop="@dimen/_10sdp"
-        android:contentDescription="@string/image_view_content_description"
-        android:src="@drawable/ic_digital_dukaan_splash"
+        android:layout_width="@dimen/_75sdp"
+        android:layout_height="@dimen/_75sdp"
+        android:src="@drawable/gif_processing"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
-    <ProgressBar
-        android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyle"
-        android:layout_width="@dimen/_20sdp"
-        android:layout_height="@dimen/_20sdp"
-        android:layout_marginTop="@dimen/_10sdp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/logo"
-        app:layout_constraintStart_toStartOf="@+id/logo"
-        app:layout_constraintTop_toBottomOf="@+id/logo"
-        app:layout_constraintVertical_bias="0.022" />
 
     <TextView
         android:id="@+id/progressDialogTextView"
