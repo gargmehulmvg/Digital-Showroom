@@ -32,7 +32,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.android.synthetic.main.marketing_fragment.*
 import okhttp3.ResponseBody
 
-class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingServiceInterface {
+class MarketingFragment : BaseChildFragment(), IOnToolbarIconClick, IMarketingServiceInterface {
 
     companion object {
         private lateinit var service: MarketingService
@@ -178,5 +178,11 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                 }
             }
         }.show()
+    }
+
+    override fun onNativeBackPressed() {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            mActivity.onBackPressed()
+        }
     }
 }

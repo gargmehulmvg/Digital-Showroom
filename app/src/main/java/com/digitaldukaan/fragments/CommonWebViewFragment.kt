@@ -12,6 +12,7 @@ import android.webkit.WebViewClient
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.ToolBarManager
+import com.digitaldukaan.webviews.WebViewBridge
 import kotlinx.android.synthetic.main.common_webview_fragment.*
 
 
@@ -44,6 +45,7 @@ class CommonWebViewFragment : BaseFragment() {
         commonWebView.apply {
             commonWebView.webViewClient = WebViewController()
             settings.javaScriptEnabled = true
+            addJavascriptInterface(WebViewBridge(), "AndroidBridge")
             loadUrl(mLoadUrl)
         }
         showCancellableProgressDialog(mActivity)
