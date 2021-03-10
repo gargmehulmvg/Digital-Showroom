@@ -103,12 +103,18 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
                 val minDeliveryAmountContainer: TextInputLayout = findViewById(R.id.minDeliveryAmountContainer)
                 val minDeliveryAmountEditText: EditText = findViewById(R.id.minDeliveryAmountEditText)
                 minDeliveryAmountContainer.hint = mMoreControlsStaticData.bottom_sheet_heading
+                minDeliveryAmountEditText.setText(if (mMinOrderValue != 0.0) mMinOrderValue.toString() else "")
                 minDeliveryHeadingTextView.text = mMoreControlsStaticData.bottom_sheet_hint
                 verifyTextView.text = mMoreControlsStaticData.save_changes
                 verifyTextView.setOnClickListener {
                     val amount = minDeliveryAmountEditText.text.trim().toString()
                     if (amount.isEmpty()) {
-                        minDeliveryAmountEditText.error = getString(R.string.mandatory_field_message)
+                        minDeliveryAmountEditText.error = mMoreControlsStaticData.error_mandatory_field
+                        requestFocus()
+                        return@setOnClickListener
+                    }
+                    if (amount.toDouble() == 0.0) {
+                        minDeliveryAmountEditText.error = mMoreControlsStaticData.error_amount_must_greater_than_zero
                         requestFocus()
                         return@setOnClickListener
                     }
@@ -134,11 +140,12 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
     override fun onMoreControlsResponse(response: MoreControlsResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
-            showToast(response.toString())
+            showShortSnackBar(response.mMessage)
             mMinOrderValue = response.mServices.mMinOrderValue ?: 0.0
             mDeliveryPrice = response.mServices.mDeliveryPrice ?: 0.0
             mFreeDeliveryAbove = response.mServices.mFreeDeliveryAbove ?: 0.0
             mDeliveryChargeType = response.mServices.mDeliveryChargeType ?: 0
+            setUIDataFromResponse()
         }
     }
 
