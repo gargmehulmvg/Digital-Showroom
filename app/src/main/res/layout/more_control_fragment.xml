@@ -119,30 +119,57 @@
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/deliveryChargeTypeTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:paddingTop="@dimen/_2sdp"
+            android:textColor="@color/default_text_light_grey"
+            android:textSize="@dimen/_9sdp"
+            app:layout_constraintStart_toStartOf="@+id/deliveryChargeHeadingTextView"
+            app:layout_constraintTop_toBottomOf="@+id/deliveryChargeHeadingTextView"
+            tools:text="Current: Fixed Delivery Charge" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/deliveryChargeTypeValueTextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:clickable="false"
             android:paddingTop="@dimen/_2sdp"
-            tools:text="Current: Fixed Delivery Charge"
-            android:textColor="@color/default_text_light_grey"
+            android:textColor="@color/open_green"
+            android:textStyle="bold"
             android:textSize="@dimen/_9sdp"
             app:layout_constraintEnd_toStartOf="@+id/deliveryChargeImageView"
-            app:layout_constraintStart_toStartOf="@+id/deliveryChargeHeadingTextView"
-            app:layout_constraintTop_toBottomOf="@+id/deliveryChargeHeadingTextView" />
+            app:layout_constraintStart_toEndOf="@+id/deliveryChargeTypeTextView"
+            app:layout_constraintTop_toBottomOf="@+id/deliveryChargeHeadingTextView"
+            tools:text="Current: Fixed Delivery Charge" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/deliveryChargeRateTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:paddingTop="@dimen/_2sdp"
+            android:textColor="@color/default_text_light_grey"
+            android:textSize="@dimen/_9sdp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/deliveryChargeHeadingTextView"
+            app:layout_constraintTop_toBottomOf="@+id/deliveryChargeTypeTextView"
+            tools:text="Free delivery above: ₹ 350" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/deliveryChargeRateValueTextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:clickable="false"
             android:paddingTop="@dimen/_2sdp"
-            tools:text="Free delivery above: ₹ 350"
-            android:textColor="@color/default_text_light_grey"
+            android:textColor="@color/open_green"
+            android:textStyle="bold"
             android:textSize="@dimen/_9sdp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/deliveryChargeImageView"
-            app:layout_constraintStart_toStartOf="@+id/deliveryChargeHeadingTextView"
-            app:layout_constraintTop_toBottomOf="@+id/deliveryChargeTypeTextView" />
+            app:layout_constraintStart_toEndOf="@+id/deliveryChargeRateTextView"
+            app:layout_constraintTop_toBottomOf="@+id/deliveryChargeTypeTextView"
+            tools:text="Free delivery above: ₹ 350" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

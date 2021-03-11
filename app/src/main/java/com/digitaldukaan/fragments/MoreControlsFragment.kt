@@ -12,19 +12,21 @@ import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.models.request.MoreControlsRequest
 import com.digitaldukaan.models.response.AccountStaticTextResponse
-import com.digitaldukaan.models.response.MoreControlsResponse
+import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.StoreServicesResponse
 import com.digitaldukaan.services.MoreControlsService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IMoreControlsServiceInterface
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.textfield.TextInputLayout
+import com.google.gson.Gson
 import kotlinx.android.synthetic.main.more_control_fragment.*
 
 class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
 
     private lateinit var mMoreControlsStaticData: AccountStaticTextResponse
     private lateinit var mMoreControlsService: MoreControlsService
+    private lateinit var mAppStoreServicesResponse: StoreServicesResponse
     private var mMinOrderValue = 0.0
     private var mDeliveryPrice = 0.0
     private var mFreeDeliveryAbove = 0.0
@@ -34,13 +36,18 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
         fun newInstance(appSettingsResponseStaticData: AccountStaticTextResponse, appStoreServicesResponse: StoreServicesResponse): MoreControlsFragment {
             val fragment = MoreControlsFragment()
             fragment.mMoreControlsStaticData = appSettingsResponseStaticData
+            updateStoreServiceInstances(appStoreServicesResponse, fragment)
+            return fragment
+        }
+
+        private fun updateStoreServiceInstances(appStoreServicesResponse: StoreServicesResponse, fragment: MoreControlsFragment) {
             appStoreServicesResponse.apply {
                 fragment.mMinOrderValue = mMinOrderValue ?: 0.0
                 fragment.mDeliveryPrice = mDeliveryPrice ?: 0.0
                 fragment.mFreeDeliveryAbove = mFreeDeliveryAbove ?: 0.0
                 fragment.mDeliveryChargeType = mDeliveryChargeType ?: 0
             }
-            return fragment
+            fragment.mAppStoreServicesResponse = appStoreServicesResponse
         }
     }
 
@@ -74,17 +81,33 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
     private fun setUIDataFromResponse() {
         minOrderValueHeadingTextView.text = if (0.0 == mMinOrderValue) mMoreControlsStaticData.heading_set_min_order_value_for_delivery else mMoreControlsStaticData.heading_edit_min_order_value
         minOrderValueOptionalTextView.text = if (0.0 == mMinOrderValue) mMoreControlsStaticData.text_optional else
-                "${mMoreControlsStaticData.sub_heading_success_set_min_order_value_for_delivery}"
+                "${mMoreControlsStaticData.sub_heading_success_set_min_order_value_for_delivery} "
         minOrderValueAmountTextView.text = if (0.0 != mMinOrderValue) "${mMoreControlsStaticData.text_ruppee_symbol}$mMinOrderValue" else ""
         deliveryChargeHeadingTextView.text = mMoreControlsStaticData.heading_set_delivery_charge
         deliveryChargeTypeTextView.text = mMoreControlsStaticData.sub_heading_set_delivery_charge
+        if (mDeliveryChargeType != 0) {
+            deliveryChargeTypeTextView.text = mMoreControlsStaticData.sub_heading_success_set_delivery_charge
+            if (mDeliveryChargeType == 1) {
+                deliveryChargeRateTextView.visibility = View.GONE
+                deliveryChargeRateValueTextView.visibility = View.GONE
+            } else{
+                deliveryChargeRateTextView.text = mMoreControlsStaticData.sub_heading_success_set_delivery_charge_amount
+                deliveryChargeRateValueTextView.text = " ${mMoreControlsStaticData.text_ruppee_symbol} $mFreeDeliveryAbove"
+            }
+            deliveryChargeTypeValueTextView.text = when (mDeliveryChargeType) {
+                SetDeliveryChargeFragment.FREE_DELIVERY -> mMoreControlsStaticData.heading_free_delivery
+                SetDeliveryChargeFragment.FIXED_DELIVERY_CHARGE -> mMoreControlsStaticData.heading_fixed_delivery_charge
+                SetDeliveryChargeFragment.CUSTOM_DELIVERY_CHARGE -> mMoreControlsStaticData.heading_custom_delivery_charge
+                else -> ""
+            }
+        }
     }
 
     override fun onClick(view: View?) {
         super.onClick(view)
         when (view?.id) {
             minOrderValueContainer.id -> showMinimumDeliveryOrderBottomSheet()
-            deliveryChargeContainer.id -> launchFragment(SetDeliveryChargeFragment.newInstance(mMoreControlsStaticData), true)
+            deliveryChargeContainer.id -> launchFragment(SetDeliveryChargeFragment.newInstance(mMoreControlsStaticData, mAppStoreServicesResponse), true)
         }
     }
 
@@ -118,7 +141,7 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
                         requestFocus()
                         return@setOnClickListener
                     }
-                    if (0.0 != mFreeDeliveryAbove && amount.toDouble() < mFreeDeliveryAbove) {
+                    if (0.0 != mFreeDeliveryAbove && amount.toDouble() > mFreeDeliveryAbove) {
                         minDeliveryAmountEditText.error = mMoreControlsStaticData.error_amount_must_greater_than_free_delivery_above
                         requestFocus()
                         return@setOnClickListener
@@ -128,7 +151,6 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
                         return@setOnClickListener
                     }
                     val request = MoreControlsRequest(
-                        getStringDataFromSharedPref(Constants.STORE_ID).toInt(),
                         mDeliveryChargeType,
                         mFreeDeliveryAbove,
                         mDeliveryPrice,
@@ -142,15 +164,15 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
         }.show()
     }
 
-    override fun onMoreControlsResponse(response: MoreControlsResponse) {
+    override fun onMoreControlsResponse(response: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
-            showShortSnackBar(response.mMessage)
-            mMinOrderValue = response.mServices.mMinOrderValue ?: 0.0
-            mDeliveryPrice = response.mServices.mDeliveryPrice ?: 0.0
-            mFreeDeliveryAbove = response.mServices.mFreeDeliveryAbove ?: 0.0
-            mDeliveryChargeType = response.mServices.mDeliveryChargeType ?: 0
-            setUIDataFromResponse()
+            if (response.mIsSuccessStatus) {
+                showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
+                val moreControlResponse = Gson().fromJson<StoreServicesResponse>(response.mCommonDataStr, StoreServicesResponse::class.java)
+                updateStoreServiceInstances(moreControlResponse, this)
+                setUIDataFromResponse()
+            } else showShortSnackBar(response.mMessage, true, R.drawable.ic_close_red)
         }
     }
 
