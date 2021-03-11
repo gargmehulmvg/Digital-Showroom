@@ -26,10 +26,11 @@ class ProfileNetworkService {
     }
 
     suspend fun changeStoreAndDeliveryStatusServerCall(
+        authToken : String,
         request: StoreDeliveryStatusChangeRequest,
         serviceInterface: IProfileServiceInterface) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.changeStoreAndDeliveryStatus(request)
+            val response = RetrofitApi().getServerCallObject()?.changeStoreAndDeliveryStatus(authToken, request)
             response?.let {
                 if (it.isSuccessful) {
                     it.body()?.let { responseBody ->

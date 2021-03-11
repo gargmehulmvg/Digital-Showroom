@@ -215,12 +215,10 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         }
         showProgressDialog(mActivity)
         val request = StoreDeliveryStatusChangeRequest(
-            getStringDataFromSharedPref(Constants.STORE_ID).toInt(),
             if (storeSwitch.isChecked) 1 else 0,
-            if (deliverySwitch.isChecked) 1 else 0,
-            0
+            if (deliverySwitch.isChecked) 1 else 0
         )
-        mProfileService.changeStoreAndDeliveryStatus(request)
+        mProfileService.changeStoreAndDeliveryStatus(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
     }
 
     override fun onToolbarSideIconClicked() = launchFragment(
@@ -263,16 +261,18 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
     }
 
     private lateinit var mReferEarnOverWhatsAppResponse: ReferEarnOverWhatsAppResponse
+    private var mProfileResponse: AccountInfoResponse? = null
 
     override fun onReferAndEarnOverWhatsAppResponse(response: ReferEarnOverWhatsAppResponse) {
         mReferEarnOverWhatsAppResponse = response
     }
 
-    override fun onChangeStoreAndDeliveryStatusResponse(response: StoreDeliveryStatusChangeResponse) {
+    override fun onChangeStoreAndDeliveryStatusResponse(response: CommonApiResponse) {
         stopProgress()
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (response.mIsSuccessStatus) {
-                response.mStoreDeliveryService.let {
+                val storeDeliveryService = Gson().fromJson<StoreDeliveryServiceResponse>(response.mCommonDataStr, StoreDeliveryServiceResponse::class.java)
+                storeDeliveryService.let {
                     storeSwitch.isChecked = (it.mStoreFlag == 1)
                     deliverySwitch.isChecked = (it.mDeliveryFlag == 1)
                 }
@@ -281,8 +281,6 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             }
         }
     }
-
-    private var mProfileResponse: AccountInfoResponse? = null
 
     private fun setupUIFromProfileResponse(infoResponse: AccountInfoResponse) {
         StaticInstances.sIsStoreImageUploaded = (StaticInstances.sStoreInfo?.mStoreLogoStr?.isNotEmpty() == true)

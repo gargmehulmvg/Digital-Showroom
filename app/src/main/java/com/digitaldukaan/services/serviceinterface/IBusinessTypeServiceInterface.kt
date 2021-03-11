@@ -1,13 +1,12 @@
 package com.digitaldukaan.services.serviceinterface
 
-import com.digitaldukaan.models.response.BusinessTypeResponse
-import com.digitaldukaan.models.response.StoreDescriptionResponse
+import com.digitaldukaan.models.response.CommonApiResponse
 
 interface IBusinessTypeServiceInterface {
 
-    fun onBusinessTypeResponse(response: BusinessTypeResponse)
+    fun onBusinessTypeResponse(response: CommonApiResponse)
 
-    fun onSavingBusinessTypeResponse(response: StoreDescriptionResponse)
+    fun onSavingBusinessTypeResponse(response: CommonApiResponse)
 
     fun onBusinessTypeServerException(e: Exception)
 }

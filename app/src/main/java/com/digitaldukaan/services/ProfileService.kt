@@ -20,9 +20,9 @@ class ProfileService {
         }
     }
 
-    fun changeStoreAndDeliveryStatus(request: StoreDeliveryStatusChangeRequest) {
+    fun changeStoreAndDeliveryStatus(authToken : String, request: StoreDeliveryStatusChangeRequest) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.changeStoreAndDeliveryStatusServerCall(request, mProfileServiceInterface)
+            mNetworkService.changeStoreAndDeliveryStatusServerCall(authToken ,request, mProfileServiceInterface)
         }
     }
 

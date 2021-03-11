@@ -25,11 +25,11 @@ interface Apis {
     @GET("api/dotk/settings/getProfileInfo")
     suspend fun getProfilePreviewResponse(@Header("auth_token") authToken:String) : Response<CommonApiResponse>
 
-    @POST("api/dotstore/store/setServices")
-    suspend fun changeStoreAndDeliveryStatus(@Body request: StoreDeliveryStatusChangeRequest) : Response<StoreDeliveryStatusChangeResponse>
+    @POST("api/dotk/settings/setServices")
+    suspend fun changeStoreAndDeliveryStatus(@Header("auth_token") authToken:String, @Body request: StoreDeliveryStatusChangeRequest) : Response<CommonApiResponse>
 
-    @POST("api/dotk/merchant/setStoreDescription")
-    suspend fun setStoreDescription(@Header("auth_token") authToken:String, @Body request: StoreDescriptionRequest) : Response<StoreDescriptionResponse>
+    @POST("api/dotk/settings/setStoreDescription")
+    suspend fun setStoreDescription(@Header("auth_token") authToken:String, @Body request: StoreDescriptionRequest) : Response<CommonApiResponse>
 
     @POST("api/dotk/merchant/setStoreName")
     suspend fun setStoreName(@Header("auth_token") authToken:String, @Body request: StoreNameRequest) : Response<StoreDescriptionResponse>
@@ -40,11 +40,11 @@ interface Apis {
     @POST("api/dotk/merchant/setAddress")
     suspend fun updateStoreAddress(@Header("auth_token") authToken:String, @Body request: StoreAddressRequest) : Response<StoreAddressResponse>
 
-    @GET("api/dotk/merchant/getbusinessList")
-    suspend fun getBusinessList() : Response<BusinessTypeResponse>
+    @GET("api/dotk/settings/getAllBusinessList")
+    suspend fun getBusinessList() : Response<CommonApiResponse>
 
-    @POST("api/dotk/merchant/setStoreBusinesses")
-    suspend fun setStoreBusinesses(@Header("auth_token") authToken:String, @Body request: BusinessTypeRequest) : Response<StoreDescriptionResponse>
+    @POST("api/dotk/settings/setStoreBusinesses")
+    suspend fun setStoreBusinesses(@Header("auth_token") authToken:String, @Body request: BusinessTypeRequest) : Response<CommonApiResponse>
 
     @POST("api/dotk/merchant/setStoreLogo")
     suspend fun setStoreLogo(@Header("auth_token") authToken:String, @Body request: StoreLogoRequest) : Response<StoreDescriptionResponse>

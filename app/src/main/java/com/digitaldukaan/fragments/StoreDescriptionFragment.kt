@@ -12,9 +12,9 @@ import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.StaticInstances
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.models.request.StoreDescriptionRequest
+import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.ProfileInfoResponse
 import com.digitaldukaan.models.response.ProfilePreviewSettingsKeyResponse
-import com.digitaldukaan.models.response.StoreDescriptionResponse
 import com.digitaldukaan.services.StoreDescriptionService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IStoreDescriptionServiceInterface
@@ -81,17 +81,16 @@ class StoreDescriptionFragment : BaseFragment(), IStoreDescriptionServiceInterfa
         storeDescriptionEditText.hint = mStoreDescriptionStaticData.storeDescriptionHint
         continueTextView.text = mStoreDescriptionStaticData.saveChanges
         continueTextView.setOnClickListener {
-            val description = storeDescriptionEditText.text.trim().toString()
-            val request = StoreDescriptionRequest(getStringDataFromSharedPref(Constants.STORE_ID).toInt(), description)
+            val request = StoreDescriptionRequest(storeDescriptionEditText.text.trim().toString())
             showCancellableProgressDialog(mActivity)
             service.saveStoreDescriptionData(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
         }
     }
 
-    override fun onStoreDescriptionResponse(response: StoreDescriptionResponse) {
+    override fun onStoreDescriptionResponse(response: CommonApiResponse) {
         stopProgress()
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            if (response.mStatus) {
+            if (response.mIsSuccessStatus) {
                 showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
                 if (!mIsSingleStep) {
                     StaticInstances.sStepsCompletedList?.run {

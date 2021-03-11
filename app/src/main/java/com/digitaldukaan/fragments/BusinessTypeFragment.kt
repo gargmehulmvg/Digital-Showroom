@@ -12,10 +12,15 @@ import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.StaticInstances
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.models.request.BusinessTypeRequest
-import com.digitaldukaan.models.response.*
+import com.digitaldukaan.models.response.BusinessTypeItemResponse
+import com.digitaldukaan.models.response.CommonApiResponse
+import com.digitaldukaan.models.response.ProfileInfoResponse
+import com.digitaldukaan.models.response.ProfilePreviewSettingsKeyResponse
 import com.digitaldukaan.services.BusinessTypeService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IBusinessTypeServiceInterface
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.business_type_fragment.*
 
 class BusinessTypeFragment : BaseFragment(), IBusinessTypeServiceInterface {
@@ -85,18 +90,19 @@ class BusinessTypeFragment : BaseFragment(), IBusinessTypeServiceInterface {
                 showToast("Only ${resources.getInteger(R.integer.business_type_count)} selections are allowed")
                 return@setOnClickListener
             }
-            val businessTypRequest = BusinessTypeRequest(getStringDataFromSharedPref(Constants.STORE_ID).toInt(), businessTypeSelectedList)
+            val businessTypRequest = BusinessTypeRequest(businessTypeSelectedList)
             showProgressDialog(mActivity)
             businessTypeService.setStoreBusinesses(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), businessTypRequest)
         }
     }
 
-    override fun onBusinessTypeResponse(response: BusinessTypeResponse) {
+    override fun onBusinessTypeResponse(response: CommonApiResponse) {
         stopProgress()
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (response.mIsSuccessStatus) {
+                val listType = object : TypeToken<List<BusinessTypeItemResponse>>() {}.type
                 val businessTypeValueSplitArray = mProfilePreviewResponse?.mValue?.split(",")
-                mBusinessSelectedList = response.mBusinessList
+                mBusinessSelectedList = Gson().fromJson<ArrayList<BusinessTypeItemResponse>>(response.mCommonDataStr, listType)
                 businessTypeValueSplitArray?.run {
                     if (isNotEmpty()) {
                         mBusinessSelectedList.forEachIndexed { _, itemResponse ->
@@ -118,10 +124,10 @@ class BusinessTypeFragment : BaseFragment(), IBusinessTypeServiceInterface {
         }
     }
 
-    override fun onSavingBusinessTypeResponse(response: StoreDescriptionResponse) {
+    override fun onSavingBusinessTypeResponse(response: CommonApiResponse) {
         stopProgress()
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            if (response.mStatus) {
+            if (response.mIsSuccessStatus) {
                 showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
                 if (!mIsSingleStep) {
                     StaticInstances.sStepsCompletedList?.run {
@@ -136,7 +142,7 @@ class BusinessTypeFragment : BaseFragment(), IBusinessTypeServiceInterface {
                 } else {
                     mActivity.onBackPressed()
                 }
-            } else showToast(response.mMessage)
+            } else showShortSnackBar(response.mMessage, true, R.drawable.ic_close_red)
         }
     }
 

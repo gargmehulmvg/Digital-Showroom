@@ -76,13 +76,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         showBottomNavigationView(true)
         StaticInstances.sIsStoreImageUploaded = false
         profilePreviewStoreNameTextView.setOnClickListener {
-            var settingKeyNameResponse: ProfilePreviewSettingsKeyResponse? = null
-            mProfilePreviewResponse?.mSettingsKeysList?.forEachIndexed { _, settingsKeyResponse ->
-                if (settingsKeyResponse.mAction == Constants.ACTION_STORE_NAME) {
-                    settingKeyNameResponse = settingsKeyResponse
-                }
-            }
-            showEditStoreNameBottomSheet(settingKeyNameResponse)
+            showEditStoreNameBottomSheet(mProfilePreviewResponse?.mStoreItemResponse?.storeInfo?.name)
         }
         storePhotoLayout.setOnClickListener {
             var storeLogo = mProfilePreviewResponse?.mStoreItemResponse?.storeInfo?.logoImage
@@ -228,7 +222,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
             Constants.ACTION_BANK_ACCOUNT -> launchFragment(BankAccountFragment.newInstance(profilePreviewResponse, position, true, mProfilePreviewStaticData, mProfilePreviewResponse), true)
             Constants.ACTION_BUSINESS_TYPE -> launchFragment(BusinessTypeFragment.newInstance(profilePreviewResponse, position, true, mProfilePreviewResponse), true)
             Constants.ACTION_EDIT_STORE_LINK -> showEditStoreWarningDialog(profilePreviewResponse)
-            Constants.ACTION_STORE_NAME -> showEditStoreNameBottomSheet(profilePreviewResponse)
+            Constants.ACTION_STORE_NAME -> showEditStoreNameBottomSheet(mProfilePreviewResponse?.mStoreItemResponse?.storeInfo?.name)
         }
     }
 
@@ -381,7 +375,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         }
     }
 
-    private fun showEditStoreNameBottomSheet(previewSettingsKeyResponse: ProfilePreviewSettingsKeyResponse?) {
+    private fun showEditStoreNameBottomSheet(storeValue: String?) {
         mStoreNameEditBottomSheet = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
         val view = LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet_edit_store_name, mActivity.findViewById(R.id.bottomSheetContainer))
         mStoreNameEditBottomSheet?.apply {
@@ -406,8 +400,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         }
         bottomSheetEditStoreHeading.text = mProfilePreviewStaticData.mBottomSheetStoreNameHeading
         bottomSheetEditStoreLinkEditText.hint = mProfilePreviewStaticData.mBottomSheetStoreNameHeading
-        if (previewSettingsKeyResponse?.mValue?.isNotEmpty() == true) bottomSheetEditStoreLinkEditText.setText(previewSettingsKeyResponse.mValue)
-        bottomSheetEditStoreLinkEditText.isEnabled = previewSettingsKeyResponse?.mIsEditable ?: true
+        if (storeValue?.isNotEmpty() == true) bottomSheetEditStoreLinkEditText.setText(storeValue)
         bottomSheetEditStoreLinkEditText.addTextChangedListener(object : TextWatcher{
             override fun afterTextChanged(s: Editable?) {
                 val string = s.toString()

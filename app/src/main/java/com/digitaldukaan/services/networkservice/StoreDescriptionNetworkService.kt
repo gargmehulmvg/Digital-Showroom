@@ -2,7 +2,7 @@ package com.digitaldukaan.services.networkservice
 
 import android.util.Log
 import com.digitaldukaan.models.request.StoreDescriptionRequest
-import com.digitaldukaan.models.response.StoreDescriptionResponse
+import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.network.RetrofitApi
 import com.digitaldukaan.services.serviceinterface.IStoreDescriptionServiceInterface
 import com.google.gson.Gson
@@ -22,7 +22,7 @@ class StoreDescriptionNetworkService {
                 } else {
                     val errorResponseBody = it.errorBody()
                     errorResponseBody?.let {
-                        val errorResponse = Gson().fromJson(errorResponseBody.string(), StoreDescriptionResponse::class.java)
+                        val errorResponse = Gson().fromJson(errorResponseBody.string(), CommonApiResponse::class.java)
                         serviceInterface.onStoreDescriptionResponse(errorResponse)
                     }
                 }
