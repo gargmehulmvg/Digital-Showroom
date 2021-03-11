@@ -2,12 +2,6 @@ package com.digitaldukaan.models.response
 
 import com.google.gson.annotations.SerializedName
 
-data class StoreDeliveryStatusChangeResponse(
-    @SerializedName("status") var mIsSuccessStatus: Boolean,
-    @SerializedName("message") var mMessage: String?,
-    @SerializedName("services") var mStoreDeliveryService: StoreDeliveryServiceResponse
-)
-
 data class StoreDeliveryServiceResponse(
     @SerializedName("store_id") var mStoreId: Int,
     @SerializedName("store_flag") var mStoreFlag: Int,

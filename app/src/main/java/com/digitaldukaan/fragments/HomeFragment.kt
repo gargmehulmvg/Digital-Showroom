@@ -15,7 +15,6 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.RadioButton
 import android.widget.RadioGroup
-import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -24,15 +23,13 @@ import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.OrderAdapter
 import com.digitaldukaan.constants.*
-import com.digitaldukaan.models.response.OrderItemResponse
-import com.digitaldukaan.models.response.OrdersResponse
-import com.digitaldukaan.models.response.ValidateOtpErrorResponse
-import com.digitaldukaan.models.response.ValidateOtpResponse
+import com.digitaldukaan.models.response.*
 import com.digitaldukaan.services.HomeFragmentService
 import com.digitaldukaan.services.isInternetConnectionAvailable
-import com.digitaldukaan.services.serviceinterface.IHomeFragmentServiceInterface
+import com.digitaldukaan.services.serviceinterface.IHomeServiceInterface
 import com.digitaldukaan.views.StickHeaderItemDecoration
 import com.google.android.material.textfield.TextInputLayout
+import com.google.gson.Gson
 import kotlinx.android.synthetic.main.home_fragment.*
 import kotlinx.android.synthetic.main.layout_analytics.*
 import kotlinx.android.synthetic.main.otp_verification_fragment.*
@@ -40,7 +37,7 @@ import java.util.*
 import java.util.stream.Collectors
 import kotlin.collections.ArrayList
 
-class HomeFragment : BaseFragment(), IHomeFragmentServiceInterface,
+class HomeFragment : BaseFragment(), IHomeServiceInterface,
     SwipeRefreshLayout.OnRefreshListener {
 
     companion object {
@@ -67,6 +64,7 @@ class HomeFragment : BaseFragment(), IHomeFragmentServiceInterface,
     ): View? {
         mContentView = inflater.inflate(R.layout.home_fragment, container, false)
         if (!askContactPermission()) if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else fetchLatestOrders()
+        mHomeFragmentService.getAnalyticsData(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
         return mContentView
     }
 
@@ -75,20 +73,8 @@ class HomeFragment : BaseFragment(), IHomeFragmentServiceInterface,
         ToolBarManager.getInstance().hideToolBar(mActivity, true)
         showBottomNavigationView(false)
         swipeRefreshLayout.setOnRefreshListener(this)
-        setupAnalyticsLayout()
         completedOrderTextView.text = mOrderListStaticData.completedText
         pendingOrderTextView.text = mOrderListStaticData.pendingText
-    }
-
-    private fun setupAnalyticsLayout() {
-        val todaySaleHeading: TextView = mContentView.findViewById(R.id.todaySaleHeading)
-        val weekSaleHeading: TextView = mContentView.findViewById(R.id.weekSaleHeading)
-        val amountHeading: TextView = mContentView.findViewById(R.id.amountHeading)
-        val weekAmountHeading: TextView = mContentView.findViewById(R.id.weekAmountHeading)
-        todaySaleHeading.text = mOrderListStaticData.todaySale
-        weekSaleHeading.text = mOrderListStaticData.weekSale
-        amountHeading.text = mOrderListStaticData.amount
-        weekAmountHeading.text = mOrderListStaticData.amount
     }
 
     private fun fetchLatestOrders() {
@@ -198,6 +184,25 @@ class HomeFragment : BaseFragment(), IHomeFragmentServiceInterface,
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (swipeRefreshLayout.isRefreshing) swipeRefreshLayout.isRefreshing = false
             showOrderDataOnRecyclerView(getOrderResponse, completedOrdersRecyclerView)
+        }
+    }
+
+    override fun onAnalyticsDataResponse(commonResponse: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            if (commonResponse.mIsSuccessStatus) {
+                val analyticsResponse = Gson().fromJson<AnalyticsResponse>(commonResponse.mCommonDataStr, AnalyticsResponse::class.java)
+                todaySaleValue.text = analyticsResponse?.today?.totalCount.toString()
+                amountValue.text = "${analyticsResponse.analyticsStaticData?.textRuppeeSymbol} ${analyticsResponse?.today?.totalAmount}"
+                weekSaleValue.text = analyticsResponse?.thisWeek?.totalCount.toString()
+                weekAmountValue.text = "${analyticsResponse.analyticsStaticData?.textRuppeeSymbol} ${analyticsResponse?.thisWeek?.totalAmount}"
+                analyticsResponse?.analyticsStaticData?.run {
+                    todaySaleHeading.text = textTodaySale
+                    amountHeading.text = textTodayAmount
+                    weekSaleHeading.text = textWeekSale
+                    weekAmountHeading.text = textWeekAmount
+                }
+            }
         }
     }
 

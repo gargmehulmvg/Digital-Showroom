@@ -4,14 +4,14 @@ import android.util.Log
 import com.digitaldukaan.models.request.AuthenticateUserRequest
 import com.digitaldukaan.models.response.ValidateOtpErrorResponse
 import com.digitaldukaan.network.RetrofitApi
-import com.digitaldukaan.services.serviceinterface.IHomeFragmentServiceInterface
+import com.digitaldukaan.services.serviceinterface.IHomeServiceInterface
 import com.google.gson.Gson
 
-class HomeFragmentNetworkService {
+class HomeNetworkService {
 
     suspend fun authenticateUserServerCall(
         authToken: String,
-        serviceInterface: IHomeFragmentServiceInterface
+        serviceInterface: IHomeServiceInterface
     ) {
         try {
             val response = RetrofitApi().getServerCallObject()
@@ -37,7 +37,7 @@ class HomeFragmentNetworkService {
                 }
             }
         } catch (e: Exception) {
-            Log.e(HomeFragmentNetworkService::class.java.simpleName, "authenticateUserServerCall: ", e)
+            Log.e(HomeNetworkService::class.java.simpleName, "authenticateUserServerCall: ", e)
             serviceInterface.onHomePageException(e)
         }
     }
@@ -45,7 +45,7 @@ class HomeFragmentNetworkService {
     suspend fun getOrdersServerCall(
         storeId: String,
         page: Int,
-        serviceInterface: IHomeFragmentServiceInterface
+        serviceInterface: IHomeServiceInterface
     ) {
         try {
             val response = RetrofitApi().getServerCallObject()?.getPendingOrders(storeId, page)
@@ -68,7 +68,7 @@ class HomeFragmentNetworkService {
                 }
             }
         } catch (e: Exception) {
-            Log.e(HomeFragmentNetworkService::class.java.simpleName, "getOrdersServerCall: ", e)
+            Log.e(HomeNetworkService::class.java.simpleName, "getOrdersServerCall: ", e)
             serviceInterface.onHomePageException(e)
         }
     }
@@ -76,7 +76,7 @@ class HomeFragmentNetworkService {
     suspend fun getCompletedOrdersServerCall(
         storeId: String,
         page: Int,
-        serviceInterface: IHomeFragmentServiceInterface
+        serviceInterface: IHomeServiceInterface
     ) {
         try {
             val response = RetrofitApi().getServerCallObject()?.getCompletedOrders(storeId, page)
@@ -99,7 +99,29 @@ class HomeFragmentNetworkService {
                 }
             }
         } catch (e: Exception) {
-            Log.e(HomeFragmentNetworkService::class.java.simpleName, "getOrdersServerCall: ", e)
+            Log.e(HomeNetworkService::class.java.simpleName, "getOrdersServerCall: ", e)
+            serviceInterface.onHomePageException(e)
+        }
+    }
+
+    suspend fun getAnalyticsDataServerCall(
+        authToken: String,
+        serviceInterface: IHomeServiceInterface
+    ) {
+        try {
+            val response = RetrofitApi().getServerCallObject()?.getAnalyticsData(authToken)
+            response?.let {
+                if (it.isSuccessful) it.body()?.let { validateUserResponse -> serviceInterface.onAnalyticsDataResponse(validateUserResponse) }
+                else {
+                    val validateOtpError = it.errorBody()
+                    validateOtpError?.let {
+                        val validateOtpErrorResponse = Gson().fromJson(validateOtpError.string(), ValidateOtpErrorResponse::class.java)
+                        serviceInterface.onOTPVerificationErrorResponse(validateOtpErrorResponse)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(HomeNetworkService::class.java.simpleName, "getAnalyticsDataServerCall: ", e)
             serviceInterface.onHomePageException(e)
         }
     }

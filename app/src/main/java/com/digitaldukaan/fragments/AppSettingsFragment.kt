@@ -80,8 +80,7 @@ class AppSettingsFragment : BaseFragment(), IAppSettingsItemClicked {
     }
 
     override fun onAppSettingItemClicked(subPagesResponse: SubPagesResponse) {
-        //if (Constants.ACTION_LOGOUT == subPagesResponse.mAction) showLogoutDialog() else openUrlInBrowser(subPagesResponse.mPage)
-        if (Constants.ACTION_LOGOUT == subPagesResponse.mAction) showLogoutDialog() else showAddBankBottomSheet()
+        if (Constants.ACTION_LOGOUT == subPagesResponse.mAction) showLogoutDialog() else openUrlInBrowser(subPagesResponse.mPage)
     }
 
     private fun showAddBankBottomSheet() {

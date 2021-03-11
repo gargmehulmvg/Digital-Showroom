@@ -81,4 +81,7 @@ interface Apis {
 
     @POST("api/dotk/settings/setBankDetails")
     suspend fun setBankDetails(@Header("auth_token") authToken: String, @Body request: BankDetailsRequest): Response<CommonApiResponse>
+
+    @GET("api/dotk/orders/getOrderAnalytics")
+    suspend fun getAnalyticsData(@Header("auth_token") authToken: String) : Response<CommonApiResponse>
 }
