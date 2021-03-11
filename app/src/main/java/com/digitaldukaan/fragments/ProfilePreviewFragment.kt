@@ -89,6 +89,9 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
             if (mStoreLogo?.isNotEmpty() == true) storeLogo = mStoreLogo
             if (storeLogo?.isNotEmpty() == true) launchFragment(ProfilePhotoFragment.newInstance(storeLogo), true, storePhotoImageView) else askCameraPermission()
         }
+        constraintLayoutBanner.setOnClickListener {
+            switchToInCompleteProfileFragment(mProfilePreviewResponse)
+        }
     }
 
     override fun onRequestPermissionsResult(
@@ -132,6 +135,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         )
         mProfilePreviewResponse = response
         mProfilePreviewStaticData = response?.mProfileStaticText!!
+        StaticInstances.sStepsCompletedList = response.mStepsList
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             constraintLayoutBanner.visibility = if (mProfilePreviewResponse?.mIsProfileCompleted == true) View.GONE else View.VISIBLE
             if (swipeRefreshLayout.isRefreshing) swipeRefreshLayout.isRefreshing = false
@@ -218,7 +222,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         mProfileInfoSettingKeyResponse = profilePreviewResponse
         showToast(profilePreviewResponse.mHeadingText)
         when (profilePreviewResponse.mAction) {
-            Constants.ACTION_STORE_DESCRIPTION -> launchFragment(StoreDescriptionFragment.newInstance(profilePreviewResponse, position, true), true)
+            Constants.ACTION_STORE_DESCRIPTION -> launchFragment(StoreDescriptionFragment.newInstance(profilePreviewResponse, position, true, mProfilePreviewResponse), true)
             Constants.ACTION_STORE_LOCATION -> launchFragment(StoreMapLocationFragment.newInstance(profilePreviewResponse, position, true), true)
             Constants.ACTION_BANK_ACCOUNT -> launchFragment(BankAccountFragment.newInstance(profilePreviewResponse, mProfilePreviewStaticData), true)
             Constants.ACTION_BUSINESS_TYPE -> launchFragment(BusinessTypeFragment.newInstance(profilePreviewResponse, position, true), true)

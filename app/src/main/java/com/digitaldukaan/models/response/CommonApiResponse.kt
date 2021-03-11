@@ -15,8 +15,14 @@ data class ProfileInfoResponse(
     @SerializedName("banner") var mProfilePreviewBanner: ProfilePreviewBannerResponse,
     @SerializedName("setting_keys") var mSettingsKeysList: ArrayList<ProfilePreviewSettingsKeyResponse>,
     @SerializedName("total_steps") var mTotalSteps: String?,
+    @SerializedName("steps") var mStepsList: ArrayList<StepCompletedItem>?,
     @SerializedName("completed_steps") var mCompletedSteps: String?,
     @SerializedName("static_text") var mProfileStaticText: ProfileStaticTextResponse
+)
+
+data class StepCompletedItem(
+    @SerializedName("is_completed") var isCompleted: Boolean,
+    @SerializedName("action") var action: String?
 )
 
 data class ProfileStaticTextResponse(

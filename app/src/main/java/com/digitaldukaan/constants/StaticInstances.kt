@@ -2,6 +2,7 @@ package com.digitaldukaan.constants
 
 import com.digitaldukaan.models.request.ContactModel
 import com.digitaldukaan.models.response.BankDetailsResponse
+import com.digitaldukaan.models.response.StepCompletedItem
 import com.digitaldukaan.models.response.StoreInfoResponse
 
 object StaticInstances {
@@ -10,4 +11,5 @@ object StaticInstances {
     var sBankDetails: BankDetailsResponse? = null
     var sIsStoreImageUploaded: Boolean = false
     var sUserContactList: MutableList<ContactModel> = ArrayList()
+    var sStepsCompletedList: ArrayList<StepCompletedItem>? = null
 }

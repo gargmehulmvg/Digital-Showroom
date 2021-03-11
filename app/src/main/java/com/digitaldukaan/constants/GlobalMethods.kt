@@ -12,6 +12,8 @@ import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.fragments.BaseFragment
 import com.digitaldukaan.fragments.CommonWebViewFragment
 import com.digitaldukaan.models.request.ContactModel
+import com.digitaldukaan.models.response.ProfileInfoResponse
+import com.digitaldukaan.models.response.ProfilePreviewSettingsKeyResponse
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -117,4 +119,13 @@ fun getContactsFromStorage2(ctx: Context) {
         list.run { StaticInstances.sUserContactList = this }
         Log.d(tag, "getContactsFromStorage: Completed")
     }
+}
+
+fun getHeaderByActionInSettingKetList(profilePreviewResponse: ProfileInfoResponse?, str: String): ProfilePreviewSettingsKeyResponse? {
+    profilePreviewResponse?.mSettingsKeysList?.run {
+        for (settingItem in this) {
+            if (settingItem.mAction == str) return settingItem
+        }
+    }
+    return null
 }

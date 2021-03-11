@@ -40,6 +40,12 @@ class Constants {
         const val ACTION_QR_DOWNLOAD = "qr_download"
         const val ACTION_SHARE_DATA = "share_text"
         const val ACTION_CATALOG_WHATSAPP = "catalog_whatsapp"
+        //Incomplete profile actions
+        const val ACTION_LOGO = "logo"
+        const val ACTION_DESCRIPTION = "description"
+        const val ACTION_LOCATION = "address"
+        const val ACTION_BUSINESS = "business"
+        const val ACTION_BANK = "bank"
         //Pages
         const val PAGE_REFER = "refer"
         const val PAGE_HELP = "help"

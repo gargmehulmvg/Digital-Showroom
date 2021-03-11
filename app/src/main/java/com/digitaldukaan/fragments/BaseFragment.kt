@@ -40,6 +40,7 @@ import com.digitaldukaan.R
 import com.digitaldukaan.adapters.ImagesSearchAdapter
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.ISearchImageItemClicked
+import com.digitaldukaan.models.response.ProfileInfoResponse
 import com.digitaldukaan.models.response.StaticTextResponse
 import com.digitaldukaan.network.RetrofitApi
 import com.github.dhaval2404.imagepicker.ImagePicker
@@ -68,6 +69,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     private lateinit var mImagePickBottomSheet: BottomSheetDialog
 
     companion object {
+        private const val TAG = "BaseFragment"
         lateinit var mStaticData: StaticTextResponse
     }
 
@@ -558,5 +560,28 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     protected fun updateNavigationBarState(actionId: Int) {
         val menu: Menu = mActivity.bottomNavigationView.menu
         menu.findItem(actionId).isChecked = true
+    }
+
+    protected fun switchToInCompleteProfileFragment(profilePreviewResponse: ProfileInfoResponse?) {
+        Log.d(TAG, "switchToInCompleteProfileFragment: called")
+        StaticInstances.sStepsCompletedList?.run {
+            var incompleteProfilePageAction = ""
+            var incompleteProfilePageNumber = 0
+            for (completedItem in this) {
+                ++incompleteProfilePageNumber
+                if (!completedItem.isCompleted) {
+                    incompleteProfilePageAction = completedItem.action ?: ""
+                    break
+                }
+            }
+            when (incompleteProfilePageAction) {
+                Constants.ACTION_LOGO -> askCameraPermission()
+                Constants.ACTION_DESCRIPTION -> launchFragment(StoreDescriptionFragment.newInstance(getHeaderByActionInSettingKetList(profilePreviewResponse, Constants.ACTION_STORE_DESCRIPTION),
+                    incompleteProfilePageNumber, false, profilePreviewResponse), true)
+                Constants.ACTION_BUSINESS -> launchFragment(BusinessTypeFragment.newInstance(getHeaderByActionInSettingKetList(profilePreviewResponse, Constants.ACTION_BUSINESS_TYPE),
+                    incompleteProfilePageNumber, false), true)
+                else -> launchFragment(HomeFragment.newInstance(), true)
+            }
+        }
     }
 }

@@ -22,7 +22,7 @@ import kotlinx.android.synthetic.main.business_type_fragment.*
 
 class BusinessTypeFragment : BaseFragment(), IBusinessTypeServiceInterface {
 
-    private lateinit var mProfilePreviewResponse: ProfilePreviewSettingsKeyResponse
+    private var mProfilePreviewResponse: ProfilePreviewSettingsKeyResponse? = null
     private var mPosition: Int = 0
     private var mIsSingleStep: Boolean = false
     private lateinit var businessTypeService: BusinessTypeService
@@ -30,7 +30,7 @@ class BusinessTypeFragment : BaseFragment(), IBusinessTypeServiceInterface {
 
     companion object {
         fun newInstance(
-            profilePreviewResponse: ProfilePreviewSettingsKeyResponse,
+            profilePreviewResponse: ProfilePreviewSettingsKeyResponse?,
             position: Int,
             isSingleStep: Boolean
         ): BusinessTypeFragment {
@@ -53,7 +53,7 @@ class BusinessTypeFragment : BaseFragment(), IBusinessTypeServiceInterface {
         ToolBarManager.getInstance().apply {
             hideToolBar(mActivity, false)
             val stepStr = if (mIsSingleStep) "" else "Step $mPosition : "
-            setHeaderTitle("$stepStr${mProfilePreviewResponse.mHeadingText}")
+            setHeaderTitle("$stepStr${mProfilePreviewResponse?.mHeadingText}")
             onBackPressed(this@BusinessTypeFragment)
             hideBackPressFromToolBar(mActivity, false)
         }
@@ -80,6 +80,10 @@ class BusinessTypeFragment : BaseFragment(), IBusinessTypeServiceInterface {
                 showToast("Please select at least 1 business type")
                 return@setOnClickListener
             }
+            if (businessTypeSelectedList.size > resources.getInteger(R.integer.business_type_count)) {
+                showToast("Only ${resources.getInteger(R.integer.business_type_count)} selections are allowed")
+                return@setOnClickListener
+            }
             val businessTypRequest = BusinessTypeRequest(getStringDataFromSharedPref(Constants.STORE_ID).toInt(), businessTypeSelectedList)
             showProgressDialog(mActivity)
             businessTypeService.setStoreBusinesses(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), businessTypRequest)
@@ -90,7 +94,7 @@ class BusinessTypeFragment : BaseFragment(), IBusinessTypeServiceInterface {
         stopProgress()
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (response.mIsSuccessStatus) {
-                val businessTypeValueSplitArray = mProfilePreviewResponse.mValue?.split(",")
+                val businessTypeValueSplitArray = mProfilePreviewResponse?.mValue?.split(",")
                 mBusinessSelectedList = response.mBusinessList
                 businessTypeValueSplitArray?.run {
                     if (isNotEmpty()) {

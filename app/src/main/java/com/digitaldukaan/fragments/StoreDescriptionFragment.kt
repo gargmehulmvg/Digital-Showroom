@@ -9,8 +9,10 @@ import android.view.ViewGroup
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
+import com.digitaldukaan.constants.StaticInstances
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.models.request.StoreDescriptionRequest
+import com.digitaldukaan.models.response.ProfileInfoResponse
 import com.digitaldukaan.models.response.ProfilePreviewSettingsKeyResponse
 import com.digitaldukaan.models.response.StoreDescriptionResponse
 import com.digitaldukaan.services.StoreDescriptionService
@@ -20,21 +22,24 @@ import kotlinx.android.synthetic.main.store_description_fragment.*
 
 class StoreDescriptionFragment : BaseFragment(), IStoreDescriptionServiceInterface {
 
-    private lateinit var mProfilePreviewResponse: ProfilePreviewSettingsKeyResponse
+    private var mProfilePreviewResponse: ProfilePreviewSettingsKeyResponse? = null
+    private var mProfileInfoResponse: ProfileInfoResponse? = null
     private var mPosition: Int = 0
     private var mIsSingleStep: Boolean = false
     private val mStoreDescriptionStaticData = mStaticData.mStaticData.mProfileStaticData
 
     companion object {
         fun newInstance(
-            profilePreviewResponse: ProfilePreviewSettingsKeyResponse,
+            profilePreviewResponse: ProfilePreviewSettingsKeyResponse?,
             position: Int,
-            isSingleStep: Boolean
+            isSingleStep: Boolean,
+            profileInfoResponse: ProfileInfoResponse?
         ): StoreDescriptionFragment {
             val fragment = StoreDescriptionFragment()
             fragment.mProfilePreviewResponse = profilePreviewResponse
             fragment.mPosition = position
             fragment.mIsSingleStep = isSingleStep
+            fragment.mProfileInfoResponse = profileInfoResponse
             return fragment
         }
     }
@@ -49,7 +54,7 @@ class StoreDescriptionFragment : BaseFragment(), IStoreDescriptionServiceInterfa
         ToolBarManager.getInstance().apply {
             hideToolBar(mActivity, false)
             val stepStr = if (mIsSingleStep) "" else "Step $mPosition : "
-            setHeaderTitle("$stepStr${mProfilePreviewResponse.mHeadingText}")
+            setHeaderTitle("$stepStr${mProfilePreviewResponse?.mHeadingText}")
             onBackPressed(this@StoreDescriptionFragment)
             hideBackPressFromToolBar(mActivity, false)
         }
@@ -72,7 +77,7 @@ class StoreDescriptionFragment : BaseFragment(), IStoreDescriptionServiceInterfa
             }
 
         })
-        storeDescriptionEditText.setText(mProfilePreviewResponse.mValue)
+        storeDescriptionEditText.setText(mProfilePreviewResponse?.mValue)
         storeDescriptionEditText.hint = mStoreDescriptionStaticData.storeDescriptionHint
         continueTextView.text = mStoreDescriptionStaticData.saveChanges
         continueTextView.setOnClickListener {
@@ -88,7 +93,19 @@ class StoreDescriptionFragment : BaseFragment(), IStoreDescriptionServiceInterfa
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (response.mStatus) {
                 showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
-                mActivity.onBackPressed()
+                if (!mIsSingleStep) {
+                    StaticInstances.sStepsCompletedList?.run {
+                        for (completedItem in this) {
+                            if (completedItem.action == Constants.ACTION_DESCRIPTION) {
+                                completedItem.isCompleted = true
+                                break
+                            }
+                        }
+                        switchToInCompleteProfileFragment(mProfileInfoResponse)
+                    }
+                } else {
+                    mActivity.onBackPressed()
+                }
             } else showToast(response.mMessage)
         }
     }
