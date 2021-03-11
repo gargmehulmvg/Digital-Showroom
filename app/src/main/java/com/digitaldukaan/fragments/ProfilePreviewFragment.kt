@@ -133,6 +133,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         mProfilePreviewResponse = response
         mProfilePreviewStaticData = response?.mProfileStaticText!!
         CoroutineScopeUtils().runTaskOnCoroutineMain {
+            constraintLayoutBanner.visibility = if (mProfilePreviewResponse?.mIsProfileCompleted == true) View.GONE else View.VISIBLE
             if (swipeRefreshLayout.isRefreshing) swipeRefreshLayout.isRefreshing = false
             stopProgress()
             mProfilePreviewResponse?.mProfilePreviewBanner?.run {

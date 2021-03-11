@@ -10,11 +10,13 @@
         android:id="@+id/usernameWrapper"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
-        android:layout_margin="@dimen/_15sdp"
         android:layout_height="wrap_content"
+        android:layout_margin="@dimen/_15sdp"
+        app:layout_constraintBottom_toTopOf="@+id/continueTextView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
 
         <EditText
             android:id="@+id/storeDescriptionEditText"
@@ -25,7 +27,7 @@
             android:gravity="start"
             android:importantForAutofill="no"
             android:inputType="textMultiLine"
-            android:maxLines="5"
+            android:maxLines="15"
             android:minLines="5"
             android:textColor="@color/black"
             android:textColorHint="@color/default_text_light_grey"
