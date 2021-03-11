@@ -47,9 +47,9 @@ data class StoreServicesResponse(
 )
 
 data class AccountStaticTextResponse(
-    @SerializedName("complete_profile") var mCompleteProfile: String?,
-    @SerializedName("step_left") var mStepLeft: String?,
-    @SerializedName("steps_left") var mStepsLeft: String?,
+    @SerializedName("text_complete_profile") var mCompleteProfile: String?,
+    @SerializedName("text_step_left") var mStepLeft: String?,
+    @SerializedName("text_steps_left") var mStepsLeft: String?,
     @SerializedName("bottom_sheet_hint") var bottom_sheet_hint: String?,
     @SerializedName("bottom_sheet_save_changes") var bottom_sheet_save_changes: String?,
     @SerializedName("custom_delivery_charge_description") var custom_delivery_charge_description: String?,
@@ -90,7 +90,24 @@ data class AccountStaticTextResponse(
     @SerializedName("text_optional") var text_optional: String?,
     @SerializedName("text_yes") var text_yes: String?,
     @SerializedName("text_ruppee_symbol") var text_ruppee_symbol: String?,
-    @SerializedName("bottom_sheet_heading") var bottom_sheet_heading: String?
+    @SerializedName("bottom_sheet_heading") var bottom_sheet_heading: String?,
+    @SerializedName("text_app_version") var mAppVersionText: String?,
+    @SerializedName("logout_body") var mLogoutBody: String?,
+    @SerializedName("text_logout") var mLogoutText: String?,
+    @SerializedName("logout_title") var mLogoutTitle: String?,
+    @SerializedName("best_view_text") var mBestViewedText: String?,
+    @SerializedName("bottom_sheet_text") var mBottomSheetText: String?,
+    @SerializedName("text_delivery") var mDeliveryText: String?,
+    @SerializedName("text_store") var mStoreText: String?,
+    @SerializedName("text_open") var mOpenText: String?,
+    @SerializedName("text_closed") var mClosedText: String?,
+    @SerializedName("text_share") var mShareText: String?,
+    @SerializedName("text_share_message") var mShareMessageText: String?,
+    @SerializedName("text_off") var mOffText: String?,
+    @SerializedName("text_on") var mOnText: String?,
+    @SerializedName("text_store_id") var mStoreId: String?,
+    @SerializedName("text_new_release") var mNewReleaseText: String?,
+    @SerializedName("text_store_control") var mStoreControlsText: String?
 )
 
 data class StoreShareResponse(
@@ -111,7 +128,7 @@ data class StoreOptionsResponse(
     @SerializedName("text") var mText: String?,
     @SerializedName("banner_text") var mBannerText: String?,
     @SerializedName("action") var mAction: String?,
-    @SerializedName("show_more") var mIsShowMore: Boolean,
+    @SerializedName("is_expandable") var mIsShowMore: Boolean,
     @SerializedName("page") var mPage: String?
 )
 

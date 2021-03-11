@@ -46,18 +46,13 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
     companion object {
         fun newInstance(): SettingsFragment = SettingsFragment()
     }
-
-    private val mAppSettingsStaticData = mStaticData.mStaticData.mSettingsStaticData
+    //private val mAppSettingsStaticData = mStaticData.mStaticData.mSettingsStaticData
     private lateinit var mAppSettingsResponseStaticData: AccountStaticTextResponse
     private lateinit var mAppStoreServicesResponse: StoreServicesResponse
     private val mProfileService = ProfileService()
     private var mReferAndEarnResponse: ReferEarnResponse? = null
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.settings_fragment, container, false)
         mProfileService.setProfileServiceInterface(this)
         fetchUserProfile()
@@ -68,10 +63,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         super.onStart()
         ToolBarManager.getInstance().apply {
             setSideIconVisibility(true)
-            setSideIcon(
-                ContextCompat.getDrawable(mActivity, R.drawable.ic_setting_toolbar),
-                this@SettingsFragment
-            )
+            setSideIcon(ContextCompat.getDrawable(mActivity, R.drawable.ic_setting_toolbar), this@SettingsFragment)
         }
     }
 
@@ -80,37 +72,9 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         ToolBarManager.getInstance().apply {
             hideToolBar(mActivity, false)
             onBackPressed(this@SettingsFragment)
-            setHeaderTitle(getString(R.string.my_account))
             setSideIconVisibility(true)
             hideBackPressFromToolBar(mActivity, false)
-            setSideIcon(
-                ContextCompat.getDrawable(mActivity, R.drawable.ic_setting_toolbar),
-                this@SettingsFragment
-            )
-        }
-        storeStatusTextView.text =
-            "${mAppSettingsStaticData.mStoreText} : ${mAppSettingsStaticData.mOffText}"
-        storeSwitch.setOnCheckedChangeListener { _, isChecked ->
-            run {
-                Log.d(
-                    SettingsFragment::class.simpleName,
-                    "storeSwitch.setOnCheckedChangeListener $isChecked"
-                )
-                storeStatusTextView.text =
-                    "${mAppSettingsStaticData.mStoreText} : ${if (isChecked) mAppSettingsStaticData.mOnText else mAppSettingsStaticData.mOffText}"
-            }
-        }
-        deliveryStatusTextView.text =
-            "${mAppSettingsStaticData.mDeliveryText} : ${mAppSettingsStaticData.mOffText}"
-        deliverySwitch.setOnCheckedChangeListener { _, isChecked ->
-            run {
-                Log.d(
-                    SettingsFragment::class.simpleName,
-                    "deliverySwitch.setOnCheckedChangeListener $isChecked"
-                )
-                deliveryStatusTextView.text =
-                    "${mAppSettingsStaticData.mDeliveryText} : ${if (isChecked) mAppSettingsStaticData.mOnText else mAppSettingsStaticData.mOffText}"
-            }
+            setSideIcon(ContextCompat.getDrawable(mActivity, R.drawable.ic_setting_toolbar), this@SettingsFragment)
         }
         showBottomNavigationView(false)
         swipeRefreshLayout.setOnRefreshListener(this)
@@ -124,16 +88,8 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             deliverySwitch.id -> changeStoreDeliveryStatus()
             moreControlsTextView.id -> launchFragment(MoreControlsFragment.newInstance(mAppSettingsResponseStaticData, mAppStoreServicesResponse), true)
             moreControlsImageView.id -> launchFragment(MoreControlsFragment.newInstance(mAppSettingsResponseStaticData, mAppStoreServicesResponse), true)
-            userProfileLayout.id -> launchFragment(
-                ProfilePreviewFragment().newInstance(
-                    mProfileResponse?.mStoreInfo?.storeInfo?.name
-                ), true
-            )
-            userProfileLayout.id -> launchFragment(
-                ProfilePreviewFragment().newInstance(
-                    mProfileResponse?.mStoreInfo?.storeInfo?.name
-                ), true
-            )
+            userProfileLayout.id -> launchFragment(ProfilePreviewFragment().newInstance(mProfileResponse?.mStoreInfo?.storeInfo?.name), true)
+            userProfileLayout.id -> launchFragment(ProfilePreviewFragment().newInstance(mProfileResponse?.mStoreInfo?.storeInfo?.name), true)
         }
     }
 
@@ -146,16 +102,15 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         bottomSheetDialog.setContentView(view)
         bottomSheetDialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
         val bottomSheetBrowserText: TextView = view.findViewById(R.id.bottomSheetBrowserText)
-        val bottomSheetHeadingTextView: TextView =
-            view.findViewById(R.id.bottomSheetHeadingTextView)
+        val bottomSheetHeadingTextView: TextView = view.findViewById(R.id.bottomSheetHeadingTextView)
         val bottomSheetUrl: TextView = view.findViewById(R.id.bottomSheetUrl)
         val bottomSheetClose: View = view.findViewById(R.id.bottomSheetClose)
-        bottomSheetBrowserText.text = mAppSettingsStaticData.mBestViewedText
+        bottomSheetBrowserText.text = mAppSettingsResponseStaticData.mBestViewedText
         val txtSpannable = SpannableString(Constants.DOTPE_OFFICIAL_URL)
         val boldSpan = StyleSpan(Typeface.BOLD)
         txtSpannable.setSpan(boldSpan, 6, txtSpannable.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         bottomSheetUrl.text = txtSpannable
-        bottomSheetHeadingTextView.setHtmlData(mAppSettingsStaticData.mBottomSheetText)
+        bottomSheetHeadingTextView.setHtmlData(mAppSettingsResponseStaticData.mBottomSheetText)
         bottomSheetUrl.setOnClickListener { copyDataToClipboard(Constants.DOTPE_OFFICIAL_URL_CLIPBOARD) }
         bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
         bottomSheetDialog.show()
@@ -242,10 +197,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (swipeRefreshLayout.isRefreshing) swipeRefreshLayout.isRefreshing = false
             if (commonResponse.mIsSuccessStatus) {
-                val response = Gson().fromJson<AccountInfoResponse>(
-                    commonResponse.mCommonDataStr,
-                    AccountInfoResponse::class.java
-                )
+                val response = Gson().fromJson<AccountInfoResponse>(commonResponse.mCommonDataStr, AccountInfoResponse::class.java)
                 setupUIFromProfileResponse(response)
                 response?.mAccountStaticText?.run { mAppSettingsResponseStaticData = this }
                 response?.mStoreInfo?.storeServices?.run { mAppStoreServicesResponse = this }
@@ -338,9 +290,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             if (remainingSteps == 1) "$remainingSteps ${infoResponse.mAccountStaticText?.mStepLeft}" else "$remainingSteps ${infoResponse.mAccountStaticText?.mStepsLeft}"
         completeProfileTextView.text = infoResponse.mAccountStaticText?.mCompleteProfile
         whatsAppTextView.setOnClickListener {
-            val sharingStr = infoResponse.mStoreShare?.mWaText
-            if (infoResponse.mStoreShare?.mShareStoreBanner!!) "\n\n" + sharingStr + infoResponse.mStoreShare?.mImageUrl
-            shareDataOnWhatsApp(sharingStr)
+            shareDataOnWhatsApp(infoResponse.waShare)
         }
         viewTopOrderLayout2.setOnClickListener {
             if (infoResponse.mTrendingList?.isNotEmpty() == true) openUrlInBrowser(
@@ -356,6 +306,34 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                 )?.mPage
             )
         }
+
+
+        storeStatusTextView.text = "${infoResponse.mAccountStaticText?.mStoreText} : ${infoResponse.mAccountStaticText?.mOffText}"
+        storeSwitch.setOnCheckedChangeListener { _, isChecked ->
+            run {
+                Log.d(
+                    SettingsFragment::class.simpleName,
+                    "storeSwitch.setOnCheckedChangeListener $isChecked"
+                )
+                storeStatusTextView.text = "${infoResponse.mAccountStaticText?.mStoreText} : ${if (isChecked) infoResponse.mAccountStaticText?.mOnText else infoResponse.mAccountStaticText?.mOffText}"
+            }
+        }
+        deliveryStatusTextView.text = "${infoResponse.mAccountStaticText?.mDeliveryText} : ${infoResponse.mAccountStaticText?.mOffText}"
+        deliverySwitch.setOnCheckedChangeListener { _, isChecked ->
+            run {
+                Log.d(
+                    SettingsFragment::class.simpleName,
+                    "deliverySwitch.setOnCheckedChangeListener $isChecked"
+                )
+                deliveryStatusTextView.text = "${infoResponse.mAccountStaticText?.mDeliveryText} : ${if (isChecked) infoResponse.mAccountStaticText?.mOnText else infoResponse.mAccountStaticText?.mOffText}"
+            }
+        }
+        moreControlsTextView.text = infoResponse.mAccountStaticText?.page_heading_more_controls
+        whatsAppShareTextView.text = infoResponse.mAccountStaticText?.mShareText
+        shareShowRoomWithCustomerTextView.text = infoResponse.mAccountStaticText?.mShareMessageText
+        materialTextView.text = infoResponse.mAccountStaticText?.mStoreControlsText
+        newReleaseHeading.text = infoResponse.mAccountStaticText?.mNewReleaseText
+        ToolBarManager.getInstance().setHeaderTitle(infoResponse.mAccountStaticText?.page_heading)
     }
 
     private fun checkStoreOptionClick(response: StoreOptionsResponse) {
@@ -375,12 +353,8 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             }
             Constants.PAGE_HELP -> onToolbarSideIconClicked()
             Constants.PAGE_FEEDBACK -> openPlayStore()
-            Constants.PAGE_APP_SETTINGS -> launchFragment(
-                AppSettingsFragment().newInstance(
-                    mProfileResponse?.mSubPages,
-                    response.mText
-                ), true
-            )
+            Constants.PAGE_APP_SETTINGS -> launchFragment(AppSettingsFragment().newInstance(mProfileResponse?.mSubPages,
+                response.mText, mAppSettingsResponseStaticData), true)
             Constants.PAGE_REWARDS -> launchFragment(
                 CommonWebViewFragment().newInstance(
                     getString(R.string.help),

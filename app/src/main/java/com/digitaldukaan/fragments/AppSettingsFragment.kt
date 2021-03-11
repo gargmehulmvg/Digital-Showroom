@@ -14,6 +14,7 @@ import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.interfaces.IAppSettingsItemClicked
+import com.digitaldukaan.models.response.AccountStaticTextResponse
 import com.digitaldukaan.models.response.SubPagesResponse
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.android.synthetic.main.app_setting_fragment.*
@@ -22,12 +23,13 @@ class AppSettingsFragment : BaseFragment(), IAppSettingsItemClicked {
 
     private var mAppSettingsList: ArrayList<SubPagesResponse>? = ArrayList()
     private var mHeaderText: String? = null
-    private val mAppSettingsStaticData = mStaticData.mStaticData.mSettingsStaticData
+    private lateinit var mAppSettingsResponseStaticData: AccountStaticTextResponse
 
-    fun newInstance(list: ArrayList<SubPagesResponse>?, headerText: String?): AppSettingsFragment {
+    fun newInstance(list: ArrayList<SubPagesResponse>?, headerText: String?, appSettingsResponseStaticData: AccountStaticTextResponse): AppSettingsFragment {
         val fragment = AppSettingsFragment()
         fragment.mAppSettingsList = list
         fragment.mHeaderText = headerText
+        fragment.mAppSettingsResponseStaticData = appSettingsResponseStaticData
         return fragment
     }
 
@@ -55,18 +57,18 @@ class AppSettingsFragment : BaseFragment(), IAppSettingsItemClicked {
         }
         showBottomNavigationView(true)
         adapter.setAppSettingsList(mAppSettingsList)
-        appVersionTextView.text = "${mAppSettingsStaticData.mAppVersionText} v.${BuildConfig.VERSION_CODE}"
-        storeIdTextView.text = "${mAppSettingsStaticData.mStoreId} ${getStringDataFromSharedPref(Constants.STORE_ID)}"
+        appVersionTextView.text = "${mAppSettingsResponseStaticData.mAppVersionText} v.${BuildConfig.VERSION_CODE}"
+        storeIdTextView.text = "${mAppSettingsResponseStaticData.mStoreId} ${getStringDataFromSharedPref(Constants.STORE_ID)}"
     }
 
     private fun showLogoutDialog() {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             val builder: AlertDialog.Builder = AlertDialog.Builder(mActivity)
             builder.apply {
-                setTitle(mAppSettingsStaticData.mLogoutTitle)
-                setMessage(mAppSettingsStaticData.mLogoutBody)
+                setTitle(mAppSettingsResponseStaticData.mLogoutTitle)
+                setMessage(mAppSettingsResponseStaticData.mLogoutBody)
                 setCancelable(false)
-                setPositiveButton(mAppSettingsStaticData.mLogoutText) { dialog, _ ->
+                setPositiveButton(mAppSettingsResponseStaticData.mLogoutText) { dialog, _ ->
                     mActivity.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE).edit().clear().apply()
                     dialog.dismiss()
                     clearFragmentBackStack()
