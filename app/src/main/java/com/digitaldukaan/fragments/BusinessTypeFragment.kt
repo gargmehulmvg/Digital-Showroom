@@ -9,12 +9,10 @@ import com.digitaldukaan.R
 import com.digitaldukaan.adapters.BusinessTypeAdapter
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
+import com.digitaldukaan.constants.StaticInstances
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.models.request.BusinessTypeRequest
-import com.digitaldukaan.models.response.BusinessTypeItemResponse
-import com.digitaldukaan.models.response.BusinessTypeResponse
-import com.digitaldukaan.models.response.ProfilePreviewSettingsKeyResponse
-import com.digitaldukaan.models.response.StoreDescriptionResponse
+import com.digitaldukaan.models.response.*
 import com.digitaldukaan.services.BusinessTypeService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IBusinessTypeServiceInterface
@@ -23,6 +21,7 @@ import kotlinx.android.synthetic.main.business_type_fragment.*
 class BusinessTypeFragment : BaseFragment(), IBusinessTypeServiceInterface {
 
     private var mProfilePreviewResponse: ProfilePreviewSettingsKeyResponse? = null
+    private var mProfileInfoResponse: ProfileInfoResponse? = null
     private var mPosition: Int = 0
     private var mIsSingleStep: Boolean = false
     private lateinit var businessTypeService: BusinessTypeService
@@ -32,12 +31,14 @@ class BusinessTypeFragment : BaseFragment(), IBusinessTypeServiceInterface {
         fun newInstance(
             profilePreviewResponse: ProfilePreviewSettingsKeyResponse?,
             position: Int,
-            isSingleStep: Boolean
+            isSingleStep: Boolean,
+            profileInfoResponse: ProfileInfoResponse?
         ): BusinessTypeFragment {
             val fragment = BusinessTypeFragment()
             fragment.mProfilePreviewResponse = profilePreviewResponse
             fragment.mPosition = position
             fragment.mIsSingleStep = isSingleStep
+            fragment.mProfileInfoResponse = profileInfoResponse
             return fragment
         }
     }
@@ -122,7 +123,19 @@ class BusinessTypeFragment : BaseFragment(), IBusinessTypeServiceInterface {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (response.mStatus) {
                 showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
-                mActivity.onBackPressed()
+                if (!mIsSingleStep) {
+                    StaticInstances.sStepsCompletedList?.run {
+                        for (completedItem in this) {
+                            if (completedItem.action == Constants.ACTION_BUSINESS) {
+                                completedItem.isCompleted = true
+                                break
+                            }
+                        }
+                        switchToInCompleteProfileFragment(mProfileInfoResponse)
+                    }
+                } else {
+                    mActivity.onBackPressed()
+                }
             } else showToast(response.mMessage)
         }
     }

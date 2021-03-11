@@ -16,7 +16,7 @@ data class AccountInfoResponse(
     @SerializedName("new_releases") var mTrendingList: ArrayList<TrendingListResponse>?,
     @SerializedName("store_options") var mStoreOptions: ArrayList<StoreOptionsResponse>?,
     @SerializedName("app_settings") var mSubPages: ArrayList<SubPagesResponse>?,
-    @SerializedName("total_steps") var mTotalSteps: Int?,
+    @SerializedName("total_steps") var mTotalSteps: Int,
     @SerializedName("completed_steps") var mCompletedSteps: Int,
     @SerializedName("static_text") var mAccountStaticText: AccountStaticTextResponse?,
     @SerializedName("footer_images") var mFooterImages: ArrayList<String>?

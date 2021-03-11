@@ -2,10 +2,6 @@ package com.digitaldukaan.models.response
 
 import com.google.gson.annotations.SerializedName
 
-data class MarketingCardsResponse(
-    @SerializedName("keys") var mMarketingItemList: ArrayList<MarketingCardsItemResponse>
-)
-
 data class MarketingCardsItemResponse(
     @SerializedName("heading") var heading: String?,
     @SerializedName("sub_heading") var subHeading: String?,

@@ -13,6 +13,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -304,7 +305,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         }
         deliverySwitch.isChecked = infoResponse.mStoreInfo.storeServices.mDeliveryFlag == 1
         profileStatusRecyclerView.apply {
-            layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
+            layoutManager = GridLayoutManager(mActivity, infoResponse.mTotalSteps)
             adapter = ProfileStatusAdapter(infoResponse.mTotalSteps, infoResponse.mCompletedSteps)
         }
         settingStoreOptionRecyclerView.apply {

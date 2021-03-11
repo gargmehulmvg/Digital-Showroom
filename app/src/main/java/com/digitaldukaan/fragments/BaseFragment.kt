@@ -579,7 +579,9 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                 Constants.ACTION_DESCRIPTION -> launchFragment(StoreDescriptionFragment.newInstance(getHeaderByActionInSettingKetList(profilePreviewResponse, Constants.ACTION_STORE_DESCRIPTION),
                     incompleteProfilePageNumber, false, profilePreviewResponse), true)
                 Constants.ACTION_BUSINESS -> launchFragment(BusinessTypeFragment.newInstance(getHeaderByActionInSettingKetList(profilePreviewResponse, Constants.ACTION_BUSINESS_TYPE),
-                    incompleteProfilePageNumber, false), true)
+                    incompleteProfilePageNumber, false, profilePreviewResponse), true)
+                Constants.ACTION_BANK -> launchFragment(BankAccountFragment.newInstance(getHeaderByActionInSettingKetList(profilePreviewResponse, Constants.ACTION_BANK_ACCOUNT),
+                    incompleteProfilePageNumber, false, profilePreviewResponse?.mProfileStaticText, profilePreviewResponse), true)
                 else -> launchFragment(HomeFragment.newInstance(), true)
             }
         }
