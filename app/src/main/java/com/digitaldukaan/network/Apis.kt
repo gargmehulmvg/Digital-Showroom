@@ -46,8 +46,8 @@ interface Apis {
     @POST("api/dotk/settings/setStoreBusinesses")
     suspend fun setStoreBusinesses(@Header("auth_token") authToken:String, @Body request: BusinessTypeRequest) : Response<CommonApiResponse>
 
-    @POST("api/dotk/merchant/setStoreLogo")
-    suspend fun setStoreLogo(@Header("auth_token") authToken:String, @Body request: StoreLogoRequest) : Response<StoreDescriptionResponse>
+    @POST("api/dotk/settings/setStoreLogo")
+    suspend fun setStoreLogo(@Header("auth_token") authToken:String, @Body request: StoreLogoRequest) : Response<CommonApiResponse>
 
     @GET("api/dotk/merchant/searchImages")
     suspend fun searchImagesFromBing(@Header("auth_token") authToken: String, @Query("search_text") searchText: String, @Query("store_id") storeId: String) : Response<ImagesSearchResponse>

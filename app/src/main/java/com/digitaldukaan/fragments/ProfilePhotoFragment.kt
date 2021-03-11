@@ -12,10 +12,12 @@ import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.StaticInstances
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.models.request.StoreLogoRequest
-import com.digitaldukaan.models.response.StoreDescriptionResponse
+import com.digitaldukaan.models.response.CommonApiResponse
+import com.digitaldukaan.models.response.StoreResponse
 import com.digitaldukaan.services.ProfilePhotoService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IProfilePhotoServiceInterface
+import com.google.gson.Gson
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_profile_photo.*
 
@@ -81,10 +83,11 @@ class ProfilePhotoFragment : BaseFragment(), View.OnClickListener, IProfilePhoto
         }
     }
 
-    override fun onStoreLogoResponse(response: StoreDescriptionResponse) {
+    override fun onStoreLogoResponse(response: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
-            mStoreLogoLinkStr = response.mStoreInfo?.storeInfo?.logoImage
+            val photoResponse = Gson().fromJson<StoreResponse>(response.mCommonDataStr, StoreResponse::class.java)
+            mStoreLogoLinkStr = photoResponse.storeInfo.logoImage
             if (mStoreLogoLinkStr?.isNotEmpty() == true) Picasso.get().load(mStoreLogoLinkStr).into(profilePhotoImageView) else {
                 StaticInstances.sIsStoreImageUploaded = false
                 mActivity.onBackPressed()
@@ -101,7 +104,7 @@ class ProfilePhotoFragment : BaseFragment(), View.OnClickListener, IProfilePhoto
             showNoInternetConnectionDialog()
         }
         showProgressDialog(mActivity)
-        val request = StoreLogoRequest(getStringDataFromSharedPref(Constants.STORE_ID).toInt(), base64Str)
+        val request = StoreLogoRequest(base64Str)
         service.updateStoreLogo(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
     }
 

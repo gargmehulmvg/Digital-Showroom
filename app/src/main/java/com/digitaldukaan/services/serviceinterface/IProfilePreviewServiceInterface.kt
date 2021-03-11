@@ -11,7 +11,7 @@ interface IProfilePreviewServiceInterface {
 
     fun onStoreLinkResponse(response: StoreDescriptionResponse)
 
-    fun onStoreLogoResponse(response: StoreDescriptionResponse)
+    fun onStoreLogoResponse(response: CommonApiResponse)
 
     fun onProfilePreviewServerException(e: Exception)
 }

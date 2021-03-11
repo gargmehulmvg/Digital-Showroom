@@ -107,7 +107,7 @@ class OnBoardScreenDukaanNameFragment : BaseFragment(), IProfilePreviewServiceIn
         Log.d(TAG, "onStoreLinkResponse: do nothing")
     }
 
-    override fun onStoreLogoResponse(response: StoreDescriptionResponse) {
+    override fun onStoreLogoResponse(response: CommonApiResponse) {
         Log.d(TAG, "onStoreLogoResponse: do nothing")
     }
 

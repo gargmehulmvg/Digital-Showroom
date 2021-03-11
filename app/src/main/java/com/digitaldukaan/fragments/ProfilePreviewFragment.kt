@@ -425,15 +425,16 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
             showNoInternetConnectionDialog()
         }
         showProgressDialog(mActivity)
-        val request = StoreLogoRequest(getStringDataFromSharedPref(Constants.STORE_ID).toInt(), base64Str)
+        val request = StoreLogoRequest(base64Str)
         service.updateStoreLogo(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
     }
 
-    override fun onStoreLogoResponse(response: StoreDescriptionResponse) {
+    override fun onStoreLogoResponse(response: CommonApiResponse) {
         stopProgress()
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            if (response.mStatus) {
-                mStoreLogo = response.mStoreInfo?.storeInfo?.logoImage
+            if (response.mIsSuccessStatus) {
+                val photoResponse = Gson().fromJson<StoreResponse>(response.mCommonDataStr, StoreResponse::class.java)
+                mStoreLogo = photoResponse.storeInfo.logoImage
                 if (mStoreLogo?.isNotEmpty() == true) {
                     storePhotoImageView.visibility = View.VISIBLE
                     hiddenImageView.visibility = View.INVISIBLE
