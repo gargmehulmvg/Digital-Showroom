@@ -8,30 +8,31 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.GridLayoutManager.SpanSizeLookup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.MarketingCardAdapter
 import com.digitaldukaan.adapters.SharePDFAdapter
 import com.digitaldukaan.constants.Constants
-import com.digitaldukaan.constants.Constants.Companion.SPAN_TYPE_FULL_WIDTH
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.constants.openWebViewFragment
 import com.digitaldukaan.interfaces.IOnToolbarIconClick
 import com.digitaldukaan.models.request.StoreLogoRequest
 import com.digitaldukaan.models.response.AppShareDataResponse
+import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.MarketingCardsItemResponse
-import com.digitaldukaan.models.response.MarketingCardsResponse
 import com.digitaldukaan.models.response.ShareStorePDFDataResponse
 import com.digitaldukaan.services.MarketingService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IMarketingServiceInterface
 import com.digitaldukaan.webviews.WebViewBridge
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.marketing_fragment.*
 import okhttp3.ResponseBody
+
 
 class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingServiceInterface {
 
@@ -85,20 +86,24 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
         exceptionHandlingForAPIResponse(e)
     }
 
-    override fun onMarketingResponse(response: MarketingCardsResponse) {
+    override fun onMarketingResponse(response: CommonApiResponse) {
         stopProgress()
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            marketingCardRecyclerView.apply {
-                val list = response.mMarketingItemList
-                val gridLayoutManager = GridLayoutManager(mActivity, 2)
-                layoutManager = gridLayoutManager
-                gridLayoutManager.spanSizeLookup = object : SpanSizeLookup() {
-                    override fun getSpanSize(position: Int): Int {
-                        return if (list[position].type == SPAN_TYPE_FULL_WIDTH) 2 else 1
+            if (response.mIsSuccessStatus) {
+                val listType = object : TypeToken<List<MarketingCardsItemResponse>>() {}.type
+                val list = Gson().fromJson<ArrayList<MarketingCardsItemResponse>>(response.mCommonDataStr, listType)
+                marketingCardRecyclerView.apply {
+                    val gridLayoutManager = GridLayoutManager(mActivity, 2)
+                    layoutManager = gridLayoutManager
+                    gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                        override fun getSpanSize(position: Int): Int {
+                            return if (list[position].type == Constants.SPAN_TYPE_FULL_WIDTH) 2 else 1
+                        }
                     }
+                    adapter = MarketingCardAdapter(list, this@MarketingFragment)
                 }
-                adapter = MarketingCardAdapter(list, this@MarketingFragment)
             }
+
         }
     }
 

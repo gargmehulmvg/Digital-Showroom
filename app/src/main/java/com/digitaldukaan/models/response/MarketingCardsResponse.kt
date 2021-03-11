@@ -3,8 +3,6 @@ package com.digitaldukaan.models.response
 import com.google.gson.annotations.SerializedName
 
 data class MarketingCardsResponse(
-    @SerializedName("status") var mStatus: Boolean,
-    @SerializedName("message") var mMessage: String?,
     @SerializedName("keys") var mMarketingItemList: ArrayList<MarketingCardsItemResponse>
 )
 
