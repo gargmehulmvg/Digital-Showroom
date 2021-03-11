@@ -400,7 +400,7 @@
                             android:id="@+id/newTextView"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/ic_new"
+                            android:background="@drawable/ic_new_with_text"
                             android:clickable="false"
                             android:gravity="center"
                             android:padding="@dimen/_5sdp"

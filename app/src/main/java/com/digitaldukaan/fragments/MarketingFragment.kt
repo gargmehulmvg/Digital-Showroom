@@ -18,10 +18,9 @@ import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.constants.openWebViewFragment
 import com.digitaldukaan.interfaces.IOnToolbarIconClick
-import com.digitaldukaan.models.response.AppShareDataResponse
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.MarketingCardsItemResponse
-import com.digitaldukaan.models.response.ShareStorePDFDataResponse
+import com.digitaldukaan.models.response.ShareStorePDFDataItemResponse
 import com.digitaldukaan.services.MarketingService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IMarketingServiceInterface
@@ -30,14 +29,13 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.marketing_fragment.*
-import okhttp3.ResponseBody
 
 
 class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingServiceInterface {
 
     companion object {
         private lateinit var service: MarketingService
-        private var mShareStorePDFResponse: ShareStorePDFDataResponse? = null
+        private var mShareStorePDFResponse: ShareStorePDFDataItemResponse? = null
         private val mMarketingStaticData = mStaticData.mStaticData.mMarketingStaticData
 
         fun newInstance(): MarketingFragment {
@@ -106,21 +104,26 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
         }
     }
 
-    override fun onAppShareDataResponse(response: AppShareDataResponse) {
+    override fun onAppShareDataResponse(response: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
-            shareDataOnWhatsApp(response.mWhatsAppText)
+            shareDataOnWhatsApp(Gson().fromJson<String>(response.mCommonDataStr, String::class.java))
         }
     }
 
-    override fun onGenerateStorePdfResponse(response: ResponseBody) {
+    override fun onGenerateStorePdfResponse(response: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
+            showShortSnackBar(
+                response.mMessage,
+                true,
+                if (response.mIsSuccessStatus) R.drawable.ic_check_circle else R.drawable.ic_close_red
+            )
         }
     }
 
-    override fun onShareStorePdfDataResponse(response: ShareStorePDFDataResponse) {
-        mShareStorePDFResponse = response
+    override fun onShareStorePdfDataResponse(response: CommonApiResponse) {
+        mShareStorePDFResponse = Gson().fromJson<ShareStorePDFDataItemResponse>(response.mCommonDataStr, ShareStorePDFDataItemResponse::class.java)
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             showPDFShareBottomSheet(mShareStorePDFResponse)
@@ -151,7 +154,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
         }
     }
 
-    private fun showPDFShareBottomSheet(response: ShareStorePDFDataResponse?) {
+    private fun showPDFShareBottomSheet(response: ShareStorePDFDataItemResponse?) {
         val bottomSheetDialog = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
         val view = LayoutInflater.from(mActivity).inflate(
             R.layout.bottom_sheet_refer_and_earn,
@@ -169,8 +172,8 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                 //Picasso.get().load(R.drawable.ic_share_pdf_whatsapp).into(bottomSheetUpperImageView)
                 bottomSheetUpperImageView.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.ic_share_pdf_whatsapp))
                 bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
-                bottomSheetHeadingTextView.text = response?.mShareStorePDFDataItem?.heading
-                verifyTextView.text = response?.mShareStorePDFDataItem?.subHeading
+                bottomSheetHeadingTextView.text = response?.heading
+                verifyTextView.text = response?.subHeading
                 verifyTextView.setOnClickListener{
                     showProgressDialog(mActivity)
                     service.generateStorePdf(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
@@ -178,7 +181,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                 }
                 referAndEarnRecyclerView.apply {
                     layoutManager = LinearLayoutManager(mActivity)
-                    adapter = SharePDFAdapter(response?.mShareStorePDFDataItem?.howItWorks)
+                    adapter = SharePDFAdapter(response?.howItWorks)
                 }
             }
         }.show()

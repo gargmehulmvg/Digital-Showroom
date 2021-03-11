@@ -1,10 +1,7 @@
 package com.digitaldukaan.services.serviceinterface
 
-import com.digitaldukaan.models.response.AppShareDataResponse
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.MarketingCardsItemResponse
-import com.digitaldukaan.models.response.ShareStorePDFDataResponse
-import okhttp3.ResponseBody
 
 interface IMarketingServiceInterface {
 
@@ -12,11 +9,11 @@ interface IMarketingServiceInterface {
 
     fun onMarketingResponse(response: CommonApiResponse)
 
-    fun onAppShareDataResponse(response: AppShareDataResponse)
+    fun onAppShareDataResponse(response: CommonApiResponse)
 
-    fun onGenerateStorePdfResponse(response: ResponseBody)
+    fun onGenerateStorePdfResponse(response: CommonApiResponse)
 
-    fun onShareStorePdfDataResponse(response: ShareStorePDFDataResponse)
+    fun onShareStorePdfDataResponse(response: CommonApiResponse)
 
     fun onMarketingItemClick(response: MarketingCardsItemResponse?)
 

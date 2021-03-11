@@ -2,7 +2,6 @@ package com.digitaldukaan.network
 
 import com.digitaldukaan.models.request.*
 import com.digitaldukaan.models.response.*
-import okhttp3.ResponseBody
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -62,14 +61,14 @@ interface Apis {
     @GET("api/dotk/marketing/getStoreMarketingText")
     suspend fun getMarketingCardsData(): Response<CommonApiResponse>
 
-    @POST("api/dotk/template/shareStore")
-    suspend fun getShareStoreData(@Header("auth_token") authToken: String): Response<AppShareDataResponse>
+    @POST("api/dotk/marketing/shareStore")
+    suspend fun getShareStoreData(@Header("auth_token") authToken: String): Response<CommonApiResponse>
 
-    @GET("api/dotk/template/shareStorePdfText")
-    suspend fun getShareStorePdfText(@Header("auth_token") authToken: String): Response<ShareStorePDFDataResponse>
+    @GET("api/dotk/marketing/shareStorePdfText")
+    suspend fun getShareStorePdfText(@Header("auth_token") authToken: String): Response<CommonApiResponse>
 
-    @POST("api/dotk/catalog/generateStorePdf")
-    suspend fun generateStorePdf(@Header("auth_token") authToken: String): Response<ResponseBody>
+    @POST("api/dotk/marketing/generateStorePdf")
+    suspend fun generateStorePdf(@Header("auth_token") authToken: String): Response<CommonApiResponse>
 
     @POST("api/dotk/settings/setDeliveryInfo")
     suspend fun updateDeliveryInfo(@Header("auth_token") authToken: String, @Body request: MoreControlsRequest): Response<CommonApiResponse>
