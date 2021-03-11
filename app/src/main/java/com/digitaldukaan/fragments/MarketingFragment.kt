@@ -18,7 +18,6 @@ import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.constants.openWebViewFragment
 import com.digitaldukaan.interfaces.IOnToolbarIconClick
-import com.digitaldukaan.models.request.StoreLogoRequest
 import com.digitaldukaan.models.response.AppShareDataResponse
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.MarketingCardsItemResponse
@@ -139,13 +138,12 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
             Constants.ACTION_QR_DOWNLOAD -> openWebViewFragment(this, "", Constants.WEB_VIEW_QR_DOWNLOAD, Constants.SETTINGS)
             Constants.ACTION_SHARE_DATA -> {
                 showProgressDialog(mActivity)
-                val request = StoreLogoRequest(getStringDataFromSharedPref(Constants.STORE_ID).toInt(), "")
-                service.getShareStoreData(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
+                service.getShareStoreData(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
             }
             Constants.ACTION_CATALOG_WHATSAPP -> {
                 if (mShareStorePDFResponse == null) {
                     showProgressDialog(mActivity)
-                    service.getShareStorePdfText()
+                    service.getShareStorePdfText(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
                 } else {
                     showPDFShareBottomSheet(mShareStorePDFResponse)
                 }
@@ -175,8 +173,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                 verifyTextView.text = response?.mShareStorePDFDataItem?.subHeading
                 verifyTextView.setOnClickListener{
                     showProgressDialog(mActivity)
-                    val request = StoreLogoRequest(getStringDataFromSharedPref(Constants.STORE_ID).toInt(), "")
-                    service.generateStorePdf(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
+                    service.generateStorePdf(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
                     bottomSheetDialog.dismiss()
                 }
                 referAndEarnRecyclerView.apply {

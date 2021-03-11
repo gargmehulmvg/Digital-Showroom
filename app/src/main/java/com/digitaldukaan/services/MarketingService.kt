@@ -1,7 +1,6 @@
 package com.digitaldukaan.services
 
 import com.digitaldukaan.constants.CoroutineScopeUtils
-import com.digitaldukaan.models.request.StoreLogoRequest
 import com.digitaldukaan.services.networkservice.MarketingNetworkService
 import com.digitaldukaan.services.serviceinterface.IMarketingServiceInterface
 
@@ -21,21 +20,21 @@ class MarketingService {
         }
     }
 
-    fun getShareStoreData(authToken:String, request: StoreLogoRequest) {
+    fun getShareStoreData(authToken: String) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.getShareStoreDataServerCall(authToken, request, mServiceInterface)
+            mNetworkService.getShareStoreDataServerCall(authToken, mServiceInterface)
         }
     }
 
-    fun generateStorePdf(authToken:String, request: StoreLogoRequest) {
+    fun generateStorePdf(authToken: String) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.generateStorePdfServerCall(authToken, request, mServiceInterface)
+            mNetworkService.generateStorePdfServerCall(authToken, mServiceInterface)
         }
     }
 
-    fun getShareStorePdfText() {
+    fun getShareStorePdfText(authToken: String) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.getShareStorePdfTextServerCall(mServiceInterface)
+            mNetworkService.getShareStorePdfTextServerCall(authToken, mServiceInterface)
         }
     }
 

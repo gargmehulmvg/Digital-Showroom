@@ -1,7 +1,6 @@
 package com.digitaldukaan.services.networkservice
 
 import android.util.Log
-import com.digitaldukaan.models.request.StoreLogoRequest
 import com.digitaldukaan.network.RetrofitApi
 import com.digitaldukaan.services.serviceinterface.IMarketingServiceInterface
 
@@ -25,11 +24,10 @@ class MarketingNetworkService {
 
     suspend fun getShareStoreDataServerCall(
         authToken: String,
-        request: StoreLogoRequest,
         serviceInterface: IMarketingServiceInterface
     ) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.getShareStoreData(authToken, request)
+            val response = RetrofitApi().getServerCallObject()?.getShareStoreData(authToken)
             response?.let {
                 if (it.isSuccessful) {
                     it.body()?.let { responseBody -> serviceInterface.onAppShareDataResponse(responseBody) }
@@ -43,11 +41,10 @@ class MarketingNetworkService {
 
     suspend fun generateStorePdfServerCall(
         authToken: String,
-        request: StoreLogoRequest,
         serviceInterface: IMarketingServiceInterface
     ) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.generateStorePdf(authToken, request)
+            val response = RetrofitApi().getServerCallObject()?.generateStorePdf(authToken)
             response?.let {
                 if (it.isSuccessful) {
                     it.body()?.let { responseBody -> serviceInterface.onGenerateStorePdfResponse(responseBody) }
@@ -60,10 +57,11 @@ class MarketingNetworkService {
     }
 
     suspend fun getShareStorePdfTextServerCall(
+        authToken: String,
         serviceInterface: IMarketingServiceInterface
     ) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.getShareStorePdfText()
+            val response = RetrofitApi().getServerCallObject()?.getShareStorePdfText(authToken)
             response?.let {
                 if (it.isSuccessful) {
                     it.body()?.let { responseBody -> serviceInterface.onShareStorePdfDataResponse(responseBody) }

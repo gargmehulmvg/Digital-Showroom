@@ -63,13 +63,13 @@ interface Apis {
     suspend fun getMarketingCardsData(): Response<CommonApiResponse>
 
     @POST("api/dotk/template/shareStore")
-    suspend fun getShareStoreData(@Header("auth_token") authToken: String, @Body request: StoreLogoRequest): Response<AppShareDataResponse>
+    suspend fun getShareStoreData(@Header("auth_token") authToken: String): Response<AppShareDataResponse>
 
     @GET("api/dotk/template/shareStorePdfText")
-    suspend fun getShareStorePdfText(): Response<ShareStorePDFDataResponse>
+    suspend fun getShareStorePdfText(@Header("auth_token") authToken: String): Response<ShareStorePDFDataResponse>
 
     @POST("api/dotk/catalog/generateStorePdf")
-    suspend fun generateStorePdf(@Header("auth_token") authToken: String, @Body request: StoreLogoRequest): Response<ResponseBody>
+    suspend fun generateStorePdf(@Header("auth_token") authToken: String): Response<ResponseBody>
 
     @POST("api/dotk/settings/setDeliveryInfo")
     suspend fun updateDeliveryInfo(@Header("auth_token") authToken: String, @Body request: MoreControlsRequest): Response<CommonApiResponse>
