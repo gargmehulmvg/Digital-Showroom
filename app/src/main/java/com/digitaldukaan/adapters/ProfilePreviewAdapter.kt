@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.MainActivity
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
+import com.digitaldukaan.constants.StaticInstances
 import com.digitaldukaan.interfaces.IProfilePreviewItemClicked
 import com.digitaldukaan.models.response.ProfilePreviewSettingsKeyResponse
 import com.digitaldukaan.models.response.StoreBusinessResponse
@@ -57,24 +58,33 @@ class ProfilePreviewAdapter(
                     profilePreviewDataGroup.visibility = View.VISIBLE
                     addSettingKeyDataTextView.text = mValue
                 }
-                if (settingKeyItem.mAction == Constants.ACTION_STORE_LOCATION) {
-                    addSettingKeyDataTextView.setCompoundDrawablesWithIntrinsicBounds(
-                        R.drawable.ic_location_color,
-                        0,
-                        R.drawable.ic_edit,
-                        0
-                    )
-                } else if (settingKeyItem.mAction == Constants.ACTION_BUSINESS_TYPE) {
-                    profilePreviewBusinessTypeRecyclerView.visibility = View.VISIBLE
-                    val layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false).apply {
-                        reverseLayout = true
-                        stackFromEnd = true
+                when (settingKeyItem.mAction) {
+                    Constants.ACTION_STORE_LOCATION -> {
+                        addSettingKeyDataTextView.setCompoundDrawablesWithIntrinsicBounds(
+                            R.drawable.ic_location_color,
+                            0,
+                            R.drawable.ic_edit,
+                            0
+                        )
                     }
-                    profilePreviewBusinessTypeRecyclerView.layoutManager = layoutManager
-                    val profilePreviewBusinessTypeAdapter = ProfilePreviewBusinessTypeAdapter(mBusinessList)
-                    profilePreviewBusinessTypeRecyclerView.apply {
-                        adapter = profilePreviewBusinessTypeAdapter
-                        addItemDecoration(OverlapDecoration())
+                    Constants.ACTION_BUSINESS_TYPE -> {
+                        profilePreviewBusinessTypeRecyclerView.visibility = View.VISIBLE
+                        val layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false).apply {
+                            reverseLayout = true
+                            stackFromEnd = true
+                        }
+                        profilePreviewBusinessTypeRecyclerView.layoutManager = layoutManager
+                        val profilePreviewBusinessTypeAdapter = ProfilePreviewBusinessTypeAdapter(mBusinessList)
+                        profilePreviewBusinessTypeRecyclerView.apply {
+                            adapter = profilePreviewBusinessTypeAdapter
+                            addItemDecoration(OverlapDecoration())
+                        }
+                    }
+                    Constants.ACTION_BANK_ACCOUNT -> {
+                        StaticInstances.sBankDetails?.run {
+                            val bankStr = "${this.accountHolderName} \n" + "Account No. : ${this.accountNumber} \n" + "IFSC code : ${this.ifscCode}"
+                            addSettingKeyDataTextView.text = bankStr
+                        }
                     }
                 }
             }

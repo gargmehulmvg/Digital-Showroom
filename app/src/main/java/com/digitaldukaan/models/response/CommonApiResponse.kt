@@ -49,7 +49,10 @@ data class ProfileStaticTextResponse(
     @SerializedName("hint_bank_ifsc_code") var hint_bank_ifsc_code: String?,
     @SerializedName("hint_bank_registered_mobile_number") var hint_bank_registered_mobile_number: String?,
     @SerializedName("bank_save_changes") var hint_bank_save_changes: String?,
-    @SerializedName("error_empty_input") var error_empty_input: String?,
+    @SerializedName("error_mandatory_field") var error_mandatory_field: String?,
+    @SerializedName("error_invalid_mobile_number_field") var error_invalid_mobile_number: String?,
+    @SerializedName("error_invalid_account_number") var error_invalid_account_number: String?,
+    @SerializedName("error_both_account_number_verify_account_number_must_be_same") var error_both_account_number_verify_account_number_must_be_same: String?,
     @SerializedName("text_no") var mNoText: String?
 )
 

@@ -33,7 +33,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.android.synthetic.main.marketing_fragment.*
 import okhttp3.ResponseBody
 
-class MarketingFragment : BaseChildFragment(), IOnToolbarIconClick, IMarketingServiceInterface {
+class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingServiceInterface {
 
     companion object {
         private lateinit var service: MarketingService

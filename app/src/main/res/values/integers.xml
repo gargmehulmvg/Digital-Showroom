@@ -7,5 +7,6 @@
     <integer name="dukaan_name_length">300</integer>
     <integer name="amount_length">7</integer>
     <integer name="min_lines_two">2</integer>
+    <integer name="min_lines_three">3</integer>
     <integer name="pin_code_length">6</integer>
 </resources>

@@ -9,6 +9,7 @@ data class StoreResponse (
     @SerializedName("store_info") var storeInfo: UserStoreInfoResponse,
     @SerializedName("address") var storeAddress: UserAddressResponse,
     @SerializedName("owner") var storeOwner: StoreOwnerResponse?,
+    @SerializedName("bank_details") var bankDetails: BankDetailsResponse?,
     @SerializedName("store_businesses") var storeBusiness: ArrayList<StoreBusinessResponse>?,
     @SerializedName("services") var storeServices: StoreServicesResponse
 )

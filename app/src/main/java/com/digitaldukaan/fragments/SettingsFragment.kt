@@ -250,6 +250,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                 setupUIFromProfileResponse(response)
                 response?.mAccountStaticText?.run { mAppSettingsResponseStaticData = this }
                 response?.mStoreInfo?.storeServices?.run { mAppStoreServicesResponse = this }
+                response?.mStoreInfo?.bankDetails?.run { StaticInstances.sBankDetails = this }
             }
         }
     }

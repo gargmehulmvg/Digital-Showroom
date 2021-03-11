@@ -59,7 +59,7 @@ import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
 
 
-open class BaseFragment : Fragment(), ISearchImageItemClicked {
+open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
 
     protected lateinit var mContentView: View
     private var mProgressDialog: Dialog? = null

@@ -79,4 +79,7 @@ interface Apis {
 
     @GET("api/remoteOrder/getCompletedOrders")
     suspend fun getCompletedOrders(@Query("store_id") storeId: String, @Query("page") page: Int): Response<OrdersResponse>
+
+    @POST("api/dotk/settings/setBankDetails")
+    suspend fun setBankDetails(@Header("auth_token") authToken: String, @Body request: BankDetailsRequest): Response<CommonApiResponse>
 }
