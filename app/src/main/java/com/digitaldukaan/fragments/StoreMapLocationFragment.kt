@@ -7,7 +7,6 @@ import android.location.Geocoder
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -22,6 +21,7 @@ import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.StaticInstances
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.models.request.StoreAddressRequest
+import com.digitaldukaan.models.response.ProfileInfoResponse
 import com.digitaldukaan.models.response.ProfilePreviewSettingsKeyResponse
 import com.digitaldukaan.models.response.StoreAddressResponse
 import com.digitaldukaan.services.StoreAddressService
@@ -57,6 +57,7 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
     private lateinit var setLocationTextView: TextView
     private lateinit var stateTextView: TextView
     private var mCurrentMarker: Marker? = null
+    private var mProfileInfoResponse: ProfileInfoResponse? = null
 
     companion object {
 
@@ -65,12 +66,14 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
         fun newInstance(
             profilePreviewResponse: ProfilePreviewSettingsKeyResponse,
             position: Int,
-            isSingleStep: Boolean
+            isSingleStep: Boolean,
+            profileInfoResponse: ProfileInfoResponse?
         ): StoreMapLocationFragment {
             val fragment = StoreMapLocationFragment()
             fragment.mProfilePreviewResponse = profilePreviewResponse
             fragment.mPosition = position
             fragment.mIsSingleStep = isSingleStep
+            fragment.mProfileInfoResponse = profileInfoResponse
             return fragment
         }
     }
@@ -151,24 +154,23 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
                 )
             }
         }
-        pinCodeEditText.setText(StaticInstances.sStoreInfo?.mStoreAddress?.pinCode)
-        cityEditText.setText(StaticInstances.sStoreInfo?.mStoreAddress?.city)
-        completeAddressEditText.setText(StaticInstances.sStoreInfo?.mStoreAddress?.address1)
-        stateTextView.text = StaticInstances.sStoreInfo?.mStoreAddress?.state
+        mProfileInfoResponse?.mStoreItemResponse?.storeAddress?.run {
+            pinCodeEditText.setText(pinCode)
+            cityEditText.setText(city)
+            completeAddressEditText.setText(address1)
+            stateTextView.text = state
+        }
     }
 
     override fun onAlertDialogItemClicked(selectedStr: String?, id: Int, position: Int) {
-        showToast(selectedStr)
         stateTextView.text = selectedStr
     }
 
     private fun getCurrentLocationOfDevice() {
         if (ActivityCompat.checkSelfPermission(mActivity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
             ActivityCompat.checkSelfPermission(mActivity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                requestPermissions()
-                return
-            }
+            requestPermissions()
+            return
         }
         mGoogleApiClient?.lastLocation?.addOnCompleteListener { task ->
                 val location = task.result
@@ -185,13 +187,10 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
     private fun getLastLocation() {
         if (ActivityCompat.checkSelfPermission(mActivity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
             ActivityCompat.checkSelfPermission(mActivity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                requestPermissions()
-                return
-            }
+            requestPermissions()
+            return
         }
         val lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-        lastKnownLocation?.run { showToast("getLocation() Latitude: $latitude , Longitude: $longitude") }
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 1f, this)
         mGoogleApiClient?.lastLocation?.addOnCompleteListener(mActivity) { task ->
             if (task.isSuccessful && task.result != null) {
@@ -226,8 +225,8 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
                 }
             } else {
                 showToast("No location detected. Make sure location is enabled on the device.")
-                mCurrentLatitude = StaticInstances.sStoreInfo?.mStoreAddress?.latitude ?: 0.0
-                mCurrentLongitude = StaticInstances.sStoreInfo?.mStoreAddress?.longitude ?: 0.0
+                mCurrentLatitude = mProfileInfoResponse?.mStoreItemResponse?.storeAddress?.latitude ?: 0.0
+                mCurrentLongitude = mProfileInfoResponse?.mStoreItemResponse?.storeAddress?.longitude ?: 0.0
                 showCurrentLocationMarkers(mCurrentLatitude, mCurrentLongitude)
             }
         }
@@ -292,16 +291,27 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
     }
 
     override fun onLocationChanged(location: Location) {
-        showToast("onLocationChanged() Latitude: " + location.latitude + " , Longitude: " + location.longitude)
+        Log.d(TAG, "onLocationChanged() Latitude: " + location.latitude + " , Longitude: " + location.longitude)
     }
 
     override fun onStoreAddressResponse(response: StoreAddressResponse) {
         stopProgress()
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (response.mIsSuccessStatus) {
-                StaticInstances.sStoreInfo?.mStoreAddress = response.mUserAddressResponse
                 showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
-                mActivity.onBackPressed()
+                if (!mIsSingleStep) {
+                    StaticInstances.sStepsCompletedList?.run {
+                        for (completedItem in this) {
+                            if (completedItem.action == Constants.ACTION_LOCATION) {
+                                completedItem.isCompleted = true
+                                break
+                            }
+                        }
+                        switchToInCompleteProfileFragment(mProfileInfoResponse)
+                    }
+                } else {
+                    mActivity.onBackPressed()
+                }
             } else showToast(response.mMessage)
         }
     }

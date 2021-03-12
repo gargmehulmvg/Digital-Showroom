@@ -28,9 +28,9 @@
         android:layout_height="wrap_content"
         android:clickable="false"
         android:fontFamily="@font/montserrat"
-        android:padding="@dimen/_12sdp"
+        android:padding="@dimen/_11sdp"
         android:textColor="@color/black"
-        android:textSize="@dimen/_12sdp"
+        android:textSize="@dimen/_13sdp"
         app:layout_constraintStart_toEndOf="@id/settingImageView"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="@string/app_name" />

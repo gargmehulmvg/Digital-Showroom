@@ -46,7 +46,6 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
     companion object {
         fun newInstance(): SettingsFragment = SettingsFragment()
     }
-    //private val mAppSettingsStaticData = mStaticData.mStaticData.mSettingsStaticData
     private lateinit var mAppSettingsResponseStaticData: AccountStaticTextResponse
     private lateinit var mAppStoreServicesResponse: StoreServicesResponse
     private val mProfileService = ProfileService()
