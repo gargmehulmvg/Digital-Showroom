@@ -5,7 +5,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 data class OrdersResponse(
-    @SerializedName("next") var mIsNextDataAvailable: Boolean,
+    @SerializedName("next") var mIsNextDataAvailable: Boolean = false,
     @SerializedName("orders") var mOrdersList: ArrayList<OrderItemResponse>
 )
 

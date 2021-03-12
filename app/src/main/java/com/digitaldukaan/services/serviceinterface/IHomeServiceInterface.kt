@@ -10,7 +10,7 @@ interface IHomeServiceInterface {
 
     fun onUserAuthenticationResponse(authenticationUserResponse: ValidateOtpResponse)
 
-    fun onGetOrdersResponse(getOrderResponse: CommonApiResponse)
+    fun onPendingOrdersResponse(getOrderResponse: CommonApiResponse)
 
     fun onCompletedOrdersResponse(getOrderResponse: CommonApiResponse)
 

@@ -4,7 +4,6 @@ import android.app.Dialog
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -12,6 +11,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AbsListView
 import android.widget.EditText
 import android.widget.RadioButton
 import android.widget.RadioGroup
@@ -33,9 +33,6 @@ import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration
 import kotlinx.android.synthetic.main.home_fragment.*
 import kotlinx.android.synthetic.main.layout_analytics.*
 import kotlinx.android.synthetic.main.otp_verification_fragment.*
-import java.util.*
-import java.util.stream.Collectors
-import kotlin.collections.ArrayList
 
 class HomeFragment : BaseFragment(), IHomeServiceInterface,
     SwipeRefreshLayout.OnRefreshListener {
@@ -120,12 +117,16 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         }
     }
 
-    override fun onGetOrdersResponse(getOrderResponse: CommonApiResponse) {
+    private var mIsMorePendingOrderAvailable = false
+    private var mIsMoreCompletedOrderAvailable = false
+
+    override fun onPendingOrdersResponse(getOrderResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
             if (swipeRefreshLayout.isRefreshing) swipeRefreshLayout.isRefreshing = false
             if (getOrderResponse.mIsSuccessStatus) {
                 val ordersResponse = Gson().fromJson<OrdersResponse>(getOrderResponse.mCommonDataStr, OrdersResponse::class.java)
-                stopProgress()
+                mIsMorePendingOrderAvailable = ordersResponse.mIsNextDataAvailable
                 if (ordersResponse.mOrdersList.isEmpty()) {
                     homePageWebViewLayout.visibility = View.VISIBLE
                     orderLayout.visibility = View.GONE
@@ -134,8 +135,10 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                     homePageWebViewLayout.visibility = View.GONE
                     orderLayout.visibility = View.VISIBLE
                     swipeRefreshLayout.isEnabled = true
-                    showOrderDataOnRecyclerView(ordersResponse, ordersRecyclerView)
-                    //if (!ordersResponse.mIsNextDataAvailable) fetchLatestOrders(Constants.MODE_COMPLETED, "")
+                    if (pendingPageCount == 1) mOrderList.clear()
+                    mOrderList.addAll(ordersResponse.mOrdersList)
+                    convertDateStringOfOrders(mOrderList)
+                    orderAdapter.notifyDataSetChanged()
                 }
             }
         }
@@ -153,43 +156,27 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         }
     }
 
-    private fun showOrderDataOnRecyclerView(getOrderResponse: OrdersResponse, recyclerView: RecyclerView) {
-        val list = getOrderResponse.mOrdersList
-        val updatedOrdersList = ArrayList<OrderItemResponse>()
-        val updatedOrdersHeaderList = ArrayList<OrderItemResponse>()
-        convertDateStringOfOrders(list)
-        val groupMap: HashMap<Date?, ArrayList<OrderItemResponse>?>? =
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                list.stream().collect(Collectors.groupingBy(OrderItemResponse::updatedDate)) as HashMap<Date?, ArrayList<OrderItemResponse>?>
-            } else null
-        groupMap?.run {
-            this.forEach { (key, value) ->
-                val headerItem = OrderItemResponse()
-                headerItem.updatedDate = key
-                headerItem.viewType = Constants.VIEW_TYPE_HEADER
-                updatedOrdersList.add(headerItem)
-                updatedOrdersHeaderList.add(headerItem)
-                value?.forEachIndexed { _, itemResponse ->
-                    itemResponse.viewType = Constants.VIEW_TYPE_ITEM
-                    updatedOrdersList.add(itemResponse)
-                }
-            }
-            recyclerView.apply {
-                val orderAdapter = OrderAdapterV2(mActivity ,updatedOrdersList, updatedOrdersHeaderList)
-                showToast(list.size.toString())
-                layoutManager = LinearLayoutManager(mActivity)
-                adapter = orderAdapter
-                addItemDecoration(StickyRecyclerHeadersDecoration(orderAdapter))
-                //addItemDecoration(StickHeaderItemDecoration(orderAdapter))
-            }
-        }
-    }
+    private var mIsRecyclerViewScrolling = false
+    private lateinit var orderAdapter: OrderAdapterV2
+    private lateinit var linearLayoutManager: LinearLayoutManager
+    private var mOrderList: ArrayList<OrderItemResponse> = ArrayList()
+    private var currentItems = 0
+    private var totalItems = 0
+    private var scrollOutItems = 0
+    private var pendingPageCount = 1
+    private var completedPageCount = 1
 
     override fun onCompletedOrdersResponse(getOrderResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            if (swipeRefreshLayout.isRefreshing) swipeRefreshLayout.isRefreshing = false
             if (getOrderResponse.mIsSuccessStatus) {
                 val ordersResponse = Gson().fromJson<OrdersResponse>(getOrderResponse.mCommonDataStr, OrdersResponse::class.java)
-                //showOrderDataOnRecyclerView(ordersResponse, completedOrdersRecyclerView)
+                mIsMoreCompletedOrderAvailable = ordersResponse.mIsNextDataAvailable
+                if (ordersResponse?.mOrdersList?.isNotEmpty() == true) {
+                    mOrderList.addAll(ordersResponse.mOrdersList)
+                    orderAdapter.notifyDataSetChanged()
+                }
             }
         }
     }
@@ -231,7 +218,38 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                     } else {
                         homePageWebViewLayout.visibility = View.GONE
                         orderLayout.visibility = View.VISIBLE
-                        fetchLatestOrders(Constants.MODE_PENDING, mFetchingOrdersStr)
+                        fetchLatestOrders(Constants.MODE_PENDING, mFetchingOrdersStr, pendingPageCount)
+                        ordersRecyclerView.apply {
+                            orderAdapter = OrderAdapterV2(mActivity, mOrderList)
+                            linearLayoutManager = LinearLayoutManager(mActivity)
+                            layoutManager = linearLayoutManager
+                            adapter = orderAdapter
+                            addItemDecoration(StickyRecyclerHeadersDecoration(orderAdapter))
+                            addOnScrollListener(object : RecyclerView.OnScrollListener() {
+
+                                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                                    super.onScrollStateChanged(recyclerView, newState)
+                                    if (AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL == newState) mIsRecyclerViewScrolling = true
+                                }
+
+                                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                                    super.onScrolled(recyclerView, dx, dy)
+                                    currentItems = linearLayoutManager.childCount
+                                    totalItems = orderAdapter.itemCount
+                                    scrollOutItems = linearLayoutManager.findFirstVisibleItemPosition()
+                                    if (mIsRecyclerViewScrolling && (currentItems + scrollOutItems == totalItems)) {
+                                        mIsRecyclerViewScrolling = false
+                                        if (mIsMorePendingOrderAvailable) {
+                                            pendingPageCount++
+                                            fetchLatestOrders(Constants.MODE_PENDING, mFetchingOrdersStr, pendingPageCount)
+                                        } else if (completedPageCount == 1) {
+                                            fetchLatestOrders(Constants.MODE_COMPLETED, mFetchingOrdersStr, completedPageCount)
+                                            completedPageCount++
+                                        }
+                                    }
+                                }
+                            })
+                        }
                     }
                     if (mIsHelpOrder.mIsActive) {
                         helpImageView.visibility = View.VISIBLE
@@ -277,7 +295,9 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
     }
 
     override fun onRefresh() {
-        fetchLatestOrders(Constants.MODE_PENDING, mFetchingOrdersStr)
+        completedPageCount = 1
+        pendingPageCount = 1
+        fetchLatestOrders(Constants.MODE_PENDING, mFetchingOrdersStr, pendingPageCount)
     }
 
     override fun onRequestPermissionsResult(

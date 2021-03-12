@@ -20,8 +20,7 @@ import java.util.*
 
 class OrderAdapterV2(
     private var mContext: Context,
-    private var mOrderList: ArrayList<OrderItemResponse>?,
-    private var mOrderHeadersList: ArrayList<OrderItemResponse>?
+    private var mOrderList: ArrayList<OrderItemResponse>?
 ) : RecyclerView.Adapter<OrderAdapterV2.OrderViewHolder>(), StickyRecyclerHeadersAdapter<OrderAdapterV2.HeaderViewHolder> {
 
     private val mOrderListStaticData = BaseFragment.mStaticData.mStaticData.mOrderListStaticData
@@ -32,6 +31,7 @@ class OrderAdapterV2(
 
     inner class OrderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val orderCheckBox: CheckBox = itemView.findViewById(R.id.orderCheckBox)
+        val orderItemContainer: View = itemView.findViewById(R.id.orderItemContainer)
         val orderAddressTextView: TextView = itemView.findViewById(R.id.orderAddressTextView)
         val orderDetailsTextView: TextView = itemView.findViewById(R.id.orderDetailsTextView)
         val orderStatusTextView: TextView = itemView.findViewById(R.id.orderStatusTextView)
@@ -53,7 +53,7 @@ class OrderAdapterV2(
             orderDetailsTextView.text = "#${item?.orderId} | ${getNameFromContactList(item?.phone) ?: item?.phone}"
             orderTimeTextView.text = getTimeFromOrderString(item?.updatedCompleteDate)
             orderAddressTextView.text = getAddress(item)
-            getOrderStatus(item, orderStatusTextView)
+            getOrderStatus(item, orderStatusTextView, orderItemContainer)
         }
     }
 
@@ -74,7 +74,15 @@ class OrderAdapterV2(
         }
     }
 
-    private fun getOrderStatus(item: OrderItemResponse?, orderAddressTextView: TextView) {
+    override fun getItemId(position: Int): Long {
+        return position.toLong()
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return position
+    }
+
+    private fun getOrderStatus(item: OrderItemResponse?, orderAddressTextView: TextView, orderItemContainer: View) {
         when (item?.displayStatus) {
             Constants.DS_NEW -> {
                 orderAddressTextView.text = mOrderListStaticData.newText
@@ -90,6 +98,15 @@ class OrderAdapterV2(
                 orderAddressTextView.setTextColor(mContext.getColor(R.color.snack_bar_background))
                 orderAddressTextView.background = ContextCompat.getDrawable(mContext, R.drawable.order_adapter_bill_sent)
                 orderAddressTextView.text = mOrderListStaticData.sendBillText
+            }
+            Constants.DS_COMPLETED_CASH -> {
+                orderItemContainer.alpha = 0.2f
+            }
+            Constants.DS_COMPLETED_ONLINE -> {
+                orderItemContainer.alpha = 0.2f
+            }
+            Constants.DS_REJECTED -> {
+                orderItemContainer.alpha = 0.2f
             }
             else -> {}
         }

@@ -21,7 +21,7 @@ class HomeNetworkService {
             response?.let {
                 if (it.isSuccessful) {
                     it.body()?.let { commonApiResponse ->
-                        if (request.orderMode == Constants.MODE_PENDING) serviceInterface.onGetOrdersResponse(commonApiResponse)
+                        if (request.orderMode == Constants.MODE_PENDING) serviceInterface.onPendingOrdersResponse(commonApiResponse)
                         else serviceInterface.onCompletedOrdersResponse(commonApiResponse)
                     }
                 } else {
