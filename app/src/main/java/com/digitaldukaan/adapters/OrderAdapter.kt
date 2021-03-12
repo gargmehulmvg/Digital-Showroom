@@ -47,11 +47,16 @@ class OrderAdapter(
                 Constants.DS_NEW -> {
                     orderAddressTextView.text = mOrderListStaticData.newText
                     orderAddressTextView.setTextColor(mContext.getColor(R.color.open_green))
-                    orderAddressTextView.background = ContextCompat.getDrawable(mContext, R.drawable.curve_green_border)
+                    orderAddressTextView.background = ContextCompat.getDrawable(mContext, R.drawable.order_adapter_new)
                 }
                 Constants.DS_SEND_BILL -> {
                     orderAddressTextView.setTextColor(mContext.getColor(R.color.orange))
-                    orderAddressTextView.background = ContextCompat.getDrawable(mContext, R.drawable.curve_orange_border)
+                    orderAddressTextView.background = ContextCompat.getDrawable(mContext, R.drawable.order_adapter_send_bill)
+                    orderAddressTextView.text = mOrderListStaticData.sendBillText
+                }
+                Constants.DS_BILL_SENT -> {
+                    orderAddressTextView.setTextColor(mContext.getColor(R.color.snack_bar_background))
+                    orderAddressTextView.background = ContextCompat.getDrawable(mContext, R.drawable.order_adapter_bill_sent)
                     orderAddressTextView.text = mOrderListStaticData.sendBillText
                 }
                 else -> {}

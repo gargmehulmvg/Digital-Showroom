@@ -73,9 +73,6 @@ interface Apis {
     @POST("api/dotk/settings/setDeliveryInfo")
     suspend fun updateDeliveryInfo(@Header("auth_token") authToken: String, @Body request: MoreControlsRequest): Response<CommonApiResponse>
 
-    @GET("api/remoteOrder/getPendingOrders")
-    suspend fun getPendingOrders(@Query("store_id") storeId: String, @Query("page") page: Int): Response<OrdersResponse>
-
     @GET("api/remoteOrder/getCompletedOrders")
     suspend fun getCompletedOrders(@Query("store_id") storeId: String, @Query("page") page: Int): Response<OrdersResponse>
 
@@ -88,6 +85,6 @@ interface Apis {
     @GET("api/dotk/orders/getOrdersPageInfo")
     suspend fun getOrderPageInfo(@Header("auth_token") authToken: String) : Response<CommonApiResponse>
 
-    @POST("api/remoteOrder/getOrdersList")
+    @POST("api/dotk/orders/getOrderList")
     suspend fun getOrdersList(@Header("auth_token") authToken: String, @Body request: OrdersRequest): Response<CommonApiResponse>
 }

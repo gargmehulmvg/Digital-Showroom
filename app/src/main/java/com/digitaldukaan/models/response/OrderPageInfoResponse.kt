@@ -30,6 +30,14 @@ data class HomePageBannerResponse(
 )
 
 data class HomePageStaticTextResponse(
+    @SerializedName("new") var newText: String?,
+    @SerializedName("text_send_bill") var sendBillText: String?, //send_bill_text
+    @SerializedName("text_sent_bill") var sentBillText: String?,
+    @SerializedName("text_payment_pending") var paymentPending: String?,
+    @SerializedName("text_paid_online") var paidOnline: String?,
+    @SerializedName("text_self_billed") var selfBilled: String?, // self_billed_text
+    @SerializedName("text_pickup_order") var pickUpOrder: String?, // pickup_order_text
+
     @SerializedName("msg_double_click_to_exit") var msg_double_click_to_exit: String,
     @SerializedName("fetching_orders")          var fetching_orders: String,
     @SerializedName("heading_order_page")       var heading_order_page: String,

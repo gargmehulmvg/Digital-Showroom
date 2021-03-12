@@ -135,7 +135,6 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                 if (ordersResponse.mOrdersList.isEmpty()) {
                     homePageWebViewLayout.visibility = View.VISIBLE
                     orderLayout.visibility = View.GONE
-                    //setupHomePageWebView()
                     swipeRefreshLayout.isEnabled = false
                 } else {
                     homePageWebViewLayout.visibility = View.GONE
@@ -238,7 +237,10 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                     analyticsImageView.visibility = if (mIsAnalyticsOrder) View.VISIBLE else View.GONE
                     searchImageView.visibility = if (mIsSearchOrder) View.VISIBLE else View.GONE
                 }
-                mDoubleClickToExitStr = orderPageInfoResponse?.mHomePageStaticText?.msg_double_click_to_exit
+                orderPageInfoResponse?.mHomePageStaticText?.run {
+                    mDoubleClickToExitStr = msg_double_click_to_exit
+                    appTitleTextView.text = heading_order_page
+                }
             }
         }
     }

@@ -2,6 +2,7 @@ package com.digitaldukaan.models.response
 
 import com.google.gson.annotations.SerializedName
 import java.util.*
+import kotlin.collections.ArrayList
 
 data class OrdersResponse(
     @SerializedName("next") var mIsNextDataAvailable: Boolean,
@@ -9,14 +10,14 @@ data class OrdersResponse(
 )
 
 class OrderItemResponse {
-    @SerializedName("items") var items: String = ""
+    @SerializedName("items") var items: ArrayList<Any> = ArrayList()
     @SerializedName("store_id") var storeId: Int = 0
     @SerializedName("order_id") var orderId: Int = 0
     @SerializedName("merchant_id") var merchantId: Int = 0
     @SerializedName("order_type") var orderType: Int = 0
-    @SerializedName("amount") var amount: Int = 0
-    @SerializedName("discount") var discount: Int = 0
-    @SerializedName("pay_amount") var payAmount: Int = 0
+    @SerializedName("amount") var amount: Double = 0.0
+    @SerializedName("discount") var discount: Double = 0.0
+    @SerializedName("pay_amount") var payAmount: Double = 0.0
     @SerializedName("status") var status: Int = 0
     @SerializedName("payment_status") var paymentStatus: Int = 0
     @SerializedName("display_status") var displayStatus: String = ""
