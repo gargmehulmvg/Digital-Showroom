@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
+    android:paddingTop="@dimen/_10sdp"
     android:paddingStart="@dimen/_15sdp"
     android:paddingEnd="@dimen/_15sdp">
 
@@ -21,8 +22,10 @@
         android:id="@+id/orderItemContainer"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:onClick="onClick"
         android:background="?selectableItemBackground"
+        android:layout_marginBottom="@dimen/_5sdp"
+        android:onClick="onClick"
+        app:layout_constraintBottom_toTopOf="@+id/view5"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/orderCheckBox"
         app:layout_constraintTop_toTopOf="parent">
@@ -31,10 +34,10 @@
             android:id="@+id/orderAddressTextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textColor="@color/black"
-            android:fontFamily="sans-serif-medium"
             android:clickable="false"
-            android:textSize="@dimen/_12sdp"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_13sdp"
             app:layout_constraintEnd_toStartOf="@+id/orderTimeTextView"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -45,6 +48,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:clickable="false"
+            android:maxLines="1"
             android:fontFamily="@font/montserrat"
             android:paddingTop="@dimen/_5sdp"
             android:paddingBottom="@dimen/_2sdp"
@@ -58,10 +62,10 @@
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/orderStatusTextView"
             android:layout_width="wrap_content"
-            android:clickable="false"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/_10sdp"
+            android:clickable="false"
             android:textColor="@color/default_text_light_grey"
+            android:textSize="@dimen/_10sdp"
             app:layout_constraintBaseline_toBaselineOf="@+id/orderDetailsTextView"
             app:layout_constraintEnd_toEndOf="@+id/orderTimeTextView"
             tools:text="@string/app_name" />
@@ -69,8 +73,8 @@
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/orderTimeTextView"
             android:layout_width="wrap_content"
-            android:clickable="false"
             android:layout_height="wrap_content"
+            android:clickable="false"
             android:fontFamily="@font/montserrat_bold"
             android:textColor="@color/default_text_light_grey"
             android:textSize="@dimen/_9sdp"
@@ -89,5 +93,15 @@
             app:layout_constraintTop_toBottomOf="@+id/orderDetailsTextView" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    <View
+        android:id="@+id/view5"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/_1sdp"
+        android:background="@color/curve_grey_border"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/orderItemContainer"
+        app:layout_constraintStart_toEndOf="@+id/orderCheckBox" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
