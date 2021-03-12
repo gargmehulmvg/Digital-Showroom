@@ -29,10 +29,10 @@ class SetDeliveryChargeFragment : BaseFragment(), IMoreControlsServiceInterface 
             fragment.mAppStoreServicesResponse = appStoreServicesResponse
             return fragment
         }
-        public const val UNKNOWN_DELIVERY_CHARGE = 0
-        public const val FREE_DELIVERY = 1
-        public const val FIXED_DELIVERY_CHARGE = 2
-        public const val CUSTOM_DELIVERY_CHARGE = 3
+        const val UNKNOWN_DELIVERY_CHARGE = 0
+        const val FREE_DELIVERY = 1
+        const val FIXED_DELIVERY_CHARGE = 2
+        const val CUSTOM_DELIVERY_CHARGE = 3
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -120,8 +120,8 @@ class SetDeliveryChargeFragment : BaseFragment(), IMoreControlsServiceInterface 
                 val mMoreControlRequest = MoreControlsRequest(0, 0.0, 0.0, 0.0)
                 if (freeDeliveryRadioButton.isChecked) {
                     mMoreControlRequest.deliveryChargeType = FREE_DELIVERY
-                    mMoreControlRequest.deliveryPrice = mAppStoreServicesResponse.mDeliveryPrice ?: 0.0
-                    mMoreControlRequest.freeDeliveryAbove = mAppStoreServicesResponse.mFreeDeliveryAbove ?: 0.0
+                    mMoreControlRequest.deliveryPrice = 0.0
+                    mMoreControlRequest.freeDeliveryAbove = 0.0
                     mMoreControlRequest.minOrderValue = mAppStoreServicesResponse.mMinOrderValue ?: 0.0
                 }
                 if (fixedDeliveryRadioButton.isChecked) {
