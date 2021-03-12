@@ -13,9 +13,6 @@ interface Apis {
     @POST("api/dotk/merchant/login")
     suspend fun validateOTP(@Body request: ValidateOtpRequest) : Response<ValidateOtpResponse>
 
-    @POST("api/dotk/merchant/authenticate")
-    suspend fun authenticateUser(@Body request: AuthenticateUserRequest) : Response<ValidateOtpResponse>
-
     @GET("api/dotk/template/getAppStaticText")
     suspend fun getAppStaticText(@Query("lanuageId") languageId:String) : Response<StaticTextResponse>
 
@@ -72,9 +69,6 @@ interface Apis {
 
     @POST("api/dotk/settings/setDeliveryInfo")
     suspend fun updateDeliveryInfo(@Header("auth_token") authToken: String, @Body request: MoreControlsRequest): Response<CommonApiResponse>
-
-    @GET("api/remoteOrder/getCompletedOrders")
-    suspend fun getCompletedOrders(@Query("store_id") storeId: String, @Query("page") page: Int): Response<OrdersResponse>
 
     @POST("api/dotk/settings/setBankDetails")
     suspend fun setBankDetails(@Header("auth_token") authToken: String, @Body request: BankDetailsRequest): Response<CommonApiResponse>

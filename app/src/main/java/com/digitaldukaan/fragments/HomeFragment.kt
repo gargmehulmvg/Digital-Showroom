@@ -46,6 +46,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         private var mIsDoublePressToExit = false
         private lateinit var mHomeFragmentService: HomeFragmentService
         private var mDoubleClickToExitStr:String? = ""
+        private var mFetchingOrdersStr:String? = ""
         fun newInstance(): HomeFragment {
             return HomeFragment()
         }
@@ -63,10 +64,11 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         savedInstanceState: Bundle?
     ): View? {
         mContentView = inflater.inflate(R.layout.home_fragment, container, false)
-        if (!askContactPermission()) if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else fetchLatestOrders()
-        showProgressDialog(mActivity)
-        mHomeFragmentService.getAnalyticsData(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
-        mHomeFragmentService.getOrderPageInfo(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
+        if (!askContactPermission()) if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else {
+            showProgressDialog(mActivity)
+            mHomeFragmentService.getOrderPageInfo(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
+            mHomeFragmentService.getAnalyticsData(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
+        }
         return mContentView
     }
 
@@ -79,17 +81,9 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         pendingOrderTextView.text = mOrderListStaticData.pendingText
     }
 
-    private fun fetchLatestOrders() {
-        //showProgressDialog(mActivity, getString(R.string.authenticating_user))
-        //mHomeFragmentService.verifyUserAuthentication(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
-        //mHomeFragmentService.getOrders(getStringDataFromSharedPref(Constants.STORE_ID), 1)
-        //mHomeFragmentService.getOrders("4252", 1)
-        //mHomeFragmentService.getCompletedOrders("4252", 1)
-    }
-
-    private fun fetchLatestOrders(mode: String, fetchingOrderStr: String?) {
-        showProgressDialog(mActivity, fetchingOrderStr)
-        val request = OrdersRequest(mode, 1)
+    private fun fetchLatestOrders(mode: String, fetchingOrderStr: String?, page:Int = 1) {
+        if (fetchingOrderStr?.isNotEmpty() == true) showProgressDialog(mActivity, fetchingOrderStr)
+        val request = OrdersRequest(mode, page)
         mHomeFragmentService.getOrders(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
     }
 
@@ -128,9 +122,9 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
 
     override fun onGetOrdersResponse(getOrderResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
+            if (swipeRefreshLayout.isRefreshing) swipeRefreshLayout.isRefreshing = false
             if (getOrderResponse.mIsSuccessStatus) {
                 val ordersResponse = Gson().fromJson<OrdersResponse>(getOrderResponse.mCommonDataStr, OrdersResponse::class.java)
-                if (swipeRefreshLayout.isRefreshing) swipeRefreshLayout.isRefreshing = false
                 stopProgress()
                 if (ordersResponse.mOrdersList.isEmpty()) {
                     homePageWebViewLayout.visibility = View.VISIBLE
@@ -141,6 +135,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                     orderLayout.visibility = View.VISIBLE
                     swipeRefreshLayout.isEnabled = true
                     showOrderDataOnRecyclerView(ordersResponse, ordersRecyclerView)
+                    if (!ordersResponse.mIsNextDataAvailable) fetchLatestOrders(Constants.MODE_COMPLETED, "")
                 }
             }
         }
@@ -189,10 +184,12 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         }
     }
 
-    override fun onCompletedOrdersResponse(getOrderResponse: OrdersResponse) {
+    override fun onCompletedOrdersResponse(getOrderResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            if (swipeRefreshLayout.isRefreshing) swipeRefreshLayout.isRefreshing = false
-            showOrderDataOnRecyclerView(getOrderResponse, completedOrdersRecyclerView)
+            if (getOrderResponse.mIsSuccessStatus) {
+                val ordersResponse = Gson().fromJson<OrdersResponse>(getOrderResponse.mCommonDataStr, OrdersResponse::class.java)
+                showOrderDataOnRecyclerView(ordersResponse, completedOrdersRecyclerView)
+            }
         }
     }
 
@@ -221,6 +218,11 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
             if (commonResponse.mIsSuccessStatus) {
                 val orderPageInfoResponse = Gson().fromJson<OrderPageInfoResponse>(commonResponse.mCommonDataStr, OrderPageInfoResponse::class.java)
                 orderPageInfoResponse?.run {
+                    mHomePageStaticText?.run {
+                        mFetchingOrdersStr = fetching_orders
+                        mDoubleClickToExitStr = msg_double_click_to_exit
+                        appTitleTextView.text = heading_order_page
+                    }
                     if (mIsZeroOrder.mIsActive) {
                         homePageWebViewLayout.visibility = View.VISIBLE
                         orderLayout.visibility = View.GONE
@@ -228,7 +230,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                     } else {
                         homePageWebViewLayout.visibility = View.GONE
                         orderLayout.visibility = View.VISIBLE
-                        fetchLatestOrders(Constants.MODE_PENDING, mHomePageStaticText?.fetching_orders)
+                        fetchLatestOrders(Constants.MODE_PENDING, mFetchingOrdersStr)
                     }
                     if (mIsHelpOrder.mIsActive) {
                         helpImageView.visibility = View.VISIBLE
@@ -236,10 +238,6 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                     }
                     analyticsImageView.visibility = if (mIsAnalyticsOrder) View.VISIBLE else View.GONE
                     searchImageView.visibility = if (mIsSearchOrder) View.VISIBLE else View.GONE
-                }
-                orderPageInfoResponse?.mHomePageStaticText?.run {
-                    mDoubleClickToExitStr = msg_double_click_to_exit
-                    appTitleTextView.text = heading_order_page
                 }
             }
         }
@@ -253,7 +251,10 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
     }
 
     override fun onHomePageException(e: Exception) {
-        exceptionHandlingForAPIResponse(e)
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            if (swipeRefreshLayout.isRefreshing) swipeRefreshLayout.isRefreshing = false
+            exceptionHandlingForAPIResponse(e)
+        }
     }
 
     private fun saveUserDetailsInPref(validateOtpResponse: ValidateOtpResponse) {
@@ -275,7 +276,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
     }
 
     override fun onRefresh() {
-        fetchLatestOrders()
+        fetchLatestOrders(Constants.MODE_PENDING, mFetchingOrdersStr)
     }
 
     override fun onRequestPermissionsResult(
@@ -290,7 +291,11 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                     CoroutineScopeUtils().runTaskOnCoroutineBackground {
                         getContactsFromStorage2(mActivity)
                     }
-                    if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else fetchLatestOrders()
+                    if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else {
+                        showProgressDialog(mActivity)
+                        mHomeFragmentService.getOrderPageInfo(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
+                        mHomeFragmentService.getAnalyticsData(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
+                    }
                 }
                 else -> showShortSnackBar("Permission was denied")
             }

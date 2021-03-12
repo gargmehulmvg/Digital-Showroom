@@ -15,21 +15,9 @@ class HomeFragmentService {
         mServiceInterface = listener
     }
 
-    fun verifyUserAuthentication(authToken: String) {
-        CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.authenticateUserServerCall(authToken, mServiceInterface)
-        }
-    }
-
     fun getOrders(authToken: String, request: OrdersRequest) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
             mNetworkService.getOrdersServerCall(authToken , request, mServiceInterface)
-        }
-    }
-
-    fun getCompletedOrders(storeId: String, page: Int) {
-        CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.getCompletedOrdersServerCall(storeId , page, mServiceInterface)
         }
     }
 

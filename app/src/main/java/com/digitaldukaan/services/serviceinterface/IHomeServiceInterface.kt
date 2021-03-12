@@ -1,7 +1,6 @@
 package com.digitaldukaan.services.serviceinterface
 
 import com.digitaldukaan.models.response.CommonApiResponse
-import com.digitaldukaan.models.response.OrdersResponse
 import com.digitaldukaan.models.response.ValidateOtpErrorResponse
 import com.digitaldukaan.models.response.ValidateOtpResponse
 
@@ -11,10 +10,9 @@ interface IHomeServiceInterface {
 
     fun onUserAuthenticationResponse(authenticationUserResponse: ValidateOtpResponse)
 
-    //fun onGetOrdersResponse(getOrderResponse: OrdersResponse)
     fun onGetOrdersResponse(getOrderResponse: CommonApiResponse)
 
-    fun onCompletedOrdersResponse(getOrderResponse: OrdersResponse)
+    fun onCompletedOrdersResponse(getOrderResponse: CommonApiResponse)
 
     fun onAnalyticsDataResponse(commonResponse: CommonApiResponse)
 
