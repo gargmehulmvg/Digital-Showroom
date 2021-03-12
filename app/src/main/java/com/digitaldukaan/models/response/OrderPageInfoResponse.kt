@@ -5,10 +5,10 @@ import com.google.gson.annotations.SerializedName
 data class OrderPageInfoResponse(
     @SerializedName("zero_order")               var mIsZeroOrder: ZeroOrderPageResponse,
     @SerializedName("is_take_order_on")         var mIsTakeOrder: Boolean,
-    @SerializedName("is_search_order")          var mIsSearchOrder: Boolean,
+    @SerializedName("is_search_on")             var mIsSearchOrder: Boolean,
     @SerializedName("help_page")                var mIsHelpOrder: HelpPageResponse,
     @SerializedName("banners")                  var mBannerList: ArrayList<HomePageBannerResponse>,
-    @SerializedName("is_analytics_order")       var mIsAnalyticsOrder: Boolean,
+    @SerializedName("is_analytics")             var mIsAnalyticsOrder: Boolean,
     @SerializedName("completed_order_count")    var mCompletedOrderCount: Int,
     @SerializedName("pending_order_count")      var mPendingOrderCount: Int,
     @SerializedName("static_text")              var mHomePageStaticText: HomePageStaticTextResponse?
@@ -30,6 +30,7 @@ data class HomePageBannerResponse(
 )
 
 data class HomePageStaticTextResponse(
+    @SerializedName("msg_double_click_to_exit") var msg_double_click_to_exit: String,
     @SerializedName("fetching_orders")          var fetching_orders: String,
     @SerializedName("heading_order_page")       var heading_order_page: String,
     @SerializedName("text_pending")             var text_pending: String,

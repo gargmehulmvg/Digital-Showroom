@@ -4,9 +4,7 @@ import com.google.gson.annotations.SerializedName
 import java.util.*
 
 data class OrdersResponse(
-    @SerializedName("status") var mIsSuccessStatus: Boolean,
     @SerializedName("next") var mIsNextDataAvailable: Boolean,
-    @SerializedName("message") var mMessage: String?,
     @SerializedName("orders") var mOrdersList: ArrayList<OrderItemResponse>
 )
 

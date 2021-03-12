@@ -30,7 +30,6 @@ import com.digitaldukaan.services.serviceinterface.IHomeServiceInterface
 import com.digitaldukaan.views.StickHeaderItemDecoration
 import com.google.android.material.textfield.TextInputLayout
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.home_fragment.*
 import kotlinx.android.synthetic.main.layout_analytics.*
 import kotlinx.android.synthetic.main.otp_verification_fragment.*
@@ -46,7 +45,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         private val mOrderListStaticData = mStaticData.mStaticData.mOrderListStaticData
         private var mIsDoublePressToExit = false
         private lateinit var mHomeFragmentService: HomeFragmentService
-
+        private var mDoubleClickToExitStr:String? = ""
         fun newInstance(): HomeFragment {
             return HomeFragment()
         }
@@ -88,7 +87,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         //mHomeFragmentService.getCompletedOrders("4252", 1)
     }
 
-    private fun fetchLatestOrders(mode: String, fetchingOrderStr: String) {
+    private fun fetchLatestOrders(mode: String, fetchingOrderStr: String?) {
         showProgressDialog(mActivity, fetchingOrderStr)
         val request = OrdersRequest(mode, 1)
         mHomeFragmentService.getOrders(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
@@ -110,7 +109,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
 
     override fun onBackPressed(): Boolean {
         if (mIsDoublePressToExit) mActivity.finish()
-        showShortSnackBar(getString(R.string.msg_back_press))
+        showShortSnackBar(if (mDoubleClickToExitStr?.isNotEmpty() == true) mDoubleClickToExitStr else getString(R.string.msg_back_press))
         mIsDoublePressToExit = true
         Handler(Looper.getMainLooper()).postDelayed(
             { mIsDoublePressToExit = false },
@@ -130,11 +129,10 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
     override fun onGetOrdersResponse(getOrderResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (getOrderResponse.mIsSuccessStatus) {
-                val listType = object : TypeToken<List<OrderItemResponse>>() {}.type
-                val ordersList = Gson().fromJson<ArrayList<OrderItemResponse>>(getOrderResponse.mCommonDataStr, listType)
+                val ordersResponse = Gson().fromJson<OrdersResponse>(getOrderResponse.mCommonDataStr, OrdersResponse::class.java)
                 if (swipeRefreshLayout.isRefreshing) swipeRefreshLayout.isRefreshing = false
                 stopProgress()
-                if (ordersList.isEmpty()) {
+                if (ordersResponse.mOrdersList.isEmpty()) {
                     homePageWebViewLayout.visibility = View.VISIBLE
                     orderLayout.visibility = View.GONE
                     //setupHomePageWebView()
@@ -143,7 +141,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                     homePageWebViewLayout.visibility = View.GONE
                     orderLayout.visibility = View.VISIBLE
                     swipeRefreshLayout.isEnabled = true
-                    //showOrderDataOnRecyclerView(getOrderResponse, ordersRecyclerView)
+                    showOrderDataOnRecyclerView(ordersResponse, ordersRecyclerView)
                 }
             }
         }
@@ -231,7 +229,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                     } else {
                         homePageWebViewLayout.visibility = View.GONE
                         orderLayout.visibility = View.VISIBLE
-                        fetchLatestOrders(Constants.MODE_PENDING, "")
+                        fetchLatestOrders(Constants.MODE_PENDING, mHomePageStaticText?.fetching_orders)
                     }
                     if (mIsHelpOrder.mIsActive) {
                         helpImageView.visibility = View.VISIBLE
@@ -240,6 +238,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                     analyticsImageView.visibility = if (mIsAnalyticsOrder) View.VISIBLE else View.GONE
                     searchImageView.visibility = if (mIsSearchOrder) View.VISIBLE else View.GONE
                 }
+                mDoubleClickToExitStr = orderPageInfoResponse?.mHomePageStaticText?.msg_double_click_to_exit
             }
         }
     }
