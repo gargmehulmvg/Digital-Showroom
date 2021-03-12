@@ -20,16 +20,16 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.digitaldukaan.R
-import com.digitaldukaan.adapters.OrderAdapter
+import com.digitaldukaan.adapters.OrderAdapterV2
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.models.request.OrdersRequest
 import com.digitaldukaan.models.response.*
 import com.digitaldukaan.services.HomeFragmentService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IHomeServiceInterface
-import com.digitaldukaan.views.StickHeaderItemDecoration
 import com.google.android.material.textfield.TextInputLayout
 import com.google.gson.Gson
+import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration
 import kotlinx.android.synthetic.main.home_fragment.*
 import kotlinx.android.synthetic.main.layout_analytics.*
 import kotlinx.android.synthetic.main.otp_verification_fragment.*
@@ -77,7 +77,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         ToolBarManager.getInstance().hideToolBar(mActivity, true)
         showBottomNavigationView(false)
         swipeRefreshLayout.setOnRefreshListener(this)
-        completedOrderTextView.text = mOrderListStaticData.completedText
+        //completedOrderTextView.text = mOrderListStaticData.completedText
         pendingOrderTextView.text = mOrderListStaticData.pendingText
     }
 
@@ -135,7 +135,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                     orderLayout.visibility = View.VISIBLE
                     swipeRefreshLayout.isEnabled = true
                     showOrderDataOnRecyclerView(ordersResponse, ordersRecyclerView)
-                    if (!ordersResponse.mIsNextDataAvailable) fetchLatestOrders(Constants.MODE_COMPLETED, "")
+                    //if (!ordersResponse.mIsNextDataAvailable) fetchLatestOrders(Constants.MODE_COMPLETED, "")
                 }
             }
         }
@@ -175,11 +175,12 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                 }
             }
             recyclerView.apply {
-                val orderAdapter = OrderAdapter(mActivity ,updatedOrdersList, updatedOrdersHeaderList)
+                val orderAdapter = OrderAdapterV2(mActivity ,updatedOrdersList, updatedOrdersHeaderList)
                 showToast(list.size.toString())
                 layoutManager = LinearLayoutManager(mActivity)
                 adapter = orderAdapter
-                addItemDecoration(StickHeaderItemDecoration(orderAdapter))
+                addItemDecoration(StickyRecyclerHeadersDecoration(orderAdapter))
+                //addItemDecoration(StickHeaderItemDecoration(orderAdapter))
             }
         }
     }
@@ -188,7 +189,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (getOrderResponse.mIsSuccessStatus) {
                 val ordersResponse = Gson().fromJson<OrdersResponse>(getOrderResponse.mCommonDataStr, OrdersResponse::class.java)
-                showOrderDataOnRecyclerView(ordersResponse, completedOrdersRecyclerView)
+                //showOrderDataOnRecyclerView(ordersResponse, completedOrdersRecyclerView)
             }
         }
     }
@@ -245,8 +246,8 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
 
     private fun convertDateStringOfOrders(list: ArrayList<OrderItemResponse>) {
         list.forEachIndexed { _, itemResponse ->
-            itemResponse.updatedDate = getDateFromOrderString(itemResponse.updatedAt)
-            itemResponse.updatedCompleteDate = getCompleteDateFromOrderString(itemResponse.updatedAt)
+            itemResponse.updatedDate = getDateFromOrderString(itemResponse.createdAt)
+            itemResponse.updatedCompleteDate = getCompleteDateFromOrderString(itemResponse.createdAt)
         }
     }
 
