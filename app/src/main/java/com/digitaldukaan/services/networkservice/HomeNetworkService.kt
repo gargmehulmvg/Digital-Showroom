@@ -2,6 +2,8 @@ package com.digitaldukaan.services.networkservice
 
 import android.util.Log
 import com.digitaldukaan.models.request.AuthenticateUserRequest
+import com.digitaldukaan.models.request.OrdersRequest
+import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.ValidateOtpErrorResponse
 import com.digitaldukaan.network.RetrofitApi
 import com.digitaldukaan.services.serviceinterface.IHomeServiceInterface
@@ -43,12 +45,12 @@ class HomeNetworkService {
     }
 
     suspend fun getOrdersServerCall(
-        storeId: String,
-        page: Int,
+        authToken: String,
+        request: OrdersRequest,
         serviceInterface: IHomeServiceInterface
     ) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.getPendingOrders(storeId, page)
+            val response = RetrofitApi().getServerCallObject()?.getOrdersList(authToken, request)
             response?.let {
                 if (it.isSuccessful) {
                     it.body()?.let { validateUserResponse ->
@@ -99,7 +101,7 @@ class HomeNetworkService {
                 }
             }
         } catch (e: Exception) {
-            Log.e(HomeNetworkService::class.java.simpleName, "getOrdersServerCall: ", e)
+            Log.e(HomeNetworkService::class.java.simpleName, "getCompletedOrdersServerCall: ", e)
             serviceInterface.onHomePageException(e)
         }
     }
@@ -115,13 +117,35 @@ class HomeNetworkService {
                 else {
                     val validateOtpError = it.errorBody()
                     validateOtpError?.let {
-                        val validateOtpErrorResponse = Gson().fromJson(validateOtpError.string(), ValidateOtpErrorResponse::class.java)
-                        serviceInterface.onOTPVerificationErrorResponse(validateOtpErrorResponse)
+                        val errorResponse = Gson().fromJson(validateOtpError.string(), CommonApiResponse::class.java)
+                        serviceInterface.onAnalyticsDataResponse(errorResponse)
                     }
                 }
             }
         } catch (e: Exception) {
             Log.e(HomeNetworkService::class.java.simpleName, "getAnalyticsDataServerCall: ", e)
+            serviceInterface.onHomePageException(e)
+        }
+    }
+
+    suspend fun getOrderPageInfoServerCall(
+        authToken: String,
+        serviceInterface: IHomeServiceInterface
+    ) {
+        try {
+            val response = RetrofitApi().getServerCallObject()?.getOrderPageInfo(authToken)
+            response?.let {
+                if (it.isSuccessful) it.body()?.let { validateUserResponse -> serviceInterface.onOrderPageInfoResponse(validateUserResponse) }
+                else {
+                    val validateOtpError = it.errorBody()
+                    validateOtpError?.let {
+                        val errorResponse = Gson().fromJson(validateOtpError.string(), CommonApiResponse::class.java)
+                        serviceInterface.onOrderPageInfoResponse(errorResponse)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(HomeNetworkService::class.java.simpleName, "getOrderPageInfoServerCall: ", e)
             serviceInterface.onHomePageException(e)
         }
     }

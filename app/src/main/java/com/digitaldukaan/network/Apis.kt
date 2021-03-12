@@ -84,4 +84,10 @@ interface Apis {
 
     @GET("api/dotk/orders/getOrderAnalytics")
     suspend fun getAnalyticsData(@Header("auth_token") authToken: String) : Response<CommonApiResponse>
+
+    @GET("api/dotk/orders/getOrdersPageInfo")
+    suspend fun getOrderPageInfo(@Header("auth_token") authToken: String) : Response<CommonApiResponse>
+
+    @POST("api/remoteOrder/getOrdersList")
+    suspend fun getOrdersList(@Header("auth_token") authToken: String, @Body request: OrdersRequest): Response<CommonApiResponse>
 }

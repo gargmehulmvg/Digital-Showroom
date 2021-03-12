@@ -19,10 +19,10 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.OrderAdapter
 import com.digitaldukaan.constants.*
+import com.digitaldukaan.models.request.OrdersRequest
 import com.digitaldukaan.models.response.*
 import com.digitaldukaan.services.HomeFragmentService
 import com.digitaldukaan.services.isInternetConnectionAvailable
@@ -30,6 +30,7 @@ import com.digitaldukaan.services.serviceinterface.IHomeServiceInterface
 import com.digitaldukaan.views.StickHeaderItemDecoration
 import com.google.android.material.textfield.TextInputLayout
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.home_fragment.*
 import kotlinx.android.synthetic.main.layout_analytics.*
 import kotlinx.android.synthetic.main.otp_verification_fragment.*
@@ -64,7 +65,9 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
     ): View? {
         mContentView = inflater.inflate(R.layout.home_fragment, container, false)
         if (!askContactPermission()) if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else fetchLatestOrders()
+        showProgressDialog(mActivity)
         mHomeFragmentService.getAnalyticsData(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
+        mHomeFragmentService.getOrderPageInfo(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
         return mContentView
     }
 
@@ -78,16 +81,21 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
     }
 
     private fun fetchLatestOrders() {
-        showProgressDialog(mActivity, getString(R.string.authenticating_user))
-        mHomeFragmentService.verifyUserAuthentication(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
-        mHomeFragmentService.getOrders(getStringDataFromSharedPref(Constants.STORE_ID), 1)
+        //showProgressDialog(mActivity, getString(R.string.authenticating_user))
+        //mHomeFragmentService.verifyUserAuthentication(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
+        //mHomeFragmentService.getOrders(getStringDataFromSharedPref(Constants.STORE_ID), 1)
         //mHomeFragmentService.getOrders("4252", 1)
         //mHomeFragmentService.getCompletedOrders("4252", 1)
     }
 
+    private fun fetchLatestOrders(mode: String, fetchingOrderStr: String) {
+        showProgressDialog(mActivity, fetchingOrderStr)
+        val request = OrdersRequest(mode, 1)
+        mHomeFragmentService.getOrders(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
+    }
+
     override fun onClick(view: View?) {
         when (view?.id) {
-            helpImageView.id -> openWebViewFragment(this, getString(R.string.help), Constants.WEB_VIEW_HELP, Constants.SETTINGS)
             analyticsImageView.id -> {
                 analyticsContainer.visibility = View.VISIBLE
                 analyticsImageView.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.ic_analytics_green))
@@ -119,32 +127,36 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         }
     }
 
-    override fun onGetOrdersResponse(getOrderResponse: OrdersResponse) {
+    override fun onGetOrdersResponse(getOrderResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            if (swipeRefreshLayout.isRefreshing) swipeRefreshLayout.isRefreshing = false
-            stopProgress()
-            if (getOrderResponse.mOrdersList.isEmpty()) {
-                homePageWebViewLayout.visibility = View.VISIBLE
-                orderLayout.visibility = View.GONE
-                setupHomePageWebView()
-                swipeRefreshLayout.isEnabled = false
-            } else {
-                homePageWebViewLayout.visibility = View.GONE
-                orderLayout.visibility = View.VISIBLE
-                swipeRefreshLayout.isEnabled = true
-                showOrderDataOnRecyclerView(getOrderResponse, ordersRecyclerView)
+            if (getOrderResponse.mIsSuccessStatus) {
+                val listType = object : TypeToken<List<OrderItemResponse>>() {}.type
+                val ordersList = Gson().fromJson<ArrayList<OrderItemResponse>>(getOrderResponse.mCommonDataStr, listType)
+                if (swipeRefreshLayout.isRefreshing) swipeRefreshLayout.isRefreshing = false
+                stopProgress()
+                if (ordersList.isEmpty()) {
+                    homePageWebViewLayout.visibility = View.VISIBLE
+                    orderLayout.visibility = View.GONE
+                    //setupHomePageWebView()
+                    swipeRefreshLayout.isEnabled = false
+                } else {
+                    homePageWebViewLayout.visibility = View.GONE
+                    orderLayout.visibility = View.VISIBLE
+                    swipeRefreshLayout.isEnabled = true
+                    //showOrderDataOnRecyclerView(getOrderResponse, ordersRecyclerView)
+                }
             }
         }
     }
 
-    private fun setupHomePageWebView() {
+    private fun setupHomePageWebView(webViewUrl: String) {
         homePageWebView.apply {
             webViewClient = CommonWebViewFragment.WebViewController()
             settings.javaScriptEnabled = true
             Log.d(TAG, "setupHomePageWebView: $url")
-            val url = BuildConfig.WEB_VIEW_URL + Constants.WEB_VIEW_NO_ORDER_PAGE + "?storeid=${getStringDataFromSharedPref(
-                Constants.STORE_ID
-            )}&" + "storeName=${getStringDataFromSharedPref(Constants.STORE_NAME)}" + "&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"
+            val url = webViewUrl + "?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&" +
+                    "storeName=${getStringDataFromSharedPref(Constants.STORE_NAME)}" + "&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"
+            Log.d(TAG, "setupHomePageWebView:: $url")
             loadUrl(url)
         }
     }
@@ -201,6 +213,32 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                     amountHeading.text = textTodayAmount
                     weekSaleHeading.text = textWeekSale
                     weekAmountHeading.text = textWeekAmount
+                }
+            }
+        }
+    }
+
+    override fun onOrderPageInfoResponse(commonResponse: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            if (commonResponse.mIsSuccessStatus) {
+                val orderPageInfoResponse = Gson().fromJson<OrderPageInfoResponse>(commonResponse.mCommonDataStr, OrderPageInfoResponse::class.java)
+                orderPageInfoResponse?.run {
+                    if (mIsZeroOrder.mIsActive) {
+                        homePageWebViewLayout.visibility = View.VISIBLE
+                        orderLayout.visibility = View.GONE
+                        setupHomePageWebView(mIsZeroOrder.mUrl)
+                    } else {
+                        homePageWebViewLayout.visibility = View.GONE
+                        orderLayout.visibility = View.VISIBLE
+                        fetchLatestOrders(Constants.MODE_PENDING, "")
+                    }
+                    if (mIsHelpOrder.mIsActive) {
+                        helpImageView.visibility = View.VISIBLE
+                        helpImageView.setOnClickListener { openWebViewFragmentV2(this@HomeFragment, getString(R.string.help), mIsHelpOrder.mUrl, Constants.SETTINGS) }
+                    }
+                    analyticsImageView.visibility = if (mIsAnalyticsOrder) View.VISIBLE else View.GONE
+                    searchImageView.visibility = if (mIsSearchOrder) View.VISIBLE else View.GONE
                 }
             }
         }

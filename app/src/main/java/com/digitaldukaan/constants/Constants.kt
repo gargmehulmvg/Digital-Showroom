@@ -72,5 +72,9 @@ class Constants {
         const val DS_REJECTED = "rejected"
         const val DS_COMPLETED_CASH = "completedCash"
         const val DS_COMPLETED_ONLINE= "completedOnline"
+        //ORDER_PAGE
+        const val MODE_PENDING = "mode_pending"
+        const val MODE_COMPLETED = "mode_completed"
+
     }
 }

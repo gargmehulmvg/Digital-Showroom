@@ -1,6 +1,7 @@
 package com.digitaldukaan.services
 
 import com.digitaldukaan.constants.CoroutineScopeUtils
+import com.digitaldukaan.models.request.OrdersRequest
 import com.digitaldukaan.services.networkservice.HomeNetworkService
 import com.digitaldukaan.services.serviceinterface.IHomeServiceInterface
 
@@ -20,9 +21,9 @@ class HomeFragmentService {
         }
     }
 
-    fun getOrders(storeId: String, page: Int) {
+    fun getOrders(authToken: String, request: OrdersRequest) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.getOrdersServerCall(storeId , page, mServiceInterface)
+            mNetworkService.getOrdersServerCall(authToken , request, mServiceInterface)
         }
     }
 
@@ -35,6 +36,12 @@ class HomeFragmentService {
     fun getAnalyticsData(authToken: String) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
             mNetworkService.getAnalyticsDataServerCall(authToken, mServiceInterface)
+        }
+    }
+
+    fun getOrderPageInfo(authToken: String) {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.getOrderPageInfoServerCall(authToken, mServiceInterface)
         }
     }
 

@@ -11,11 +11,14 @@ interface IHomeServiceInterface {
 
     fun onUserAuthenticationResponse(authenticationUserResponse: ValidateOtpResponse)
 
-    fun onGetOrdersResponse(getOrderResponse: OrdersResponse)
+    //fun onGetOrdersResponse(getOrderResponse: OrdersResponse)
+    fun onGetOrdersResponse(getOrderResponse: CommonApiResponse)
 
     fun onCompletedOrdersResponse(getOrderResponse: OrdersResponse)
 
     fun onAnalyticsDataResponse(commonResponse: CommonApiResponse)
+
+    fun onOrderPageInfoResponse(commonResponse: CommonApiResponse)
 
     fun onHomePageException(e: Exception)
 
