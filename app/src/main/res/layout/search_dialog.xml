@@ -14,11 +14,12 @@
 
     <TextView
         android:id="@+id/searchByHeading"
-        style="@style/common_bold_text_view"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:padding="@dimen/_5sdp"
-        android:textSize="@dimen/_15sdp"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_18sdp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -36,6 +37,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingStart="@dimen/_10sdp"
+            android:gravity="center_vertical"
+            android:textSize="@dimen/_13sdp"
             android:paddingEnd="@dimen/_10sdp"
             tools:text="Order ID" />
 
@@ -44,6 +47,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingStart="@dimen/_10sdp"
+            android:gravity="center_vertical"
+            android:textSize="@dimen/_13sdp"
             android:paddingEnd="@dimen/_10sdp"
             tools:text="Phone Number" />
 
@@ -71,7 +76,8 @@
             android:maxLength="@integer/mobile_number_length"
             android:textColor="@color/black"
             android:textColorHint="@color/default_text_light_grey"
-            android:textSize="@dimen/_12sdp" />
+            android:textSize="@dimen/_13sdp"
+            tools:ignore="LabelFor" />
 
     </com.google.android.material.textfield.TextInputLayout>
 

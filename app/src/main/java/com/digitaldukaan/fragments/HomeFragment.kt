@@ -11,10 +11,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AbsListView
-import android.widget.EditText
-import android.widget.RadioButton
-import android.widget.RadioGroup
+import android.widget.*
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -39,11 +36,21 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
 
     companion object {
         private val TAG = HomeFragment::class.simpleName
-        private val mOrderListStaticData = mStaticData.mStaticData.mOrderListStaticData
+        private var mOrderPageInfoStaticData: HomePageStaticTextResponse? = null
         private var mIsDoublePressToExit = false
         private lateinit var mHomeFragmentService: HomeFragmentService
         private var mDoubleClickToExitStr:String? = ""
         private var mFetchingOrdersStr:String? = ""
+        private var mIsRecyclerViewScrolling = false
+        private lateinit var orderAdapter: OrderAdapterV2
+        private lateinit var linearLayoutManager: LinearLayoutManager
+        private var mOrderList: ArrayList<OrderItemResponse> = ArrayList()
+        private var currentItems = 0
+        private var totalItems = 0
+        private var scrollOutItems = 0
+        private var pendingPageCount = 1
+        private var completedPageCount = 1
+
         fun newInstance(): HomeFragment {
             return HomeFragment()
         }
@@ -75,7 +82,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         showBottomNavigationView(false)
         swipeRefreshLayout.setOnRefreshListener(this)
         //completedOrderTextView.text = mOrderListStaticData.completedText
-        pendingOrderTextView.text = mOrderListStaticData.pendingText
+        //pendingOrderTextView.text = mOrderListStaticData.pendingText
     }
 
     private fun fetchLatestOrders(mode: String, fetchingOrderStr: String?, page:Int = 1) {
@@ -151,20 +158,9 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
             Log.d(TAG, "setupHomePageWebView: $url")
             val url = webViewUrl + "?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&" +
                     "storeName=${getStringDataFromSharedPref(Constants.STORE_NAME)}" + "&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"
-            Log.d(TAG, "setupHomePageWebView:: $url")
             loadUrl(url)
         }
     }
-
-    private var mIsRecyclerViewScrolling = false
-    private lateinit var orderAdapter: OrderAdapterV2
-    private lateinit var linearLayoutManager: LinearLayoutManager
-    private var mOrderList: ArrayList<OrderItemResponse> = ArrayList()
-    private var currentItems = 0
-    private var totalItems = 0
-    private var scrollOutItems = 0
-    private var pendingPageCount = 1
-    private var completedPageCount = 1
 
     override fun onCompletedOrdersResponse(getOrderResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
@@ -206,10 +202,11 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
             if (commonResponse.mIsSuccessStatus) {
                 val orderPageInfoResponse = Gson().fromJson<OrderPageInfoResponse>(commonResponse.mCommonDataStr, OrderPageInfoResponse::class.java)
                 orderPageInfoResponse?.run {
-                    mHomePageStaticText?.run {
+                    mOrderPageInfoStaticData = mHomePageStaticText?.run {
                         mFetchingOrdersStr = fetching_orders
                         mDoubleClickToExitStr = msg_double_click_to_exit
                         appTitleTextView.text = heading_order_page
+                        this
                     }
                     if (mIsZeroOrder.mIsActive) {
                         homePageWebViewLayout.visibility = View.VISIBLE
@@ -337,13 +334,20 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                         val phoneRadioButton: RadioButton = findViewById(R.id.phoneNumberRadioButton)
                         val searchInputLayout: TextInputLayout = findViewById(R.id.searchInputLayout)
                         val mobileNumberEditText: EditText = findViewById(R.id.mobileNumberEditText)
+                        val searchByHeading: TextView = findViewById(R.id.searchByHeading)
+                        val confirmTextView: TextView = findViewById(R.id.confirmTextView)
+                        searchByHeading.text = mOrderPageInfoStaticData?.heading_search_dialog
+                        orderIdRadioButton.text = mOrderPageInfoStaticData?.search_dialog_selection_one
+                        phoneRadioButton.text = mOrderPageInfoStaticData?.search_dialog_selection_two
+                        confirmTextView.text = mOrderPageInfoStaticData?.search_dialog_button_text
+
                         searchRadioGroup.setOnCheckedChangeListener { _, checkedId ->
                             when(checkedId) {
                                 orderIdRadioButton.id -> {
-                                    searchInputLayout.hint = "Enter Search ID"
+                                    searchInputLayout.hint = "${mOrderPageInfoStaticData?.heading_search_dialog} ${mOrderPageInfoStaticData?.search_dialog_selection_one}"
                                 }
                                 phoneRadioButton.id -> {
-                                    searchInputLayout.hint = "Enter Mobile Number"
+                                    searchInputLayout.hint = "${mOrderPageInfoStaticData?.heading_search_dialog} ${mOrderPageInfoStaticData?.search_dialog_selection_two}"
                                 }
                             }
                             mobileNumberEditText.setText("")
