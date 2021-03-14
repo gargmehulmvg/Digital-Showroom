@@ -269,13 +269,6 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         }
     }
 
-    private fun convertDateStringOfOrders(list: ArrayList<OrderItemResponse>) {
-        list.forEachIndexed { _, itemResponse ->
-            itemResponse.updatedDate = getDateFromOrderString(itemResponse.createdAt)
-            itemResponse.updatedCompleteDate = getCompleteDateFromOrderString(itemResponse.createdAt)
-        }
-    }
-
     override fun onHomePageException(e: Exception) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (swipeRefreshLayout.isRefreshing) swipeRefreshLayout.isRefreshing = false
@@ -333,7 +326,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
     override fun onSearchDialogContinueButtonClicked(inputOrderId: String, inputMobileNumber: String) {
         mOrderIdString = inputOrderId
         mMobileNumberString = inputMobileNumber
-        val request = SearchOrdersRequest(mOrderIdString.toInt(), mMobileNumberString, 1)
+        val request = SearchOrdersRequest(if (mOrderIdString.isNotEmpty()) mOrderIdString.toLong() else 0, mMobileNumberString, 1)
         if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog()
         showProgressDialog(mActivity)
         mHomeFragmentService.getSearchOrders(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)

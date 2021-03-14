@@ -37,6 +37,7 @@ import com.digitaldukaan.R
 import com.digitaldukaan.adapters.ImagesSearchAdapter
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.ISearchImageItemClicked
+import com.digitaldukaan.models.response.OrderItemResponse
 import com.digitaldukaan.models.response.OrderPageStaticTextResponse
 import com.digitaldukaan.models.response.ProfileInfoResponse
 import com.digitaldukaan.models.response.StaticTextResponse
@@ -653,8 +654,13 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         }
     }
 
-    open fun onSearchDialogContinueButtonClicked(inputOrderId: String, inputMobileNumber: String) {
+    open fun onSearchDialogContinueButtonClicked(inputOrderId: String, inputMobileNumber: String) = Unit
 
+    open fun convertDateStringOfOrders(list: ArrayList<OrderItemResponse>) {
+        list.forEachIndexed { _, itemResponse ->
+            itemResponse.updatedDate = getDateFromOrderString(itemResponse.createdAt)
+            itemResponse.updatedCompleteDate = getCompleteDateFromOrderString(itemResponse.createdAt)
+        }
     }
 
 }

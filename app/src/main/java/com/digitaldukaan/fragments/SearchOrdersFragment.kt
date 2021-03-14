@@ -11,16 +11,18 @@ import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.OrderAdapterV2
 import com.digitaldukaan.constants.Constants
+import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.StaticInstances
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.interfaces.IOnToolbarIconClick
 import com.digitaldukaan.models.request.SearchOrdersRequest
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.OrderItemResponse
+import com.digitaldukaan.models.response.OrdersResponse
 import com.digitaldukaan.services.SearchOrdersService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.ISearchOrderServiceInterface
-import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration
+import com.google.gson.Gson
 import kotlinx.android.synthetic.main.home_fragment.*
 
 class SearchOrdersFragment: BaseFragment(), IOnToolbarIconClick, ISearchOrderServiceInterface {
@@ -70,11 +72,11 @@ class SearchOrdersFragment: BaseFragment(), IOnToolbarIconClick, ISearchOrderSer
             setSideIcon(ContextCompat.getDrawable(mActivity, R.drawable.ic_search), this@SearchOrdersFragment)
         }
         ordersRecyclerView.apply {
+            convertDateStringOfOrders(mOrderList)
             orderAdapter = OrderAdapterV2(mActivity, mOrderList)
             linearLayoutManager = LinearLayoutManager(mActivity)
             layoutManager = linearLayoutManager
             adapter = orderAdapter
-            addItemDecoration(StickyRecyclerHeadersDecoration(orderAdapter))
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
 
                 override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
@@ -91,7 +93,7 @@ class SearchOrdersFragment: BaseFragment(), IOnToolbarIconClick, ISearchOrderSer
                         mIsRecyclerViewScrolling = false
                         if (mIsMoreSearchOrderAvailable) {
                             searchPageCount++
-                            val request = SearchOrdersRequest(mOrderIdString.toInt(), mMobileNumberString, searchPageCount)
+                            val request = SearchOrdersRequest(mOrderIdString.toLong(), mMobileNumberString, searchPageCount)
                             if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else
                                 mService.getSearchOrders(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
                         }
@@ -108,14 +110,21 @@ class SearchOrdersFragment: BaseFragment(), IOnToolbarIconClick, ISearchOrderSer
     override fun onSearchDialogContinueButtonClicked(inputOrderId: String, inputMobileNumber: String) {
         mOrderIdString = inputOrderId
         mMobileNumberString = inputMobileNumber
-        val request = SearchOrdersRequest(mOrderIdString.toInt(), mMobileNumberString, searchPageCount)
+        val request = SearchOrdersRequest(mOrderIdString.toLong(), mMobileNumberString, searchPageCount)
         if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog()
         showProgressDialog(mActivity)
+        ToolBarManager.getInstance().setHeaderTitle("\"${if (inputMobileNumber.isEmpty()) inputOrderId else inputMobileNumber}\"")
         mService.getSearchOrders(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
     }
 
     override fun onSearchOrderResponse(commonResponse: CommonApiResponse) {
-        stopProgress()
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            val ordersResponse = Gson().fromJson<OrdersResponse>(commonResponse.mCommonDataStr, OrdersResponse::class.java)
+            mOrderList.clear()
+            if (ordersResponse?.mOrdersList?.isNotEmpty() == true) mOrderList.addAll(ordersResponse.mOrdersList)
+            orderAdapter.notifyDataSetChanged()
+        }
     }
 
     override fun onSearchOrderException(e: Exception) {
