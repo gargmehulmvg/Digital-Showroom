@@ -80,8 +80,8 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         val fragmentTag = fragment.javaClass.canonicalName
         try {
             fragmentTransaction.setCustomAnimations(
-                R.anim.enter_from_right,
-                R.anim.exit_to_left,
+                R.anim.fade_in,
+                R.anim.fade_out,
                 android.R.anim.slide_in_left,
                 android.R.anim.slide_out_right
             )
@@ -111,10 +111,10 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         val fragmentTag = fragment.javaClass.canonicalName
         try {
             fragmentTransaction.setCustomAnimations(
-                R.anim.enter_from_right,
-                R.anim.exit_to_left,
-                android.R.anim.slide_in_left,
-                android.R.anim.slide_out_right
+                R.anim.slide_in,
+                R.anim.fade_out,
+                R.anim.fade_in,
+                R.anim.slide_out
             )
             fragmentTransaction.replace(R.id.homeFrame, fragment, fragmentTag)
             if (addToBackStack) fragmentTransaction.addToBackStack(fragmentTag)
