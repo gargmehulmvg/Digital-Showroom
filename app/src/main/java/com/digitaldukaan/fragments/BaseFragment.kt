@@ -25,10 +25,7 @@ import android.view.WindowManager
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.TranslateAnimation
 import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -40,6 +37,7 @@ import com.digitaldukaan.R
 import com.digitaldukaan.adapters.ImagesSearchAdapter
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.ISearchImageItemClicked
+import com.digitaldukaan.models.response.OrderPageStaticTextResponse
 import com.digitaldukaan.models.response.ProfileInfoResponse
 import com.digitaldukaan.models.response.StaticTextResponse
 import com.digitaldukaan.network.RetrofitApi
@@ -47,6 +45,7 @@ import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.textfield.TextInputLayout
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_main2.*
 import kotlinx.android.synthetic.main.bottom_sheet_image_pick.view.*
@@ -586,4 +585,76 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
             }
         }
     }
+
+    protected fun showSearchDialog(staticData: OrderPageStaticTextResponse?, mobileNumberString: String, orderIdStr: String) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            mActivity.let {
+                val view = LayoutInflater.from(mActivity).inflate(R.layout.search_dialog, null)
+                val dialog = Dialog(mActivity)
+                dialog.apply {
+                    setContentView(view)
+                    window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                    view?.run {
+                        val searchRadioGroup: RadioGroup = findViewById(R.id.searchRadioGroup)
+                        val orderIdRadioButton: RadioButton = findViewById(R.id.orderIdRadioButton)
+                        val phoneRadioButton: RadioButton = findViewById(R.id.phoneNumberRadioButton)
+                        val searchInputLayout: TextInputLayout = findViewById(R.id.searchInputLayout)
+                        val mobileNumberEditText: EditText = findViewById(R.id.mobileNumberEditText)
+                        val searchByHeading: TextView = findViewById(R.id.searchByHeading)
+                        val confirmTextView: TextView = findViewById(R.id.confirmTextView)
+                        searchByHeading.text = staticData?.heading_search_dialog
+                        orderIdRadioButton.text = staticData?.search_dialog_selection_one
+                        phoneRadioButton.text = staticData?.search_dialog_selection_two
+                        confirmTextView.text = staticData?.search_dialog_button_text
+                        searchRadioGroup.setOnCheckedChangeListener { _, checkedId ->
+                            when(checkedId) {
+                                orderIdRadioButton.id -> {
+                                    searchInputLayout.hint = "${staticData?.heading_search_dialog} ${staticData?.search_dialog_selection_one}"
+                                }
+                                phoneRadioButton.id -> {
+                                    searchInputLayout.hint = "${staticData?.heading_search_dialog} ${staticData?.search_dialog_selection_two}"
+                                }
+                            }
+                            mobileNumberEditText.setText("")
+                        }
+                        orderIdRadioButton.isChecked = true
+                        if (mobileNumberString.isNotEmpty()) {
+                            phoneRadioButton.isChecked = true
+                            mobileNumberEditText.setText(mobileNumberString)
+                        } else {
+                            orderIdRadioButton.isChecked = true
+                            mobileNumberEditText.setText(orderIdStr)
+                        }
+                        confirmTextView.setOnClickListener {
+                            var inputOrderId = ""
+                            var inputMobileNumber = ""
+                            staticData?.error_mandatory_field = "This field is mandatory" // todo remove this
+                            if (orderIdRadioButton.isChecked) {
+                                inputOrderId = mobileNumberEditText.text.trim().toString()
+                                if (inputOrderId.isEmpty()) {
+                                    mobileNumberEditText.error = staticData?.error_mandatory_field
+                                    mobileNumberEditText.requestFocus()
+                                    return@setOnClickListener
+                                }
+                            } else {
+                                inputMobileNumber = mobileNumberEditText.text.trim().toString()
+                                if (inputMobileNumber.isEmpty()) {
+                                    mobileNumberEditText.error = staticData?.error_mandatory_field
+                                    mobileNumberEditText.requestFocus()
+                                    return@setOnClickListener
+                                }
+                            }
+                            dismiss()
+                            onSearchDialogContinueButtonClicked(inputOrderId, inputMobileNumber)
+                        }
+                    }
+                }.show()
+            }
+        }
+    }
+
+    open fun onSearchDialogContinueButtonClicked(inputOrderId: String, inputMobileNumber: String) {
+
+    }
+
 }

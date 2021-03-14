@@ -1,9 +1,6 @@
 package com.digitaldukaan.fragments
 
-import android.app.Dialog
 import android.content.pm.PackageManager
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -11,7 +8,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.AbsListView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -20,11 +17,11 @@ import com.digitaldukaan.R
 import com.digitaldukaan.adapters.OrderAdapterV2
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.models.request.OrdersRequest
+import com.digitaldukaan.models.request.SearchOrdersRequest
 import com.digitaldukaan.models.response.*
 import com.digitaldukaan.services.HomeFragmentService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IHomeServiceInterface
-import com.google.android.material.textfield.TextInputLayout
 import com.google.gson.Gson
 import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration
 import kotlinx.android.synthetic.main.home_fragment.*
@@ -36,7 +33,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
 
     companion object {
         private val TAG = HomeFragment::class.simpleName
-        private var mOrderPageInfoStaticData: HomePageStaticTextResponse? = null
+        private var mOrderPageInfoStaticData: OrderPageStaticTextResponse? = null
         private var mIsDoublePressToExit = false
         private lateinit var mHomeFragmentService: HomeFragmentService
         private var mDoubleClickToExitStr:String? = ""
@@ -50,6 +47,10 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         private var scrollOutItems = 0
         private var pendingPageCount = 1
         private var completedPageCount = 1
+        private var mOrderIdString = ""
+        private var mMobileNumberString = ""
+        private var mIsMorePendingOrderAvailable = false
+        private var mIsMoreCompletedOrderAvailable = false
 
         fun newInstance(): HomeFragment {
             return HomeFragment()
@@ -97,7 +98,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                 analyticsContainer.visibility = View.VISIBLE
                 analyticsImageView.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.ic_analytics_green))
             }
-            searchImageView.id -> showSearchDialog()
+            searchImageView.id -> showSearchDialog(mOrderPageInfoStaticData, mMobileNumberString, mOrderIdString)
             closeAnalyticsImageView.id -> {
                 analyticsImageView.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.ic_analytics_black))
                 analyticsContainer.visibility = View.GONE
@@ -123,9 +124,6 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
             if (!authenticationUserResponse.mIsSuccessStatus) showShortSnackBar(authenticationUserResponse.mMessage, true, R.drawable.ic_close_red)
         }
     }
-
-    private var mIsMorePendingOrderAvailable = false
-    private var mIsMoreCompletedOrderAvailable = false
 
     override fun onPendingOrdersResponse(getOrderResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
@@ -202,12 +200,13 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
             if (commonResponse.mIsSuccessStatus) {
                 val orderPageInfoResponse = Gson().fromJson<OrderPageInfoResponse>(commonResponse.mCommonDataStr, OrderPageInfoResponse::class.java)
                 orderPageInfoResponse?.run {
-                    mOrderPageInfoStaticData = mHomePageStaticText?.run {
+                    mOrderPageInfoStaticData = mOrderPageStaticText?.run {
                         mFetchingOrdersStr = fetching_orders
                         mDoubleClickToExitStr = msg_double_click_to_exit
                         appTitleTextView.text = heading_order_page
                         this
                     }
+                    StaticInstances.sOrderPageInfoStaticData = mOrderPageInfoStaticData
                     if (mIsZeroOrder.mIsActive) {
                         homePageWebViewLayout.visibility = View.VISIBLE
                         orderLayout.visibility = View.GONE
@@ -256,6 +255,17 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                     searchImageView.visibility = if (mIsSearchOrder) View.VISIBLE else View.GONE
                 }
             }
+        }
+    }
+
+    override fun onSearchOrdersResponse(commonResponse: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            if (swipeRefreshLayout.isRefreshing) swipeRefreshLayout.isRefreshing = false
+            if (commonResponse.mIsSuccessStatus) {
+                val ordersResponse = Gson().fromJson<OrdersResponse>(commonResponse.mCommonDataStr, OrdersResponse::class.java)
+                if (ordersResponse?.mOrdersList?.isNotEmpty() == true) launchFragment(SearchOrdersFragment.newInstance(mOrderIdString, mMobileNumberString, ordersResponse?.mOrdersList), true)
+            } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
         }
     }
 
@@ -320,43 +330,13 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         }
     }
 
-    private fun showSearchDialog() {
-        CoroutineScopeUtils().runTaskOnCoroutineMain {
-            mActivity.let {
-                val view = LayoutInflater.from(mActivity).inflate(R.layout.search_dialog, null)
-                val dialog = Dialog(mActivity)
-                dialog.apply {
-                    setContentView(view)
-                    window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-                    view?.run {
-                        val searchRadioGroup: RadioGroup = findViewById(R.id.searchRadioGroup)
-                        val orderIdRadioButton: RadioButton = findViewById(R.id.orderIdRadioButton)
-                        val phoneRadioButton: RadioButton = findViewById(R.id.phoneNumberRadioButton)
-                        val searchInputLayout: TextInputLayout = findViewById(R.id.searchInputLayout)
-                        val mobileNumberEditText: EditText = findViewById(R.id.mobileNumberEditText)
-                        val searchByHeading: TextView = findViewById(R.id.searchByHeading)
-                        val confirmTextView: TextView = findViewById(R.id.confirmTextView)
-                        searchByHeading.text = mOrderPageInfoStaticData?.heading_search_dialog
-                        orderIdRadioButton.text = mOrderPageInfoStaticData?.search_dialog_selection_one
-                        phoneRadioButton.text = mOrderPageInfoStaticData?.search_dialog_selection_two
-                        confirmTextView.text = mOrderPageInfoStaticData?.search_dialog_button_text
-
-                        searchRadioGroup.setOnCheckedChangeListener { _, checkedId ->
-                            when(checkedId) {
-                                orderIdRadioButton.id -> {
-                                    searchInputLayout.hint = "${mOrderPageInfoStaticData?.heading_search_dialog} ${mOrderPageInfoStaticData?.search_dialog_selection_one}"
-                                }
-                                phoneRadioButton.id -> {
-                                    searchInputLayout.hint = "${mOrderPageInfoStaticData?.heading_search_dialog} ${mOrderPageInfoStaticData?.search_dialog_selection_two}"
-                                }
-                            }
-                            mobileNumberEditText.setText("")
-                        }
-                        orderIdRadioButton.isChecked = true
-                    }
-                }.show()
-            }
-        }
+    override fun onSearchDialogContinueButtonClicked(inputOrderId: String, inputMobileNumber: String) {
+        mOrderIdString = inputOrderId
+        mMobileNumberString = inputMobileNumber
+        val request = SearchOrdersRequest(mOrderIdString.toInt(), mMobileNumberString, 1)
+        if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog()
+        showProgressDialog(mActivity)
+        mHomeFragmentService.getSearchOrders(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
     }
 
 }

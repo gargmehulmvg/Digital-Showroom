@@ -2,6 +2,7 @@ package com.digitaldukaan.services
 
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.models.request.OrdersRequest
+import com.digitaldukaan.models.request.SearchOrdersRequest
 import com.digitaldukaan.services.networkservice.HomeNetworkService
 import com.digitaldukaan.services.serviceinterface.IHomeServiceInterface
 
@@ -18,6 +19,12 @@ class HomeFragmentService {
     fun getOrders(authToken: String, request: OrdersRequest) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
             mNetworkService.getOrdersServerCall(authToken , request, mServiceInterface)
+        }
+    }
+
+    fun getSearchOrders(authToken: String, request: SearchOrdersRequest) {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.getSearchOrdersServerCall(authToken , request, mServiceInterface)
         }
     }
 

@@ -11,7 +11,7 @@ data class OrderPageInfoResponse(
     @SerializedName("is_analytics")                     var mIsAnalyticsOrder: Boolean,
     @SerializedName("completed_order_count")            var mCompletedOrderCount: Int,
     @SerializedName("pending_order_count")              var mPendingOrderCount: Int,
-    @SerializedName("static_text")                      var mHomePageStaticText: HomePageStaticTextResponse?
+    @SerializedName("static_text")                      var mOrderPageStaticText: OrderPageStaticTextResponse?
 )
 
 data class ZeroOrderPageResponse(
@@ -29,7 +29,7 @@ data class HomePageBannerResponse(
     @SerializedName("deep_link")                        var mUrl: String
 )
 
-data class HomePageStaticTextResponse(
+data class OrderPageStaticTextResponse(
     @SerializedName("new")                              var newText: String?,
     @SerializedName("text_send_bill")                   var sendBillText: String?, //send_bill_text
     @SerializedName("text_sent_bill")                   var sentBillText: String?,
@@ -48,5 +48,7 @@ data class HomePageStaticTextResponse(
     @SerializedName("text_completed")                   var text_completed: String,
     @SerializedName("text_rejected")                    var text_rejected: String,
     @SerializedName("text_paid_online")                 var text_paid_online: String,
-    @SerializedName("text_today")                       var text_today: String
+    @SerializedName("text_today")                       var text_today: String,
+
+    @SerializedName("error_mandatory_field")            var error_mandatory_field: String      //TODO to be added by Abhishek
 )

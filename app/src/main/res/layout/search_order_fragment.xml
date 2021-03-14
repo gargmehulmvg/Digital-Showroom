@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/orderLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:animateLayoutChanges="true"
+        android:fillViewport="true"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
+            android:orientation="vertical">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/pendingOrderTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/_10sdp"
+                android:background="@drawable/slight_curve_grey_background"
+                android:fontFamily="@font/montserrat"
+                android:gravity="center"
+                android:minWidth="@dimen/_50sdp"
+                android:paddingStart="@dimen/_8sdp"
+                android:paddingTop="@dimen/_2sdp"
+                android:paddingEnd="@dimen/_8sdp"
+                android:paddingBottom="@dimen/_2sdp"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_9sdp"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="@string/app_name" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/ordersRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/pendingOrderTextView"
+                tools:itemCount="3"
+                tools:listitem="@layout/order_item" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
