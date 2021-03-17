@@ -4,6 +4,7 @@ import android.util.Log
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.models.request.OrdersRequest
 import com.digitaldukaan.models.request.SearchOrdersRequest
+import com.digitaldukaan.models.request.UpdateOrderRequest
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.ValidateOtpErrorResponse
 import com.digitaldukaan.network.RetrofitApi
@@ -107,6 +108,29 @@ class HomeNetworkService {
             }
         } catch (e: Exception) {
             Log.e(HomeNetworkService::class.java.simpleName, "getSearchOrdersServerCall: ", e)
+            serviceInterface.onHomePageException(e)
+        }
+    }
+
+    suspend fun updateOrderStatusServerCall(
+        authToken: String,
+        request: UpdateOrderRequest,
+        serviceInterface: IHomeServiceInterface
+    ) {
+        try {
+            val response = RetrofitApi().getServerCallObject()?.updateOrderStatus(authToken, request)
+            response?.let {
+                if (it.isSuccessful) it.body()?.let { commonApiResponse -> serviceInterface.onOrdersUpdatedStatusResponse(commonApiResponse) }
+                else {
+                    val responseBody = it.errorBody()
+                    responseBody?.let {
+                        val errorResponse = Gson().fromJson(responseBody.string(), CommonApiResponse::class.java)
+                        serviceInterface.onOrdersUpdatedStatusResponse(errorResponse)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(HomeNetworkService::class.java.simpleName, "updateOrderStatusServerCall: ", e)
             serviceInterface.onHomePageException(e)
         }
     }

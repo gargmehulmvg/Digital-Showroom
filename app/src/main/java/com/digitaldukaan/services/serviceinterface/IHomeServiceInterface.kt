@@ -20,6 +20,8 @@ interface IHomeServiceInterface {
 
     fun onSearchOrdersResponse(commonResponse: CommonApiResponse)
 
+    fun onOrdersUpdatedStatusResponse(commonResponse: CommonApiResponse)
+
     fun onHomePageException(e: Exception)
 
 }

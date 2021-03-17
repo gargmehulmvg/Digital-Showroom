@@ -27,6 +27,9 @@ class Constants {
         const val SETTINGS = "settings"
         const val DOTPE_OFFICIAL_URL_CLIPBOARD = "https://web.dotpe.in"
         const val DOTPE_OFFICIAL_URL = "goto : web.dotpe.in"
+        const val KEY_DONT_SHOW_MESSAGE_AGAIN = "KEY_DONT_SHOW_MESSAGE_AGAIN"
+        const val TEXT_YES = "yes"
+        const val TEXT_NO = "no"
         //Actions
         const val ACTION_LOGOUT = "logout"
         const val ACTION_STORE_DESCRIPTION = "store_description"
@@ -76,6 +79,16 @@ class Constants {
         //ORDER_PAGE
         const val MODE_PENDING = "mode_pending"
         const val MODE_COMPLETED = "mode_completed"
+        //ORDER_STATUS
+        const val StatusCustomerUpdated = 1
+        const val StatusMerchantUpdated = 2
+        const val StatusRejected = 3 //(Status_message : Merchant/Customer Rejected)
+        const val StatusActive = 4 //(Accepted Tab in merchant)
+        const val StatusReady = 5 //(For delivery / pickup)
+        const val StatusOutForDelivery = 6
+        const val StatusCompleted = 7
+        const val StatusCancelled = 8
+        const val StatusSeenByMerchant = 9
 
     }
 }

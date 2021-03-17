@@ -663,4 +663,34 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         }
     }
 
+    open fun openDontShowDialog(item: OrderItemResponse?) {
+        val builder = AlertDialog.Builder(mActivity)
+        val view: View = layoutInflater.inflate(R.layout.dont_show_again_dialog, null)
+        var isCheckBoxVisible = getStringDataFromSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN) == Constants.TEXT_NO
+        builder.apply {
+            setTitle("Alert")
+            setMessage("Have you received Cash or Payment?")
+            if (isCheckBoxVisible) setView(view)
+            setPositiveButton("Yes") { dialogInterface, _ ->
+                run {
+                    dialogInterface.dismiss()
+                    storeStringDataInSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN, if (isCheckBoxVisible) Constants.TEXT_YES else Constants.TEXT_NO)
+                    onDontShowDialogPositiveButtonClicked(item)
+                }
+            }
+            setNegativeButton("No") { dialogInterface, _ -> dialogInterface.dismiss() }
+            view.run {
+                val checkBox: CheckBox = view.findViewById(R.id.checkBox)
+                checkBox.text = "Don't show this message again"
+                checkBox.setOnCheckedChangeListener { _, isChecked ->
+                    run {
+                        isCheckBoxVisible = isChecked
+                    }
+                }
+            }
+        }.show()
+    }
+
+    open fun onDontShowDialogPositiveButtonClicked(item: OrderItemResponse?) = Unit
+
 }

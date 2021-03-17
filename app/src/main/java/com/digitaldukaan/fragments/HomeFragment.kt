@@ -16,8 +16,10 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.OrderAdapterV2
 import com.digitaldukaan.constants.*
+import com.digitaldukaan.interfaces.IOrderCheckBoxListener
 import com.digitaldukaan.models.request.OrdersRequest
 import com.digitaldukaan.models.request.SearchOrdersRequest
+import com.digitaldukaan.models.request.UpdateOrderRequest
 import com.digitaldukaan.models.response.*
 import com.digitaldukaan.services.HomeFragmentService
 import com.digitaldukaan.services.isInternetConnectionAvailable
@@ -29,7 +31,7 @@ import kotlinx.android.synthetic.main.layout_analytics.*
 import kotlinx.android.synthetic.main.otp_verification_fragment.*
 
 class HomeFragment : BaseFragment(), IHomeServiceInterface,
-    SwipeRefreshLayout.OnRefreshListener {
+    SwipeRefreshLayout.OnRefreshListener, IOrderCheckBoxListener {
 
     companion object {
         private val TAG = HomeFragment::class.simpleName
@@ -217,6 +219,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                         fetchLatestOrders(Constants.MODE_PENDING, mFetchingOrdersStr, pendingPageCount)
                         ordersRecyclerView.apply {
                             orderAdapter = OrderAdapterV2(mActivity, mOrderList)
+                            orderAdapter.setCheckBoxListener(this@HomeFragment)
                             linearLayoutManager = LinearLayoutManager(mActivity)
                             layoutManager = linearLayoutManager
                             adapter = orderAdapter
@@ -265,6 +268,16 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
             if (commonResponse.mIsSuccessStatus) {
                 val ordersResponse = Gson().fromJson<OrdersResponse>(commonResponse.mCommonDataStr, OrdersResponse::class.java)
                 if (ordersResponse?.mOrdersList?.isNotEmpty() == true) launchFragment(SearchOrdersFragment.newInstance(mOrderIdString, mMobileNumberString, ordersResponse?.mOrdersList), true)
+            } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
+        }
+    }
+
+    override fun onOrdersUpdatedStatusResponse(commonResponse: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            if (swipeRefreshLayout.isRefreshing) swipeRefreshLayout.isRefreshing = false
+            if (commonResponse.mIsSuccessStatus) {
+                onRefresh()
             } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
         }
     }
@@ -332,4 +345,18 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         mHomeFragmentService.getSearchOrders(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
     }
 
+    override fun onOrderCheckBoxChanged(isChecked: Boolean, item: OrderItemResponse?) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            showToast(isChecked.toString())
+            if (isChecked) openDontShowDialog(item)
+        }
+    }
+
+    override fun onDontShowDialogPositiveButtonClicked(item: OrderItemResponse?) {
+        val request = UpdateOrderRequest(item?.orderId?.toLong(), Constants.StatusSeenByMerchant.toLong())
+        if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else {
+            showProgressDialog(mActivity)
+            mHomeFragmentService.updateOrderStatus(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
+        }
+    }
 }

@@ -87,4 +87,7 @@ interface Apis {
 
     @POST("api/dotk/settings/initiateKyc")
     suspend fun initiateKyc(@Header("auth_token") authToken: String): Response<CommonApiResponse>
+
+    @POST("api/dotk/orders/updateOrderStatus")
+    suspend fun updateOrderStatus(@Header("auth_token") authToken: String, @Body request: UpdateOrderRequest): Response<CommonApiResponse>
 }
