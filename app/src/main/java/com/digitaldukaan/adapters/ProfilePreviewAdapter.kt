@@ -58,6 +58,15 @@ class ProfilePreviewAdapter(
                     profilePreviewDataGroup.visibility = View.VISIBLE
                     addSettingKeyDataTextView.text = mValue
                 }
+                settingKeyItem.mIsEditable.run {
+                    holder.profilePreviewContainer.isEnabled = this
+                    addSettingKeyDataTextView.setCompoundDrawablesWithIntrinsicBounds(
+                        0,
+                        0,
+                        0,
+                        0
+                    )
+                }
                 when (settingKeyItem.mAction) {
                     Constants.ACTION_STORE_LOCATION -> {
                         addSettingKeyDataTextView.setCompoundDrawablesWithIntrinsicBounds(

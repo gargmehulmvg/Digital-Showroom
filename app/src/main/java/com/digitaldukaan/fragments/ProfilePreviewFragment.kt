@@ -223,6 +223,14 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
             Constants.ACTION_BUSINESS_TYPE -> launchFragment(BusinessTypeFragment.newInstance(profilePreviewResponse, position, true, mProfilePreviewResponse), true)
             Constants.ACTION_EDIT_STORE_LINK -> showEditStoreWarningDialog(profilePreviewResponse)
             Constants.ACTION_STORE_NAME -> showEditStoreNameBottomSheet(mProfilePreviewResponse?.mStoreItemResponse?.storeInfo?.name)
+            Constants.ACTION_KYC_STATUS -> {
+                if (!isInternetConnectionAvailable(mActivity)) {
+                    showNoInternetConnectionDialog()
+                    return
+                }
+                showProgressDialog(mActivity)
+                service.initiateKyc(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
+            }
         }
     }
 
@@ -450,5 +458,13 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
             } else showToast(response.mMessage)
         }
         Log.d(ProfilePreviewFragment::class.simpleName, "onStoreLogoResponse: do nothing")
+    }
+
+    override fun onInitiateKycResponse(response: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            if (response.mIsSuccessStatus) openUrlInBrowser(Gson().fromJson<String>(response.mCommonDataStr, String::class.java)) else showShortSnackBar(response.mMessage, true, R.drawable.ic_close_red)
+
+        }
     }
 }

@@ -111,6 +111,10 @@ class OnBoardScreenDukaanNameFragment : BaseFragment(), IProfilePreviewServiceIn
         Log.d(TAG, "onStoreLogoResponse: do nothing")
     }
 
+    override fun onInitiateKycResponse(response: CommonApiResponse) {
+        Log.d(TAG, "onInitiateKycResponse: do nothing")
+    }
+
     override fun onProfilePreviewServerException(e: Exception) {
         exceptionHandlingForAPIResponse(e)
     }

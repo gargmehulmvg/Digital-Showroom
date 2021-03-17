@@ -40,6 +40,7 @@ class Constants {
         const val ACTION_QR_DOWNLOAD = "qr_download"
         const val ACTION_SHARE_DATA = "share_text"
         const val ACTION_CATALOG_WHATSAPP = "catalog_whatsapp"
+        const val ACTION_KYC_STATUS = "kyc_status"
         //Incomplete profile actions
         const val ACTION_LOGO = "logo"
         const val ACTION_DESCRIPTION = "description"
@@ -64,14 +65,14 @@ class Constants {
         const val ORDER_TYPE_PICK_UP = 2
         const val ORDER_TYPE_SELF = 3
         //DELIVERY_STATUS
-        const val DS_NEW = "new"
-        const val DS_SEND_BILL = "sendBill"
-        const val DS_BILL_SENT = "billSent"
-        const val DS_CASH_MARKED = "cashMarked"
-        const val DS_PAID_ONLINE = "paidOnline"
-        const val DS_REJECTED = "rejected"
-        const val DS_COMPLETED_CASH = "completedCash"
-        const val DS_COMPLETED_ONLINE= "completedOnline"
+        const val DS_NEW = "new"                        // When order comes but not opened by merchant
+        const val DS_SEND_BILL = "sendBill"             // When order comes opened the order but didn't send bill and exit
+        const val DS_BILL_SENT = "billSent"             // When order comes and send bill but payment is due
+        const val DS_CASH_MARKED = "cashMarked"         // When order comes & marked as cash
+        const val DS_PAID_ONLINE = "paidOnline"         // When order comes & order is paid online by customer
+        const val DS_REJECTED = "rejected"              // Order rejected byt customer
+        const val DS_COMPLETED_CASH = "completedCash"   // When order comes & marked as cash TODO ASK SIDDHANT
+        const val DS_COMPLETED_ONLINE= "completedOnline"// Order self checklist by merchant :: Paid Online
         //ORDER_PAGE
         const val MODE_PENDING = "mode_pending"
         const val MODE_COMPLETED = "mode_completed"

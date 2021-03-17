@@ -40,4 +40,10 @@ class ProfilePreviewService {
         }
     }
 
+    fun initiateKyc(authToken: String) {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.initiateKycServerCall(authToken, mServiceInterface)
+        }
+    }
+
 }

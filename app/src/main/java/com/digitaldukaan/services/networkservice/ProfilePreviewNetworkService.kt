@@ -4,8 +4,10 @@ import android.util.Log
 import com.digitaldukaan.models.request.StoreLinkRequest
 import com.digitaldukaan.models.request.StoreLogoRequest
 import com.digitaldukaan.models.request.StoreNameRequest
+import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.network.RetrofitApi
 import com.digitaldukaan.services.serviceinterface.IProfilePreviewServiceInterface
+import com.google.gson.Gson
 
 class ProfilePreviewNetworkService {
 
@@ -81,6 +83,31 @@ class ProfilePreviewNetworkService {
                         serviceInterface.onStoreLogoResponse(storeLinkResponse)
                     }
                 } else throw Exception(response.message())
+            }
+        } catch (e: Exception) {
+            Log.e(ProfilePreviewNetworkService::class.java.simpleName, "updateStoreLogoServerCall: ", e)
+            serviceInterface.onProfilePreviewServerException(e)
+        }
+    }
+
+    suspend fun initiateKycServerCall(
+        authToken: String,
+        serviceInterface: IProfilePreviewServiceInterface
+    ) {
+        try {
+            val response = RetrofitApi().getServerCallObject()?.initiateKyc(authToken)
+            response?.let {
+                if (it.isSuccessful) {
+                    it.body()?.let { storeLinkResponse ->
+                        serviceInterface.onInitiateKycResponse(storeLinkResponse)
+                    }
+                } else {
+                    val errorResponseBody = it.errorBody()
+                    errorResponseBody?.let {
+                        val validateOtpErrorResponse = Gson().fromJson(errorResponseBody.string(), CommonApiResponse::class.java)
+                        serviceInterface.onInitiateKycResponse(validateOtpErrorResponse)
+                    }
+                }
             }
         } catch (e: Exception) {
             Log.e(ProfilePreviewNetworkService::class.java.simpleName, "updateStoreLogoServerCall: ", e)
