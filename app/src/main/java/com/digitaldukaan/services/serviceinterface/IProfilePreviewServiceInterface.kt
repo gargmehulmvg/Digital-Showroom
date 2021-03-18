@@ -7,7 +7,7 @@ interface IProfilePreviewServiceInterface {
 
     fun onProfilePreviewResponse(commonApiResponse: CommonApiResponse)
 
-    fun onStoreNameResponse(response: StoreDescriptionResponse)
+    fun onStoreNameResponse(response: CommonApiResponse)
 
     fun onStoreLinkResponse(response: StoreDescriptionResponse)
 

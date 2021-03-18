@@ -42,7 +42,13 @@ class ProfilePreviewNetworkService {
                     it.body()?.let { storeNameResponse ->
                         serviceInterface.onStoreNameResponse(storeNameResponse)
                     }
-                } else throw Exception(response.message())
+                } else {
+                    val errorResponseBody = it.errorBody()
+                    errorResponseBody?.let {
+                        val validateOtpErrorResponse = Gson().fromJson(errorResponseBody.string(), CommonApiResponse::class.java)
+                        serviceInterface.onStoreNameResponse(validateOtpErrorResponse)
+                    }
+                }
             }
         } catch (e: Exception) {
             Log.e(ProfilePreviewNetworkService::class.java.simpleName, "updateStoreNameServerCall: ", e)

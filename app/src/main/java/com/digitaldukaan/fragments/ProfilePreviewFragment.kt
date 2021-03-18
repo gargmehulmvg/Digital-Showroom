@@ -174,15 +174,15 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         }
     }
 
-    override fun onStoreNameResponse(response: StoreDescriptionResponse) {
+    override fun onStoreNameResponse(response: CommonApiResponse) {
         stopProgress()
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            if (response.mStatus) {
+            if (response.mIsSuccessStatus) {
                 mStoreNameEditBottomSheet?.run {
                     if (isShowing) dismiss()
                 }
-                showToast()
-                mStoreName = response.mStoreInfo?.storeInfo?.name
+                val storeNameResponse = Gson().fromJson<StoreResponse>(response.mCommonDataStr, StoreResponse::class.java)
+                mStoreName = storeNameResponse.storeInfo.name
                 showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
                 onRefresh()
             } else showToast(response.mMessage)
@@ -401,7 +401,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                 showNoInternetConnectionDialog()
             } else {
                 val newStoreName = bottomSheetEditStoreLinkEditText.text.trim().toString()
-                val request = StoreNameRequest(getStringDataFromSharedPref(Constants.STORE_ID).toInt(), newStoreName)
+                val request = StoreNameRequest(newStoreName)
                 showProgressDialog(mActivity)
                 service.updateStoreName(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN),request)
             }

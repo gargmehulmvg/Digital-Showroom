@@ -80,7 +80,7 @@ class OnBoardScreenDukaanNameFragment : BaseFragment(), IProfilePreviewServiceIn
                     } else {
                         val service = ProfilePreviewService()
                         service.setServiceInterface(this)
-                        val request = StoreNameRequest(getStringDataFromSharedPref(Constants.STORE_ID).toInt(), dukanName)
+                        val request = StoreNameRequest(dukanName)
                         showProgressDialog(mActivity)
                         service.updateStoreName(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN),request)
                     }
@@ -93,10 +93,10 @@ class OnBoardScreenDukaanNameFragment : BaseFragment(), IProfilePreviewServiceIn
         Log.d(TAG, "onProfilePreviewResponse: do nothing")
     }
 
-    override fun onStoreNameResponse(response: StoreDescriptionResponse) {
+    override fun onStoreNameResponse(response: CommonApiResponse) {
         stopProgress()
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            if (response.mStatus) {
+            if (response.mIsSuccessStatus) {
                 showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
                 launchFragment(OnBoardScreenDukaanLocationFragment(), true)
             } else showToast(response.mMessage)
