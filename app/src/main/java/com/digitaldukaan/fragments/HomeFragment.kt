@@ -16,7 +16,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.OrderAdapterV2
 import com.digitaldukaan.constants.*
-import com.digitaldukaan.interfaces.IOrderCheckBoxListener
+import com.digitaldukaan.interfaces.IOrderListItemListener
 import com.digitaldukaan.models.request.OrdersRequest
 import com.digitaldukaan.models.request.SearchOrdersRequest
 import com.digitaldukaan.models.request.UpdateOrderRequest
@@ -31,7 +31,7 @@ import kotlinx.android.synthetic.main.layout_analytics.*
 import kotlinx.android.synthetic.main.otp_verification_fragment.*
 
 class HomeFragment : BaseFragment(), IHomeServiceInterface,
-    SwipeRefreshLayout.OnRefreshListener, IOrderCheckBoxListener {
+    SwipeRefreshLayout.OnRefreshListener, IOrderListItemListener {
 
     companion object {
         private val TAG = HomeFragment::class.simpleName
@@ -326,7 +326,6 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                         getContactsFromStorage2(mActivity)
                     }
                     if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else {
-                        showProgressDialog(mActivity)
                         mHomeFragmentService.getOrderPageInfo(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
                         mHomeFragmentService.getAnalyticsData(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
                     }
@@ -350,6 +349,10 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
             showToast(isChecked.toString())
             if (isChecked) openDontShowDialog(item)
         }
+    }
+
+    override fun onOrderItemCLickChanged(item: OrderItemResponse?) {
+        launchFragment(OrderDetailFragment.newInstance(item?.orderId.toString()), true)
     }
 
     override fun onDontShowDialogPositiveButtonClicked(item: OrderItemResponse?) {

@@ -14,6 +14,7 @@
     <color name="red">#F4071B</color>
     <color name="red_alpha">#FDA8A8</color>
     <color name="open_green">#1E981E</color>
+    <color name="open_green_darker">#2BD36D</color>
     <color name="orange">#F69647</color>
     <color name="green_alpha">#9DEF9D</color>
     <color name="default_bg">#F7F8F8</color>

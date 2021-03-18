@@ -14,7 +14,7 @@ import com.digitaldukaan.constants.StaticInstances
 import com.digitaldukaan.constants.getStringFromOrderDate
 import com.digitaldukaan.constants.getTimeFromOrderString
 import com.digitaldukaan.fragments.BaseFragment
-import com.digitaldukaan.interfaces.IOrderCheckBoxListener
+import com.digitaldukaan.interfaces.IOrderListItemListener
 import com.digitaldukaan.models.response.OrderItemResponse
 import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersAdapter
 import java.util.*
@@ -25,10 +25,10 @@ class OrderAdapterV2(
 ) : RecyclerView.Adapter<OrderAdapterV2.OrderViewHolder>(), StickyRecyclerHeadersAdapter<OrderAdapterV2.HeaderViewHolder> {
 
     private val mOrderListStaticData = BaseFragment.mStaticData.mStaticData.mOrderListStaticData
-    private var mCheckBoxListener: IOrderCheckBoxListener? = null
+    private var mListItemListener: IOrderListItemListener? = null
 
-    fun setCheckBoxListener(listener: IOrderCheckBoxListener) {
-        this.mCheckBoxListener = listener
+    fun setCheckBoxListener(listener: IOrderListItemListener) {
+        this.mListItemListener = listener
     }
 
     inner class HeaderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -46,8 +46,11 @@ class OrderAdapterV2(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OrderViewHolder {
         val view = OrderViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.order_item, parent, false))
-        view.orderCheckBox.setOnClickListener { _ ->
-            mCheckBoxListener?.let { it.onOrderCheckBoxChanged(view.orderCheckBox.isChecked, mOrderList?.get(view.adapterPosition)) }
+        view.orderCheckBox.setOnClickListener {
+            mListItemListener?.onOrderCheckBoxChanged(view.orderCheckBox.isChecked, mOrderList?.get(view.adapterPosition))
+        }
+        view.orderItemContainer.setOnClickListener {
+            mListItemListener?.onOrderItemCLickChanged(mOrderList?.get(view.adapterPosition))
         }
         return view
     }

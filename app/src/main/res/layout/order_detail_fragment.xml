@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:animateLayoutChanges="true"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/newOrderTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/open_green_darker"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center"
+            android:paddingTop="@dimen/_4sdp"
+            android:paddingBottom="@dimen/_4sdp"
+            android:text="New Order"
+            android:textColor="@color/white" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/orderDetailItemRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:itemCount="3"
+            tools:listitem="@layout/order_detail_item" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
+            android:padding="@dimen/_12sdp">
+
+            <TextView
+                android:id="@+id/deliveryChargeLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Delivery Charges" />
+
+            <TextView
+                android:id="@+id/deliveryChargeValue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Delivery Charges" />
+
+            <TextView
+                android:id="@+id/addDeliveryChargesLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:background="?selectableItemBackground"
+                android:fontFamily="sans-serif-medium"
+                android:onClick="onClick"
+                android:text="+ Add Delivery And Other Charges"
+                android:textColor="@color/open_green"
+                app:layout_constraintStart_toStartOf="@id/deliveryChargeLabel"
+                app:layout_constraintTop_toBottomOf="@id/deliveryChargeLabel" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0.4dp"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:layout_marginTop="@dimen/_2sdp"
+                android:layout_marginEnd="@dimen/_5sdp"
+                android:background="@color/open_green"
+                app:layout_constraintEnd_toEndOf="@+id/addDeliveryChargesLabel"
+                app:layout_constraintStart_toStartOf="@+id/addDeliveryChargesLabel"
+                app:layout_constraintTop_toBottomOf="@+id/addDeliveryChargesLabel" />
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/addDeliveryChargesGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:constraint_referenced_ids="otherChargesEditText,otherChargesValueEditText,discountsEditText,discountsValueEditText" />
+
+            <EditText
+                android:id="@+id/otherChargesEditText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:hint="Other charges"
+                android:importantForAutofill="no"
+                android:inputType="text"
+                android:minWidth="@dimen/_100sdp"
+                android:textSize="@dimen/_10sdp"
+                app:layout_constraintStart_toStartOf="@+id/addDeliveryChargesLabel"
+                app:layout_constraintTop_toBottomOf="@+id/addDeliveryChargesLabel" />
+
+            <EditText
+                android:id="@+id/otherChargesValueEditText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="₹"
+                android:importantForAutofill="no"
+                android:inputType="number"
+                android:maxLength="@integer/amount_length"
+                android:minWidth="@dimen/_30sdp"
+                android:textSize="@dimen/_10sdp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/otherChargesEditText" />
+
+            <EditText
+                android:id="@+id/discountsValueEditText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="₹"
+                android:importantForAutofill="no"
+                android:inputType="number"
+                android:maxLength="@integer/amount_length"
+                android:minWidth="@dimen/_30sdp"
+                android:textSize="@dimen/_10sdp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/otherChargesValueEditText"
+                app:layout_constraintTop_toBottomOf="@+id/otherChargesValueEditText" />
+
+            <EditText
+                android:id="@+id/discountsEditText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="Discounts"
+                android:importantForAutofill="no"
+                android:inputType="text"
+                android:minWidth="@dimen/_100sdp"
+                android:textSize="@dimen/_10sdp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/addDeliveryChargesLabel"
+                app:layout_constraintTop_toBottomOf="@+id/otherChargesEditText" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/instructionsLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-medium"
+            android:paddingStart="@dimen/_12sdp"
+            android:paddingTop="@dimen/_12sdp"
+            android:paddingEnd="@dimen/_12sdp"
+            android:paddingBottom="@dimen/_5sdp"
+            android:text="INSTRUCTIONS:"
+            android:textColor="@color/default_text_light_grey"
+            android:textSize="@dimen/_11sdp" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/instructionsValue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/_12sdp"
+            android:paddingEnd="@dimen/_12sdp"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_12sdp"
+            tools:text="Please mention Happy birthday aditya on the top of the cake" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/customerDetailsLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-medium"
+            android:paddingStart="@dimen/_12sdp"
+            android:paddingTop="@dimen/_12sdp"
+            android:paddingEnd="@dimen/_12sdp"
+            android:paddingBottom="@dimen/_5sdp"
+            android:text="CUSTOMER DETAILS:"
+            android:textColor="@color/default_text_light_grey"
+            android:textSize="@dimen/_11sdp" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/customerDeliveryDetailsRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/_60sdp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:itemCount="5"
+            tools:listitem="@layout/customer_detail_item" />
+
+    </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>

@@ -52,8 +52,15 @@ data class DeliveryInfoItemResponse(
     @SerializedName("fulfillment_id") var fulfillmentId: Int,
     @SerializedName("latitude") var latitude: Double,
     @SerializedName("longitude") var longitude: Double,
+    @SerializedName("assigned_to") var assignedTo: Double,
     @SerializedName("address1") var address1: String,
     @SerializedName("address2") var address2: String,
+    @SerializedName("city") var city: String?,
+    @SerializedName("landmark") var landmark: String?,
+    @SerializedName("pincode") var pincode: String?,
+    @SerializedName("deliver_to") var deliverTo: String?,
+    @SerializedName("delivery_to") var deliveryTo: String?,
+    @SerializedName("delivery_from") var deliveryFrom: String?,
     @SerializedName("slot_start") var slotStart: String?,
     @SerializedName("slot_end") var slotEnd: String?
 )

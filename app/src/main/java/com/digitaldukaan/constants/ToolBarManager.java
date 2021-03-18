@@ -26,9 +26,17 @@ public class ToolBarManager {
 
     public void setHeaderTitle(String title) {
         TextView v = mToolbar.findViewById(R.id.appTitleTextView);
+        TextView subHeadingView = mToolbar.findViewById(R.id.appSubTitleTextView);
+        subHeadingView.setVisibility(View.GONE);
         v.setText(title);
     }
-    
+
+    public void setHeaderSubTitle(String title) {
+        TextView v = mToolbar.findViewById(R.id.appSubTitleTextView);
+        v.setVisibility(View.VISIBLE);
+        v.setText(title);
+    }
+
     public void setSideIcon(Drawable drawable, IOnToolbarIconClick listener) {
         ImageView imageView = mToolbar.findViewById(R.id.sideIconToolbar);
         imageView.setImageDrawable(drawable);

@@ -93,6 +93,11 @@ fun getStringFromOrderDate(date: Date): String {
     return dateFormat.format(date)
 }
 
+fun getStringDateTimeFromOrderDate(date: Date): String {
+    val dateFormat = SimpleDateFormat("dd MMM yy | hh:mm a", Locale.getDefault());
+    return dateFormat.format(date)
+}
+
 fun getContactsFromStorage2(ctx: Context) {
     val tag = "CONTACTS"
     if (StaticInstances.sUserContactList.isNotEmpty()) return

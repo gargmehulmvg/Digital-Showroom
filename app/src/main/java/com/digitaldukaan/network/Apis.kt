@@ -90,4 +90,7 @@ interface Apis {
 
     @POST("api/dotk/orders/updateOrderStatus")
     suspend fun updateOrderStatus(@Header("auth_token") authToken: String, @Body request: UpdateOrderRequest): Response<CommonApiResponse>
+
+    @GET("api/dotk/orders/getOrderDetails/{orderId}")
+    suspend fun getOrderDetails(@Header("auth_token") authToken: String, @Path("orderId") orderId: String): Response<CommonApiResponse>
 }

@@ -12,7 +12,6 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -263,11 +262,11 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             layoutManager = linearLayoutManager
             adapter = settingsAdapter
             settingsAdapter.setSettingsList(infoResponse.mStoreOptions)
-            val dividerItemDecoration = DividerItemDecoration(
-                context,
-                linearLayoutManager.orientation
-            )
-            addItemDecoration(dividerItemDecoration)
+//            val dividerItemDecoration = DividerItemDecoration(
+//                context,
+//                linearLayoutManager.orientation
+//            )
+//            addItemDecoration(dividerItemDecoration)
         }
         infoResponse.mTrendingList?.forEachIndexed { index, response ->
             if (0 == index) {
@@ -284,7 +283,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                 bulkUploadItemTextView.text = response.mText
             }
         }
-        val remainingSteps = infoResponse.mTotalSteps?.minus(infoResponse.mCompletedSteps)
+        val remainingSteps = infoResponse.mTotalSteps.minus(infoResponse.mCompletedSteps)
         stepsLeftTextView.text =
             if (remainingSteps == 1) "$remainingSteps ${infoResponse.mAccountStaticText?.mStepLeft}" else "$remainingSteps ${infoResponse.mAccountStaticText?.mStepsLeft}"
         completeProfileTextView.text = infoResponse.mAccountStaticText?.mCompleteProfile
