@@ -94,4 +94,7 @@ interface Apis {
 
     @GET("api/dotk/orders/getOrderDetails/{orderId}")
     suspend fun getOrderDetails(@Header("auth_token") authToken: String, @Path("orderId") orderId: String): Response<CommonApiResponse>
+
+    @GET("api/dotk/products/getProductPageInfo")
+    suspend fun getProductPageInfo(@Header("auth_token") authToken: String): Response<CommonApiResponse>
 }
