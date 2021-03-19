@@ -8,6 +8,7 @@ import android.content.Context.MODE_PRIVATE
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Color
+import android.graphics.Paint
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.net.Uri
@@ -175,6 +176,10 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     fun EditText.hideKeyboard() {
         val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(this.windowToken, 0)
+    }
+
+    fun TextView.showStrikeOffText() {
+        paintFlags = paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
     }
 
     open fun hideSoftKeyboard() {

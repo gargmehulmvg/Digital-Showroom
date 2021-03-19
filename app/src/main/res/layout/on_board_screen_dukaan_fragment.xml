@@ -84,7 +84,7 @@
                 tools:hint="@string/your_shop_store_dukaan_name"
                 android:importantForAutofill="no"
                 android:inputType="text"
-                android:maxLength="@integer/dukaan_name_length"
+                android:maxLength="@integer/description_name_length"
                 android:textColor="@color/black"
                 android:textColorHint="@color/default_text_light_grey"
                 android:textSize="@dimen/_12sdp" />

@@ -81,7 +81,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface {
 
     override fun onClick(view: View?) {
         when(view?.id) {
-            addProductContainer.id -> launchFragment(AddProductFragment.newInstance(), true)
+            addProductContainer.id -> launchFragment(AddProductFragment.newInstance(0), true)
         }
     }
 

@@ -6,6 +6,10 @@ interface IAddProductServiceInterface {
 
     fun onAddProductBannerStaticDataResponse(commonResponse: CommonApiResponse)
 
+    fun onGetAddProductDataResponse(commonResponse: CommonApiResponse)
+
+    fun onAddProductDataResponse(commonResponse: CommonApiResponse)
+
     fun onAddProductException(e: Exception)
 
 }

@@ -101,7 +101,7 @@
                 android:layout_marginTop="@dimen/_20sdp"
                 android:layout_marginStart="@dimen/_20sdp"
                 android:layout_marginEnd="@dimen/_20sdp"
-                android:hint="Enter Item Name"
+                tools:hint="Enter Item Name"
                 app:layout_constraintEnd_toEndOf="@+id/smsImageView"
                 app:layout_constraintStart_toStartOf="@+id/enterMobileNumberHeading"
                 app:layout_constraintTop_toBottomOf="@+id/send4DigitOtpHeading">
@@ -111,10 +111,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:importantForAutofill="no"
-                    android:inputType="number"
+                    android:inputType="text"
                     android:focusable="true"
                     android:clickable="true"
-                    android:maxLength="@integer/mobile_number_length"
+                    android:maxLength="@integer/description_name_length"
                     android:textColor="@color/black"
                     android:textColorHint="@color/default_text_light_grey"
                     android:textSize="@dimen/_12sdp" />
@@ -129,7 +129,7 @@
                 android:layout_marginTop="@dimen/_10sdp"
                 android:layout_marginStart="@dimen/_20sdp"
                 android:layout_marginEnd="@dimen/_20sdp"
-                android:hint="Price (₹)"
+                tools:hint="Price (₹)"
                 app:layout_constraintEnd_toEndOf="@+id/smsImageView"
                 app:layout_constraintStart_toStartOf="@+id/enterMobileNumberHeading"
                 app:layout_constraintTop_toBottomOf="@+id/send4DigitOtpHeading">
@@ -161,7 +161,7 @@
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="@dimen/_150sdp"
                     android:layout_height="wrap_content"
-                    android:hint="Discounted Price (₹)"
+                    tools:hint="Discounted Price (₹)"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
@@ -185,7 +185,7 @@
                     android:id="@+id/originalPriceTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="₹ 504"
+                    tools:text="₹ 504"
                     android:textSize="@dimen/_14sdp"
                     app:layout_constraintBottom_toBottomOf="@+id/discountedPriceInputLayout"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -198,7 +198,7 @@
                     android:id="@+id/pricePercentageOffTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="50% OFF"
+                    tools:text="50% OFF"
                     android:fontFamily="sans-serif-medium"
                     android:textColor="@color/open_green"
                     android:textSize="@dimen/_10sdp"
@@ -213,7 +213,8 @@
                     android:layout_marginStart="@dimen/_10sdp"
                     android:background="@drawable/slight_curve_red_background"
                     android:fontFamily="@font/montserrat_bold"
-                    android:text="₹ 504"
+                    tools:text="₹ 504"
+                    android:visibility="invisible"
                     android:textSize="@dimen/_10sdp"
                     android:textColor="@color/white"
                     app:layout_constraintBottom_toBottomOf="@+id/originalPriceTextView"
@@ -230,7 +231,7 @@
                 android:layout_marginTop="@dimen/_10sdp"
                 android:layout_marginStart="@dimen/_20sdp"
                 android:layout_marginEnd="@dimen/_20sdp"
-                android:hint="Enter Category (Optional)"
+                tools:hint="Enter Category (Optional)"
                 app:layout_constraintEnd_toEndOf="@+id/smsImageView"
                 app:layout_constraintStart_toStartOf="@+id/enterMobileNumberHeading"
                 app:layout_constraintTop_toBottomOf="@+id/send4DigitOtpHeading">
@@ -240,10 +241,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:importantForAutofill="no"
-                    android:inputType="number"
+                    android:inputType="text"
                     android:focusable="true"
                     android:clickable="true"
-                    android:maxLength="@integer/mobile_number_length"
+                    android:maxLength="@integer/description_name_length"
                     android:textColor="@color/black"
                     android:textColorHint="@color/default_text_light_grey"
                     android:textSize="@dimen/_12sdp" />
@@ -266,7 +267,7 @@
                 android:layout_marginStart="@dimen/_20sdp"
                 android:layout_marginTop="@dimen/_10sdp"
                 android:textColor="@color/open_green"
-                android:text="+ Add Item Description" />
+                tools:text="+ Add Item Description" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/productDescriptionInputLayout"

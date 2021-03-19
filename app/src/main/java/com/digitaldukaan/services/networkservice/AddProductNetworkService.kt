@@ -1,6 +1,7 @@
 package com.digitaldukaan.services.networkservice
 
 import android.util.Log
+import com.digitaldukaan.models.request.AddProductRequest
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.network.RetrofitApi
 import com.digitaldukaan.services.serviceinterface.IAddProductServiceInterface
@@ -33,6 +34,66 @@ class AddProductNetworkService {
             }
         } catch (e: Exception) {
             Log.e(AddProductNetworkService::class.java.simpleName, "getAddOrderBottomSheetDataServerCall: ", e)
+            serviceInterface.onAddProductException(e)
+        }
+    }
+
+    suspend fun getItemInfoServerCall(
+        authToken: String,
+        itemId: Int,
+        serviceInterface: IAddProductServiceInterface
+    ) {
+        try {
+            val response = RetrofitApi().getServerCallObject()?.getItemInfo(authToken, itemId)
+            response?.let {
+                if (it.isSuccessful) {
+                    it.body()?.let { commonApiResponse -> serviceInterface.onGetAddProductDataResponse(commonApiResponse)
+                    }
+                } else {
+                    val responseBody = it.errorBody()
+                    responseBody?.let {
+                        val errorResponse = Gson().fromJson(
+                            responseBody.string(),
+                            CommonApiResponse::class.java
+                        )
+                        serviceInterface.onGetAddProductDataResponse(
+                            errorResponse
+                        )
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(AddProductNetworkService::class.java.simpleName, "getItemInfoServerCall: ", e)
+            serviceInterface.onAddProductException(e)
+        }
+    }
+
+    suspend fun setItemServerCall(
+        authToken: String,
+        request: AddProductRequest,
+        serviceInterface: IAddProductServiceInterface
+    ) {
+        try {
+            val response = RetrofitApi().getServerCallObject()?.setItem(authToken, request)
+            response?.let {
+                if (it.isSuccessful) {
+                    it.body()?.let { commonApiResponse -> serviceInterface.onAddProductDataResponse(commonApiResponse)
+                    }
+                } else {
+                    val responseBody = it.errorBody()
+                    responseBody?.let {
+                        val errorResponse = Gson().fromJson(
+                            responseBody.string(),
+                            CommonApiResponse::class.java
+                        )
+                        serviceInterface.onGetAddProductDataResponse(
+                            errorResponse
+                        )
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(AddProductNetworkService::class.java.simpleName, "getItemInfoServerCall: ", e)
             serviceInterface.onAddProductException(e)
         }
     }
