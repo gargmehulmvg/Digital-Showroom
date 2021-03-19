@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:animateLayoutChanges="true"
-    xmlns:tools="http://schemas.android.com/tools">
+    android:animateLayoutChanges="true">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:fillViewport="true"
         android:animateLayoutChanges="true"
         android:background="@color/default_bg"
+        android:fillViewport="true"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout5"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -23,18 +23,18 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:background="@color/add_product_banner_background"
-                android:padding="@dimen/_15sdp"
+                android:layout_height="wrap_content"
                 android:animateLayoutChanges="true"
-                android:layout_height="wrap_content">
+                android:background="@color/add_product_banner_background"
+                android:padding="@dimen/_15sdp">
 
                 <TextView
                     android:id="@+id/textView2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_5sdp"
                     android:fontFamily="sans-serif-medium"
                     android:maxWidth="@dimen/_175sdp"
-                    android:layout_marginStart="@dimen/_5sdp"
                     android:minLines="@integer/min_lines_two"
                     android:textColor="@color/black"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -46,22 +46,66 @@
                     android:id="@+id/tryNowTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/curve_black_border"
-                    android:textColor="@color/black"
                     android:layout_marginEnd="@dimen/_5sdp"
+                    android:background="@drawable/curve_black_border"
                     android:onClick="onClick"
+                    android:text="Try Now"
+                    android:textColor="@color/black"
                     android:textSize="@dimen/_12sdp"
                     app:layout_constraintBottom_toBottomOf="@+id/textView2"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/textView2"
-                    android:text="Try Now" />
+                    app:layout_constraintTop_toTopOf="@+id/textView2" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:background="@color/black"
-                android:layout_height="@dimen/_175sdp">
+                android:layout_height="@dimen/_175sdp"
+                android:background="@color/black">
+
+                <androidx.constraintlayout.widget.Group
+                    android:id="@+id/noImagesLayout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="visible"
+                    app:constraint_referenced_ids="updateCameraTextView,updateCameraImageView" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/imagesRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_100sdp"
+                    android:orientation="horizontal"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/imagesLeftContainer"
+                    tools:itemCount="1"
+                    tools:listitem="@layout/add_product_images_item" />
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/imagesLeftContainer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/_5sdp"
+                    app:cardCornerRadius="@dimen/_15sdp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/imagesLeftTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@color/default_text_light_grey"
+                        android:paddingStart="@dimen/_10sdp"
+                        android:paddingTop="@dimen/_5sdp"
+                        android:paddingEnd="@dimen/_10sdp"
+                        android:paddingBottom="@dimen/_5sdp"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_10sdp"
+                        tools:text="3/4 images left" />
+
+                </androidx.cardview.widget.CardView>
 
                 <ImageView
                     android:id="@+id/updateCameraImageView"
@@ -71,6 +115,7 @@
                     android:src="@drawable/ic_camera_update"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
+                    android:onClick="onClick"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_bias="0.4" />
@@ -81,15 +126,16 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-medium"
                     android:gravity="center"
+                    android:onClick="onClick"
                     android:maxWidth="@dimen/_100sdp"
                     android:minLines="@integer/min_lines_two"
-                    android:text="Upload or search images"
                     android:paddingTop="@dimen/_10sdp"
-                    android:textSize="@dimen/_10sdp"
                     android:textColor="@color/white"
+                    android:textSize="@dimen/_10sdp"
                     app:layout_constraintEnd_toEndOf="@+id/updateCameraImageView"
                     app:layout_constraintStart_toStartOf="@+id/updateCameraImageView"
-                    app:layout_constraintTop_toBottomOf="@+id/updateCameraImageView" />
+                    app:layout_constraintTop_toBottomOf="@+id/updateCameraImageView"
+                    tools:text="Upload or search images" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -98,22 +144,22 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_20sdp"
                 android:layout_marginStart="@dimen/_20sdp"
+                android:layout_marginTop="@dimen/_20sdp"
                 android:layout_marginEnd="@dimen/_20sdp"
-                tools:hint="Enter Item Name"
                 app:layout_constraintEnd_toEndOf="@+id/smsImageView"
                 app:layout_constraintStart_toStartOf="@+id/enterMobileNumberHeading"
-                app:layout_constraintTop_toBottomOf="@+id/send4DigitOtpHeading">
+                app:layout_constraintTop_toBottomOf="@+id/send4DigitOtpHeading"
+                tools:hint="Enter Item Name">
 
                 <EditText
                     android:id="@+id/nameEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:importantForAutofill="no"
                     android:inputType="text"
-                    android:focusable="true"
-                    android:clickable="true"
                     android:maxLength="@integer/description_name_length"
                     android:textColor="@color/black"
                     android:textColorHint="@color/default_text_light_grey"
@@ -126,22 +172,22 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_10sdp"
                 android:layout_marginStart="@dimen/_20sdp"
+                android:layout_marginTop="@dimen/_10sdp"
                 android:layout_marginEnd="@dimen/_20sdp"
-                tools:hint="Price (₹)"
                 app:layout_constraintEnd_toEndOf="@+id/smsImageView"
                 app:layout_constraintStart_toStartOf="@+id/enterMobileNumberHeading"
-                app:layout_constraintTop_toBottomOf="@+id/send4DigitOtpHeading">
+                app:layout_constraintTop_toBottomOf="@+id/send4DigitOtpHeading"
+                tools:hint="Price (₹)">
 
                 <EditText
                     android:id="@+id/priceEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:importantForAutofill="no"
                     android:inputType="number"
-                    android:focusable="true"
-                    android:clickable="true"
                     android:maxLength="@integer/mobile_number_length"
                     android:textColor="@color/black"
                     android:textColorHint="@color/default_text_light_grey"
@@ -152,19 +198,19 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_10sdp"
                 android:layout_marginStart="@dimen/_20sdp"
-                android:layout_marginEnd="@dimen/_20sdp" >
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginEnd="@dimen/_20sdp">
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/discountedPriceInputLayout"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="@dimen/_150sdp"
                     android:layout_height="wrap_content"
-                    tools:hint="Discounted Price (₹)"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:hint="Discounted Price (₹)">
 
                     <EditText
                         android:id="@+id/discountedPriceEditText"
@@ -185,26 +231,26 @@
                     android:id="@+id/originalPriceTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    tools:text="₹ 504"
                     android:textSize="@dimen/_14sdp"
                     app:layout_constraintBottom_toBottomOf="@+id/discountedPriceInputLayout"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.25"
                     app:layout_constraintStart_toEndOf="@+id/discountedPriceInputLayout"
                     app:layout_constraintTop_toTopOf="@+id/discountedPriceInputLayout"
-                    app:layout_constraintVertical_bias="0.0" />
+                    app:layout_constraintVertical_bias="0.0"
+                    tools:text="₹ 504" />
 
                 <TextView
                     android:id="@+id/pricePercentageOffTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    tools:text="50% OFF"
                     android:fontFamily="sans-serif-medium"
                     android:textColor="@color/open_green"
                     android:textSize="@dimen/_10sdp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="@+id/discountedPriceTextView"
-                    app:layout_constraintTop_toBottomOf="@+id/originalPriceTextView" />
+                    app:layout_constraintTop_toBottomOf="@+id/originalPriceTextView"
+                    tools:text="50% OFF" />
 
                 <TextView
                     android:id="@+id/discountedPriceTextView"
@@ -213,13 +259,13 @@
                     android:layout_marginStart="@dimen/_10sdp"
                     android:background="@drawable/slight_curve_red_background"
                     android:fontFamily="@font/montserrat_bold"
-                    tools:text="₹ 504"
-                    android:visibility="invisible"
-                    android:textSize="@dimen/_10sdp"
                     android:textColor="@color/white"
+                    android:textSize="@dimen/_10sdp"
+                    android:visibility="invisible"
                     app:layout_constraintBottom_toBottomOf="@+id/originalPriceTextView"
                     app:layout_constraintStart_toEndOf="@+id/originalPriceTextView"
-                    app:layout_constraintTop_toTopOf="@+id/originalPriceTextView" />
+                    app:layout_constraintTop_toTopOf="@+id/originalPriceTextView"
+                    tools:text="₹ 504" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -228,22 +274,22 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_10sdp"
                 android:layout_marginStart="@dimen/_20sdp"
+                android:layout_marginTop="@dimen/_10sdp"
                 android:layout_marginEnd="@dimen/_20sdp"
-                tools:hint="Enter Category (Optional)"
                 app:layout_constraintEnd_toEndOf="@+id/smsImageView"
                 app:layout_constraintStart_toStartOf="@+id/enterMobileNumberHeading"
-                app:layout_constraintTop_toBottomOf="@+id/send4DigitOtpHeading">
+                app:layout_constraintTop_toBottomOf="@+id/send4DigitOtpHeading"
+                tools:hint="Enter Category (Optional)">
 
                 <EditText
                     android:id="@+id/enterCategoryEditText"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:focusable="true"
                     android:importantForAutofill="no"
                     android:inputType="text"
-                    android:focusable="true"
-                    android:clickable="true"
                     android:maxLength="@integer/description_name_length"
                     android:textColor="@color/black"
                     android:textColorHint="@color/default_text_light_grey"
@@ -254,19 +300,19 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_5sdp"
-                android:background="@color/curve_grey_border"
-                android:layout_marginTop="@dimen/_20sdp" />
+                android:layout_marginTop="@dimen/_20sdp"
+                android:background="@color/curve_grey_border" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/addItemTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="@dimen/_12sdp"
-                android:onClick="onClick"
-                android:background="?selectableItemBackground"
                 android:layout_marginStart="@dimen/_20sdp"
                 android:layout_marginTop="@dimen/_10sdp"
+                android:background="?selectableItemBackground"
+                android:onClick="onClick"
                 android:textColor="@color/open_green"
+                android:textSize="@dimen/_12sdp"
                 tools:text="+ Add Item Description" />
 
             <com.google.android.material.textfield.TextInputLayout
@@ -319,13 +365,13 @@
 
         <TextView
             android:id="@+id/continueTextView"
+            style="@style/common_text_view_background"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:onClick="onClick"
-            android:gravity="center"
-            tools:text="@string/save_n_continue"
             android:layout_margin="@dimen/_10sdp"
-            style="@style/common_text_view_background" />
+            android:gravity="center"
+            android:onClick="onClick"
+            tools:text="@string/save_n_continue" />
 
     </androidx.cardview.widget.CardView>
 

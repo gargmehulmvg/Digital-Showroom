@@ -1,162 +1,172 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/bottomSheetContainer"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:fillViewport="true"
+    android:layout_height="match_parent"
     android:background="@drawable/upper_curve_white_background"
+    android:maxHeight="@dimen/_500sdp"
     android:paddingStart="@dimen/_15sdp"
+    android:orientation="vertical"
     android:paddingTop="@dimen/_8sdp"
     android:paddingEnd="@dimen/_15sdp">
 
-    <ImageView
-        android:id="@+id/bottomSheetUploadImageCloseImageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:contentDescription="@string/image_view_content_description"
-        android:src="@drawable/ic_black_close"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/bottomSheetUploadImageHeading"
-        style="@style/common_bold_text_view"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textSize="@dimen/_18sdp"
-        app:layout_constraintEnd_toStartOf="@+id/bottomSheetUploadImageCloseImageView"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/bottomSheetUploadImageCloseImageView"
-        tools:text="Confirmation" />
-
-    <TextView
-        android:id="@+id/bottomSheetUploadImageSearchHeading"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_15sdp"
-        android:fontFamily="sans-serif-medium"
-        android:textColor="@color/black"
-        android:textSize="@dimen/_14sdp"
-        app:layout_constraintEnd_toStartOf="@id/bottomSheetUploadImageCloseImageView"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/bottomSheetUploadImageCameraTextView"
-        tools:text="Confirmation" />
+        android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/bottomSheetUploadImageCamera"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:layout_marginTop="@dimen/_15sdp"
-        android:contentDescription="@string/image_view_content_description"
-        android:padding="@dimen/_5sdp"
-        android:src="@drawable/ic_open_camera"
-        app:layout_constraintEnd_toStartOf="@+id/bottomSheetUploadImageGallery"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintHorizontal_chainStyle="spread_inside"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/bottomSheetUploadImageHeading" />
+        <ImageView
+            android:id="@+id/bottomSheetUploadImageCloseImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:contentDescription="@string/image_view_content_description"
+            android:src="@drawable/ic_black_close"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/bottomSheetUploadImageCameraTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_5sdp"
-        android:fontFamily="@font/montserrat"
-        android:textSize="@dimen/_10sdp"
-        app:layout_constraintEnd_toEndOf="@+id/bottomSheetUploadImageCamera"
-        app:layout_constraintStart_toStartOf="@+id/bottomSheetUploadImageCamera"
-        app:layout_constraintTop_toBottomOf="@+id/bottomSheetUploadImageCamera"
-        tools:text="Take a photo" />
+        <TextView
+            android:id="@+id/bottomSheetUploadImageHeading"
+            style="@style/common_bold_text_view"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/_18sdp"
+            app:layout_constraintEnd_toStartOf="@+id/bottomSheetUploadImageCloseImageView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/bottomSheetUploadImageCloseImageView"
+            tools:text="Confirmation" />
 
-    <ImageView
-        android:id="@+id/bottomSheetUploadImageGallery"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:contentDescription="@string/image_view_content_description"
-        android:padding="@dimen/_5sdp"
-        android:src="@drawable/ic_gallery"
-        app:layout_constraintBottom_toBottomOf="@+id/bottomSheetUploadImageCamera"
-        app:layout_constraintEnd_toStartOf="@+id/bottomSheetUploadImageRemovePhoto"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/bottomSheetUploadImageCamera"
-        app:layout_constraintTop_toTopOf="@+id/bottomSheetUploadImageCamera" />
+        <TextView
+            android:id="@+id/bottomSheetUploadImageSearchHeading"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_15sdp"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_14sdp"
+            app:layout_constraintEnd_toStartOf="@id/bottomSheetUploadImageCloseImageView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/bottomSheetUploadImageCameraTextView"
+            tools:text="Confirmation" />
 
-    <ImageView
-        android:id="@+id/bottomSheetUploadImageRemovePhoto"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:contentDescription="@string/image_view_content_description"
-        android:padding="@dimen/_5sdp"
-        android:src="@drawable/ic_remove_photo"
-        app:layout_constraintBottom_toBottomOf="@+id/bottomSheetUploadImageGallery"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/bottomSheetUploadImageGallery"
-        app:layout_constraintTop_toTopOf="@+id/bottomSheetUploadImageGallery" />
+        <ImageView
+            android:id="@+id/bottomSheetUploadImageCamera"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:layout_marginTop="@dimen/_15sdp"
+            android:contentDescription="@string/image_view_content_description"
+            android:padding="@dimen/_5sdp"
+            android:src="@drawable/ic_open_camera"
+            app:layout_constraintEnd_toStartOf="@+id/bottomSheetUploadImageGallery"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_chainStyle="spread_inside"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/bottomSheetUploadImageHeading" />
 
-    <TextView
-        android:id="@+id/bottomSheetUploadImageGalleryTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/montserrat"
-        android:textSize="@dimen/_10sdp"
-        app:layout_constraintEnd_toEndOf="@+id/bottomSheetUploadImageGallery"
-        app:layout_constraintStart_toEndOf="@+id/bottomSheetUploadImageCamera"
-        app:layout_constraintTop_toTopOf="@+id/bottomSheetUploadImageCameraTextView"
-        tools:text="Take a photo" />
+        <TextView
+            android:id="@+id/bottomSheetUploadImageCameraTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:fontFamily="@font/montserrat"
+            android:textSize="@dimen/_10sdp"
+            app:layout_constraintEnd_toEndOf="@+id/bottomSheetUploadImageCamera"
+            app:layout_constraintStart_toStartOf="@+id/bottomSheetUploadImageCamera"
+            app:layout_constraintTop_toBottomOf="@+id/bottomSheetUploadImageCamera"
+            tools:text="Take a photo" />
 
-    <TextView
-        android:id="@+id/bottomSheetUploadImageRemovePhotoTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="@font/montserrat"
-        android:textSize="@dimen/_10sdp"
-        app:layout_constraintEnd_toEndOf="@+id/bottomSheetUploadImageRemovePhoto"
-        app:layout_constraintStart_toEndOf="@+id/bottomSheetUploadImageGallery"
-        app:layout_constraintTop_toTopOf="@+id/bottomSheetUploadImageGalleryTextView"
-        tools:text="Take a photo" />
+        <ImageView
+            android:id="@+id/bottomSheetUploadImageGallery"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:contentDescription="@string/image_view_content_description"
+            android:padding="@dimen/_5sdp"
+            android:src="@drawable/ic_gallery"
+            app:layout_constraintBottom_toBottomOf="@+id/bottomSheetUploadImageCamera"
+            app:layout_constraintEnd_toStartOf="@+id/bottomSheetUploadImageRemovePhoto"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/bottomSheetUploadImageCamera"
+            app:layout_constraintTop_toTopOf="@+id/bottomSheetUploadImageCamera" />
 
-    <EditText
-        android:id="@+id/searchImageEditText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_8sdp"
-        android:background="@drawable/search_curve_padding_grey_border"
-        android:imeOptions="actionSearch"
-        android:importantForAutofill="no"
-        android:inputType="text"
-        android:textSize="@dimen/_12sdp"
-        app:layout_constraintEnd_toEndOf="@+id/bottomSheetUploadImageHeading"
-        app:layout_constraintStart_toStartOf="@+id/bottomSheetUploadImageHeading"
-        app:layout_constraintTop_toBottomOf="@+id/bottomSheetUploadImageSearchHeading" />
+        <ImageView
+            android:id="@+id/bottomSheetUploadImageRemovePhoto"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:contentDescription="@string/image_view_content_description"
+            android:padding="@dimen/_5sdp"
+            android:src="@drawable/ic_remove_photo"
+            app:layout_constraintBottom_toBottomOf="@+id/bottomSheetUploadImageGallery"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/bottomSheetUploadImageGallery"
+            app:layout_constraintTop_toTopOf="@+id/bottomSheetUploadImageGallery" />
 
-    <ImageView
-        android:id="@+id/searchImageImageView"
-        android:layout_width="@dimen/_30sdp"
-        android:layout_height="0dp"
-        android:background="@drawable/search_right_curve_green"
-        android:contentDescription="@string/image_view_content_description"
-        android:padding="@dimen/_7sdp"
-        android:src="@drawable/ic_search"
-        app:layout_constraintBottom_toBottomOf="@+id/searchImageEditText"
-        app:layout_constraintEnd_toEndOf="@+id/searchImageEditText"
-        app:layout_constraintTop_toTopOf="@+id/searchImageEditText" />
+        <TextView
+            android:id="@+id/bottomSheetUploadImageGalleryTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat"
+            android:textSize="@dimen/_10sdp"
+            app:layout_constraintEnd_toEndOf="@+id/bottomSheetUploadImageGallery"
+            app:layout_constraintStart_toEndOf="@+id/bottomSheetUploadImageCamera"
+            app:layout_constraintTop_toTopOf="@+id/bottomSheetUploadImageCameraTextView"
+            tools:text="Take a photo" />
+
+        <TextView
+            android:id="@+id/bottomSheetUploadImageRemovePhotoTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat"
+            android:textSize="@dimen/_10sdp"
+            app:layout_constraintEnd_toEndOf="@+id/bottomSheetUploadImageRemovePhoto"
+            app:layout_constraintStart_toEndOf="@+id/bottomSheetUploadImageGallery"
+            app:layout_constraintTop_toTopOf="@+id/bottomSheetUploadImageGalleryTextView"
+            tools:text="Take a photo" />
+
+        <EditText
+            android:id="@+id/searchImageEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:background="@drawable/search_curve_padding_grey_border"
+            android:imeOptions="actionSearch"
+            android:importantForAutofill="no"
+            android:inputType="text"
+            android:text="apple"
+            android:textSize="@dimen/_14sdp"
+            app:layout_constraintEnd_toEndOf="@+id/bottomSheetUploadImageHeading"
+            app:layout_constraintStart_toStartOf="@+id/bottomSheetUploadImageHeading"
+            app:layout_constraintTop_toBottomOf="@+id/bottomSheetUploadImageSearchHeading" />
+
+        <ImageView
+            android:id="@+id/searchImageImageView"
+            android:layout_width="@dimen/_30sdp"
+            android:layout_height="0dp"
+            android:background="@drawable/search_right_curve_green"
+            android:contentDescription="@string/image_view_content_description"
+            android:padding="@dimen/_7sdp"
+            android:src="@drawable/ic_search"
+            app:layout_constraintBottom_toBottomOf="@+id/searchImageEditText"
+            app:layout_constraintEnd_toEndOf="@+id/searchImageEditText"
+            app:layout_constraintTop_toTopOf="@+id/searchImageEditText" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/searchImageRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_15sdp"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/_10sdp"
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-        app:layout_constraintEnd_toEndOf="@+id/searchImageEditText"
-        app:layout_constraintStart_toStartOf="@+id/searchImageEditText"
-        app:layout_constraintTop_toBottomOf="@+id/searchImageEditText"
         app:spanCount="3"
+        tools:itemCount="25"
+        tools:layout_editor_absoluteX="20dp"
+        tools:layout_editor_absoluteY="429dp"
         tools:listitem="@layout/search_images_item" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

@@ -9,9 +9,15 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
+import com.digitaldukaan.adapters.AddProductsImagesAdapter
+import com.digitaldukaan.adapters.ImagesSearchAdapter
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
+import com.digitaldukaan.constants.StaticInstances
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.models.request.AddProductItemCategory
 import com.digitaldukaan.models.request.AddProductRequest
@@ -19,6 +25,7 @@ import com.digitaldukaan.models.response.AddProductBannerTextResponse
 import com.digitaldukaan.models.response.AddProductResponse
 import com.digitaldukaan.models.response.AddProductStaticText
 import com.digitaldukaan.models.response.CommonApiResponse
+import com.digitaldukaan.network.RetrofitApi
 import com.digitaldukaan.services.AddProductService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IAddProductServiceInterface
@@ -26,6 +33,9 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.add_product_fragment.*
+import kotlinx.android.synthetic.main.bottom_sheet_image_pick.view.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class AddProductFragment : BaseFragment(), IAddProductServiceInterface {
 
@@ -146,7 +156,106 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface {
                     }
                 }
             }
+            updateCameraImageView.id -> {
+                showAddProductImagePickerBottomSheet()
+            }
+            updateCameraTextView.id -> {
+                showAddProductImagePickerBottomSheet()
+            }
         }
+    }
+
+    private lateinit var imagePickBottomSheet: BottomSheetDialog
+    private var imageAdapter = ImagesSearchAdapter()
+
+    fun showAddProductImagePickerBottomSheet() {
+        imagePickBottomSheet = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
+        val view = LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet_image_pick, mActivity.findViewById(R.id.bottomSheetContainer))
+        imagePickBottomSheet.apply {
+            setContentView(view)
+            //setBottomSheetCommonProperty()
+            view?.run {
+                val bottomSheetUploadImageCloseImageView: ImageView = findViewById(R.id.bottomSheetUploadImageCloseImageView)
+                val bottomSheetUploadImageHeading: TextView = findViewById(R.id.bottomSheetUploadImageHeading)
+                val bottomSheetUploadImageCameraTextView: TextView = findViewById(R.id.bottomSheetUploadImageCameraTextView)
+                val bottomSheetUploadImageGalleryTextView: TextView = findViewById(R.id.bottomSheetUploadImageGalleryTextView)
+                val bottomSheetUploadImageSearchHeading: TextView = findViewById(R.id.bottomSheetUploadImageSearchHeading)
+                val bottomSheetUploadImageRemovePhotoTextView: TextView = findViewById(R.id.bottomSheetUploadImageRemovePhotoTextView)
+                val searchImageEditText: EditText = findViewById(R.id.searchImageEditText)
+                val searchImageImageView: View = findViewById(R.id.searchImageImageView)
+                val bottomSheetUploadImageRemovePhoto: View = findViewById(R.id.bottomSheetUploadImageRemovePhoto)
+                val searchImageRecyclerView: RecyclerView = findViewById(R.id.searchImageRecyclerView)
+                bottomSheetUploadImageGalleryTextView.text = addProductStaticData?.bottom_sheet_add_from_gallery
+                bottomSheetUploadImageSearchHeading.text = addProductStaticData?.bottom_sheet_you_can_add_upto_4_images
+                bottomSheetUploadImageRemovePhotoTextView.text = addProductStaticData?.bottom_sheet_remove_image
+                bottomSheetUploadImageHeading.text = addProductStaticData?.bottom_sheet_add_image
+                bottomSheetUploadImageCameraTextView.text = addProductStaticData?.bottom_sheet_take_a_photo
+                searchImageEditText.hint = addProductStaticData?.bottom_sheet_hint_search_for_images_here
+                bottomSheetUploadImageCloseImageView.setOnClickListener { if (imagePickBottomSheet.isShowing) imagePickBottomSheet.dismiss() }
+                if (!StaticInstances.sIsStoreImageUploaded) {
+                    bottomSheetUploadImageRemovePhotoTextView.visibility = View.GONE
+                    bottomSheetUploadImageRemovePhoto.visibility = View.GONE
+                }
+                bottomSheetUploadImageCamera.setOnClickListener {
+                    imagePickBottomSheet.dismiss()
+                    openCamera()
+                }
+                bottomSheetUploadImageCameraTextView.setOnClickListener {
+                    imagePickBottomSheet.dismiss()
+                    openCamera()
+                }
+                bottomSheetUploadImageGallery.setOnClickListener {
+                    imagePickBottomSheet.dismiss()
+                    openGallery()
+                }
+                bottomSheetUploadImageGalleryTextView.setOnClickListener {
+                    imagePickBottomSheet.dismiss()
+                    openGallery()
+                }
+                bottomSheetUploadImageRemovePhoto.setOnClickListener {
+                    imagePickBottomSheet.dismiss()
+                    onImageSelectionResult("")
+                }
+                bottomSheetUploadImageRemovePhotoTextView.setOnClickListener {
+                    imagePickBottomSheet.dismiss()
+                    onImageSelectionResult("")
+                }
+                imageAdapter.setSearchImageListener(this@AddProductFragment)
+                searchImageImageView.setOnClickListener {
+                    if (searchImageEditText.text.trim().toString().isEmpty()) {
+                        searchImageEditText.error = getString(R.string.mandatory_field_message)
+                        searchImageEditText.requestFocus()
+                        return@setOnClickListener
+                    }
+                    showProgressDialog(mActivity)
+                    CoroutineScopeUtils().runTaskOnCoroutineBackground {
+                        val response = RetrofitApi().getServerCallObject()?.searchImagesFromBing(
+                            getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), searchImageEditText.text.trim().toString(), getStringDataFromSharedPref(Constants.STORE_ID)
+                        )
+                        response?.let {
+                            if (it.isSuccessful) {
+                                it.body()?.let {
+                                    withContext(Dispatchers.Main) {
+                                        stopProgress()
+                                        val list = it.mImagesList
+                                        searchImageRecyclerView.apply {
+                                            layoutManager = GridLayoutManager(mActivity, 3)
+                                            adapter = imageAdapter
+                                            imageAdapter.setSearchImageList(list)
+                                        }
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+                }
+            }
+        }.show()
+    }
+
+    override fun onImageSelectionResult(base64Str: String?) {
+        showToast(base64Str)
     }
 
     private fun checkValidation(): Boolean {
@@ -193,6 +302,20 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface {
                 nameEditText.setText(name)
                 priceEditText.setText(price.toString())
                 discountedPriceEditText.setText(discountedPrice.toString())
+                if (addProductResponse.storeItem?.imagesList?.isNotEmpty() == true) {
+                    noImagesLayout.visibility = View.GONE
+                    imagesRecyclerView.apply {
+                        layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
+                        val list:ArrayList<String> = ArrayList()
+                        addProductResponse.storeItem?.imagesList?.forEachIndexed { _, imagesResponse ->
+                            if (imagesResponse.status != 0) list.add(imagesResponse.imageUrl)
+                        }
+                        adapter = AddProductsImagesAdapter(list, addProductStaticData?.text_images_added)
+                    }
+                } else {
+                    imagesRecyclerView.visibility = View.GONE
+                    noImagesLayout.visibility = View.VISIBLE
+                }
                 if (description.isNotEmpty()) {
                     addItemTextView.visibility = View.GONE
                     productDescriptionInputLayout.visibility = View.VISIBLE
@@ -210,6 +333,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface {
                 enterCategoryInputLayout.hint = hint_enter_category_optional
                 addItemTextView.text = text_add_item_description
                 continueTextView.text = text_add_item
+                imagesLeftTextView.text = "${addProductResponse?.storeItem?.imagesList?.size ?: 0}/4 $text_images_added"
             }
         }
     }

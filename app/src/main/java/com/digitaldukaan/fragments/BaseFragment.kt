@@ -399,7 +399,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         val view = LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet_image_pick, mActivity.findViewById(R.id.bottomSheetContainer))
         mImagePickBottomSheet.apply {
             setContentView(view)
-            setBottomSheetCommonProperty()
+            //setBottomSheetCommonProperty()
             view?.run {
                 val bottomSheetUploadImageCloseImageView: ImageView = findViewById(R.id.bottomSheetUploadImageCloseImageView)
                 val bottomSheetUploadImageHeading: TextView = findViewById(R.id.bottomSheetUploadImageHeading)
@@ -480,7 +480,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         }.show()
     }
 
-    private fun openGallery() {
+    open fun openGallery() {
         ImagePicker.with(mActivity)
             .galleryOnly()
             .crop(1f, 1f)            //Crop image(Optional), Check Customization for more option
@@ -492,7 +492,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
             .start()
     }
 
-    private fun openCamera() {
+    open fun openCamera() {
         ImagePicker.with(mActivity)
             .cameraOnly()
             .crop(1f, 1f) //Crop image(Optional), Check Customization for more option

@@ -10,5 +10,12 @@ data class AddProductItemResponse(
     @SerializedName("image_url") var imageUrl: String,
     @SerializedName("available") var available: Int,
     @SerializedName("discounted_price") var discountedPrice: Double,
+    @SerializedName("images") var imagesList: ArrayList<AddProductImagesResponse> = ArrayList(),
     @SerializedName("description") var description: String
+)
+
+data class AddProductImagesResponse(
+    @SerializedName("image_id") var imageId: Int,
+    @SerializedName("image_url") var imageUrl: String,
+    @SerializedName("status") var status: Int
 )
