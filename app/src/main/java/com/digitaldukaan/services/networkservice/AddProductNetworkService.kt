@@ -86,7 +86,7 @@ class AddProductNetworkService {
                             responseBody.string(),
                             CommonApiResponse::class.java
                         )
-                        serviceInterface.onGetAddProductDataResponse(
+                        serviceInterface.onAddProductDataResponse(
                             errorResponse
                         )
                     }

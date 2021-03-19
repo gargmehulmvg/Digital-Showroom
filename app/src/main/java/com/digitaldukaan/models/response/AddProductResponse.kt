@@ -4,11 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 data class AddProductResponse(
     @SerializedName("static_text") var addProductStaticText: AddProductStaticText?,
-    @SerializedName("header") var header: String?,
-    @SerializedName("body") var body: String?,
-    @SerializedName("button_text") var button_text: String?,
-    @SerializedName("image_url") var image_url: String?,
-    @SerializedName("flag") var flag: Boolean
+    @SerializedName("store_item") var storeItem: AddProductItemResponse?
 )
 
 data class AddProductStaticText(

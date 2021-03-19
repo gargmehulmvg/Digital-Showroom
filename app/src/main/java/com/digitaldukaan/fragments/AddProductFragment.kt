@@ -13,6 +13,7 @@ import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.ToolBarManager
+import com.digitaldukaan.models.request.AddProductItemCategory
 import com.digitaldukaan.models.request.AddProductRequest
 import com.digitaldukaan.models.response.AddProductBannerTextResponse
 import com.digitaldukaan.models.response.AddProductResponse
@@ -37,6 +38,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface {
         fun newInstance(itemId:Int): AddProductFragment {
             val fragment = AddProductFragment()
             fragment.mItemId = itemId
+            fragment.mItemId = 89764
             return fragment
         }
     }
@@ -124,10 +126,11 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface {
             }
             continueTextView.id -> {
                 if (checkValidation()) {
-                    val nameStr = nameEditText.text.trim().toString()
+                    val nameStr = nameEditText.text.toString()
                     val priceStr = priceEditText.text.trim().toString()
                     val discountedStr = discountedPriceEditText.text.trim().toString()
-                    val descriptionStr = productDescriptionEditText.text.trim().toString()
+                    val descriptionStr = productDescriptionEditText.text.toString()
+                    val categoryStr = enterCategoryEditText.text.toString()
                     if (!isInternetConnectionAvailable(mActivity)) return else {
                         showProgressDialog(mActivity)
                         val request = AddProductRequest(
@@ -136,6 +139,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface {
                             priceStr.toDouble(),
                             discountedStr.toDouble(),
                             descriptionStr,
+                            AddProductItemCategory(0, categoryStr),
                             nameStr
                         )
                         mService.setItem(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
@@ -185,6 +189,16 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface {
             stopProgress()
             val addProductResponse = Gson().fromJson<AddProductResponse>(commonResponse.mCommonDataStr, AddProductResponse::class.java)
             addProductStaticData = addProductResponse?.addProductStaticText
+            addProductResponse?.storeItem?.run {
+                nameEditText.setText(name)
+                priceEditText.setText(price.toString())
+                discountedPriceEditText.setText(discountedPrice.toString())
+                if (description.isNotEmpty()) {
+                    addItemTextView.visibility = View.GONE
+                    productDescriptionInputLayout.visibility = View.VISIBLE
+                    productDescriptionEditText.setText(description)
+                }
+            }
             addProductStaticData?.run {
                 ToolBarManager.getInstance().setHeaderTitle(heading_add_product_page)
                 tryNowTextView.text = text_try_now
