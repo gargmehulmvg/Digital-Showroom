@@ -8,7 +8,7 @@
         app:showAsAction="never" />
     <item
         android:id="@+id/menuProducts"
-        android:icon="@drawable/ic_marketing_unselected"
+        android:icon="@drawable/ic_add_prod"
         android:title=""
         app:showAsAction="never" />
     <item

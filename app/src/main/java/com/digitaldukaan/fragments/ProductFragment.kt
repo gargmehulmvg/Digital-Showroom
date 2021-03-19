@@ -46,13 +46,13 @@ class ProductFragment : BaseFragment(), IProductServiceInterface {
             hideBackPressFromToolBar(mActivity, false)
             onBackPressed(this@ProductFragment)
         }
+        hideBottomNavigationView(false)
         return mContentView
     }
 
     override fun onProductResponse(commonResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
-            showToast(commonResponse.toString())
             val productResponse = Gson().fromJson(commonResponse.mCommonDataStr, ProductPageResponse::class.java)
             var url: String
             ToolBarManager.getInstance().setHeaderTitle(productResponse?.static_text?.product_page_heading)
@@ -77,6 +77,12 @@ class ProductFragment : BaseFragment(), IProductServiceInterface {
 
     override fun onProductException(e: Exception) {
         exceptionHandlingForAPIResponse(e)
+    }
+
+    override fun onClick(view: View?) {
+        when(view?.id) {
+            addProductContainer.id -> launchFragment(AddProductFragment.newInstance(), true)
+        }
     }
 
 }

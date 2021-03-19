@@ -49,7 +49,7 @@ class SetDeliveryChargeFragment : BaseFragment(), IMoreControlsServiceInterface 
             onBackPressed(this@SetDeliveryChargeFragment)
             hideBackPressFromToolBar(mActivity, false)
         }
-        showBottomNavigationView(true)
+        hideBottomNavigationView(true)
         if (!isInternetConnectionAvailable(mActivity)) {
             showNoInternetConnectionDialog()
             return

@@ -82,7 +82,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         updateNavigationBarState(R.id.menuHome)
         ToolBarManager.getInstance().hideToolBar(mActivity, true)
-        showBottomNavigationView(false)
+        hideBottomNavigationView(false)
         swipeRefreshLayout.setOnRefreshListener(this)
         //completedOrderTextView.text = mOrderListStaticData.completedText
         //pendingOrderTextView.text = mOrderListStaticData.pendingText

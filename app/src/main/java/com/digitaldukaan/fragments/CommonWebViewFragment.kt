@@ -34,7 +34,7 @@ class CommonWebViewFragment : BaseFragment() {
         savedInstanceState: Bundle?
     ): View? {
         mContentView = inflater.inflate(R.layout.common_webview_fragment, container, false)
-        showBottomNavigationView(true)
+        hideBottomNavigationView(true)
         return mContentView
     }
 

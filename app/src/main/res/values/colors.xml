@@ -22,4 +22,5 @@
     <color name="snack_bar_background">#434D4D</color>
     <color name="curve_new_banner_background">#009688</color>
     <color name="profile_preview_banner_background">#DBF8E5</color>
+    <color name="add_product_banner_background">#FCF2BF</color>
 </resources>

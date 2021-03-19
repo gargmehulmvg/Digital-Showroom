@@ -31,7 +31,7 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.fragment_splash, container, false)
-        showBottomNavigationView(true)
+        hideBottomNavigationView(true)
         return mContentView
     }
 

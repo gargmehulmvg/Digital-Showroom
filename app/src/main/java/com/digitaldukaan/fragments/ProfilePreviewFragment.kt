@@ -73,7 +73,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         }
         mStoreLogo = ""
         fetchProfilePreviewCall()
-        showBottomNavigationView(true)
+        hideBottomNavigationView(true)
         StaticInstances.sIsStoreImageUploaded = false
         profilePreviewStoreNameTextView.setOnClickListener {
             showEditStoreNameBottomSheet(mProfilePreviewResponse?.mStoreItemResponse?.storeInfo?.name)

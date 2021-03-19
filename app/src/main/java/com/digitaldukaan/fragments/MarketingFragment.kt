@@ -68,7 +68,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                 this@MarketingFragment
             )
         }
-        showBottomNavigationView(false)
+        hideBottomNavigationView(false)
         if (!isInternetConnectionAvailable(mActivity)) {
             showNoInternetConnectionDialog()
             return

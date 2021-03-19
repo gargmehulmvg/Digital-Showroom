@@ -98,7 +98,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         }
     }
 
-    open fun showBottomNavigationView(isHidden: Boolean) {
+    open fun hideBottomNavigationView(isHidden: Boolean) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             mActivity.bottomNavigationView.visibility = if (isHidden) View.GONE else View.VISIBLE
         }

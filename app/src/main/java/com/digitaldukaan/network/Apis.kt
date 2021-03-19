@@ -97,4 +97,7 @@ interface Apis {
 
     @GET("api/dotk/products/getProductPageInfo")
     suspend fun getProductPageInfo(@Header("auth_token") authToken: String): Response<CommonApiResponse>
+
+    @GET("api/dotk/products/getMasterCatalogStaticText")
+    suspend fun getMasterCatalogStaticText(@Header("auth_token") authToken: String): Response<CommonApiResponse>
 }
