@@ -483,7 +483,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     private fun openGallery() {
         ImagePicker.with(mActivity)
             .galleryOnly()
-            .crop()                    //Crop image(Optional), Check Customization for more option
+            .crop(1f, 1f)            //Crop image(Optional), Check Customization for more option
             .compress(1024)            //Final image size will be less than 1 MB(Optional)
             .maxResultSize(
                 1080,
@@ -495,7 +495,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     private fun openCamera() {
         ImagePicker.with(mActivity)
             .cameraOnly()
-            .crop()                    //Crop image(Optional), Check Customization for more option
+            .crop(1f, 1f) //Crop image(Optional), Check Customization for more option
             .compress(1024)            //Final image size will be less than 1 MB(Optional)
             .maxResultSize(
                 1080,
