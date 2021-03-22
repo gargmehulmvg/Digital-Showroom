@@ -89,6 +89,7 @@ class Constants {
         const val StatusCompleted = 7
         const val StatusCancelled = 8
         const val StatusSeenByMerchant = 9
-
+        //BASE64 APIs END POINT
+        const val BASE64_STORE_LOGO = "store_logo"
     }
 }

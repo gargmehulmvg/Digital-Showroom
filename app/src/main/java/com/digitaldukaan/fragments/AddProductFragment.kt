@@ -397,7 +397,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     adapter = addImageAdapter
                     addImageAdapter.setListToAdapter(mImagesListStr)
                 }
-
+                imagesLeftTextView.text = "${mImagesListStr?.size}/4 ${addProductStaticData?.text_images_added}"
             } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
         }
     }
