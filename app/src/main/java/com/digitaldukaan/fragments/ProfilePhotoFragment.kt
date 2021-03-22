@@ -20,6 +20,10 @@ import com.digitaldukaan.services.serviceinterface.IProfilePhotoServiceInterface
 import com.google.gson.Gson
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.fragment_profile_photo.*
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import java.io.File
 
 
 class ProfilePhotoFragment : BaseFragment(), View.OnClickListener, IProfilePhotoServiceInterface {
@@ -95,17 +99,28 @@ class ProfilePhotoFragment : BaseFragment(), View.OnClickListener, IProfilePhoto
         }
     }
 
+    override fun onImageCDNLinkGenerateResponse(response: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            val photoResponse = Gson().fromJson<String>(response.mCommonDataStr, String::class.java)
+            service.uploadStoreLogo(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), StoreLogoRequest(photoResponse))
+        }
+    }
+
     override fun onProfilePhotoServerException(e: Exception) {
         exceptionHandlingForAPIResponse(e)
     }
 
-    override fun onImageSelectionResult(base64Str: String?) {
+    override fun onImageSelectionResultFile(file: File?) {
         if (!isInternetConnectionAvailable(mActivity)) {
             showNoInternetConnectionDialog()
         }
         showProgressDialog(mActivity)
-        val request = StoreLogoRequest(base64Str)
-        service.updateStoreLogo(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
+        file?.run {
+            val fileRequestBody = MultipartBody.Part.createFormData("image", file.name, RequestBody.create("image/*".toMediaTypeOrNull(), file))
+            val imageTypeRequestBody = RequestBody.create("text/plain".toMediaTypeOrNull(), Constants.BASE64_STORE_LOGO)
+            service.generateCDNLink(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), imageTypeRequestBody, fileRequestBody)
+        }
+
     }
 
 }

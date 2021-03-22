@@ -2,6 +2,8 @@ package com.digitaldukaan.network
 
 import com.digitaldukaan.models.request.*
 import com.digitaldukaan.models.response.*
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -43,8 +45,12 @@ interface Apis {
     @POST("api/dotk/settings/setStoreBusinesses")
     suspend fun setStoreBusinesses(@Header("auth_token") authToken:String, @Body request: BusinessTypeRequest) : Response<CommonApiResponse>
 
-    @POST("api/dotk/settings/setStoreLogo")
+    @POST("api/dotk/images/setStoreLogo")
     suspend fun setStoreLogo(@Header("auth_token") authToken:String, @Body request: StoreLogoRequest) : Response<CommonApiResponse>
+
+    @Multipart
+    @POST("api/dotk/images/uploadImageToS3")
+    suspend fun getImageUploadCdnLink(@Header("auth_token") authToken: String, @Part("image_type") imageType: RequestBody, @Part file: MultipartBody.Part?): Response<CommonApiResponse>
 
     @GET("api/dotk/merchant/searchImages")
     suspend fun searchImagesFromBing(@Header("auth_token") authToken: String, @Query("search_text") searchText: String, @Query("store_id") storeId: String) : Response<ImagesSearchResponse>

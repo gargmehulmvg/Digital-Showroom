@@ -517,6 +517,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                 //You can also get File Path from intent
                 val filePath: String? = ImagePicker.getFilePath(data)
                 onImageSelectionResult(convertImageFileToBase64(file))
+                onImageSelectionResultFile(file)
             }
             ImagePicker.RESULT_ERROR -> {
                 Toast.makeText(context, ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
@@ -526,6 +527,8 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
             }
         }
     }
+
+    open fun onImageSelectionResultFile(file: File?) = Unit
 
     open fun convertImageFileToBase64(imageFile: File?): String {
         if (imageFile == null) return ""
@@ -549,6 +552,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                     stopProgress()
                     if (::mImagePickBottomSheet.isInitialized) mImagePickBottomSheet.dismiss()
                     onImageSelectionResult(convertImageFileToBase64(file))
+                    onImageSelectionResultFile(file)
                 }
             }
 

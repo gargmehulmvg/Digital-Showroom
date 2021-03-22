@@ -6,5 +6,7 @@ interface IProfilePhotoServiceInterface {
 
     fun onStoreLogoResponse(response: CommonApiResponse)
 
+    fun onImageCDNLinkGenerateResponse(response: CommonApiResponse)
+
     fun onProfilePhotoServerException(e: Exception)
 }
