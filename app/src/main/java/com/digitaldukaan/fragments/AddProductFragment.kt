@@ -3,6 +3,7 @@ package com.digitaldukaan.fragments
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,8 +18,9 @@ import com.digitaldukaan.adapters.AddProductsImagesAdapter
 import com.digitaldukaan.adapters.ImagesSearchAdapter
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
-import com.digitaldukaan.constants.StaticInstances
 import com.digitaldukaan.constants.ToolBarManager
+import com.digitaldukaan.interfaces.IAdapterItemClickListener
+import com.digitaldukaan.models.request.AddProductImageItem
 import com.digitaldukaan.models.request.AddProductItemCategory
 import com.digitaldukaan.models.request.AddProductRequest
 import com.digitaldukaan.models.response.AddProductBannerTextResponse
@@ -37,18 +39,22 @@ import kotlinx.android.synthetic.main.bottom_sheet_image_pick.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class AddProductFragment : BaseFragment(), IAddProductServiceInterface {
+class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapterItemClickListener {
 
     private lateinit var mService: AddProductService
     private var addProductBannerStaticDataResponse: AddProductBannerTextResponse? = null
     private var addProductStaticData: AddProductStaticText? = null
     private var mItemId = 0
+    private val mImagesListStr: ArrayList<String> = ArrayList()
+    private lateinit var imagePickBottomSheet: BottomSheetDialog
+    private var imageAdapter = ImagesSearchAdapter()
+    private var mImageChangePosition = 0
 
     companion object {
         fun newInstance(itemId:Int): AddProductFragment {
             val fragment = AddProductFragment()
             fragment.mItemId = itemId
-            fragment.mItemId = 89764
+            fragment.mItemId = 89767
             return fragment
         }
     }
@@ -58,6 +64,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface {
         mService = AddProductService()
         mService.setServiceListener(this)
         showProgressDialog(mActivity)
+        mImagesListStr.add(0, "")
         mService.getItemInfo(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), mItemId)
     }
 
@@ -143,6 +150,10 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface {
                     val categoryStr = enterCategoryEditText.text.toString()
                     if (!isInternetConnectionAvailable(mActivity)) return else {
                         showProgressDialog(mActivity)
+                        val imageListRequest:ArrayList<AddProductImageItem> = ArrayList()
+                        mImagesListStr.forEachIndexed { pos, str -> imageListRequest.add(
+                            AddProductImageItem(pos, str, 1)
+                        ) }
                         val request = AddProductRequest(
                             0,
                             1,
@@ -150,6 +161,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface {
                             discountedStr.toDouble(),
                             descriptionStr,
                             AddProductItemCategory(0, categoryStr),
+                            imageListRequest,
                             nameStr
                         )
                         mService.setItem(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
@@ -157,18 +169,15 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface {
                 }
             }
             updateCameraImageView.id -> {
-                showAddProductImagePickerBottomSheet()
+                showAddProductImagePickerBottomSheet(0)
             }
             updateCameraTextView.id -> {
-                showAddProductImagePickerBottomSheet()
+                showAddProductImagePickerBottomSheet(0)
             }
         }
     }
 
-    private lateinit var imagePickBottomSheet: BottomSheetDialog
-    private var imageAdapter = ImagesSearchAdapter()
-
-    fun showAddProductImagePickerBottomSheet() {
+    private fun showAddProductImagePickerBottomSheet(position: Int) {
         imagePickBottomSheet = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
         val view = LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet_image_pick, mActivity.findViewById(R.id.bottomSheetContainer))
         imagePickBottomSheet.apply {
@@ -192,10 +201,8 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface {
                 bottomSheetUploadImageCameraTextView.text = addProductStaticData?.bottom_sheet_take_a_photo
                 searchImageEditText.hint = addProductStaticData?.bottom_sheet_hint_search_for_images_here
                 bottomSheetUploadImageCloseImageView.setOnClickListener { if (imagePickBottomSheet.isShowing) imagePickBottomSheet.dismiss() }
-                if (!StaticInstances.sIsStoreImageUploaded) {
-                    bottomSheetUploadImageRemovePhotoTextView.visibility = View.GONE
-                    bottomSheetUploadImageRemovePhoto.visibility = View.GONE
-                }
+                bottomSheetUploadImageRemovePhotoTextView.visibility = if (position == 0) View.GONE else View.VISIBLE
+                bottomSheetUploadImageRemovePhoto.visibility = if (position == 0) View.GONE else View.VISIBLE
                 bottomSheetUploadImageCamera.setOnClickListener {
                     imagePickBottomSheet.dismiss()
                     openCamera()
@@ -255,7 +262,24 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface {
     }
 
     override fun onImageSelectionResult(base64Str: String?) {
-        showToast(base64Str)
+        base64Str?.run {
+            if (mImagesListStr.size == 1 || mImageChangePosition == 0) {
+                mImagesListStr.add(base64Str)
+            } else if (mImageChangePosition != 0) {
+                mImagesListStr.removeAt(mImageChangePosition)
+                mImagesListStr.add(mImageChangePosition, base64Str)
+            }
+            noImagesLayout.visibility = View.GONE
+            imagesRecyclerView.visibility = View.VISIBLE
+            imagesRecyclerView.apply {
+                layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
+                val addImageAdapter = AddProductsImagesAdapter(null, mImagesListStr, addProductStaticData?.text_images_added, this@AddProductFragment)
+                adapter = addImageAdapter
+                addImageAdapter.setListToAdapter(null, mImagesListStr)
+
+            }
+        }
+        if (::imagePickBottomSheet.isInitialized) imagePickBottomSheet.dismiss()
     }
 
     private fun checkValidation(): Boolean {
@@ -310,7 +334,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface {
                         addProductResponse.storeItem?.imagesList?.forEachIndexed { _, imagesResponse ->
                             if (imagesResponse.status != 0) list.add(imagesResponse.imageUrl)
                         }
-                        adapter = AddProductsImagesAdapter(list, addProductStaticData?.text_images_added)
+                        adapter = AddProductsImagesAdapter(list,null ,addProductStaticData?.text_images_added, this@AddProductFragment)
                     }
                 } else {
                     imagesRecyclerView.visibility = View.GONE
@@ -379,6 +403,16 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface {
                 }
             }
         }.show()
+    }
+
+    override fun onAdapterItemClickListener(position: Int) {
+        mImageChangePosition = position
+        showAddProductImagePickerBottomSheet(position)
+    }
+
+    override fun onSearchImageItemClicked(photoStr: String) {
+        super.onSearchImageItemClicked(photoStr)
+        Log.d(AddProductFragment::class.java.simpleName, "onSearchImageItemClicked: do nothing")
     }
 
 }

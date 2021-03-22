@@ -547,17 +547,19 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                 bitmap?.let {
                     val file = getImageFileFromBitmap(it, mActivity)
                     stopProgress()
-                    mImagePickBottomSheet.dismiss()
+                    if (::mImagePickBottomSheet.isInitialized) mImagePickBottomSheet.dismiss()
                     onImageSelectionResult(convertImageFileToBase64(file))
                 }
             }
 
             override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
                 Log.d("TAG", "onPrepareLoad: ")
+                onImageSelectionResult(null)
             }
 
             override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
                 Log.d("TAG", "onBitmapFailed: ")
+                onImageSelectionResult(null)
             }
         })
     }

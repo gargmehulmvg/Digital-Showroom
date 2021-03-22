@@ -7,41 +7,63 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
+import com.digitaldukaan.constants.getBitmapFromBase64
+import com.digitaldukaan.interfaces.IAdapterItemClickListener
 import com.squareup.picasso.Picasso
 
 class AddProductsImagesAdapter(
     private var mImagesList: ArrayList<String>?,
-    private var mNoImagesText: String?
+    private var mImagesBase64List: ArrayList<String>?,
+    private var mNoImagesText: String?,
+    private var mAdapterItemClick: IAdapterItemClickListener
 ) :
     RecyclerView.Adapter<AddProductsImagesAdapter.AddProductsImagesViewHolder>() {
 
     inner class AddProductsImagesViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val imageContainer: View = itemView.findViewById(R.id.imageContainer)
         val noImagesLayout: View = itemView.findViewById(R.id.noImagesLayout)
         val image: ImageView = itemView.findViewById(R.id.image)
         val updateCameraTextView: TextView = itemView.findViewById(R.id.updateCameraTextView)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AddProductsImagesViewHolder {
-        return AddProductsImagesViewHolder(
+        val holder = AddProductsImagesViewHolder(
             LayoutInflater.from(parent.context).inflate(R.layout.add_product_images_item, parent, false)
         )
+        holder.imageContainer.setOnClickListener { mAdapterItemClick.onAdapterItemClickListener(holder.adapterPosition) }
+        return holder
     }
 
-    override fun getItemCount(): Int = mImagesList?.size ?: 0
+    fun setListToAdapter(imagesList: ArrayList<String>?, imagesBase64List: ArrayList<String>?) {
+        this.mImagesList = imagesList
+        this.mImagesBase64List = imagesBase64List
+        notifyDataSetChanged()
+    }
+
+    override fun getItemCount(): Int {
+        if (mImagesBase64List?.isNotEmpty() == true) return mImagesBase64List?.size ?: 0
+        return mImagesList?.size ?: 0
+    }
 
     override fun onBindViewHolder(
         holder: AddProductsImagesViewHolder,
         position: Int
     ) {
         holder.apply {
-            if (position == 0) {
+            val imageStr = if (mImagesList != null) mImagesList?.get(position) else mImagesBase64List?.get(position)
+            if (imageStr?.isEmpty() == true) {
                 noImagesLayout.visibility = View.VISIBLE
                 image.visibility = View.GONE
                 updateCameraTextView.text = mNoImagesText
+                if ((mImagesList?.isNotEmpty() == true && mImagesList?.size == 5) || ((mImagesBase64List?.isNotEmpty() == true && mImagesBase64List?.size == 5))) {
+                    imageContainer.alpha = 0.2f
+                    imageContainer.isEnabled = false
+                }
             } else {
                 noImagesLayout.visibility = View.GONE
                 image.visibility = View.VISIBLE
-                Picasso.get().load(mImagesList?.get(position)).into(image)
+                if (mImagesList != null) Picasso.get().load(imageStr).into(image) else
+                    image.setImageBitmap(getBitmapFromBase64(imageStr))
             }
         }
     }

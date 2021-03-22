@@ -8,11 +8,18 @@ data class AddProductRequest(
     @SerializedName("price") var price: Double,
     @SerializedName("discounted_price") var discountedPrice: Double,
     @SerializedName("description") var description: String,
-    @SerializedName("ItemCategory") var itemCategory: AddProductItemCategory,
+    @SerializedName("category") var itemCategory: AddProductItemCategory,
+    @SerializedName("images") var imageList: ArrayList<AddProductImageItem>,
     @SerializedName("name") var name: String
 )
 
 data class AddProductItemCategory(
     @SerializedName("id") var id: Int,
     @SerializedName("name") var name: String
+)
+
+data class AddProductImageItem(
+    @SerializedName("image_id") var id: Int,
+    @SerializedName("image_url") var name: String,
+    @SerializedName("status") var status: Int
 )

@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.provider.ContactsContract
 import android.provider.MediaStore
+import android.util.Base64
 import android.util.Log
 import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.fragments.BaseFragment
@@ -42,6 +43,11 @@ fun getImageFileFromBitmap(bitmap: Bitmap, context: Context): File {
     fos.flush()
     fos.close()
     return bitmapFile
+}
+
+fun getBitmapFromBase64(base64Str: String?): Bitmap? {
+    val decodedBytes: ByteArray = Base64.decode(base64Str?.substring(base64Str.indexOf(",") + 1), Base64.DEFAULT)
+    return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
 }
 
 fun Bitmap.getImageUri(inContext: Context): Uri? {
