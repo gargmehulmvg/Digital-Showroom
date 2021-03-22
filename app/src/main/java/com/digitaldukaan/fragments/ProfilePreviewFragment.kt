@@ -36,6 +36,10 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.profile_preview_fragment.*
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import java.io.File
 
 
 class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
@@ -428,13 +432,16 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         fetchProfilePreviewCall()
     }
 
-    override fun onImageSelectionResult(base64Str: String?) {
+    override fun onImageSelectionResultFile(file: File?) {
         if (!isInternetConnectionAvailable(mActivity)) {
             showNoInternetConnectionDialog()
         }
         showProgressDialog(mActivity)
-        val request = StoreLogoRequest(base64Str)
-        service.updateStoreLogo(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
+        file?.run {
+            val fileRequestBody = MultipartBody.Part.createFormData("image", file.name, RequestBody.create("image/*".toMediaTypeOrNull(), file))
+            val imageTypeRequestBody = RequestBody.create("text/plain".toMediaTypeOrNull(), Constants.BASE64_STORE_LOGO)
+            service.generateCDNLink(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), imageTypeRequestBody, fileRequestBody)
+        }
     }
 
     override fun onStoreLogoResponse(response: CommonApiResponse) {
@@ -458,6 +465,13 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
             } else showToast(response.mMessage)
         }
         Log.d(ProfilePreviewFragment::class.simpleName, "onStoreLogoResponse: do nothing")
+    }
+
+    override fun onImageCDNLinkGenerateResponse(response: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            val photoResponse = Gson().fromJson<String>(response.mCommonDataStr, String::class.java)
+            service.updateStoreLogo(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), StoreLogoRequest(photoResponse))
+        }
     }
 
     override fun onInitiateKycResponse(response: CommonApiResponse) {

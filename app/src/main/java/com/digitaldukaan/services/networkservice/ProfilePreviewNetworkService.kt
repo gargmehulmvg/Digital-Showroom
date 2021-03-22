@@ -8,6 +8,8 @@ import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.network.RetrofitApi
 import com.digitaldukaan.services.serviceinterface.IProfilePreviewServiceInterface
 import com.google.gson.Gson
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 
 class ProfilePreviewNetworkService {
 
@@ -92,6 +94,27 @@ class ProfilePreviewNetworkService {
             }
         } catch (e: Exception) {
             Log.e(ProfilePreviewNetworkService::class.java.simpleName, "updateStoreLogoServerCall: ", e)
+            serviceInterface.onProfilePreviewServerException(e)
+        }
+    }
+
+    suspend fun getImageUploadCdnLinkServerCall(
+        authToken: String,
+        imageType: RequestBody,
+        imageFile: MultipartBody.Part?,
+        serviceInterface: IProfilePreviewServiceInterface
+    ) {
+        try {
+            val response = RetrofitApi().getServerCallObject()?.getImageUploadCdnLink(authToken, imageType, imageFile)
+            response?.let {
+                if (it.isSuccessful) {
+                    it.body()?.let { storeLinkResponse ->
+                        serviceInterface.onImageCDNLinkGenerateResponse(storeLinkResponse)
+                    }
+                } else throw Exception(response.message())
+            }
+        } catch (e: Exception) {
+            Log.e(ProfilePhotoNetworkService::class.java.simpleName, "getImageUploadCdnLinkServerCall: ", e)
             serviceInterface.onProfilePreviewServerException(e)
         }
     }

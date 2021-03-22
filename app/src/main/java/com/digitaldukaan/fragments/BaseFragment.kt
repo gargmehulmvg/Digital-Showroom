@@ -440,11 +440,11 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                 }
                 bottomSheetUploadImageRemovePhoto.setOnClickListener {
                     mImagePickBottomSheet.dismiss()
-                    onImageSelectionResult("")
+                    onImageSelectionResultFile(null)
                 }
                 bottomSheetUploadImageRemovePhotoTextView.setOnClickListener {
                     mImagePickBottomSheet.dismiss()
-                    onImageSelectionResult("")
+                    onImageSelectionResultFile(null)
                 }
                 mImageAdapter.setSearchImageListener(this@BaseFragment)
                 searchImageImageView.setOnClickListener {
@@ -510,13 +510,11 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                 //Image Uri will not be null for RESULT_OK
                 val fileUri = data?.data
                 //imgProfile.setImageURI(fileUri)
-
                 //You can get File object from intent
                 val file: File? = ImagePicker.getFile(data)
-
                 //You can also get File Path from intent
-                val filePath: String? = ImagePicker.getFilePath(data)
-                onImageSelectionResult(convertImageFileToBase64(file))
+                //val filePath: String? = ImagePicker.getFilePath(data)
+                //onImageSelectionResult(convertImageFileToBase64(file))
                 onImageSelectionResultFile(file)
             }
             ImagePicker.RESULT_ERROR -> {
@@ -551,19 +549,18 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                     val file = getImageFileFromBitmap(it, mActivity)
                     stopProgress()
                     if (::mImagePickBottomSheet.isInitialized) mImagePickBottomSheet.dismiss()
-                    onImageSelectionResult(convertImageFileToBase64(file))
                     onImageSelectionResultFile(file)
                 }
             }
 
             override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
                 Log.d("TAG", "onPrepareLoad: ")
-                onImageSelectionResult(null)
+                onImageSelectionResultFile(null)
             }
 
             override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
                 Log.d("TAG", "onBitmapFailed: ")
-                onImageSelectionResult(null)
+                onImageSelectionResultFile(null)
             }
         })
     }

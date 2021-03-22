@@ -79,7 +79,7 @@ class ProfilePhotoFragment : BaseFragment(), View.OnClickListener, IProfilePhoto
                 setNegativeButton(getString(R.string.text_no)) { dialog, _ -> dialog.dismiss() }
                 setPositiveButton(getString(R.string.txt_yes)) { dialog, _ ->
                     dialog.dismiss()
-                    onImageSelectionResult("")
+                    onImageSelectionResultFile(null)
                 }
             }
             val alertDialog: AlertDialog = builder.create()
@@ -113,14 +113,16 @@ class ProfilePhotoFragment : BaseFragment(), View.OnClickListener, IProfilePhoto
     override fun onImageSelectionResultFile(file: File?) {
         if (!isInternetConnectionAvailable(mActivity)) {
             showNoInternetConnectionDialog()
+            return
         }
         showProgressDialog(mActivity)
-        file?.run {
+        if (file == null) {
+            service.uploadStoreLogo(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), StoreLogoRequest(""))
+        } else {
             val fileRequestBody = MultipartBody.Part.createFormData("image", file.name, RequestBody.create("image/*".toMediaTypeOrNull(), file))
             val imageTypeRequestBody = RequestBody.create("text/plain".toMediaTypeOrNull(), Constants.BASE64_STORE_LOGO)
             service.generateCDNLink(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), imageTypeRequestBody, fileRequestBody)
         }
-
     }
 
 }

@@ -6,6 +6,8 @@ import com.digitaldukaan.models.request.StoreLogoRequest
 import com.digitaldukaan.models.request.StoreNameRequest
 import com.digitaldukaan.services.networkservice.ProfilePreviewNetworkService
 import com.digitaldukaan.services.serviceinterface.IProfilePreviewServiceInterface
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 
 class ProfilePreviewService {
 
@@ -37,6 +39,12 @@ class ProfilePreviewService {
     fun updateStoreLogo(authToken: String, request: StoreLogoRequest) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
             mNetworkService.updateStoreLogoServerCall(authToken, request, mServiceInterface)
+        }
+    }
+
+    fun generateCDNLink(authToken: String, imageType: RequestBody, file: MultipartBody.Part?) {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.getImageUploadCdnLinkServerCall(authToken, imageType, file, mServiceInterface)
         }
     }
 

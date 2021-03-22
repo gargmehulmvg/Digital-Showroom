@@ -225,11 +225,11 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 }
                 bottomSheetUploadImageRemovePhoto.setOnClickListener {
                     imagePickBottomSheet.dismiss()
-                    onImageSelectionResult("")
+                    onImageSelectionResultFile(null)
                 }
                 bottomSheetUploadImageRemovePhotoTextView.setOnClickListener {
                     imagePickBottomSheet.dismiss()
-                    onImageSelectionResult("")
+                    onImageSelectionResultFile(null)
                 }
                 imageAdapter.setSearchImageListener(this@AddProductFragment)
                 searchImageImageView.setOnClickListener {
@@ -240,9 +240,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     }
                     showProgressDialog(mActivity)
                     CoroutineScopeUtils().runTaskOnCoroutineBackground {
-                        val response = RetrofitApi().getServerCallObject()?.searchImagesFromBing(
-                            getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), searchImageEditText.text.trim().toString(), getStringDataFromSharedPref(Constants.STORE_ID)
-                        )
+                        val response = RetrofitApi().getServerCallObject()?.searchImagesFromBing(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), searchImageEditText.text.trim().toString(), getStringDataFromSharedPref(Constants.STORE_ID))
                         response?.let {
                             if (it.isSuccessful) {
                                 it.body()?.let {
@@ -256,7 +254,6 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                                         }
                                     }
                                 }
-
                             }
                         }
                     }

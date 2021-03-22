@@ -13,6 +13,8 @@ interface IProfilePreviewServiceInterface {
 
     fun onStoreLogoResponse(response: CommonApiResponse)
 
+    fun onImageCDNLinkGenerateResponse(response: CommonApiResponse)
+
     fun onInitiateKycResponse(response: CommonApiResponse)
 
     fun onProfilePreviewServerException(e: Exception)
