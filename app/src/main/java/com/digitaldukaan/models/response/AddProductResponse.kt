@@ -4,7 +4,19 @@ import com.google.gson.annotations.SerializedName
 
 data class AddProductResponse(
     @SerializedName("static_text") var addProductStaticText: AddProductStaticText?,
+    @SerializedName("categories") var addProductStoreCategories: AddProductStoreCategory?,
     @SerializedName("store_item") var storeItem: AddProductItemResponse?
+)
+
+data class AddProductStoreCategory(
+    @SerializedName("store_categories") val storeCategoriesList:ArrayList<AddStoreCategoryItem>?,
+    @SerializedName("suggested_categories") val suggestedCategories:String?
+)
+
+data class AddStoreCategoryItem(
+    @SerializedName("id") val id:String?,
+    @SerializedName("name") val name:String?,
+    var isSelected: Boolean?
 )
 
 data class AddProductStaticText(

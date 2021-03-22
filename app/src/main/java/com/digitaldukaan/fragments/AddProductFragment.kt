@@ -13,20 +13,20 @@ import android.widget.TextView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.digitaldukaan.R
+import com.digitaldukaan.adapters.AddProductsChipsAdapter
 import com.digitaldukaan.adapters.AddProductsImagesAdapter
 import com.digitaldukaan.adapters.ImagesSearchAdapter
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.interfaces.IAdapterItemClickListener
+import com.digitaldukaan.interfaces.IChipItemClickListener
 import com.digitaldukaan.models.request.AddProductImageItem
 import com.digitaldukaan.models.request.AddProductItemCategory
 import com.digitaldukaan.models.request.AddProductRequest
-import com.digitaldukaan.models.response.AddProductBannerTextResponse
-import com.digitaldukaan.models.response.AddProductResponse
-import com.digitaldukaan.models.response.AddProductStaticText
-import com.digitaldukaan.models.response.CommonApiResponse
+import com.digitaldukaan.models.response.*
 import com.digitaldukaan.network.RetrofitApi
 import com.digitaldukaan.services.AddProductService
 import com.digitaldukaan.services.isInternetConnectionAvailable
@@ -35,11 +35,12 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.add_product_fragment.*
-import kotlinx.android.synthetic.main.bottom_sheet_image_pick.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapterItemClickListener {
+
+class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapterItemClickListener,
+    IChipItemClickListener {
 
     private lateinit var mService: AddProductService
     private var addProductBannerStaticDataResponse: AddProductBannerTextResponse? = null
@@ -49,6 +50,8 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     private lateinit var imagePickBottomSheet: BottomSheetDialog
     private var imageAdapter = ImagesSearchAdapter()
     private var mImageChangePosition = 0
+    private var mAddProductStoreCategoryList: ArrayList<AddStoreCategoryItem>? = ArrayList()
+    private lateinit var addProductChipsAdapter: AddProductsChipsAdapter
 
     companion object {
         fun newInstance(itemId:Int): AddProductFragment {
@@ -203,7 +206,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 bottomSheetUploadImageCloseImageView.setOnClickListener { if (imagePickBottomSheet.isShowing) imagePickBottomSheet.dismiss() }
                 bottomSheetUploadImageRemovePhotoTextView.visibility = if (position == 0) View.GONE else View.VISIBLE
                 bottomSheetUploadImageRemovePhoto.visibility = if (position == 0) View.GONE else View.VISIBLE
-                bottomSheetUploadImageCamera.setOnClickListener {
+                bottomSheetUploadImageCameraTextView.setOnClickListener {
                     imagePickBottomSheet.dismiss()
                     openCamera()
                 }
@@ -211,7 +214,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     imagePickBottomSheet.dismiss()
                     openCamera()
                 }
-                bottomSheetUploadImageGallery.setOnClickListener {
+                bottomSheetUploadImageGalleryTextView.setOnClickListener {
                     imagePickBottomSheet.dismiss()
                     openGallery()
                 }
@@ -346,6 +349,15 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     productDescriptionEditText.setText(description)
                 }
             }
+            addProductResponse?.addProductStoreCategories?.run {
+                chipGroupRecyclerView.apply {
+                    layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+                    mAddProductStoreCategoryList = addProductResponse.addProductStoreCategories?.storeCategoriesList
+                    mAddProductStoreCategoryList?.get(1)?.isSelected = true
+                    addProductChipsAdapter = AddProductsChipsAdapter(mAddProductStoreCategoryList, this@AddProductFragment)
+                    adapter = addProductChipsAdapter
+                }
+            }
             addProductStaticData?.run {
                 ToolBarManager.getInstance().setHeaderTitle(heading_add_product_page)
                 tryNowTextView.text = text_try_now
@@ -415,4 +427,9 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         Log.d(AddProductFragment::class.java.simpleName, "onSearchImageItemClicked: do nothing")
     }
 
+    override fun onChipItemClickListener(position: Int) {
+        mAddProductStoreCategoryList?.forEachIndexed { _, categoryItem -> categoryItem.isSelected = false }
+        mAddProductStoreCategoryList?.get(position)?.isSelected = true
+        addProductChipsAdapter.setAddProductStoreCategoryList(mAddProductStoreCategoryList)
+    }
 }
