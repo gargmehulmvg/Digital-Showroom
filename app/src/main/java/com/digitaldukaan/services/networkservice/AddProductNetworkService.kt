@@ -2,6 +2,7 @@ package com.digitaldukaan.services.networkservice
 
 import android.util.Log
 import com.digitaldukaan.models.request.AddProductRequest
+import com.digitaldukaan.models.request.ConvertFileToLinkRequest
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.network.RetrofitApi
 import com.digitaldukaan.services.serviceinterface.IAddProductServiceInterface
@@ -94,6 +95,36 @@ class AddProductNetworkService {
             }
         } catch (e: Exception) {
             Log.e(AddProductNetworkService::class.java.simpleName, "getItemInfoServerCall: ", e)
+            serviceInterface.onAddProductException(e)
+        }
+    }
+
+    suspend fun convertFileToLinkServerCall(
+        authToken: String,
+        request: ConvertFileToLinkRequest,
+        serviceInterface: IAddProductServiceInterface
+    ) {
+        try {
+            val response = RetrofitApi().getServerCallObject()?.convertFileToLink(authToken, request)
+            response?.let {
+                if (it.isSuccessful) {
+                    it.body()?.let { commonApiResponse -> serviceInterface.onConvertFileToLinkResponse(commonApiResponse)
+                    }
+                } else {
+                    val responseBody = it.errorBody()
+                    responseBody?.let {
+                        val errorResponse = Gson().fromJson(
+                            responseBody.string(),
+                            CommonApiResponse::class.java
+                        )
+                        serviceInterface.onConvertFileToLinkResponse(
+                            errorResponse
+                        )
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(AddProductNetworkService::class.java.simpleName, "convertFileToLinkServerCall: ", e)
             serviceInterface.onAddProductException(e)
         }
     }

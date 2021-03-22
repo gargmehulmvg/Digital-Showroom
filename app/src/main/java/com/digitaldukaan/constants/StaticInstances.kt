@@ -1,6 +1,6 @@
 package com.digitaldukaan.constants
 
-import com.digitaldukaan.models.request.ContactModel
+import com.digitaldukaan.models.dto.ContactModel
 import com.digitaldukaan.models.response.BankDetailsResponse
 import com.digitaldukaan.models.response.OrderPageStaticTextResponse
 import com.digitaldukaan.models.response.StepCompletedItem

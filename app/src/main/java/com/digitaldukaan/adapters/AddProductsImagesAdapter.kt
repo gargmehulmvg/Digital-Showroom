@@ -7,13 +7,11 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
-import com.digitaldukaan.constants.getBitmapFromBase64
 import com.digitaldukaan.interfaces.IAdapterItemClickListener
 import com.squareup.picasso.Picasso
 
 class AddProductsImagesAdapter(
     private var mImagesList: ArrayList<String>?,
-    private var mImagesBase64List: ArrayList<String>?,
     private var mNoImagesText: String?,
     private var mAdapterItemClick: IAdapterItemClickListener
 ) :
@@ -34,14 +32,12 @@ class AddProductsImagesAdapter(
         return holder
     }
 
-    fun setListToAdapter(imagesList: ArrayList<String>?, imagesBase64List: ArrayList<String>?) {
+    fun setListToAdapter(imagesList: ArrayList<String>?) {
         this.mImagesList = imagesList
-        this.mImagesBase64List = imagesBase64List
         notifyDataSetChanged()
     }
 
     override fun getItemCount(): Int {
-        if (mImagesBase64List?.isNotEmpty() == true) return mImagesBase64List?.size ?: 0
         return mImagesList?.size ?: 0
     }
 
@@ -50,20 +46,19 @@ class AddProductsImagesAdapter(
         position: Int
     ) {
         holder.apply {
-            val imageStr = if (mImagesList != null) mImagesList?.get(position) else mImagesBase64List?.get(position)
+            val imageStr = mImagesList?.get(position)
             if (imageStr?.isEmpty() == true) {
                 noImagesLayout.visibility = View.VISIBLE
                 image.visibility = View.GONE
                 updateCameraTextView.text = mNoImagesText
-                if ((mImagesList?.isNotEmpty() == true && mImagesList?.size == 5) || ((mImagesBase64List?.isNotEmpty() == true && mImagesBase64List?.size == 5))) {
+                if ((mImagesList?.isNotEmpty() == true && mImagesList?.size == 5)) {
                     imageContainer.alpha = 0.2f
                     imageContainer.isEnabled = false
                 }
             } else {
                 noImagesLayout.visibility = View.GONE
                 image.visibility = View.VISIBLE
-                if (mImagesList != null) Picasso.get().load(imageStr).into(image) else
-                    image.setImageBitmap(getBitmapFromBase64(imageStr))
+                Picasso.get().load(imageStr).into(image)
             }
         }
     }

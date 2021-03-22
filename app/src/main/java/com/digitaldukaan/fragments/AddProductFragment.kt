@@ -26,6 +26,7 @@ import com.digitaldukaan.interfaces.IChipItemClickListener
 import com.digitaldukaan.models.request.AddProductImageItem
 import com.digitaldukaan.models.request.AddProductItemCategory
 import com.digitaldukaan.models.request.AddProductRequest
+import com.digitaldukaan.models.request.ConvertFileToLinkRequest
 import com.digitaldukaan.models.response.*
 import com.digitaldukaan.network.RetrofitApi
 import com.digitaldukaan.services.AddProductService
@@ -265,23 +266,13 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     }
 
     override fun onImageSelectionResult(base64Str: String?) {
-        base64Str?.run {
-            if (mImagesListStr.size == 1 || mImageChangePosition == 0) {
-                mImagesListStr.add(base64Str)
-            } else if (mImageChangePosition != 0) {
-                mImagesListStr.removeAt(mImageChangePosition)
-                mImagesListStr.add(mImageChangePosition, base64Str)
-            }
-            noImagesLayout.visibility = View.GONE
-            imagesRecyclerView.visibility = View.VISIBLE
-            imagesRecyclerView.apply {
-                layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
-                val addImageAdapter = AddProductsImagesAdapter(null, mImagesListStr, addProductStaticData?.text_images_added, this@AddProductFragment)
-                adapter = addImageAdapter
-                addImageAdapter.setListToAdapter(null, mImagesListStr)
-
-            }
+        if (!isInternetConnectionAvailable(mActivity)) {
+            showNoInternetConnectionDialog()
+            return
         }
+        showProgressDialog(mActivity)
+        val request = ConvertFileToLinkRequest(base64Str)
+        mService.convertFileToLink(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
         if (::imagePickBottomSheet.isInitialized) imagePickBottomSheet.dismiss()
     }
 
@@ -337,7 +328,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                         addProductResponse.storeItem?.imagesList?.forEachIndexed { _, imagesResponse ->
                             if (imagesResponse.status != 0) list.add(imagesResponse.imageUrl)
                         }
-                        adapter = AddProductsImagesAdapter(list,null ,addProductStaticData?.text_images_added, this@AddProductFragment)
+                        adapter = AddProductsImagesAdapter(list ,addProductStaticData?.text_images_added, this@AddProductFragment)
                     }
                 } else {
                     imagesRecyclerView.visibility = View.GONE
@@ -380,6 +371,33 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             if (commonResponse.mIsSuccessStatus) {
                 showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_check_circle)
                 mActivity.onBackPressed()
+            } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
+        }
+    }
+
+    override fun onConvertFileToLinkResponse(commonResponse: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            if (commonResponse.mIsSuccessStatus) {
+                showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_check_circle)
+                val base64Str = Gson().fromJson<String>(commonResponse.mCommonDataStr, String::class.java)
+
+                if (mImagesListStr.size == 1 || mImageChangePosition == 0) mImagesListStr.add(base64Str) else if (mImageChangePosition != 0) {
+                    mImagesListStr.removeAt(mImageChangePosition)
+                    mImagesListStr.add(mImageChangePosition, base64Str)
+                }
+                noImagesLayout.visibility = View.GONE
+                imagesRecyclerView.visibility = View.VISIBLE
+                imagesRecyclerView.apply {
+                    layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
+                    val addImageAdapter = AddProductsImagesAdapter(
+                        mImagesListStr,
+                        addProductStaticData?.text_images_added,
+                        this@AddProductFragment
+                    )
+                    adapter = addImageAdapter
+                    addImageAdapter.setListToAdapter(mImagesListStr)
+                }
+
             } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
         }
     }

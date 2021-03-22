@@ -10,6 +10,8 @@ interface IAddProductServiceInterface {
 
     fun onAddProductDataResponse(commonResponse: CommonApiResponse)
 
+    fun onConvertFileToLinkResponse(commonResponse: CommonApiResponse)
+
     fun onAddProductException(e: Exception)
 
 }

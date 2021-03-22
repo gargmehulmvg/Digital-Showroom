@@ -1,4 +1,4 @@
-package com.digitaldukaan.models.request;
+package com.digitaldukaan.models.dto;
 
 import android.net.Uri;
 

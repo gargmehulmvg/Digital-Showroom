@@ -2,6 +2,7 @@ package com.digitaldukaan.services
 
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.models.request.AddProductRequest
+import com.digitaldukaan.models.request.ConvertFileToLinkRequest
 import com.digitaldukaan.services.networkservice.AddProductNetworkService
 import com.digitaldukaan.services.serviceinterface.IAddProductServiceInterface
 
@@ -30,6 +31,12 @@ class AddProductService {
     fun setItem(authToken: String, request: AddProductRequest) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
             mNetworkService.setItemServerCall(authToken, request, mServiceInterface)
+        }
+    }
+
+    fun convertFileToLink(authToken: String, request: ConvertFileToLinkRequest) {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.convertFileToLinkServerCall(authToken, request, mServiceInterface)
         }
     }
 

@@ -29,7 +29,6 @@ interface Apis {
     suspend fun setStoreDescription(@Header("auth_token") authToken:String, @Body request: StoreDescriptionRequest) : Response<CommonApiResponse>
 
     @POST("api/dotk/settings/setStoreName")
-    //suspend fun setStoreName(@Header("auth_token") authToken:String, @Body request: StoreNameRequest) : Response<StoreDescriptionResponse>
     suspend fun setStoreName(@Header("auth_token") authToken:String, @Body request: StoreNameRequest) : Response<CommonApiResponse>
 
     @POST("api/dotk/merchant/updateStoreDomain")
@@ -106,4 +105,7 @@ interface Apis {
 
     @POST("api/dotk/products/setItem")
     suspend fun setItem(@Header("auth_token") authToken: String, @Body request: AddProductRequest): Response<CommonApiResponse>
+
+    @POST("api/dotk/products/setItem")
+    suspend fun convertFileToLink(@Header("auth_token") authToken: String, @Body request: ConvertFileToLinkRequest): Response<CommonApiResponse>
 }

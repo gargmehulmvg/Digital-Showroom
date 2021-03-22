@@ -12,7 +12,7 @@ import android.util.Log
 import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.fragments.BaseFragment
 import com.digitaldukaan.fragments.CommonWebViewFragment
-import com.digitaldukaan.models.request.ContactModel
+import com.digitaldukaan.models.dto.ContactModel
 import com.digitaldukaan.models.response.ProfileInfoResponse
 import com.digitaldukaan.models.response.ProfilePreviewSettingsKeyResponse
 import java.io.ByteArrayOutputStream
