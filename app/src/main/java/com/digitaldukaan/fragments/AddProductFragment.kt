@@ -448,6 +448,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     override fun onChipItemClickListener(position: Int) {
         mAddProductStoreCategoryList?.forEachIndexed { _, categoryItem -> categoryItem.isSelected = false }
         mAddProductStoreCategoryList?.get(position)?.isSelected = true
+        enterCategoryEditText.setText(mAddProductStoreCategoryList?.get(position)?.name)
         addProductChipsAdapter.setAddProductStoreCategoryList(mAddProductStoreCategoryList)
     }
 }
