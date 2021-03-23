@@ -4,12 +4,12 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.PopupMenu
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -23,6 +23,7 @@ import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.interfaces.IAdapterItemClickListener
 import com.digitaldukaan.interfaces.IChipItemClickListener
+import com.digitaldukaan.interfaces.IOnToolbarIconClick
 import com.digitaldukaan.models.request.AddProductImageItem
 import com.digitaldukaan.models.request.AddProductItemCategory
 import com.digitaldukaan.models.request.AddProductRequest
@@ -44,7 +45,7 @@ import java.io.File
 
 
 class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapterItemClickListener,
-    IChipItemClickListener {
+    IChipItemClickListener, IOnToolbarIconClick, PopupMenu.OnMenuItemClickListener {
 
     private lateinit var mService: AddProductService
     private var addProductBannerStaticDataResponse: AddProductBannerTextResponse? = null
@@ -56,6 +57,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     private var mImageChangePosition = 0
     private var mAddProductStoreCategoryList: ArrayList<AddStoreCategoryItem>? = ArrayList()
     private lateinit var addProductChipsAdapter: AddProductsChipsAdapter
+    private var mOptionsMenuResponse: ArrayList<TrendingListResponse>? = null
 
     companion object {
         fun newInstance(itemId:Int): AddProductFragment {
@@ -81,6 +83,8 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             hideToolBar(mActivity, false)
             hideBackPressFromToolBar(mActivity, false)
             onBackPressed(this@AddProductFragment)
+            setSideIconVisibility(true)
+            setSideIcon(ContextCompat.getDrawable(mActivity, R.drawable.ic_options_menu), this@AddProductFragment)
         }
         hideBottomNavigationView(true)
         val discountPriceEditText: EditText = mContentView.findViewById(R.id.discountedPriceEditText)
@@ -271,8 +275,12 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             showNoInternetConnectionDialog()
             return
         }
+        if (file == null) {
+            showShortSnackBar("Something went wrong", true, R.drawable.ic_close_red)
+            return
+        }
         showProgressDialog(mActivity)
-        val fileRequestBody = MultipartBody.Part.createFormData("image", file?.name, RequestBody.create("image/*".toMediaTypeOrNull(), file!!))
+        val fileRequestBody = MultipartBody.Part.createFormData("image", file?.name, RequestBody.create("image/*".toMediaTypeOrNull(), file))
         val imageTypeRequestBody = RequestBody.create("text/plain".toMediaTypeOrNull(), Constants.BASE64_STORE_ITEMS)
         mService.generateCDNLink(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), imageTypeRequestBody, fileRequestBody)
         if (::imagePickBottomSheet.isInitialized) imagePickBottomSheet.dismiss()
@@ -322,12 +330,12 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 nameEditText.setText(name)
                 priceEditText.setText(price.toString())
                 discountedPriceEditText.setText(discountedPrice.toString())
-                if (addProductResponse.storeItem?.imagesList?.isNotEmpty() == true) {
+                if (addProductResponse.storeItem.imagesList.isNotEmpty()) {
                     noImagesLayout.visibility = View.GONE
                     imagesRecyclerView.apply {
                         layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
                         val list:ArrayList<String> = ArrayList()
-                        addProductResponse.storeItem?.imagesList?.forEachIndexed { _, imagesResponse ->
+                        addProductResponse.storeItem.imagesList.forEachIndexed { _, imagesResponse ->
                             if (imagesResponse.status != 0) list.add(imagesResponse.imageUrl)
                         }
                         adapter = AddProductsImagesAdapter(list ,addProductStaticData?.text_images_added, this@AddProductFragment)
@@ -362,8 +370,10 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 enterCategoryInputLayout.hint = hint_enter_category_optional
                 addItemTextView.text = text_add_item_description
                 continueTextView.text = text_add_item
-                imagesLeftTextView.text = "${addProductResponse?.storeItem?.imagesList?.size ?: 0}/4 $text_images_added"
+                val count = addProductResponse?.storeItem?.imagesList?.size ?: 0
+                imagesLeftTextView.text = "${if (count == 0) count else count - 1}/4 $text_images_added"
             }
+            mOptionsMenuResponse = addProductResponse?.addProductStoreOptionsMenu
         }
     }
 
@@ -399,7 +409,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     adapter = addImageAdapter
                     addImageAdapter.setListToAdapter(mImagesListStr)
                 }
-                imagesLeftTextView.text = "${mImagesListStr?.size}/4 ${addProductStaticData?.text_images_added}"
+                imagesLeftTextView.text = "${mImagesListStr?.size -1}/4 ${addProductStaticData?.text_images_added}"
             } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
         }
     }
@@ -452,5 +462,23 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         mAddProductStoreCategoryList?.get(position)?.isSelected = true
         enterCategoryEditText.setText(mAddProductStoreCategoryList?.get(position)?.name)
         addProductChipsAdapter.setAddProductStoreCategoryList(mAddProductStoreCategoryList)
+    }
+
+    override fun onToolbarSideIconClicked() {
+        val sideView:View = mActivity.findViewById(R.id.sideIconToolbar)
+        val optionsMenu = PopupMenu(mActivity, sideView)
+        optionsMenu.inflate(R.menu.menu_product_fragment)
+        mOptionsMenuResponse?.forEachIndexed { position, response ->
+            optionsMenu.menu?.add(Menu.NONE, position, Menu.NONE, response.mText)
+        }
+        optionsMenu.setOnMenuItemClickListener(this)
+        optionsMenu.show()
+    }
+
+    override fun onMenuItemClick(item: MenuItem?): Boolean {
+        if (0 == item?.itemId) {
+            openUrlInBrowser(mOptionsMenuResponse?.get(0)?.mPage)
+        }
+        return true
     }
 }

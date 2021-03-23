@@ -76,6 +76,12 @@ fun openWebViewFragmentV2(fragment: BaseFragment, title: String, webViewType: St
     )
 }
 
+fun openWebViewFragment(fragment: BaseFragment, title: String, webViewType: String?) {
+    fragment.launchFragment(
+        CommonWebViewFragment().newInstance(title, webViewType + "?storeid=${fragment.getStringDataFromSharedPref(Constants.STORE_ID)}&" + "&token=${fragment.getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"), true
+    )
+}
+
 fun getDateFromOrderString(dateStr: String): Date? {
     val format: DateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
     return format.parse(dateStr)

@@ -4,16 +4,19 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.widget.PopupMenu
+import androidx.core.content.ContextCompat
 import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.ToolBarManager
+import com.digitaldukaan.constants.openWebViewFragment
+import com.digitaldukaan.interfaces.IOnToolbarIconClick
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.ProductPageResponse
+import com.digitaldukaan.models.response.TrendingListResponse
 import com.digitaldukaan.services.ProductService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IProductServiceInterface
@@ -22,9 +25,11 @@ import com.google.gson.Gson
 import kotlinx.android.synthetic.main.common_webview_fragment.commonWebView
 import kotlinx.android.synthetic.main.product_fragment.*
 
-class ProductFragment : BaseFragment(), IProductServiceInterface {
+class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIconClick,
+    PopupMenu.OnMenuItemClickListener {
 
     private lateinit var mService: ProductService
+    private var mOptionsMenuResponse: ArrayList<TrendingListResponse>? = null
 
     companion object {
         fun newInstance(): ProductFragment {
@@ -45,6 +50,8 @@ class ProductFragment : BaseFragment(), IProductServiceInterface {
             hideToolBar(mActivity, false)
             hideBackPressFromToolBar(mActivity, false)
             onBackPressed(this@ProductFragment)
+            setSideIconVisibility(true)
+            setSideIcon(ContextCompat.getDrawable(mActivity, R.drawable.ic_options_menu), this@ProductFragment)
         }
         hideBottomNavigationView(false)
         return mContentView
@@ -56,6 +63,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface {
             val productResponse = Gson().fromJson(commonResponse.mCommonDataStr, ProductPageResponse::class.java)
             var url: String
             ToolBarManager.getInstance().setHeaderTitle(productResponse?.static_text?.product_page_heading)
+            mOptionsMenuResponse = productResponse?.optionMenuList
             commonWebView.apply {
                 webViewClient = CommonWebViewFragment.WebViewController()
                 settings.javaScriptEnabled = true
@@ -83,6 +91,32 @@ class ProductFragment : BaseFragment(), IProductServiceInterface {
         when(view?.id) {
             addProductContainer.id -> launchFragment(AddProductFragment.newInstance(0), true)
         }
+    }
+
+    override fun onToolbarSideIconClicked() {
+        val sideView:View = mActivity.findViewById(R.id.sideIconToolbar)
+        val optionsMenu = PopupMenu(mActivity, sideView)
+        optionsMenu.inflate(R.menu.menu_product_fragment)
+        mOptionsMenuResponse?.forEachIndexed { position, response ->
+            optionsMenu.menu?.add(Menu.NONE, position, Menu.NONE, response.mText)
+        }
+        optionsMenu.setOnMenuItemClickListener(this)
+        optionsMenu.show()
+    }
+
+    override fun onMenuItemClick(item: MenuItem?): Boolean {
+        when(item?.itemId) {
+            0 -> {
+                openWebViewFragment(this, "", BuildConfig.WEB_VIEW_URL + mOptionsMenuResponse?.get(0)?.mPage)
+            }
+            1 -> {
+                openWebViewFragment(this, "", BuildConfig.WEB_VIEW_URL + mOptionsMenuResponse?.get(1)?.mPage)
+            }
+            2 -> {
+                showToast(item.title.toString())
+            }
+        }
+        return true
     }
 
 }
