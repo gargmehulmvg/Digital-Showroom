@@ -2,11 +2,12 @@ package com.digitaldukaan.services.networkservice
 
 import android.util.Log
 import com.digitaldukaan.models.request.AddProductRequest
-import com.digitaldukaan.models.request.ConvertFileToLinkRequest
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.network.RetrofitApi
 import com.digitaldukaan.services.serviceinterface.IAddProductServiceInterface
 import com.google.gson.Gson
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 
 class AddProductNetworkService {
 
@@ -101,11 +102,12 @@ class AddProductNetworkService {
 
     suspend fun convertFileToLinkServerCall(
         authToken: String,
-        request: ConvertFileToLinkRequest,
+        imageType: RequestBody,
+        imageFile: MultipartBody.Part?,
         serviceInterface: IAddProductServiceInterface
     ) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.convertFileToLink(authToken, request)
+            val response = RetrofitApi().getServerCallObject()?.getImageUploadCdnLink(authToken, imageType, imageFile)
             response?.let {
                 if (it.isSuccessful) {
                     it.body()?.let { commonApiResponse -> serviceInterface.onConvertFileToLinkResponse(commonApiResponse)

@@ -26,7 +26,6 @@ import com.digitaldukaan.interfaces.IChipItemClickListener
 import com.digitaldukaan.models.request.AddProductImageItem
 import com.digitaldukaan.models.request.AddProductItemCategory
 import com.digitaldukaan.models.request.AddProductRequest
-import com.digitaldukaan.models.request.ConvertFileToLinkRequest
 import com.digitaldukaan.models.response.*
 import com.digitaldukaan.network.RetrofitApi
 import com.digitaldukaan.services.AddProductService
@@ -38,6 +37,10 @@ import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.add_product_fragment.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import java.io.File
 
 
 class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapterItemClickListener,
@@ -58,7 +61,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         fun newInstance(itemId:Int): AddProductFragment {
             val fragment = AddProductFragment()
             fragment.mItemId = itemId
-            fragment.mItemId = 89767
+            fragment.mItemId = 89777
             return fragment
         }
     }
@@ -155,9 +158,10 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     if (!isInternetConnectionAvailable(mActivity)) return else {
                         showProgressDialog(mActivity)
                         val imageListRequest:ArrayList<AddProductImageItem> = ArrayList()
-                        mImagesListStr.forEachIndexed { pos, str -> imageListRequest.add(
-                            AddProductImageItem(pos, str, 1)
+                        mImagesListStr.forEachIndexed { _, str -> imageListRequest.add(
+                            AddProductImageItem(0, str, 1)
                         ) }
+                        mImagesListStr.removeAt(0)
                         val request = AddProductRequest(
                             0,
                             1,
@@ -262,14 +266,15 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         }.show()
     }
 
-    override fun onImageSelectionResult(base64Str: String?) {
+    override fun onImageSelectionResultFile(file: File?) {
         if (!isInternetConnectionAvailable(mActivity)) {
             showNoInternetConnectionDialog()
             return
         }
         showProgressDialog(mActivity)
-        val request = ConvertFileToLinkRequest(base64Str)
-        mService.convertFileToLink(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
+        val fileRequestBody = MultipartBody.Part.createFormData("image", file?.name, RequestBody.create("image/*".toMediaTypeOrNull(), file!!))
+        val imageTypeRequestBody = RequestBody.create("text/plain".toMediaTypeOrNull(), Constants.BASE64_STORE_ITEMS)
+        mService.generateCDNLink(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), imageTypeRequestBody, fileRequestBody)
         if (::imagePickBottomSheet.isInitialized) imagePickBottomSheet.dismiss()
     }
 
@@ -373,11 +378,11 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     }
 
     override fun onConvertFileToLinkResponse(commonResponse: CommonApiResponse) {
+        stopProgress()
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (commonResponse.mIsSuccessStatus) {
                 showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_check_circle)
                 val base64Str = Gson().fromJson<String>(commonResponse.mCommonDataStr, String::class.java)
-
                 if (mImagesListStr.size == 1 || mImageChangePosition == 0) mImagesListStr.add(base64Str) else if (mImageChangePosition != 0) {
                     mImagesListStr.removeAt(mImageChangePosition)
                     mImagesListStr.add(mImageChangePosition, base64Str)

@@ -91,5 +91,6 @@ class Constants {
         const val StatusSeenByMerchant = 9
         //BASE64 APIs END POINT
         const val BASE64_STORE_LOGO = "store_logo"
+        const val BASE64_STORE_ITEMS = "store_items"
     }
 }

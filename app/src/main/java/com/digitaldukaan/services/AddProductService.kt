@@ -2,9 +2,10 @@ package com.digitaldukaan.services
 
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.models.request.AddProductRequest
-import com.digitaldukaan.models.request.ConvertFileToLinkRequest
 import com.digitaldukaan.services.networkservice.AddProductNetworkService
 import com.digitaldukaan.services.serviceinterface.IAddProductServiceInterface
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 
 class AddProductService {
 
@@ -34,9 +35,9 @@ class AddProductService {
         }
     }
 
-    fun convertFileToLink(authToken: String, request: ConvertFileToLinkRequest) {
+    fun generateCDNLink(authToken: String, imageType: RequestBody, file: MultipartBody.Part?) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.convertFileToLinkServerCall(authToken, request, mServiceInterface)
+            mNetworkService.convertFileToLinkServerCall(authToken, imageType, file, mServiceInterface)
         }
     }
 

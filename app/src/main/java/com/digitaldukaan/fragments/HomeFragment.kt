@@ -24,6 +24,7 @@ import com.digitaldukaan.models.response.*
 import com.digitaldukaan.services.HomeFragmentService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IHomeServiceInterface
+import com.digitaldukaan.webviews.WebViewBridge
 import com.google.gson.Gson
 import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration
 import kotlinx.android.synthetic.main.home_fragment.*
@@ -63,6 +64,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         super.onCreate(savedInstanceState)
         mHomeFragmentService = HomeFragmentService()
         mHomeFragmentService.setHomeFragmentServiceListener(this)
+        WebViewBridge.mWebViewListener = this
     }
 
     override fun onCreateView(
@@ -360,6 +362,12 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else {
             showProgressDialog(mActivity)
             mHomeFragmentService.updateOrderStatus(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
+        }
+    }
+
+    override fun onNativeBackPressed() {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            mActivity.onBackPressed()
         }
     }
 }
