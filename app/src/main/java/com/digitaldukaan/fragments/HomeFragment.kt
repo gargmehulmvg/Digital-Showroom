@@ -349,7 +349,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
     override fun onOrderCheckBoxChanged(isChecked: Boolean, item: OrderItemResponse?) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             showToast(isChecked.toString())
-            if (isChecked) openDontShowDialog(item)
+            if (isChecked) openDontShowDialog(item, mOrderPageInfoStaticData)
         }
     }
 

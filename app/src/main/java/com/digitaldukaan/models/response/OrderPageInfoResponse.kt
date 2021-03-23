@@ -49,6 +49,11 @@ data class OrderPageStaticTextResponse(
     @SerializedName("text_rejected")                    var text_rejected: String,
     @SerializedName("text_paid_online")                 var text_paid_online: String,
     @SerializedName("text_today")                       var text_today: String,
+    @SerializedName("error_mandatory_field")            var error_mandatory_field: String,
 
-    @SerializedName("error_mandatory_field")            var error_mandatory_field: String      //TODO to be added by Abhishek
+    @SerializedName("dialog_message")                var dialog_message: String,
+    @SerializedName("dialog_check_box_text")                       var dialog_check_box_text: String,
+    @SerializedName("dialog_text_no")                       var dialog_text_no: String,
+    @SerializedName("dialog_text_yes")                       var dialog_text_yes: String,
+    @SerializedName("dialog_text_alert")                       var dialog_text_alert: String
 )
