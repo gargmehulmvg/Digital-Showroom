@@ -17,6 +17,7 @@ import com.digitaldukaan.R
 import com.digitaldukaan.adapters.OrderAdapterV2
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.IOrderListItemListener
+import com.digitaldukaan.models.request.CompleteOrderRequest
 import com.digitaldukaan.models.request.OrdersRequest
 import com.digitaldukaan.models.request.SearchOrdersRequest
 import com.digitaldukaan.models.request.UpdateOrderRequest
@@ -275,6 +276,10 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
     }
 
     override fun onOrdersUpdatedStatusResponse(commonResponse: CommonApiResponse) {
+        Log.d(TAG, "onOrdersUpdatedStatusResponse: do nothing :: $commonResponse")
+    }
+
+    override fun onCompleteOrderStatusResponse(commonResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             if (swipeRefreshLayout.isRefreshing) swipeRefreshLayout.isRefreshing = false
@@ -354,14 +359,16 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
     }
 
     override fun onOrderItemCLickChanged(item: OrderItemResponse?) {
+        val request = UpdateOrderRequest(item?.orderId?.toLong(), Constants.StatusSeenByMerchant.toLong())
+        mHomeFragmentService.updateOrderStatus(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
         launchFragment(OrderDetailFragment.newInstance(item?.orderId.toString()), true)
     }
 
     override fun onDontShowDialogPositiveButtonClicked(item: OrderItemResponse?) {
-        val request = UpdateOrderRequest(item?.orderId?.toLong(), Constants.StatusSeenByMerchant.toLong())
+        val request = CompleteOrderRequest(item?.orderId?.toLong())
         if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else {
             showProgressDialog(mActivity)
-            mHomeFragmentService.updateOrderStatus(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
+            mHomeFragmentService.completeOrder(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
         }
     }
 

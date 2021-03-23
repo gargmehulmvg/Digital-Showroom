@@ -1,6 +1,7 @@
 package com.digitaldukaan.services
 
 import com.digitaldukaan.constants.CoroutineScopeUtils
+import com.digitaldukaan.models.request.CompleteOrderRequest
 import com.digitaldukaan.models.request.OrdersRequest
 import com.digitaldukaan.models.request.SearchOrdersRequest
 import com.digitaldukaan.models.request.UpdateOrderRequest
@@ -32,6 +33,12 @@ class HomeFragmentService {
     fun updateOrderStatus(authToken: String, request: UpdateOrderRequest) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
             mNetworkService.updateOrderStatusServerCall(authToken , request, mServiceInterface)
+        }
+    }
+
+    fun completeOrder(authToken: String, request: CompleteOrderRequest) {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.completeOrderServerCall(authToken , request, mServiceInterface)
         }
     }
 

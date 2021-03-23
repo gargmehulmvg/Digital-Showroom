@@ -120,4 +120,7 @@ interface Apis {
 
     @POST("api/dotk/products/setItem")
     suspend fun setItem(@Header("auth_token") authToken: String, @Body request: AddProductRequest): Response<CommonApiResponse>
+
+    @POST("api/dotk/orders/completeOrder")
+    suspend fun completeOrder(@Header("auth_token") authToken: String, @Body request: CompleteOrderRequest): Response<CommonApiResponse>
 }

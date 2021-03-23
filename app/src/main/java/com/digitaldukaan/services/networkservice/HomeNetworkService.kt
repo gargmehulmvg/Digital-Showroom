@@ -2,6 +2,7 @@ package com.digitaldukaan.services.networkservice
 
 import android.util.Log
 import com.digitaldukaan.constants.Constants
+import com.digitaldukaan.models.request.CompleteOrderRequest
 import com.digitaldukaan.models.request.OrdersRequest
 import com.digitaldukaan.models.request.SearchOrdersRequest
 import com.digitaldukaan.models.request.UpdateOrderRequest
@@ -131,6 +132,29 @@ class HomeNetworkService {
             }
         } catch (e: Exception) {
             Log.e(HomeNetworkService::class.java.simpleName, "updateOrderStatusServerCall: ", e)
+            serviceInterface.onHomePageException(e)
+        }
+    }
+
+    suspend fun completeOrderServerCall(
+        authToken: String,
+        request: CompleteOrderRequest,
+        serviceInterface: IHomeServiceInterface
+    ) {
+        try {
+            val response = RetrofitApi().getServerCallObject()?.completeOrder(authToken, request)
+            response?.let {
+                if (it.isSuccessful) it.body()?.let { commonApiResponse -> serviceInterface.onCompleteOrderStatusResponse(commonApiResponse) }
+                else {
+                    val responseBody = it.errorBody()
+                    responseBody?.let {
+                        val errorResponse = Gson().fromJson(responseBody.string(), CommonApiResponse::class.java)
+                        serviceInterface.onCompleteOrderStatusResponse(errorResponse)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(HomeNetworkService::class.java.simpleName, "completeOrderServerCall: ", e)
             serviceInterface.onHomePageException(e)
         }
     }

@@ -22,6 +22,8 @@ interface IHomeServiceInterface {
 
     fun onOrdersUpdatedStatusResponse(commonResponse: CommonApiResponse)
 
+    fun onCompleteOrderStatusResponse(commonResponse: CommonApiResponse)
+
     fun onHomePageException(e: Exception)
 
 }
