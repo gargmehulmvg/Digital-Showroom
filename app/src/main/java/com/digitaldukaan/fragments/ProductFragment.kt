@@ -38,6 +38,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
 
     private lateinit var mService: ProductService
     private var mOptionsMenuResponse: ArrayList<TrendingListResponse>? = null
+    private var mShareDataOverWhatsAppText = ""
 
     companion object {
         fun newInstance(): ProductFragment {
@@ -109,7 +110,8 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
     override fun onProductShareStoreWAResponse(commonResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
-            shareDataOnWhatsApp(Gson().fromJson<String>(commonResponse.mCommonDataStr, String::class.java))
+            mShareDataOverWhatsAppText = Gson().fromJson<String>(commonResponse.mCommonDataStr, String::class.java)
+            shareDataOnWhatsApp(mShareDataOverWhatsAppText)
         }
     }
 
@@ -154,12 +156,13 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
         when(view?.id) {
             addProductContainer.id -> launchFragment(AddProductFragment.newInstance(0), true)
             shareProductContainer.id -> {
-                if (!isInternetConnectionAvailable(mActivity)) {
+                if (mShareDataOverWhatsAppText.isNotEmpty()) shareDataOnWhatsApp(mShareDataOverWhatsAppText) else if (!isInternetConnectionAvailable(mActivity)) {
                     showNoInternetConnectionDialog()
                     return
+                } else {
+                    showProgressDialog(mActivity)
+                    mService.getProductShareStoreData(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
                 }
-                showProgressDialog(mActivity)
-                mService.getProductShareStoreData(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
             }
         }
     }
