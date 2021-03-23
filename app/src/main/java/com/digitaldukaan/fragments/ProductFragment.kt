@@ -5,10 +5,15 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.*
+import android.widget.ImageView
 import android.widget.PopupMenu
+import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
+import com.digitaldukaan.adapters.SharePDFAdapter
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.ToolBarManager
@@ -16,12 +21,15 @@ import com.digitaldukaan.constants.openWebViewFragment
 import com.digitaldukaan.interfaces.IOnToolbarIconClick
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.ProductPageResponse
+import com.digitaldukaan.models.response.ShareStorePDFDataItemResponse
 import com.digitaldukaan.models.response.TrendingListResponse
 import com.digitaldukaan.services.ProductService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IProductServiceInterface
 import com.digitaldukaan.webviews.WebViewBridge
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
+import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.common_webview_fragment.commonWebView
 import kotlinx.android.synthetic.main.product_fragment.*
 
@@ -83,6 +91,61 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
         }
     }
 
+    override fun onProductShareStorePDFDataResponse(commonResponse: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            val sharePDF = Gson().fromJson<ShareStorePDFDataItemResponse>(commonResponse.mCommonDataStr, ShareStorePDFDataItemResponse::class.java)
+            showPDFShareBottomSheet(sharePDF)
+        }
+    }
+
+    override fun onProductPDFGenerateResponse(response: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            showShortSnackBar(response.mMessage, true, if (response.mIsSuccessStatus) R.drawable.ic_check_circle else R.drawable.ic_close_red)
+        }
+    }
+
+    override fun onProductShareStoreWAResponse(commonResponse: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            shareDataOnWhatsApp(Gson().fromJson<String>(commonResponse.mCommonDataStr, String::class.java))
+        }
+    }
+
+    private fun showPDFShareBottomSheet(response: ShareStorePDFDataItemResponse?) {
+        val bottomSheetDialog = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
+        val view = LayoutInflater.from(mActivity).inflate(
+            R.layout.bottom_sheet_refer_and_earn,
+            mActivity.findViewById(R.id.bottomSheetContainer)
+        )
+        bottomSheetDialog.apply {
+            setContentView(view)
+            setBottomSheetCommonProperty()
+            view.run {
+                val bottomSheetClose: View = findViewById(R.id.bottomSheetClose)
+                val bottomSheetUpperImageView: ImageView = findViewById(R.id.bottomSheetUpperImageView)
+                val bottomSheetHeadingTextView: TextView = findViewById(R.id.bottomSheetHeadingTextView)
+                val verifyTextView: TextView = findViewById(R.id.verifyTextView)
+                val referAndEarnRecyclerView: RecyclerView = findViewById(R.id.referAndEarnRecyclerView)
+                if (response?.imageUrl?.isNotEmpty() == true) Picasso.get().load(response.imageUrl).into(bottomSheetUpperImageView)
+                bottomSheetUpperImageView.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.ic_share_pdf_whatsapp))
+                bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
+                bottomSheetHeadingTextView.text = response?.heading
+                verifyTextView.text = response?.subHeading
+                verifyTextView.setOnClickListener{
+                    showProgressDialog(mActivity)
+                    mService.generateProductStorePdf(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
+                    bottomSheetDialog.dismiss()
+                }
+                referAndEarnRecyclerView.apply {
+                    layoutManager = LinearLayoutManager(mActivity)
+                    adapter = SharePDFAdapter(response?.howItWorks)
+                }
+            }
+        }.show()
+    }
+
     override fun onProductException(e: Exception) {
         exceptionHandlingForAPIResponse(e)
     }
@@ -90,6 +153,14 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
     override fun onClick(view: View?) {
         when(view?.id) {
             addProductContainer.id -> launchFragment(AddProductFragment.newInstance(0), true)
+            shareProductContainer.id -> {
+                if (!isInternetConnectionAvailable(mActivity)) {
+                    showNoInternetConnectionDialog()
+                    return
+                }
+                showProgressDialog(mActivity)
+                mService.getProductShareStoreData(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
+            }
         }
     }
 
@@ -106,14 +177,15 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
 
     override fun onMenuItemClick(item: MenuItem?): Boolean {
         when(item?.itemId) {
-            0 -> {
-                openWebViewFragment(this, "", BuildConfig.WEB_VIEW_URL + mOptionsMenuResponse?.get(0)?.mPage)
-            }
-            1 -> {
-                openWebViewFragment(this, "", BuildConfig.WEB_VIEW_URL + mOptionsMenuResponse?.get(1)?.mPage)
-            }
+            0 -> openWebViewFragment(this, "", BuildConfig.WEB_VIEW_URL + mOptionsMenuResponse?.get(0)?.mPage)
+            1 -> openWebViewFragment(this, "", BuildConfig.WEB_VIEW_URL + mOptionsMenuResponse?.get(1)?.mPage)
             2 -> {
-                showToast(item.title.toString())
+                if (!isInternetConnectionAvailable(mActivity)) {
+                    showNoInternetConnectionDialog()
+                    return true
+                }
+                showProgressDialog(mActivity)
+                mService.getProductSharePDFTextData(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
             }
         }
         return true

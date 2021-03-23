@@ -280,7 +280,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             return
         }
         showProgressDialog(mActivity)
-        val fileRequestBody = MultipartBody.Part.createFormData("image", file?.name, RequestBody.create("image/*".toMediaTypeOrNull(), file))
+        val fileRequestBody = MultipartBody.Part.createFormData("image", file.name, RequestBody.create("image/*".toMediaTypeOrNull(), file))
         val imageTypeRequestBody = RequestBody.create("text/plain".toMediaTypeOrNull(), Constants.BASE64_STORE_ITEMS)
         mService.generateCDNLink(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), imageTypeRequestBody, fileRequestBody)
         if (::imagePickBottomSheet.isInitialized) imagePickBottomSheet.dismiss()
@@ -476,9 +476,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     }
 
     override fun onMenuItemClick(item: MenuItem?): Boolean {
-        if (0 == item?.itemId) {
-            openUrlInBrowser(mOptionsMenuResponse?.get(0)?.mPage)
-        }
+        if (0 == item?.itemId) openUrlInBrowser(mOptionsMenuResponse?.get(0)?.mPage)
         return true
     }
 }

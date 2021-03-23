@@ -23,10 +23,12 @@
         app:layout_constraintBottom_toBottomOf="parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/shareProductContainer"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/_5sdp"
             android:layout_weight="1"
+            android:onClick="onClick"
             android:background="@drawable/curve_black_border"
             android:padding="@dimen/_12sdp">
 
@@ -36,6 +38,7 @@
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/image_view_content_description"
                 android:src="@drawable/ic_whatsapp"
+                android:clickable="false"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/shareButtonTextView"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -47,6 +50,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/black"
+                android:clickable="false"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"

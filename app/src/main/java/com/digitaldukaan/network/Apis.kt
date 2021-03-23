@@ -67,11 +67,20 @@ interface Apis {
     @POST("api/dotk/marketing/shareStore")
     suspend fun getShareStoreData(@Header("auth_token") authToken: String): Response<CommonApiResponse>
 
+    @POST("api/dotk/products/shareStore")
+    suspend fun getProductShareStoreData(@Header("auth_token") authToken: String): Response<CommonApiResponse>
+
     @GET("api/dotk/marketing/shareStorePdfText")
     suspend fun getShareStorePdfText(@Header("auth_token") authToken: String): Response<CommonApiResponse>
 
+    @GET("api/dotk/products/shareStorePdfText")
+    suspend fun getProductShareStorePdfText(@Header("auth_token") authToken: String): Response<CommonApiResponse>
+
     @POST("api/dotk/marketing/generateStorePdf")
     suspend fun generateStorePdf(@Header("auth_token") authToken: String): Response<CommonApiResponse>
+
+    @POST("api/dotk/marketing/generateStorePdf")
+    suspend fun generateProductStorePdf(@Header("auth_token") authToken: String): Response<CommonApiResponse>
 
     @POST("api/dotk/settings/setDeliveryInfo")
     suspend fun updateDeliveryInfo(@Header("auth_token") authToken: String, @Body request: MoreControlsRequest): Response<CommonApiResponse>
@@ -111,7 +120,4 @@ interface Apis {
 
     @POST("api/dotk/products/setItem")
     suspend fun setItem(@Header("auth_token") authToken: String, @Body request: AddProductRequest): Response<CommonApiResponse>
-
-    @POST("api/dotk/products/setItem")
-    suspend fun convertFileToLink(@Header("auth_token") authToken: String, @Body request: ConvertFileToLinkRequest): Response<CommonApiResponse>
 }

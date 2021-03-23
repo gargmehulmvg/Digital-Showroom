@@ -6,6 +6,12 @@ interface IProductServiceInterface {
 
     fun onProductResponse(commonResponse: CommonApiResponse)
 
+    fun onProductShareStorePDFDataResponse(commonResponse: CommonApiResponse)
+
+    fun onProductPDFGenerateResponse(commonResponse: CommonApiResponse)
+
+    fun onProductShareStoreWAResponse(commonResponse: CommonApiResponse)
+
     fun onProductException(e: Exception)
 
 }

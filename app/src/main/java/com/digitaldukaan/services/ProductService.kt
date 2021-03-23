@@ -20,4 +20,22 @@ class ProductService {
         }
     }
 
+    fun getProductSharePDFTextData(authToken: String) {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.getProductShareStorePdfTextServerCall(authToken, mServiceInterface)
+        }
+    }
+
+    fun generateProductStorePdf(authToken: String) {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.generateProductStorePdfServerCall(authToken, mServiceInterface)
+        }
+    }
+
+    fun getProductShareStoreData(authToken: String) {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.getProductShareStoreDataServerCall(authToken, mServiceInterface)
+        }
+    }
+
 }
