@@ -172,7 +172,25 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
         val optionsMenu = PopupMenu(mActivity, sideView)
         optionsMenu.inflate(R.menu.menu_product_fragment)
         mOptionsMenuResponse?.forEachIndexed { position, response ->
-            optionsMenu.menu?.add(Menu.NONE, position, Menu.NONE, response.mText)
+            val menuOption = optionsMenu.menu?.add(Menu.NONE, position, Menu.NONE, response.mText)
+            /*if (response.mCDN?.isNotEmpty() == true) {
+                Picasso.get().load(response.mCDN).into(object : com.squareup.picasso.Target {
+                    override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
+                        bitmap?.let {
+                            val drawableIcon: Drawable = BitmapDrawable(resources, bitmap)
+                            menuOption?.icon = drawableIcon
+                        }
+                    }
+
+                    override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
+                        Log.d("TAG", "onPrepareLoad: ")
+                    }
+
+                    override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
+                        Log.d("TAG", "onBitmapFailed: ")
+                    }
+                })
+            }*/
         }
         optionsMenu.setOnMenuItemClickListener(this)
         optionsMenu.show()

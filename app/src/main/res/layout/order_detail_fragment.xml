@@ -29,7 +29,7 @@
                 android:gravity="center"
                 android:paddingTop="@dimen/_4sdp"
                 android:paddingBottom="@dimen/_4sdp"
-                android:text="New Order"
+                tools:text="New Order"
                 android:textColor="@color/white" />
 
             <androidx.recyclerview.widget.RecyclerView
@@ -37,7 +37,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:itemCount="3"
+                tools:itemCount="1"
                 tools:listitem="@layout/order_detail_item" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -50,6 +50,7 @@
                     android:id="@+id/deliveryChargeLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:visibility="gone"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     tools:text="Delivery Charges" />
@@ -57,9 +58,10 @@
                 <TextView
                     android:id="@+id/deliveryChargeValue"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="0dp"
+                    app:layout_constraintBottom_toBottomOf="@+id/deliveryChargeLabel"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/deliveryChargeLabel"
                     tools:text="Delivery Charges" />
 
                 <TextView
@@ -70,7 +72,7 @@
                     android:background="?selectableItemBackground"
                     android:fontFamily="sans-serif-medium"
                     android:onClick="onClick"
-                    android:text="+ Add Delivery And Other Charges"
+                    tools:text="+ Add Delivery And Other Charges"
                     android:textColor="@color/open_green"
                     app:layout_constraintStart_toStartOf="@id/deliveryChargeLabel"
                     app:layout_constraintTop_toBottomOf="@id/deliveryChargeLabel" />
@@ -98,7 +100,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_10sdp"
-                    android:hint="Other charges"
+                    tools:hint="Other charges"
                     android:importantForAutofill="no"
                     android:inputType="text"
                     android:minWidth="@dimen/_100sdp"
@@ -110,7 +112,7 @@
                     android:id="@+id/otherChargesValueEditText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:hint="₹"
+                    tools:hint="₹"
                     android:importantForAutofill="no"
                     android:inputType="number"
                     android:maxLength="@integer/amount_length"
@@ -123,7 +125,7 @@
                     android:id="@+id/discountsValueEditText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:hint="₹"
+                    tools:hint="₹"
                     android:importantForAutofill="no"
                     android:inputType="number"
                     android:maxLength="@integer/amount_length"
@@ -137,7 +139,7 @@
                     android:id="@+id/discountsEditText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:hint="Discounts"
+                    tools:hint="Discounts"
                     android:importantForAutofill="no"
                     android:inputType="text"
                     android:minWidth="@dimen/_100sdp"
@@ -155,9 +157,10 @@
                 android:fontFamily="sans-serif-medium"
                 android:paddingStart="@dimen/_12sdp"
                 android:paddingTop="@dimen/_12sdp"
+                android:visibility="gone"
                 android:paddingEnd="@dimen/_12sdp"
                 android:paddingBottom="@dimen/_5sdp"
-                android:text="INSTRUCTIONS:"
+                tools:text="INSTRUCTIONS:"
                 android:textColor="@color/default_text_light_grey"
                 android:textSize="@dimen/_11sdp" />
 
@@ -166,6 +169,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingStart="@dimen/_12sdp"
+                android:visibility="gone"
                 android:paddingEnd="@dimen/_12sdp"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_12sdp"
@@ -180,7 +184,7 @@
                 android:paddingTop="@dimen/_12sdp"
                 android:paddingEnd="@dimen/_12sdp"
                 android:paddingBottom="@dimen/_5sdp"
-                android:text="CUSTOMER DETAILS:"
+                tools:text="CUSTOMER DETAILS:"
                 android:textColor="@color/default_text_light_grey"
                 android:textSize="@dimen/_11sdp" />
 
@@ -193,6 +197,10 @@
                 tools:itemCount="5"
                 tools:listitem="@layout/customer_detail_item" />
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_200sdp" />
+
         </LinearLayout>
 
     </androidx.core.widget.NestedScrollView>
@@ -202,9 +210,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:elevation="@dimen/_5sdp"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_2sdp"
+            android:alpha="0.2"
+            android:background="@color/cardview_dark_background" />
 
         <include
             layout="@layout/bottom_layout_send_bill"

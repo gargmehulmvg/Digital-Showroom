@@ -39,5 +39,38 @@ data class OrderDetailItemResponse(
 
 data class OrderDetailMainResponse(
     @SerializedName("order") var orders: OrderDetailsResponse?,
+    @SerializedName("static_text") var staticText: OrderDetailsStaticTextResponse?,
     @SerializedName("store_services") var storeServices: StoreServicesResponse?
+)
+
+data class OrderDetailsStaticTextResponse(
+    @SerializedName("heading_add_delivery_and_other_charges") val heading_add_delivery_and_other_charges: String?,
+    @SerializedName("heading_customer_details") val heading_customer_details: String?,
+    @SerializedName("heading_free") val heading_free: String?,
+    @SerializedName("heading_instructions") val heading_instructions: String?,
+    @SerializedName("heading_send_bill_to_your_customer") val heading_send_bill_to_your_customer: String?,
+    @SerializedName("text_customer_can_pay_via") val text_customer_can_pay_via: String?,
+    @SerializedName("text_rupees_symbol") val text_rupees_symbol: String?,
+    @SerializedName("text_refund_successful") val text_refund_successful: String?,
+    @SerializedName("text_status") val text_status: String?,
+    @SerializedName("text_quantity") val text_quantity: String?,
+    @SerializedName("text_packet") val text_packet: String?,
+    @SerializedName("text_order_id") val text_order_id: String?,
+    @SerializedName("text_order") val text_order: String?,
+    @SerializedName("text_new_order") val text_new_order: String?,
+    @SerializedName("text_name") val text_name: String?,
+    @SerializedName("text_id") val text_id: String?,
+    @SerializedName("hint_other_charges") val hint_other_charges: String?,
+    @SerializedName("hint_discount") val hint_discount: String?,
+    @SerializedName("text_add_bank_account") val text_add_bank_account: String?,
+    @SerializedName("text_address") val text_address: String?,
+    @SerializedName("text_bank_account_not_found") val text_bank_account_not_found: String?,
+    @SerializedName("text_bill_amount") val text_bill_amount: String?,
+    @SerializedName("text_city_and_pincode") val text_city_and_pincode: String?,
+    @SerializedName("text_delivery_charges") val text_delivery_charges: String?,
+    @SerializedName("text_details") val text_details: String?,
+    @SerializedName("text_estimate_delivery") val text_estimate_delivery: String?,
+    @SerializedName("text_landmark") val text_landmark: String?,
+    @SerializedName("text_processing_refund") val text_processing_refund: String?,
+    @SerializedName("text_send_bill") val text_send_bill: String?
 )
