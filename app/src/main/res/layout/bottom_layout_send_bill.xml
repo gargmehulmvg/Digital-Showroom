@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:background="@color/white"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/_15sdp">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/sendBillToCustomerTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_14sdp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Send bill to your customer" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/amountLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/_40sdp"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:background="@drawable/slight_curve_green_border"
+        android:minWidth="@dimen/_175sdp"
+        app:layout_constraintStart_toStartOf="@+id/sendBillToCustomerTextView"
+        app:layout_constraintTop_toBottomOf="@+id/sendBillToCustomerTextView">
+
+        <EditText
+            android:id="@+id/amountEditText"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"
+            android:inputType="number"
+            android:minWidth="@dimen/_135sdp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:hint="1512" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/image_view_content_description"
+            android:src="@drawable/ic_camera_black"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/amountEditText"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="@dimen/_5sdp"
+        android:background="@drawable/slight_curve_black_background"
+        android:elevation="@dimen/_4sdp"
+        android:fontFamily="@font/montserrat_bold"
+        android:gravity="center"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="@+id/amountLayout"
+        app:layout_constraintEnd_toEndOf="@+id/sendBillToCustomerTextView"
+        app:layout_constraintStart_toEndOf="@+id/amountLayout"
+        app:layout_constraintTop_toTopOf="@+id/amountLayout"
+        tools:text="SEND BILL" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/customerCanPayUsingTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_15sdp"
+        android:layout_marginBottom="@dimen/_20sdp"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_10sdp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/amountLayout"
+        app:layout_constraintTop_toBottomOf="@+id/amountLayout"
+        tools:text="Send bill to your customer" />
+
+    <ImageView
+        android:layout_width="@dimen/_100sdp"
+        android:layout_height="0dp"
+        android:contentDescription="@string/image_view_content_description"
+        android:src="@drawable/payment_gateway_group"
+        app:layout_constraintBottom_toBottomOf="@+id/customerCanPayUsingTextView"
+        app:layout_constraintEnd_toEndOf="@+id/textView3"
+        app:layout_constraintStart_toEndOf="@+id/customerCanPayUsingTextView"
+        app:layout_constraintTop_toTopOf="@+id/customerCanPayUsingTextView" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

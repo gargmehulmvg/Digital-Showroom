@@ -43,6 +43,9 @@ data class StoreServicesResponse(
     @SerializedName("min_order_value") var mMinOrderValue: Double?,
     @SerializedName("delivery_price") var mDeliveryPrice: Double?,
     @SerializedName("delivery_charge_type") var mDeliveryChargeType: Int?,
+    @SerializedName("delivery_charge_min") var mDeliveryChargeMin: Double?,
+    @SerializedName("delivery_charge_max") var mDeliveryChargeMax: Double?,
+    @SerializedName("delivery_time_approx") var mDeliveryTimeApprox: String?,
     @SerializedName("free_delivery_above") var mFreeDeliveryAbove: Double?
 )
 

@@ -1,5 +1,7 @@
 package com.digitaldukaan.fragments
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,16 +15,18 @@ import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.IOnToolbarIconClick
 import com.digitaldukaan.models.dto.CustomerDeliveryAddressDTO
 import com.digitaldukaan.models.response.CommonApiResponse
-import com.digitaldukaan.models.response.OrderDetailsResponse
+import com.digitaldukaan.models.response.OrderDetailMainResponse
 import com.digitaldukaan.services.OrderDetailService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IOrderDetailServiceInterface
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.order_detail_fragment.*
 
+
 class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToolbarIconClick {
 
     private var mOrderId = ""
+    private var mMobileNumber = ""
     private lateinit var mOrderDetailService: OrderDetailService
 
     companion object {
@@ -64,12 +68,14 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
             setSideIconVisibility(true)
             setSideIcon(ContextCompat.getDrawable(mActivity, R.drawable.ic_call), this@OrderDetailFragment)
         }
+        hideBottomNavigationView(true)
     }
 
     override fun onOrderDetailResponse(commonResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
-            val orderDetailResponse = Gson().fromJson<OrderDetailsResponse>(commonResponse.mCommonDataStr, OrderDetailsResponse::class.java)
+            val orderDetailMainResponse = Gson().fromJson<OrderDetailMainResponse>(commonResponse.mCommonDataStr, OrderDetailMainResponse::class.java)
+            val orderDetailResponse = orderDetailMainResponse?.orders
             newOrderTextView.visibility = if (orderDetailResponse?.displayStatus == Constants.DS_NEW) View.VISIBLE else View.GONE
             val createdDate = orderDetailResponse?.createdAt?.let { getCompleteDateFromOrderString(it) }
             createdDate?.run { ToolBarManager.getInstance().setHeaderSubTitle(getStringDateTimeFromOrderDate(createdDate)) }
@@ -88,8 +94,9 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                 }
                 adapter = CustomerDeliveryAddressAdapter(customerDetailsList)
             }
-            orderDetailResponse.instruction = "Please mention Happy birthday aditya on the top of the cake"
+            orderDetailResponse?.instruction = "Please mention Happy birthday aditya on the top of the cake"
             instructionsValue.text = orderDetailResponse?.instruction
+            mMobileNumber = orderDetailResponse?.phone ?: ""
         }
     }
 
@@ -98,7 +105,8 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
     }
 
     override fun onToolbarSideIconClicked() {
-        showToast()
+        val intent = Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", mMobileNumber, null))
+        mActivity.startActivity(intent)
     }
 
 }

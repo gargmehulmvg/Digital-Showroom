@@ -36,3 +36,8 @@ data class OrderDetailItemResponse(
     @SerializedName("item_type") var item_type: String?,
     @SerializedName("creator_type") var creator_type: Int?
 )
+
+data class OrderDetailMainResponse(
+    @SerializedName("order") var orders: OrderDetailsResponse?,
+    @SerializedName("store_services") var storeServices: StoreServicesResponse?
+)
