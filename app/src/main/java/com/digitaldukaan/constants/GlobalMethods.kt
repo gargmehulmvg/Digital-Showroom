@@ -106,7 +106,8 @@ fun getStringFromOrderDate(date: Date): String {
     return dateFormat.format(date)
 }
 
-fun getStringDateTimeFromOrderDate(date: Date): String {
+fun getStringDateTimeFromOrderDate(date: Date?): String {
+    if (date == null) return ""
     val dateFormat = SimpleDateFormat("dd MMM yy | hh:mm a", Locale.getDefault());
     return dateFormat.format(date)
 }

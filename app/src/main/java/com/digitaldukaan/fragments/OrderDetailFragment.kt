@@ -125,15 +125,15 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
             stopProgress()
             orderDetailMainResponse = Gson().fromJson<OrderDetailMainResponse>(commonResponse.mCommonDataStr, OrderDetailMainResponse::class.java)
             val orderDetailResponse = orderDetailMainResponse?.orders
+            mOrderDetailStaticData = orderDetailMainResponse?.staticText
             newOrderTextView.visibility = if (orderDetailResponse?.displayStatus == Constants.DS_NEW) View.VISIBLE else View.GONE
             sendBillLayout.visibility = if (orderDetailResponse?.displayStatus == Constants.DS_SEND_BILL) View.VISIBLE else View.GONE
             val createdDate = orderDetailResponse?.createdAt?.let { getCompleteDateFromOrderString(it) }
             createdDate?.run { ToolBarManager.getInstance().setHeaderSubTitle(getStringDateTimeFromOrderDate(createdDate)) }
             orderDetailItemRecyclerView.apply {
                 layoutManager = LinearLayoutManager(mActivity)
-                adapter = OrderDetailsAdapter(orderDetailResponse?.orderDetailsItemsList)
+                adapter = OrderDetailsAdapter(orderDetailResponse?.orderDetailsItemsList, orderDetailResponse?.displayStatus, mOrderDetailStaticData)
             }
-            mOrderDetailStaticData = orderDetailMainResponse?.staticText
             mOrderDetailStaticData?.run {
                 sendBillToCustomerTextView.setHtmlData(heading_send_bill_to_your_customer)
                 sendBillTextView.text = text_send_bill
@@ -148,13 +148,14 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                 instructionsLabel.text = heading_instructions
                 customerDetailsLabel.text = heading_customer_details
                 newOrderTextView.text = text_new_order
+                billAmountLabel.text = "$text_bill_amount:"
+                statusLabel.text = "$text_status:"
+                detailTextView.text = "$text_details:"
+                billAmountValue.text = "$text_rupees_symbol ${orderDetailResponse?.amount}"
                 ToolBarManager.getInstance().setHeaderTitle("$text_order #$mOrderId")
+                if (orderDetailResponse?.deliveryInfo?.customDeliveryTime?.isEmpty() == true) estimateDeliveryTextView.visibility = View.GONE else estimateDeliveryTextView.text = "$text_estimate_delivery : ${orderDetailResponse?.deliveryInfo?.customDeliveryTime}"
             }
-            ToolBarManager.getInstance().setHeaderSubTitle(
-                getTimeFromOrderString(
-                    getCompleteDateFromOrderString(orderDetailMainResponse?.orders?.createdAt)
-                )
-            )
+            ToolBarManager.getInstance().setHeaderSubTitle(getStringDateTimeFromOrderDate(getCompleteDateFromOrderString(orderDetailMainResponse?.orders?.createdAt)))
             customerDeliveryDetailsRecyclerView.apply {
                 layoutManager = LinearLayoutManager(mActivity)
                 val customerDetailsList = ArrayList<CustomerDeliveryAddressDTO>()

@@ -6,10 +6,14 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
+import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.models.response.OrderDetailItemResponse
+import com.digitaldukaan.models.response.OrderDetailsStaticTextResponse
 
 class OrderDetailsAdapter(
-    private var mOrderDetailList: ArrayList<OrderDetailItemResponse>?
+    private var mOrderDetailList: ArrayList<OrderDetailItemResponse>?,
+    private val mDeliveryStatus: String?,
+    private val mOrderDetailStaticData: OrderDetailsStaticTextResponse?
 ) :
     RecyclerView.Adapter<OrderDetailsAdapter.ReferAndEarnViewHolder>() {
 
@@ -17,6 +21,7 @@ class OrderDetailsAdapter(
         val orderDetailNameTextView: TextView = itemView.findViewById(R.id.orderDetailNameTextView)
         val quantityTextView: TextView = itemView.findViewById(R.id.quantityTextView)
         val priceTextView: TextView = itemView.findViewById(R.id.priceTextView)
+        val closeImageView: View = itemView.findViewById(R.id.closeImageView)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReferAndEarnViewHolder {
@@ -34,8 +39,9 @@ class OrderDetailsAdapter(
         val item = mOrderDetailList?.get(position)
         holder.apply {
             orderDetailNameTextView.text = item?.item_name
-            quantityTextView.text = "Qty: ${item?.item_quantity}"
-            priceTextView.text = "₹ ${item?.item_price}"
+            quantityTextView.text = "${mOrderDetailStaticData?.text_quantity}: ${item?.item_quantity}"
+            priceTextView.text = "${mOrderDetailStaticData?.text_rupees_symbol} ${item?.item_price}"
+            if (mDeliveryStatus == Constants.DS_BILL_SENT) closeImageView.visibility = View.INVISIBLE
         }
     }
 
