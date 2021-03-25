@@ -20,7 +20,7 @@ import com.digitaldukaan.interfaces.IOrderListItemListener
 import com.digitaldukaan.models.request.CompleteOrderRequest
 import com.digitaldukaan.models.request.OrdersRequest
 import com.digitaldukaan.models.request.SearchOrdersRequest
-import com.digitaldukaan.models.request.UpdateOrderRequest
+import com.digitaldukaan.models.request.UpdateOrderStatusRequest
 import com.digitaldukaan.models.response.*
 import com.digitaldukaan.services.HomeFragmentService
 import com.digitaldukaan.services.isInternetConnectionAvailable
@@ -359,7 +359,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
     }
 
     override fun onOrderItemCLickChanged(item: OrderItemResponse?) {
-        val request = UpdateOrderRequest(item?.orderId?.toLong(), Constants.StatusSeenByMerchant.toLong())
+        val request = UpdateOrderStatusRequest(item?.orderId?.toLong(), Constants.StatusSeenByMerchant.toLong())
         mHomeFragmentService.updateOrderStatus(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
         launchFragment(OrderDetailFragment.newInstance(item?.orderId.toString()), true)
     }

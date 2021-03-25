@@ -504,6 +504,17 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
             .start()
     }
 
+    open fun openFullCamera() {
+        ImagePicker.with(mActivity)
+            .cameraOnly()
+            .compress(1024)            //Final image size will be less than 1 MB(Optional)
+            .maxResultSize(
+                1080,
+                1080
+            )
+            .start()
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when (resultCode) {
             Activity.RESULT_OK -> {

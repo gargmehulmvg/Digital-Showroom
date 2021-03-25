@@ -41,6 +41,7 @@
             tools:hint="1512" />
 
         <ImageView
+            android:id="@+id/billCameraImageView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="@string/image_view_content_description"

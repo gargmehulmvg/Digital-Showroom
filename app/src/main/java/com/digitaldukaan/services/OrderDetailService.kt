@@ -20,4 +20,10 @@ class OrderDetailService {
         }
     }
 
+    fun getDeliveryTime(authToken: String) {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.getDeliveryTimeServerCall(authToken, mServiceInterface)
+        }
+    }
+
 }

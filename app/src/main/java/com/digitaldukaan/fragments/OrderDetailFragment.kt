@@ -6,23 +6,31 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.CustomerDeliveryAddressAdapter
+import com.digitaldukaan.adapters.DeliveryTimeAdapter
 import com.digitaldukaan.adapters.OrderDetailsAdapter
 import com.digitaldukaan.constants.*
+import com.digitaldukaan.interfaces.IChipItemClickListener
 import com.digitaldukaan.interfaces.IOnToolbarIconClick
 import com.digitaldukaan.models.dto.CustomerDeliveryAddressDTO
 import com.digitaldukaan.models.response.CommonApiResponse
+import com.digitaldukaan.models.response.DeliveryTimeResponse
 import com.digitaldukaan.models.response.OrderDetailMainResponse
 import com.digitaldukaan.models.response.OrderDetailsStaticTextResponse
 import com.digitaldukaan.services.OrderDetailService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IOrderDetailServiceInterface
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.bottom_layout_send_bill.*
 import kotlinx.android.synthetic.main.order_detail_fragment.*
+import java.io.File
 
 
 class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToolbarIconClick {
@@ -31,6 +39,10 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
     private var mMobileNumber = ""
     private lateinit var mOrderDetailService: OrderDetailService
     private var mOrderDetailStaticData: OrderDetailsStaticTextResponse? = null
+    private lateinit var mDeliveryTimeAdapter: DeliveryTimeAdapter
+    private var deliveryTimeResponse: DeliveryTimeResponse? = null
+    private var mDeliveryTimeStr: String? = ""
+    private var orderDetailMainResponse: OrderDetailMainResponse? = null
 
     companion object {
         fun newInstance(orderId: String): OrderDetailFragment {
@@ -59,6 +71,14 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                 addDeliveryChargesLabel.visibility = View.GONE
                 addDeliveryChargesGroup.visibility = View.VISIBLE
             }
+            billCameraImageView.id -> {
+                if (!isInternetConnectionAvailable(mActivity)) {
+                    showNoInternetConnectionDialog()
+                    return
+                }
+                showProgressDialog(mActivity)
+                mOrderDetailService.getDeliveryTime(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
+            }
         }
     }
 
@@ -76,7 +96,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
     override fun onOrderDetailResponse(commonResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
-            val orderDetailMainResponse = Gson().fromJson<OrderDetailMainResponse>(commonResponse.mCommonDataStr, OrderDetailMainResponse::class.java)
+            orderDetailMainResponse = Gson().fromJson<OrderDetailMainResponse>(commonResponse.mCommonDataStr, OrderDetailMainResponse::class.java)
             val orderDetailResponse = orderDetailMainResponse?.orders
             newOrderTextView.visibility = if (orderDetailResponse?.displayStatus == Constants.DS_NEW) View.VISIBLE else View.GONE
             val createdDate = orderDetailResponse?.createdAt?.let { getCompleteDateFromOrderString(it) }
@@ -128,6 +148,21 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
         }
     }
 
+    override fun onDeliveryTimeResponse(commonResponse: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            if (commonResponse.mIsSuccessStatus) {
+                deliveryTimeResponse = Gson().fromJson<DeliveryTimeResponse>(commonResponse.mCommonDataStr, DeliveryTimeResponse::class.java)
+                showDeliveryTimeBottomSheet(deliveryTimeResponse)
+            } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
+        }
+    }
+
+    override fun onImageSelectionResultFile(file: File?) {
+        super.onImageSelectionResultFile(file)
+        launchFragment(SendBillPhotoFragment.newInstance(orderDetailMainResponse, file, mDeliveryTimeStr), true)
+    }
+
     override fun onOrderDetailException(e: Exception) {
         exceptionHandlingForAPIResponse(e)
     }
@@ -135,6 +170,44 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
     override fun onToolbarSideIconClicked() {
         val intent = Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", mMobileNumber, null))
         mActivity.startActivity(intent)
+    }
+
+    private fun showDeliveryTimeBottomSheet(deliveryTimeResponse: DeliveryTimeResponse?) {
+        val bottomSheetDialog = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
+        val view = LayoutInflater.from(mActivity).inflate(
+            R.layout.bottom_sheet_delivery_time,
+            mActivity.findViewById(R.id.bottomSheetContainer)
+        )
+        bottomSheetDialog.apply {
+            setContentView(view)
+            setBottomSheetCommonProperty()
+            view.run {
+                val bottomSheetHeading: TextView = findViewById(R.id.bottomSheetHeading)
+                val bottomSheetSendBillText: TextView = findViewById(R.id.bottomSheetSendBillText)
+                val deliveryTimeRecyclerView: RecyclerView = findViewById(R.id.deliveryTimeRecyclerView)
+                deliveryTimeResponse?.staticText?.run {
+                    bottomSheetHeading.text = heading_choose_delivery_time
+                    bottomSheetSendBillText.text = text_send_bill
+                    deliveryTimeRecyclerView.apply {
+                        layoutManager = StaggeredGridLayoutManager(3, LinearLayoutManager.HORIZONTAL)
+                        mDeliveryTimeAdapter = DeliveryTimeAdapter(deliveryTimeResponse.deliveryTimeList, object : IChipItemClickListener {
+                            override fun onChipItemClickListener(position: Int) {
+                                deliveryTimeResponse.deliveryTimeList?.forEachIndexed { _, itemResponse -> itemResponse.isSelected = false }
+                                deliveryTimeResponse.deliveryTimeList?.get(position)?.isSelected = true
+                                mDeliveryTimeAdapter.setDeliveryTimeList(deliveryTimeResponse.deliveryTimeList)
+                                mDeliveryTimeStr = deliveryTimeResponse.deliveryTimeList?.get(position)?.value
+                                bottomSheetSendBillText.isEnabled = true
+                            }
+                        })
+                        adapter = mDeliveryTimeAdapter
+                    }
+                }
+                bottomSheetSendBillText.setOnClickListener {
+                    bottomSheetDialog.dismiss()
+                    openFullCamera()
+                }
+            }
+        }.show()
     }
 
 }

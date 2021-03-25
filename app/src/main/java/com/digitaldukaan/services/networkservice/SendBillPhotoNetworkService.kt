@@ -1,23 +1,27 @@
 package com.digitaldukaan.services.networkservice
 
 import android.util.Log
+import com.digitaldukaan.models.request.UpdateOrderRequest
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.network.RetrofitApi
-import com.digitaldukaan.services.serviceinterface.IOrderDetailServiceInterface
+import com.digitaldukaan.services.serviceinterface.ISendBillPhotoServiceInterface
 import com.google.gson.Gson
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 
-class OrderDetailNetworkService {
+class SendBillPhotoNetworkService {
 
-    suspend fun getOrderDetailServerCall(
+    suspend fun convertFileToLinkServerCall(
         authToken: String,
-        orderId: String,
-        serviceInterface: IOrderDetailServiceInterface
+        imageType: RequestBody,
+        imageFile: MultipartBody.Part?,
+        serviceInterface: ISendBillPhotoServiceInterface
     ) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.getOrderDetails(authToken, orderId)
+            val response = RetrofitApi().getServerCallObject()?.getImageUploadCdnLink(authToken, imageType, imageFile)
             response?.let {
                 if (it.isSuccessful) {
-                    it.body()?.let { commonApiResponse -> serviceInterface.onOrderDetailResponse(commonApiResponse)
+                    it.body()?.let { commonApiResponse -> serviceInterface.onConvertFileToLinkResponse(commonApiResponse)
                     }
                 } else {
                     val responseBody = it.errorBody()
@@ -26,27 +30,28 @@ class OrderDetailNetworkService {
                             responseBody.string(),
                             CommonApiResponse::class.java
                         )
-                        serviceInterface.onOrderDetailResponse(
+                        serviceInterface.onConvertFileToLinkResponse(
                             errorResponse
                         )
                     }
                 }
             }
         } catch (e: Exception) {
-            Log.e(OrderDetailNetworkService::class.java.simpleName, "getOrderDetailServerCall: ", e)
-            serviceInterface.onOrderDetailException(e)
+            Log.e(SendBillPhotoNetworkService::class.java.simpleName, "convertFileToLinkServerCall: ", e)
+            serviceInterface.onSendBillPhotoException(e)
         }
     }
 
-    suspend fun getDeliveryTimeServerCall(
+    suspend fun updateOrderServerCall(
         authToken: String,
-        serviceInterface: IOrderDetailServiceInterface
+        request: UpdateOrderRequest,
+        serviceInterface: ISendBillPhotoServiceInterface
     ) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.getDeliveryTime(authToken)
+            val response = RetrofitApi().getServerCallObject()?.updateOrder(authToken, request)
             response?.let {
                 if (it.isSuccessful) {
-                    it.body()?.let { commonApiResponse -> serviceInterface.onDeliveryTimeResponse(commonApiResponse)
+                    it.body()?.let { commonApiResponse -> serviceInterface.onUpdateOrderResponse(commonApiResponse)
                     }
                 } else {
                     val responseBody = it.errorBody()
@@ -55,15 +60,15 @@ class OrderDetailNetworkService {
                             responseBody.string(),
                             CommonApiResponse::class.java
                         )
-                        serviceInterface.onDeliveryTimeResponse(
+                        serviceInterface.onUpdateOrderResponse(
                             errorResponse
                         )
                     }
                 }
             }
         } catch (e: Exception) {
-            Log.e(OrderDetailNetworkService::class.java.simpleName, "getDeliveryTimeServerCall: ", e)
-            serviceInterface.onOrderDetailException(e)
+            Log.e(SendBillPhotoNetworkService::class.java.simpleName, "updateOrderServerCall: ", e)
+            serviceInterface.onSendBillPhotoException(e)
         }
     }
 

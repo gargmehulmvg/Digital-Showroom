@@ -5,7 +5,7 @@ import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.models.request.CompleteOrderRequest
 import com.digitaldukaan.models.request.OrdersRequest
 import com.digitaldukaan.models.request.SearchOrdersRequest
-import com.digitaldukaan.models.request.UpdateOrderRequest
+import com.digitaldukaan.models.request.UpdateOrderStatusRequest
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.ValidateOtpErrorResponse
 import com.digitaldukaan.network.RetrofitApi
@@ -115,11 +115,11 @@ class HomeNetworkService {
 
     suspend fun updateOrderStatusServerCall(
         authToken: String,
-        request: UpdateOrderRequest,
+        statusRequest: UpdateOrderStatusRequest,
         serviceInterface: IHomeServiceInterface
     ) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.updateOrderStatus(authToken, request)
+            val response = RetrofitApi().getServerCallObject()?.updateOrderStatus(authToken, statusRequest)
             response?.let {
                 if (it.isSuccessful) it.body()?.let { commonApiResponse -> serviceInterface.onOrdersUpdatedStatusResponse(commonApiResponse) }
                 else {

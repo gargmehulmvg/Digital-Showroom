@@ -2,6 +2,7 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/bottomSheetContainer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:cardCornerRadius="@dimen/_5sdp">
@@ -32,11 +33,11 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_15sdp"
             app:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
-            app:layout_constraintEnd_toEndOf="@+id/bottomSheetHeading"
-            app:layout_constraintStart_toStartOf="@+id/bottomSheetHeading"
-            app:layout_constraintTop_toBottomOf="@+id/bottomSheetHeading"
+            app:layout_constraintEnd_toEndOf="@id/bottomSheetHeading"
+            app:layout_constraintStart_toStartOf="@id/bottomSheetHeading"
+            app:layout_constraintTop_toBottomOf="@id/bottomSheetHeading"
             app:spanCount="3"
-            tools:listitem="@layout/chip_item_layout2" />
+            tools:listitem="@layout/delivery_time_layout" />
 
         <TextView
             android:id="@+id/bottomSheetSendBillText"
@@ -46,13 +47,14 @@
             android:layout_marginBottom="@dimen/_15sdp"
             android:layout_marginTop="@dimen/_15sdp"
             android:gravity="center"
+            android:enabled="false"
             android:textColor="@color/white"
-            android:textSize="@dimen/_12sdp"
+            android:textSize="@dimen/_14sdp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/bottomSheetHeading"
+            app:layout_constraintEnd_toEndOf="@id/bottomSheetHeading"
             app:layout_constraintHorizontal_bias="0.65"
-            app:layout_constraintStart_toStartOf="@+id/bottomSheetHeading"
-            app:layout_constraintTop_toBottomOf="@+id/deliveryTimeRecyclerView"
+            app:layout_constraintStart_toStartOf="@id/bottomSheetHeading"
+            app:layout_constraintTop_toBottomOf="@id/deliveryTimeRecyclerView"
             tools:text="@string/text_new" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

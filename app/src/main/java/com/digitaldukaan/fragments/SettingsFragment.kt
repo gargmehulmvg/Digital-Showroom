@@ -149,7 +149,6 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                 }
             }
         }.show()
-        bottomSheetDialog.show()
     }
 
     private fun fetchUserProfile() {

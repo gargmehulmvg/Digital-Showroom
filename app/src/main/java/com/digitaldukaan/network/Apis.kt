@@ -104,7 +104,7 @@ interface Apis {
     suspend fun initiateKyc(@Header("auth_token") authToken: String): Response<CommonApiResponse>
 
     @POST("api/dotk/orders/updateOrderStatus")
-    suspend fun updateOrderStatus(@Header("auth_token") authToken: String, @Body request: UpdateOrderRequest): Response<CommonApiResponse>
+    suspend fun updateOrderStatus(@Header("auth_token") authToken: String, @Body statusRequest: UpdateOrderStatusRequest): Response<CommonApiResponse>
 
     @GET("api/dotk/orders/getOrderDetails/{orderId}")
     suspend fun getOrderDetails(@Header("auth_token") authToken: String, @Path("orderId") orderId: String): Response<CommonApiResponse>
@@ -123,4 +123,10 @@ interface Apis {
 
     @POST("api/dotk/orders/completeOrder")
     suspend fun completeOrder(@Header("auth_token") authToken: String, @Body request: CompleteOrderRequest): Response<CommonApiResponse>
+
+    @GET("api/dotk/orders/getDeliveryTime")
+    suspend fun getDeliveryTime(@Header("auth_token") authToken: String): Response<CommonApiResponse>
+
+    @POST("api/dotk/orders/updateOrder")
+    suspend fun updateOrder(@Header("auth_token") authToken: String, @Body statusRequest: UpdateOrderRequest): Response<CommonApiResponse>
 }
