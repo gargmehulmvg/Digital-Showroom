@@ -13,18 +13,18 @@ import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.StaticInstances
 import com.digitaldukaan.constants.getStringFromOrderDate
 import com.digitaldukaan.constants.getTimeFromOrderString
-import com.digitaldukaan.fragments.BaseFragment
 import com.digitaldukaan.interfaces.IOrderListItemListener
 import com.digitaldukaan.models.response.OrderItemResponse
+import com.digitaldukaan.models.response.OrderPageStaticTextResponse
 import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersAdapter
 import java.util.*
 
 class OrderAdapterV2(
     private var mContext: Context,
-    private var mOrderList: ArrayList<OrderItemResponse>?
+    private var mOrderList: ArrayList<OrderItemResponse>?,
+    private var mOrderPageInfoStaticData: OrderPageStaticTextResponse?
 ) : RecyclerView.Adapter<OrderAdapterV2.OrderViewHolder>(), StickyRecyclerHeadersAdapter<OrderAdapterV2.HeaderViewHolder> {
 
-    private val mOrderListStaticData = BaseFragment.mStaticData.mStaticData.mOrderListStaticData
     private var mListItemListener: IOrderListItemListener? = null
 
     fun setCheckBoxListener(listener: IOrderListItemListener) {
@@ -99,21 +99,21 @@ class OrderAdapterV2(
     private fun getOrderStatus(item: OrderItemResponse?, orderAddressTextView: TextView, orderItemContainer: View, orderCheckBox: CheckBox) {
         when (item?.displayStatus) {
             Constants.DS_NEW -> {
-                orderAddressTextView.text = mOrderListStaticData.newText
+                orderAddressTextView.text = mOrderPageInfoStaticData?.newText
                 orderAddressTextView.setTextColor(mContext.getColor(R.color.open_green))
                 orderAddressTextView.background = ContextCompat.getDrawable(mContext, R.drawable.order_adapter_new)
             }
             Constants.DS_SEND_BILL -> {
                 orderAddressTextView.setTextColor(mContext.getColor(R.color.orange))
                 orderAddressTextView.background = ContextCompat.getDrawable(mContext, R.drawable.order_adapter_send_bill)
-                orderAddressTextView.text = mOrderListStaticData.sendBillText
+                orderAddressTextView.text = mOrderPageInfoStaticData?.sendBillText
                 orderCheckBox.isEnabled = false
                 orderCheckBox.alpha = 0.2f
             }
             Constants.DS_BILL_SENT -> {
                 orderAddressTextView.setTextColor(mContext.getColor(R.color.snack_bar_background))
                 orderAddressTextView.background = ContextCompat.getDrawable(mContext, R.drawable.order_adapter_bill_sent)
-                orderAddressTextView.text = mOrderListStaticData.sendBillText
+                orderAddressTextView.text = mOrderPageInfoStaticData?.sentBillText
                 orderCheckBox.isEnabled = false
                 orderCheckBox.alpha = 0.2f
             }
@@ -146,8 +146,8 @@ class OrderAdapterV2(
     private fun getAddress(item: OrderItemResponse?): String {
         return when (item?.orderType) {
             Constants.ORDER_TYPE_ADDRESS -> "${item.deliveryInfo.address1} ${item.deliveryInfo.address2}"
-            Constants.ORDER_TYPE_PICK_UP -> mOrderListStaticData.pickUpOrder ?: ""
-            Constants.ORDER_TYPE_SELF -> mOrderListStaticData.selfBilled ?: ""
+            Constants.ORDER_TYPE_PICK_UP -> mOrderPageInfoStaticData?.pickUpOrder ?: ""
+            Constants.ORDER_TYPE_SELF -> mOrderPageInfoStaticData?.selfBilled ?: ""
             else -> ""
         }
     }

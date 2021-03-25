@@ -73,7 +73,7 @@ class SearchOrdersFragment: BaseFragment(), IOnToolbarIconClick, ISearchOrderSer
         }
         ordersRecyclerView.apply {
             convertDateStringOfOrders(mOrderList)
-            orderAdapter = OrderAdapterV2(mActivity, mOrderList)
+            orderAdapter = OrderAdapterV2(mActivity, mOrderList, null)
             linearLayoutManager = LinearLayoutManager(mActivity)
             layoutManager = linearLayoutManager
             adapter = orderAdapter

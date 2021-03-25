@@ -114,7 +114,6 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
         ToolBarManager.getInstance().apply {
             hideToolBar(mActivity, false)
             onBackPressed(this@OrderDetailFragment)
-            setHeaderSubTitle("11 Feb | 12:23PM")
             setSideIconVisibility(true)
             setSideIcon(ContextCompat.getDrawable(mActivity, R.drawable.ic_call), this@OrderDetailFragment)
         }
@@ -127,6 +126,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
             orderDetailMainResponse = Gson().fromJson<OrderDetailMainResponse>(commonResponse.mCommonDataStr, OrderDetailMainResponse::class.java)
             val orderDetailResponse = orderDetailMainResponse?.orders
             newOrderTextView.visibility = if (orderDetailResponse?.displayStatus == Constants.DS_NEW) View.VISIBLE else View.GONE
+            sendBillLayout.visibility = if (orderDetailResponse?.displayStatus == Constants.DS_SEND_BILL) View.VISIBLE else View.GONE
             val createdDate = orderDetailResponse?.createdAt?.let { getCompleteDateFromOrderString(it) }
             createdDate?.run { ToolBarManager.getInstance().setHeaderSubTitle(getStringDateTimeFromOrderDate(createdDate)) }
             orderDetailItemRecyclerView.apply {
@@ -150,6 +150,11 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                 newOrderTextView.text = text_new_order
                 ToolBarManager.getInstance().setHeaderTitle("$text_order #$mOrderId")
             }
+            ToolBarManager.getInstance().setHeaderSubTitle(
+                getTimeFromOrderString(
+                    getCompleteDateFromOrderString(orderDetailMainResponse?.orders?.createdAt)
+                )
+            )
             customerDeliveryDetailsRecyclerView.apply {
                 layoutManager = LinearLayoutManager(mActivity)
                 val customerDetailsList = ArrayList<CustomerDeliveryAddressDTO>()
@@ -182,7 +187,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
             stopProgress()
             if (commonResponse.mIsSuccessStatus) {
                 deliveryTimeResponse = Gson().fromJson<DeliveryTimeResponse>(commonResponse.mCommonDataStr, DeliveryTimeResponse::class.java)
-                showDeliveryTimeBottomSheet(deliveryTimeResponse, mBillSentCameraClicked)
+                showDeliveryTimeBottomSheet(deliveryTimeResponse, !mBillSentCameraClicked)
             } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
         }
     }

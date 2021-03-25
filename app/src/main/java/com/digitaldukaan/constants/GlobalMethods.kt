@@ -87,7 +87,8 @@ fun getDateFromOrderString(dateStr: String): Date? {
     return format.parse(dateStr)
 }
 
-fun getCompleteDateFromOrderString(dateStr: String): Date? {
+fun getCompleteDateFromOrderString(dateStr: String?): Date? {
+    if (dateStr == null) return Date()
     val format: DateFormat = SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.getDefault())
     return format.parse(dateStr)
 }

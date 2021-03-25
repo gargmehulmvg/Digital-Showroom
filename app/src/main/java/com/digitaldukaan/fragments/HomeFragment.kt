@@ -221,7 +221,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                         orderLayout.visibility = View.VISIBLE
                         fetchLatestOrders(Constants.MODE_PENDING, mFetchingOrdersStr, pendingPageCount)
                         ordersRecyclerView.apply {
-                            orderAdapter = OrderAdapterV2(mActivity, mOrderList)
+                            orderAdapter = OrderAdapterV2(mActivity, mOrderList, mOrderPageInfoStaticData)
                             orderAdapter.setCheckBoxListener(this@HomeFragment)
                             linearLayoutManager = LinearLayoutManager(mActivity)
                             layoutManager = linearLayoutManager
@@ -270,7 +270,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
             if (swipeRefreshLayout.isRefreshing) swipeRefreshLayout.isRefreshing = false
             if (commonResponse.mIsSuccessStatus) {
                 val ordersResponse = Gson().fromJson<OrdersResponse>(commonResponse.mCommonDataStr, OrdersResponse::class.java)
-                if (ordersResponse?.mOrdersList?.isNotEmpty() == true) launchFragment(SearchOrdersFragment.newInstance(mOrderIdString, mMobileNumberString, ordersResponse?.mOrdersList), true)
+                if (ordersResponse?.mOrdersList?.isNotEmpty() == true) launchFragment(SearchOrdersFragment.newInstance(mOrderIdString, mMobileNumberString, ordersResponse.mOrdersList), true)
             } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
         }
     }
@@ -359,8 +359,10 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
     }
 
     override fun onOrderItemCLickChanged(item: OrderItemResponse?) {
-        val request = UpdateOrderStatusRequest(item?.orderId?.toLong(), Constants.StatusSeenByMerchant.toLong())
-        mHomeFragmentService.updateOrderStatus(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
+        if (item?.displayStatus == Constants.DS_NEW) {
+            val request = UpdateOrderStatusRequest(item.orderId.toLong(), Constants.StatusSeenByMerchant.toLong())
+            mHomeFragmentService.updateOrderStatus(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
+        }
         launchFragment(OrderDetailFragment.newInstance(item?.orderId.toString()), true)
     }
 
