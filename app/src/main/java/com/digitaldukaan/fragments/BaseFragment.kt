@@ -19,10 +19,7 @@ import android.text.Html
 import android.util.Base64
 import android.util.Base64OutputStream
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.View
-import android.view.WindowManager
+import android.view.*
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.TranslateAnimation
 import android.view.inputmethod.InputMethodManager
@@ -711,5 +708,17 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     }
 
     open fun onDontShowDialogPositiveButtonClicked(item: OrderItemResponse?) = Unit
+
+    protected fun showImageDialog(imageStr: String?) {
+        Dialog(mActivity).apply {
+            requestWindowFeature(Window.FEATURE_NO_TITLE)
+            setCancelable(true)
+            setContentView(R.layout.image_dialog)
+            val imageView: ImageView = findViewById(R.id.imageView)
+            imageStr?.let {
+                Picasso.get().load(it).into(imageView)
+            }
+        }.show()
+    }
 
 }

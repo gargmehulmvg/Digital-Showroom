@@ -128,11 +128,22 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
             mOrderDetailStaticData = orderDetailMainResponse?.staticText
             newOrderTextView.visibility = if (orderDetailResponse?.displayStatus == Constants.DS_NEW) View.VISIBLE else View.GONE
             sendBillLayout.visibility = if (orderDetailResponse?.displayStatus == Constants.DS_SEND_BILL) View.VISIBLE else View.GONE
+            orderDetailContainer.visibility = if (orderDetailResponse?.displayStatus == Constants.DS_SEND_BILL) View.GONE else View.VISIBLE
+            addDeliveryChargesLabel.visibility = if (orderDetailResponse?.displayStatus == Constants.DS_SEND_BILL) View.VISIBLE else View.GONE
             val createdDate = orderDetailResponse?.createdAt?.let { getCompleteDateFromOrderString(it) }
             createdDate?.run { ToolBarManager.getInstance().setHeaderSubTitle(getStringDateTimeFromOrderDate(createdDate)) }
             orderDetailItemRecyclerView.apply {
                 layoutManager = LinearLayoutManager(mActivity)
-                adapter = OrderDetailsAdapter(orderDetailResponse?.orderDetailsItemsList, orderDetailResponse?.displayStatus, mOrderDetailStaticData)
+                val list = orderDetailResponse?.orderDetailsItemsList
+                var orderDetailAdapter: OrderDetailsAdapter? = null
+                orderDetailAdapter = OrderDetailsAdapter(list, orderDetailResponse?.displayStatus, mOrderDetailStaticData, object : IChipItemClickListener {
+
+                    override fun onChipItemClickListener(position: Int) {
+                        list?.get(position)?.item_status = if (list?.get(position)?.item_status == 2) 1 else 2
+                        orderDetailAdapter?.setOrderDetailList(list)
+                    }
+                })
+                adapter = orderDetailAdapter
             }
             mOrderDetailStaticData?.run {
                 sendBillToCustomerTextView.setHtmlData(heading_send_bill_to_your_customer)
@@ -180,6 +191,12 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                 deliveryChargeValue.text = "${mOrderDetailStaticData?.text_rupees_symbol} ${orderDetailMainResponse?.storeServices?.mDeliveryPrice}"
             }
             mMobileNumber = orderDetailResponse?.phone ?: ""
+            if (orderDetailResponse?.imageLink?.isNotEmpty() == true) {
+                viewBillTextView.visibility = View.VISIBLE
+                viewBillTextView.setOnClickListener {
+                    showImageDialog(orderDetailResponse.imageLink)
+                }
+            }
         }
     }
 
@@ -236,7 +253,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                     bottomSheetHeading.text = heading_choose_delivery_time
                     bottomSheetSendBillText.text = text_send_bill
                     deliveryTimeRecyclerView.apply {
-                        layoutManager = StaggeredGridLayoutManager(3, LinearLayoutManager.HORIZONTAL)
+                        layoutManager = StaggeredGridLayoutManager(3, LinearLayoutManager.VERTICAL)
                         mDeliveryTimeAdapter = DeliveryTimeAdapter(deliveryTimeResponse.deliveryTimeList, object : IChipItemClickListener {
                             override fun onChipItemClickListener(position: Int) {
                                 deliveryTimeResponse.deliveryTimeList?.forEachIndexed { _, itemResponse -> itemResponse.isSelected = false }

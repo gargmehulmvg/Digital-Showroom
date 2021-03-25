@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:animateLayoutChanges="true" >
+    android:animateLayoutChanges="true">
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/nestedScrollView"
@@ -29,22 +29,22 @@
                 android:gravity="center"
                 android:paddingTop="@dimen/_4sdp"
                 android:paddingBottom="@dimen/_4sdp"
-                tools:text="New Order"
-                android:textColor="@color/white" />
+                android:textColor="@color/white"
+                tools:text="New Order" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/orderDetailContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="@dimen/_10sdp"
-                android:background="@color/black">
+                android:background="@color/black"
+                android:padding="@dimen/_10sdp">
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/billAmountLabel"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:alpha="0.75"
                     android:layout_marginTop="@dimen/_10sdp"
+                    android:alpha="0.75"
                     android:textColor="@color/white"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
@@ -83,8 +83,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_5sdp"
-                    android:alpha="0.75"
                     android:layout_marginBottom="@dimen/_10sdp"
+                    android:alpha="0.75"
                     android:textColor="@color/white"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -154,10 +154,10 @@
                     android:background="?selectableItemBackground"
                     android:fontFamily="sans-serif-medium"
                     android:onClick="onClick"
-                    tools:text="+ Add Delivery And Other Charges"
                     android:textColor="@color/open_green"
                     app:layout_constraintStart_toStartOf="@id/deliveryChargeLabel"
-                    app:layout_constraintTop_toBottomOf="@id/deliveryChargeLabel" />
+                    app:layout_constraintTop_toBottomOf="@id/deliveryChargeLabel"
+                    tools:text="+ Add Delivery And Other Charges" />
 
                 <View
                     android:layout_width="0dp"
@@ -182,32 +182,31 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_10sdp"
-                    tools:hint="Other charges"
                     android:importantForAutofill="no"
                     android:inputType="text"
                     android:minWidth="@dimen/_100sdp"
                     android:textSize="@dimen/_10sdp"
                     app:layout_constraintStart_toStartOf="@+id/addDeliveryChargesLabel"
-                    app:layout_constraintTop_toBottomOf="@+id/addDeliveryChargesLabel" />
+                    app:layout_constraintTop_toBottomOf="@+id/addDeliveryChargesLabel"
+                    tools:hint="Other charges" />
 
                 <EditText
                     android:id="@+id/otherChargesValueEditText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    tools:hint="₹"
                     android:importantForAutofill="no"
                     android:inputType="number"
                     android:maxLength="@integer/amount_length"
                     android:minWidth="@dimen/_30sdp"
                     android:textSize="@dimen/_10sdp"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/otherChargesEditText" />
+                    app:layout_constraintTop_toTopOf="@+id/otherChargesEditText"
+                    tools:hint="₹" />
 
                 <EditText
                     android:id="@+id/discountsValueEditText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    tools:hint="₹"
                     android:importantForAutofill="no"
                     android:inputType="number"
                     android:maxLength="@integer/amount_length"
@@ -215,20 +214,21 @@
                     android:textSize="@dimen/_10sdp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="@+id/otherChargesValueEditText"
-                    app:layout_constraintTop_toBottomOf="@+id/otherChargesValueEditText" />
+                    app:layout_constraintTop_toBottomOf="@+id/otherChargesValueEditText"
+                    tools:hint="₹" />
 
                 <EditText
                     android:id="@+id/discountsEditText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    tools:hint="Discounts"
                     android:importantForAutofill="no"
                     android:inputType="text"
                     android:minWidth="@dimen/_100sdp"
                     android:textSize="@dimen/_10sdp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="@+id/addDeliveryChargesLabel"
-                    app:layout_constraintTop_toBottomOf="@+id/otherChargesEditText" />
+                    app:layout_constraintTop_toBottomOf="@+id/otherChargesEditText"
+                    tools:hint="Discounts" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -239,37 +239,37 @@
                 android:fontFamily="sans-serif-medium"
                 android:paddingStart="@dimen/_12sdp"
                 android:paddingTop="@dimen/_12sdp"
-                android:visibility="gone"
                 android:paddingEnd="@dimen/_12sdp"
                 android:paddingBottom="@dimen/_5sdp"
-                tools:text="INSTRUCTIONS:"
                 android:textColor="@color/default_text_light_grey"
-                android:textSize="@dimen/_11sdp" />
+                android:textSize="@dimen/_11sdp"
+                android:visibility="gone"
+                tools:text="INSTRUCTIONS:" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/instructionsValue"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingStart="@dimen/_12sdp"
-                android:visibility="gone"
                 android:paddingEnd="@dimen/_12sdp"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_12sdp"
+                android:visibility="gone"
                 tools:text="Please mention Happy birthday aditya on the top of the cake" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/estimateDeliveryTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginEnd="@dimen/_10sdp"
+                android:background="@drawable/slight_curve_black_background"
+                android:fontFamily="@font/montserrat"
                 android:gravity="center"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_10sdp"
-                android:fontFamily="@font/montserrat"
-                tools:text="@string/app_name"
-                android:background="@drawable/slight_curve_black_background"
-                android:layout_marginTop="@dimen/_10sdp"
-                android:layout_marginStart="@dimen/_10sdp"
-                android:layout_marginEnd="@dimen/_10sdp" />
+                tools:text="@string/app_name" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/customerDetailsLabel"
@@ -280,9 +280,9 @@
                 android:paddingTop="@dimen/_12sdp"
                 android:paddingEnd="@dimen/_12sdp"
                 android:paddingBottom="@dimen/_5sdp"
-                tools:text="CUSTOMER DETAILS:"
                 android:textColor="@color/default_text_light_grey"
-                android:textSize="@dimen/_11sdp" />
+                android:textSize="@dimen/_11sdp"
+                tools:text="CUSTOMER DETAILS:" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/customerDeliveryDetailsRecyclerView"
@@ -322,5 +322,26 @@
             app:layout_constraintBottom_toBottomOf="parent" />
 
     </LinearLayout>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/viewBillTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/_15sdp"
+        android:layout_marginBottom="@dimen/_15sdp"
+        android:background="@drawable/curve_black_background"
+        android:drawableStart="@drawable/ic_view_bill_white"
+        android:drawablePadding="@dimen/_5sdp"
+        android:visibility="gone"
+        android:fontFamily="sans-serif-medium"
+        android:paddingStart="@dimen/_10sdp"
+        android:paddingTop="@dimen/_5sdp"
+        android:paddingEnd="@dimen/_10sdp"
+        android:paddingBottom="@dimen/_5sdp"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_13sdp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:text="View Bill" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

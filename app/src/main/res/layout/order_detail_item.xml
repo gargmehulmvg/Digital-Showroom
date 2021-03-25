@@ -6,16 +6,17 @@
     android:layout_height="wrap_content"
     android:layout_marginStart="@dimen/_15sdp"
     android:layout_marginTop="@dimen/_8sdp"
-    android:layout_marginBottom="@dimen/_3sdp"
     android:layout_marginEnd="@dimen/_15sdp"
+    android:layout_marginBottom="@dimen/_3sdp"
     android:elevation="@dimen/_4sdp"
     app:cardCornerRadius="@dimen/_4sdp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/orderDetailContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="@dimen/_8sdp"
-        android:background="@color/white">
+        android:background="@color/white"
+        android:padding="@dimen/_8sdp">
 
         <ImageView
             android:id="@+id/orderDetailImageView"
@@ -44,8 +45,8 @@
             android:id="@+id/closeImageView"
             android:layout_width="@dimen/_20sdp"
             android:layout_height="@dimen/_20sdp"
-            android:padding="@dimen/_4sdp"
             android:contentDescription="@string/image_view_content_description"
+            android:padding="@dimen/_2sdp"
             android:src="@drawable/ic_close_red"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -76,8 +77,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_8sdp"
-            android:textColor="@color/open_green"
             android:fontFamily="sans-serif-medium"
+            android:textColor="@color/open_green"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/view4"
