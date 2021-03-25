@@ -59,6 +59,7 @@
         android:id="@+id/sendBillTextView"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:onClick="onClick"
         android:layout_marginStart="@dimen/_5sdp"
         android:background="@drawable/slight_curve_black_background"
         android:elevation="@dimen/_4sdp"

@@ -19,10 +19,8 @@ import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.IChipItemClickListener
 import com.digitaldukaan.interfaces.IOnToolbarIconClick
 import com.digitaldukaan.models.dto.CustomerDeliveryAddressDTO
-import com.digitaldukaan.models.response.CommonApiResponse
-import com.digitaldukaan.models.response.DeliveryTimeResponse
-import com.digitaldukaan.models.response.OrderDetailMainResponse
-import com.digitaldukaan.models.response.OrderDetailsStaticTextResponse
+import com.digitaldukaan.models.request.UpdateOrderRequest
+import com.digitaldukaan.models.response.*
 import com.digitaldukaan.services.OrderDetailService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IOrderDetailServiceInterface
@@ -43,6 +41,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
     private var deliveryTimeResponse: DeliveryTimeResponse? = null
     private var mDeliveryTimeStr: String? = ""
     private var orderDetailMainResponse: OrderDetailMainResponse? = null
+    private var mBillSentCameraClicked = false
 
     companion object {
         fun newInstance(orderId: String): OrderDetailFragment {
@@ -72,13 +71,42 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                 addDeliveryChargesGroup.visibility = View.VISIBLE
             }
             billCameraImageView.id -> {
-                if (!isInternetConnectionAvailable(mActivity)) {
-                    showNoInternetConnectionDialog()
-                    return
-                }
-                showProgressDialog(mActivity)
-                mOrderDetailService.getDeliveryTime(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
+                mBillSentCameraClicked = true
+                handleDeliveryTimeBottomSheet(false)
             }
+            sendBillTextView.id -> {
+                handleDeliveryTimeBottomSheet(true)
+            }
+        }
+    }
+
+    private fun handleDeliveryTimeBottomSheet(isCallSendBillServerCall: Boolean) {
+        if (deliveryTimeResponse != null) {
+            showDeliveryTimeBottomSheet(deliveryTimeResponse, isCallSendBillServerCall)
+        } else {
+            if (!isInternetConnectionAvailable(mActivity)) {
+                showNoInternetConnectionDialog()
+                return
+            }
+            showProgressDialog(mActivity)
+            mOrderDetailService.getDeliveryTime(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
+        }
+    }
+
+    private fun initiateSendBillServerCall() {
+        orderDetailMainResponse?.orders?.run {
+            val request = UpdateOrderRequest(
+                orderId,
+                amount,
+                false,
+                deliveryInfo?.deliveryTo,
+                deliveryInfo?.deliveryFrom,
+                mDeliveryTimeStr,
+                orderDetailsItemsList,
+                ""
+            )
+            showProgressDialog(mActivity)
+            mOrderDetailService.updateOrder(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
         }
     }
 
@@ -134,6 +162,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                 adapter = CustomerDeliveryAddressAdapter(customerDetailsList)
             }
             orderDetailResponse?.instruction = "Please mention Happy birthday aditya on the top of the cake"
+            amountEditText.setText("${orderDetailMainResponse?.orders?.amount}")
             if (orderDetailResponse?.instruction?.isNotEmpty() == true) {
                 instructionsValue.visibility = View.VISIBLE
                 instructionsValue.text = orderDetailResponse.instruction
@@ -153,7 +182,19 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
             stopProgress()
             if (commonResponse.mIsSuccessStatus) {
                 deliveryTimeResponse = Gson().fromJson<DeliveryTimeResponse>(commonResponse.mCommonDataStr, DeliveryTimeResponse::class.java)
-                showDeliveryTimeBottomSheet(deliveryTimeResponse)
+                showDeliveryTimeBottomSheet(deliveryTimeResponse, mBillSentCameraClicked)
+            } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
+        }
+    }
+
+    override fun onUpdateOrderResponse(commonResponse: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            if (commonResponse.mIsSuccessStatus) {
+                showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_green_check_small)
+                val response = Gson().fromJson<UpdateOrderResponse>(commonResponse.mCommonDataStr, UpdateOrderResponse::class.java)
+                shareDataOnWhatsApp(response?.whatsAppText)
+                launchFragment(HomeFragment.newInstance(), true)
             } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
         }
     }
@@ -172,7 +213,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
         mActivity.startActivity(intent)
     }
 
-    private fun showDeliveryTimeBottomSheet(deliveryTimeResponse: DeliveryTimeResponse?) {
+    private fun showDeliveryTimeBottomSheet(deliveryTimeResponse: DeliveryTimeResponse?, isCallSendBillServerCall: Boolean) {
         val bottomSheetDialog = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
         val view = LayoutInflater.from(mActivity).inflate(
             R.layout.bottom_sheet_delivery_time,
@@ -204,7 +245,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                 }
                 bottomSheetSendBillText.setOnClickListener {
                     bottomSheetDialog.dismiss()
-                    openFullCamera()
+                    if (isCallSendBillServerCall) initiateSendBillServerCall() else openFullCamera()
                 }
             }
         }.show()
