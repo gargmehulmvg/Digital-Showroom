@@ -71,6 +71,8 @@ data class OrderDetailsStaticTextResponse(
     @SerializedName("text_details") val text_details: String?,
     @SerializedName("text_estimate_delivery") val text_estimate_delivery: String?,
     @SerializedName("text_landmark") val text_landmark: String?,
+    @SerializedName("message_customer_paid") val message_customer_paid: String?,
+    @SerializedName("message_bill_sent_customer_not_paid") val message_bill_sent_customer_not_paid: String?,
     @SerializedName("text_processing_refund") val text_processing_refund: String?,
     @SerializedName("text_send_bill") val text_send_bill: String?
 )

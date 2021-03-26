@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/bottomSheetContainer"
     android:orientation="vertical"
     android:background="@drawable/upper_curve_white_background"
@@ -48,7 +49,7 @@
             app:layout_constraintEnd_toStartOf="@+id/bottomSheetUpperImageView"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@+id/bottomSheetUpperImageView"
-            android:text="Add your bank Account" />
+            tools:text="Add your bank Account" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/bottomSheetBankRecyclerView"

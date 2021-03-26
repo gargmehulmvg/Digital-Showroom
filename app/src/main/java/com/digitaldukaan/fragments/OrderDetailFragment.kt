@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -42,11 +43,13 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
     private var mDeliveryTimeStr: String? = ""
     private var orderDetailMainResponse: OrderDetailMainResponse? = null
     private var mBillSentCameraClicked = false
+    private var mIsNewOrder = false
 
     companion object {
-        fun newInstance(orderId: String): OrderDetailFragment {
+        fun newInstance(orderId: String, isNewOrder: Boolean): OrderDetailFragment {
             val fragment = OrderDetailFragment()
             fragment.mOrderId = orderId
+            fragment.mIsNewOrder = isNewOrder
             return fragment
         }
     }
@@ -74,9 +77,8 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                 mBillSentCameraClicked = true
                 handleDeliveryTimeBottomSheet(false)
             }
-            sendBillTextView.id -> {
-                handleDeliveryTimeBottomSheet(true)
-            }
+            sendBillTextView.id -> handleDeliveryTimeBottomSheet(true)
+            detailTextView.id -> showOrderDetailBottomSheet()
         }
     }
 
@@ -126,7 +128,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
             orderDetailMainResponse = Gson().fromJson<OrderDetailMainResponse>(commonResponse.mCommonDataStr, OrderDetailMainResponse::class.java)
             val orderDetailResponse = orderDetailMainResponse?.orders
             mOrderDetailStaticData = orderDetailMainResponse?.staticText
-            //newOrderTextView.visibility = if (orderDetailResponse?.displayStatus == Constants.DS_SEND_BILL) View.VISIBLE else View.GONE TODO NEW will be shown only 1 time when order is seen by customer
+            newOrderTextView.visibility = if (mIsNewOrder) View.VISIBLE else View.GONE
             sendBillLayout.visibility = if (orderDetailResponse?.displayStatus == Constants.DS_SEND_BILL) View.VISIBLE else View.GONE
             orderDetailContainer.visibility = if (orderDetailResponse?.displayStatus == Constants.DS_SEND_BILL) View.GONE else View.VISIBLE
             addDeliveryChargesLabel.visibility = if (orderDetailResponse?.displayStatus == Constants.DS_SEND_BILL) View.VISIBLE else View.GONE
@@ -165,16 +167,20 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                 billAmountValue.text = "$text_rupees_symbol ${orderDetailResponse?.amount}"
                 ToolBarManager.getInstance().setHeaderTitle("$text_order #$mOrderId")
                 if (orderDetailResponse?.deliveryInfo?.customDeliveryTime?.isEmpty() == true) estimateDeliveryTextView.visibility = View.GONE else estimateDeliveryTextView.text = "$text_estimate_delivery : ${orderDetailResponse?.deliveryInfo?.customDeliveryTime}"
+                statusValue.text = when(orderDetailMainResponse?.orders?.displayStatus) {
+                    Constants.DS_BILL_SENT -> message_bill_sent_customer_not_paid
+                    else -> ""
+                }
             }
             ToolBarManager.getInstance().setHeaderSubTitle(getStringDateTimeFromOrderDate(getCompleteDateFromOrderString(orderDetailMainResponse?.orders?.createdAt)))
             customerDeliveryDetailsRecyclerView.apply {
                 layoutManager = LinearLayoutManager(mActivity)
                 val customerDetailsList = ArrayList<CustomerDeliveryAddressDTO>()
                 orderDetailResponse?.deliveryInfo?.run {
-                    customerDetailsList.add(CustomerDeliveryAddressDTO(mOrderDetailStaticData?.text_name, deliverTo))
-                    customerDetailsList.add(CustomerDeliveryAddressDTO(mOrderDetailStaticData?.text_address, "$address1,$address2"))
-                    customerDetailsList.add(CustomerDeliveryAddressDTO(mOrderDetailStaticData?.text_city_and_pincode, "$city,$pincode"))
-                    customerDetailsList.add(CustomerDeliveryAddressDTO(mOrderDetailStaticData?.text_landmark, landmark))
+                    customerDetailsList.add(CustomerDeliveryAddressDTO(mOrderDetailStaticData?.text_name + ":", deliverTo))
+                    customerDetailsList.add(CustomerDeliveryAddressDTO(mOrderDetailStaticData?.text_address + ":", "$address1,$address2"))
+                    customerDetailsList.add(CustomerDeliveryAddressDTO(mOrderDetailStaticData?.text_city_and_pincode + ":", "$city,$pincode"))
+                    customerDetailsList.add(CustomerDeliveryAddressDTO(mOrderDetailStaticData?.text_landmark + ":", landmark))
                 }
                 adapter = CustomerDeliveryAddressAdapter(customerDetailsList)
             }
@@ -216,7 +222,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
             if (commonResponse.mIsSuccessStatus) {
                 showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_green_check_small)
                 val response = Gson().fromJson<UpdateOrderResponse>(commonResponse.mCommonDataStr, UpdateOrderResponse::class.java)
-                shareDataOnWhatsApp(response?.whatsAppText)
+                openWhatsAppChatByNumber(mMobileNumber, response?.whatsAppText)
                 launchFragment(HomeFragment.newInstance(), true)
             } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
         }
@@ -269,6 +275,41 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                 bottomSheetSendBillText.setOnClickListener {
                     bottomSheetDialog.dismiss()
                     if (isCallSendBillServerCall) initiateSendBillServerCall() else openFullCamera()
+                }
+            }
+        }.show()
+    }
+
+    private fun showOrderDetailBottomSheet() {
+        val bottomSheetDialog = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
+        val view = LayoutInflater.from(mActivity).inflate(
+            R.layout.bottom_sheet_order_detail,
+            mActivity.findViewById(R.id.bottomSheetContainer)
+        )
+        bottomSheetDialog.apply {
+            setContentView(view)
+            setBottomSheetCommonProperty()
+            view.run {
+                val bottomSheetHeadingTextView: TextView = findViewById(R.id.bottomSheetHeadingTextView)
+                val billAmountTextView: TextView = findViewById(R.id.billAmountTextView)
+                val orderIdTextView: TextView = findViewById(R.id.orderIdTextView)
+                val textViewTop: TextView = findViewById(R.id.textViewTop)
+                val textViewBottom: TextView = findViewById(R.id.textViewBottom)
+                val imageViewTop: ImageView = findViewById(R.id.imageViewTop)
+                val imageViewBottom: ImageView = findViewById(R.id.imageViewBottom)
+                orderDetailMainResponse?.let {
+                    mOrderDetailStaticData?.run {
+                        bottomSheetHeadingTextView.text = text_details
+                        billAmountTextView.text = "$text_bill_amount: ${it.orders?.amount}"
+                        orderIdTextView.text = "$text_order_id: ${it.orders?.orderId}"
+                    }
+                    when(it.orders?.displayStatus) {
+                        Constants.DS_BILL_SENT -> {
+                            imageViewTop.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.ic_order_detail_green_tick))
+                            imageViewBottom.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.ic_order_detail_green_tick))
+                            textViewTop.text = it.staticText?.message_customer_paid
+                        }
+                    }
                 }
             }
         }.show()

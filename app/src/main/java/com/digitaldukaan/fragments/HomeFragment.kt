@@ -359,11 +359,13 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
     }
 
     override fun onOrderItemCLickChanged(item: OrderItemResponse?) {
+        var isNewOrder = false
         if (item?.displayStatus == Constants.DS_NEW) {
             val request = UpdateOrderStatusRequest(item.orderId.toLong(), Constants.StatusSeenByMerchant.toLong())
             mHomeFragmentService.updateOrderStatus(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
+            isNewOrder = true
         }
-        launchFragment(OrderDetailFragment.newInstance(item?.orderId.toString()), true)
+        launchFragment(OrderDetailFragment.newInstance(item?.orderId.toString(), isNewOrder), true)
     }
 
     override fun onDontShowDialogPositiveButtonClicked(item: OrderItemResponse?) {
