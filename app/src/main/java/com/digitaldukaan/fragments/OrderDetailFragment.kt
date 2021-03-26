@@ -3,6 +3,7 @@ package com.digitaldukaan.fragments
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -72,6 +73,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
             addDeliveryChargesLabel.id -> {
                 addDeliveryChargesLabel.visibility = View.GONE
                 addDeliveryChargesGroup.visibility = View.VISIBLE
+                minusTextView.visibility = View.VISIBLE
             }
             billCameraImageView.id -> {
                 mBillSentCameraClicked = true
@@ -97,9 +99,35 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
 
     private fun initiateSendBillServerCall() {
         orderDetailMainResponse?.orders?.run {
+            if (otherChargesValueEditText.text?.isNotEmpty() == true) {
+                val orderDetailItemResponse = OrderDetailItemResponse(
+                    0,
+                    0,
+                    if (otherChargesEditText.text?.isNotEmpty() == true) otherChargesEditText.text.toString() else "charge",
+                    1,
+                    if (otherChargesValueEditText.text?.isNotEmpty() == true) otherChargesValueEditText.text.toString().toDouble() else 0.0,
+                    1,
+                    "charge",
+                    Constants.CREATOR_TYPE_MERCHANT
+                )
+                orderDetailsItemsList?.add(orderDetailItemResponse)
+            }
+            if (discountsValueEditText.text?.isNotEmpty() == true) {
+                val orderDetailItemResponse = OrderDetailItemResponse(
+                    0,
+                    0,
+                    if (discountsEditText.text?.isNotEmpty() == true) discountsEditText.text.toString() else "discount",
+                    1,
+                    if (discountsValueEditText.text?.isNotEmpty() == true) discountsValueEditText.text.toString().toDouble() else 0.0,
+                    1,
+                    "charge",
+                    Constants.CREATOR_TYPE_MERCHANT
+                )
+                orderDetailsItemsList?.add(orderDetailItemResponse)
+            }
             val request = UpdateOrderRequest(
                 orderId,
-                amount,
+                if (amountEditText.text?.isNotEmpty() == true) amountEditText.text.toString().toDouble() else amount,
                 false,
                 deliveryInfo?.deliveryTo,
                 deliveryInfo?.deliveryFrom,
@@ -107,6 +135,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                 orderDetailsItemsList,
                 ""
             )
+            Log.d(OrderDetailFragment::class.java.simpleName, "initiateSendBillServerCall: $request")
             showProgressDialog(mActivity)
             mOrderDetailService.updateOrder(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
         }
@@ -184,7 +213,6 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                 }
                 adapter = CustomerDeliveryAddressAdapter(customerDetailsList)
             }
-            orderDetailResponse?.instruction = "Please mention Happy birthday aditya on the top of the cake"
             amountEditText.setText("${orderDetailMainResponse?.orders?.amount}")
             if (orderDetailResponse?.instruction?.isNotEmpty() == true) {
                 instructionsValue.visibility = View.VISIBLE
@@ -230,6 +258,35 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
 
     override fun onImageSelectionResultFile(file: File?) {
         super.onImageSelectionResultFile(file)
+        orderDetailMainResponse?.orders?.run {
+            if (otherChargesValueEditText.text?.isNotEmpty() == true) {
+                val orderDetailItemResponse = OrderDetailItemResponse(
+                    0,
+                    0,
+                    if (otherChargesEditText.text?.isNotEmpty() == true) otherChargesEditText.text.toString() else "charge",
+                    1,
+                    if (otherChargesValueEditText.text?.isNotEmpty() == true) otherChargesValueEditText.text.toString().toDouble() else 0.0,
+                    1,
+                    "charge",
+                    Constants.CREATOR_TYPE_MERCHANT
+                )
+                orderDetailsItemsList?.add(orderDetailItemResponse)
+            }
+            if (discountsValueEditText.text?.isNotEmpty() == true) {
+                val orderDetailItemResponse = OrderDetailItemResponse(
+                    0,
+                    0,
+                    if (discountsEditText.text?.isNotEmpty() == true) discountsEditText.text.toString() else "discount",
+                    1,
+                    if (discountsValueEditText.text?.isNotEmpty() == true) discountsValueEditText.text.toString().toDouble() else 0.0,
+                    1,
+                    "charge",
+                    Constants.CREATOR_TYPE_MERCHANT
+                )
+                orderDetailsItemsList?.add(orderDetailItemResponse)
+            }
+            amount = (if (amountEditText.text?.isNotEmpty() == true) amountEditText.text.toString().toDouble() else amount)
+        }
         launchFragment(SendBillPhotoFragment.newInstance(orderDetailMainResponse, file, mDeliveryTimeStr), true)
     }
 

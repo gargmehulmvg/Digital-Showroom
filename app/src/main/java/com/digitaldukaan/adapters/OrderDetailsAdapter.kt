@@ -55,7 +55,7 @@ class OrderDetailsAdapter(
             orderDetailNameTextView.text = item?.item_name
             quantityTextView.text = "${mOrderDetailStaticData?.text_quantity}: ${item?.item_quantity}"
             priceTextView.text = "${mOrderDetailStaticData?.text_rupees_symbol} ${item?.item_price}"
-            if (mDeliveryStatus == Constants.DS_BILL_SENT) closeImageView.visibility = View.INVISIBLE
+            closeImageView.visibility = if (Constants.DS_SEND_BILL == mDeliveryStatus || Constants.DS_NEW == mDeliveryStatus) View.VISIBLE else View.GONE
             if (item?.item_status == itemStatusRejected) {
                 closeImageView.setImageResource(R.drawable.ic_undo)
                 orderDetailContainer.alpha = 0.5f

@@ -218,6 +218,19 @@
                     app:layout_constraintTop_toBottomOf="@+id/otherChargesValueEditText"
                     tools:hint="₹" />
 
+                <TextView
+                    android:id="@+id/minusTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/minus"
+                    android:visibility="gone"
+                    android:paddingEnd="@dimen/_5sdp"
+                    android:paddingStart="@dimen/_5sdp"
+                    android:textSize="@dimen/_14sdp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/discountsValueEditText"
+                    app:layout_constraintTop_toBottomOf="@+id/otherChargesValueEditText" />
+
                 <EditText
                     android:id="@+id/discountsEditText"
                     android:layout_width="wrap_content"

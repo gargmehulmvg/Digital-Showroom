@@ -117,6 +117,19 @@ class OrderAdapterV2(
                 orderCheckBox.isEnabled = false
                 orderCheckBox.alpha = 0.2f
             }
+            Constants.DS_PAID_ONLINE -> {
+                orderAddressTextView.setTextColor(mContext.getColor(R.color.open_green))
+                orderAddressTextView.background = ContextCompat.getDrawable(mContext, R.drawable.order_adapter_new)
+                orderAddressTextView.text = mOrderPageInfoStaticData?.text_paid_online
+                orderAddressTextView.setCompoundDrawablesWithIntrinsicBounds(
+                    0,
+                    0,
+                    R.drawable.ic_green_check_small,
+                    0
+                )
+                orderCheckBox.isEnabled = false
+                orderCheckBox.alpha = 0.2f
+            }
             Constants.DS_COMPLETED_CASH -> {
                 orderCheckBox.alpha = 0.2f
                 orderItemContainer.alpha = 0.2f

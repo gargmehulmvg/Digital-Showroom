@@ -31,7 +31,7 @@ data class OrderDetailItemResponse(
     @SerializedName("item_id") var item_id: Int?,
     @SerializedName("item_name") var item_name: String?,
     @SerializedName("item_quantity") var item_quantity: Int?,
-    @SerializedName("item_price") var item_price: Int?,
+    @SerializedName("item_price") var item_price: Double?,
     @SerializedName("item_status") var item_status: Int?,
     @SerializedName("item_type") var item_type: String?,
     @SerializedName("creator_type") var creator_type: Int?
