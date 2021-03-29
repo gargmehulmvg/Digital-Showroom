@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
@@ -45,8 +46,10 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
     private var orderDetailMainResponse: OrderDetailMainResponse? = null
     private var mBillSentCameraClicked = false
     private var mIsNewOrder = false
+    private lateinit var deliveryTimeEditText: EditText
 
     companion object {
+        private const val CUSTOM = "custom"
         fun newInstance(orderId: String, isNewOrder: Boolean): OrderDetailFragment {
             val fragment = OrderDetailFragment()
             fragment.mOrderId = orderId
@@ -309,6 +312,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
             setContentView(view)
             setBottomSheetCommonProperty()
             view.run {
+                deliveryTimeEditText = findViewById(R.id.deliveryTimeEditText)
                 val bottomSheetHeading: TextView = findViewById(R.id.bottomSheetHeading)
                 val bottomSheetSendBillText: TextView = findViewById(R.id.bottomSheetSendBillText)
                 val deliveryTimeRecyclerView: RecyclerView = findViewById(R.id.deliveryTimeRecyclerView)
@@ -321,6 +325,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                             override fun onChipItemClickListener(position: Int) {
                                 deliveryTimeResponse.deliveryTimeList?.forEachIndexed { _, itemResponse -> itemResponse.isSelected = false }
                                 deliveryTimeResponse.deliveryTimeList?.get(position)?.isSelected = true
+                                deliveryTimeEditText.visibility = if (CUSTOM == deliveryTimeResponse.deliveryTimeList?.get(position)?.key) View.VISIBLE else View.INVISIBLE
                                 mDeliveryTimeAdapter.setDeliveryTimeList(deliveryTimeResponse.deliveryTimeList)
                                 mDeliveryTimeStr = deliveryTimeResponse.deliveryTimeList?.get(position)?.value
                                 bottomSheetSendBillText.isEnabled = true
@@ -330,8 +335,22 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                     }
                 }
                 bottomSheetSendBillText.setOnClickListener {
-                    bottomSheetDialog.dismiss()
-                    if (isCallSendBillServerCall) initiateSendBillServerCall() else openFullCamera()
+                    if (mDeliveryTimeStr?.equals(CUSTOM, true) == true) {
+                        mDeliveryTimeStr = deliveryTimeEditText.text.toString()
+                        if (mDeliveryTimeStr?.isEmpty() == true) {
+                            deliveryTimeEditText.apply {
+                                error = getString(R.string.mandatory_field_message)
+                                requestFocus()
+                            }
+                            return@setOnClickListener
+                        }
+                    } else if (isCallSendBillServerCall) {
+                        bottomSheetDialog.dismiss()
+                        initiateSendBillServerCall()
+                    } else {
+                        bottomSheetDialog.dismiss()
+                        openFullCamera()
+                    }
                 }
             }
         }.show()

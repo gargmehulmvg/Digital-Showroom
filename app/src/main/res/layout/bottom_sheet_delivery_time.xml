@@ -39,22 +39,36 @@
             app:spanCount="3"
             tools:listitem="@layout/delivery_time_layout" />
 
+        <EditText
+            android:id="@+id/deliveryTimeEditText"
+            android:layout_width="0dp"
+            android:visibility="invisible"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/_13sdp"
+            tools:hint="Enter Delivery Time/Date"
+            app:layout_constraintEnd_toEndOf="@+id/deliveryTimeRecyclerView"
+            app:layout_constraintStart_toStartOf="@+id/deliveryTimeRecyclerView"
+            app:layout_constraintTop_toBottomOf="@+id/deliveryTimeRecyclerView"
+            android:imeOptions="actionDone"
+            android:inputType="text" />
+
         <TextView
             android:id="@+id/bottomSheetSendBillText"
             style="@style/common_text_view_background"
             android:layout_width="0dp"
+            android:layout_marginTop="@dimen/_5sdp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/_15sdp"
-            android:layout_marginTop="@dimen/_15sdp"
-            android:gravity="center"
             android:enabled="false"
+            android:gravity="center"
             android:textColor="@color/white"
             android:textSize="@dimen/_14sdp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@id/bottomSheetHeading"
             app:layout_constraintHorizontal_bias="0.65"
             app:layout_constraintStart_toStartOf="@id/bottomSheetHeading"
-            app:layout_constraintTop_toBottomOf="@id/deliveryTimeRecyclerView"
+            app:layout_constraintTop_toBottomOf="@+id/deliveryTimeEditText"
             tools:text="@string/text_new" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
