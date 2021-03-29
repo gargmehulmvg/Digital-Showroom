@@ -39,6 +39,21 @@
         tools:targetApi="lollipop">
 
         <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/skipTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat_bold"
+            android:onClick="onClick"
+            android:text="@string/skip"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_16sdp"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="@+id/verifyTextView"
+            app:layout_constraintEnd_toStartOf="@+id/verifyTextView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/verifyTextView" />
+
+        <com.google.android.material.textview.MaterialTextView
             android:id="@+id/verifyTextView"
             style="@style/common_text_view_background"
             android:onClick="onClick"

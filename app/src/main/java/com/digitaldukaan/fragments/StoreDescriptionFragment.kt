@@ -80,7 +80,11 @@ class StoreDescriptionFragment : BaseFragment(), IStoreDescriptionServiceInterfa
         storeDescriptionEditText.setText(mProfilePreviewResponse?.mValue)
         storeDescriptionEditText.hint = mStoreDescriptionStaticData.storeDescriptionHint
         continueTextView.text = mStoreDescriptionStaticData.saveChanges
-        if (mIsSingleStep)  statusRecyclerView.visibility = View.GONE else {
+        if (mIsSingleStep) {
+            statusRecyclerView.visibility = View.GONE
+            skipTextView.visibility = View.GONE
+        } else {
+            skipTextView.visibility = View.VISIBLE
             statusRecyclerView.apply {
                 visibility = View.VISIBLE
                 layoutManager = GridLayoutManager(mActivity, mProfileInfoResponse?.mTotalSteps?.toInt() ?: 0)

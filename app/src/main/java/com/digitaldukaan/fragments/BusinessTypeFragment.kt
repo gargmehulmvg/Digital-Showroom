@@ -68,7 +68,11 @@ class BusinessTypeFragment : BaseFragment(), IBusinessTypeServiceInterface {
             showNoInternetConnectionDialog()
             return
         }
-        if (mIsSingleStep)  statusRecyclerView.visibility = View.GONE else {
+        if (mIsSingleStep) {
+            statusRecyclerView.visibility = View.GONE
+            skipTextView.visibility = View.GONE
+        } else {
+            skipTextView.visibility = View.VISIBLE
             statusRecyclerView.apply {
                 visibility = View.VISIBLE
                 layoutManager = GridLayoutManager(mActivity, mProfileInfoResponse?.mTotalSteps?.toInt() ?: 0)
@@ -79,29 +83,6 @@ class BusinessTypeFragment : BaseFragment(), IBusinessTypeServiceInterface {
         businessTypeService.setServiceInterface(this)
         showProgressDialog(mActivity)
         businessTypeService.getBusinessListData()
-        verifyTextView.setOnClickListener {
-            if (!isInternetConnectionAvailable(mActivity)) {
-                showNoInternetConnectionDialog()
-                return@setOnClickListener
-            }
-            businessTypeService = BusinessTypeService()
-            businessTypeService.setServiceInterface(this)
-            val businessTypeSelectedList:ArrayList<Int> = ArrayList()
-            mBusinessSelectedList.forEachIndexed { _, itemResponse ->
-                if (itemResponse.isBusinessTypeSelected) businessTypeSelectedList.add(itemResponse.businessId)
-            }
-            if (businessTypeSelectedList.isEmpty()) {
-                showToast("Please select at least 1 business type")
-                return@setOnClickListener
-            }
-            if (businessTypeSelectedList.size > resources.getInteger(R.integer.business_type_count)) {
-                showToast("Only ${resources.getInteger(R.integer.business_type_count)} selections are allowed")
-                return@setOnClickListener
-            }
-            val businessTypRequest = BusinessTypeRequest(businessTypeSelectedList)
-            showProgressDialog(mActivity)
-            businessTypeService.setStoreBusinesses(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), businessTypRequest)
-        }
     }
 
     override fun onBusinessTypeResponse(response: CommonApiResponse) {
@@ -129,6 +110,45 @@ class BusinessTypeFragment : BaseFragment(), IBusinessTypeServiceInterface {
                     adapter = BusinessTypeAdapter(mActivity, mBusinessSelectedList)
                 }
             } else showToast(response.mMessage)
+        }
+    }
+
+    override fun onClick(view: View?) {
+        when(view?.id) {
+            skipTextView.id -> {
+                StaticInstances.sStepsCompletedList?.run {
+                    for (completedItem in this) {
+                        if (completedItem.action == Constants.ACTION_DESCRIPTION) {
+                            completedItem.isCompleted = true
+                            break
+                        }
+                    }
+                    switchToInCompleteProfileFragment(mProfileInfoResponse)
+                }
+            }
+            verifyTextView.id -> {
+                if (!isInternetConnectionAvailable(mActivity)) {
+                    showNoInternetConnectionDialog()
+                    return
+                }
+                businessTypeService = BusinessTypeService()
+                businessTypeService.setServiceInterface(this)
+                val businessTypeSelectedList:ArrayList<Int> = ArrayList()
+                mBusinessSelectedList.forEachIndexed { _, itemResponse ->
+                    if (itemResponse.isBusinessTypeSelected) businessTypeSelectedList.add(itemResponse.businessId)
+                }
+                if (businessTypeSelectedList.isEmpty()) {
+                    showToast("Please select at least 1 business type")
+                    return
+                }
+                if (businessTypeSelectedList.size > resources.getInteger(R.integer.business_type_count)) {
+                    showToast("Only ${resources.getInteger(R.integer.business_type_count)} selections are allowed")
+                    return
+                }
+                val businessTypRequest = BusinessTypeRequest(businessTypeSelectedList)
+                showProgressDialog(mActivity)
+                businessTypeService.setStoreBusinesses(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), businessTypRequest)
+            }
         }
     }
 

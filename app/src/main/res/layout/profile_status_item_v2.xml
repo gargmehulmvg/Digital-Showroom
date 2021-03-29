@@ -6,7 +6,7 @@
     <TextView
         android:id="@+id/profileStatusItemView"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/_5sdp"
+        android:layout_height="@dimen/_3sdp"
         android:layout_marginEnd="@dimen/_1sdp"
         android:background="@drawable/profile_status_selector_green"
         android:enabled="true" />

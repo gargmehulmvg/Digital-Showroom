@@ -43,7 +43,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         fragment.onClick(v)
     }
 
-    private fun getCurrentFragment(): BaseFragment {
+    public fun getCurrentFragment(): BaseFragment {
         val mgr = supportFragmentManager
         val list = mgr.fragments
         val count = mgr.backStackEntryCount

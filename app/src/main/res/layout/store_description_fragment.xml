@@ -63,11 +63,12 @@
         android:textColor="@color/black"
         android:fontFamily="@font/montserrat_bold"
         android:textSize="@dimen/_16sdp"
+        android:visibility="visible"
         android:onClick="onClick"
         app:layout_constraintBottom_toBottomOf="@+id/continueTextView"
         app:layout_constraintEnd_toStartOf="@+id/continueTextView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/continueTextView"
-        tools:text="@string/skip" />
+        android:text="@string/skip" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
