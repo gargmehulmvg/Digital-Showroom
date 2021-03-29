@@ -6,6 +6,8 @@ interface ISearchOrderServiceInterface {
 
     fun onSearchOrderResponse(commonResponse: CommonApiResponse)
 
+    fun onOrdersUpdatedStatusResponse(commonResponse: CommonApiResponse)
+
     fun onSearchOrderException(e: Exception)
 
 }

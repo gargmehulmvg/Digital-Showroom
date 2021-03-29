@@ -221,7 +221,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                         orderLayout.visibility = View.VISIBLE
                         fetchLatestOrders(Constants.MODE_PENDING, mFetchingOrdersStr, pendingPageCount)
                         ordersRecyclerView.apply {
-                            orderAdapter = OrderAdapterV2(mActivity, mOrderList, mOrderPageInfoStaticData)
+                            orderAdapter = OrderAdapterV2(mActivity, mOrderList)
                             orderAdapter.setCheckBoxListener(this@HomeFragment)
                             linearLayoutManager = LinearLayoutManager(mActivity)
                             layoutManager = linearLayoutManager

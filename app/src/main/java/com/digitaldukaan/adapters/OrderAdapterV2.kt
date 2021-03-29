@@ -21,11 +21,11 @@ import java.util.*
 
 class OrderAdapterV2(
     private var mContext: Context,
-    private var mOrderList: ArrayList<OrderItemResponse>?,
-    private var mOrderPageInfoStaticData: OrderPageStaticTextResponse?
+    private var mOrderList: ArrayList<OrderItemResponse>?
 ) : RecyclerView.Adapter<OrderAdapterV2.OrderViewHolder>(), StickyRecyclerHeadersAdapter<OrderAdapterV2.HeaderViewHolder> {
 
     private var mListItemListener: IOrderListItemListener? = null
+    private var mOrderPageInfoStaticData: OrderPageStaticTextResponse? = StaticInstances.sOrderPageInfoStaticData
 
     fun setCheckBoxListener(listener: IOrderListItemListener) {
         this.mListItemListener = listener

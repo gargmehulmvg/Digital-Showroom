@@ -1,6 +1,7 @@
 package com.digitaldukaan.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,7 +16,9 @@ import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.StaticInstances
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.interfaces.IOnToolbarIconClick
+import com.digitaldukaan.interfaces.IOrderListItemListener
 import com.digitaldukaan.models.request.SearchOrdersRequest
+import com.digitaldukaan.models.request.UpdateOrderStatusRequest
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.OrderItemResponse
 import com.digitaldukaan.models.response.OrdersResponse
@@ -25,7 +28,8 @@ import com.digitaldukaan.services.serviceinterface.ISearchOrderServiceInterface
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.home_fragment.*
 
-class SearchOrdersFragment: BaseFragment(), IOnToolbarIconClick, ISearchOrderServiceInterface {
+class SearchOrdersFragment: BaseFragment(), IOnToolbarIconClick, ISearchOrderServiceInterface,
+    IOrderListItemListener {
 
     private var mOrderIdString = ""
     private var mMobileNumberString = ""
@@ -73,10 +77,11 @@ class SearchOrdersFragment: BaseFragment(), IOnToolbarIconClick, ISearchOrderSer
         }
         ordersRecyclerView.apply {
             convertDateStringOfOrders(mOrderList)
-            orderAdapter = OrderAdapterV2(mActivity, mOrderList, null)
+            orderAdapter = OrderAdapterV2(mActivity, mOrderList)
             linearLayoutManager = LinearLayoutManager(mActivity)
             layoutManager = linearLayoutManager
             adapter = orderAdapter
+            orderAdapter.setCheckBoxListener(this@SearchOrdersFragment)
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
 
                 override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
@@ -127,8 +132,29 @@ class SearchOrdersFragment: BaseFragment(), IOnToolbarIconClick, ISearchOrderSer
         }
     }
 
+    override fun onOrdersUpdatedStatusResponse(commonResponse: CommonApiResponse) {
+        Log.d(TAG, "onOrdersUpdatedStatusResponse: do nothing :: $commonResponse")
+    }
+
     override fun onSearchOrderException(e: Exception) {
         exceptionHandlingForAPIResponse(e)
+    }
+
+    override fun onOrderCheckBoxChanged(isChecked: Boolean, item: OrderItemResponse?) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            showToast(isChecked.toString())
+            if (isChecked) openDontShowDialog(item, StaticInstances.sOrderPageInfoStaticData)
+        }
+    }
+
+    override fun onOrderItemCLickChanged(item: OrderItemResponse?) {
+        var isNewOrder = false
+        if (item?.displayStatus == Constants.DS_NEW) {
+            val request = UpdateOrderStatusRequest(item.orderId.toLong(), Constants.StatusSeenByMerchant.toLong())
+            mService.updateOrderStatus(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
+            isNewOrder = true
+        }
+        launchFragment(OrderDetailFragment.newInstance(item?.orderId.toString(), isNewOrder), true)
     }
 
 }
