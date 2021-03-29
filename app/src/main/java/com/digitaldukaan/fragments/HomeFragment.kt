@@ -91,7 +91,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
     }
 
     private fun fetchLatestOrders(mode: String, fetchingOrderStr: String?, page:Int = 1) {
-        if (fetchingOrderStr?.isNotEmpty() == true) showProgressDialog(mActivity, fetchingOrderStr)
+        if (fetchingOrderStr?.isNotEmpty() == true) showCancellableProgressDialog(mActivity, fetchingOrderStr)
         val request = OrdersRequest(mode, page)
         mHomeFragmentService.getOrders(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
     }

@@ -17,7 +17,7 @@ data class AddProductStoreCategory(
 data class AddStoreCategoryItem(
     @SerializedName("id") val id:String?,
     @SerializedName("name") val name:String?,
-    var isSelected: Boolean?
+    var isSelected: Boolean
 )
 
 data class AddProductStaticText(

@@ -106,12 +106,16 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
 
     open fun onBackPressed() : Boolean  = false
 
-    protected fun showCancellableProgressDialog(context: Context?) {
+    protected fun showCancellableProgressDialog(context: Context?, message: String? = "Please wait...") {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             context?.run {
                 mProgressDialog = Dialog(this)
                 val inflate = LayoutInflater.from(this).inflate(R.layout.progress_dialog, null)
                 mProgressDialog?.setContentView(inflate)
+                message?.run {
+                    val messageTextView : TextView = inflate.findViewById(R.id.progressDialogTextView)
+                    messageTextView.text = this
+                }
                 mProgressDialog?.setCancelable(true)
                 mProgressDialog?.window!!.setBackgroundDrawable(
                     ColorDrawable(Color.TRANSPARENT)

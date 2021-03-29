@@ -63,7 +63,6 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         fun newInstance(itemId:Int): AddProductFragment {
             val fragment = AddProductFragment()
             fragment.mItemId = itemId
-            fragment.mItemId = 89777
             return fragment
         }
     }
@@ -330,12 +329,12 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 nameEditText.setText(name)
                 priceEditText.setText(price.toString())
                 discountedPriceEditText.setText(discountedPrice.toString())
-                if (addProductResponse.storeItem.imagesList.isNotEmpty()) {
+                if (addProductResponse.storeItem.imagesList?.isNotEmpty() == true) {
                     noImagesLayout.visibility = View.GONE
                     imagesRecyclerView.apply {
                         layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
                         val list:ArrayList<String> = ArrayList()
-                        addProductResponse.storeItem.imagesList.forEachIndexed { _, imagesResponse ->
+                        addProductResponse.storeItem.imagesList?.forEachIndexed { _, imagesResponse ->
                             if (imagesResponse.status != 0) list.add(imagesResponse.imageUrl)
                         }
                         adapter = AddProductsImagesAdapter(list ,addProductStaticData?.text_images_added, this@AddProductFragment)
@@ -352,9 +351,10 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             }
             addProductResponse?.addProductStoreCategories?.run {
                 chipGroupRecyclerView.apply {
-                    layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
+                    layoutManager = StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL)
                     mAddProductStoreCategoryList = addProductResponse.addProductStoreCategories?.storeCategoriesList
-                    mAddProductStoreCategoryList?.get(1)?.isSelected = true
+                    if (mAddProductStoreCategoryList?.isNotEmpty() == true)
+                        //mAddProductStoreCategoryList?.get(1)?.isSelected = true
                     addProductChipsAdapter = AddProductsChipsAdapter(mAddProductStoreCategoryList, this@AddProductFragment)
                     adapter = addProductChipsAdapter
                 }
