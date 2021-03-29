@@ -13,8 +13,7 @@ import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.webviews.WebViewBridge
-import kotlinx.android.synthetic.main.common_webview_fragment.*
-
+import kotlinx.android.synthetic.main.layout_common_webview_fragment.*
 
 class CommonWebViewFragment : BaseFragment() {
 
@@ -33,7 +32,7 @@ class CommonWebViewFragment : BaseFragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        mContentView = inflater.inflate(R.layout.common_webview_fragment, container, false)
+        mContentView = inflater.inflate(R.layout.layout_common_webview_fragment, container, false)
         hideBottomNavigationView(true)
         return mContentView
     }

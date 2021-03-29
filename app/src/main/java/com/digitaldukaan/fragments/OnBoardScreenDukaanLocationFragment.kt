@@ -26,7 +26,7 @@ import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IStoreAddressServiceInterface
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import kotlinx.android.synthetic.main.on_board_screen_dukaan_location_fragment.*
+import kotlinx.android.synthetic.main.layout_on_board_screen_dukaan_location_fragment.*
 
 
 class OnBoardScreenDukaanLocationFragment : BaseFragment(), IStoreAddressServiceInterface, LocationListener {
@@ -130,7 +130,7 @@ class OnBoardScreenDukaanLocationFragment : BaseFragment(), IStoreAddressService
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        mContentView = inflater.inflate(R.layout.on_board_screen_dukaan_location_fragment, container, false)
+        mContentView = inflater.inflate(R.layout.layout_on_board_screen_dukaan_location_fragment, container, false)
         getLocation()
         return mContentView
     }

@@ -19,7 +19,7 @@ import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IProfilePhotoServiceInterface
 import com.google.gson.Gson
 import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.fragment_profile_photo.*
+import kotlinx.android.synthetic.main.layout_profile_photo_fragment.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -47,7 +47,7 @@ class ProfilePhotoFragment : BaseFragment(), View.OnClickListener, IProfilePhoto
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        mContentView = inflater.inflate(R.layout.fragment_profile_photo, container, false)
+        mContentView = inflater.inflate(R.layout.layout_profile_photo_fragment, container, false)
         service.setServiceInterface(this)
         StaticInstances.sIsStoreImageUploaded = false
         return mContentView

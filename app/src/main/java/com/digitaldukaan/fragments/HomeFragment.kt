@@ -75,7 +75,6 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
     ): View? {
         mContentView = inflater.inflate(R.layout.home_fragment, container, false)
         if (!askContactPermission()) if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else {
-            showProgressDialog(mActivity)
             mHomeFragmentService.getOrderPageInfo(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
             mHomeFragmentService.getAnalyticsData(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
         }

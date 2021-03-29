@@ -19,7 +19,7 @@ import com.digitaldukaan.models.response.StaticTextResponse
 import com.digitaldukaan.services.SplashService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.ISplashServiceInterface
-import kotlinx.android.synthetic.main.fragment_splash.*
+import kotlinx.android.synthetic.main.layout_splash_fragment.*
 
 class SplashFragment : BaseFragment(), ISplashServiceInterface {
 
@@ -30,7 +30,7 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        mContentView = inflater.inflate(R.layout.fragment_splash, container, false)
+        mContentView = inflater.inflate(R.layout.layout_splash_fragment, container, false)
         hideBottomNavigationView(true)
         return mContentView
     }

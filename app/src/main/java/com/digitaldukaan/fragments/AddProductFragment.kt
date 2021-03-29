@@ -35,7 +35,7 @@ import com.digitaldukaan.services.serviceinterface.IAddProductServiceInterface
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.add_product_fragment.*
+import kotlinx.android.synthetic.main.layout_add_product_fragment.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -78,7 +78,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        mContentView = inflater.inflate(R.layout.add_product_fragment, container, false)
+        mContentView = inflater.inflate(R.layout.layout_add_product_fragment, container, false)
         ToolBarManager.getInstance().apply {
             hideToolBar(mActivity, false)
             hideBackPressFromToolBar(mActivity, false)

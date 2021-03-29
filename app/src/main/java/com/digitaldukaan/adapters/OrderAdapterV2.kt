@@ -130,6 +130,19 @@ class OrderAdapterV2(
                 orderCheckBox.isEnabled = false
                 orderCheckBox.alpha = 0.2f
             }
+            Constants.DS_REJECTED -> {
+                orderAddressTextView.setTextColor(mContext.getColor(R.color.red))
+                orderAddressTextView.background = ContextCompat.getDrawable(mContext, R.drawable.order_adapter_rejected)
+                orderAddressTextView.text = mOrderPageInfoStaticData?.text_rejected
+                orderAddressTextView.setCompoundDrawablesWithIntrinsicBounds(
+                    0,
+                    0,
+                    R.drawable.ic_close_red,
+                    0
+                )
+                orderCheckBox.isEnabled = false
+                orderCheckBox.alpha = 0.2f
+            }
             Constants.DS_COMPLETED_CASH -> {
                 orderCheckBox.alpha = 0.2f
                 orderItemContainer.alpha = 0.2f
@@ -142,11 +155,6 @@ class OrderAdapterV2(
                 orderItemContainer.alpha = 0.2f
                 orderCheckBox.isSelected = true
                 orderCheckBox.isChecked = true
-                orderCheckBox.isEnabled = false
-            }
-            Constants.DS_REJECTED -> {
-                orderCheckBox.alpha = 0.2f
-                orderItemContainer.alpha = 0.2f
                 orderCheckBox.isEnabled = false
             }
             else -> {

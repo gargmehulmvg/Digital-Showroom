@@ -10,7 +10,7 @@ import android.view.ViewGroup
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.ToolBarManager
-import kotlinx.android.synthetic.main.create_store_fragment.*
+import kotlinx.android.synthetic.main.layout_create_store_fragment.*
 
 class CreateStoreFragment : BaseFragment() {
 
@@ -22,7 +22,7 @@ class CreateStoreFragment : BaseFragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        mContentView = inflater.inflate(R.layout.create_store_fragment, container, false)
+        mContentView = inflater.inflate(R.layout.layout_create_store_fragment, container, false)
         return mContentView
     }
 

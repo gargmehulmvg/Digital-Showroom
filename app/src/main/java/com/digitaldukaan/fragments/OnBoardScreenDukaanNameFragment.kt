@@ -17,7 +17,7 @@ import com.digitaldukaan.models.response.StoreDescriptionResponse
 import com.digitaldukaan.services.ProfilePreviewService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IProfilePreviewServiceInterface
-import kotlinx.android.synthetic.main.on_board_screen_dukaan_fragment.*
+import kotlinx.android.synthetic.main.layout_on_board_screen_dukaan_fragment.*
 
 
 class OnBoardScreenDukaanNameFragment : BaseFragment(), IProfilePreviewServiceInterface {
@@ -30,13 +30,11 @@ class OnBoardScreenDukaanNameFragment : BaseFragment(), IProfilePreviewServiceIn
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-            sharedElementEnterTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.move)
-        }
+        sharedElementEnterTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.move)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        mContentView = inflater.inflate(R.layout.on_board_screen_dukaan_fragment, container, false)
+        mContentView = inflater.inflate(R.layout.layout_on_board_screen_dukaan_fragment, container, false)
         return mContentView
     }
 

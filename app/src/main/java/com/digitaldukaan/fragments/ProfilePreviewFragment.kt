@@ -35,7 +35,7 @@ import com.digitaldukaan.views.allowOnlyAlphaNumericCharacters
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.profile_preview_fragment.*
+import kotlinx.android.synthetic.main.layout_profile_preview_fragment.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -63,7 +63,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        mContentView = inflater.inflate(R.layout.profile_preview_fragment, container, false)
+        mContentView = inflater.inflate(R.layout.layout_profile_preview_fragment, container, false)
         service.setServiceInterface(this)
         cancelWarningDialog = Dialog(mActivity)
         return mContentView

@@ -30,7 +30,6 @@ import com.digitaldukaan.webviews.WebViewBridge
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.common_webview_fragment.commonWebView
 import kotlinx.android.synthetic.main.product_fragment.*
 
 class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIconClick,

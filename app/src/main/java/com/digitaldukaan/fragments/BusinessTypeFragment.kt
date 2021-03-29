@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.GridLayoutManager
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.BusinessTypeAdapter
+import com.digitaldukaan.adapters.ProfileStatusAdapter2
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.StaticInstances
@@ -21,7 +22,7 @@ import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IBusinessTypeServiceInterface
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import kotlinx.android.synthetic.main.business_type_fragment.*
+import kotlinx.android.synthetic.main.layout_business_type_fragment.*
 
 class BusinessTypeFragment : BaseFragment(), IBusinessTypeServiceInterface {
 
@@ -49,7 +50,7 @@ class BusinessTypeFragment : BaseFragment(), IBusinessTypeServiceInterface {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        mContentView = inflater.inflate(R.layout.business_type_fragment, container, false)
+        mContentView = inflater.inflate(R.layout.layout_business_type_fragment, container, false)
         return mContentView
     }
 
@@ -66,6 +67,13 @@ class BusinessTypeFragment : BaseFragment(), IBusinessTypeServiceInterface {
         if (!isInternetConnectionAvailable(mActivity)) {
             showNoInternetConnectionDialog()
             return
+        }
+        if (mIsSingleStep)  statusRecyclerView.visibility = View.GONE else {
+            statusRecyclerView.apply {
+                visibility = View.VISIBLE
+                layoutManager = GridLayoutManager(mActivity, mProfileInfoResponse?.mTotalSteps?.toInt() ?: 0)
+                adapter = ProfileStatusAdapter2(mProfileInfoResponse?.mTotalSteps?.toInt(), mPosition)
+            }
         }
         businessTypeService = BusinessTypeService()
         businessTypeService.setServiceInterface(this)

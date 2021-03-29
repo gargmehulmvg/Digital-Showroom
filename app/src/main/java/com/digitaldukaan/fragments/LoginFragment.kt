@@ -27,7 +27,7 @@ import com.google.android.gms.auth.api.credentials.Credential
 import com.google.android.gms.auth.api.credentials.Credentials
 import com.google.android.gms.auth.api.credentials.CredentialsApi
 import com.google.android.gms.auth.api.credentials.HintRequest
-import kotlinx.android.synthetic.main.login_fragment.*
+import kotlinx.android.synthetic.main.layout_login_fragment.*
 
 class LoginFragment : BaseFragment(), ILoginServiceInterface {
 
@@ -54,7 +54,7 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        mContentView = inflater.inflate(R.layout.login_fragment, container, false)
+        mContentView = inflater.inflate(R.layout.layout_login_fragment, container, false)
         return mContentView
     }
 

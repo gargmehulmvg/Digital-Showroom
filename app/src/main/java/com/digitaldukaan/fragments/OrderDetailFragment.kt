@@ -29,7 +29,7 @@ import com.digitaldukaan.services.serviceinterface.IOrderDetailServiceInterface
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.bottom_layout_send_bill.*
-import kotlinx.android.synthetic.main.order_detail_fragment.*
+import kotlinx.android.synthetic.main.layout_order_detail_fragment.*
 import java.io.File
 
 
@@ -58,7 +58,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mOrderDetailService = OrderDetailService()
         mOrderDetailService.setOrderDetailServiceListener(this)
-        mContentView = inflater.inflate(R.layout.order_detail_fragment, container, false)
+        mContentView = inflater.inflate(R.layout.layout_order_detail_fragment, container, false)
         if (!isInternetConnectionAvailable(mActivity)) {
             showNoInternetConnectionDialog()
         } else {

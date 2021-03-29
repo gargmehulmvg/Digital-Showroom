@@ -15,7 +15,9 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
 import androidx.core.app.ActivityCompat
+import androidx.recyclerview.widget.GridLayoutManager
 import com.digitaldukaan.R
+import com.digitaldukaan.adapters.ProfileStatusAdapter2
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.StaticInstances
@@ -37,7 +39,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.textfield.TextInputLayout
-import kotlinx.android.synthetic.main.fragment_store_map_location.*
+import kotlinx.android.synthetic.main.layout_store_map_location_fragment.*
 import java.util.*
 
 class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddressServiceInterface {
@@ -79,7 +81,7 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        mContentView = inflater.inflate(R.layout.fragment_store_map_location, container, false)
+        mContentView = inflater.inflate(R.layout.layout_store_map_location_fragment, container, false)
         locationManager = mActivity.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         return mContentView
     }
@@ -116,7 +118,7 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
         pinCodeLayout.hint = mMapStaticData.pinCodeTextHint
         cityLayout.hint = mMapStaticData.cityTextHint
         setLocationTextView.text = mMapStaticData.setLocationText
-        stateTextView.text = "Select State"
+        stateTextView.text = getString(R.string.select_state)
         saveTextView.text = mMapStaticData.saveChangesText
         setLocationTextView.setOnClickListener {
             mapBottomSheetLayout.visibility = View.VISIBLE
@@ -160,6 +162,13 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
             completeAddressEditText.setText(address1)
             stateTextView.text = state
         }
+        if (mIsSingleStep)  statusRecyclerView.visibility = View.GONE else {
+            statusRecyclerView.apply {
+                visibility = View.VISIBLE
+                layoutManager = GridLayoutManager(mActivity, mProfileInfoResponse?.mTotalSteps?.toInt() ?: 0)
+                adapter = ProfileStatusAdapter2(mProfileInfoResponse?.mTotalSteps?.toInt(), mPosition)
+            }
+        }
     }
 
     override fun onAlertDialogItemClicked(selectedStr: String?, id: Int, position: Int) {
@@ -190,7 +199,7 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
             requestPermissions()
             return
         }
-        val lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+        //val lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 1f, this)
         mGoogleApiClient?.lastLocation?.addOnCompleteListener(mActivity) { task ->
             if (task.isSuccessful && task.result != null) {

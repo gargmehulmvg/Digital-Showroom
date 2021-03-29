@@ -29,7 +29,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.marketing_fragment.*
+import kotlinx.android.synthetic.main.layout_marketing_fragment.*
 
 
 class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingServiceInterface {
@@ -51,7 +51,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
     ): View? {
         service = MarketingService()
         service.setMarketingServiceListener(this)
-        mContentView = inflater.inflate(R.layout.marketing_fragment, container, false)
+        mContentView = inflater.inflate(R.layout.layout_marketing_fragment, container, false)
         return mContentView
     }
 

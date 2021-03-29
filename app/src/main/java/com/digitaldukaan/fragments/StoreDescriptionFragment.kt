@@ -6,7 +6,9 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.GridLayoutManager
 import com.digitaldukaan.R
+import com.digitaldukaan.adapters.ProfileStatusAdapter2
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.StaticInstances
@@ -62,8 +64,6 @@ class StoreDescriptionFragment : BaseFragment(), IStoreDescriptionServiceInterfa
             showNoInternetConnectionDialog()
             return
         }
-        val service = StoreDescriptionService()
-        service.setServiceInterface(this)
         storeDescriptionEditText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 val str = s.toString()
@@ -80,10 +80,35 @@ class StoreDescriptionFragment : BaseFragment(), IStoreDescriptionServiceInterfa
         storeDescriptionEditText.setText(mProfilePreviewResponse?.mValue)
         storeDescriptionEditText.hint = mStoreDescriptionStaticData.storeDescriptionHint
         continueTextView.text = mStoreDescriptionStaticData.saveChanges
-        continueTextView.setOnClickListener {
-            val request = StoreDescriptionRequest(storeDescriptionEditText.text.trim().toString())
-            showCancellableProgressDialog(mActivity)
-            service.saveStoreDescriptionData(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
+        if (mIsSingleStep)  statusRecyclerView.visibility = View.GONE else {
+            statusRecyclerView.apply {
+                visibility = View.VISIBLE
+                layoutManager = GridLayoutManager(mActivity, mProfileInfoResponse?.mTotalSteps?.toInt() ?: 0)
+                adapter = ProfileStatusAdapter2(mProfileInfoResponse?.mTotalSteps?.toInt(), mPosition)
+            }
+        }
+    }
+
+    override fun onClick(view: View?) {
+        when (view?.id) {
+            skipTextView.id -> {
+                StaticInstances.sStepsCompletedList?.run {
+                    for (completedItem in this) {
+                        if (completedItem.action == Constants.ACTION_DESCRIPTION) {
+                            completedItem.isCompleted = true
+                            break
+                        }
+                    }
+                    switchToInCompleteProfileFragment(mProfileInfoResponse)
+                }
+            }
+            continueTextView.id -> {
+                val service = StoreDescriptionService()
+                service.setServiceInterface(this)
+                val request = StoreDescriptionRequest(storeDescriptionEditText.text.trim().toString())
+                showCancellableProgressDialog(mActivity)
+                service.saveStoreDescriptionData(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
+            }
         }
     }
 

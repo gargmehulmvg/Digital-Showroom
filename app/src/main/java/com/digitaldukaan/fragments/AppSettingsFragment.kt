@@ -17,7 +17,7 @@ import com.digitaldukaan.interfaces.IAppSettingsItemClicked
 import com.digitaldukaan.models.response.AccountStaticTextResponse
 import com.digitaldukaan.models.response.SubPagesResponse
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import kotlinx.android.synthetic.main.app_setting_fragment.*
+import kotlinx.android.synthetic.main.layout_app_setting_fragment.*
 
 class AppSettingsFragment : BaseFragment(), IAppSettingsItemClicked {
 
@@ -38,7 +38,7 @@ class AppSettingsFragment : BaseFragment(), IAppSettingsItemClicked {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        mContentView = inflater.inflate(R.layout.app_setting_fragment, container, false)
+        mContentView = inflater.inflate(R.layout.layout_app_setting_fragment, container, false)
 
         return mContentView
     }

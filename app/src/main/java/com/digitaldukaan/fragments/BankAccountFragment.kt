@@ -16,7 +16,7 @@ import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IBankDetailsServiceInterface
 import com.digitaldukaan.views.allowOnlyAlphaNumericCharacters
 import com.google.gson.Gson
-import kotlinx.android.synthetic.main.bank_account_fragment.*
+import kotlinx.android.synthetic.main.layout_bank_account_fragment.*
 
 class BankAccountFragment : BaseFragment(), IBankDetailsServiceInterface {
 
@@ -50,7 +50,7 @@ class BankAccountFragment : BaseFragment(), IBankDetailsServiceInterface {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        mContentView = inflater.inflate(R.layout.bank_account_fragment, container, false)
+        mContentView = inflater.inflate(R.layout.layout_bank_account_fragment, container, false)
         mService = BankDetailsService()
         mService.setServiceInterface(this)
         return mContentView

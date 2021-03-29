@@ -36,7 +36,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.settings_fragment.*
+import kotlinx.android.synthetic.main.layout_settings_fragment.*
 
 
 class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInterface,
@@ -51,7 +51,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
     private var mReferAndEarnResponse: ReferEarnResponse? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        mContentView = inflater.inflate(R.layout.settings_fragment, container, false)
+        mContentView = inflater.inflate(R.layout.layout_settings_fragment, container, false)
         mProfileService.setProfileServiceInterface(this)
         fetchUserProfile()
         return mContentView
