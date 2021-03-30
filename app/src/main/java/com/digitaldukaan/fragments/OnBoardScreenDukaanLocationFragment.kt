@@ -6,7 +6,6 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
-import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -51,10 +50,8 @@ class OnBoardScreenDukaanLocationFragment : BaseFragment(), IStoreAddressService
     private fun getLastLocation() {
         if (ActivityCompat.checkSelfPermission(mActivity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
             ActivityCompat.checkSelfPermission(mActivity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                requestPermissions()
-                return
-            }
+            requestPermissions()
+            return
         }
         val lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
         lastKnownLocation?.run {
@@ -169,6 +166,18 @@ class OnBoardScreenDukaanLocationFragment : BaseFragment(), IStoreAddressService
 
     override fun onLocationChanged(location: Location) {
         showToast("onLocationChanged() Latitude: " + location.latitude + " , Longitude: " + location.longitude)
+    }
+
+    override fun onStatusChanged(p0: String?, p1: Int, p2: Bundle?) {
+        Log.d(TAG, "onStatusChanged :: p0 :: $p0, p1 :: $p1, p2:: $p2")
+    }
+
+    override fun onProviderEnabled(p0: String?) {
+        Log.d(TAG, "onProviderEnabled :: $p0")
+    }
+
+    override fun onProviderDisabled(p0: String?) {
+        Log.d(TAG, "onProviderDisabled :: $p0")
     }
 
     private fun setupUIFromStaticData() {

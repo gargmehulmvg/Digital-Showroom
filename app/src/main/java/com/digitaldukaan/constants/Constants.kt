@@ -96,5 +96,9 @@ class Constants {
         //CREATOR_TYPE
         const val CREATOR_TYPE_MERCHANT = 1
         const val CREATOR_TYPE_CUSTOMER = 2
+        //NOTIFICATION_CHANNEL
+        const val NOTIFICATION_CHANNEL_ID = "DIGITAL_DUKAAN_ID"
+        const val NOTIFICATION_CHANNEL_NAME = "DIGITAL_DUKAAN"
+        const val NOTIFICATION_CHANNEL_DESC = "DIGITAL_DUKAAN Notifications"
     }
 }
