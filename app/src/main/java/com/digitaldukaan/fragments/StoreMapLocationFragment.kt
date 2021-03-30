@@ -303,6 +303,18 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
         Log.d(TAG, "onLocationChanged() Latitude: " + location.latitude + " , Longitude: " + location.longitude)
     }
 
+    override fun onStatusChanged(p0: String?, p1: Int, p2: Bundle?) {
+        Log.d(TAG, "onStatusChanged :: p0 :: $p0, p1 :: $p1, p2:: $p2")
+    }
+
+    override fun onProviderEnabled(p0: String?) {
+        Log.d(TAG, "onProviderEnabled :: $p0")
+    }
+
+    override fun onProviderDisabled(p0: String?) {
+        Log.d(TAG, "onProviderDisabled :: $p0")
+    }
+
     override fun onStoreAddressResponse(response: StoreAddressResponse) {
         stopProgress()
         CoroutineScopeUtils().runTaskOnCoroutineMain {
