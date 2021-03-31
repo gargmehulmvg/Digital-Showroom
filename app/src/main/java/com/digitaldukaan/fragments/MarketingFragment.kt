@@ -13,10 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.MarketingCardAdapter
 import com.digitaldukaan.adapters.SharePDFAdapter
-import com.digitaldukaan.constants.Constants
-import com.digitaldukaan.constants.CoroutineScopeUtils
-import com.digitaldukaan.constants.ToolBarManager
-import com.digitaldukaan.constants.openWebViewFragment
+import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.IOnToolbarIconClick
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.MarketingCardsItemResponse
@@ -137,8 +134,14 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
             return
         }
         when (response?.action) {
-            Constants.ACTION_BUSINESS_CREATIVE -> openWebViewFragment(this, "", Constants.WEB_VIEW_CREATIVE_LIST, Constants.SETTINGS)
-            Constants.ACTION_SOCIAL_CREATIVE -> openWebViewFragment(this, "", Constants.WEB_VIEW_SOCIAL_CREATIVE_LIST, Constants.SETTINGS)
+            Constants.ACTION_BUSINESS_CREATIVE -> {
+                CleverTapManager.pushMarketingOffersViewNowEvent()
+                openWebViewFragment(this, "", Constants.WEB_VIEW_CREATIVE_LIST, Constants.SETTINGS)
+            }
+            Constants.ACTION_SOCIAL_CREATIVE -> {
+                CleverTapManager.pushMarketingSocialViewNowEvent()
+                openWebViewFragment(this, "", Constants.WEB_VIEW_SOCIAL_CREATIVE_LIST, Constants.SETTINGS)
+            }
             Constants.ACTION_QR_DOWNLOAD -> openWebViewFragment(this, "", Constants.WEB_VIEW_QR_DOWNLOAD, Constants.SETTINGS)
             Constants.ACTION_SHARE_DATA -> {
                 showProgressDialog(mActivity)

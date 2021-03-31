@@ -14,7 +14,7 @@ class PrefsManager {
             return prefs?.getString(keyName, "").toString()
         }
 
-        open fun storeStringDataInSharedPref(keyName: String, value: String?) {
+        fun storeStringDataInSharedPref(keyName: String, value: String?) {
             val editor = mActivityInstance?.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE)?.edit()
             editor?.putString(keyName, value)
             editor?.apply()

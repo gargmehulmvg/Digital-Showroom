@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
 import com.digitaldukaan.R
+import com.digitaldukaan.constants.CleverTapManager
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.ToolBarManager
@@ -106,8 +107,14 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
     override fun onClick(view: View?) {
         super.onClick(view)
         when (view?.id) {
-            minOrderValueContainer.id -> showMinimumDeliveryOrderBottomSheet()
-            deliveryChargeContainer.id -> launchFragment(SetDeliveryChargeFragment.newInstance(mMoreControlsStaticData, mAppStoreServicesResponse), true)
+            minOrderValueContainer.id -> {
+                CleverTapManager.pushMinOrderValueEvent()
+                showMinimumDeliveryOrderBottomSheet()
+            }
+            deliveryChargeContainer.id -> {
+                CleverTapManager.pushDeliveryChargeEvent()
+                launchFragment(SetDeliveryChargeFragment.newInstance(mMoreControlsStaticData, mAppStoreServicesResponse), true)
+            }
         }
     }
 
