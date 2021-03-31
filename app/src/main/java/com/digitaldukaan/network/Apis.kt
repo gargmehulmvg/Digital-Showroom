@@ -113,7 +113,7 @@ interface Apis {
     suspend fun getProductPageInfo(@Header("auth_token") authToken: String): Response<CommonApiResponse>
 
     @GET("api/dotk/products/getMasterCatalogStaticText")
-    suspend fun getMasterCatalogStaticText(@Header("auth_token") authToken: String): Response<CommonApiResponse>
+    suspend fun getMasterCatalogStaticText(): Response<CommonApiResponse>
 
     @GET("api/dotk/products/getItemInfo/{itemId}")
     suspend fun getItemInfo(@Header("auth_token") authToken: String, @Path("itemId") itemId: Int): Response<CommonApiResponse>
@@ -125,7 +125,7 @@ interface Apis {
     suspend fun completeOrder(@Header("auth_token") authToken: String, @Body request: CompleteOrderRequest): Response<CommonApiResponse>
 
     @GET("api/dotk/orders/getDeliveryTime")
-    suspend fun getDeliveryTime(@Header("auth_token") authToken: String): Response<CommonApiResponse>
+    suspend fun getDeliveryTime(): Response<CommonApiResponse>
 
     @POST("api/dotk/orders/updateOrder")
     suspend fun updateOrder(@Header("auth_token") authToken: String, @Body statusRequest: UpdateOrderRequest): Response<CommonApiResponse>

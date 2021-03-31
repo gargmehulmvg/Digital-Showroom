@@ -40,11 +40,10 @@ class OrderDetailNetworkService {
     }
 
     suspend fun getDeliveryTimeServerCall(
-        authToken: String,
         serviceInterface: IOrderDetailServiceInterface
     ) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.getDeliveryTime(authToken)
+            val response = RetrofitApi().getServerCallObject()?.getDeliveryTime()
             response?.let {
                 if (it.isSuccessful) {
                     it.body()?.let { commonApiResponse -> serviceInterface.onDeliveryTimeResponse(commonApiResponse)

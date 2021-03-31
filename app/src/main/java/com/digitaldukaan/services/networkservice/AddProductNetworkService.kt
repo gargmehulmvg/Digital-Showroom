@@ -12,11 +12,10 @@ import okhttp3.RequestBody
 class AddProductNetworkService {
 
     suspend fun getAddOrderBottomSheetDataServerCall(
-        authToken: String,
         serviceInterface: IAddProductServiceInterface
     ) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.getMasterCatalogStaticText(authToken)
+            val response = RetrofitApi().getServerCallObject()?.getMasterCatalogStaticText()
             response?.let {
                 if (it.isSuccessful) {
                     it.body()?.let { commonApiResponse -> serviceInterface.onAddProductBannerStaticDataResponse(commonApiResponse)

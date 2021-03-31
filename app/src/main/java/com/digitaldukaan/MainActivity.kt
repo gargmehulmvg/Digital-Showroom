@@ -1,6 +1,5 @@
 package com.digitaldukaan
 
-import android.app.NotificationManager
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.os.Bundle
@@ -9,8 +8,8 @@ import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import com.clevertap.android.sdk.CleverTapAPI
-import com.digitaldukaan.constants.Constants
+import com.digitaldukaan.constants.CleverTapManager
+import com.digitaldukaan.constants.PrefsManager
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.fragments.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -27,18 +26,8 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         ToolBarManager.getInstance().setupToolbar(toolbarLayout)
         setupBottomNavigation()
         launchFragment(SplashFragment.newInstance(), true)
-        val cleverTapAPI = CleverTapAPI.getDefaultInstance(applicationContext)
-        CleverTapAPI.createNotificationChannel(
-            applicationContext,
-            Constants.NOTIFICATION_CHANNEL_ID,
-            Constants.NOTIFICATION_CHANNEL_NAME,
-            Constants.NOTIFICATION_CHANNEL_DESC,
-            NotificationManager.IMPORTANCE_MAX,
-            true
-        )
-        Log.d("TAG", "onCreate: $cleverTapAPI")
-        //cleverTapAPI?.pushEvent("Test Event")
-        Log.d("TAG", "pushEvent: DONE")
+        CleverTapManager.setCleverTapManager(this)
+        PrefsManager.setPrefsManager(this)
     }
 
     private fun setupBottomNavigation() {

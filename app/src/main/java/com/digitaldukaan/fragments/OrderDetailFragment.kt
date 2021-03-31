@@ -96,7 +96,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                 return
             }
             showProgressDialog(mActivity)
-            mOrderDetailService.getDeliveryTime(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
+            mOrderDetailService.getDeliveryTime()
         }
     }
 

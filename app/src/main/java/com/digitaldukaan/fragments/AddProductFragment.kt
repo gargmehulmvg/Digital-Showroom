@@ -148,7 +148,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                         return
                     }
                     showProgressDialog(mActivity)
-                    mService.getAddOrderBottomSheetData(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
+                    mService.getAddOrderBottomSheetData()
                 } else showMaterCatalogBottomSheet()
             }
             continueTextView.id -> {

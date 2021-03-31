@@ -17,9 +17,9 @@ class AddProductService {
         mServiceInterface = listener
     }
 
-    fun getAddOrderBottomSheetData(authToken: String) {
+    fun getAddOrderBottomSheetData() {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.getAddOrderBottomSheetDataServerCall(authToken, mServiceInterface)
+            mNetworkService.getAddOrderBottomSheetDataServerCall(mServiceInterface)
         }
     }
 
