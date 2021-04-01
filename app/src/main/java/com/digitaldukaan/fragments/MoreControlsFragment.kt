@@ -7,10 +7,7 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
 import com.digitaldukaan.R
-import com.digitaldukaan.constants.CleverTapManager
-import com.digitaldukaan.constants.Constants
-import com.digitaldukaan.constants.CoroutineScopeUtils
-import com.digitaldukaan.constants.ToolBarManager
+import com.digitaldukaan.constants.*
 import com.digitaldukaan.models.request.MoreControlsRequest
 import com.digitaldukaan.models.response.AccountStaticTextResponse
 import com.digitaldukaan.models.response.CommonApiResponse
@@ -108,11 +105,19 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
         super.onClick(view)
         when (view?.id) {
             minOrderValueContainer.id -> {
-                CleverTapManager.pushMinOrderValueEvent()
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_SET_MIN_ORDER_VALUE,
+                    isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = false,
+                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
+                )
                 showMinimumDeliveryOrderBottomSheet()
             }
             deliveryChargeContainer.id -> {
-                CleverTapManager.pushDeliveryChargeEvent()
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_SET_DELIVERY_CHARGE,
+                    isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = false,
+                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
+                )
                 launchFragment(SetDeliveryChargeFragment.newInstance(mMoreControlsStaticData, mAppStoreServicesResponse), true)
             }
         }

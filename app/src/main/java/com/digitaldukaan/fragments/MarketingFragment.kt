@@ -135,11 +135,19 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
         }
         when (response?.action) {
             Constants.ACTION_BUSINESS_CREATIVE -> {
-                CleverTapManager.pushMarketingOffersViewNowEvent()
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_MARKET_VIEW_NOW,
+                    isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = false,
+                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), "type" to AFInAppEventParameterName.SOCIAL)
+                )
                 openWebViewFragment(this, "", Constants.WEB_VIEW_CREATIVE_LIST, Constants.SETTINGS)
             }
             Constants.ACTION_SOCIAL_CREATIVE -> {
-                CleverTapManager.pushMarketingSocialViewNowEvent()
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_MARKET_VIEW_NOW,
+                    isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = false,
+                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), "type" to AFInAppEventParameterName.SOCIAL)
+                )
                 openWebViewFragment(this, "", Constants.WEB_VIEW_SOCIAL_CREATIVE_LIST, Constants.SETTINGS)
             }
             Constants.ACTION_QR_DOWNLOAD -> openWebViewFragment(this, "", Constants.WEB_VIEW_QR_DOWNLOAD, Constants.SETTINGS)

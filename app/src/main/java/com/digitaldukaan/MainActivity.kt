@@ -8,7 +8,7 @@ import android.view.MenuItem
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import com.digitaldukaan.constants.CleverTapManager
+import com.digitaldukaan.constants.AppEventsManager
 import com.digitaldukaan.constants.PrefsManager
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.fragments.*
@@ -19,6 +19,10 @@ import kotlinx.android.synthetic.main.activity_main2.*
 
 class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
 
+    companion object {
+        private const val TAG = "MainActivity"
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main2)
@@ -26,8 +30,8 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         ToolBarManager.getInstance().setupToolbar(toolbarLayout)
         setupBottomNavigation()
         launchFragment(SplashFragment.newInstance(), true)
-        CleverTapManager.setCleverTapManager(this)
         PrefsManager.setPrefsManager(this)
+        AppEventsManager.setAppEventsManager(this)
     }
 
     private fun setupBottomNavigation() {
