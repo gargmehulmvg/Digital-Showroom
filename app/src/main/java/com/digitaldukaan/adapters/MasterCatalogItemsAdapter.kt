@@ -1,6 +1,5 @@
 package com.digitaldukaan.adapters
 
-import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,6 +29,7 @@ class MasterCatalogItemsAdapter(
     }
 
     inner class MarketingCardViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val setPriceTextView: TextView = itemView.findViewById(R.id.setPriceTextView)
         val priceTextView: TextView = itemView.findViewById(R.id.priceTextView)
         val imageView: ImageView = itemView.findViewById(R.id.imageView)
         val titleTextView: TextView = itemView.findViewById(R.id.titleTextView)
@@ -43,11 +43,6 @@ class MasterCatalogItemsAdapter(
         )
         view.imageView.setOnClickListener {
             mCategoryItemClickListener.onCategoryItemsClickResponse(mCategoryItemList?.get(view.adapterPosition))
-        }
-        view.priceTextView.setOnClickListener {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                it.tooltipText =  "You can change the price after adding to your catalogue"
-            }
         }
         return view
     }
@@ -76,6 +71,10 @@ class MasterCatalogItemsAdapter(
                 container.isEnabled = false
                 container.alpha = 0.2f
                 checkBox.isEnabled = false
+            }
+            if (item?.price == 0.0) {
+                priceTextView.text = "${mStaticText?.text_set_your_price} ${mStaticText?.text_rupees_symbol}"
+                setPriceTextView.text = item.price.toString()
             }
         }
     }

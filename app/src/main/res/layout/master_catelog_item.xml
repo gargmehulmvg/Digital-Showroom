@@ -48,7 +48,8 @@
         android:layout_height="wrap_content"
         android:maxLines="@integer/min_lines_two"
         android:minLines="@integer/min_lines_two"
-        android:paddingStart="@dimen/_10sdp"
+        android:layout_marginStart="@dimen/_5sdp"
+        android:paddingStart="@dimen/_5sdp"
         android:paddingTop="@dimen/_4sdp"
         android:paddingEnd="@dimen/_10sdp"
         android:textColor="@color/black"
@@ -61,34 +62,32 @@
         android:id="@+id/priceTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="sans-serif-medium"
-        android:paddingStart="@dimen/_10sdp"
-        android:onClick="onClick"
         android:background="?selectableItemBackground"
+        android:fontFamily="sans-serif-medium"
+        android:onClick="onClick"
+        android:paddingStart="@dimen/_5sdp"
         android:paddingTop="@dimen/_4sdp"
-        android:paddingEnd="@dimen/_10sdp"
+        android:paddingEnd="@dimen/_5sdp"
         android:textColor="@color/default_text_light_grey"
         android:textSize="@dimen/_12sdp"
         app:layout_constraintBottom_toBottomOf="@+id/imageLayout"
-        app:layout_constraintStart_toEndOf="@+id/imageLayout"
+        app:layout_constraintStart_toStartOf="@+id/titleTextView"
         app:layout_constraintTop_toBottomOf="@+id/titleTextView"
         app:layout_constraintVertical_bias="0.9"
-        tools:text="₹ 345" />
+        tools:text="Set your price ₹" />
 
-    <EditText
-        android:id="@+id/priceEditText"
+    <TextView
+        android:id="@+id/setPriceTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif-medium"
         android:onClick="onClick"
-        android:inputType="number"
-        android:paddingStart="@dimen/_10sdp"
-        android:paddingTop="@dimen/_4sdp"
-        android:paddingEnd="@dimen/_10sdp"
-        android:textColor="@color/default_text_light_grey"
+        android:background="?selectableItemBackground"
+        android:minWidth="@dimen/_25sdp"
+        android:textColor="@color/open_green"
         android:textSize="@dimen/_12sdp"
         app:layout_constraintBaseline_toBaselineOf="@+id/priceTextView"
         app:layout_constraintStart_toEndOf="@+id/priceTextView"
-        tools:text="₹ 345" />
+        tools:text="345" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
