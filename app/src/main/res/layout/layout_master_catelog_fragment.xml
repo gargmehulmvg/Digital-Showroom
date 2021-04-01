@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="@dimen/_10sdp">
+
+    <ImageView
+        android:id="@+id/backImageView"
+        android:layout_width="@dimen/_35sdp"
+        android:layout_height="@dimen/_30sdp"
+        android:contentDescription="@string/image_view_content_description"
+        android:onClick="onClick"
+        android:background="?selectableItemBackground"
+        android:padding="@dimen/_4sdp"
+        android:rotation="180"
+        android:src="@drawable/ic_arrow_forward_white"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/black" />
+
+    <ImageView
+        android:id="@+id/searchImageView"
+        android:layout_width="@dimen/_35sdp"
+        android:layout_height="@dimen/_30sdp"
+        android:contentDescription="@string/image_view_content_description"
+        android:onClick="onClick"
+        android:background="?selectableItemBackground"
+        android:padding="@dimen/_6sdp"
+        android:src="@drawable/ic_search"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/open_green" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/exploreTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:paddingTop="@dimen/_5sdp"
+        android:paddingStart="@dimen/_15sdp"
+        android:paddingEnd="@dimen/_15sdp"
+        android:textSize="@dimen/_20sdp"
+        app:layout_constraintEnd_toStartOf="@+id/searchImageView"
+        app:layout_constraintStart_toStartOf="@+id/backImageView"
+        app:layout_constraintTop_toBottomOf="@+id/backImageView"
+        tools:text="Explore" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/subCategoryRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_8sdp"
+        tools:listitem="@layout/sub_category_item"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@+id/exploreTextView"
+        tools:layout_editor_absoluteX="13dp" />
+
+    <View
+        android:id="@+id/view6"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_1sdp"
+        android:background="@color/light_grey_background"
+        app:layout_constraintTop_toBottomOf="@+id/subCategoryRecyclerView"
+        tools:layout_editor_absoluteX="13dp" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/productCountTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/_15sdp"
+        android:paddingStart="@dimen/_15sdp"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="@color/default_text_light_grey"
+        android:paddingEnd="@dimen/_15sdp"
+        app:layout_constraintStart_toStartOf="@+id/subCategoryRecyclerView"
+        app:layout_constraintTop_toBottomOf="@+id/view6"
+        tools:text="4563 products, tap to select" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

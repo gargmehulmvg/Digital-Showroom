@@ -19,4 +19,10 @@ class ExploreCategoryService {
         }
     }
 
+    fun getMasterSubCategories(id: Int?) {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            id?.let { mNetworkService.getMasterSubCategoriesServerCall(id, mServiceInterface) }
+        }
+    }
+
 }

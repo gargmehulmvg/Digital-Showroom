@@ -74,7 +74,7 @@ class ExploreCategoryFragment: BaseFragment(), IExploreCategoryServiceInterface 
     }
 
     override fun onExploreCategoryItemClickedResponse(response: ExploreCategoryItemResponse?) {
-        showToast(response?.categoryName)
+        launchFragment(MasterCatalogFragment.newInstance(addProductStaticData, response), true)
     }
 
     override fun onExploreCategoryServerException(e: Exception) {
