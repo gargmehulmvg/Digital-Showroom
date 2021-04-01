@@ -74,6 +74,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         mActivity = context as MainActivity
+        Log.d(TAG, "onAttach :: called in Application")
     }
 
     protected fun showProgressDialog(context: Context?, message: String? = "Please wait...") {

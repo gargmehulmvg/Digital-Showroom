@@ -6,6 +6,9 @@ import android.content.Context
 class PrefsManager {
 
     companion object {
+
+        const val APP_INSTANCE_ID = "APP_INSTANCE_ID"
+
         private var mActivityInstance: Activity? = null
         fun setPrefsManager(activity: Activity) = run { mActivityInstance = activity }
 

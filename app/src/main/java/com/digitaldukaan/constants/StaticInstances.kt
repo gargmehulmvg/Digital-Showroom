@@ -14,4 +14,5 @@ object StaticInstances {
     var sUserContactList: MutableList<ContactModel> = ArrayList()
     var sStepsCompletedList: ArrayList<StepCompletedItem>? = null
     var sOrderPageInfoStaticData: OrderPageStaticTextResponse? = null
+    var sAppSessionId: String? = ""
 }

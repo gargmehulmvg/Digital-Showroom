@@ -6,6 +6,7 @@ import com.appsflyer.AppsFlyerConversionListener
 import com.appsflyer.AppsFlyerLib
 import com.clevertap.android.sdk.ActivityLifecycleCallback
 
+
 class App: Application() {
 
     companion object {
@@ -16,7 +17,6 @@ class App: Application() {
     override fun onCreate() {
         ActivityLifecycleCallback.register(this)
         super.onCreate()
-
         val conversionDataListener  = object : AppsFlyerConversionListener {
             override fun onConversionDataSuccess(data: MutableMap<String, Any>?) {
                 data?.let { cvData ->
@@ -40,9 +40,7 @@ class App: Application() {
                 Log.e(TAG, "error onAttributionFailure :  $error")
             }
         }
-
         AppsFlyerLib.getInstance().init(APP_FLYER_DEV_KEY, conversionDataListener, this)
         AppsFlyerLib.getInstance().start(this)
-
     }
 }
