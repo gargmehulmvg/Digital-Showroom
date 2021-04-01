@@ -127,6 +127,9 @@ interface Apis {
     @GET("api/dotk/orders/getDeliveryTime")
     suspend fun getDeliveryTime(): Response<CommonApiResponse>
 
+    @GET("api/dotk/products/getMasterCategories")
+    suspend fun getMasterCategories(): Response<CommonApiResponse>
+
     @POST("api/dotk/orders/updateOrder")
     suspend fun updateOrder(@Header("auth_token") authToken: String, @Body statusRequest: UpdateOrderRequest): Response<CommonApiResponse>
 }

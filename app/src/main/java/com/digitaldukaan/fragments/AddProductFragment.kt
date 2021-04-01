@@ -441,7 +441,8 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 Picasso.get().load(addProductBannerStaticDataResponse?.image_url).into(bannerImageView)
                 closeImageView.setOnClickListener { bottomSheetDialog.dismiss() }
                 buttonTextView.setOnClickListener{
-                    showToast()
+                    bottomSheetDialog.dismiss()
+                    launchFragment(ExploreCategoryFragment.newInstance(addProductStaticData), true)
                 }
             }
         }.show()
