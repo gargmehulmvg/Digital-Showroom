@@ -8,7 +8,9 @@ import android.text.style.StyleSpan
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AbsListView
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.MasterCatalogItemsAdapter
 import com.digitaldukaan.adapters.SubCategoryAdapter
@@ -31,6 +33,15 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
     private var subCategoryItemList: ArrayList<ExploreCategoryItemResponse>? = null
     private var subCategoryAdapter: SubCategoryAdapter? = null
     private var masterCatalogAdapter: MasterCatalogItemsAdapter? = null
+    private lateinit var mLinearLayoutManager: LinearLayoutManager
+    private var mCurrentItems = 0
+    private var mTotalItems = 0
+    private var mScrollOutItems = 0
+    private var mPageCount = 1
+    private var mCategoryId = 0
+    private var mIsRecyclerViewScrolling = false
+    private var mIsMoreItemsAvailable = false
+    private var mCategoryItemsList: ArrayList<MasterCatalogItemResponse>? = ArrayList()
 
     companion object {
         fun newInstance(addProductStaticData: AddProductStaticText?, item: ExploreCategoryItemResponse?): MasterCatalogFragment {
@@ -48,6 +59,7 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
     ): View? {
         mContentView = inflater.inflate(R.layout.layout_master_catelog_fragment, container, false)
         mService.setServiceInterface(this)
+        mLinearLayoutManager = LinearLayoutManager(mActivity)
         return mContentView
     }
 
@@ -63,6 +75,34 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
         }
         showProgressDialog(mActivity)
         mService.getMasterSubCategories(mExploreCategoryItem?.categoryId)
+        masterCatalogRecyclerView.apply {
+            layoutManager = mLinearLayoutManager
+            masterCatalogAdapter = MasterCatalogItemsAdapter(mActivity, mCategoryItemsList, this@MasterCatalogFragment, addProductStaticData)
+            adapter = masterCatalogAdapter
+
+            addOnScrollListener(object : RecyclerView.OnScrollListener() {
+
+                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                    super.onScrollStateChanged(recyclerView, newState)
+                    if (AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL == newState) mIsRecyclerViewScrolling = true
+                }
+
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    super.onScrolled(recyclerView, dx, dy)
+                    mCurrentItems = mLinearLayoutManager.childCount
+                    mTotalItems = masterCatalogAdapter?.itemCount ?: 0
+                    mScrollOutItems = mLinearLayoutManager.findFirstVisibleItemPosition()
+                    if (mIsRecyclerViewScrolling && (mCurrentItems + mScrollOutItems == mTotalItems)) {
+                        mIsRecyclerViewScrolling = false
+                        if (mIsMoreItemsAvailable) {
+                            mPageCount++
+                            mService.getMasterItems(mCategoryId, mPageCount)
+                        }
+                    }
+                }
+            })
+
+        }
     }
 
     override fun onClick(view: View?) {
@@ -80,7 +120,8 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
                 subCategoryItemList = Gson().fromJson<ArrayList<ExploreCategoryItemResponse>>(response.mCommonDataStr, listType)
                 if (subCategoryItemList?.isNotEmpty() == true) {
                     subCategoryItemList?.get(0)?.isSelected = true
-                    mService.getMasterItems(subCategoryItemList?.get(0)?.categoryId, 1)
+                    mCategoryId = subCategoryItemList?.get(0)?.categoryId ?: 0
+                    mService.getMasterItems(mCategoryId, 1)
                     subCategoryRecyclerView.apply {
                         layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
                         subCategoryAdapter = SubCategoryAdapter(mActivity, subCategoryItemList, this@MasterCatalogFragment)
@@ -97,11 +138,9 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
             if (response.mIsSuccessStatus) {
                 val categoryItems = Gson().fromJson<MasterCatalogResponse>(response.mCommonDataStr, MasterCatalogResponse::class.java)
                 productCountTextView.text = "${categoryItems?.totalItems} ${addProductStaticData?.text_products}, ${addProductStaticData?.text_tap_to_select}"
-                masterCatalogRecyclerView.apply {
-                    layoutManager = LinearLayoutManager(mActivity)
-                    masterCatalogAdapter = MasterCatalogItemsAdapter(mActivity, categoryItems?.itemList, this@MasterCatalogFragment, addProductStaticData)
-                    adapter = masterCatalogAdapter
-                }
+                mIsMoreItemsAvailable = categoryItems.isNext
+                if (categoryItems?.itemList?.isNotEmpty() == true) mCategoryItemsList?.addAll(categoryItems.itemList)
+                masterCatalogAdapter?.setMasterCatalogList(mCategoryItemsList)
             }
         }
     }
@@ -110,7 +149,12 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
         showToast()
     }
 
+    override fun onCategoryItemsImageClickResponse(response: MasterCatalogItemResponse?) {
+        showImageDialog(response?.imageUrl)
+    }
+
     override fun onExploreCategoryItemClickedResponse(response: ExploreCategoryItemResponse?) {
+        mCategoryItemsList?.clear()
         var position = 0
         subCategoryItemList?.forEachIndexed { pos, itemResponse -> itemResponse.isSelected = false
             if (response?.categoryId == itemResponse.categoryId) position = pos
@@ -119,7 +163,9 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
         subCategoryAdapter?.setSubCategoryList(subCategoryItemList)
         subCategoryRecyclerView.scrollToPosition(position)
         showProgressDialog(mActivity)
-        mService.getMasterItems(response?.categoryId, 1)
+        mPageCount = 1
+        mCategoryId = response?.categoryId ?: 0
+        mService.getMasterItems(mCategoryId, mPageCount)
     }
 
     override fun onExploreCategoryServerException(e: Exception) {

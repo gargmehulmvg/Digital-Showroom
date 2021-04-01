@@ -84,6 +84,10 @@ class ExploreCategoryFragment: BaseFragment(), IExploreCategoryServiceInterface 
         Log.d(TAG, "onCategoryItemsClickResponse: do nothing")
     }
 
+    override fun onCategoryItemsImageClickResponse(response: MasterCatalogItemResponse?) {
+        Log.d(TAG, "onCategoryItemsImageClickResponse: do nothing")
+    }
+
     override fun onExploreCategoryItemClickedResponse(response: ExploreCategoryItemResponse?) {
         launchFragment(MasterCatalogFragment.newInstance(addProductStaticData, response), true)
     }

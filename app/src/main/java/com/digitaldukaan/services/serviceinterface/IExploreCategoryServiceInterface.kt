@@ -12,6 +12,8 @@ interface IExploreCategoryServiceInterface {
 
     fun onCategoryItemsClickResponse(response: MasterCatalogItemResponse?)
 
+    fun onCategoryItemsImageClickResponse(response: MasterCatalogItemResponse?)
+
     fun onExploreCategoryItemClickedResponse(response: ExploreCategoryItemResponse?)
 
     fun onExploreCategoryServerException(e: Exception)

@@ -23,7 +23,7 @@ class MasterCatalogItemsAdapter(
 ) :
     RecyclerView.Adapter<MasterCatalogItemsAdapter.MarketingCardViewHolder>() {
 
-    fun setSubCategoryList(list: ArrayList<MasterCatalogItemResponse>?) {
+    fun setMasterCatalogList(list: ArrayList<MasterCatalogItemResponse>?) {
         this.mCategoryItemList = list
         notifyDataSetChanged()
     }
@@ -42,7 +42,7 @@ class MasterCatalogItemsAdapter(
             LayoutInflater.from(parent.context).inflate(R.layout.master_catelog_item, parent, false)
         )
         view.imageView.setOnClickListener {
-            mCategoryItemClickListener.onCategoryItemsClickResponse(mCategoryItemList?.get(view.adapterPosition))
+            mCategoryItemClickListener.onCategoryItemsImageClickResponse(mCategoryItemList?.get(view.adapterPosition))
         }
         return view
     }
