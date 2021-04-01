@@ -40,8 +40,8 @@ class ExploreCategoryNetworkService {
             val response = RetrofitApi().getServerCallObject()?.getMasterSubCategories(id)
             response?.let {
                 if (it.isSuccessful) {
-                    it.body()?.let {
-                        serviceInterface.onExploreCategoryResponse(it)
+                    it.body()?.let { apiResponse ->
+                        serviceInterface.onExploreCategoryResponse(apiResponse)
                     }
                 } else {
                     val errorResponseBody = it.errorBody()
@@ -53,6 +53,32 @@ class ExploreCategoryNetworkService {
             }
         } catch (e: Exception) {
             Log.e(ExploreCategoryNetworkService::class.java.simpleName, "getMasterSubCategoriesServerCall: ", e)
+            serviceInterface.onExploreCategoryServerException(e)
+        }
+    }
+
+    suspend fun getMasterItemsServerCall(
+        id: Int,
+        page: Int,
+        serviceInterface: IExploreCategoryServiceInterface
+    ) {
+        try {
+            val response = RetrofitApi().getServerCallObject()?.getMasterItems(id, page)
+            response?.let {
+                if (it.isSuccessful) {
+                    it.body()?.let { apiResponse ->
+                        serviceInterface.onSubCategoryItemsResponse(apiResponse)
+                    }
+                } else {
+                    val errorResponseBody = it.errorBody()
+                    errorResponseBody?.let {
+                        val errorResponse = Gson().fromJson(errorResponseBody.string(), CommonApiResponse::class.java)
+                        serviceInterface.onSubCategoryItemsResponse(errorResponse)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(ExploreCategoryNetworkService::class.java.simpleName, "getMasterItemsServerCall: ", e)
             serviceInterface.onExploreCategoryServerException(e)
         }
     }

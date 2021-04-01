@@ -10,13 +10,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.digitaldukaan.R
+import com.digitaldukaan.adapters.MasterCatalogItemsAdapter
 import com.digitaldukaan.adapters.SubCategoryAdapter
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.interfaces.IOnToolbarIconClick
-import com.digitaldukaan.models.response.AddProductStaticText
-import com.digitaldukaan.models.response.CommonApiResponse
-import com.digitaldukaan.models.response.ExploreCategoryItemResponse
+import com.digitaldukaan.models.response.*
 import com.digitaldukaan.services.ExploreCategoryService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IExploreCategoryServiceInterface
@@ -31,6 +30,7 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
     private var mExploreCategoryItem: ExploreCategoryItemResponse? = null
     private var subCategoryItemList: ArrayList<ExploreCategoryItemResponse>? = null
     private var subCategoryAdapter: SubCategoryAdapter? = null
+    private var masterCatalogAdapter: MasterCatalogItemsAdapter? = null
 
     companion object {
         fun newInstance(addProductStaticData: AddProductStaticText?, item: ExploreCategoryItemResponse?): MasterCatalogFragment {
@@ -80,8 +80,7 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
                 subCategoryItemList = Gson().fromJson<ArrayList<ExploreCategoryItemResponse>>(response.mCommonDataStr, listType)
                 if (subCategoryItemList?.isNotEmpty() == true) {
                     subCategoryItemList?.get(0)?.isSelected = true
-                    val listCount = subCategoryItemList?.size
-                    productCountTextView.text = "$listCount ${addProductStaticData?.text_products}, ${addProductStaticData?.text_tap_to_select}"
+                    mService.getMasterItems(subCategoryItemList?.get(0)?.categoryId, 1)
                     subCategoryRecyclerView.apply {
                         layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
                         subCategoryAdapter = SubCategoryAdapter(mActivity, subCategoryItemList, this@MasterCatalogFragment)
@@ -92,6 +91,25 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
         }
     }
 
+    override fun onSubCategoryItemsResponse(response: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            if (response.mIsSuccessStatus) {
+                val categoryItems = Gson().fromJson<MasterCatalogResponse>(response.mCommonDataStr, MasterCatalogResponse::class.java)
+                productCountTextView.text = "${categoryItems?.totalItems} ${addProductStaticData?.text_products}, ${addProductStaticData?.text_tap_to_select}"
+                masterCatalogRecyclerView.apply {
+                    layoutManager = LinearLayoutManager(mActivity)
+                    masterCatalogAdapter = MasterCatalogItemsAdapter(mActivity, categoryItems?.itemList, this@MasterCatalogFragment, addProductStaticData)
+                    adapter = masterCatalogAdapter
+                }
+            }
+        }
+    }
+
+    override fun onCategoryItemsClickResponse(response: MasterCatalogItemResponse?) {
+        showToast()
+    }
+
     override fun onExploreCategoryItemClickedResponse(response: ExploreCategoryItemResponse?) {
         var position = 0
         subCategoryItemList?.forEachIndexed { pos, itemResponse -> itemResponse.isSelected = false
@@ -100,6 +118,8 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
         subCategoryItemList?.get(position)?.isSelected = true
         subCategoryAdapter?.setSubCategoryList(subCategoryItemList)
         subCategoryRecyclerView.scrollToPosition(position)
+        showProgressDialog(mActivity)
+        mService.getMasterItems(response?.categoryId, 1)
     }
 
     override fun onExploreCategoryServerException(e: Exception) {

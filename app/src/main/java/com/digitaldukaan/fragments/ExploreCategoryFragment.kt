@@ -1,6 +1,7 @@
 package com.digitaldukaan.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +13,7 @@ import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.models.response.AddProductStaticText
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.ExploreCategoryItemResponse
+import com.digitaldukaan.models.response.MasterCatalogItemResponse
 import com.digitaldukaan.services.ExploreCategoryService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IExploreCategoryServiceInterface
@@ -25,6 +27,7 @@ class ExploreCategoryFragment: BaseFragment(), IExploreCategoryServiceInterface 
     private var addProductStaticData: AddProductStaticText? = null
 
     companion object {
+        private const val TAG = "ExploreCategoryFragment"
         fun newInstance(addProductStaticData: AddProductStaticText?): ExploreCategoryFragment {
             val fragment =  ExploreCategoryFragment()
             fragment.addProductStaticData = addProductStaticData
@@ -71,6 +74,14 @@ class ExploreCategoryFragment: BaseFragment(), IExploreCategoryServiceInterface 
                 }
             }
         }
+    }
+
+    override fun onSubCategoryItemsResponse(response: CommonApiResponse) {
+        Log.d(TAG, "onCategoryItemsResponse: do nothing")
+    }
+
+    override fun onCategoryItemsClickResponse(response: MasterCatalogItemResponse?) {
+        Log.d(TAG, "onCategoryItemsClickResponse: do nothing")
     }
 
     override fun onExploreCategoryItemClickedResponse(response: ExploreCategoryItemResponse?) {

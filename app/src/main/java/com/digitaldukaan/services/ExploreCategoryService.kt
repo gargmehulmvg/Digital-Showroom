@@ -25,4 +25,10 @@ class ExploreCategoryService {
         }
     }
 
+    fun getMasterItems(id: Int?, page: Int) {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            id?.let { mNetworkService.getMasterItemsServerCall(id, page, mServiceInterface) }
+        }
+    }
+
 }
