@@ -3,89 +3,140 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="@dimen/_10sdp">
+    android:animateLayoutChanges="true"
+    android:layout_height="match_parent">
 
-    <ImageView
-        android:id="@+id/backImageView"
-        android:layout_width="@dimen/_35sdp"
-        android:layout_height="@dimen/_30sdp"
-        android:contentDescription="@string/image_view_content_description"
-        android:onClick="onClick"
-        android:background="?selectableItemBackground"
-        android:padding="@dimen/_4sdp"
-        android:rotation="180"
-        android:src="@drawable/ic_arrow_forward_white"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/black" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:padding="@dimen/_10sdp"
+        app:layout_constraintBottom_toTopOf="@+id/cardView"
+        app:layout_constraintTop_toTopOf="parent">
 
-    <ImageView
-        android:id="@+id/searchImageView"
-        android:layout_width="@dimen/_35sdp"
-        android:layout_height="@dimen/_30sdp"
-        android:contentDescription="@string/image_view_content_description"
-        android:onClick="onClick"
-        android:background="?selectableItemBackground"
-        android:padding="@dimen/_6sdp"
-        android:src="@drawable/ic_search"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:tint="@color/open_green" />
+        <ImageView
+            android:id="@+id/backImageView"
+            android:layout_width="@dimen/_35sdp"
+            android:layout_height="@dimen/_30sdp"
+            android:background="?selectableItemBackground"
+            android:contentDescription="@string/image_view_content_description"
+            android:onClick="onClick"
+            android:padding="@dimen/_4sdp"
+            android:rotation="180"
+            android:src="@drawable/ic_arrow_forward_white"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/black" />
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/exploreTextView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:textColor="@color/black"
-        android:paddingTop="@dimen/_5sdp"
-        android:paddingStart="@dimen/_15sdp"
-        android:paddingEnd="@dimen/_15sdp"
-        android:textSize="@dimen/_20sdp"
-        app:layout_constraintEnd_toStartOf="@+id/searchImageView"
-        app:layout_constraintStart_toStartOf="@+id/backImageView"
-        app:layout_constraintTop_toBottomOf="@+id/backImageView"
-        tools:text="Explore" />
+        <ImageView
+            android:id="@+id/searchImageView"
+            android:layout_width="@dimen/_35sdp"
+            android:layout_height="@dimen/_30sdp"
+            android:background="?selectableItemBackground"
+            android:contentDescription="@string/image_view_content_description"
+            android:onClick="onClick"
+            android:visibility="invisible"
+            android:padding="@dimen/_6sdp"
+            android:src="@drawable/ic_search"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/open_green" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/subCategoryRecyclerView"
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/exploreTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/_15sdp"
+            android:paddingTop="@dimen/_5sdp"
+            android:paddingEnd="@dimen/_15sdp"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_20sdp"
+            app:layout_constraintEnd_toStartOf="@+id/searchImageView"
+            app:layout_constraintStart_toStartOf="@+id/backImageView"
+            app:layout_constraintTop_toBottomOf="@+id/backImageView"
+            tools:text="Explore" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/subCategoryRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_8sdp"
+            android:orientation="horizontal"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintTop_toBottomOf="@+id/exploreTextView"
+            tools:listitem="@layout/sub_category_item" />
+
+        <View
+            android:id="@+id/view6"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_1sdp"
+            android:background="@color/light_grey_background"
+            app:layout_constraintTop_toBottomOf="@+id/subCategoryRecyclerView"
+            tools:layout_editor_absoluteX="13dp" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/productCountTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-medium"
+            android:paddingStart="@dimen/_15sdp"
+            android:paddingTop="@dimen/_15sdp"
+            android:paddingEnd="@dimen/_15sdp"
+            android:textColor="@color/default_text_light_grey"
+            app:layout_constraintStart_toStartOf="@+id/subCategoryRecyclerView"
+            app:layout_constraintTop_toBottomOf="@+id/view6"
+            tools:text="4563 products, tap to select" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/productCountTextView">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/masterCatalogRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:nestedScrollingEnabled="false"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:itemCount="4"
+                tools:listitem="@layout/master_catalog_item" />
+
+            <View
+                android:id="@+id/blankSpace"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_100sdp"
+                android:background="@color/white" />
+
+        </LinearLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_8sdp"
-        tools:listitem="@layout/sub_category_item"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@+id/exploreTextView" />
+        android:layout_gravity="bottom"
+        android:padding="@dimen/_5sdp"
+        android:animateLayoutChanges="true"
+        app:cardElevation="@dimen/_10sdp"
+        app:layout_constraintBottom_toBottomOf="parent">
 
-    <View
-        android:id="@+id/view6"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/_1sdp"
-        android:background="@color/light_grey_background"
-        app:layout_constraintTop_toBottomOf="@+id/subCategoryRecyclerView"
-        tools:layout_editor_absoluteX="13dp" />
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/addProductTextView"
+            style="@style/common_text_view_background"
+            android:layout_width="match_parent"
+            android:layout_margin="@dimen/_10sdp"
+            android:gravity="center"
+            android:visibility="gone"
+            android:onClick="onClick"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/priceLayout"
+            app:layout_constraintStart_toStartOf="@+id/priceLayout"
+            app:layout_constraintTop_toBottomOf="@+id/priceLayout"
+            tools:text="Set Price" />
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/productCountTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingTop="@dimen/_15sdp"
-        android:paddingStart="@dimen/_15sdp"
-        android:fontFamily="sans-serif-medium"
-        android:textColor="@color/default_text_light_grey"
-        android:paddingEnd="@dimen/_15sdp"
-        app:layout_constraintStart_toStartOf="@+id/subCategoryRecyclerView"
-        app:layout_constraintTop_toBottomOf="@+id/view6"
-        tools:text="4563 products, tap to select" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/masterCatalogRecyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_10sdp"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintTop_toBottomOf="@+id/productCountTextView"
-        tools:layout_editor_absoluteX="13dp"
-        tools:listitem="@layout/master_catelog_item" />
+    </androidx.cardview.widget.CardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

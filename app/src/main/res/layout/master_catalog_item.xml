@@ -47,6 +47,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:maxLines="@integer/min_lines_two"
+        android:background="?selectableItemBackground"
+        android:onClick="onClick"
         android:minLines="@integer/min_lines_two"
         android:layout_marginStart="@dimen/_5sdp"
         android:paddingStart="@dimen/_5sdp"

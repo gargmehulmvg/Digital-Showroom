@@ -23,8 +23,11 @@ class MasterCatalogItemsAdapter(
 ) :
     RecyclerView.Adapter<MasterCatalogItemsAdapter.MarketingCardViewHolder>() {
 
-    fun setMasterCatalogList(list: ArrayList<MasterCatalogItemResponse>?) {
+    private var mSelectedProductsHashMap: HashMap<Int?, MasterCatalogItemResponse?>? = HashMap()
+
+    fun setMasterCatalogList(list: ArrayList<MasterCatalogItemResponse>?, selectedProductsHashMap: HashMap<Int?, MasterCatalogItemResponse?>?) {
         this.mCategoryItemList = list
+        this.mSelectedProductsHashMap = selectedProductsHashMap
         notifyDataSetChanged()
     }
 
@@ -39,10 +42,20 @@ class MasterCatalogItemsAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MarketingCardViewHolder {
         val view = MarketingCardViewHolder(
-            LayoutInflater.from(parent.context).inflate(R.layout.master_catelog_item, parent, false)
+            LayoutInflater.from(parent.context).inflate(R.layout.master_catalog_item, parent, false)
         )
         view.imageView.setOnClickListener {
-            mCategoryItemClickListener.onCategoryItemsImageClickResponse(mCategoryItemList?.get(view.adapterPosition))
+            mCategoryItemClickListener.onCategoryItemsImageClick(mCategoryItemList?.get(view.adapterPosition))
+        }
+        view.setPriceTextView.setOnClickListener {
+            mCategoryItemClickListener.onCategoryItemsSetPriceClick(view.adapterPosition, mCategoryItemList?.get(view.adapterPosition))
+        }
+        view.checkBox.setOnCheckedChangeListener { _, isChecked ->
+            mCategoryItemClickListener.onCategoryCheckBoxClick(view.adapterPosition, mCategoryItemList?.get(view.adapterPosition), isChecked)
+        }
+        view.titleTextView.setOnClickListener {
+            mCategoryItemClickListener.onCategoryCheckBoxClick(view.adapterPosition, mCategoryItemList?.get(view.adapterPosition), !view.checkBox.isChecked)
+            view.checkBox.isChecked = !view.checkBox.isChecked
         }
         return view
     }
@@ -71,11 +84,20 @@ class MasterCatalogItemsAdapter(
                 container.isEnabled = false
                 container.alpha = 0.2f
                 checkBox.isEnabled = false
+            } else {
+                container.isEnabled = true
+                container.alpha = 1f
+                checkBox.isEnabled = true
             }
             if (item?.price == 0.0) {
+                checkBox.isEnabled = false
                 priceTextView.text = "${mStaticText?.text_set_your_price} ${mStaticText?.text_rupees_symbol}"
                 setPriceTextView.text = item.price.toString()
+            } else {
+                checkBox.isEnabled = true
             }
+            checkBox.isChecked = (item?.isSelected == true || mSelectedProductsHashMap?.containsKey(item?.itemId) == true)
+            checkBox.isSelected = (item?.isSelected == true || mSelectedProductsHashMap?.containsKey(item?.itemId) == true)
         }
     }
 

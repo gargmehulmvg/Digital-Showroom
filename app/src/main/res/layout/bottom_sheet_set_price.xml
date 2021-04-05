@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/bottomSheetContainer"
+    android:layout_width="match_parent"
+    android:padding="@dimen/_10sdp"
+    android:background="@drawable/upper_curve_white_background"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/bottomSheetClose"
+        android:layout_width="@dimen/_22sdp"
+        android:layout_height="@dimen/_22sdp"
+        android:contentDescription="@string/image_view_content_description"
+        android:elevation="@dimen/_4sdp"
+        android:layout_marginEnd="@dimen/_5sdp"
+        android:src="@drawable/ic_black_close"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/bottomSheetHeadingTextView"
+        style="@style/common_bold_text_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="@+id/bottomSheetClose"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/bottomSheetClose"
+        tools:text="Set price below" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/imageLayout"
+        android:layout_width="@dimen/_75sdp"
+        android:layout_height="@dimen/_75sdp"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:background="@drawable/slight_curve_grey_border_without_padding"
+        android:gravity="center_horizontal"
+        app:layout_constraintStart_toStartOf="@+id/bottomSheetHeadingTextView"
+        app:layout_constraintTop_toBottomOf="@+id/bottomSheetHeadingTextView">
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_margin="@dimen/_2sdp"
+            android:contentDescription="@string/image_view_content_description"
+            android:transitionName="@string/transition_name"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/titleTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_15sdp"
+        android:maxLines="@integer/min_lines_two"
+        android:minLines="@integer/min_lines_two"
+        android:paddingStart="@dimen/_5sdp"
+        android:paddingEnd="@dimen/_10sdp"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_13sdp"
+        app:layout_constraintBottom_toBottomOf="@+id/imageLayout"
+        app:layout_constraintEnd_toEndOf="@+id/bottomSheetClose"
+        app:layout_constraintStart_toEndOf="@+id/imageLayout"
+        app:layout_constraintTop_toTopOf="@+id/imageLayout"
+        tools:text="Axe Deo Recharge Midnight 150ml" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/priceLayout"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_marginTop="@dimen/_20sdp"
+        android:layout_height="wrap_content"
+        tools:hint="Price (Rs)"
+        app:layout_constraintEnd_toEndOf="@+id/titleTextView"
+        app:layout_constraintStart_toStartOf="@+id/imageLayout"
+        app:layout_constraintTop_toBottomOf="@+id/imageLayout">
+
+        <EditText
+            android:id="@+id/priceEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="true"
+            android:importantForAutofill="no"
+            android:inputType="number"
+            android:maxLength="@integer/amount_length"
+            android:textColor="@color/black"
+            android:textColorHint="@color/default_text_light_grey"
+            android:textSize="@dimen/_12sdp" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/setPriceTextView"
+        style="@style/common_text_view_background"
+        android:layout_width="0dp"
+        android:onClick="onClick"
+        android:layout_marginTop="@dimen/_20sdp"
+        android:gravity="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/priceLayout"
+        app:layout_constraintStart_toStartOf="@+id/priceLayout"
+        app:layout_constraintTop_toBottomOf="@+id/priceLayout"
+        tools:text="Set Price" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

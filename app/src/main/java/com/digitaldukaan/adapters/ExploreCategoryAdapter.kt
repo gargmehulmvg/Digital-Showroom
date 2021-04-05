@@ -19,7 +19,6 @@ class ExploreCategoryAdapter(
     inner class MarketingCardViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val itemContainer: View = itemView.findViewById(R.id.itemContainer)
         val imageView: ImageView = itemView.findViewById(R.id.imageView)
-        //val headingTextView: TextView = itemView.findViewById(R.id.headingTextView)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MarketingCardViewHolder {
@@ -27,7 +26,7 @@ class ExploreCategoryAdapter(
             LayoutInflater.from(parent.context).inflate(R.layout.explore_category_item, parent, false)
         )
         view.itemContainer.setOnClickListener {
-            mCategoryItemClickListener.onExploreCategoryItemClickedResponse(
+            mCategoryItemClickListener.onExploreCategoryItemClick(
                 mCategoryItemList?.get(view.adapterPosition)
             )
         }
@@ -43,7 +42,6 @@ class ExploreCategoryAdapter(
         val item = mCategoryItemList?.get(position)
         holder.run {
             Picasso.get().load(item?.imageUrl).into(imageView)
-            //headingTextView.text = item?.categoryName
         }
     }
 

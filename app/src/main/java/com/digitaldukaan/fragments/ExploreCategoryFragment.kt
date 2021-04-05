@@ -84,11 +84,19 @@ class ExploreCategoryFragment: BaseFragment(), IExploreCategoryServiceInterface 
         Log.d(TAG, "onCategoryItemsClickResponse: do nothing")
     }
 
-    override fun onCategoryItemsImageClickResponse(response: MasterCatalogItemResponse?) {
+    override fun onCategoryItemsImageClick(response: MasterCatalogItemResponse?) {
         Log.d(TAG, "onCategoryItemsImageClickResponse: do nothing")
     }
 
-    override fun onExploreCategoryItemClickedResponse(response: ExploreCategoryItemResponse?) {
+    override fun onCategoryItemsSetPriceClick(position: Int, response: MasterCatalogItemResponse?) {
+        Log.d(TAG, "onCategoryItemsSetPriceClickResponse: do nothing")
+    }
+
+    override fun onCategoryCheckBoxClick(position: Int, response: MasterCatalogItemResponse?, isChecked: Boolean) {
+        Log.d(TAG, "onCategoryCheckBoxClick: do nothing")
+    }
+
+    override fun onExploreCategoryItemClick(response: ExploreCategoryItemResponse?) {
         launchFragment(MasterCatalogFragment.newInstance(addProductStaticData, response), true)
     }
 

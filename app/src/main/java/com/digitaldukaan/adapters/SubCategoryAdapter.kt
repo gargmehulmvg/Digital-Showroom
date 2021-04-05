@@ -37,7 +37,7 @@ class SubCategoryAdapter(
             LayoutInflater.from(parent.context).inflate(R.layout.sub_category_item, parent, false)
         )
         view.itemContainer.setOnClickListener {
-            mCategoryItemClickListener.onExploreCategoryItemClickedResponse(mCategoryItemList?.get(view.adapterPosition))
+            mCategoryItemClickListener.onExploreCategoryItemClick(mCategoryItemList?.get(view.adapterPosition))
         }
         return view
     }
