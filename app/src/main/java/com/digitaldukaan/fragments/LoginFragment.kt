@@ -27,6 +27,7 @@ import com.google.android.gms.auth.api.credentials.Credential
 import com.google.android.gms.auth.api.credentials.Credentials
 import com.google.android.gms.auth.api.credentials.CredentialsApi
 import com.google.android.gms.auth.api.credentials.HintRequest
+import com.truecaller.android.sdk.TruecallerSDK
 import kotlinx.android.synthetic.main.layout_login_fragment.*
 
 class LoginFragment : BaseFragment(), ILoginServiceInterface {
@@ -47,6 +48,8 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
         sharedElementEnterTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.move)
         mLoginService = LoginService()
         mLoginService.setLoginServiceInterface(this)
+        TruecallerSDK.getInstance().isUsable
+        TruecallerSDK.getInstance().getUserProfile(this)
     }
 
     override fun onCreateView(
@@ -65,7 +68,6 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
         }
         setupDataFromStaticResponse()
         setupMobileNumberEditText()
-        if (!mIsMobileNumberSearchingDone) initiateAutoDetectMobileNumber()
     }
 
     private fun setupDataFromStaticResponse() {
@@ -133,21 +135,10 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
     private fun initiateAutoDetectMobileNumber() {
         mIsMobileNumberSearchingDone = true
         Handler(Looper.getMainLooper()).postDelayed({
-            val hintRequest = HintRequest.Builder()
-                .setPhoneNumberIdentifierSupported(true)
-                .build()
-            val intent: PendingIntent =
-                Credentials.getClient(mActivity).getHintPickerIntent(hintRequest)
+            val hintRequest = HintRequest.Builder().setPhoneNumberIdentifierSupported(true).build()
+            val intent: PendingIntent = Credentials.getClient(mActivity).getHintPickerIntent(hintRequest)
             try {
-                startIntentSenderForResult(
-                    intent.intentSender,
-                    CREDENTIAL_PICKER_REQUEST,
-                    null,
-                    0,
-                    0,
-                    0,
-                    Bundle()
-                )
+                startIntentSenderForResult(intent.intentSender, CREDENTIAL_PICKER_REQUEST, null, 0, 0, 0, Bundle())
             } catch (e: IntentSender.SendIntentException) {
                 e.printStackTrace()
             }
@@ -169,6 +160,11 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
             }
         } else if (requestCode == CREDENTIAL_PICKER_REQUEST && resultCode == CredentialsApi.ACTIVITY_RESULT_NO_HINTS_AVAILABLE) {
             Toast.makeText(context, "No phone numbers found", Toast.LENGTH_LONG).show()
+        } else if (requestCode == TruecallerSDK.SHARE_PROFILE_REQUEST_CODE) {
+            mIsMobileNumberSearchingDone = true
+            showShortSnackBar("True Caller result :: ${data?.data}")
+        } else {
+            if (!mIsMobileNumberSearchingDone) initiateAutoDetectMobileNumber()
         }
     }
 

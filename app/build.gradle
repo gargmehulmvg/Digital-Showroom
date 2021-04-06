@@ -132,6 +132,8 @@ dependencies {
     implementation 'com.appsflyer:af-android-sdk:6.0.0'
     implementation 'com.appsflyer:af-android-sdk:6.0.0'
     implementation 'com.android.installreferrer:installreferrer:2.2'
+    //TrueCaller SDK
+    implementation "com.truecaller.android.sdk:truecaller-sdk:2.6.0"
 }
 
 apply plugin: 'com.google.gms.google-services'
