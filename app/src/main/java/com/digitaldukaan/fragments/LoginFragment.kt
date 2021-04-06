@@ -73,7 +73,7 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
     private fun setupDataFromStaticResponse() {
         enterMobileNumberHeading.text = mAuthStaticData.mHeadingText
         send4DigitOtpHeading.text = mAuthStaticData.mSubHeadingText
-        mobileNumberEditText.hint = mAuthStaticData.mInputText
+        mobileNumberInputLayout.hint = mAuthStaticData.mInputText
         getOtpTextView.text = mAuthStaticData.mButtonText
     }
 
