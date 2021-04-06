@@ -24,7 +24,8 @@ class RetrofitApi {
                     val newRequest = originalRequest.newBuilder()
                         .addHeader("auth_token", PrefsManager.getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
                         .addHeader("session_id", StaticInstances.sAppSessionId ?: "")
-                        .addHeader("install_id", StaticInstances.sAppSessionId ?: "")
+                        .addHeader("install_id", PrefsManager.getStringDataFromSharedPref(PrefsManager.APP_INSTANCE_ID)
+                        )
                         .build()
                     it.proceed(newRequest)
                 }
