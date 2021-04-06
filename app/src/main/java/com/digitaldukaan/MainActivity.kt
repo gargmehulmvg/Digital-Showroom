@@ -2,10 +2,12 @@ package com.digitaldukaan
 
 import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.digitaldukaan.constants.*
@@ -27,13 +29,18 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         ToolBarManager.getInstance().setupToolbar(toolbarLayout)
         setupBottomNavigation()
-        launchFragment(SplashFragment.newInstance(), true)
         PrefsManager.setPrefsManager(this)
         AppEventsManager.setAppEventsManager(this)
         if (StaticInstances.sAppSessionId?.isEmpty() == true) StaticInstances.sAppSessionId = RandomStringGenerator(16).nextString()
         if (PrefsManager.getStringDataFromSharedPref(PrefsManager.APP_INSTANCE_ID).isEmpty()) PrefsManager.storeStringDataInSharedPref(PrefsManager.APP_INSTANCE_ID, RandomStringGenerator(16).nextString())
         Log.d(TAG, "appSessionID :: ${StaticInstances.sAppSessionId}")
         Log.d(TAG, "appInstanceID :: ${PrefsManager.getStringDataFromSharedPref(PrefsManager.APP_INSTANCE_ID)}")
+        val intentUri = intent?.data
+        if (intentUri == null) launchFragment(SplashFragment.newInstance(), true) else switchToFragmentByDeepLink(intentUri)
+    }
+
+    private fun switchToFragmentByDeepLink(intentUri: Uri) {
+        Toast.makeText(applicationContext, intentUri.toString(), Toast.LENGTH_SHORT).show()
     }
 
     private fun setupBottomNavigation() {
