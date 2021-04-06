@@ -76,6 +76,10 @@ class ExploreCategoryFragment: BaseFragment(), IExploreCategoryServiceInterface 
         }
     }
 
+    override fun onBuildCatalogResponse(response: CommonApiResponse) {
+        Log.d(TAG, "onBuildCatalogResponse: do nothing")
+    }
+
     override fun onSubCategoryItemsResponse(response: CommonApiResponse) {
         Log.d(TAG, "onCategoryItemsResponse: do nothing")
     }

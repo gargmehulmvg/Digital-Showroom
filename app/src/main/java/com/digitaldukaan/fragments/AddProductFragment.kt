@@ -71,9 +71,6 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         super.onCreate(savedInstanceState)
         mService = AddProductService()
         mService.setServiceListener(this)
-        showProgressDialog(mActivity)
-        mImagesListStr.add(0, "")
-        mService.getItemInfo(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), mItemId)
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -91,7 +88,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         val originalPriceTextView: TextView = mContentView.findViewById(R.id.originalPriceTextView)
         val discountedPriceTextView: TextView = mContentView.findViewById(R.id.discountedPriceTextView)
         val pricePercentageOffTextView: TextView = mContentView.findViewById(R.id.pricePercentageOffTextView)
-        discountPriceEditText.addTextChangedListener(object : TextWatcher{
+        discountPriceEditText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 val str = s?.toString()
                 if (str?.isNotEmpty() == true) {
@@ -107,6 +104,12 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                             discountPriceEditText.error = addProductStaticData?.error_discount_price_less_then_original_price
                             discountPriceEditText.text = null
                             discountPriceEditText.requestFocus()
+                        }
+                        str.toDouble() == 0.0 -> {
+                            discountedPriceTextView.visibility = View.INVISIBLE
+                            originalPriceTextView.text = null
+                            discountedPriceTextView.text = null
+                            pricePercentageOffTextView.text = null
                         }
                         else -> {
                             discountedPriceTextView.visibility = View.VISIBLE
@@ -132,6 +135,9 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             }
 
         })
+        showProgressDialog(mActivity)
+        mImagesListStr.add(0, "")
+        mService.getItemInfo(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), mItemId)
         return mContentView
     }
 

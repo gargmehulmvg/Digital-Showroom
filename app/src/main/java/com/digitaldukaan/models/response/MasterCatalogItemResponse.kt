@@ -8,6 +8,7 @@ data class MasterCatalogItemResponse(
     @SerializedName("item_name") var itemName: String?,
     @SerializedName("image_url") var imageUrl: String?,
     @SerializedName("is_added") var isAdded: Boolean,
+    var parentCategoryIdForRequest: Int,
     var isSelected: Boolean
 )
 

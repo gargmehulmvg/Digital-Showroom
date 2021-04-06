@@ -3,6 +3,8 @@
 
     <corners android:radius="@dimen/_10sdp" />
 
-    <solid android:color="@color/chip_non_select_color" />
+    <solid android:color="@color/default_bg" />
+
+    <stroke android:width="@dimen/_1sdp" android:color="@color/default_text_light_grey" />
 
 </shape>

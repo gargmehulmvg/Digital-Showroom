@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.StyleSpan
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -141,6 +140,15 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
         }
     }
 
+    override fun onBuildCatalogResponse(response: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            if (response.mIsSuccessStatus) {
+                showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
+                mActivity.onBackPressed()
+            } else showShortSnackBar(response.mMessage, true, R.drawable.ic_close_red)
+        }
+    }
+
     override fun onSubCategoryItemsResponse(response: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
@@ -167,7 +175,10 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
     }
 
     override fun onCategoryCheckBoxClick(position: Int, response: MasterCatalogItemResponse?, isChecked: Boolean) {
-        if (isChecked) mSelectedProductsHashMap[response?.itemId] = response else mSelectedProductsHashMap.remove(response?.itemId)
+        if (isChecked) {
+            mSelectedProductsHashMap[response?.itemId] = response
+            mSelectedProductsHashMap[response?.itemId]?.parentCategoryIdForRequest = mCategoryId
+        } else mSelectedProductsHashMap.remove(response?.itemId)
         if (mSelectedProductsHashMap.isNotEmpty()) {
             addProductTextView.visibility = View.VISIBLE
             val size = mSelectedProductsHashMap.size
@@ -242,7 +253,11 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
                     adapter = MasterCatalogItemsConfirmationAdapter(mActivity, addProductStaticData, addMasterCatalogConfirmProductsList)
                 }
                 setPriceTextView.setOnClickListener {
-                    addMasterCatalogConfirmProductsList.forEachIndexed { _, itemResponse ->  Log.d(TAG, "showConfirmationBottomSheet:: $itemResponse")}
+                    if (!isInternetConnectionAvailable(mActivity)) {
+                        showNoInternetConnectionDialog()
+                        return@setOnClickListener
+                    }
+                    mService.buildCatalog(addMasterCatalogConfirmProductsList)
                     bottomSheetDialog.dismiss()
                 }
             }

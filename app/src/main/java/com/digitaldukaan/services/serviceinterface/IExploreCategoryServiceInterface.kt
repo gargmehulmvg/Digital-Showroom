@@ -8,6 +8,8 @@ interface IExploreCategoryServiceInterface {
 
     fun onExploreCategoryResponse(response: CommonApiResponse)
 
+    fun onBuildCatalogResponse(response: CommonApiResponse)
+
     fun onSubCategoryItemsResponse(response: CommonApiResponse)
 
     fun onCategoryItemsClickResponse(response: MasterCatalogItemResponse?)

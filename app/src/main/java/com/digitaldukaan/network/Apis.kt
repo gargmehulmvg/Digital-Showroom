@@ -138,4 +138,7 @@ interface Apis {
 
     @POST("api/dotk/orders/updateOrder")
     suspend fun updateOrder(@Header("auth_token") authToken: String, @Body statusRequest: UpdateOrderRequest): Response<CommonApiResponse>
+
+    @POST("api/dotk/products/buildCatalog")
+    suspend fun buildCatalog(@Body request: BuildCatalogRequest): Response<CommonApiResponse>
 }

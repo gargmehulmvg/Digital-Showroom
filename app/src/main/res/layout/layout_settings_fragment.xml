@@ -2,8 +2,8 @@
 <androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
     android:id="@+id/swipeRefreshLayout"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/light_grey_background">
 
@@ -35,27 +35,27 @@
                     style="@style/common_bold_text_view"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    tools:text="@string/app_name"
                     android:textSize="@dimen/_14sdp"
                     app:layout_constraintBottom_toBottomOf="@+id/linearLayout"
                     app:layout_constraintEnd_toStartOf="@+id/linearLayout"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/linearLayout" />
+                    app:layout_constraintTop_toTopOf="@+id/linearLayout"
+                    tools:text="@string/app_name" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/profileStatusRecyclerView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_8sdp"
                     android:layout_marginStart="@dimen/_10sdp"
+                    android:layout_marginTop="@dimen/_8sdp"
                     android:layout_marginEnd="@dimen/_10sdp"
                     android:clickable="false"
-                    app:spanCount="5"
-                    tools:itemCount="5"
                     app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+                    app:spanCount="5"
+                    tools:itemCount="5"
                     tools:listitem="@layout/profile_status_item" />
 
                 <com.google.android.material.textview.MaterialTextView
@@ -64,15 +64,15 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_8sdp"
                     android:layout_marginBottom="@dimen/_5sdp"
-                    tools:text="@string/complete_profile"
-                    android:textColor="@color/black"
                     android:fontFamily="@font/montserrat"
-                    android:textSize="@dimen/_11sdp"
-                    android:paddingEnd="@dimen/_5sdp"
                     android:paddingStart="@dimen/_5sdp"
+                    android:paddingEnd="@dimen/_5sdp"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_11sdp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/shapeableImageView"
-                    app:layout_constraintTop_toBottomOf="@id/profileStatusRecyclerView" />
+                    app:layout_constraintTop_toBottomOf="@id/profileStatusRecyclerView"
+                    tools:text="@string/complete_profile" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/stepsLeftTextView"
@@ -80,16 +80,16 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_8sdp"
                     android:layout_marginBottom="@dimen/_5sdp"
+                    android:fontFamily="@font/montserrat"
                     android:paddingStart="@dimen/_5sdp"
                     android:paddingEnd="@dimen/_5sdp"
-                    android:fontFamily="@font/montserrat"
-                    tools:text="@string/complete_profile"
                     android:textColor="@color/default_text_light_grey"
                     android:textSize="@dimen/_11sdp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/completeProfileTextView"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/profileStatusRecyclerView" />
+                    app:layout_constraintTop_toBottomOf="@id/profileStatusRecyclerView"
+                    tools:text="@string/complete_profile" />
 
                 <com.google.android.material.imageview.ShapeableImageView
                     android:id="@+id/shapeableImageView"
@@ -128,7 +128,7 @@
                         android:fontFamily="@font/montserrat"
                         android:maxLines="1"
                         android:paddingTop="@dimen/_2sdp"
-                        tools:text="@string/add_logo"
+                        android:text="@string/add_logo"
                         android:textColor="@color/black"
                         android:textSize="@dimen/_9sdp"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -166,11 +166,11 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/_15sdp"
                     android:layout_marginTop="@dimen/_13sdp"
-                    tools:text="@string/store_controls"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_13sdp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="@string/store_controls" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/storeStatusTextView"
@@ -200,8 +200,8 @@
                     android:id="@+id/moreControlsImageView"
                     android:layout_width="@dimen/_33sdp"
                     android:layout_height="0dp"
-                    android:onClick="onClick"
                     android:background="?android:selectableItemBackground"
+                    android:onClick="onClick"
                     android:src="@drawable/ic_more_controls"
                     app:layout_constraintBottom_toTopOf="@+id/deliveryStatusTextView"
                     app:layout_constraintEnd_toEndOf="@+id/moreControlsTextView"
@@ -212,34 +212,34 @@
                     android:id="@+id/moreControlsTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:padding="@dimen/_2sdp"
-                    tools:text="@string/more_controls"
                     android:onClick="onClick"
+                    android:padding="@dimen/_2sdp"
                     android:textColor="@color/black"
                     app:layout_constraintBottom_toBottomOf="@+id/deliveryStatusTextView"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.8"
                     app:layout_constraintStart_toEndOf="@+id/deliveryStatusTextView"
-                    app:layout_constraintTop_toTopOf="@+id/deliveryStatusTextView" />
+                    app:layout_constraintTop_toTopOf="@+id/deliveryStatusTextView"
+                    tools:text="@string/more_controls" />
 
                 <com.google.android.material.switchmaterial.SwitchMaterial
                     android:id="@+id/storeSwitch"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_5sdp"
-                    app:useMaterialThemeColors="false"
                     android:onClick="onClick"
                     android:thumb="@drawable/ic_store_switch_selector"
                     app:layout_constraintStart_toStartOf="@+id/materialTextView"
                     app:layout_constraintTop_toBottomOf="@+id/materialTextView"
-                    app:track="@drawable/ic_store_switch_track" />
+                    app:track="@drawable/ic_store_switch_track"
+                    app:useMaterialThemeColors="false" />
 
                 <androidx.appcompat.widget.SwitchCompat
                     android:id="@+id/deliverySwitch"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:onClick="onClick"
                     android:layout_marginStart="@dimen/_25sdp"
+                    android:onClick="onClick"
                     android:thumb="@drawable/ic_delivery_switch_selector"
                     app:layout_constraintBottom_toBottomOf="@+id/storeSwitch"
                     app:layout_constraintStart_toEndOf="@+id/storeSwitch"
@@ -260,24 +260,24 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_15sdp"
                     android:layout_marginBottom="@dimen/_15sdp"
-                    tools:text="@string/share_your_showroom_with_customers"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_13sdp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/whatsAppTextView"
                     app:layout_constraintStart_toStartOf="@+id/materialTextView"
-                    app:layout_constraintTop_toBottomOf="@+id/separator" />
+                    app:layout_constraintTop_toBottomOf="@+id/separator"
+                    tools:text="@string/share_your_showroom_with_customers" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/whatsAppTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:layout_constraintBottom_toBottomOf="@+id/shareShowRoomWithCustomerTextView"
                     android:layout_marginEnd="@dimen/_10sdp"
                     android:background="@drawable/curve_black_border"
                     android:gravity="center"
                     android:onClick="onClick"
                     android:orientation="horizontal"
+                    app:layout_constraintBottom_toBottomOf="@+id/shareShowRoomWithCustomerTextView"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/shareShowRoomWithCustomerTextView">
 
@@ -285,28 +285,28 @@
                         android:id="@+id/shapeableImageView2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/ic_whatsapp"
+                        android:contentDescription="@string/image_view_content_description"
                         android:padding="@dimen/_5sdp"
+                        android:src="@drawable/ic_whatsapp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintVertical_bias="1.0"
-                        android:contentDescription="@string/image_view_content_description" />
+                        app:layout_constraintVertical_bias="1.0" />
 
                     <TextView
                         android:id="@+id/whatsAppShareTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:clickable="false"
-                        tools:text="@string/share"
+                        android:padding="@dimen/_5sdp"
                         android:textColor="@color/black"
                         android:textSize="@dimen/_14sdp"
-                        android:padding="@dimen/_5sdp"
                         app:layout_constraintBottom_toBottomOf="@+id/shapeableImageView2"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@+id/shapeableImageView2"
                         app:layout_constraintTop_toTopOf="@+id/shapeableImageView2"
-                        app:layout_constraintVertical_bias="0.3" />
+                        app:layout_constraintVertical_bias="0.3"
+                        tools:text="@string/share" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -325,23 +325,23 @@
                     android:layout_marginStart="@dimen/_15sdp"
                     android:layout_marginTop="@dimen/_13sdp"
                     android:fontFamily="@font/montserrat"
-                    tools:text="@string/new_release"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_13sdp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="@string/new_release" />
 
                 <androidx.cardview.widget.CardView
                     android:id="@+id/viewTopOrderLayout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:elevation="@dimen/_1sdp"
-                    tools:targetApi="lollipop"
                     app:layout_constraintBottom_toBottomOf="@+id/digitalShowroomWebLayout"
                     app:layout_constraintEnd_toStartOf="@+id/digitalShowroomWebLayout"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/digitalShowroomWebLayout" >
+                    app:layout_constraintTop_toTopOf="@+id/digitalShowroomWebLayout"
+                    tools:targetApi="lollipop">
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/viewTopOrderLayout2"
@@ -352,8 +352,8 @@
                             android:layout_width="@dimen/_90sdp"
                             android:layout_height="wrap_content"
                             android:background="@drawable/curve_white_selector"
-                            android:gravity="center_horizontal"
                             android:clickable="false"
+                            android:gravity="center_horizontal"
                             android:orientation="vertical"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
@@ -420,8 +420,8 @@
                     android:layout_marginBottom="@dimen/_15sdp"
                     android:background="@drawable/curve_white_selector"
                     android:elevation="@dimen/_1sdp"
-                    android:onClick="onClick"
                     android:gravity="center_horizontal"
+                    android:onClick="onClick"
                     android:orientation="vertical"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/bulkUploadItemLayout"
@@ -434,14 +434,14 @@
                         android:id="@+id/trendingTextView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:clickable="false"
                         android:drawablePadding="@dimen/_5sdp"
                         android:fontFamily="@font/montserrat"
                         android:padding="@dimen/_4sdp"
-                        android:clickable="false"
-                        tools:text="@string/trending"
                         android:textColor="@color/red"
                         android:textSize="@dimen/_8sdp"
-                        app:drawableStartCompat="@drawable/ic_trending" />
+                        app:drawableStartCompat="@drawable/ic_trending"
+                        tools:text="@string/trending" />
 
                     <com.google.android.material.imageview.ShapeableImageView
                         android:id="@+id/digitalShowroomWebImageView"
@@ -456,13 +456,13 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/_2sdp"
+                        android:clickable="false"
                         android:gravity="center"
                         android:maxLines="@integer/min_lines_two"
                         android:minLines="@integer/min_lines_two"
                         android:padding="@dimen/_2sdp"
                         android:textColor="@color/black"
                         android:textSize="@dimen/_10sdp"
-                        android:clickable="false"
                         app:fontFamily="@font/montserrat"
                         app:layout_constraintEnd_toEndOf="@+id/storeSwitch"
                         app:layout_constraintStart_toStartOf="@+id/storeSwitch"
@@ -477,8 +477,8 @@
                     android:layout_height="wrap_content"
                     android:background="@drawable/curve_white_selector"
                     android:elevation="@dimen/_1sdp"
-                    android:onClick="onClick"
                     android:gravity="center_horizontal"
+                    android:onClick="onClick"
                     android:orientation="vertical"
                     app:layout_constraintBottom_toBottomOf="@+id/digitalShowroomWebLayout"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -490,10 +490,10 @@
                     <TextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:clickable="false"
                         android:drawablePadding="@dimen/_5sdp"
                         android:fontFamily="@font/montserrat"
                         android:padding="@dimen/_4sdp"
-                        android:clickable="false"
                         android:textColor="@color/red"
                         android:textSize="@dimen/_8sdp" />
 
@@ -501,8 +501,8 @@
                         android:id="@+id/bulkUploadItemImageView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:clickable="false"
                         android:layout_margin="@dimen/_5sdp"
+                        android:clickable="false"
                         android:src="@drawable/ic_auto_data_backup" />
 
                     <com.google.android.material.textview.MaterialTextView
@@ -510,8 +510,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/_2sdp"
-                        android:gravity="center"
                         android:clickable="false"
+                        android:gravity="center"
                         android:maxLines="@integer/min_lines_two"
                         android:minLines="@integer/min_lines_two"
                         android:padding="@dimen/_2sdp"
@@ -533,8 +533,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/white"
-                android:padding="@dimen/_10sdp"
                 android:orientation="vertical"
+                android:padding="@dimen/_10sdp"
                 app:layout_constraintTop_toBottomOf="@+id/newReleaseLayout">
 
                 <androidx.recyclerview.widget.RecyclerView
@@ -554,11 +554,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/dark_blackish"
+                android:orientation="horizontal"
                 android:paddingStart="@dimen/_10sdp"
                 android:paddingTop="@dimen/_10sdp"
                 android:paddingEnd="@dimen/_10sdp"
                 android:paddingBottom="@dimen/_10sdp"
-                android:orientation="horizontal"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -570,16 +570,16 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:src="@drawable/ic_auto_data_backup"
-                    android:contentDescription="@string/image_view_content_description" />
+                    android:contentDescription="@string/image_view_content_description"
+                    android:src="@drawable/ic_auto_data_backup" />
 
                 <ImageView
                     android:id="@+id/safeSecureImageView"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:src="@drawable/ic_auto_data_backup"
-                    android:contentDescription="@string/image_view_content_description" />
+                    android:contentDescription="@string/image_view_content_description"
+                    android:src="@drawable/ic_auto_data_backup" />
 
             </LinearLayout>
 

@@ -1,6 +1,7 @@
 package com.digitaldukaan.services.networkservice
 
 import android.util.Log
+import com.digitaldukaan.models.request.BuildCatalogRequest
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.network.RetrofitApi
 import com.digitaldukaan.services.serviceinterface.IExploreCategoryServiceInterface
@@ -79,6 +80,31 @@ class ExploreCategoryNetworkService {
             }
         } catch (e: Exception) {
             Log.e(ExploreCategoryNetworkService::class.java.simpleName, "getMasterItemsServerCall: ", e)
+            serviceInterface.onExploreCategoryServerException(e)
+        }
+    }
+
+    suspend fun buildCatalogServerCall(
+        request: BuildCatalogRequest,
+        serviceInterface: IExploreCategoryServiceInterface
+    ) {
+        try {
+            val response = RetrofitApi().getServerCallObject()?.buildCatalog(request)
+            response?.let {
+                if (it.isSuccessful) {
+                    it.body()?.let { apiResponse ->
+                        serviceInterface.onBuildCatalogResponse(apiResponse)
+                    }
+                } else {
+                    val errorResponseBody = it.errorBody()
+                    errorResponseBody?.let {
+                        val errorResponse = Gson().fromJson(errorResponseBody.string(), CommonApiResponse::class.java)
+                        serviceInterface.onBuildCatalogResponse(errorResponse)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(ExploreCategoryNetworkService::class.java.simpleName, "buildCatalogServerCall: ", e)
             serviceInterface.onExploreCategoryServerException(e)
         }
     }

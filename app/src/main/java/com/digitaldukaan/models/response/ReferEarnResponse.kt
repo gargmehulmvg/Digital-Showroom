@@ -15,7 +15,7 @@ data class ReferAndEarnItemResponse(
     @SerializedName("image_url") var imageUrl: String?,
     @SerializedName("settings_txt") var settingsTxt: String?,
     @SerializedName("work_journey") var workJourneyList: ArrayList<WorkJourneyItemResponse>?,
-    @SerializedName("is_offer_valid") var mErrorString: String?
+    @SerializedName("is_offer_valid") var isOfferValid: Boolean?
 )
 
 
