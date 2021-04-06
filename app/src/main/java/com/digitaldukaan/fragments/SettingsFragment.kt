@@ -48,7 +48,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
     private lateinit var mAppSettingsResponseStaticData: AccountStaticTextResponse
     private lateinit var mAppStoreServicesResponse: StoreServicesResponse
     private val mProfileService = ProfileService()
-    private var mReferAndEarnResponse: ReferEarnResponse? = null
+    private var mReferAndEarnResponse: ReferAndEarnItemResponse? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.layout_settings_fragment, container, false)
@@ -114,7 +114,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         bottomSheetDialog.show()
     }
 
-    private fun showReferAndEarnBottomSheet(response: ReferEarnResponse?) {
+    private fun showReferAndEarnBottomSheet(response: ReferAndEarnItemResponse?) {
         val bottomSheetDialog = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
         val view = LayoutInflater.from(mActivity).inflate(
             R.layout.bottom_sheet_refer_and_earn,
@@ -129,10 +129,10 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                 val bottomSheetHeadingTextView: TextView = findViewById(R.id.bottomSheetHeadingTextView)
                 val verifyTextView: TextView = findViewById(R.id.verifyTextView)
                 val referAndEarnRecyclerView: RecyclerView = findViewById(R.id.referAndEarnRecyclerView)
-                Picasso.get().load(response?.mReferAndEarnData?.imageUrl).into(bottomSheetUpperImageView)
+                Picasso.get().load(response?.imageUrl).into(bottomSheetUpperImageView)
                 bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
-                bottomSheetHeadingTextView.text = "${response?.mReferAndEarnData?.heading1}\n${response?.mReferAndEarnData?.heading2}"
-                verifyTextView.text = response?.mReferAndEarnData?.settingsTxt
+                bottomSheetHeadingTextView.text = "${response?.heading1}\n${response?.heading2}"
+                verifyTextView.text = response?.settingsTxt
                 verifyTextView.setOnClickListener{
                     mReferEarnOverWhatsAppResponse.run {
                         if (mReferAndEarnData.isShareStoreBanner == true) {
@@ -145,7 +145,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                 }
                 referAndEarnRecyclerView.apply {
                     layoutManager = LinearLayoutManager(mActivity)
-                    adapter = ReferAndEarnAdapter(response?.mReferAndEarnData?.workJourneyList)
+                    adapter = ReferAndEarnAdapter(response?.workJourneyList)
                 }
             }
         }.show()
@@ -203,10 +203,11 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         }
     }
 
-    override fun onReferAndEarnResponse(response: ReferEarnResponse) {
+    override fun onReferAndEarnResponse(response: CommonApiResponse) {
         stopProgress()
-        mReferAndEarnResponse = response
-        CoroutineScopeUtils().runTaskOnCoroutineMain { showReferAndEarnBottomSheet(response) }
+        val responseModel = Gson().fromJson<ReferAndEarnItemResponse>(response.mCommonDataStr, ReferAndEarnItemResponse::class.java)
+        mReferAndEarnResponse = responseModel
+        CoroutineScopeUtils().runTaskOnCoroutineMain { showReferAndEarnBottomSheet(responseModel) }
     }
 
     private lateinit var mReferEarnOverWhatsAppResponse: ReferEarnOverWhatsAppResponse
@@ -261,11 +262,6 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             layoutManager = linearLayoutManager
             adapter = settingsAdapter
             settingsAdapter.setSettingsList(infoResponse.mStoreOptions)
-//            val dividerItemDecoration = DividerItemDecoration(
-//                context,
-//                linearLayoutManager.orientation
-//            )
-//            addItemDecoration(dividerItemDecoration)
         }
         infoResponse.mTrendingList?.forEachIndexed { index, response ->
             if (0 == index) {
@@ -325,6 +321,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                 deliveryStatusTextView.text = "${infoResponse.mAccountStaticText?.mDeliveryText} : ${if (isChecked) infoResponse.mAccountStaticText?.mOnText else infoResponse.mAccountStaticText?.mOffText}"
             }
         }
+        hiddenTextView.text = infoResponse.mAccountStaticText?.mTextAddPhoto
         moreControlsTextView.text = infoResponse.mAccountStaticText?.page_heading_more_controls
         whatsAppShareTextView.text = infoResponse.mAccountStaticText?.mShareText
         shareShowRoomWithCustomerTextView.text = infoResponse.mAccountStaticText?.mShareMessageText

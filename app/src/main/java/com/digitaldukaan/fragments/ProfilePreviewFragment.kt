@@ -136,6 +136,10 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         StaticInstances.sStepsCompletedList = response.mStepsList
         response.mStoreItemResponse?.bankDetails?.run { StaticInstances.sBankDetails = this }
         CoroutineScopeUtils().runTaskOnCoroutineMain {
+            mProfilePreviewStaticData.run {
+                profilePreviewStoreNameHeading.text = text_store_name
+                hiddenTextView.text = text_add_photo
+            }
             constraintLayoutBanner.visibility = if (mProfilePreviewResponse?.mIsProfileCompleted == true) View.GONE else View.VISIBLE
             if (swipeRefreshLayout.isRefreshing) swipeRefreshLayout.isRefreshing = false
             stopProgress()

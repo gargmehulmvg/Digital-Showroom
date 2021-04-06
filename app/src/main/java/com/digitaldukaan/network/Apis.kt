@@ -55,8 +55,8 @@ interface Apis {
     @GET("api/dotk/merchant/searchImages")
     suspend fun searchImagesFromBing(@Header("auth_token") authToken: String, @Query("search_text") searchText: String, @Query("store_id") storeId: String) : Response<ImagesSearchResponse>
 
-    @GET("api/dotk/template/referApp")
-    suspend fun getReferAndEarnData() : Response<ReferEarnResponse>
+    @GET("api/dotk/settings/referApp")
+    suspend fun getReferAndEarnData() : Response<CommonApiResponse>
 
     @GET("api/dotk/template/referAppWa")
     suspend fun getReferAndEarnDataOverWhatsApp() : Response<ReferEarnOverWhatsAppResponse>
@@ -141,4 +141,7 @@ interface Apis {
 
     @POST("api/dotk/products/buildCatalog")
     suspend fun buildCatalog(@Body request: BuildCatalogRequest): Response<CommonApiResponse>
+
+    @POST("api/dotanalytics/push/androidEventLog")
+    suspend fun androidEventLog(@Body request: AndroidEventLogRequest): Response<CommonApiResponse>
 }

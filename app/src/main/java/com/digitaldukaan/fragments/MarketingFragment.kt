@@ -137,7 +137,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
             Constants.ACTION_BUSINESS_CREATIVE -> {
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_MARKET_VIEW_NOW,
-                    isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = false,
+                    isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = true,
                     data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), "type" to AFInAppEventParameterName.SOCIAL)
                 )
                 openWebViewFragment(this, "", Constants.WEB_VIEW_CREATIVE_LIST, Constants.SETTINGS)
@@ -145,7 +145,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
             Constants.ACTION_SOCIAL_CREATIVE -> {
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_MARKET_VIEW_NOW,
-                    isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = false,
+                    isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = true,
                     data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), "type" to AFInAppEventParameterName.SOCIAL)
                 )
                 openWebViewFragment(this, "", Constants.WEB_VIEW_SOCIAL_CREATIVE_LIST, Constants.SETTINGS)

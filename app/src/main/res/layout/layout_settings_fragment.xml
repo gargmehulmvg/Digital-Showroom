@@ -128,7 +128,7 @@
                         android:fontFamily="@font/montserrat"
                         android:maxLines="1"
                         android:paddingTop="@dimen/_2sdp"
-                        android:text="@string/add_logo"
+                        tools:text="@string/add_logo"
                         android:textColor="@color/black"
                         android:textSize="@dimen/_9sdp"
                         app:layout_constraintBottom_toBottomOf="parent"

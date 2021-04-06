@@ -3,6 +3,7 @@ package com.digitaldukaan.network
 import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.PrefsManager
+import com.digitaldukaan.constants.StaticInstances
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import okhttp3.logging.HttpLoggingInterceptor
@@ -20,7 +21,11 @@ class RetrofitApi {
             val okHttpClient = OkHttpClient.Builder()
                 .addInterceptor {
                     val originalRequest = it.request()
-                    val newRequest = originalRequest.newBuilder().addHeader("auth_token", PrefsManager.getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)).build()
+                    val newRequest = originalRequest.newBuilder()
+                        .addHeader("auth_token", PrefsManager.getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
+                        .addHeader("session_id", StaticInstances.sAppSessionId ?: "")
+                        .addHeader("install_id", StaticInstances.sAppSessionId ?: "")
+                        .build()
                     it.proceed(newRequest)
                 }
                 .addInterceptor(loggingInterface)

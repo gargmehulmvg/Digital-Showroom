@@ -2,13 +2,6 @@ package com.digitaldukaan.models.response
 
 import com.google.gson.annotations.SerializedName
 
-data class ProfileResponse(
-    @SerializedName("status") var mStatus: Boolean,
-    @SerializedName("message") var mMessage: String?,
-    @SerializedName("error_type") var mErrorType: String?,
-    @SerializedName("account_information") var mAccountInfoResponse: AccountInfoResponse?
-)
-
 data class AccountInfoResponse(
     @SerializedName("store") var mStoreInfo: StoreResponse,
     @SerializedName("store_share") var mStoreShare: StoreShareResponse?,
@@ -110,6 +103,7 @@ data class AccountStaticTextResponse(
     @SerializedName("text_on") var mOnText: String?,
     @SerializedName("text_store_id") var mStoreId: String?,
     @SerializedName("text_new_release") var mNewReleaseText: String?,
+    @SerializedName("text_add_photo") var mTextAddPhoto: String?,
     @SerializedName("text_store_control") var mStoreControlsText: String?
 )
 

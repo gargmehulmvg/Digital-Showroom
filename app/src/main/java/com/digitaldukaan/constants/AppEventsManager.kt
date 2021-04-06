@@ -5,6 +5,8 @@ import android.app.NotificationManager
 import android.util.Log
 import com.appsflyer.AppsFlyerLib
 import com.clevertap.android.sdk.CleverTapAPI
+import com.digitaldukaan.models.request.AndroidEventLogRequest
+import com.digitaldukaan.network.RetrofitApi
 
 class AppEventsManager {
 
@@ -27,8 +29,20 @@ class AppEventsManager {
             if (isAppFlyerEvent) {
                 pushAppFlyerEvent(eventName, data)
             }
+            if (isServerCallEvent) {
+                pushServerCallEvent(eventName, data)
+            }
         }
-        
+
+        private fun pushServerCallEvent(eventName: String?, data: Map<String, String>) {
+            CoroutineScopeUtils().runTaskOnCoroutineBackground {
+                Log.d(TAG, "pushServerCallEvent: event name :: $eventName && map :: $data")
+                val request = AndroidEventLogRequest(PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID).toInt(), eventName, data)
+                val response = RetrofitApi().getServerCallObject()?.androidEventLog(request)
+                Log.d(TAG, "pushServerCallEvent: $response")
+            }
+        }
+
         private fun pushCleverTapEvent(eventName: String?, data: Map<String, String>) {
             Log.d(TAG, "pushCleverTapEvent: event name :: $eventName && map :: $data")
             mCleverTapAPI?.pushEvent(eventName, data)

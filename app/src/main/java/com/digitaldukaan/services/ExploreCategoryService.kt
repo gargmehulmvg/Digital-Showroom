@@ -38,7 +38,7 @@ class ExploreCategoryService {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
             val buildCatalogItemList: ArrayList<BuildCatalogItemRequest> = ArrayList()
             list.forEachIndexed { _, itemResponse ->
-                buildCatalogItemList.add(BuildCatalogItemRequest(itemResponse?.itemId, itemResponse?.parentCategoryIdForRequest, itemResponse?.price))
+                buildCatalogItemList.add(BuildCatalogItemRequest(itemResponse?.parentCategoryIdForRequest, itemResponse?.itemId, itemResponse?.price))
             }
             val buildCatalogRequest = BuildCatalogRequest(buildCatalogItemList)
             mNetworkService.buildCatalogServerCall(buildCatalogRequest, mServiceInterface)
