@@ -7,11 +7,13 @@ import android.content.IntentSender
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.transition.TransitionInflater
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
@@ -27,7 +29,7 @@ import com.google.android.gms.auth.api.credentials.Credential
 import com.google.android.gms.auth.api.credentials.Credentials
 import com.google.android.gms.auth.api.credentials.CredentialsApi
 import com.google.android.gms.auth.api.credentials.HintRequest
-import com.truecaller.android.sdk.TruecallerSDK
+import com.truecaller.android.sdk.*
 import kotlinx.android.synthetic.main.layout_login_fragment.*
 
 class LoginFragment : BaseFragment(), ILoginServiceInterface {
@@ -38,6 +40,8 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
     private val mAuthStaticData: AuthNewResponseData = mStaticData.mStaticData.mAuthNew
 
     companion object {
+        private const val TAG = "LoginFragment"
+        private var mMobileNumber = ""
         fun newInstance(): LoginFragment{
             return LoginFragment()
         }
@@ -48,10 +52,43 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
         sharedElementEnterTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.move)
         mLoginService = LoginService()
         mLoginService.setLoginServiceInterface(this)
-        TruecallerSDK.getInstance().isUsable
-        TruecallerSDK.getInstance().getUserProfile(this)
+        initializeTrueCaller()
+        if (TruecallerSDK.getInstance().isUsable) TruecallerSDK.getInstance().getUserProfile(this) else initiateAutoDetectMobileNumber()
     }
 
+    private fun initializeTrueCaller() {
+        val trueScope = TruecallerSdkScope.Builder(mActivity, sdkCallback)
+            .consentMode(TruecallerSdkScope.CONSENT_MODE_BOTTOMSHEET)
+            .loginTextPrefix(TruecallerSdkScope.LOGIN_TEXT_PREFIX_TO_GET_STARTED)
+            .loginTextSuffix(TruecallerSdkScope.LOGIN_TEXT_SUFFIX_PLEASE_VERIFY_MOBILE_NO)
+            .buttonColor(ContextCompat.getColor(mActivity, R.color.black))
+            .buttonTextColor(ContextCompat.getColor(mActivity, R.color.white))
+            .consentTitleOption(TruecallerSdkScope.SDK_CONSENT_TITLE_VERIFY)
+            .footerType(TruecallerSdkScope.FOOTER_TYPE_NONE)
+            .sdkOptions(TruecallerSdkScope.SDK_OPTION_WITHOUT_OTP)
+            .buttonShapeOptions(TruecallerSdkScope.BUTTON_SHAPE_ROUNDED)
+            .build()
+        TruecallerSDK.init(trueScope)
+    }
+
+    private val sdkCallback = object : ITrueCallback {
+
+        override fun onFailureProfileShared(p0: TrueError) {
+            Log.d(TAG, "onFailureProfileShared: $p0")
+            showToast("onFailureProfileShared")
+        }
+
+        override fun onSuccessProfileShared(p0: TrueProfile) {
+            Log.d(TAG, "onSuccessProfileShared: $p0")
+            showToast("onSuccessProfileShared")
+        }
+
+        override fun onVerificationRequired(p0: TrueError?) {
+            Log.d(TAG, "onVerificationRequired: $p0")
+            showToast("onVerificationRequired")
+        }
+    }
+    
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -68,12 +105,17 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
         }
         setupDataFromStaticResponse()
         setupMobileNumberEditText()
+        if (mMobileNumber.isNotEmpty()) {
+            mobileNumberInputLayout.visibility = View.VISIBLE
+            mobileNumberTextView.visibility = View.GONE
+        }
     }
 
     private fun setupDataFromStaticResponse() {
         enterMobileNumberHeading.text = mAuthStaticData.mHeadingText
         send4DigitOtpHeading.text = mAuthStaticData.mSubHeadingText
         mobileNumberInputLayout.hint = mAuthStaticData.mInputText
+        mobileNumberTextView.text = mAuthStaticData.mInputText
         getOtpTextView.text = mAuthStaticData.mButtonText
     }
 
@@ -82,14 +124,24 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
             requestFocus()
             showKeyboard()
         }
-        getOtpTextView.setOnClickListener {
-            val mobileNumber = mobileNumberEditText.text.trim().toString()
-            val validationFailed = isMobileNumberValidationNotCorrect(mobileNumber)
-            performOTPServerCall(validationFailed, mobileNumber)
-        }
         mobileNumberEditText.setOnEditorActionListener { _, actionId, _ ->
             if (EditorInfo.IME_ACTION_DONE == actionId) getOtpTextView.callOnClick()
             true
+        }
+    }
+
+    override fun onClick(view: View?) {
+        when (view?.id) {
+            mobileNumberTextView.id -> {
+                mobileNumberTextView.visibility = View.GONE
+                mobileNumberInputLayout.visibility = View.VISIBLE
+                initiateAutoDetectMobileNumber()
+            }
+            getOtpTextView.id -> {
+                val mobileNumber = mobileNumberEditText.text.trim().toString()
+                val validationFailed = isMobileNumberValidationNotCorrect(mobileNumber)
+                performOTPServerCall(validationFailed, mobileNumber)
+            }
         }
     }
 
@@ -134,15 +186,14 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
 
     private fun initiateAutoDetectMobileNumber() {
         mIsMobileNumberSearchingDone = true
-        Handler(Looper.getMainLooper()).postDelayed({
-            val hintRequest = HintRequest.Builder().setPhoneNumberIdentifierSupported(true).build()
-            val intent: PendingIntent = Credentials.getClient(mActivity).getHintPickerIntent(hintRequest)
-            try {
-                startIntentSenderForResult(intent.intentSender, CREDENTIAL_PICKER_REQUEST, null, 0, 0, 0, Bundle())
-            } catch (e: IntentSender.SendIntentException) {
-                e.printStackTrace()
-            }
-        }, Constants.TIMER_INTERVAL)
+        val hintRequest = HintRequest.Builder().setPhoneNumberIdentifierSupported(true).build()
+        val intent: PendingIntent =
+            Credentials.getClient(mActivity).getHintPickerIntent(hintRequest)
+        try {
+            startIntentSenderForResult(intent.intentSender, CREDENTIAL_PICKER_REQUEST, null, 0, 0, 0, Bundle())
+        } catch (e: IntentSender.SendIntentException) {
+            e.printStackTrace()
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -152,7 +203,8 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
                 CoroutineScopeUtils().runTaskOnCoroutineMain {
                     mobileNumberEditText.apply {
                         text = null
-                        setText(it.id.substring(3))
+                        mMobileNumber = it.id.substring(3)
+                        setText(mMobileNumber)
                         setSelection(mobileNumberEditText.text.trim().length)
                     }
                     getOtpTextView.callOnClick()

@@ -20,6 +20,7 @@ class AppEventsManager {
         fun setAppEventsManager(activity: Activity) = run {
             mActivityInstance = activity
             mCleverTapAPI = CleverTapAPI.getDefaultInstance(mActivityInstance)
+            StaticInstances.sCleverTapId = mCleverTapAPI?.cleverTapID
         }
 
         fun pushAppEvents(eventName: String?, isCleverTapEvent: Boolean, isAppFlyerEvent: Boolean, isServerCallEvent: Boolean, data: Map<String, String>) {

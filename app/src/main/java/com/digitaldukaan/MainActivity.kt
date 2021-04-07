@@ -9,13 +9,12 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.fragments.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomnavigation.LabelVisibilityMode.LABEL_VISIBILITY_UNLABELED
-import com.truecaller.android.sdk.*
+import com.truecaller.android.sdk.TruecallerSDK
 import kotlinx.android.synthetic.main.activity_main2.*
 
 
@@ -37,53 +36,8 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         if (PrefsManager.getStringDataFromSharedPref(PrefsManager.APP_INSTANCE_ID).isEmpty()) PrefsManager.storeStringDataInSharedPref(PrefsManager.APP_INSTANCE_ID, RandomStringGenerator(16).nextString())
         Log.d(TAG, "appSessionID :: ${StaticInstances.sAppSessionId}")
         Log.d(TAG, "appInstanceID :: ${PrefsManager.getStringDataFromSharedPref(PrefsManager.APP_INSTANCE_ID)}")
-        initializeTrueCaller()
         val intentUri = intent?.data
         if (intentUri == null) launchFragment(SplashFragment.newInstance(), true) else switchToFragmentByDeepLink(intentUri)
-    }
-
-    private fun initializeTrueCaller() {
-        /*val trueScope = TruecallerSdkScope.Builder(this, sdkCallback)
-            .consentMode(TruecallerSdkScope.CONSENT_MODE_BOTTOMSHEET)
-            .buttonColor(ContextCompat.getColor(this, R.color.black))
-            .buttonTextColor(ContextCompat.getColor(this, R.color.white))
-            .loginTextPrefix(TruecallerSdkScope.LOGIN_TEXT_PREFIX_TO_GET_STARTED)
-            .loginTextSuffix(TruecallerSdkScope.LOGIN_TEXT_SUFFIX_PLEASE_VERIFY_MOBILE_NO)
-            .ctaTextPrefix(TruecallerSdkScope.CTA_TEXT_PREFIX_USE)
-            .buttonShapeOptions(TruecallerSdkScope.BUTTON_SHAPE_ROUNDED)
-            //.privacyPolicyUrl("<<YOUR_PRIVACY_POLICY_LINK>>")
-            //.termsOfServiceUrl("<<YOUR_PRIVACY_POLICY_LINK>>")
-            .footerType(TruecallerSdkScope.FOOTER_TYPE_NONE)
-            .consentTitleOption(TruecallerSdkScope.SDK_CONSENT_TITLE_LOG_IN)
-            .sdkOptions(TruecallerSdkScope.SDK_OPTION_WITHOUT_OTP)
-            .build()*/
-        val trueScope = TruecallerSdkScope.Builder(this, sdkCallback)
-            .consentMode(TruecallerSdkScope.CONSENT_MODE_BOTTOMSHEET)
-            .loginTextPrefix(TruecallerSdkScope.LOGIN_TEXT_PREFIX_TO_GET_STARTED)
-            .loginTextSuffix(TruecallerSdkScope.LOGIN_TEXT_SUFFIX_PLEASE_VERIFY_MOBILE_NO)
-            .buttonColor(ContextCompat.getColor(this, R.color.black))
-            .buttonTextColor(ContextCompat.getColor(this, R.color.white))
-            .consentTitleOption(TruecallerSdkScope.SDK_CONSENT_TITLE_VERIFY)
-            .footerType(TruecallerSdkScope.FOOTER_TYPE_NONE)
-            .sdkOptions(TruecallerSdkScope.SDK_OPTION_WITHOUT_OTP)
-            .buttonShapeOptions(TruecallerSdkScope.BUTTON_SHAPE_ROUNDED)
-            .build()
-        TruecallerSDK.init(trueScope)
-    }
-
-    private val sdkCallback = object : ITrueCallback {
-
-        override fun onFailureProfileShared(p0: TrueError) {
-            Log.d(TAG, "onFailureProfileShared: $p0")
-        }
-
-        override fun onSuccessProfileShared(p0: TrueProfile) {
-            Log.d(TAG, "onSuccessProfileShared: $p0")
-        }
-
-        override fun onVerificationRequired(p0: TrueError?) {
-            Log.d(TAG, "onVerificationRequired: $p0")
-        }
     }
 
     private fun switchToFragmentByDeepLink(intentUri: Uri) {
@@ -199,9 +153,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == TruecallerSDK.SHARE_PROFILE_REQUEST_CODE) {
-            TruecallerSDK.getInstance().onActivityResultObtained(this, requestCode, resultCode, data);
-        } else getCurrentFragment().onActivityResult(requestCode, resultCode, data)
+        getCurrentFragment().onActivityResult(requestCode, resultCode, data)
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {

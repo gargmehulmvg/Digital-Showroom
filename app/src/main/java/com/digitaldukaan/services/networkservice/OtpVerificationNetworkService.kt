@@ -1,6 +1,7 @@
 package com.digitaldukaan.services.networkservice
 
 import android.util.Log
+import com.digitaldukaan.constants.StaticInstances
 import com.digitaldukaan.models.request.ValidateOtpRequest
 import com.digitaldukaan.models.response.ValidateOtpErrorResponse
 import com.digitaldukaan.network.RetrofitApi
@@ -16,7 +17,7 @@ class OtpVerificationNetworkService {
     ) {
         try {
             val response = RetrofitApi().getServerCallObject()
-                ?.validateOTP(ValidateOtpRequest(otpStr, mobileNumber))
+                ?.validateOTP(ValidateOtpRequest(otpStr, StaticInstances.sCleverTapId, mobileNumber))
             response?.let {
                 if (it.isSuccessful) {
                     it.body()?.let { validateOtpSuccessResponse ->

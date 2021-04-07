@@ -15,4 +15,5 @@ object StaticInstances {
     var sStepsCompletedList: ArrayList<StepCompletedItem>? = null
     var sOrderPageInfoStaticData: OrderPageStaticTextResponse? = null
     var sAppSessionId: String? = ""
+    var sCleverTapId: String? = ""
 }
