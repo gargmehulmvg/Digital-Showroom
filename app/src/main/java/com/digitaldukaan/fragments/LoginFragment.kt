@@ -41,6 +41,7 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
 
     companion object {
         private const val TAG = "LoginFragment"
+        private const val USE_ANOTHER_NUMBER = 14
         private var mMobileNumber = ""
         fun newInstance(): LoginFragment{
             return LoginFragment()
@@ -64,7 +65,7 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
             .buttonColor(ContextCompat.getColor(mActivity, R.color.black))
             .buttonTextColor(ContextCompat.getColor(mActivity, R.color.white))
             .consentTitleOption(TruecallerSdkScope.SDK_CONSENT_TITLE_VERIFY)
-            .footerType(TruecallerSdkScope.FOOTER_TYPE_NONE)
+            .footerType(TruecallerSdkScope.FOOTER_TYPE_CONTINUE)
             .sdkOptions(TruecallerSdkScope.SDK_OPTION_WITHOUT_OTP)
             .buttonShapeOptions(TruecallerSdkScope.BUTTON_SHAPE_ROUNDED)
             .build()
@@ -75,7 +76,9 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
 
         override fun onFailureProfileShared(p0: TrueError) {
             Log.d(TAG, "onFailureProfileShared: $p0")
-            showToast("onFailureProfileShared")
+            when (p0.errorType) {
+                USE_ANOTHER_NUMBER -> mobileNumberTextView.callOnClick()
+            }
         }
 
         override fun onSuccessProfileShared(p0: TrueProfile) {
@@ -213,8 +216,8 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
         } else if (requestCode == CREDENTIAL_PICKER_REQUEST && resultCode == CredentialsApi.ACTIVITY_RESULT_NO_HINTS_AVAILABLE) {
             Toast.makeText(context, "No phone numbers found", Toast.LENGTH_LONG).show()
         } else if (requestCode == TruecallerSDK.SHARE_PROFILE_REQUEST_CODE) {
+            TruecallerSDK.getInstance().onActivityResultObtained(mActivity, requestCode, resultCode, data)
             mIsMobileNumberSearchingDone = true
-            showShortSnackBar("True Caller result :: ${data?.data}")
         } else {
             if (!mIsMobileNumberSearchingDone) initiateAutoDetectMobileNumber()
         }

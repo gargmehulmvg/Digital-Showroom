@@ -16,4 +16,5 @@ object StaticInstances {
     var sOrderPageInfoStaticData: OrderPageStaticTextResponse? = null
     var sAppSessionId: String? = ""
     var sCleverTapId: String? = ""
+    var sFireBaseMessagingToken: String? = ""
 }

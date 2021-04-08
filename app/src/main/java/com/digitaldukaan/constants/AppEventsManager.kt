@@ -7,6 +7,7 @@ import com.appsflyer.AppsFlyerLib
 import com.clevertap.android.sdk.CleverTapAPI
 import com.digitaldukaan.models.request.AndroidEventLogRequest
 import com.digitaldukaan.network.RetrofitApi
+import com.google.firebase.iid.FirebaseInstanceId
 
 class AppEventsManager {
 
@@ -21,6 +22,7 @@ class AppEventsManager {
             mActivityInstance = activity
             mCleverTapAPI = CleverTapAPI.getDefaultInstance(mActivityInstance)
             StaticInstances.sCleverTapId = mCleverTapAPI?.cleverTapID
+            createNotificationChannel()
         }
 
         fun pushAppEvents(eventName: String?, isCleverTapEvent: Boolean, isAppFlyerEvent: Boolean, isServerCallEvent: Boolean, data: Map<String, String>) {
@@ -58,6 +60,11 @@ class AppEventsManager {
         }
 
         private fun createNotificationChannel() {
+            CleverTapAPI.createNotificationChannelGroup(
+                mActivityInstance,
+                AFInAppEventParameterName.NOTIFICATION_GROUP_ID,
+                AFInAppEventParameterName.NOTIFICATION_GROUP_NAME
+            )
             CleverTapAPI.createNotificationChannel(
                 mActivityInstance,
                 AFInAppEventParameterName.NOTIFICATION_CHANNEL_ID,
@@ -66,6 +73,9 @@ class AppEventsManager {
                 NotificationManager.IMPORTANCE_MAX,
                 true
             )
+            val fcmRegId = FirebaseInstanceId.getInstance().token
+            Log.d(TAG, "createNotificationChannel: sFireBaseMessagingToken :: ${StaticInstances.sFireBaseMessagingToken}")
+            mCleverTapAPI?.pushFcmRegistrationId(fcmRegId, true)
         }
     }
 }

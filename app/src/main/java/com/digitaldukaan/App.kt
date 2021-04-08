@@ -5,9 +5,12 @@ import android.util.Log
 import com.appsflyer.AppsFlyerConversionListener
 import com.appsflyer.AppsFlyerLib
 import com.clevertap.android.sdk.ActivityLifecycleCallback
+import com.clevertap.android.sdk.CTPushNotificationListener
+import com.clevertap.android.sdk.CleverTapAPI
+import java.util.*
 
 
-class App: Application() {
+class App: Application(), CTPushNotificationListener {
 
     companion object {
         private const val APP_FLYER_DEV_KEY = "aLPBh66qehqonqtR9AeCtL"
@@ -42,5 +45,11 @@ class App: Application() {
         }
         AppsFlyerLib.getInstance().init(APP_FLYER_DEV_KEY, conversionDataListener, this)
         AppsFlyerLib.getInstance().start(this)
+        val cleverTapAPI = CleverTapAPI.getDefaultInstance(applicationContext)
+        cleverTapAPI?.ctPushNotificationListener = this
+    }
+
+    override fun onNotificationClickedPayloadReceived(payload: HashMap<String, Any>?) {
+
     }
 }
