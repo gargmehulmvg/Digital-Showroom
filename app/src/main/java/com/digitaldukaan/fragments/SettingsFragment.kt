@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
+import com.digitaldukaan.adapters.NewReleaseAdapter
 import com.digitaldukaan.adapters.ProfileStatusAdapter
 import com.digitaldukaan.adapters.ReferAndEarnAdapter
 import com.digitaldukaan.adapters.SettingsStoreAdapter
@@ -81,7 +82,6 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
     override fun onClick(view: View?) {
         super.onClick(view)
         when (view?.id) {
-            digitalShowroomWebLayout.id -> showTrendingOffersBottomSheet()
             storeSwitch.id -> changeStoreDeliveryStatus()
             deliverySwitch.id -> changeStoreDeliveryStatus()
             moreControlsTextView.id -> launchFragment(MoreControlsFragment.newInstance(mAppSettingsResponseStaticData, mAppStoreServicesResponse), true)
@@ -263,20 +263,9 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             adapter = settingsAdapter
             settingsAdapter.setSettingsList(infoResponse.mStoreOptions)
         }
-        infoResponse.mTrendingList?.forEachIndexed { index, response ->
-            if (0 == index) {
-                Picasso.get().load(response.mCDN).placeholder(R.drawable.ic_auto_data_backup).into(viewTopStoreImageView)
-                viewTopStoreTextView.text = response.mText
-            }
-            if (1 == index) {
-                trendingTextView.text = response.mType
-                Picasso.get().load(response.mCDN).placeholder(R.drawable.ic_auto_data_backup).into(digitalShowroomWebImageView)
-                digitalShowroomWebTextView.text = response.mText
-            }
-            if (2 == index) {
-                Picasso.get().load(response.mCDN).placeholder(R.drawable.ic_auto_data_backup).into(bulkUploadItemImageView)
-                bulkUploadItemTextView.text = response.mText
-            }
+        newReleaseRecyclerView.apply {
+            layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
+            adapter = NewReleaseAdapter(infoResponse.mTrendingList, this@SettingsFragment)
         }
         val remainingSteps = infoResponse.mTotalSteps.minus(infoResponse.mCompletedSteps)
         stepsLeftTextView.text =
@@ -285,22 +274,6 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         whatsAppTextView.setOnClickListener {
             shareDataOnWhatsApp(infoResponse.waShare)
         }
-        viewTopOrderLayout2.setOnClickListener {
-            if (infoResponse.mTrendingList?.isNotEmpty() == true) openUrlInBrowser(
-                infoResponse.mTrendingList?.get(
-                    0
-                )?.mPage
-            )
-        }
-        bulkUploadItemLayout.setOnClickListener {
-            if (infoResponse.mTrendingList?.size!! >= 2) openUrlInBrowser(
-                infoResponse.mTrendingList?.get(
-                    2
-                )?.mPage
-            )
-        }
-
-
         storeStatusTextView.text = "${infoResponse.mAccountStaticText?.mStoreText} : ${infoResponse.mAccountStaticText?.mOffText}"
         storeSwitch.setOnCheckedChangeListener { _, isChecked ->
             run {
@@ -375,5 +348,9 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
     override fun onStoreSettingItemClicked(storeResponse: StoreOptionsResponse) {
         showToast(storeResponse.mText)
         checkStoreOptionClick(storeResponse)
+    }
+
+    override fun onNewReleaseItemClicked(responseItem: TrendingListResponse?) {
+        if (responseItem?.mAction == Constants.NEW_RELEASE_TYPE_EXTERNAL) openUrlInBrowser(responseItem.mPage) else showTrendingOffersBottomSheet()
     }
 }

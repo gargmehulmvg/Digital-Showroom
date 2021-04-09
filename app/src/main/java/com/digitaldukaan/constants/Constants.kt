@@ -96,5 +96,9 @@ class Constants {
         //CREATOR_TYPE
         const val CREATOR_TYPE_MERCHANT = 1
         const val CREATOR_TYPE_CUSTOMER = 2
+        //NEW RELEASE TYPES
+        const val NEW_RELEASE_TYPE_NEW = "new"
+        const val NEW_RELEASE_TYPE_TRENDING = "trending"
+        const val NEW_RELEASE_TYPE_EXTERNAL = "external"
     }
 }
