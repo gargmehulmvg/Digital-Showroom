@@ -327,7 +327,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                     getString(R.string.help),
                     BuildConfig.WEB_VIEW_URL + Constants.WEB_VIEW_REWARDS + "?storeid=${getStringDataFromSharedPref(
                         Constants.STORE_ID
-                    )}&" + "redirectFrom=settings" + "&token=${getStringDataFromSharedPref(
+                    )}&" + "redirectFrom=settings&token=${getStringDataFromSharedPref(
                         Constants.USER_AUTH_TOKEN
                     )}"
                 ), true

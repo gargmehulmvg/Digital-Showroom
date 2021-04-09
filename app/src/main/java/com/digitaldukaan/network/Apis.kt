@@ -144,4 +144,7 @@ interface Apis {
 
     @POST("api/dotanalytics/push/androidEventLog")
     suspend fun androidEventLog(@Body request: AndroidEventLogRequest): Response<CommonApiResponse>
+
+    @POST("api/dotk/onboard/validateUser")
+    suspend fun validateUser(@Body request: ValidateUserRequest): Response<CommonApiResponse>
 }

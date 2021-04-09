@@ -10,6 +10,7 @@ import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.interfaces.IOnOTPFilledListener
+import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.GenerateOtpResponse
 import com.digitaldukaan.models.response.ValidateOtpErrorResponse
 import com.digitaldukaan.models.response.ValidateOtpResponse
@@ -38,6 +39,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
     private val mOtpStaticResponseData = mStaticData.mStaticData.mVerifyOtpStaticData
 
     companion object {
+        private const val TAG = "OtpVerificationFragment"
         fun newInstance(mobileNumber: String): OtpVerificationFragment {
             val fragment = OtpVerificationFragment()
             fragment.mMobileNumberStr = mobileNumber
@@ -185,6 +187,10 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
 
     override fun onGenerateOTPResponse(generateOtpResponse: GenerateOtpResponse) {
         stopProgress()
+    }
+
+    override fun onValidateUserResponse(validateUserResponse: CommonApiResponse) {
+        Log.d(TAG, "onValidateUserResponse: do nothing")
     }
 
     override fun onGenerateOTPException(e: Exception) {

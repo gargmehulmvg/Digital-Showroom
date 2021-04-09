@@ -19,9 +19,13 @@ import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.Constants.Companion.CREDENTIAL_PICKER_REQUEST
 import com.digitaldukaan.constants.CoroutineScopeUtils
+import com.digitaldukaan.constants.StaticInstances
 import com.digitaldukaan.constants.ToolBarManager
+import com.digitaldukaan.models.request.ValidateUserRequest
 import com.digitaldukaan.models.response.AuthNewResponseData
+import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.GenerateOtpResponse
+import com.digitaldukaan.models.response.ValidateUserResponse
 import com.digitaldukaan.services.LoginService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.ILoginServiceInterface
@@ -29,6 +33,7 @@ import com.google.android.gms.auth.api.credentials.Credential
 import com.google.android.gms.auth.api.credentials.Credentials
 import com.google.android.gms.auth.api.credentials.CredentialsApi
 import com.google.android.gms.auth.api.credentials.HintRequest
+import com.google.gson.Gson
 import com.truecaller.android.sdk.*
 import kotlinx.android.synthetic.main.layout_login_fragment.*
 
@@ -81,9 +86,17 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
             }
         }
 
-        override fun onSuccessProfileShared(p0: TrueProfile) {
-            Log.d(TAG, "onSuccessProfileShared: $p0")
+        override fun onSuccessProfileShared(response: TrueProfile) {
+            Log.d(TAG, "onSuccessProfileShared: $response")
             showToast("onSuccessProfileShared")
+            val request = ValidateUserRequest(
+                response.payload,
+                response.signature,
+                StaticInstances.sCleverTapId,
+                StaticInstances.sFireBaseMessagingToken,
+                if (response.phoneNumber.length >= 10) response.phoneNumber.substring(response.phoneNumber.length - 10) else ""
+            )
+            mLoginService.validateUser(request)
         }
 
         override fun onVerificationRequired(p0: TrueError?) {
@@ -232,6 +245,27 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
             } else {
                 showToast(generateOtpResponse.mMessage)
             }
+        }
+    }
+
+    override fun onValidateUserResponse(response: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            if (response.mIsSuccessStatus) {
+                showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
+                val validateUserResponse = Gson().fromJson<ValidateUserResponse>(response.mCommonDataStr, ValidateUserResponse::class.java)
+                saveUserDetailsInPref(validateUserResponse)
+                if (validateUserResponse.store == null || validateUserResponse.user.isNewUser) launchFragment(OnBoardScreenDukaanNameFragment(), true) else launchFragment(HomeFragment(), true)
+            } else showShortSnackBar(response.mMessage, true, R.drawable.ic_close_red)
+        }
+    }
+
+    private fun saveUserDetailsInPref(validateOtpResponse: ValidateUserResponse) {
+        storeStringDataInSharedPref(Constants.USER_AUTH_TOKEN, validateOtpResponse.user.authToken)
+        storeStringDataInSharedPref(Constants.USER_MOBILE_NUMBER, validateOtpResponse.user.phone)
+        validateOtpResponse.store?.run {
+            storeStringDataInSharedPref(Constants.STORE_ID, storeId.toString())
+            storeStringDataInSharedPref(Constants.STORE_NAME, storeInfo.name)
         }
     }
 

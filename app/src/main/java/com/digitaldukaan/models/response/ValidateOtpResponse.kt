@@ -13,6 +13,18 @@ data class ValidateOtpResponse (
     @SerializedName("auto_verify_time") var mAutoVerifyTime: Int?
 )
 
+data class ValidateUserResponse (
+    @SerializedName("user") var user: UserResponse,
+    @SerializedName("store") var store: StoreResponse?
+)
+
+data class UserResponse (
+    @SerializedName("user_id") var userId: String,
+    @SerializedName("phone") var phone: String?,
+    @SerializedName("new_user") var isNewUser: Boolean,
+    @SerializedName("auth_token") var authToken: String?
+)
+
 data class UserStoreInfoResponse (
     @SerializedName("status") var mIsSuccessStatus: Boolean?,
     @SerializedName("name") var name: String?,
