@@ -88,6 +88,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         swipeRefreshLayout.setOnRefreshListener(this)
         //completedOrderTextView.text = mOrderListStaticData.completedText
         //pendingOrderTextView.text = mOrderListStaticData.pendingText
+        orderAdapter = OrderAdapterV2(mActivity, mOrderList)
     }
 
     private fun fetchLatestOrders(mode: String, fetchingOrderStr: String?, page:Int = 1) {

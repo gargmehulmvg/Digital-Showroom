@@ -67,6 +67,7 @@
     <string name="skip">Skip</string>
     <string name="partnerKey">nv6KQed96fde799434ca6ac959f4c4e643119</string>
     <string name="partnerKeyLocal">JuIbl2f5656a26c834f3fafb65717c49eafb9</string>
+    <string name="default_notification_channel_id">DIGITAL_DUKAAN_ID</string>
     <string-array name="state_array">
         <item >Andhra Pradesh</item>
         <item >Arunachal Pradesh</item>

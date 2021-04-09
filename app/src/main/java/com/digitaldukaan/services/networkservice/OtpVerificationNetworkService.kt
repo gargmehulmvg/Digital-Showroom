@@ -17,7 +17,7 @@ class OtpVerificationNetworkService {
     ) {
         try {
             val response = RetrofitApi().getServerCallObject()
-                ?.validateOTP(ValidateOtpRequest(otpStr, StaticInstances.sCleverTapId, mobileNumber))
+                ?.validateOTP(ValidateOtpRequest(otpStr, StaticInstances.sCleverTapId, StaticInstances.sFireBaseMessagingToken, mobileNumber))
             response?.let {
                 if (it.isSuccessful) {
                     it.body()?.let { validateOtpSuccessResponse ->

@@ -10,15 +10,20 @@ import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import com.clevertap.android.sdk.CleverTapAPI
+import com.clevertap.android.sdk.pushnotification.CTPushNotificationListener
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.fragments.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomnavigation.LabelVisibilityMode.LABEL_VISIBILITY_UNLABELED
+import com.google.firebase.messaging.FirebaseMessaging
 import com.truecaller.android.sdk.TruecallerSDK
 import kotlinx.android.synthetic.main.activity_main2.*
+import java.util.*
 
 
-class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
+class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener,
+    CTPushNotificationListener {
 
     companion object {
         private const val TAG = "MainActivity"
@@ -38,6 +43,13 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         Log.d(TAG, "appInstanceID :: ${PrefsManager.getStringDataFromSharedPref(PrefsManager.APP_INSTANCE_ID)}")
         val intentUri = intent?.data
         if (intentUri == null) launchFragment(SplashFragment.newInstance(), true) else switchToFragmentByDeepLink(intentUri)
+        FirebaseMessaging.getInstance().token.addOnCompleteListener {
+            if(it.isComplete){
+                StaticInstances.sFireBaseMessagingToken = it.result.toString()
+                Log.d(TAG, "onCreate :: FIREBASE TOKEN :: ${it.result}")
+                CleverTapAPI.getDefaultInstance(this)?.pushFcmRegistrationId(StaticInstances.sFireBaseMessagingToken, true)
+            }
+        }
     }
 
     private fun switchToFragmentByDeepLink(intentUri: Uri) {
@@ -171,5 +183,9 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         Log.d(TAG, "onDestroy :: called for application")
         StaticInstances.sAppSessionId = ""
         TruecallerSDK.clear()
+    }
+
+    override fun onNotificationClickedPayloadReceived(payload: HashMap<String, Any>?) {
+        Log.d(TAG, "onNotificationClickedPayloadReceived: $payload")
     }
 }

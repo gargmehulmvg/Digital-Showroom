@@ -26,7 +26,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.squareup.picasso.Picasso
-import com.truecaller.android.sdk.TruecallerSDK
 import kotlinx.android.synthetic.main.layout_marketing_fragment.*
 
 
@@ -74,7 +73,6 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
         showProgressDialog(mActivity)
         service.getMarketingCardsData()
         WebViewBridge.mWebViewListener = this
-        TruecallerSDK.getInstance().isUsable
     }
 
     override fun onToolbarSideIconClicked() = openWebViewFragment(this, getString(R.string.help), Constants.WEB_VIEW_HELP, Constants.SETTINGS)

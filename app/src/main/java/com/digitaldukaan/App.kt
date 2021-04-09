@@ -1,16 +1,15 @@
 package com.digitaldukaan
 
 import android.app.Application
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.os.Build
 import android.util.Log
 import com.appsflyer.AppsFlyerConversionListener
 import com.appsflyer.AppsFlyerLib
-import com.clevertap.android.sdk.ActivityLifecycleCallback
-import com.clevertap.android.sdk.CTPushNotificationListener
-import com.clevertap.android.sdk.CleverTapAPI
-import java.util.*
+import com.digitaldukaan.constants.AFInAppEventParameterName
 
-
-class App: Application(), CTPushNotificationListener {
+class App: Application() {
 
     companion object {
         private const val APP_FLYER_DEV_KEY = "aLPBh66qehqonqtR9AeCtL"
@@ -18,7 +17,6 @@ class App: Application(), CTPushNotificationListener {
     }
 
     override fun onCreate() {
-        ActivityLifecycleCallback.register(this)
         super.onCreate()
         val conversionDataListener  = object : AppsFlyerConversionListener {
             override fun onConversionDataSuccess(data: MutableMap<String, Any>?) {
@@ -45,11 +43,14 @@ class App: Application(), CTPushNotificationListener {
         }
         AppsFlyerLib.getInstance().init(APP_FLYER_DEV_KEY, conversionDataListener, this)
         AppsFlyerLib.getInstance().start(this)
-        val cleverTapAPI = CleverTapAPI.getDefaultInstance(applicationContext)
-        cleverTapAPI?.ctPushNotificationListener = this
-    }
-
-    override fun onNotificationClickedPayloadReceived(payload: HashMap<String, Any>?) {
-
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val notificationChannel = NotificationChannel(
+                AFInAppEventParameterName.NOTIFICATION_CHANNEL_ID,
+                AFInAppEventParameterName.NOTIFICATION_CHANNEL_NAME,
+                NotificationManager.IMPORTANCE_HIGH
+            )
+            val manager = getSystemService(NotificationManager::class.java)
+            manager.createNotificationChannel(notificationChannel)
+        }
     }
 }
