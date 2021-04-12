@@ -3,22 +3,20 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/menuHome"
-        android:icon="@drawable/ic_home_unselected"
-        android:title=""
-        app:showAsAction="never" />
+        android:icon="@drawable/ic_order"
+        android:title="@string/orders" />
     <item
         android:id="@+id/menuProducts"
-        android:icon="@drawable/ic_add_prod"
-        android:title=""
-        app:showAsAction="never" />
+        android:icon="@drawable/ic_catalog_new"
+        android:title="@string/catalog" />
+    <item
+        android:id="@+id/menuPremium" />
     <item
         android:id="@+id/menuMarketing"
-        android:icon="@drawable/ic_marketing_unselected"
-        android:title=""
-        app:showAsAction="never" />
+        android:icon="@drawable/ic_marketing"
+        android:title="@string/marketing" />
     <item
         android:id="@+id/menuSettings"
         android:icon="@drawable/ic_bottom_nav_setting"
-        android:title=""
-        app:showAsAction="never" />
+        android:title="@string/settings" />
 </menu>

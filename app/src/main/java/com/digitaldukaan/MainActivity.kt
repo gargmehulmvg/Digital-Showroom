@@ -16,7 +16,7 @@ import com.clevertap.android.sdk.pushnotification.CTPushNotificationListener
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.fragments.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.android.material.bottomnavigation.LabelVisibilityMode.LABEL_VISIBILITY_UNLABELED
+import com.google.android.material.bottomnavigation.LabelVisibilityMode.LABEL_VISIBILITY_LABELED
 import com.google.firebase.messaging.FirebaseMessaging
 import com.truecaller.android.sdk.TruecallerSDK
 import kotlinx.android.synthetic.main.activity_main2.*
@@ -63,7 +63,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     }
 
     private fun setupBottomNavigation() {
-        bottomNavigationView.labelVisibilityMode = LABEL_VISIBILITY_UNLABELED
+        bottomNavigationView.labelVisibilityMode = LABEL_VISIBILITY_LABELED
         bottomNavigationView.setOnNavigationItemSelectedListener(this)
     }
 

@@ -100,11 +100,11 @@
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNavigationView"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/_35sdp"
-        android:elevation="@dimen/_4sdp"
+        android:layout_height="wrap_content"
+        app:layout_behavior="BottomNavigationBehavior"
+        android:elevation="@dimen/_8sdp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:itemIconTint="@color/bottom_nav_icon_selector"
         app:layout_constraintStart_toStartOf="parent"
         app:menu="@menu/bottom_navigation_menu"
         tools:targetApi="lollipop" />
