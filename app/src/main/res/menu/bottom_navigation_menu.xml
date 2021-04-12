@@ -10,7 +10,8 @@
         android:icon="@drawable/ic_catalog_new"
         android:title="@string/catalog" />
     <item
-        android:id="@+id/menuPremium" />
+        android:id="@+id/menuPremium"
+        android:title="" />
     <item
         android:id="@+id/menuMarketing"
         android:icon="@drawable/ic_marketing"
