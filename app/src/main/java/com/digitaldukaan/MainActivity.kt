@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.clevertap.android.sdk.CleverTapAPI
+import com.clevertap.android.sdk.InAppNotificationButtonListener
 import com.clevertap.android.sdk.pushnotification.CTPushNotificationListener
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.fragments.*
@@ -23,7 +24,7 @@ import java.util.*
 
 
 class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener,
-    CTPushNotificationListener {
+    CTPushNotificationListener, InAppNotificationButtonListener {
 
     companion object {
         private const val TAG = "MainActivity"
@@ -49,6 +50,9 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
                 Log.d(TAG, "onCreate :: FIREBASE TOKEN :: ${it.result}")
                 CleverTapAPI.getDefaultInstance(this)?.pushFcmRegistrationId(StaticInstances.sFireBaseMessagingToken, true)
             }
+        }
+        CleverTapAPI.getDefaultInstance(this)?.apply {
+            setInAppNotificationButtonListener(this@MainActivity)
         }
     }
 
@@ -189,5 +193,9 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
     override fun onNotificationClickedPayloadReceived(payload: HashMap<String, Any>?) {
         Log.d(TAG, "onNotificationClickedPayloadReceived: $payload")
+    }
+
+    override fun onInAppButtonClick(payload: HashMap<String, String>?) {
+        Log.d(TAG, "onInAppButtonClick :: $payload")
     }
 }

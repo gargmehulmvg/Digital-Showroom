@@ -10,6 +10,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import androidx.core.net.toUri
 import com.clevertap.android.sdk.CleverTapAPI
 import com.digitaldukaan.constants.AFInAppEventParameterName
 import com.google.firebase.messaging.FirebaseMessagingService
@@ -35,7 +36,7 @@ class MyFcmMessageListenerService : FirebaseMessagingService() {
                     if (info.fromCleverTap) {
                         Log.d(TAG, "CLEVER-TAP NOTIFICATIONS :: $info")
                         CleverTapAPI.createNotification(applicationContext, extras)
-                        sendNotification(extras.getString("nt"), extras.getString("nm"))
+                        sendNotification(extras.getString("nt"), extras.getString("nm"), extras.getString("wzrk_dl"))
                     }
                 }
             } catch (t: Throwable) {
@@ -55,9 +56,9 @@ class MyFcmMessageListenerService : FirebaseMessagingService() {
         Log.d(TAG, "onNewToken: $p0")
     }
 
-    private fun sendNotification(title: String?, message: String?) {
-        var id = ""
+    private fun sendNotification(title: String?, message: String?, deepLinkUrl: String? = "") {
         val intent = Intent(this, MainActivity::class.java)
+        if (deepLinkUrl?.isNotEmpty() == true) intent.data = deepLinkUrl.toUri()
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT)
         val notificationBuilder = NotificationCompat.Builder(this, AFInAppEventParameterName.NOTIFICATION_CHANNEL_ID).apply {
