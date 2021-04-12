@@ -40,7 +40,12 @@
                     android:host="app.digitaldukaan.co.in"
                     android:pathPrefix="/FiCx" />
             </intent-filter>
-
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="digitaldukaan" />
+            </intent-filter>
         </activity>
 
         <meta-data

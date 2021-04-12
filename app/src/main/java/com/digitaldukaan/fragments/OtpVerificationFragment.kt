@@ -7,9 +7,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.digitaldukaan.R
+import com.digitaldukaan.constants.AppEventsManager
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.interfaces.IOnOTPFilledListener
+import com.digitaldukaan.models.dto.CleverTapProfile
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.GenerateOtpResponse
 import com.digitaldukaan.models.response.ValidateOtpErrorResponse
@@ -152,6 +154,19 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
             stopProgress()
             showToast(validateOtpResponse.mMessage)
             saveUserDetailsInPref(validateOtpResponse)
+            val cleverTapProfile = CleverTapProfile()
+            cleverTapProfile.mShopName = validateOtpResponse.mStore?.storeInfo?.name
+            var businessTypeStr = ""
+            validateOtpResponse.mStore?.storeBusiness?.forEachIndexed { _, businessResponse -> businessTypeStr += "$businessResponse ," }
+            cleverTapProfile.mShopCategory = businessTypeStr
+            cleverTapProfile.mPhone = validateOtpResponse.mUserPhoneNumber
+            cleverTapProfile.mIdentity = validateOtpResponse.mUserPhoneNumber
+            cleverTapProfile.mLat = validateOtpResponse.mStore?.storeAddress?.latitude
+            cleverTapProfile.mLong = validateOtpResponse.mStore?.storeAddress?.longitude
+            cleverTapProfile.mAddress = validateOtpResponse.mStore?.storeAddress?.let {
+                "${it.address1}, ${it.googleAddress}, ${it.pinCode}"
+            }
+            AppEventsManager.pushCleverTapProfile(cleverTapProfile)
             if (validateOtpResponse.mStore == null || mIsNewUser) launchFragment(OnBoardScreenDukaanNameFragment(), true) else launchFragment(HomeFragment(), true)
         }
     }

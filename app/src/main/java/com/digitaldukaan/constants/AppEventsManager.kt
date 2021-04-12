@@ -5,6 +5,7 @@ import android.app.NotificationManager
 import android.util.Log
 import com.appsflyer.AppsFlyerLib
 import com.clevertap.android.sdk.CleverTapAPI
+import com.digitaldukaan.models.dto.CleverTapProfile
 import com.digitaldukaan.models.request.AndroidEventLogRequest
 import com.digitaldukaan.network.RetrofitApi
 
@@ -57,6 +58,23 @@ class AppEventsManager {
             val appFlyerInstance = AppsFlyerLib.getInstance()
             appFlyerInstance?.logEvent(mActivityInstance,  eventName, data)
             Log.d(TAG, "pushAppFlyerEvent: DONE")
+        }
+
+        fun pushCleverTapProfile(profile: CleverTapProfile) {
+            val profileUpdate = HashMap<String, Any?>()
+            profileUpdate["name"] = "dot kirana merchant"
+            profileUpdate["Identity"] = profile.mIdentity
+            profileUpdate["Phone"] = "+91${profile.mPhone}"
+            profileUpdate["isMerchant"] = profile.mIsMerchant
+            profileUpdate["storeID"] = PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)
+            profileUpdate["shopCategory"] = profile.mShopCategory
+            profileUpdate["lat"] = profile.mLat
+            profileUpdate["lng"] = profile.mLong
+            profileUpdate["merchant"] = 1
+            profileUpdate["customer"] = 0
+            profileUpdate["shopName"] = profile.mShopName
+            profileUpdate["address"] = profile.mAddress
+            CleverTapAPI.getDefaultInstance(mActivityInstance)?.onUserLogin(profileUpdate)
         }
 
         private fun createNotificationChannel() {

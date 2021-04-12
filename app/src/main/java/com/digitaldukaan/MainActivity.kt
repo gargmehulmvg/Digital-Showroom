@@ -53,7 +53,9 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     }
 
     private fun switchToFragmentByDeepLink(intentUri: Uri) {
+        Log.d(TAG, "switchToFragmentByDeepLink: $intentUri")
         Toast.makeText(applicationContext, intentUri.toString(), Toast.LENGTH_SHORT).show()
+        launchFragment(SettingsFragment.newInstance(), true)
     }
 
     private fun setupBottomNavigation() {

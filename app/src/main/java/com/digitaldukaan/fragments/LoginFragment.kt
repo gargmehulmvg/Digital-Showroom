@@ -16,11 +16,9 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.transition.TransitionInflater
 import com.digitaldukaan.R
-import com.digitaldukaan.constants.Constants
+import com.digitaldukaan.constants.*
 import com.digitaldukaan.constants.Constants.Companion.CREDENTIAL_PICKER_REQUEST
-import com.digitaldukaan.constants.CoroutineScopeUtils
-import com.digitaldukaan.constants.StaticInstances
-import com.digitaldukaan.constants.ToolBarManager
+import com.digitaldukaan.models.dto.CleverTapProfile
 import com.digitaldukaan.models.request.ValidateUserRequest
 import com.digitaldukaan.models.response.AuthNewResponseData
 import com.digitaldukaan.models.response.CommonApiResponse
@@ -255,6 +253,19 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
                 showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
                 val validateUserResponse = Gson().fromJson<ValidateUserResponse>(response.mCommonDataStr, ValidateUserResponse::class.java)
                 saveUserDetailsInPref(validateUserResponse)
+                val cleverTapProfile = CleverTapProfile()
+                cleverTapProfile.mShopName = validateUserResponse?.store?.storeInfo?.name
+                var businessTypeStr = ""
+                validateUserResponse?.store?.storeBusiness?.forEachIndexed { _, businessResponse -> businessTypeStr += "$businessResponse ," }
+                cleverTapProfile.mShopCategory = businessTypeStr
+                cleverTapProfile.mPhone = validateUserResponse?.user?.phone
+                cleverTapProfile.mIdentity = validateUserResponse?.user?.phone
+                cleverTapProfile.mLat = validateUserResponse?.store?.storeAddress?.latitude
+                cleverTapProfile.mLong = validateUserResponse?.store?.storeAddress?.longitude
+                cleverTapProfile.mAddress = validateUserResponse?.store?.storeAddress?.let {
+                    "${it.address1}, ${it.googleAddress}, ${it.pinCode}"
+                }
+                AppEventsManager.pushCleverTapProfile(cleverTapProfile)
                 if (validateUserResponse.store == null || validateUserResponse.user.isNewUser) launchFragment(OnBoardScreenDukaanNameFragment(), true) else launchFragment(HomeFragment(), true)
             } else showShortSnackBar(response.mMessage, true, R.drawable.ic_close_red)
         }

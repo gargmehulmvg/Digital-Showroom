@@ -35,7 +35,7 @@ class MyFcmMessageListenerService : FirebaseMessagingService() {
                     if (info.fromCleverTap) {
                         Log.d(TAG, "CLEVER-TAP NOTIFICATIONS :: $info")
                         CleverTapAPI.createNotification(applicationContext, extras)
-                        sendNotification("TITLE", "CLEVER TAP BODY")
+                        sendNotification(extras.getString("nt"), extras.getString("nm"))
                     }
                 }
             } catch (t: Throwable) {
