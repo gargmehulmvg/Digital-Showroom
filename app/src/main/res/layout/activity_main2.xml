@@ -129,27 +129,28 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ImageView
-        android:id="@+id/imageView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@+id/premiumImageView"
+        android:layout_width="@dimen/_35sdp"
+        android:layout_height="@dimen/_35sdp"
         android:layout_gravity="center"
-        android:src="@drawable/ic_premium_crown"
-        android:padding="@dimen/_9sdp"
-        android:contentDescription="@string/image_view_content_description"
+        android:layout_marginBottom="@dimen/_20sdp"
         android:background="@drawable/ic_premium_icon_background"
-        app:layout_constraintBottom_toTopOf="@+id/bottomNavigationViewLayout"
+        android:contentDescription="@string/image_view_content_description"
+        android:padding="@dimen/_9sdp"
+        android:src="@drawable/ic_premium_crown"
+        app:layout_constraintBottom_toBottomOf="@+id/bottomNavigationViewLayout"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/bottomNavigationViewLayout" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <TextView
+        android:id="@+id/premiumTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/premium"
         android:textSize="@dimen/_10sdp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/imageView3"
-        app:layout_constraintStart_toStartOf="@+id/imageView3"
-        app:layout_constraintTop_toBottomOf="@+id/imageView3" />
+        app:layout_constraintEnd_toEndOf="@+id/premiumImageView"
+        app:layout_constraintStart_toStartOf="@+id/premiumImageView"
+        app:layout_constraintTop_toBottomOf="@+id/premiumImageView" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

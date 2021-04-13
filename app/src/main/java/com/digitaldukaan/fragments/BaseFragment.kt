@@ -100,6 +100,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     open fun hideBottomNavigationView(isHidden: Boolean) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             mActivity.bottomNavigationView.visibility = if (isHidden) View.GONE else View.VISIBLE
+            mActivity.premiumImageView.visibility = if (isHidden) View.GONE else View.VISIBLE
         }
     }
 
@@ -579,6 +580,13 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     }
 
     protected fun updateNavigationBarState(actionId: Int) {
+        if (actionId == R.id.menuPremium) {
+            mActivity.bottomNavigationView.background = ContextCompat.getDrawable(mActivity, R.drawable.bottom_nav_premium_gradient_background)
+            mActivity.premiumTextView.setTextColor(ContextCompat.getColor(mActivity, R.color.premium_text_color))
+        } else {
+            mActivity.bottomNavigationView.background = null
+            mActivity.premiumTextView.setTextColor(ContextCompat.getColor(mActivity, R.color.default_text_light_grey))
+        }
         val menu: Menu = mActivity.bottomNavigationView.menu
         menu.findItem(actionId).isChecked = true
     }

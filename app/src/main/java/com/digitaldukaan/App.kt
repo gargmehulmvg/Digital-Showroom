@@ -45,7 +45,7 @@ class App: Application() {
         AppsFlyerLib.getInstance().start(this)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val notificationChannel = NotificationChannel(
-                AFInAppEventParameterName.NOTIFICATION_CHANNEL_ID,
+                AFInAppEventParameterName.NOTIFICATION_CHANNEL_NOTIFICATIONS,
                 AFInAppEventParameterName.NOTIFICATION_CHANNEL_NAME,
                 NotificationManager.IMPORTANCE_HIGH
             )

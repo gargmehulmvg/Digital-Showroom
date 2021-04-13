@@ -61,7 +61,7 @@ class MyFcmMessageListenerService : FirebaseMessagingService() {
         if (deepLinkUrl?.isNotEmpty() == true) intent.data = deepLinkUrl.toUri()
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT)
-        val notificationBuilder = NotificationCompat.Builder(this, AFInAppEventParameterName.NOTIFICATION_CHANNEL_ID).apply {
+        val notificationBuilder = NotificationCompat.Builder(this, AFInAppEventParameterName.NOTIFICATION_CHANNEL_NOTIFICATIONS).apply {
             setSmallIcon(R.mipmap.ic_launcher)
             setContentTitle(title)
             setContentText(message)

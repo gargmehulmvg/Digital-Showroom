@@ -180,7 +180,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             R.id.menuSettings -> if (getCurrentFragment() !is SettingsFragment) launchFragment(SettingsFragment.newInstance(), true)
             R.id.menuMarketing -> if (getCurrentFragment() !is MarketingFragment) launchFragment(MarketingFragment.newInstance(), true)
             R.id.menuProducts -> if (getCurrentFragment() !is ProductFragment) launchFragment(ProductFragment.newInstance(), true)
-            R.id.menuPremium -> Toast.makeText(applicationContext, "menuPremium", Toast.LENGTH_SHORT).show()
+            R.id.menuPremium -> if (getCurrentFragment() !is PremiumFragment) launchFragment(PremiumFragment.newInstance(), true)
         }
         return true
     }

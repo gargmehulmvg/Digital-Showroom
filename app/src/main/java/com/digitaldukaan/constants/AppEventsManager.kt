@@ -85,7 +85,23 @@ class AppEventsManager {
             )
             CleverTapAPI.createNotificationChannel(
                 mActivityInstance,
-                AFInAppEventParameterName.NOTIFICATION_CHANNEL_ID,
+                AFInAppEventParameterName.NOTIFICATION_CHANNEL_NOTIFICATIONS,
+                AFInAppEventParameterName.NOTIFICATION_CHANNEL_NAME,
+                AFInAppEventParameterName.NOTIFICATION_CHANNEL_DESC,
+                NotificationManager.IMPORTANCE_MAX,
+                true
+            )
+            CleverTapAPI.createNotificationChannel(
+                mActivityInstance,
+                AFInAppEventParameterName.NOTIFICATION_CHANNEL_UPDATES,
+                AFInAppEventParameterName.NOTIFICATION_CHANNEL_NAME,
+                AFInAppEventParameterName.NOTIFICATION_CHANNEL_DESC,
+                NotificationManager.IMPORTANCE_MAX,
+                true
+            )
+            CleverTapAPI.createNotificationChannel(
+                mActivityInstance,
+                AFInAppEventParameterName.NOTIFICATION_CHANNEL_CAMPAIGN,
                 AFInAppEventParameterName.NOTIFICATION_CHANNEL_NAME,
                 AFInAppEventParameterName.NOTIFICATION_CHANNEL_DESC,
                 NotificationManager.IMPORTANCE_MAX,
