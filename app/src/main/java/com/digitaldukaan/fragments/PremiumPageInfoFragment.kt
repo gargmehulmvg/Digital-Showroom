@@ -14,6 +14,7 @@ import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.PremiumPageInfoResponse
+import com.digitaldukaan.models.response.PremiumPageInfoStaticTextResponse
 import com.digitaldukaan.services.PremiumPageInfoService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IPremiumPageInfoServiceInterface
@@ -27,6 +28,7 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
     companion object {
         private const val TAG = "PremiumPageInfoFragment"
         private val mService: PremiumPageInfoService = PremiumPageInfoService()
+        private var mStaticText: PremiumPageInfoStaticTextResponse? = null
         fun newInstance(): PremiumPageInfoFragment {
             return PremiumPageInfoFragment()
         }
@@ -55,9 +57,9 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
         }
         showProgressDialog(mActivity)
         mService.getPremiumPageInfo()
-//        testTextView.setOnClickListener {
-//            callBackClosed()
-//        }
+        testTextView.setOnClickListener {
+            launchFragment(EditPremiumFragment.newInstance(mStaticText), true)
+        }
     }
 
     override fun onNativeBackPressed() {
@@ -69,11 +71,13 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
     override fun onPremiumPageInfoResponse(response: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             val premiumPageInfoResponse = Gson().fromJson<PremiumPageInfoResponse>(response.mCommonDataStr, PremiumPageInfoResponse::class.java)
+            mStaticText = premiumPageInfoResponse?.staticText
             commonWebView.apply {
                 clearHistory()
                 clearCache(true)
                 settings.allowFileAccess = true
                 settings.javaScriptEnabled = true
+                settings.domStorageEnabled = true
                 settings.javaScriptCanOpenWindowsAutomatically = true
                 addJavascriptInterface(WebViewBridge(), "Android")
                 val url = BuildConfig.WEB_VIEW_URL + premiumPageInfoResponse.premium?.mUrl + "?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}" + "&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"

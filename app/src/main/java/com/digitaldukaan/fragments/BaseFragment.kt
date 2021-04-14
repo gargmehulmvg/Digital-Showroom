@@ -101,6 +101,8 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             mActivity.bottomNavigationView.visibility = if (isHidden) View.GONE else View.VISIBLE
             mActivity.premiumImageView.visibility = if (isHidden) View.GONE else View.VISIBLE
+            mActivity.premiumTextView.visibility = if (isHidden) View.GONE else View.VISIBLE
+            mActivity.view7.visibility = if (isHidden) View.GONE else View.VISIBLE
         }
     }
 
