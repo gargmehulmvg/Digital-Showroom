@@ -29,6 +29,7 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
         private const val TAG = "PremiumPageInfoFragment"
         private val mService: PremiumPageInfoService = PremiumPageInfoService()
         private var mStaticText: PremiumPageInfoStaticTextResponse? = null
+        private var premiumPageInfoResponse: PremiumPageInfoResponse? = null
         fun newInstance(): PremiumPageInfoFragment {
             return PremiumPageInfoFragment()
         }
@@ -58,7 +59,7 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
         showProgressDialog(mActivity)
         mService.getPremiumPageInfo()
         testTextView.setOnClickListener {
-            launchFragment(EditPremiumFragment.newInstance(mStaticText), true)
+            launchFragment(EditPremiumFragment.newInstance(mStaticText, premiumPageInfoResponse), true)
         }
     }
 
@@ -70,7 +71,7 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
 
     override fun onPremiumPageInfoResponse(response: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            val premiumPageInfoResponse = Gson().fromJson<PremiumPageInfoResponse>(response.mCommonDataStr, PremiumPageInfoResponse::class.java)
+            premiumPageInfoResponse = Gson().fromJson<PremiumPageInfoResponse>(response.mCommonDataStr, PremiumPageInfoResponse::class.java)
             mStaticText = premiumPageInfoResponse?.staticText
             commonWebView.apply {
                 clearHistory()
@@ -80,7 +81,7 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
                 settings.domStorageEnabled = true
                 settings.javaScriptCanOpenWindowsAutomatically = true
                 addJavascriptInterface(WebViewBridge(), "Android")
-                val url = BuildConfig.WEB_VIEW_URL + premiumPageInfoResponse.premium?.mUrl + "?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}" + "&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"
+                val url = BuildConfig.WEB_VIEW_URL + premiumPageInfoResponse?.premium?.mUrl + "?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}" + "&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"
                 Log.d(PremiumPageInfoFragment::class.simpleName, "onViewCreated: $url")
                 loadUrl(url)
                 webViewClient = object : WebViewClient() {

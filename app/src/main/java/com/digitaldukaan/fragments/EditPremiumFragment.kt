@@ -5,8 +5,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.ToolBarManager
+import com.digitaldukaan.models.response.PremiumPageInfoResponse
 import com.digitaldukaan.models.response.PremiumPageInfoStaticTextResponse
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.webviews.WebViewBridge
@@ -15,11 +17,16 @@ import kotlinx.android.synthetic.main.layout_edit_premium_fragment.*
 class EditPremiumFragment : BaseFragment() {
 
     private var mStaticText: PremiumPageInfoStaticTextResponse? = null
+    private var mPremiumPageInfoResponse: PremiumPageInfoResponse? = null
 
     companion object {
-        fun newInstance(staticText: PremiumPageInfoStaticTextResponse?): EditPremiumFragment{
+        fun newInstance(
+            staticText: PremiumPageInfoStaticTextResponse?,
+            premiumPageInfoResponse: PremiumPageInfoResponse?
+        ): EditPremiumFragment{
             val fragment = EditPremiumFragment()
             fragment.mStaticText = staticText
+            fragment.mPremiumPageInfoResponse = premiumPageInfoResponse
             return fragment
         }
     }
@@ -47,7 +54,7 @@ class EditPremiumFragment : BaseFragment() {
             settings.javaScriptEnabled = true
             settings.domStorageEnabled = true
             addJavascriptInterface(WebViewBridge(), "Android")
-            val url = "https://showroom-preview2.dotpe.in/mehulgarg"
+            val url = "${BuildConfig.WEB_VIEW_PREVIEW_URL}${mPremiumPageInfoResponse?.domain}"
             Log.d(EditPremiumFragment::class.simpleName, "onViewCreated: $url")
             loadUrl(url)
         }
