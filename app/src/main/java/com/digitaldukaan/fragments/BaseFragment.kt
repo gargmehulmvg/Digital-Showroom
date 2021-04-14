@@ -35,10 +35,7 @@ import com.digitaldukaan.R
 import com.digitaldukaan.adapters.ImagesSearchAdapter
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.ISearchImageItemClicked
-import com.digitaldukaan.models.response.OrderItemResponse
-import com.digitaldukaan.models.response.OrderPageStaticTextResponse
-import com.digitaldukaan.models.response.ProfileInfoResponse
-import com.digitaldukaan.models.response.StaticTextResponse
+import com.digitaldukaan.models.response.*
 import com.digitaldukaan.network.RetrofitApi
 import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -750,6 +747,36 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         } catch (e: java.lang.Exception) {
             showToast("Error/n$e")
         }
+    }
+
+    protected fun showMaterCatalogBottomSheet(addProductBannerStaticDataResponse: AddProductBannerTextResponse?, addProductStaticText: AddProductStaticText?) {
+        val bottomSheetDialog = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
+        val view = LayoutInflater.from(mActivity).inflate(
+            R.layout.bottom_sheet_add_products_catalog_builder,
+            mActivity.findViewById(R.id.bottomSheetContainer)
+        )
+        bottomSheetDialog.apply {
+            setContentView(view)
+            setBottomSheetCommonProperty()
+            view.run {
+                val closeImageView: View = findViewById(R.id.closeImageView)
+                val offerTextView: TextView = findViewById(R.id.offerTextView)
+                val headerTextView: TextView = findViewById(R.id.headerTextView)
+                val bodyTextView: TextView = findViewById(R.id.bodyTextView)
+                val bannerImageView: ImageView = findViewById(R.id.bannerImageView)
+                val buttonTextView: TextView = findViewById(R.id.buttonTextView)
+                offerTextView.text = addProductBannerStaticDataResponse?.offer
+                headerTextView.setHtmlData(addProductBannerStaticDataResponse?.header)
+                bodyTextView.text = addProductBannerStaticDataResponse?.body
+                buttonTextView.text = addProductBannerStaticDataResponse?.button_text
+                Picasso.get().load(addProductBannerStaticDataResponse?.image_url).into(bannerImageView)
+                closeImageView.setOnClickListener { bottomSheetDialog.dismiss() }
+                buttonTextView.setOnClickListener{
+                    bottomSheetDialog.dismiss()
+                    launchFragment(ExploreCategoryFragment.newInstance(addProductStaticText), true)
+                }
+            }
+        }.show()
     }
 
 }

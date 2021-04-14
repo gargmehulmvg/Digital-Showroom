@@ -34,7 +34,6 @@ import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IAddProductServiceInterface
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
-import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.layout_add_product_fragment.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -155,7 +154,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     }
                     showProgressDialog(mActivity)
                     mService.getAddOrderBottomSheetData()
-                } else showMaterCatalogBottomSheet()
+                } else showMaterCatalogBottomSheet(addProductBannerStaticDataResponse, addProductStaticData)
             }
             continueTextView.id -> {
                 if (checkValidation()) {
@@ -322,7 +321,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             addProductBannerStaticDataResponse = Gson().fromJson<AddProductBannerTextResponse>(commonResponse.mCommonDataStr, AddProductBannerTextResponse::class.java)
-            addProductBannerStaticDataResponse?.run { showMaterCatalogBottomSheet() }
+            addProductBannerStaticDataResponse?.run { showMaterCatalogBottomSheet(addProductBannerStaticDataResponse, addProductStaticData) }
         }
     }
 
@@ -422,36 +421,6 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
 
     override fun onAddProductException(e: Exception) {
         exceptionHandlingForAPIResponse(e)
-    }
-
-    private fun showMaterCatalogBottomSheet() {
-        val bottomSheetDialog = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
-        val view = LayoutInflater.from(mActivity).inflate(
-            R.layout.bottom_sheet_add_products_catalog_builder,
-            mActivity.findViewById(R.id.bottomSheetContainer)
-        )
-        bottomSheetDialog.apply {
-            setContentView(view)
-            setBottomSheetCommonProperty()
-            view.run {
-                val closeImageView: View = findViewById(R.id.closeImageView)
-                val offerTextView: TextView = findViewById(R.id.offerTextView)
-                val headerTextView: TextView = findViewById(R.id.headerTextView)
-                val bodyTextView: TextView = findViewById(R.id.bodyTextView)
-                val bannerImageView: ImageView = findViewById(R.id.bannerImageView)
-                val buttonTextView: TextView = findViewById(R.id.buttonTextView)
-                offerTextView.text = addProductBannerStaticDataResponse?.offer
-                headerTextView.setHtmlData(addProductBannerStaticDataResponse?.header)
-                bodyTextView.text = addProductBannerStaticDataResponse?.body
-                buttonTextView.text = addProductBannerStaticDataResponse?.button_text
-                Picasso.get().load(addProductBannerStaticDataResponse?.image_url).into(bannerImageView)
-                closeImageView.setOnClickListener { bottomSheetDialog.dismiss() }
-                buttonTextView.setOnClickListener{
-                    bottomSheetDialog.dismiss()
-                    launchFragment(ExploreCategoryFragment.newInstance(addProductStaticData), true)
-                }
-            }
-        }.show()
     }
 
     override fun onAdapterItemClickListener(position: Int) {

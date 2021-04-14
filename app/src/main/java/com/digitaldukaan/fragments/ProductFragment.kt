@@ -19,10 +19,7 @@ import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.constants.openWebViewFragment
 import com.digitaldukaan.interfaces.IOnToolbarIconClick
-import com.digitaldukaan.models.response.CommonApiResponse
-import com.digitaldukaan.models.response.ProductPageResponse
-import com.digitaldukaan.models.response.ShareStorePDFDataItemResponse
-import com.digitaldukaan.models.response.TrendingListResponse
+import com.digitaldukaan.models.response.*
 import com.digitaldukaan.services.ProductService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IProductServiceInterface
@@ -31,6 +28,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.product_fragment.*
+import org.json.JSONObject
 
 class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIconClick,
     PopupMenu.OnMenuItemClickListener {
@@ -38,8 +36,12 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
     private lateinit var mService: ProductService
     private var mOptionsMenuResponse: ArrayList<TrendingListResponse>? = null
     private var mShareDataOverWhatsAppText = ""
+    private var addProductBannerStaticDataResponse: AddProductBannerTextResponse? = null
 
     companion object {
+        private var addProductStaticData: AddProductStaticText? = null
+
+        private const val TAG = "ProductFragment"
         fun newInstance(): ProductFragment {
             return ProductFragment()
         }
@@ -49,6 +51,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
         super.onCreate(savedInstanceState)
         mService = ProductService()
         mService.setOrderDetailServiceListener(this)
+        WebViewBridge.mWebViewListener = this
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -65,10 +68,19 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
         return mContentView
     }
 
+    override fun onAddProductBannerStaticDataResponse(commonResponse: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            addProductBannerStaticDataResponse = Gson().fromJson<AddProductBannerTextResponse>(commonResponse.mCommonDataStr, AddProductBannerTextResponse::class.java)
+            addProductBannerStaticDataResponse?.run { showMaterCatalogBottomSheet(addProductBannerStaticDataResponse, addProductStaticData) }
+        }
+    }
+
     override fun onProductResponse(commonResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             val productResponse = Gson().fromJson(commonResponse.mCommonDataStr, ProductPageResponse::class.java)
+            addProductStaticData = productResponse?.static_text
             var url: String
             ToolBarManager.getInstance().setHeaderTitle(productResponse?.static_text?.product_page_heading)
             mOptionsMenuResponse = productResponse?.optionMenuList
@@ -147,9 +159,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
         }.show()
     }
 
-    override fun onProductException(e: Exception) {
-        exceptionHandlingForAPIResponse(e)
-    }
+    override fun onProductException(e: Exception) = exceptionHandlingForAPIResponse(e)
 
     override fun onClick(view: View?) {
         when(view?.id) {
@@ -209,6 +219,21 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
             }
         }
         return true
+    }
+
+    override fun sendData(data: String) {
+        Log.d(TAG, "sendData: $data")
+        val jsonData = JSONObject(data)
+        if (jsonData.optBoolean("catalogBuilderBannerClick")) {
+            if (addProductBannerStaticDataResponse == null) {
+                if (!isInternetConnectionAvailable(mActivity)) {
+                    showNoInternetConnectionDialog()
+                    return
+                }
+                showProgressDialog(mActivity)
+                mService.getAddOrderBottomSheetData()
+            } else showMaterCatalogBottomSheet(addProductBannerStaticDataResponse, addProductStaticData)
+        }
     }
 
 }

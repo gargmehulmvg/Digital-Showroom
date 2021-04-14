@@ -21,6 +21,7 @@ data class AddStoreCategoryItem(
 )
 
 data class AddProductStaticText(
+    @SerializedName("product_page_heading") var product_page_heading: String?,
     @SerializedName("bottom_sheet_add_from_gallery") var bottom_sheet_add_from_gallery: String?,
     @SerializedName("bottom_sheet_add_image") var bottom_sheet_add_image: String?,
     @SerializedName("bottom_sheet_confirm_selection") var bottom_sheet_confirm_selection: String?,
@@ -56,5 +57,17 @@ data class AddProductStaticText(
     @SerializedName("text_tap_to_select") var text_tap_to_select: String?,
     @SerializedName("text_try_now") var text_try_now: String?,
     @SerializedName("text_upload_or_search_images") var text_upload_or_search_images: String?,
-    @SerializedName("hint_discounted_price") var hint_discounted_price: String?
+    @SerializedName("hint_discounted_price") var hint_discounted_price: String?,
+
+
+
+    @SerializedName("bottom_sheet_heading_edit_category") var bottom_sheet_heading_edit_category: String?,
+    @SerializedName("bottom_sheet_category_name") var bottom_sheet_category_name: String?,
+    @SerializedName("bottom_sheet_hint_category_name") var bottom_sheet_hint_category_name: String?,
+    @SerializedName("bottom_sheet_delete_category") var bottom_sheet_delete_category: String?,
+    @SerializedName("bottom_sheet_save") var bottom_sheet_save: String?,
+    @SerializedName("dialog_stock_message") var dialog_stock_message: String?,
+    @SerializedName("dialog_stock_dont_show_this_again") var dialog_stock_dont_show_this_again: String?,
+    @SerializedName("text_yes") var text_yes: String?,
+    @SerializedName("text_no") var text_no: String?
 )

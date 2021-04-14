@@ -10,6 +10,12 @@ class ProductService {
 
     private val mNetworkService = ProductNetworkService()
 
+    fun getAddOrderBottomSheetData() {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.getAddOrderBottomSheetDataServerCall(mServiceInterface)
+        }
+    }
+
     fun setOrderDetailServiceListener(listener: IProductServiceInterface) {
         mServiceInterface = listener
     }

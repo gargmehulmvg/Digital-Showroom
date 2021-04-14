@@ -7,9 +7,5 @@ data class ProductPageResponse(
     @SerializedName("option_menu") var optionMenuList: ArrayList<TrendingListResponse>,
     @SerializedName("share_shop") var shareShop: TrendingListResponse,
     @SerializedName("add_product") var addProduct: TrendingListResponse,
-    @SerializedName("static_text") var static_text: ProductPageStaticData
-)
-
-data class ProductPageStaticData(
-    @SerializedName("product_page_heading") var product_page_heading: String?
+    @SerializedName("static_text") var static_text: AddProductStaticText
 )

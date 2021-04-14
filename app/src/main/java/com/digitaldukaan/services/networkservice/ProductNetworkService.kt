@@ -8,6 +8,34 @@ import com.google.gson.Gson
 
 class ProductNetworkService {
 
+    suspend fun getAddOrderBottomSheetDataServerCall(
+        serviceInterface: IProductServiceInterface
+    ) {
+        try {
+            val response = RetrofitApi().getServerCallObject()?.getMasterCatalogStaticText()
+            response?.let {
+                if (it.isSuccessful) {
+                    it.body()?.let { commonApiResponse -> serviceInterface.onAddProductBannerStaticDataResponse(commonApiResponse)
+                    }
+                } else {
+                    val responseBody = it.errorBody()
+                    responseBody?.let {
+                        val errorResponse = Gson().fromJson(
+                            responseBody.string(),
+                            CommonApiResponse::class.java
+                        )
+                        serviceInterface.onAddProductBannerStaticDataResponse(
+                            errorResponse
+                        )
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(AddProductNetworkService::class.java.simpleName, "getAddOrderBottomSheetDataServerCall: ", e)
+            serviceInterface.onProductException(e)
+        }
+    }
+
     suspend fun getProductPageInfoServerCall(
         authToken: String,
         serviceInterface: IProductServiceInterface

@@ -47,6 +47,7 @@ class ExploreCategoryFragment: BaseFragment(), IExploreCategoryServiceInterface 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         ToolBarManager.getInstance().apply { hideToolBar(mActivity, true) }
+        hideBottomNavigationView(true)
         if (!isInternetConnectionAvailable(mActivity)) {
             showNoInternetConnectionDialog()
             return
