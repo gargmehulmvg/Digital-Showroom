@@ -55,9 +55,9 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
         }
         showProgressDialog(mActivity)
         mService.getPremiumPageInfo()
-        testTextView.setOnClickListener {
-            callBackClosed()
-        }
+//        testTextView.setOnClickListener {
+//            callBackClosed()
+//        }
     }
 
     override fun onNativeBackPressed() {

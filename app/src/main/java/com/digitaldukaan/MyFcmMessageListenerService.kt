@@ -35,7 +35,7 @@ class MyFcmMessageListenerService : FirebaseMessagingService() {
                     val info = CleverTapAPI.getNotificationInfo(extras)
                     if (info.fromCleverTap) {
                         Log.d(TAG, "CLEVER-TAP NOTIFICATIONS :: $info")
-                        CleverTapAPI.createNotification(applicationContext, extras)
+                        //CleverTapAPI.createNotification(applicationContext, extras)
                         sendNotification(extras.getString("nt"), extras.getString("nm"), extras.getString("wzrk_dl"))
                     }
                 }
