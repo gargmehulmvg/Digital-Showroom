@@ -204,4 +204,10 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
             mActivity.onBackPressed()
         }
     }
+
+    override fun sendData(data: String) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            showToast(data)
+        }
+    }
 }

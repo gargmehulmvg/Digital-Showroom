@@ -147,4 +147,7 @@ interface Apis {
 
     @POST("api/dotk/onboard/validateUser")
     suspend fun validateUser(@Body request: ValidateUserRequest): Response<CommonApiResponse>
+
+    @GET("api/dotk/premium/getPremiumPageInfo")
+    suspend fun getPremiumPageInfo(): Response<CommonApiResponse>
 }

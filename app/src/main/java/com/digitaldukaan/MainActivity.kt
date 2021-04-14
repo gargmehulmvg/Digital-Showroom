@@ -2,12 +2,10 @@ package com.digitaldukaan
 
 import android.content.Intent
 import android.content.pm.ActivityInfo
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.clevertap.android.sdk.CleverTapAPI
@@ -43,7 +41,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         Log.d(TAG, "appSessionID :: ${StaticInstances.sAppSessionId}")
         Log.d(TAG, "appInstanceID :: ${PrefsManager.getStringDataFromSharedPref(PrefsManager.APP_INSTANCE_ID)}")
         val intentUri = intent?.data
-        if (intentUri == null) launchFragment(SplashFragment.newInstance(), true) else switchToFragmentByDeepLink(intentUri)
+        launchFragment(SplashFragment.newInstance(intentUri), true)
         FirebaseMessaging.getInstance().token.addOnCompleteListener {
             if(it.isComplete){
                 StaticInstances.sFireBaseMessagingToken = it.result.toString()
@@ -54,12 +52,6 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         CleverTapAPI.getDefaultInstance(this)?.apply {
             setInAppNotificationButtonListener(this@MainActivity)
         }
-    }
-
-    private fun switchToFragmentByDeepLink(intentUri: Uri) {
-        Log.d(TAG, "switchToFragmentByDeepLink: $intentUri")
-        Toast.makeText(applicationContext, intentUri.toString(), Toast.LENGTH_SHORT).show()
-        launchFragment(SettingsFragment.newInstance(), true)
     }
 
     private fun setupBottomNavigation() {
@@ -180,7 +172,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             R.id.menuSettings -> if (getCurrentFragment() !is SettingsFragment) launchFragment(SettingsFragment.newInstance(), true)
             R.id.menuMarketing -> if (getCurrentFragment() !is MarketingFragment) launchFragment(MarketingFragment.newInstance(), true)
             R.id.menuProducts -> if (getCurrentFragment() !is ProductFragment) launchFragment(ProductFragment.newInstance(), true)
-            R.id.menuPremium -> if (getCurrentFragment() !is PremiumFragment) launchFragment(PremiumFragment.newInstance(), true)
+            R.id.menuPremium -> if (getCurrentFragment() !is PremiumPageInfoFragment) launchFragment(PremiumPageInfoFragment.newInstance(), true)
         }
         return true
     }

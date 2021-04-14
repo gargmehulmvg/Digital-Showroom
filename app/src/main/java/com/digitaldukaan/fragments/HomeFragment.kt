@@ -381,4 +381,10 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
             mActivity.onBackPressed()
         }
     }
+
+    override fun sendData(data: String) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            showToast(data)
+        }
+    }
 }

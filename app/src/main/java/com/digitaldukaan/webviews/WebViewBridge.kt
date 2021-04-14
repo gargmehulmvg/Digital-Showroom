@@ -16,4 +16,10 @@ class WebViewBridge {
         Log.d(WebViewBridge::class.simpleName, "onNativeBackPress")
         mWebViewListener?.onNativeBackPressed()
     }
+
+    @JavascriptInterface
+    fun sendData(value: String) {
+        Log.d(WebViewBridge::class.simpleName, "sendData")
+        mWebViewListener?.sendData(value)
+    }
 }
