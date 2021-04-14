@@ -100,5 +100,8 @@ class Constants {
         const val NEW_RELEASE_TYPE_NEW = "new"
         const val NEW_RELEASE_TYPE_TRENDING = "trending"
         const val NEW_RELEASE_TYPE_EXTERNAL = "external"
+        //EDIT PHOTO MODES
+        const val EDIT_PHOTO_MODE_MOBILE = "mobile"
+        const val EDIT_PHOTO_MODE_DESKTOP = "desktop"
     }
 }

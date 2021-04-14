@@ -128,4 +128,6 @@ dependencies {
     implementation 'com.android.installreferrer:installreferrer:2.2'
     //TrueCaller SDK
     implementation "com.truecaller.android.sdk:truecaller-sdk:2.6.0"
+    //custom crop library
+    implementation 'com.theartofdev.edmodo:android-image-cropper:2.8.0'
 }

@@ -53,7 +53,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
     private var mProfilePreviewResponse: ProfileInfoResponse? = null
     private lateinit var mStoreLinkErrorResponse:StoreDescriptionResponse
     private lateinit var mProfileInfoSettingKeyResponse: ProfilePreviewSettingsKeyResponse
-    private lateinit var cancelWarningDialog:Dialog
+    private lateinit var cancelWarningDialog: Dialog
     private var mStoreLogo: String? = ""
 
     fun newInstance(storeName: String?): ProfilePreviewFragment {

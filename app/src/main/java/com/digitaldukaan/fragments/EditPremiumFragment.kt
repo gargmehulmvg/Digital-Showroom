@@ -1,5 +1,6 @@
 package com.digitaldukaan.fragments
 
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.EditPremiumColorAdapter
+import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.interfaces.IAdapterItemClickListener
@@ -98,6 +100,15 @@ class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
                     mService.getPremiumColors()
                 } else showColorBottomSheet()
             }
+            changeImageContainer.id -> {
+                openGalleryWithoutCrop()
+            }
+        }
+    }
+
+    override fun onImageSelectionResultUri(fileUri: Uri?) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            launchFragment(EditPhotoFragment.newInstance(fileUri, Constants.EDIT_PHOTO_MODE_MOBILE, mStaticText), true)
         }
     }
 

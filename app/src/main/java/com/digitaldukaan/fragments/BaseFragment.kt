@@ -494,6 +494,17 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
             .start()
     }
 
+    open fun openGalleryWithoutCrop() {
+        ImagePicker.with(mActivity)
+            .galleryOnly()
+            .compress(1024)            //Final image size will be less than 1 MB(Optional)
+            .maxResultSize(
+                1080,
+                1080
+            ) //Final image resolution will be less than 1080 x 1080(Optional)
+            .start()
+    }
+
     open fun openCamera() {
         ImagePicker.with(mActivity)
             .cameraOnly()
@@ -528,6 +539,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                 //You can also get File Path from intent
                 //val filePath: String? = ImagePicker.getFilePath(data)
                 //onImageSelectionResult(convertImageFileToBase64(file))
+                onImageSelectionResultUri(fileUri)
                 onImageSelectionResultFile(file)
             }
             ImagePicker.RESULT_ERROR -> {
@@ -540,6 +552,8 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     }
 
     open fun onImageSelectionResultFile(file: File?) = Unit
+
+    open fun onImageSelectionResultUri(fileUri: Uri?) = Unit
 
     open fun convertImageFileToBase64(imageFile: File?): String {
         if (imageFile == null) return ""
