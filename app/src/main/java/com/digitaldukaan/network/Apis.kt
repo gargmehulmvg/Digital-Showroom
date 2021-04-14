@@ -150,4 +150,10 @@ interface Apis {
 
     @GET("api/dotk/premium/getPremiumPageInfo")
     suspend fun getPremiumPageInfo(): Response<CommonApiResponse>
+
+    @GET("api/dotk/premium/getAllPresetColors")
+    suspend fun getAllPresetColors(): Response<CommonApiResponse>
+
+    @POST("api/dotk/premium/setStoreThemeColorPalette")
+    suspend fun setStoreThemeColorPalette(@Body request: EditPremiumColorRequest): Response<CommonApiResponse>
 }

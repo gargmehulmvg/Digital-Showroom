@@ -18,7 +18,9 @@ data class ThemeResponse(
     @SerializedName("theme_id") var themeId: Int,
     @SerializedName("store_theme_id") var storeThemeId: Int,
     @SerializedName("roundness") var roundness: Int,
+    @SerializedName("is_quick_view") var isQuickView: Int,
     @SerializedName("category") var category: String,
+    @SerializedName("colors") var colorItem: EditPremiumColorItemResponse,
     @SerializedName("expiry") var expiry: String
 )
 
