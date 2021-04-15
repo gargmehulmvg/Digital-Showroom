@@ -1,6 +1,7 @@
 package com.digitaldukaan.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -35,6 +36,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
         private lateinit var service: MarketingService
         private var mShareStorePDFResponse: ShareStorePDFDataItemResponse? = null
         private val mMarketingStaticData = mStaticData.mStaticData.mMarketingStaticData
+        private const val TAG = "MarketingFragment"
 
         fun newInstance(): MarketingFragment {
             return MarketingFragment()
@@ -207,7 +209,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
 
     override fun sendData(data: String) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            showToast(data)
+            Log.d(TAG, "sendData: $data")
         }
     }
 }

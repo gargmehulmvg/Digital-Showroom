@@ -384,7 +384,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
 
     override fun sendData(data: String) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            showToast(data)
+            Log.d(TAG, "sendData: $data")
         }
     }
 }

@@ -60,7 +60,6 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
         task.addOnFailureListener {
             Log.d("OtpVerificationFragment", "onCreate: Auto read SMS retrieval task failed")
         }
-        showToast("App Signature is ${AppSignatureHelper(mActivity).appSignatures[0]}")
         Log.d("OtpVerificationFragment", "App Signature is ${AppSignatureHelper(mActivity).appSignatures[0]}")
         mLoginService = LoginService()
         mLoginService.setLoginServiceInterface(this)

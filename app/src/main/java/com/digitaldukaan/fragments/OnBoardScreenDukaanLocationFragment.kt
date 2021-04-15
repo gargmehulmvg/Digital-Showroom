@@ -55,7 +55,7 @@ class OnBoardScreenDukaanLocationFragment : BaseFragment(), IStoreAddressService
         }
         val lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
         lastKnownLocation?.run {
-            showToast("getLocation() Latitude: $latitude , Longitude: $longitude")
+            Log.d(TAG, "getLocation() Latitude: $latitude , Longitude: $longitude")
         }
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 1f, this)
         fusedLocationClient?.lastLocation?.addOnCompleteListener(mActivity) { task ->
@@ -82,16 +82,8 @@ class OnBoardScreenDukaanLocationFragment : BaseFragment(), IStoreAddressService
             mActivity,
             Manifest.permission.ACCESS_COARSE_LOCATION
         )
-        if (shouldProvideRationale) {
-            showCustomSnackBar(
-                "Location permission is needed for core functionality"
-            )
-        } else {
-            startLocationPermissionRequest()
-        }
+        if (shouldProvideRationale) showToast("Location permission is needed for core functionality") else startLocationPermissionRequest()
     }
-
-    private fun showCustomSnackBar(mainTextStringId: String) = showToast(mainTextStringId)
 
     override fun onRequestPermissionsResult(
         requestCode: Int, permissions: Array<String>,
@@ -110,7 +102,7 @@ class OnBoardScreenDukaanLocationFragment : BaseFragment(), IStoreAddressService
                     getLastLocation()
                 }
                 else -> {
-                    showCustomSnackBar("Permission was denied")
+                    showToast("Permission was denied")
                 }
             }
         }
@@ -165,7 +157,7 @@ class OnBoardScreenDukaanLocationFragment : BaseFragment(), IStoreAddressService
     }
 
     override fun onLocationChanged(location: Location) {
-        showToast("onLocationChanged() Latitude: " + location.latitude + " , Longitude: " + location.longitude)
+        Log.d(TAG, "onLocationChanged() Latitude: " + location.latitude + " , Longitude: " + location.longitude)
     }
 
     override fun onStatusChanged(p0: String?, p1: Int, p2: Bundle?) {

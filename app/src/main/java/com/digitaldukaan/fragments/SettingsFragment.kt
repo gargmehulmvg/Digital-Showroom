@@ -346,7 +346,6 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
     }
 
     override fun onStoreSettingItemClicked(storeResponse: StoreOptionsResponse) {
-        showToast(storeResponse.mText)
         checkStoreOptionClick(storeResponse)
     }
 

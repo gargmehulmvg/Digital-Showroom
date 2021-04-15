@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.StyleSpan
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -163,7 +164,7 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
     }
 
     override fun onCategoryItemsClickResponse(response: MasterCatalogItemResponse?) {
-        showToast()
+        Log.d(TAG, "onCategoryItemsClickResponse: ${response?.itemName}")
     }
 
     override fun onCategoryItemsImageClick(response: MasterCatalogItemResponse?) {
@@ -284,7 +285,7 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
     }
 
     override fun onToolbarSideIconClicked() {
-        showToast()
+        Log.d(TAG, "onToolbarSideIconClicked: do nothing")
     }
 
 }

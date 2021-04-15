@@ -23,6 +23,7 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
 
     private lateinit var mHeaderText: String
     private lateinit var mLoadUrl: String
+    private val mTagName = "CommonWebViewFragment"
 
     fun newInstance(headerText: String, loadUrl:String): CommonWebViewFragment {
         val fragment = CommonWebViewFragment()
@@ -74,9 +75,7 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
     }
 
     override fun sendData(data: String) {
-        CoroutineScopeUtils().runTaskOnCoroutineMain {
-            showToast(data)
-        }
+        Log.d(mTagName, "sendData: $data")
     }
 
     class WebViewController : WebViewClient() {
