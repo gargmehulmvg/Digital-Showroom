@@ -18,6 +18,7 @@ class Constants {
         const val USER_MOBILE_NUMBER = "USER_MOBILE_NUMBER"
         const val STORE_NAME = "STORE_NAME"
         const val WEB_VIEW_HELP = "help"
+        const val WEB_VIEW_TNC = "tnc"
         const val WEB_VIEW_NO_ORDER_PAGE = "noorderspage"
         const val WEB_VIEW_QR_DOWNLOAD = "qr"
         const val WEB_VIEW_CREATIVE_LIST = "creative-list"

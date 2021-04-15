@@ -75,6 +75,7 @@
     <string name="premium">Premium</string>
     <string name="delete_product">Delete Product</string>
     <string name="are_you_sure_to_delete">Are you sure to delete this item permanently?</string>
+    <string name="term_and_condition"><![CDATA[Terms & Condition]]></string>
     <string-array name="state_array">
         <item >Andhra Pradesh</item>
         <item >Arunachal Pradesh</item>

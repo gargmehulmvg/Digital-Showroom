@@ -21,6 +21,7 @@ import com.digitaldukaan.services.serviceinterface.IPremiumPageInfoServiceInterf
 import com.digitaldukaan.webviews.WebViewBridge
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.layout_premium_fragment.*
+import org.json.JSONObject
 
 
 class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface {
@@ -58,9 +59,6 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
         }
         showProgressDialog(mActivity)
         mService.getPremiumPageInfo()
-        testTextView.setOnClickListener {
-            launchFragment(EditPremiumFragment.newInstance(mStaticText, premiumPageInfoResponse), true)
-        }
     }
 
     override fun onNativeBackPressed() {
@@ -87,7 +85,6 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
                 webViewClient = object : WebViewClient() {
                     override fun onPageFinished(view: WebView, url: String) {
                         stopProgress()
-                        callBackClosed()
                     }
                 }
             }
@@ -95,13 +92,13 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
     }
 
     override fun sendData(data: String) {
-        showToast(data)
-    }
-
-    fun callBackClosed() {
-        Log.d(TAG, "callBackClosed: called")
-        val scriptToRun = "javascript:callBackClosed('Mehul')"
-        commonWebView.loadUrl(scriptToRun)
+        Log.d(TAG, "sendData: $data")
+        val jsonData = JSONObject(data)
+        if (jsonData.optBoolean("redirectNative")) {
+            launchFragment(EditPremiumFragment.newInstance(mStaticText, premiumPageInfoResponse), true)
+        } else if (jsonData.optBoolean("redirectBrowser")) {
+            openUrlInBrowser(jsonData.optString("data"))
+        }
     }
 
     override fun onPremiumPageInfoServerException(e: Exception) {

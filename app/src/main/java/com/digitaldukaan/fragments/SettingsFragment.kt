@@ -324,7 +324,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                 response.mText, mAppSettingsResponseStaticData), true)
             Constants.PAGE_REWARDS -> launchFragment(
                 CommonWebViewFragment().newInstance(
-                    getString(R.string.help),
+                    getString(R.string.my_rewards),
                     BuildConfig.WEB_VIEW_URL + Constants.WEB_VIEW_REWARDS + "?storeid=${getStringDataFromSharedPref(
                         Constants.STORE_ID
                     )}&" + "redirectFrom=settings&token=${getStringDataFromSharedPref(

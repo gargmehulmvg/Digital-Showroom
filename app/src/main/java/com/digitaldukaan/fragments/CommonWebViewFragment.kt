@@ -4,18 +4,22 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.widget.PopupMenu
+import androidx.core.content.ContextCompat
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
+import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.ToolBarManager
+import com.digitaldukaan.constants.openWebViewFragment
+import com.digitaldukaan.interfaces.IOnToolbarIconClick
 import com.digitaldukaan.webviews.WebViewBridge
 import kotlinx.android.synthetic.main.layout_common_webview_fragment.*
 
-class CommonWebViewFragment : BaseFragment() {
+class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
+    PopupMenu.OnMenuItemClickListener {
 
     private lateinit var mHeaderText: String
     private lateinit var mLoadUrl: String
@@ -38,8 +42,15 @@ class CommonWebViewFragment : BaseFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        ToolBarManager.getInstance().apply {
-            hideToolBar(mActivity, true)
+        if (mHeaderText == getString(R.string.my_rewards)) {
+            ToolBarManager.getInstance().apply {
+                hideToolBar(mActivity, false)
+                setHeaderTitle(mHeaderText)
+                setSideIconVisibility(true)
+                setSideIcon(ContextCompat.getDrawable(mActivity, R.drawable.ic_options_menu), this@CommonWebViewFragment)
+            }
+        } else {
+            ToolBarManager.getInstance().apply { hideToolBar(mActivity, true) }
         }
         commonWebView.apply {
             commonWebView.webViewClient = WebViewController()
@@ -53,6 +64,19 @@ class CommonWebViewFragment : BaseFragment() {
         Handler(Looper.getMainLooper()).postDelayed({
             stopProgress()
         }, Constants.TIMER_INTERVAL)
+        WebViewBridge.mWebViewListener = this
+    }
+
+    override fun onNativeBackPressed() {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            mActivity.onBackPressed()
+        }
+    }
+
+    override fun sendData(data: String) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            showToast(data)
+        }
     }
 
     class WebViewController : WebViewClient() {
@@ -61,6 +85,22 @@ class CommonWebViewFragment : BaseFragment() {
             view.loadUrl(url)
             return true
         }
+    }
+
+    override fun onToolbarSideIconClicked() {
+        val sideView:View = mActivity.findViewById(R.id.sideIconToolbar)
+        val optionsMenu = PopupMenu(mActivity, sideView)
+        optionsMenu.inflate(R.menu.menu_product_fragment)
+        optionsMenu.menu?.add(Menu.NONE, 0, Menu .NONE, getString(R.string.term_and_condition))
+        optionsMenu.menu?.add(Menu.NONE, 1, Menu .NONE, getString(R.string.help))
+        optionsMenu.setOnMenuItemClickListener(this)
+        optionsMenu.show()
+    }
+
+    override fun onMenuItemClick(item: MenuItem?): Boolean {
+        if (0 == item?.itemId) openWebViewFragment(this, getString(R.string.help), Constants.WEB_VIEW_TNC, Constants.SETTINGS)
+        if (1 == item?.itemId) openWebViewFragment(this, getString(R.string.help), Constants.WEB_VIEW_HELP, Constants.SETTINGS)
+        return true
     }
 
 }

@@ -137,7 +137,6 @@
             android:imeOptions="actionSearch"
             android:importantForAutofill="no"
             android:inputType="text"
-            android:text="apple"
             android:textSize="@dimen/_14sdp"
             app:layout_constraintEnd_toEndOf="@+id/bottomSheetUploadImageHeading"
             app:layout_constraintStart_toStartOf="@+id/bottomSheetUploadImageHeading"

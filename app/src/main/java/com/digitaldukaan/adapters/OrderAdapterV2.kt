@@ -102,20 +102,20 @@ class OrderAdapterV2(
                 orderAddressTextView.text = mOrderPageInfoStaticData?.newText
                 orderAddressTextView.setTextColor(mContext.getColor(R.color.open_green))
                 orderAddressTextView.background = ContextCompat.getDrawable(mContext, R.drawable.order_adapter_new)
+                orderCheckBox.isEnabled = false
+                orderCheckBox.alpha = 0.2f
             }
             Constants.DS_SEND_BILL -> {
                 orderAddressTextView.setTextColor(mContext.getColor(R.color.orange))
                 orderAddressTextView.background = ContextCompat.getDrawable(mContext, R.drawable.order_adapter_send_bill)
                 orderAddressTextView.text = mOrderPageInfoStaticData?.sendBillText
-                orderCheckBox.isEnabled = false
-                orderCheckBox.alpha = 0.2f
+                orderCheckBox.isEnabled = true
             }
             Constants.DS_BILL_SENT -> {
                 orderAddressTextView.setTextColor(mContext.getColor(R.color.snack_bar_background))
                 orderAddressTextView.background = ContextCompat.getDrawable(mContext, R.drawable.order_adapter_bill_sent)
                 orderAddressTextView.text = mOrderPageInfoStaticData?.sentBillText
-                orderCheckBox.isEnabled = false
-                orderCheckBox.alpha = 0.2f
+                orderCheckBox.isEnabled = true
             }
             Constants.DS_PAID_ONLINE -> {
                 orderAddressTextView.setTextColor(mContext.getColor(R.color.open_green))
