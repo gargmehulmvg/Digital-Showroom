@@ -17,9 +17,9 @@ class SendBillPhotoService {
         mServiceInterface = listener
     }
 
-    fun generateCDNLink(authToken: String, imageType: RequestBody, file: MultipartBody.Part?) {
+    fun generateCDNLink(imageType: RequestBody, file: MultipartBody.Part?) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.convertFileToLinkServerCall(authToken, imageType, file, mServiceInterface)
+            mNetworkService.convertFileToLinkServerCall(imageType, file, mServiceInterface)
         }
     }
 

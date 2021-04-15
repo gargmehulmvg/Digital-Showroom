@@ -16,9 +16,9 @@ class ProfilePhotoService {
         mServiceInterface = serviceInterface
     }
 
-    fun generateCDNLink(authToken: String, imageType: RequestBody, file: MultipartBody.Part?) {
+    fun generateCDNLink(imageType: RequestBody, file: MultipartBody.Part?) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.getImageUploadCdnLinkServerCall(authToken, imageType, file, mServiceInterface)
+            mNetworkService.getImageUploadCdnLinkServerCall(imageType, file, mServiceInterface)
         }
     }
 

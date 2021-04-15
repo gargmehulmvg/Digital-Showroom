@@ -2,6 +2,7 @@ package com.digitaldukaan.services.networkservice
 
 import android.util.Log
 import com.digitaldukaan.models.request.AddProductRequest
+import com.digitaldukaan.models.request.DeleteItemRequest
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.network.RetrofitApi
 import com.digitaldukaan.services.serviceinterface.IAddProductServiceInterface
@@ -100,13 +101,12 @@ class AddProductNetworkService {
     }
 
     suspend fun convertFileToLinkServerCall(
-        authToken: String,
         imageType: RequestBody,
         imageFile: MultipartBody.Part?,
         serviceInterface: IAddProductServiceInterface
     ) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.getImageUploadCdnLink(authToken, imageType, imageFile)
+            val response = RetrofitApi().getServerCallObject()?.getImageUploadCdnLink(imageType, imageFile)
             response?.let {
                 if (it.isSuccessful) {
                     it.body()?.let { commonApiResponse -> serviceInterface.onConvertFileToLinkResponse(commonApiResponse)
@@ -126,6 +126,33 @@ class AddProductNetworkService {
             }
         } catch (e: Exception) {
             Log.e(AddProductNetworkService::class.java.simpleName, "convertFileToLinkServerCall: ", e)
+            serviceInterface.onAddProductException(e)
+        }
+    }
+
+    suspend fun deleteItemServerCall(
+        request: DeleteItemRequest,
+        serviceInterface: IAddProductServiceInterface
+    ) {
+        try {
+            val response = RetrofitApi().getServerCallObject()?.deleteItem(request)
+            response?.let {
+                if (it.isSuccessful) {
+                    it.body()?.let { commonApiResponse -> serviceInterface.onDeleteItemResponse(commonApiResponse)
+                    }
+                } else {
+                    val responseBody = it.errorBody()
+                    responseBody?.let {
+                        val errorResponse = Gson().fromJson(
+                            responseBody.string(),
+                            CommonApiResponse::class.java
+                        )
+                        serviceInterface.onDeleteItemResponse(errorResponse)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(ProductNetworkService::class.java.simpleName, "deleteCategoryServerCall: ", e)
             serviceInterface.onAddProductException(e)
         }
     }

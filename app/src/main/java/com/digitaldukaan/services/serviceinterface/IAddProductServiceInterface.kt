@@ -12,6 +12,8 @@ interface IAddProductServiceInterface {
 
     fun onConvertFileToLinkResponse(commonResponse: CommonApiResponse)
 
+    fun onDeleteItemResponse(commonResponse: CommonApiResponse)
+
     fun onAddProductException(e: Exception)
 
 }

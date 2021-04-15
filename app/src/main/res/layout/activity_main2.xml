@@ -56,7 +56,7 @@
                 android:textColor="@color/black"
                 android:textSize="@dimen/_14sdp"
                 android:textStyle="bold"
-                app:layout_constraintEnd_toStartOf="@id/sideIconToolbar"
+                app:layout_constraintEnd_toStartOf="@+id/sideIcon2Toolbar"
                 app:layout_constraintStart_toEndOf="@id/backButtonToolbar"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="@string/app_name" />
@@ -89,6 +89,20 @@
                 android:visibility="invisible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/appTitleTextView"
+                app:tint="@color/black"
+                tools:ignore="ContentDescription" />
+
+            <ImageView
+                android:id="@+id/sideIcon2Toolbar"
+                android:layout_width="@dimen/_32sdp"
+                android:layout_height="0dp"
+                android:background="?selectableItemBackground"
+                android:padding="@dimen/_4sdp"
+                android:src="@drawable/ic_setting_toolbar"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/sideIconToolbar"
                 app:layout_constraintTop_toTopOf="@+id/appTitleTextView"
                 app:tint="@color/black"
                 tools:ignore="ContentDescription" />

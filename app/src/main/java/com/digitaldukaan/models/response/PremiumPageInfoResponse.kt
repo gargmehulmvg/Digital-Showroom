@@ -21,7 +21,21 @@ data class ThemeResponse(
     @SerializedName("is_quick_view") var isQuickView: Int,
     @SerializedName("category") var category: String,
     @SerializedName("colors") var colorItem: EditPremiumColorItemResponse,
+    @SerializedName("components") var themeComponent: ThemeComponentResponse,
     @SerializedName("expiry") var expiry: String
+)
+
+data class ThemeComponentResponse(
+    @SerializedName("Body") var body: ArrayList<ThemeBodyResponse>
+)
+
+data class ThemeBodyResponse(
+    @SerializedName("images") var images: ArrayList<ThemeBodyImagesItemResponse>
+)
+
+data class ThemeBodyImagesItemResponse(
+    @SerializedName("id") var id: Int,
+    @SerializedName("image_url") var imageUrl: String
 )
 
 data class PremiumPageInfoStaticTextResponse(

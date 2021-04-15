@@ -108,7 +108,7 @@ class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
 
     override fun onImageSelectionResultUri(fileUri: Uri?) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            launchFragment(EditPhotoFragment.newInstance(fileUri, Constants.EDIT_PHOTO_MODE_MOBILE, mStaticText), true)
+            launchFragment(EditPhotoFragment.newInstance(fileUri, Constants.EDIT_PHOTO_MODE_MOBILE, mStaticText, mPremiumPageInfoResponse), true)
         }
     }
 

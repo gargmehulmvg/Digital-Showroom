@@ -93,6 +93,7 @@ class Constants {
         const val BASE64_STORE_LOGO = "store_logo"
         const val BASE64_STORE_ITEMS = "store_items"
         const val BASE64_ORDER_BILL = "order_bill"
+        const val BASE64_THEMES = "themes"
         //CREATOR_TYPE
         const val CREATOR_TYPE_MERCHANT = 1
         const val CREATOR_TYPE_CUSTOMER = 2

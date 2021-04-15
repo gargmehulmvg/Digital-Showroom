@@ -50,7 +50,7 @@ interface Apis {
 
     @Multipart
     @POST("api/dotk/images/uploadImageToS3")
-    suspend fun getImageUploadCdnLink(@Header("auth_token") authToken: String, @Part("image_type") imageType: RequestBody, @Part file: MultipartBody.Part?): Response<CommonApiResponse>
+    suspend fun getImageUploadCdnLink(@Part("image_type") imageType: RequestBody, @Part file: MultipartBody.Part?): Response<CommonApiResponse>
 
     @GET("api/dotk/merchant/searchImages")
     suspend fun searchImagesFromBing(@Header("auth_token") authToken: String, @Query("search_text") searchText: String, @Query("store_id") storeId: String) : Response<ImagesSearchResponse>
@@ -122,7 +122,7 @@ interface Apis {
     suspend fun setItem(@Header("auth_token") authToken: String, @Body request: AddProductRequest): Response<CommonApiResponse>
 
     @POST("api/dotk/orders/completeOrder")
-    suspend fun completeOrder(@Header("auth_token") authToken: String, @Body request: CompleteOrderRequest): Response<CommonApiResponse>
+    suspend fun completeOrder(@Body request: CompleteOrderRequest): Response<CommonApiResponse>
 
     @GET("api/dotk/orders/getDeliveryTime")
     suspend fun getDeliveryTime(): Response<CommonApiResponse>
@@ -171,4 +171,10 @@ interface Apis {
 
     @POST("api/dotk/products/deleteCategory")
     suspend fun deleteCategory(@Body request: DeleteCategoryRequest): Response<CommonApiResponse>
+
+    @POST("api/dotk/products/deleteItem")
+    suspend fun deleteItem(@Body request: DeleteItemRequest): Response<CommonApiResponse>
+
+    @POST("api/dotk/premium/setStoreThemeBanner")
+    suspend fun setStoreThemeBanner(@Body request: StoreThemeBannerRequest): Response<CommonApiResponse>
 }

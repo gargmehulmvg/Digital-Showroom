@@ -2,6 +2,7 @@ package com.digitaldukaan.services
 
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.models.request.AddProductRequest
+import com.digitaldukaan.models.request.DeleteItemRequest
 import com.digitaldukaan.services.networkservice.AddProductNetworkService
 import com.digitaldukaan.services.serviceinterface.IAddProductServiceInterface
 import okhttp3.MultipartBody
@@ -35,9 +36,15 @@ class AddProductService {
         }
     }
 
-    fun generateCDNLink(authToken: String, imageType: RequestBody, file: MultipartBody.Part?) {
+    fun generateCDNLink(imageType: RequestBody, file: MultipartBody.Part?) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.convertFileToLinkServerCall(authToken, imageType, file, mServiceInterface)
+            mNetworkService.convertFileToLinkServerCall(imageType, file, mServiceInterface)
+        }
+    }
+
+    fun deleteItemServerCall(request: DeleteItemRequest) {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.deleteItemServerCall(request, mServiceInterface)
         }
     }
 

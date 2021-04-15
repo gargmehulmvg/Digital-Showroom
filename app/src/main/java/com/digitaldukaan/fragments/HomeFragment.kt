@@ -372,7 +372,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         val request = CompleteOrderRequest(item?.orderId?.toLong())
         if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else {
             showProgressDialog(mActivity)
-            mHomeFragmentService.completeOrder(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
+            mHomeFragmentService.completeOrder(request)
         }
     }
 

@@ -137,12 +137,11 @@ class HomeNetworkService {
     }
 
     suspend fun completeOrderServerCall(
-        authToken: String,
         request: CompleteOrderRequest,
         serviceInterface: IHomeServiceInterface
     ) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.completeOrder(authToken, request)
+            val response = RetrofitApi().getServerCallObject()?.completeOrder(request)
             response?.let {
                 if (it.isSuccessful) it.body()?.let { commonApiResponse -> serviceInterface.onCompleteOrderStatusResponse(commonApiResponse) }
                 else {

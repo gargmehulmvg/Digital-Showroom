@@ -121,7 +121,7 @@ class ProfilePhotoFragment : BaseFragment(), View.OnClickListener, IProfilePhoto
         } else {
             val fileRequestBody = MultipartBody.Part.createFormData("image", file.name, RequestBody.create("image/*".toMediaTypeOrNull(), file))
             val imageTypeRequestBody = RequestBody.create("text/plain".toMediaTypeOrNull(), Constants.BASE64_STORE_LOGO)
-            service.generateCDNLink(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), imageTypeRequestBody, fileRequestBody)
+            service.generateCDNLink(imageTypeRequestBody, fileRequestBody)
         }
     }
 

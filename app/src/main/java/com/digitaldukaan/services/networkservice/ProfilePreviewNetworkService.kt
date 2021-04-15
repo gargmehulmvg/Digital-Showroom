@@ -99,13 +99,12 @@ class ProfilePreviewNetworkService {
     }
 
     suspend fun getImageUploadCdnLinkServerCall(
-        authToken: String,
         imageType: RequestBody,
         imageFile: MultipartBody.Part?,
         serviceInterface: IProfilePreviewServiceInterface
     ) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.getImageUploadCdnLink(authToken, imageType, imageFile)
+            val response = RetrofitApi().getServerCallObject()?.getImageUploadCdnLink(imageType, imageFile)
             response?.let {
                 if (it.isSuccessful) {
                     it.body()?.let { storeLinkResponse ->

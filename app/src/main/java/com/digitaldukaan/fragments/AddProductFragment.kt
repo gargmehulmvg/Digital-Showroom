@@ -286,7 +286,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         showProgressDialog(mActivity)
         val fileRequestBody = MultipartBody.Part.createFormData("image", file.name, RequestBody.create("image/*".toMediaTypeOrNull(), file))
         val imageTypeRequestBody = RequestBody.create("text/plain".toMediaTypeOrNull(), Constants.BASE64_STORE_ITEMS)
-        mService.generateCDNLink(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), imageTypeRequestBody, fileRequestBody)
+        mService.generateCDNLink(imageTypeRequestBody, fileRequestBody)
         if (::imagePickBottomSheet.isInitialized) imagePickBottomSheet.dismiss()
     }
 
@@ -415,6 +415,16 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     addImageAdapter.setListToAdapter(mImagesListStr)
                 }
                 imagesLeftTextView.text = "${mImagesListStr?.size -1}/4 ${addProductStaticData?.text_images_added}"
+            } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
+        }
+    }
+
+    override fun onDeleteItemResponse(commonResponse: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            if (commonResponse.mIsSuccessStatus) {
+                showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_check_circle)
+                mActivity.onBackPressed()
             } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
         }
     }

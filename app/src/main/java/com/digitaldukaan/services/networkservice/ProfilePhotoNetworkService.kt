@@ -10,13 +10,12 @@ import okhttp3.RequestBody
 class ProfilePhotoNetworkService {
 
     suspend fun getImageUploadCdnLinkServerCall(
-        authToken: String,
         imageType: RequestBody,
         imageFile: MultipartBody.Part?,
         serviceInterface: IProfilePhotoServiceInterface
     ) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.getImageUploadCdnLink(authToken, imageType, imageFile)
+            val response = RetrofitApi().getServerCallObject()?.getImageUploadCdnLink(imageType, imageFile)
             response?.let {
                 if (it.isSuccessful) {
                     it.body()?.let { storeLinkResponse ->

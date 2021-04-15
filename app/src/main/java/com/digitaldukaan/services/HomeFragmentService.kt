@@ -36,9 +36,9 @@ class HomeFragmentService {
         }
     }
 
-    fun completeOrder(authToken: String, request: CompleteOrderRequest) {
+    fun completeOrder(request: CompleteOrderRequest) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.completeOrderServerCall(authToken , request, mServiceInterface)
+            mNetworkService.completeOrderServerCall(request, mServiceInterface)
         }
     }
 
