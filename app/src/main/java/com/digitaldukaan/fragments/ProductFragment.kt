@@ -1,30 +1,36 @@
 package com.digitaldukaan.fragments
 
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.*
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import android.widget.EditText
 import android.widget.ImageView
 import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
+import com.digitaldukaan.adapters.AddProductsChipsAdapter
 import com.digitaldukaan.adapters.SharePDFAdapter
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.constants.openWebViewFragment
+import com.digitaldukaan.interfaces.IChipItemClickListener
 import com.digitaldukaan.interfaces.IOnToolbarIconClick
+import com.digitaldukaan.models.request.UpdateCategoryRequest
 import com.digitaldukaan.models.response.*
 import com.digitaldukaan.services.ProductService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IProductServiceInterface
 import com.digitaldukaan.webviews.WebViewBridge
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.textfield.TextInputLayout
 import com.google.gson.Gson
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.product_fragment.*
@@ -36,7 +42,10 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
     private lateinit var mService: ProductService
     private var mOptionsMenuResponse: ArrayList<TrendingListResponse>? = null
     private var mShareDataOverWhatsAppText = ""
+    private var mUserCategoryResponse: AddProductStoreCategory? = null
     private var addProductBannerStaticDataResponse: AddProductBannerTextResponse? = null
+    private lateinit var addProductChipsAdapter: AddProductsChipsAdapter
+    private var mSelectedCategoryItem: AddStoreCategoryItem? = null
 
     companion object {
         private var addProductStaticData: AddProductStaticText? = null
@@ -52,6 +61,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
         mService = ProductService()
         mService.setOrderDetailServiceListener(this)
         WebViewBridge.mWebViewListener = this
+        mService.getUserCategories()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -78,18 +88,21 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
 
     override fun onProductResponse(commonResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            stopProgress()
             val productResponse = Gson().fromJson(commonResponse.mCommonDataStr, ProductPageResponse::class.java)
             addProductStaticData = productResponse?.static_text
             var url: String
             ToolBarManager.getInstance().setHeaderTitle(productResponse?.static_text?.product_page_heading)
             mOptionsMenuResponse = productResponse?.optionMenuList
             commonWebView.apply {
-                webViewClient = CommonWebViewFragment.WebViewController()
                 settings.javaScriptEnabled = true
                 addJavascriptInterface(WebViewBridge(), "Android")
                 url = BuildConfig.WEB_VIEW_URL + productResponse.product_page_url + "?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&" + "&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"
                 loadUrl(url)
+                webViewClient = object : WebViewClient() {
+                    override fun onPageFinished(view: WebView, url: String) {
+                        stopProgress()
+                    }
+                }
             }
             productResponse.shareShop.run {
                 shareButtonTextView.text = this.mText
@@ -97,10 +110,8 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
             productResponse.addProduct.run {
                 addProductTextView.text = this.mText
             }
-            showCancellableProgressDialog(mActivity)
-            Log.d(ProductFragment::class.simpleName, "onViewCreated: $url")
-            Handler(Looper.getMainLooper()).postDelayed({ stopProgress() }, Constants.TIMER_INTERVAL)
         }
+        stopProgress()
     }
 
     override fun onProductShareStorePDFDataResponse(commonResponse: CommonApiResponse) {
@@ -126,6 +137,22 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
         }
     }
 
+    override fun onUserCategoryResponse(commonResponse: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            if (commonResponse.mIsSuccessStatus) {
+                mUserCategoryResponse = Gson().fromJson<AddProductStoreCategory>(commonResponse.mCommonDataStr, AddProductStoreCategory::class.java)
+            }
+        }
+    }
+
+    override fun onUpdateCategoryResponse(commonResponse: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            commonWebView.reload()
+            showShortSnackBar(commonResponse.mMessage, true, if (commonResponse.mIsSuccessStatus) R.drawable.ic_check_circle else R.drawable.ic_close_red)
+        }
+    }
+
     private fun showPDFShareBottomSheet(response: ShareStorePDFDataItemResponse?) {
         val bottomSheetDialog = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
         val view = LayoutInflater.from(mActivity).inflate(
@@ -148,7 +175,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                 verifyTextView.text = response?.subHeading
                 verifyTextView.setOnClickListener{
                     showProgressDialog(mActivity)
-                    mService.generateProductStorePdf(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
+                    mService.generateProductStorePdf()
                     bottomSheetDialog.dismiss()
                 }
                 referAndEarnRecyclerView.apply {
@@ -170,7 +197,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                     return
                 } else {
                     showProgressDialog(mActivity)
-                    mService.getProductShareStoreData(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
+                    mService.getProductShareStoreData()
                 }
             }
         }
@@ -234,6 +261,73 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                 mService.getAddOrderBottomSheetData()
             } else showMaterCatalogBottomSheet(addProductBannerStaticDataResponse, addProductStaticData)
         }
+        else if (jsonData.optBoolean("catalogCategoryEdit")) {
+            val jsonDataObject = JSONObject(jsonData.optString("data"))
+            showColorBottomSheet(jsonDataObject.optString("name"), jsonDataObject.optInt("id"))
+        } else if (jsonData.optBoolean("catalogItemEdit")) {
+            val jsonDataObject = JSONObject(jsonData.optString("data"))
+            launchFragment(AddProductFragment.newInstance(jsonDataObject.optInt("id")), true)
+        }
+    }
+
+    private fun showColorBottomSheet(categoryName: String?, categoryId: Int) {
+        val bottomSheetDialog = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
+        val view = LayoutInflater.from(mActivity).inflate(
+            R.layout.bottom_sheet_edit_category,
+            mActivity.findViewById(R.id.bottomSheetContainer)
+        )
+        bottomSheetDialog.apply {
+            setContentView(view)
+            setBottomSheetCommonProperty()
+            view.run {
+                val categoryChipRecyclerView: RecyclerView = findViewById(R.id.categoryChipRecyclerView)
+                val deleteCategoryTextView: TextView = findViewById(R.id.deleteCategoryTextView)
+                val editCategoryTextView: TextView = findViewById(R.id.editCategoryTextView)
+                val categoryNameTextView: TextView = findViewById(R.id.categoryNameTextView)
+                val saveTextView: TextView = findViewById(R.id.saveTextView)
+                val categoryNameEditText: EditText = findViewById(R.id.categoryNameEditText)
+                val categoryNameInputLayout: TextInputLayout = findViewById(R.id.categoryNameInputLayout)
+                editCategoryTextView.text = addProductStaticData?.bottom_sheet_heading_edit_category
+                categoryNameTextView.text = addProductStaticData?.bottom_sheet_category_name
+                categoryNameInputLayout.hint = addProductStaticData?.bottom_sheet_hint_category_name
+                deleteCategoryTextView.text = addProductStaticData?.bottom_sheet_delete_category
+                saveTextView.text = addProductStaticData?.bottom_sheet_save
+                categoryNameEditText.setText(categoryName)
+                mUserCategoryResponse?.storeCategoriesList?.run {
+                    categoryChipRecyclerView.apply {
+                        layoutManager = StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL)
+                        val list = mUserCategoryResponse?.storeCategoriesList
+                        list?.forEachIndexed { _, categoryItem -> categoryItem.isSelected = (categoryItem.id == categoryId) }
+                        if (list?.isNotEmpty() == true)
+                            addProductChipsAdapter = AddProductsChipsAdapter(list, object : IChipItemClickListener {
+                                    override fun onChipItemClickListener(position: Int) {
+                                        list.forEachIndexed { _, categoryItem -> categoryItem.isSelected = false }
+                                        list[position].isSelected = true
+                                        categoryNameEditText.setText(list[position].name)
+                                        mSelectedCategoryItem = list[position]
+                                        addProductChipsAdapter.setAddProductStoreCategoryList(list)
+                                    }
+                                })
+                        adapter = addProductChipsAdapter
+                    }
+                }
+                saveTextView.setOnClickListener {
+                    val categoryNameInputByUser = categoryNameEditText.text.toString()
+                    val request = if (categoryNameInputByUser.equals(mSelectedCategoryItem?.name, true)) {
+                        UpdateCategoryRequest(categoryId, mSelectedCategoryItem?.name)
+                    } else {
+                        UpdateCategoryRequest(categoryId, categoryNameInputByUser)
+                    }
+                    if (!isInternetConnectionAvailable(mActivity)) {
+                        showNoInternetConnectionDialog()
+                        return@setOnClickListener
+                    }
+                    bottomSheetDialog.dismiss()
+                    showProgressDialog(mActivity)
+                    mService.updateCategory(request)
+                }
+            }
+        }.show()
     }
 
 }

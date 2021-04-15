@@ -68,7 +68,7 @@ interface Apis {
     suspend fun getShareStoreData(@Header("auth_token") authToken: String): Response<CommonApiResponse>
 
     @POST("api/dotk/products/shareStore")
-    suspend fun getProductShareStoreData(@Header("auth_token") authToken: String): Response<CommonApiResponse>
+    suspend fun getProductShareStoreData(): Response<CommonApiResponse>
 
     @GET("api/dotk/marketing/shareStorePdfText")
     suspend fun getShareStorePdfText(@Header("auth_token") authToken: String): Response<CommonApiResponse>
@@ -80,7 +80,7 @@ interface Apis {
     suspend fun generateStorePdf(@Header("auth_token") authToken: String): Response<CommonApiResponse>
 
     @POST("api/dotk/marketing/generateStorePdf")
-    suspend fun generateProductStorePdf(@Header("auth_token") authToken: String): Response<CommonApiResponse>
+    suspend fun generateProductStorePdf(): Response<CommonApiResponse>
 
     @POST("api/dotk/settings/setDeliveryInfo")
     suspend fun updateDeliveryInfo(@Header("auth_token") authToken: String, @Body request: MoreControlsRequest): Response<CommonApiResponse>
@@ -156,4 +156,13 @@ interface Apis {
 
     @POST("api/dotk/premium/setStoreThemeColorPalette")
     suspend fun setStoreThemeColorPalette(@Body request: EditPremiumColorRequest): Response<CommonApiResponse>
+
+    @POST("api/dotk/products/updateStock")
+    suspend fun updateStock(@Body request: UpdateStockRequest): Response<CommonApiResponse>
+
+    @GET("api/dotk/products/getUserCategories")
+    suspend fun getUserCategories(): Response<CommonApiResponse>
+
+    @POST("api/dotk/products/updateCategory")
+    suspend fun updateCategory(@Body request: UpdateCategoryRequest): Response<CommonApiResponse>
 }

@@ -1,6 +1,7 @@
 package com.digitaldukaan.services
 
 import com.digitaldukaan.constants.CoroutineScopeUtils
+import com.digitaldukaan.models.request.UpdateCategoryRequest
 import com.digitaldukaan.services.networkservice.ProductNetworkService
 import com.digitaldukaan.services.serviceinterface.IProductServiceInterface
 
@@ -32,15 +33,27 @@ class ProductService {
         }
     }
 
-    fun generateProductStorePdf(authToken: String) {
+    fun generateProductStorePdf() {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.generateProductStorePdfServerCall(authToken, mServiceInterface)
+            mNetworkService.generateProductStorePdfServerCall(mServiceInterface)
         }
     }
 
-    fun getProductShareStoreData(authToken: String) {
+    fun getProductShareStoreData() {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.getProductShareStoreDataServerCall(authToken, mServiceInterface)
+            mNetworkService.getProductShareStoreDataServerCall(mServiceInterface)
+        }
+    }
+
+    fun getUserCategories() {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.getUserCategoriesServerCall(mServiceInterface)
+        }
+    }
+
+    fun updateCategory(request: UpdateCategoryRequest) {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.updateCategoryServerCall(request, mServiceInterface)
         }
     }
 

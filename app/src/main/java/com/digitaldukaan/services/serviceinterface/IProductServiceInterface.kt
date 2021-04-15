@@ -14,6 +14,10 @@ interface IProductServiceInterface {
 
     fun onProductShareStoreWAResponse(commonResponse: CommonApiResponse)
 
+    fun onUserCategoryResponse(commonResponse: CommonApiResponse)
+
+    fun onUpdateCategoryResponse(commonResponse: CommonApiResponse)
+
     fun onProductException(e: Exception)
 
 }
