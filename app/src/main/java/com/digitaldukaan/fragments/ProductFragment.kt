@@ -26,6 +26,7 @@ import com.digitaldukaan.interfaces.IChipItemClickListener
 import com.digitaldukaan.interfaces.IOnToolbarIconClick
 import com.digitaldukaan.models.request.DeleteCategoryRequest
 import com.digitaldukaan.models.request.UpdateCategoryRequest
+import com.digitaldukaan.models.request.UpdateStockRequest
 import com.digitaldukaan.models.response.*
 import com.digitaldukaan.services.ProductService
 import com.digitaldukaan.services.isInternetConnectionAvailable
@@ -175,6 +176,14 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
         }
     }
 
+    override fun onUpdateStockResponse(commonResponse: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            commonWebView.reload()
+            showShortSnackBar(commonResponse.mMessage, true, if (commonResponse.mIsSuccessStatus) R.drawable.ic_check_circle else R.drawable.ic_close_red)
+        }
+    }
+
     private fun showPDFShareBottomSheet(response: ShareStorePDFDataItemResponse?) {
         val bottomSheetDialog = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
         val view = LayoutInflater.from(mActivity).inflate(
@@ -289,6 +298,15 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
         } else if (jsonData.optBoolean("catalogItemEdit")) {
             val jsonDataObject = JSONObject(jsonData.optString("data"))
             launchFragment(AddProductFragment.newInstance(jsonDataObject.optInt("id")), true)
+        } else if (jsonData.optBoolean("catalogStockUpdate")) {
+            val jsonDataObject = JSONObject(jsonData.optString("data"))
+            val request = UpdateStockRequest(jsonDataObject.optInt("id"), if (jsonDataObject.optInt("available") == 0) 1 else 0)
+            if (!isInternetConnectionAvailable(mActivity)) {
+                showNoInternetConnectionDialog()
+                return
+            }
+            showProgressDialog(mActivity)
+            mService.updateStock(request)
         }
     }
 

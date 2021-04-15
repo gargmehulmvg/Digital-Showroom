@@ -22,6 +22,8 @@ interface IProductServiceInterface {
 
     fun onDeleteCategoryResponse(commonResponse: CommonApiResponse)
 
+    fun onUpdateStockResponse(commonResponse: CommonApiResponse)
+
     fun onProductException(e: Exception)
 
 }

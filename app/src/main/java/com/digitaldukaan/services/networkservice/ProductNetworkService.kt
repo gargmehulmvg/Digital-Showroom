@@ -3,6 +3,7 @@ package com.digitaldukaan.services.networkservice
 import android.util.Log
 import com.digitaldukaan.models.request.DeleteCategoryRequest
 import com.digitaldukaan.models.request.UpdateCategoryRequest
+import com.digitaldukaan.models.request.UpdateStockRequest
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.network.RetrofitApi
 import com.digitaldukaan.services.serviceinterface.IProductServiceInterface
@@ -248,6 +249,33 @@ class ProductNetworkService {
             }
         } catch (e: Exception) {
             Log.e(ProductNetworkService::class.java.simpleName, "deleteCategoryServerCall: ", e)
+            serviceInterface.onProductException(e)
+        }
+    }
+
+    suspend fun updateStockServerCall(
+        request: UpdateStockRequest,
+        serviceInterface: IProductServiceInterface
+    ) {
+        try {
+            val response = RetrofitApi().getServerCallObject()?.updateStock(request)
+            response?.let {
+                if (it.isSuccessful) {
+                    it.body()?.let { commonApiResponse -> serviceInterface.onUpdateStockResponse(commonApiResponse)
+                    }
+                } else {
+                    val responseBody = it.errorBody()
+                    responseBody?.let {
+                        val errorResponse = Gson().fromJson(
+                            responseBody.string(),
+                            CommonApiResponse::class.java
+                        )
+                        serviceInterface.onUpdateStockResponse(errorResponse)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(ProductNetworkService::class.java.simpleName, "updateStockServerCall: ", e)
             serviceInterface.onProductException(e)
         }
     }
