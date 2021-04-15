@@ -26,7 +26,7 @@
                 android:layout_height="wrap_content"
                 android:animateLayoutChanges="true"
                 android:background="@color/add_product_banner_background"
-                android:padding="@dimen/_15sdp">
+                android:padding="@dimen/_12sdp">
 
                 <TextView
                     android:id="@+id/textView2"
@@ -34,6 +34,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/_5sdp"
                     android:fontFamily="sans-serif-medium"
+                    android:lineSpacingMultiplier="1.2"
                     android:maxWidth="@dimen/_175sdp"
                     android:minLines="@integer/min_lines_two"
                     android:textColor="@color/black"
@@ -47,10 +48,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/_5sdp"
-                    android:background="@drawable/curve_black_border"
+                    android:background="@drawable/curve_green_border"
+                    android:fontFamily="@font/roboto_medium"
                     android:onClick="onClick"
                     android:text="Try Now"
-                    android:textColor="@color/black"
+                    android:textColor="@color/open_green"
                     android:textSize="@dimen/_12sdp"
                     app:layout_constraintBottom_toBottomOf="@+id/textView2"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -87,7 +89,7 @@
                     android:id="@+id/imagesLeftContainer"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/_5sdp"
+                    android:layout_margin="@dimen/_7sdp"
                     app:cardCornerRadius="@dimen/_15sdp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
@@ -112,10 +114,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:contentDescription="@string/image_view_content_description"
+                    android:onClick="onClick"
                     android:src="@drawable/ic_camera_update"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    android:onClick="onClick"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintVertical_bias="0.4" />
@@ -126,9 +128,9 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-medium"
                     android:gravity="center"
-                    android:onClick="onClick"
                     android:maxWidth="@dimen/_100sdp"
                     android:minLines="@integer/min_lines_two"
+                    android:onClick="onClick"
                     android:paddingTop="@dimen/_10sdp"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_10sdp"
@@ -232,6 +234,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="@dimen/_14sdp"
+                    android:layout_marginTop="@dimen/_8sdp"
                     app:layout_constraintBottom_toBottomOf="@+id/discountedPriceInputLayout"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.25"
@@ -246,7 +249,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-medium"
                     android:textColor="@color/open_green"
-                    android:textSize="@dimen/_10sdp"
+                    android:textSize="@dimen/_11sdp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="@+id/discountedPriceTextView"
                     app:layout_constraintTop_toBottomOf="@+id/originalPriceTextView"
@@ -260,9 +263,10 @@
                     android:background="@drawable/slight_curve_red_background"
                     android:fontFamily="@font/montserrat_bold"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/_10sdp"
+                    android:textSize="@dimen/_11sdp"
                     android:visibility="invisible"
                     app:layout_constraintBottom_toBottomOf="@+id/originalPriceTextView"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/originalPriceTextView"
                     app:layout_constraintTop_toTopOf="@+id/originalPriceTextView"
                     tools:text="₹ 504" />
@@ -301,17 +305,18 @@
                 android:id="@+id/chipGroupRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
-                app:spanCount="2"
-                tools:listitem="@layout/chip_item_layout2"
                 android:layout_marginStart="@dimen/_20sdp"
                 android:layout_marginTop="@dimen/_10sdp"
-                android:layout_marginEnd="@dimen/_20sdp" />
+                android:layout_marginEnd="@dimen/_20sdp"
+                app:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
+                app:spanCount="2"
+                tools:listitem="@layout/chip_item_layout2" />
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_5sdp"
                 android:layout_marginTop="@dimen/_20sdp"
+                android:alpha="0.5"
                 android:background="@color/curve_grey_border" />
 
             <com.google.android.material.textview.MaterialTextView
@@ -319,11 +324,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_20sdp"
-                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_15sdp"
                 android:background="?selectableItemBackground"
+                android:fontFamily="@font/roboto_medium"
                 android:onClick="onClick"
                 android:textColor="@color/open_green"
-                android:textSize="@dimen/_12sdp"
+                android:textSize="@dimen/_13sdp"
                 tools:text="+ Add Item Description" />
 
             <com.google.android.material.textfield.TextInputLayout
@@ -331,12 +337,16 @@
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/_15sdp"
+                android:layout_marginStart="@dimen/_20sdp"
+                android:layout_marginEnd="@dimen/_20sdp"
+                android:layout_marginTop="@dimen/_15sdp"
                 android:visibility="gone"
+                app:counterMaxLength="@integer/description_name_length"
                 app:layout_constraintBottom_toTopOf="@+id/continueTextView"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
+                android:hint="Enter Description (Optional)"
                 app:layout_constraintVertical_bias="0.0">
 
                 <EditText
@@ -352,14 +362,13 @@
                     android:minLines="5"
                     android:textColor="@color/black"
                     android:textColorHint="@color/default_text_light_grey"
-                    android:textSize="@dimen/_12sdp"
-                    tools:hint="Enter Description (Optional)" />
+                    android:textSize="@dimen/_12sdp" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_50sdp" />
+                android:layout_height="@dimen/_75sdp" />
 
         </LinearLayout>
 

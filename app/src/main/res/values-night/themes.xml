@@ -15,26 +15,26 @@
     </style>
 
     <style name="common_bold_text_view">
-        <item name="fontFamily">@font/montserrat_bold</item>
+        <item name="fontFamily">@font/roboto_bold</item>
         <item name="android:textSize">@dimen/_22sdp</item>
         <item name="android:textColor">@color/black</item>
     </style>
 
     <style name="common_text_view_background">
-        <item name="fontFamily">@font/montserrat_bold</item>
+        <item name="fontFamily">@font/roboto_bold</item>
         <item name="android:textSize">@dimen/_16sdp</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:background">@drawable/curve_black_background_selector</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:paddingTop">@dimen/_5sdp</item>
-        <item name="android:paddingBottom">@dimen/_5sdp</item>
+        <item name="android:paddingTop">@dimen/_10sdp</item>
+        <item name="android:paddingBottom">@dimen/_10sdp</item>
         <item name="android:paddingStart">@dimen/_20sdp</item>
         <item name="android:paddingEnd">@dimen/_20sdp</item>
     </style>
 
     <style name="common_text_view_black_border">
-        <item name="fontFamily">@font/montserrat_bold</item>
+        <item name="fontFamily">@font/roboto_bold</item>
         <item name="android:textSize">@dimen/_16sdp</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:background">@drawable/curve_black_border</item>

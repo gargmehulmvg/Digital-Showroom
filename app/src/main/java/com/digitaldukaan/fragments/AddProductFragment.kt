@@ -91,7 +91,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             hideBackPressFromToolBar(mActivity, false)
             onBackPressed(this@AddProductFragment)
             setSideIconVisibility(true)
-            setSecondSideIconVisibility(true)
+            setSecondSideIconVisibility(mItemId != 0)
             setSecondSideIcon(ContextCompat.getDrawable(mActivity, R.drawable.ic_delete), this@AddProductFragment)
             setSideIcon(ContextCompat.getDrawable(mActivity, R.drawable.ic_options_menu), this@AddProductFragment)
         }
@@ -126,11 +126,11 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                         }
                         else -> {
                             discountedPriceTextView.visibility = View.VISIBLE
-                            originalPriceTextView.text = "${addProductStaticData?.text_rupees_symbol}${priceStr.toDouble()}"
-                            discountedPriceTextView.text = "${addProductStaticData?.text_rupees_symbol}${str.toDouble()}"
+                            originalPriceTextView.text = "${addProductStaticData?.text_rupees_symbol} ${priceStr.toDouble()}"
+                            discountedPriceTextView.text = "${addProductStaticData?.text_rupees_symbol} ${str.toDouble()}"
                             originalPriceTextView.showStrikeOffText()
                             val percentage = (str.toDouble() / priceStr.toDouble()) * 100
-                            pricePercentageOffTextView.text = "$percentage% OFF"
+                            pricePercentageOffTextView.text = "${percentage.toInt()}% OFF"
                         }
                     }
                 } else {
@@ -159,6 +159,8 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             addItemTextView.id -> {
                 addItemTextView.visibility = View.GONE
                 productDescriptionInputLayout.visibility = View.VISIBLE
+                productDescriptionEditText.requestFocus()
+                productDescriptionEditText.isFocusable = true
             }
             tryNowTextView.id -> {
                 if (addProductBannerStaticDataResponse == null) {
@@ -351,8 +353,8 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             addProductStaticData = addProductResponse?.addProductStaticText
             addProductResponse?.storeItem?.run {
                 nameEditText.setText(name)
-                priceEditText.setText(price.toString())
-                discountedPriceEditText.setText(discountedPrice.toString())
+                priceEditText.setText(if (price != 0.0) price.toString() else "")
+                discountedPriceEditText.setText(if (discountedPrice != 0.0) discountedPrice.toString() else "")
                 if (addProductResponse.storeItem.imagesList?.isNotEmpty() == true) {
                     noImagesLayout.visibility = View.GONE
                     imagesRecyclerView.apply {

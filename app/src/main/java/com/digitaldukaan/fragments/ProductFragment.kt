@@ -102,7 +102,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
             commonWebView.apply {
                 settings.javaScriptEnabled = true
                 addJavascriptInterface(WebViewBridge(), "Android")
-                url = BuildConfig.WEB_VIEW_URL + productResponse.product_page_url + "?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&" + "&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"
+                url = BuildConfig.WEB_VIEW_URL + productResponse.product_page_url + "?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"
                 loadUrl(url)
                 webViewClient = object : WebViewClient() {
                     override fun onPageFinished(view: WebView, url: String) {
@@ -112,9 +112,11 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
             }
             productResponse.shareShop.run {
                 shareButtonTextView.text = this.mText
+                //Picasso.get().load(mCDN).into(shareButtonImageView)
             }
             productResponse.addProduct.run {
                 addProductTextView.text = this.mText
+                //Picasso.get().load(mCDN).into(addProductImageView)
             }
         }
         stopProgress()
@@ -298,6 +300,8 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
         } else if (jsonData.optBoolean("catalogItemEdit")) {
             val jsonDataObject = JSONObject(jsonData.optString("data"))
             launchFragment(AddProductFragment.newInstance(jsonDataObject.optInt("id")), true)
+        } else if (jsonData.optBoolean("catalogAddItem")) {
+            launchFragment(AddProductFragment.newInstance(0), true)
         } else if (jsonData.optBoolean("catalogStockUpdate")) {
             val jsonDataObject = JSONObject(jsonData.optString("data"))
             val request = UpdateStockRequest(jsonDataObject.optInt("id"), if (jsonDataObject.optInt("available") == 0) 1 else 0)
