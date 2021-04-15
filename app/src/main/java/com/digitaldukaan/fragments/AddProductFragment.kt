@@ -9,6 +9,7 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.PopupMenu
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -24,9 +25,11 @@ import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.interfaces.IAdapterItemClickListener
 import com.digitaldukaan.interfaces.IChipItemClickListener
 import com.digitaldukaan.interfaces.IOnToolbarIconClick
+import com.digitaldukaan.interfaces.IOnToolbarSecondIconClick
 import com.digitaldukaan.models.request.AddProductImageItem
 import com.digitaldukaan.models.request.AddProductItemCategory
 import com.digitaldukaan.models.request.AddProductRequest
+import com.digitaldukaan.models.request.DeleteItemRequest
 import com.digitaldukaan.models.response.*
 import com.digitaldukaan.network.RetrofitApi
 import com.digitaldukaan.services.AddProductService
@@ -44,7 +47,8 @@ import java.io.File
 
 
 class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapterItemClickListener,
-    IChipItemClickListener, IOnToolbarIconClick, PopupMenu.OnMenuItemClickListener {
+    IChipItemClickListener, IOnToolbarIconClick, PopupMenu.OnMenuItemClickListener,
+    IOnToolbarSecondIconClick {
 
     private lateinit var mService: AddProductService
     private var addProductBannerStaticDataResponse: AddProductBannerTextResponse? = null
@@ -72,6 +76,13 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         mService.setServiceListener(this)
     }
 
+    override fun onStop() {
+        super.onStop()
+        ToolBarManager.getInstance().apply {
+            setSecondSideIconVisibility(false)
+        }
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.layout_add_product_fragment, container, false)
         ToolBarManager.getInstance().apply {
@@ -79,6 +90,8 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             hideBackPressFromToolBar(mActivity, false)
             onBackPressed(this@AddProductFragment)
             setSideIconVisibility(true)
+            setSecondSideIconVisibility(true)
+            setSecondSideIcon(ContextCompat.getDrawable(mActivity, R.drawable.ic_delete), this@AddProductFragment)
             setSideIcon(ContextCompat.getDrawable(mActivity, R.drawable.ic_options_menu), this@AddProductFragment)
         }
         hideBottomNavigationView(true)
@@ -464,5 +477,32 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     override fun onMenuItemClick(item: MenuItem?): Boolean {
         if (0 == item?.itemId) openUrlInBrowser(mOptionsMenuResponse?.get(0)?.mPage)
         return true
+    }
+
+    override fun onToolbarSecondIconClicked() {
+        showDeleteConfirmationDialog()
+    }
+
+    private fun showDeleteConfirmationDialog() {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            val builder: AlertDialog.Builder = AlertDialog.Builder(mActivity)
+            builder.apply {
+                setTitle(getString(R.string.delete_product))
+                setMessage(getString(R.string.are_you_sure_to_delete))
+                setCancelable(false)
+                setPositiveButton(getString(R.string.txt_yes)) { dialog, _ ->
+                    dialog.dismiss()
+                    if (!isInternetConnectionAvailable(mActivity)) {
+                        showNoInternetConnectionDialog()
+                        return@setPositiveButton
+                    }
+                    showProgressDialog(mActivity)
+                    mService.deleteItemServerCall(DeleteItemRequest(mItemId))
+                }
+                setNegativeButton(getString(R.string.text_no)) { dialog, _ -> dialog.dismiss() }
+            }
+            val alertDialog: AlertDialog = builder.create()
+            alertDialog.show()
+        }
     }
 }

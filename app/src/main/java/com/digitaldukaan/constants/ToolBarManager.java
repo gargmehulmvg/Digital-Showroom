@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment;
 import com.digitaldukaan.MainActivity;
 import com.digitaldukaan.R;
 import com.digitaldukaan.interfaces.IOnToolbarIconClick;
+import com.digitaldukaan.interfaces.IOnToolbarSecondIconClick;
 
 public class ToolBarManager {
 
@@ -45,8 +46,20 @@ public class ToolBarManager {
         }
     }
 
+    public void setSecondSideIcon(Drawable drawable, IOnToolbarSecondIconClick listener) {
+        ImageView imageView = mToolbar.findViewById(R.id.sideIcon2Toolbar);
+        imageView.setImageDrawable(drawable);
+        if (null != listener) {
+            imageView.setOnClickListener(v -> listener.onToolbarSecondIconClicked());
+        }
+    }
+
     public void setSideIconVisibility(boolean isVisible) {
         mToolbar.findViewById(R.id.sideIconToolbar).setVisibility(isVisible ? View.VISIBLE : View.GONE);
+    }
+
+    public void setSecondSideIconVisibility(boolean isVisible) {
+        mToolbar.findViewById(R.id.sideIcon2Toolbar).setVisibility(isVisible ? View.VISIBLE : View.GONE);
     }
 
     public void setupToolbar(Toolbar mToolbar) {

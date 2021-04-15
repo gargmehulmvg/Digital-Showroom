@@ -73,6 +73,8 @@
     <string name="marketing">Marketing</string>
     <string name="settings">Settings</string>
     <string name="premium">Premium</string>
+    <string name="delete_product">Delete Product</string>
+    <string name="are_you_sure_to_delete">Are you sure to delete this item permanently?</string>
     <string-array name="state_array">
         <item >Andhra Pradesh</item>
         <item >Arunachal Pradesh</item>
