@@ -54,13 +54,14 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     private var addProductBannerStaticDataResponse: AddProductBannerTextResponse? = null
     private var addProductStaticData: AddProductStaticText? = null
     private var mItemId = 0
-    private val mImagesListStr: ArrayList<String> = ArrayList()
+    private val mImagesStrList: ArrayList<String> = ArrayList()
     private lateinit var imagePickBottomSheet: BottomSheetDialog
     private var imageAdapter = ImagesSearchAdapter()
     private var mImageChangePosition = 0
     private var mAddProductStoreCategoryList: ArrayList<AddStoreCategoryItem>? = ArrayList()
     private lateinit var addProductChipsAdapter: AddProductsChipsAdapter
     private var mOptionsMenuResponse: ArrayList<TrendingListResponse>? = null
+    private var mImageAddAdapter: AddProductsImagesAdapter? = null
 
     companion object {
         fun newInstance(itemId:Int): AddProductFragment {
@@ -148,7 +149,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
 
         })
         showProgressDialog(mActivity)
-        mImagesListStr.add(0, "")
+        mImagesStrList.add(0, "")
         mService.getItemInfo(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), mItemId)
         return mContentView
     }
@@ -178,13 +179,14 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     val categoryStr = enterCategoryEditText.text.toString()
                     if (!isInternetConnectionAvailable(mActivity)) return else {
                         showProgressDialog(mActivity)
-                        val imageListRequest:ArrayList<AddProductImageItem> = ArrayList()
-                        mImagesListStr.forEachIndexed { _, str -> imageListRequest.add(
-                            AddProductImageItem(0, str, 1)
-                        ) }
-                        mImagesListStr.removeAt(0)
+                        val imageListRequest: ArrayList<AddProductImageItem> = ArrayList()
+                        mImagesStrList.forEachIndexed { _, str ->
+                            if (str.isNotEmpty()) {
+                                imageListRequest.add(AddProductImageItem(0, str, 1))
+                            }
+                        }
                         val request = AddProductRequest(
-                            0,
+                            mItemId,
                             1,
                             priceStr.toDouble(),
                             discountedStr.toDouble(),
@@ -216,7 +218,9 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 val bottomSheetUploadImageCloseImageView: ImageView = findViewById(R.id.bottomSheetUploadImageCloseImageView)
                 val bottomSheetUploadImageHeading: TextView = findViewById(R.id.bottomSheetUploadImageHeading)
                 val bottomSheetUploadImageCameraTextView: TextView = findViewById(R.id.bottomSheetUploadImageCameraTextView)
+                val bottomSheetUploadImageCamera: View = findViewById(R.id.bottomSheetUploadImageCamera)
                 val bottomSheetUploadImageGalleryTextView: TextView = findViewById(R.id.bottomSheetUploadImageGalleryTextView)
+                val bottomSheetUploadImageGallery: View = findViewById(R.id.bottomSheetUploadImageGallery)
                 val bottomSheetUploadImageSearchHeading: TextView = findViewById(R.id.bottomSheetUploadImageSearchHeading)
                 val bottomSheetUploadImageRemovePhotoTextView: TextView = findViewById(R.id.bottomSheetUploadImageRemovePhotoTextView)
                 val searchImageEditText: EditText = findViewById(R.id.searchImageEditText)
@@ -232,7 +236,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 bottomSheetUploadImageCloseImageView.setOnClickListener { if (imagePickBottomSheet.isShowing) imagePickBottomSheet.dismiss() }
                 bottomSheetUploadImageRemovePhotoTextView.visibility = if (position == 0) View.GONE else View.VISIBLE
                 bottomSheetUploadImageRemovePhoto.visibility = if (position == 0) View.GONE else View.VISIBLE
-                bottomSheetUploadImageCameraTextView.setOnClickListener {
+                bottomSheetUploadImageCamera.setOnClickListener {
                     imagePickBottomSheet.dismiss()
                     openCamera()
                 }
@@ -240,7 +244,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     imagePickBottomSheet.dismiss()
                     openCamera()
                 }
-                bottomSheetUploadImageGalleryTextView.setOnClickListener {
+                bottomSheetUploadImageGallery.setOnClickListener {
                     imagePickBottomSheet.dismiss()
                     openGallery()
                 }
@@ -250,11 +254,13 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 }
                 bottomSheetUploadImageRemovePhoto.setOnClickListener {
                     imagePickBottomSheet.dismiss()
-                    onImageSelectionResultFile(null)
+                    mImagesStrList.removeAt(mImageChangePosition)
+                    mImageAddAdapter?.setListToAdapter(mImagesStrList)
                 }
                 bottomSheetUploadImageRemovePhotoTextView.setOnClickListener {
                     imagePickBottomSheet.dismiss()
-                    onImageSelectionResultFile(null)
+                    mImagesStrList.removeAt(mImageChangePosition)
+                    mImageAddAdapter?.setListToAdapter(mImagesStrList)
                 }
                 imageAdapter.setSearchImageListener(this@AddProductFragment)
                 searchImageImageView.setOnClickListener {
@@ -351,11 +357,13 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     noImagesLayout.visibility = View.GONE
                     imagesRecyclerView.apply {
                         layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
-                        val list:ArrayList<String> = ArrayList()
+                        mImagesStrList.clear()
                         addProductResponse.storeItem.imagesList?.forEachIndexed { _, imagesResponse ->
-                            if (imagesResponse.status != 0) list.add(imagesResponse.imageUrl)
+                            if (imagesResponse.status != 0) mImagesStrList.add(imagesResponse.imageUrl)
                         }
-                        adapter = AddProductsImagesAdapter(list ,addProductStaticData?.text_images_added, this@AddProductFragment)
+                        mImagesStrList[0] = ""
+                        mImageAddAdapter = AddProductsImagesAdapter(mImagesStrList ,addProductStaticData?.text_images_added, this@AddProductFragment)
+                        adapter = mImageAddAdapter
                     }
                 } else {
                     imagesRecyclerView.visibility = View.GONE
@@ -411,23 +419,22 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             if (commonResponse.mIsSuccessStatus) {
                 showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_check_circle)
                 val base64Str = Gson().fromJson<String>(commonResponse.mCommonDataStr, String::class.java)
-                if (mImagesListStr.size == 1 || mImageChangePosition == 0) mImagesListStr.add(base64Str) else if (mImageChangePosition != 0) {
-                    mImagesListStr.removeAt(mImageChangePosition)
-                    mImagesListStr.add(mImageChangePosition, base64Str)
+                if (mImagesStrList.size == 1 || mImageChangePosition == 0) mImagesStrList.add(base64Str) else if (mImageChangePosition != 0) {
+                    mImagesStrList[mImageChangePosition] = base64Str
                 }
                 noImagesLayout.visibility = View.GONE
                 imagesRecyclerView.visibility = View.VISIBLE
                 imagesRecyclerView.apply {
                     layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
-                    val addImageAdapter = AddProductsImagesAdapter(
-                        mImagesListStr,
+                    mImageAddAdapter = AddProductsImagesAdapter(
+                        mImagesStrList,
                         addProductStaticData?.text_images_added,
                         this@AddProductFragment
                     )
-                    adapter = addImageAdapter
-                    addImageAdapter.setListToAdapter(mImagesListStr)
+                    adapter = mImageAddAdapter
+                    mImageAddAdapter?.setListToAdapter(mImagesStrList)
                 }
-                imagesLeftTextView.text = "${mImagesListStr?.size -1}/4 ${addProductStaticData?.text_images_added}"
+                imagesLeftTextView.text = "${mImagesStrList?.size -1}/4 ${addProductStaticData?.text_images_added}"
             } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
         }
     }

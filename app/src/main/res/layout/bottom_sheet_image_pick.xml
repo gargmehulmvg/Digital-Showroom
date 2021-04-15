@@ -33,9 +33,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textSize="@dimen/_18sdp"
-            app:layout_constraintEnd_toStartOf="@+id/bottomSheetUploadImageCloseImageView"
+            app:layout_constraintEnd_toStartOf="@id/bottomSheetUploadImageCloseImageView"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/bottomSheetUploadImageCloseImageView"
+            app:layout_constraintTop_toTopOf="@id/bottomSheetUploadImageCloseImageView"
             tools:text="Confirmation" />
 
         <TextView
@@ -48,7 +48,7 @@
             android:textSize="@dimen/_14sdp"
             app:layout_constraintEnd_toStartOf="@id/bottomSheetUploadImageCloseImageView"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/bottomSheetUploadImageCameraTextView"
+            app:layout_constraintTop_toBottomOf="@id/bottomSheetUploadImageCameraTextView"
             tools:text="Confirmation" />
 
         <ImageView
@@ -60,11 +60,11 @@
             android:contentDescription="@string/image_view_content_description"
             android:padding="@dimen/_5sdp"
             android:src="@drawable/ic_open_camera"
-            app:layout_constraintEnd_toStartOf="@+id/bottomSheetUploadImageGallery"
+            app:layout_constraintEnd_toStartOf="@id/bottomSheetUploadImageGallery"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintHorizontal_chainStyle="spread_inside"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/bottomSheetUploadImageHeading" />
+            app:layout_constraintTop_toBottomOf="@id/bottomSheetUploadImageHeading" />
 
         <TextView
             android:id="@+id/bottomSheetUploadImageCameraTextView"
@@ -73,9 +73,9 @@
             android:layout_marginTop="@dimen/_5sdp"
             android:fontFamily="@font/montserrat"
             android:textSize="@dimen/_10sdp"
-            app:layout_constraintEnd_toEndOf="@+id/bottomSheetUploadImageCamera"
-            app:layout_constraintStart_toStartOf="@+id/bottomSheetUploadImageCamera"
-            app:layout_constraintTop_toBottomOf="@+id/bottomSheetUploadImageCamera"
+            app:layout_constraintEnd_toEndOf="@id/bottomSheetUploadImageCamera"
+            app:layout_constraintStart_toStartOf="@id/bottomSheetUploadImageCamera"
+            app:layout_constraintTop_toBottomOf="@id/bottomSheetUploadImageCamera"
             tools:text="Take a photo" />
 
         <ImageView
@@ -86,11 +86,11 @@
             android:contentDescription="@string/image_view_content_description"
             android:padding="@dimen/_5sdp"
             android:src="@drawable/ic_gallery"
-            app:layout_constraintBottom_toBottomOf="@+id/bottomSheetUploadImageCamera"
-            app:layout_constraintEnd_toStartOf="@+id/bottomSheetUploadImageRemovePhoto"
+            app:layout_constraintBottom_toBottomOf="@id/bottomSheetUploadImageCamera"
+            app:layout_constraintEnd_toStartOf="@id/bottomSheetUploadImageRemovePhoto"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/bottomSheetUploadImageCamera"
-            app:layout_constraintTop_toTopOf="@+id/bottomSheetUploadImageCamera" />
+            app:layout_constraintStart_toEndOf="@id/bottomSheetUploadImageCamera"
+            app:layout_constraintTop_toTopOf="@id/bottomSheetUploadImageCamera" />
 
         <ImageView
             android:id="@+id/bottomSheetUploadImageRemovePhoto"
@@ -100,11 +100,11 @@
             android:contentDescription="@string/image_view_content_description"
             android:padding="@dimen/_5sdp"
             android:src="@drawable/ic_remove_photo"
-            app:layout_constraintBottom_toBottomOf="@+id/bottomSheetUploadImageGallery"
+            app:layout_constraintBottom_toBottomOf="@id/bottomSheetUploadImageGallery"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/bottomSheetUploadImageGallery"
-            app:layout_constraintTop_toTopOf="@+id/bottomSheetUploadImageGallery" />
+            app:layout_constraintStart_toEndOf="@id/bottomSheetUploadImageGallery"
+            app:layout_constraintTop_toTopOf="@id/bottomSheetUploadImageGallery" />
 
         <TextView
             android:id="@+id/bottomSheetUploadImageGalleryTextView"
@@ -112,9 +112,9 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/montserrat"
             android:textSize="@dimen/_10sdp"
-            app:layout_constraintEnd_toEndOf="@+id/bottomSheetUploadImageGallery"
-            app:layout_constraintStart_toEndOf="@+id/bottomSheetUploadImageCamera"
-            app:layout_constraintTop_toTopOf="@+id/bottomSheetUploadImageCameraTextView"
+            app:layout_constraintEnd_toEndOf="@id/bottomSheetUploadImageGallery"
+            app:layout_constraintStart_toEndOf="@id/bottomSheetUploadImageCamera"
+            app:layout_constraintTop_toTopOf="@id/bottomSheetUploadImageCameraTextView"
             tools:text="Take a photo" />
 
         <TextView
@@ -123,9 +123,9 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/montserrat"
             android:textSize="@dimen/_10sdp"
-            app:layout_constraintEnd_toEndOf="@+id/bottomSheetUploadImageRemovePhoto"
-            app:layout_constraintStart_toEndOf="@+id/bottomSheetUploadImageGallery"
-            app:layout_constraintTop_toTopOf="@+id/bottomSheetUploadImageGalleryTextView"
+            app:layout_constraintEnd_toEndOf="@id/bottomSheetUploadImageRemovePhoto"
+            app:layout_constraintStart_toEndOf="@id/bottomSheetUploadImageGallery"
+            app:layout_constraintTop_toTopOf="@id/bottomSheetUploadImageGalleryTextView"
             tools:text="Take a photo" />
 
         <EditText
@@ -138,9 +138,9 @@
             android:importantForAutofill="no"
             android:inputType="text"
             android:textSize="@dimen/_14sdp"
-            app:layout_constraintEnd_toEndOf="@+id/bottomSheetUploadImageHeading"
-            app:layout_constraintStart_toStartOf="@+id/bottomSheetUploadImageHeading"
-            app:layout_constraintTop_toBottomOf="@+id/bottomSheetUploadImageSearchHeading" />
+            app:layout_constraintEnd_toEndOf="@id/bottomSheetUploadImageHeading"
+            app:layout_constraintStart_toStartOf="@id/bottomSheetUploadImageHeading"
+            app:layout_constraintTop_toBottomOf="@id/bottomSheetUploadImageSearchHeading" />
 
         <ImageView
             android:id="@+id/searchImageImageView"
@@ -150,9 +150,9 @@
             android:contentDescription="@string/image_view_content_description"
             android:padding="@dimen/_7sdp"
             android:src="@drawable/ic_search"
-            app:layout_constraintBottom_toBottomOf="@+id/searchImageEditText"
-            app:layout_constraintEnd_toEndOf="@+id/searchImageEditText"
-            app:layout_constraintTop_toTopOf="@+id/searchImageEditText" />
+            app:layout_constraintBottom_toBottomOf="@id/searchImageEditText"
+            app:layout_constraintEnd_toEndOf="@id/searchImageEditText"
+            app:layout_constraintTop_toTopOf="@id/searchImageEditText" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
