@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.AddProductsChipsAdapter
+import com.digitaldukaan.adapters.DeleteCategoryAdapter
 import com.digitaldukaan.adapters.SharePDFAdapter
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
@@ -23,6 +24,7 @@ import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.constants.openWebViewFragment
 import com.digitaldukaan.interfaces.IChipItemClickListener
 import com.digitaldukaan.interfaces.IOnToolbarIconClick
+import com.digitaldukaan.models.request.DeleteCategoryRequest
 import com.digitaldukaan.models.request.UpdateCategoryRequest
 import com.digitaldukaan.models.response.*
 import com.digitaldukaan.services.ProductService
@@ -32,6 +34,7 @@ import com.digitaldukaan.webviews.WebViewBridge
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.textfield.TextInputLayout
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.product_fragment.*
 import org.json.JSONObject
@@ -46,6 +49,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
     private var addProductBannerStaticDataResponse: AddProductBannerTextResponse? = null
     private lateinit var addProductChipsAdapter: AddProductsChipsAdapter
     private var mSelectedCategoryItem: AddStoreCategoryItem? = null
+    private var mDeleteCategoryItemList: ArrayList<DeleteCategoryItemResponse?>? = null
 
     companion object {
         private var addProductStaticData: AddProductStaticText? = null
@@ -62,6 +66,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
         mService.setOrderDetailServiceListener(this)
         WebViewBridge.mWebViewListener = this
         mService.getUserCategories()
+        mService.getDeleteCategoryItem()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -145,7 +150,24 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
         }
     }
 
+    override fun onDeleteCategoryInfoResponse(commonResponse: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            if (commonResponse.mIsSuccessStatus) {
+                val listType = object : TypeToken<List<DeleteCategoryItemResponse?>>() {}.type
+                mDeleteCategoryItemList = Gson().fromJson<ArrayList<DeleteCategoryItemResponse?>>(commonResponse.mCommonDataStr, listType)
+            }
+        }
+    }
+
     override fun onUpdateCategoryResponse(commonResponse: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            commonWebView.reload()
+            showShortSnackBar(commonResponse.mMessage, true, if (commonResponse.mIsSuccessStatus) R.drawable.ic_check_circle else R.drawable.ic_close_red)
+        }
+    }
+
+    override fun onDeleteCategoryResponse(commonResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             commonWebView.reload()
@@ -263,14 +285,14 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
         }
         else if (jsonData.optBoolean("catalogCategoryEdit")) {
             val jsonDataObject = JSONObject(jsonData.optString("data"))
-            showColorBottomSheet(jsonDataObject.optString("name"), jsonDataObject.optInt("id"))
+            showUpdateCategoryBottomSheet(jsonDataObject.optString("name"), jsonDataObject.optInt("id"))
         } else if (jsonData.optBoolean("catalogItemEdit")) {
             val jsonDataObject = JSONObject(jsonData.optString("data"))
             launchFragment(AddProductFragment.newInstance(jsonDataObject.optInt("id")), true)
         }
     }
 
-    private fun showColorBottomSheet(categoryName: String?, categoryId: Int) {
+    private fun showUpdateCategoryBottomSheet(categoryName: String?, categoryId: Int) {
         val bottomSheetDialog = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
         val view = LayoutInflater.from(mActivity).inflate(
             R.layout.bottom_sheet_edit_category,
@@ -325,6 +347,43 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                     bottomSheetDialog.dismiss()
                     showProgressDialog(mActivity)
                     mService.updateCategory(request)
+                }
+                deleteCategoryTextView.setOnClickListener {
+                    bottomSheetDialog.dismiss()
+                    showDeleteCategoryBottomSheet(categoryName, categoryId)
+                }
+            }
+        }.show()
+    }
+    private fun showDeleteCategoryBottomSheet(categoryName: String?, categoryId: Int) {
+        val bottomSheetDialog = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
+        val view = LayoutInflater.from(mActivity).inflate(
+            R.layout.bottom_sheet_delete_category,
+            mActivity.findViewById(R.id.bottomSheetContainer)
+        )
+        bottomSheetDialog.apply {
+            setContentView(view)
+            setBottomSheetCommonProperty()
+            view.run {
+                val deleteCategoryRecyclerView: RecyclerView = findViewById(R.id.deleteCategoryRecyclerView)
+                val deleteCategoryTextView: TextView = findViewById(R.id.deleteCategoryTextView)
+                val categoryNameTextView: TextView = findViewById(R.id.categoryNameTextView)
+                deleteCategoryTextView.text = addProductStaticData?.bottom_sheet_delete_category
+                categoryNameTextView.text = categoryName
+                deleteCategoryRecyclerView.apply {
+                    layoutManager = LinearLayoutManager(mActivity)
+                    adapter = DeleteCategoryAdapter(mDeleteCategoryItemList, object : IChipItemClickListener {
+                        override fun onChipItemClickListener(position: Int) {
+                            if (mDeleteCategoryItemList?.get(position)?.action?.isEmpty() == true) {
+                                bottomSheetDialog.dismiss()
+                            } else {
+                                val request = DeleteCategoryRequest(categoryId, mDeleteCategoryItemList?.get(position)?.action == "true")
+                                bottomSheetDialog.dismiss()
+                                showProgressDialog(mActivity)
+                                mService.deleteCategory(request)
+                            }
+                        }
+                    })
                 }
             }
         }.show()

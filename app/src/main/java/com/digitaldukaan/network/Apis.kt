@@ -163,6 +163,12 @@ interface Apis {
     @GET("api/dotk/products/getUserCategories")
     suspend fun getUserCategories(): Response<CommonApiResponse>
 
+    @GET("api/dotk/products/getDeleteCategoryInfo")
+    suspend fun getDeleteCategoryInfo(): Response<CommonApiResponse>
+
     @POST("api/dotk/products/updateCategory")
     suspend fun updateCategory(@Body request: UpdateCategoryRequest): Response<CommonApiResponse>
+
+    @POST("api/dotk/products/deleteCategory")
+    suspend fun deleteCategory(@Body request: DeleteCategoryRequest): Response<CommonApiResponse>
 }

@@ -1,6 +1,7 @@
 package com.digitaldukaan.services
 
 import com.digitaldukaan.constants.CoroutineScopeUtils
+import com.digitaldukaan.models.request.DeleteCategoryRequest
 import com.digitaldukaan.models.request.UpdateCategoryRequest
 import com.digitaldukaan.services.networkservice.ProductNetworkService
 import com.digitaldukaan.services.serviceinterface.IProductServiceInterface
@@ -51,9 +52,21 @@ class ProductService {
         }
     }
 
+    fun getDeleteCategoryItem() {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.getDeleteCategoriesServerCall(mServiceInterface)
+        }
+    }
+
     fun updateCategory(request: UpdateCategoryRequest) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
             mNetworkService.updateCategoryServerCall(request, mServiceInterface)
+        }
+    }
+
+    fun deleteCategory(request: DeleteCategoryRequest) {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.deleteCategoryServerCall(request, mServiceInterface)
         }
     }
 

@@ -16,7 +16,11 @@ interface IProductServiceInterface {
 
     fun onUserCategoryResponse(commonResponse: CommonApiResponse)
 
+    fun onDeleteCategoryInfoResponse(commonResponse: CommonApiResponse)
+
     fun onUpdateCategoryResponse(commonResponse: CommonApiResponse)
+
+    fun onDeleteCategoryResponse(commonResponse: CommonApiResponse)
 
     fun onProductException(e: Exception)
 

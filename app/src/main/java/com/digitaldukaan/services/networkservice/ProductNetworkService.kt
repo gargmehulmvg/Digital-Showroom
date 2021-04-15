@@ -1,6 +1,7 @@
 package com.digitaldukaan.services.networkservice
 
 import android.util.Log
+import com.digitaldukaan.models.request.DeleteCategoryRequest
 import com.digitaldukaan.models.request.UpdateCategoryRequest
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.network.RetrofitApi
@@ -171,6 +172,32 @@ class ProductNetworkService {
         }
     }
 
+    suspend fun getDeleteCategoriesServerCall(
+        serviceInterface: IProductServiceInterface
+    ) {
+        try {
+            val response = RetrofitApi().getServerCallObject()?.getDeleteCategoryInfo()
+            response?.let {
+                if (it.isSuccessful) {
+                    it.body()?.let { commonApiResponse -> serviceInterface.onDeleteCategoryInfoResponse(commonApiResponse)
+                    }
+                } else {
+                    val responseBody = it.errorBody()
+                    responseBody?.let {
+                        val errorResponse = Gson().fromJson(
+                            responseBody.string(),
+                            CommonApiResponse::class.java
+                        )
+                        serviceInterface.onDeleteCategoryInfoResponse(errorResponse)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(ProductNetworkService::class.java.simpleName, "getDeleteCategoriesServerCall: ", e)
+            serviceInterface.onProductException(e)
+        }
+    }
+
     suspend fun updateCategoryServerCall(
         request: UpdateCategoryRequest,
         serviceInterface: IProductServiceInterface
@@ -194,6 +221,33 @@ class ProductNetworkService {
             }
         } catch (e: Exception) {
             Log.e(ProductNetworkService::class.java.simpleName, "updateCategoryServerCall: ", e)
+            serviceInterface.onProductException(e)
+        }
+    }
+
+    suspend fun deleteCategoryServerCall(
+        request: DeleteCategoryRequest,
+        serviceInterface: IProductServiceInterface
+    ) {
+        try {
+            val response = RetrofitApi().getServerCallObject()?.deleteCategory(request)
+            response?.let {
+                if (it.isSuccessful) {
+                    it.body()?.let { commonApiResponse -> serviceInterface.onDeleteCategoryResponse(commonApiResponse)
+                    }
+                } else {
+                    val responseBody = it.errorBody()
+                    responseBody?.let {
+                        val errorResponse = Gson().fromJson(
+                            responseBody.string(),
+                            CommonApiResponse::class.java
+                        )
+                        serviceInterface.onDeleteCategoryResponse(errorResponse)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(ProductNetworkService::class.java.simpleName, "deleteCategoryServerCall: ", e)
             serviceInterface.onProductException(e)
         }
     }
