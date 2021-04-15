@@ -380,7 +380,12 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     layoutManager = StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL)
                     mAddProductStoreCategoryList = addProductResponse.addProductStoreCategories?.storeCategoriesList
                     if (mAddProductStoreCategoryList?.isNotEmpty() == true)
-                        //mAddProductStoreCategoryList?.get(1)?.isSelected = true
+                        mAddProductStoreCategoryList?.forEachIndexed { _, categoryItem ->
+                            if (addProductResponse.storeItem.category.id == categoryItem.id) {
+                                enterCategoryEditText.setText(categoryItem.name)
+                                categoryItem.isSelected = true
+                            } else categoryItem.isSelected = false
+                        }
                     addProductChipsAdapter = AddProductsChipsAdapter(mAddProductStoreCategoryList, this@AddProductFragment)
                     adapter = addProductChipsAdapter
                 }
