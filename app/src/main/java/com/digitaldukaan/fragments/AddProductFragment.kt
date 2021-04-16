@@ -355,12 +355,12 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 nameEditText.setText(name)
                 priceEditText.setText(if (price != 0.0) price.toString() else "")
                 discountedPriceEditText.setText(if (discountedPrice != 0.0) discountedPrice.toString() else "")
-                if (addProductResponse.storeItem.imagesList?.isNotEmpty() == true) {
+                if (addProductResponse.storeItem?.imagesList?.isNotEmpty() == true) {
                     noImagesLayout.visibility = View.GONE
                     imagesRecyclerView.apply {
                         layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
                         mImagesStrList.clear()
-                        addProductResponse.storeItem.imagesList?.forEachIndexed { _, imagesResponse ->
+                        addProductResponse.storeItem?.imagesList?.forEachIndexed { _, imagesResponse ->
                             if (imagesResponse.status != 0) mImagesStrList.add(imagesResponse.imageUrl)
                         }
                         mImagesStrList[0] = ""

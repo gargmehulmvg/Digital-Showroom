@@ -6,7 +6,7 @@ data class AddProductResponse(
     @SerializedName("static_text") var addProductStaticText: AddProductStaticText?,
     @SerializedName("categories") var addProductStoreCategories: AddProductStoreCategory?,
     @SerializedName("option_menu") var addProductStoreOptionsMenu: ArrayList<TrendingListResponse>?,
-    @SerializedName("store_item") var storeItem: AddProductItemResponse
+    @SerializedName("store_item") var storeItem: AddProductItemResponse?
 )
 
 data class AddProductStoreCategory(
