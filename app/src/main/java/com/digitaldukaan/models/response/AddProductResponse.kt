@@ -59,7 +59,9 @@ data class AddProductStaticText(
     @SerializedName("text_upload_or_search_images") var text_upload_or_search_images: String?,
     @SerializedName("hint_discounted_price") var hint_discounted_price: String?,
 
-
+    @SerializedName("heading_view_store_as_a_customer") var heading_view_store_as_customer: String?,
+    @SerializedName("message_get_premium_website_for_your_showroom") var message_get_premium_website_for_your_showroom: String?,
+    @SerializedName("text_get_started") var text_get_started: String?,
 
     @SerializedName("bottom_sheet_heading_edit_category") var bottom_sheet_heading_edit_category: String?,
     @SerializedName("bottom_sheet_category_name") var bottom_sheet_category_name: String?,

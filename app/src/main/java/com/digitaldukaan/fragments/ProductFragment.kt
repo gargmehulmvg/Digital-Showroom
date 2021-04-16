@@ -303,6 +303,9 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
             launchFragment(AddProductFragment.newInstance(jsonDataObject.optInt("id")), true)
         } else if (jsonData.optBoolean("catalogAddItem")) {
             launchFragment(AddProductFragment.newInstance(0), true)
+        } else if (jsonData.optBoolean("viewShopAsCustomer")) {
+            val isPremiumEnable = (jsonData.optInt("isPremium") == 1)
+            launchFragment(ViewAsCustomerFragment.newInstance(jsonData.optString("domain"), isPremiumEnable, addProductStaticData), true)
         } else if (jsonData.optBoolean("catalogStockUpdate")) {
             val jsonDataObject = JSONObject(jsonData.optString("data"))
             val request = UpdateStockRequest(jsonDataObject.optInt("id"), if (jsonDataObject.optInt("available") == 0) 1 else 0)
