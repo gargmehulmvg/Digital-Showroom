@@ -264,7 +264,19 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         try {
             mActivity.startActivity(whatsAppIntent)
         } catch (ex: ActivityNotFoundException) {
-            showToast("Whatsapp have not been installed.")
+            showToast(ex.message)
+        }
+    }
+
+    open fun shareData(sharingData: String?, image: Bitmap?) {
+        val whatsAppIntent = Intent(Intent.ACTION_SEND)
+        whatsAppIntent.type = "text/plain"
+        image?.let { whatsAppIntent.putExtra(Intent.EXTRA_STREAM, image.getImageUri(mActivity)) }
+        whatsAppIntent.putExtra(Intent.EXTRA_TEXT, sharingData)
+        try {
+            mActivity.startActivity(whatsAppIntent)
+        } catch (ex: ActivityNotFoundException) {
+            showToast(ex.message)
         }
     }
 

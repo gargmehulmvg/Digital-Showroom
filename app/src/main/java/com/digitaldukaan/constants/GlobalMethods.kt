@@ -18,7 +18,9 @@ import com.digitaldukaan.models.response.ProfilePreviewSettingsKeyResponse
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
+import java.io.InputStream
 import java.net.URL
+import java.net.URLConnection
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
@@ -30,6 +32,23 @@ fun getBitmapFromURL(src: String?): Bitmap? {
     } catch (e: Exception) {
         null
     }
+}
+
+fun getBase64FromImageURL(url: String): String? {
+    try {
+        val imageUrl = URL(url)
+        val ucon: URLConnection = imageUrl.openConnection()
+        val `is`: InputStream = ucon.getInputStream()
+        val baos = ByteArrayOutputStream()
+        val buffer = ByteArray(1024)
+        var read: Int
+        while (`is`.read(buffer, 0, buffer.size).also { read = it } != -1) baos.write(buffer, 0, read)
+        baos.flush()
+        return Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT)
+    } catch (e: Exception) {
+        Log.d("Error", e.toString())
+    }
+    return null
 }
 
 fun getImageFileFromBitmap(bitmap: Bitmap, context: Context): File {

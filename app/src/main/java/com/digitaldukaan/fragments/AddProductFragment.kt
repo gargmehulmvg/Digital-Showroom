@@ -383,7 +383,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     mAddProductStoreCategoryList = addProductResponse.addProductStoreCategories?.storeCategoriesList
                     if (mAddProductStoreCategoryList?.isNotEmpty() == true)
                         mAddProductStoreCategoryList?.forEachIndexed { _, categoryItem ->
-                            if (addProductResponse.storeItem.category.id == categoryItem.id) {
+                            if (addProductResponse.storeItem?.category?.id == categoryItem.id) {
                                 enterCategoryEditText.setText(categoryItem.name)
                                 categoryItem.isSelected = true
                             } else categoryItem.isSelected = false

@@ -10,10 +10,7 @@ import android.webkit.WebViewClient
 import android.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import com.digitaldukaan.R
-import com.digitaldukaan.constants.Constants
-import com.digitaldukaan.constants.CoroutineScopeUtils
-import com.digitaldukaan.constants.ToolBarManager
-import com.digitaldukaan.constants.openWebViewFragment
+import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.IOnToolbarIconClick
 import com.digitaldukaan.webviews.WebViewBridge
 import kotlinx.android.synthetic.main.layout_common_webview_fragment.*
@@ -84,8 +81,15 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
             if (jsonData.optBoolean("shareType")) {
                 val imageUrl = jsonData.optString("data")
                 val domain = jsonData.optString("domain")
-                Log.d(mTagName, "image URL: $imageUrl")
-                shareDataOnWhatsAppWithImage("Order From - $domain", imageUrl)
+                Log.d(mTagName, "image URL :: $imageUrl")
+                Log.d(mTagName, "image BASE64 :: ${getBase64FromImageURL(domain)}")
+                //shareDataOnWhatsAppWithImage("Order From - $domain", imageUrl)
+            } else {
+                val imageBase64 = jsonData.optString("data")
+                Log.d(mTagName, "image URL :: $imageBase64")
+                val domain = jsonData.optString("domain")
+                val bitmap = getBitmapFromBase64(imageBase64)
+                shareData("Order From - $domain", bitmap)
             }
         }
     }
