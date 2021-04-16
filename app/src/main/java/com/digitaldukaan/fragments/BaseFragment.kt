@@ -269,38 +269,41 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     }
 
     open fun shareDataOnWhatsAppWithImage(sharingData: String?, photoStr: String?) {
-        Picasso.get().load(photoStr).into(object : com.squareup.picasso.Target {
-            override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
-                // loaded bitmap is here (bitmap)
-                bitmap?.let {
-                    val imgUri = it.getImageUri(mActivity)
-                    imgUri?.let {
-                        val whatsAppIntent = Intent(Intent.ACTION_SEND)
-                        whatsAppIntent.apply {
-                            type = "text/plain"
-                            setPackage("com.whatsapp")
-                            putExtra(Intent.EXTRA_TEXT, sharingData)
-                            putExtra(Intent.EXTRA_STREAM, imgUri)
-                            type = "image/jpeg"
-                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                            try {
-                                mActivity.startActivity(whatsAppIntent)
-                            } catch (ex: ActivityNotFoundException) {
-                                showToast("WhatsApp have not been installed.")
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            Picasso.get().load(photoStr).into(object : com.squareup.picasso.Target {
+                override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
+                    // loaded bitmap is here (bitmap)
+                    bitmap?.let {
+                        val imgUri = it.getImageUri(mActivity)
+                        Log.d(TAG, "onBitmapLoaded: $imgUri")
+                        imgUri?.let {
+                            val whatsAppIntent = Intent(Intent.ACTION_SEND)
+                            whatsAppIntent.apply {
+                                type = "text/plain"
+                                setPackage("com.whatsapp")
+                                putExtra(Intent.EXTRA_TEXT, sharingData)
+                                putExtra(Intent.EXTRA_STREAM, imgUri)
+                                type = "image/jpeg"
+                                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                try {
+                                    mActivity.startActivity(whatsAppIntent)
+                                } catch (ex: ActivityNotFoundException) {
+                                    showToast("WhatsApp have not been installed.")
+                                }
                             }
                         }
                     }
                 }
-            }
 
-            override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
-                Log.d("TAG", "onPrepareLoad: ")
-            }
+                override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
+                    Log.d(TAG, "onPrepareLoad: ")
+                }
 
-            override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
-                Log.d("TAG", "onBitmapFailed: ")
-            }
-        })
+                override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
+                    Log.d(TAG, "onBitmapFailed: ")
+                }
+            })
+        }
     }
 
     open fun startShinningAnimation(view: View) {

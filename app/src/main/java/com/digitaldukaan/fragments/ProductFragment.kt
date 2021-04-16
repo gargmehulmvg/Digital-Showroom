@@ -95,6 +95,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
     override fun onProductResponse(commonResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             val productResponse = Gson().fromJson(commonResponse.mCommonDataStr, ProductPageResponse::class.java)
+            bottomContainer.visibility = if (productResponse?.isZeroProduct == true) View.GONE else View.VISIBLE
             addProductStaticData = productResponse?.static_text
             var url: String
             ToolBarManager.getInstance().setHeaderTitle(productResponse?.static_text?.product_page_heading)

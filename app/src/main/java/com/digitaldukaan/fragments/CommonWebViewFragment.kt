@@ -17,6 +17,7 @@ import com.digitaldukaan.constants.openWebViewFragment
 import com.digitaldukaan.interfaces.IOnToolbarIconClick
 import com.digitaldukaan.webviews.WebViewBridge
 import kotlinx.android.synthetic.main.layout_common_webview_fragment.*
+import org.json.JSONObject
 
 class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
     PopupMenu.OnMenuItemClickListener {
@@ -54,7 +55,9 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
             ToolBarManager.getInstance().apply { hideToolBar(mActivity, true) }
         }
         commonWebView.apply {
-            commonWebView.webViewClient = WebViewController()
+            val webViewController = WebViewController()
+            webViewController.commonWebView = commonWebView
+            commonWebView.webViewClient = webViewController
             settings.javaScriptEnabled = true
             addJavascriptInterface(WebViewBridge(), "Android")
             Log.d(CommonWebViewFragment::class.simpleName, "onViewCreated: $mLoadUrl")
@@ -76,9 +79,25 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
 
     override fun sendData(data: String) {
         Log.d(mTagName, "sendData: $data")
+        val jsonData = JSONObject(data)
+        if (jsonData.optBoolean("shareCreative")) {
+            if (jsonData.optBoolean("shareType")) {
+                val imageUrl = jsonData.optString("data")
+                val domain = jsonData.optString("domain")
+                Log.d(mTagName, "image URL: $imageUrl")
+                shareDataOnWhatsAppWithImage("Order From - $domain", imageUrl)
+            }
+        }
     }
 
     class WebViewController : WebViewClient() {
+
+        var commonWebView: WebView? = null
+
+        override fun onPageFinished(view: WebView?, url: String?) {
+            Log.d("WebViewController", "onPageFinished: called")
+            commonWebView?.loadUrl("javascript: receiveAndroidData('Mehul')")
+        }
 
         override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
             view.loadUrl(url)
@@ -100,6 +119,10 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
         if (0 == item?.itemId) openWebViewFragment(this, getString(R.string.help), Constants.WEB_VIEW_TNC, Constants.SETTINGS)
         if (1 == item?.itemId) openWebViewFragment(this, getString(R.string.help), Constants.WEB_VIEW_HELP, Constants.SETTINGS)
         return true
+    }
+
+    override fun showAndroidToast(data: String) {
+        showToast(data)
     }
 
 }

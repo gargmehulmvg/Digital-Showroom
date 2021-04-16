@@ -22,4 +22,10 @@ class WebViewBridge {
         Log.d(WebViewBridge::class.simpleName, "sendData")
         mWebViewListener?.sendData(value)
     }
+
+    @JavascriptInterface
+    fun showAndroidToast(value: String) {
+        Log.d(WebViewBridge::class.simpleName, "showAndroidToast")
+        mWebViewListener?.showAndroidToast(value)
+    }
 }

@@ -84,6 +84,7 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
                 loadUrl(url)
                 webViewClient = object : WebViewClient() {
                     override fun onPageFinished(view: WebView, url: String) {
+                        Log.d(TAG, "onPageFinished: called")
                         stopProgress()
                     }
                 }
@@ -103,5 +104,9 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
 
     override fun onPremiumPageInfoServerException(e: Exception) {
         exceptionHandlingForAPIResponse(e)
+    }
+
+    override fun showAndroidToast(data: String) {
+        showToast(data)
     }
 }

@@ -5,4 +5,6 @@ interface IWebViewCallbacks {
     fun onNativeBackPressed()
 
     fun sendData(data: String)
+
+    fun showAndroidToast(data: String)
 }
