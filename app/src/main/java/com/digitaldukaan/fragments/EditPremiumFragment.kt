@@ -20,6 +20,7 @@ import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.EditPremiumColorItemResponse
 import com.digitaldukaan.models.response.PremiumPageInfoResponse
 import com.digitaldukaan.models.response.PremiumPageInfoStaticTextResponse
+import com.digitaldukaan.network.RetrofitApi
 import com.digitaldukaan.services.EditPremiumService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IEditPremiumServiceInterface
@@ -35,6 +36,7 @@ class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
     private var mPremiumPageInfoResponse: PremiumPageInfoResponse? = null
     private var mEditPremiumColorList: ArrayList<EditPremiumColorItemResponse?>? = null
     private var mSelectedColorId = 0
+    private var mShareDataOverWhatsAppText = ""
     private var mDefaultSelectedColorItem: EditPremiumColorItemResponse? = null
 
     companion object {
@@ -102,6 +104,29 @@ class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
             }
             changeImageContainer.id -> {
                 openGalleryWithoutCrop()
+            }
+            viewWebsiteImageView.id -> {
+                val url = "${BuildConfig.WEB_VIEW_PREVIEW_URL}${mPremiumPageInfoResponse?.domain}"
+                openUrlInBrowser(url)
+            }
+            whatsAppImageView.id -> {
+                if (mShareDataOverWhatsAppText.isNotEmpty()) {
+                    shareDataOnWhatsApp(mShareDataOverWhatsAppText)
+                } else if (!isInternetConnectionAvailable(mActivity)) {
+                    showNoInternetConnectionDialog()
+                    return
+                } else {
+                    showProgressDialog(mActivity)
+                    CoroutineScopeUtils().runTaskOnCoroutineBackground {
+                        val response = RetrofitApi().getServerCallObject()?.getProductShareStoreData()
+                        CoroutineScopeUtils().runTaskOnCoroutineMain {
+                            val commonResponse = response?.body()
+                            stopProgress()
+                            mShareDataOverWhatsAppText = Gson().fromJson<String>(commonResponse?.mCommonDataStr, String::class.java)
+                            shareDataOnWhatsApp(mShareDataOverWhatsAppText)
+                        }
+                    }
+                }
             }
         }
     }
