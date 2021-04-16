@@ -113,11 +113,11 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
             }
             productResponse.shareShop.run {
                 shareButtonTextView.text = this.mText
-                //Picasso.get().load(mCDN).into(shareButtonImageView)
+                if (mCDN.isNotEmpty()) Picasso.get().load(mCDN).into(shareButtonImageView)
             }
             productResponse.addProduct.run {
                 addProductTextView.text = this.mText
-                //Picasso.get().load(mCDN).into(addProductImageView)
+                if (mCDN.isNotEmpty()) Picasso.get().load(mCDN).into(addProductImageView)
             }
         }
         stopProgress()
