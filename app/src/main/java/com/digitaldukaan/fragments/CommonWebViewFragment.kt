@@ -82,7 +82,7 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
                 val imageUrl = jsonData.optString("data")
                 val domain = jsonData.optString("domain")
                 Log.d(mTagName, "image URL :: $imageUrl")
-                Log.d(mTagName, "image BASE64 :: ${getBase64FromImageURL(domain)}")
+                Log.d(mTagName, "image BASE64 :: ${getBase64FromImageURL(imageUrl)}")
                 //shareDataOnWhatsAppWithImage("Order From - $domain", imageUrl)
             } else {
                 val imageBase64 = jsonData.optString("data")
@@ -90,6 +90,13 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
                 val domain = jsonData.optString("domain")
                 val bitmap = getBitmapFromBase64(imageBase64)
                 shareData("Order From - $domain", bitmap)
+            }
+        } else if (jsonData.optBoolean("convertImage")) {
+            val imageUrl = jsonData.optString("data")
+            val image64 = getBase64FromImageURL(imageUrl)
+            Log.d(mTagName, "image BASE64 :: $image64")
+            CoroutineScopeUtils().runTaskOnCoroutineMain {
+                commonWebView?.loadUrl("javascript: receiveAndroidData('$image64')")
             }
         }
     }
