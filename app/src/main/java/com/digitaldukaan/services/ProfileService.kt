@@ -52,4 +52,9 @@ class ProfileService {
             mNetworkService.updateStoreLogoServerCall(authToken, request, mProfileServiceInterface)
         }
     }
+    fun getProductShareStoreData() {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.getProductShareStoreDataServerCall(mProfileServiceInterface)
+        }
+    }
 }

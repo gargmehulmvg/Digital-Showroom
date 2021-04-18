@@ -59,6 +59,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
     private var mReferAndEarnResponse: ReferAndEarnItemResponse? = null
     private var mAccountInfoResponse: AccountInfoResponse? = null
     private var mStoreLogo: String? = ""
+    private var mShareDataOverWhatsAppText = ""
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.layout_settings_fragment, container, false)
@@ -105,6 +106,15 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                 var storeLogo = mAccountInfoResponse?.mStoreInfo?.storeInfo?.logoImage
                 if (mStoreLogo?.isNotEmpty() == true) storeLogo = mStoreLogo
                 if (storeLogo?.isNotEmpty() == true) launchFragment(ProfilePhotoFragment.newInstance(storeLogo), true, storePhotoImageView) else askCameraPermission()
+            }
+            whatsAppTextView.id -> {
+                if (mShareDataOverWhatsAppText.isNotEmpty()) shareDataOnWhatsApp(mShareDataOverWhatsAppText) else if (!isInternetConnectionAvailable(mActivity)) {
+                    showNoInternetConnectionDialog()
+                    return
+                } else {
+                    showProgressDialog(mActivity)
+                    mProfileService.getProductShareStoreData()
+                }
             }
         }
     }
@@ -297,6 +307,14 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         }
     }
 
+    override fun onProductShareStoreWAResponse(commonResponse: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            mShareDataOverWhatsAppText = Gson().fromJson<String>(commonResponse.mCommonDataStr, String::class.java)
+            shareDataOnWhatsApp(mShareDataOverWhatsAppText)
+        }
+    }
+
     private fun setupUIFromProfileResponse(infoResponse: AccountInfoResponse) {
         StaticInstances.sIsStoreImageUploaded = (StaticInstances.sStoreInfo?.mStoreLogoStr?.isNotEmpty() == true)
         mProfileResponse = infoResponse
@@ -336,9 +354,9 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         stepsLeftTextView.text =
             if (remainingSteps == 1) "$remainingSteps ${infoResponse.mAccountStaticText?.mStepLeft}" else "$remainingSteps ${infoResponse.mAccountStaticText?.mStepsLeft}"
         completeProfileTextView.text = infoResponse.mAccountStaticText?.mCompleteProfile
-        whatsAppTextView.setOnClickListener {
-            shareDataOnWhatsApp(infoResponse.waShare)
-        }
+//        whatsAppTextView.setOnClickListener {
+//            shareDataOnWhatsApp(infoResponse.waShare)
+//        }
         storeStatusTextView.text = "${infoResponse.mAccountStaticText?.mStoreText} : ${infoResponse.mAccountStaticText?.mOffText}"
         storeSwitch.setOnCheckedChangeListener { _, isChecked ->
             run {

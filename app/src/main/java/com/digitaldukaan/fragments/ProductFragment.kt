@@ -167,6 +167,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             commonWebView.reload()
+            mService.getUserCategories()
             showShortSnackBar(commonResponse.mMessage, true, if (commonResponse.mIsSuccessStatus) R.drawable.ic_check_circle else R.drawable.ic_close_red)
         }
     }
@@ -175,6 +176,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             commonWebView.reload()
+            mService.getUserCategories()
             showShortSnackBar(commonResponse.mMessage, true, if (commonResponse.mIsSuccessStatus) R.drawable.ic_check_circle else R.drawable.ic_close_red)
         }
     }
@@ -361,6 +363,13 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                 }
                 saveTextView.setOnClickListener {
                     val categoryNameInputByUser = categoryNameEditText.text.toString()
+                    if (categoryNameInputByUser.trim().isEmpty()) {
+                        categoryNameEditText.apply {
+                            error = addProductStaticData?.error_mandatory_field
+                            requestFocus()
+                        }
+                        return@setOnClickListener
+                    }
                     val request = if (categoryNameInputByUser.equals(mSelectedCategoryItem?.name, true)) {
                         UpdateCategoryRequest(categoryId, mSelectedCategoryItem?.name)
                     } else {

@@ -36,8 +36,8 @@
 
             <ImageView
                 android:id="@+id/shareButtonImageView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="@dimen/_15sdp"
+                android:layout_height="@dimen/_15sdp"
                 android:contentDescription="@string/image_view_content_description"
                 tools:src="@drawable/ic_whatsapp"
                 android:clickable="false"
@@ -74,11 +74,11 @@
 
             <ImageView
                 android:id="@+id/addProductImageView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="@dimen/_15sdp"
+                android:layout_height="@dimen/_15sdp"
                 android:clickable="false"
                 android:contentDescription="@string/image_view_content_description"
-                tools:src="@drawable/ic_whatsapp"
+                tools:src="@drawable/ic_add_prod"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/addProductTextView"
                 app:layout_constraintHorizontal_bias="0.5"

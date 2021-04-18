@@ -3,8 +3,10 @@ package com.digitaldukaan.services.networkservice
 import android.util.Log
 import com.digitaldukaan.models.request.StoreDeliveryStatusChangeRequest
 import com.digitaldukaan.models.request.StoreLogoRequest
+import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.network.RetrofitApi
 import com.digitaldukaan.services.serviceinterface.IProfileServiceInterface
+import com.google.gson.Gson
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 
@@ -117,6 +119,32 @@ class ProfileNetworkService {
             }
         } catch (e: Exception) {
             Log.e(ProfilePreviewNetworkService::class.java.simpleName, "updateStoreLogoServerCall: ", e)
+            serviceInterface.onProfileDataException(e)
+        }
+    }
+
+    suspend fun getProductShareStoreDataServerCall(
+        serviceInterface: IProfileServiceInterface
+    ) {
+        try {
+            val response = RetrofitApi().getServerCallObject()?.getProductShareStoreData()
+            response?.let {
+                if (it.isSuccessful) {
+                    it.body()?.let { commonApiResponse -> serviceInterface.onProductShareStoreWAResponse(commonApiResponse)
+                    }
+                } else {
+                    val responseBody = it.errorBody()
+                    responseBody?.let {
+                        val errorResponse = Gson().fromJson(
+                            responseBody.string(),
+                            CommonApiResponse::class.java
+                        )
+                        serviceInterface.onProductShareStoreWAResponse(errorResponse)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(ProductNetworkService::class.java.simpleName, "getProductShareStoreDataServerCall: ", e)
             serviceInterface.onProfileDataException(e)
         }
     }

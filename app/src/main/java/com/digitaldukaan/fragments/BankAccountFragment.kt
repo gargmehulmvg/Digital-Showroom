@@ -85,6 +85,8 @@ class BankAccountFragment : BaseFragment(), IBankDetailsServiceInterface {
             accountHolderNameEditText.setText(this.accountHolderName)
             mobileNumberEditText.setText(this.registeredPhone)
         }
+        mobileNumberEditText.setText(mProfileInfoResponse?.mStoreItemResponse?.storeOwner?.phone)
+        mobileNumberEditText.isEnabled = false
         ifscEditText.allowOnlyAlphaNumericCharacters()
     }
 

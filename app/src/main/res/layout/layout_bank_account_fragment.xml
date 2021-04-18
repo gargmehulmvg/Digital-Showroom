@@ -170,6 +170,7 @@
             style="@style/common_text_view_background"
             android:drawableEnd="@drawable/ic_arrow_forward_white"
             android:drawablePadding="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_20sdp"
             android:enabled="true"
             android:onClick="onClick"
             app:layout_constraintBottom_toBottomOf="parent"

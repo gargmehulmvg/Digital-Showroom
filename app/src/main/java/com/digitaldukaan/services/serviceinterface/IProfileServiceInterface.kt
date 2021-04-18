@@ -17,5 +17,7 @@ interface IProfileServiceInterface {
 
     fun onStoreLogoResponse(response: CommonApiResponse)
 
+    fun onProductShareStoreWAResponse(response: CommonApiResponse)
+
     fun onProfileDataException(e: Exception)
 }
