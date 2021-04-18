@@ -136,7 +136,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         }
     }
 
-    protected fun showToast(message: String? = "sample testing") {
+    public fun showToast(message: String? = "sample testing") {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
         }

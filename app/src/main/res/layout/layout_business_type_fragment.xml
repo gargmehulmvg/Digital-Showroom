@@ -57,7 +57,7 @@
             android:id="@+id/verifyTextView"
             style="@style/common_text_view_background"
             android:onClick="onClick"
-            android:text="@string/complete_profile"
+            tools:text="@string/complete_profile"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

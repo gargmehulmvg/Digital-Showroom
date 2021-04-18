@@ -1,6 +1,5 @@
 package com.digitaldukaan.adapters
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,11 +9,12 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.BusinessTypeAdapter.BusinessTypeViewHolder
+import com.digitaldukaan.fragments.BaseFragment
 import com.digitaldukaan.models.response.BusinessTypeItemResponse
 import com.squareup.picasso.Picasso
 
 class BusinessTypeAdapter(
-    private val mContext: Context,
+    private val mContext: BaseFragment,
     private var mBusinessList: ArrayList<BusinessTypeItemResponse>
 ) :
     RecyclerView.Adapter<BusinessTypeViewHolder>() {
@@ -36,6 +36,12 @@ class BusinessTypeAdapter(
                 it.isSelected = false
                 view.businessTypeCheckBox.isChecked = false
             } else {
+                var count = 0
+                mBusinessList.forEachIndexed { _, itemResponse -> if (itemResponse.isBusinessTypeSelected) ++count }
+                if (count >= mContext.resources.getInteger(R.integer.business_type_count)) {
+                    mContext.showToast("Only ${mContext.resources.getInteger(R.integer.business_type_count)} selections are allowed")
+                    return@setOnClickListener
+                }
                 mBusinessList[view.adapterPosition].isBusinessTypeSelected = true
                 it.isSelected = true
                 view.businessTypeCheckBox.isChecked = true

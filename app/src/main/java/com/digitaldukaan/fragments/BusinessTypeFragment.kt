@@ -79,6 +79,7 @@ class BusinessTypeFragment : BaseFragment(), IBusinessTypeServiceInterface {
                 adapter = ProfileStatusAdapter2(mProfileInfoResponse?.mTotalSteps?.toInt(), mPosition)
             }
         }
+        verifyTextView.text = mStaticData.mStaticData.mSettingsStaticData.mSaveChanges
         businessTypeService = BusinessTypeService()
         businessTypeService.setServiceInterface(this)
         showProgressDialog(mActivity)
@@ -107,7 +108,7 @@ class BusinessTypeFragment : BaseFragment(), IBusinessTypeServiceInterface {
                 }
                 businessTypeRecyclerView.apply {
                     layoutManager = GridLayoutManager(mActivity, 2)
-                    adapter = BusinessTypeAdapter(mActivity, mBusinessSelectedList)
+                    adapter = BusinessTypeAdapter(this@BusinessTypeFragment, mBusinessSelectedList)
                 }
             } else showToast(response.mMessage)
         }
