@@ -1,5 +1,6 @@
 package com.digitaldukaan.fragments
 
+import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
 import android.text.Spannable
@@ -12,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -61,7 +63,6 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.layout_settings_fragment, container, false)
         mProfileService.setProfileServiceInterface(this)
-        fetchUserProfile()
         return mContentView
     }
 
@@ -84,6 +85,8 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         }
         hideBottomNavigationView(false)
         swipeRefreshLayout.setOnRefreshListener(this)
+        mStoreLogo = ""
+        fetchUserProfile()
     }
 
     override fun onClick(view: View?) {
@@ -106,11 +109,16 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         }
     }
 
-    override fun onImageSelectionResultFile(file: File?) {
+    override fun onImageSelectionResultFile(file: File?, mode: String) {
+        if (mode == Constants.MODE_CROP) {
+            val fragment = CropPhotoFragment.newInstance(file?.toUri())
+            fragment.setTargetFragment(this, Constants.CROP_IMAGE_REQUEST_CODE)
+            launchFragment(fragment, true)
+            return
+        }
         if (!isInternetConnectionAvailable(mActivity)) {
             showNoInternetConnectionDialog()
         }
-        showProgressDialog(mActivity)
         file?.run {
             val fileRequestBody = MultipartBody.Part.createFormData("image", file.name, RequestBody.create("image/*".toMediaTypeOrNull(), file))
             val imageTypeRequestBody = RequestBody.create("text/plain".toMediaTypeOrNull(), Constants.BASE64_STORE_LOGO)
@@ -260,7 +268,8 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
     }
 
     override fun onImageCDNLinkGenerateResponse(response: CommonApiResponse) {
-        CoroutineScopeUtils().runTaskOnCoroutineMain {
+        stopProgress()
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
             val photoResponse = Gson().fromJson<String>(response.mCommonDataStr, String::class.java)
             mProfileService.updateStoreLogo(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), StoreLogoRequest(photoResponse))
         }
@@ -407,5 +416,14 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
 
     override fun onNewReleaseItemClicked(responseItem: TrendingListResponse?) {
         if (responseItem?.mAction == Constants.NEW_RELEASE_TYPE_EXTERNAL) openUrlInBrowser(responseItem.mPage) else showTrendingOffersBottomSheet()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == Constants.CROP_IMAGE_REQUEST_CODE) {
+            val file = data?.getSerializableExtra(Constants.MODE_CROP) as File
+            CoroutineScopeUtils().runTaskOnCoroutineMain {
+                onImageSelectionResultFile(file, "")
+            }
+        } else super.onActivityResult(requestCode, resultCode, data)
     }
 }

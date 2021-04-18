@@ -12,6 +12,7 @@ class Constants {
         const val CREDENTIAL_PICKER_REQUEST = 1001
         const val IMAGE_PICK_REQUEST_CODE = 1002
         const val CONTACT_REQUEST_CODE = 1003
+        const val CROP_IMAGE_REQUEST_CODE = 1004
         const val SHARED_PREF_NAME = "DigitalDukaanPrefs"
         const val USER_AUTH_TOKEN = "USER_AUTH_TOKEN"
         const val STORE_ID = "STORE_ID"
@@ -31,7 +32,7 @@ class Constants {
         const val KEY_DONT_SHOW_MESSAGE_AGAIN = "KEY_DONT_SHOW_MESSAGE_AGAIN"
         const val TEXT_YES = "yes"
         const val TEXT_NO = "no"
-        //Actions
+        //ACTIONS
         const val ACTION_LOGOUT = "logout"
         const val ACTION_STORE_DESCRIPTION = "store_description"
         const val ACTION_BANK_ACCOUNT = "bank_account"
@@ -51,7 +52,7 @@ class Constants {
         const val ACTION_LOCATION = "address"
         const val ACTION_BUSINESS = "business"
         const val ACTION_BANK = "bank"
-        //Pages
+        //PAGES
         const val PAGE_REFER = "refer"
         const val PAGE_HELP = "help"
         const val PAGE_FEEDBACK = "Feedback"
@@ -105,5 +106,7 @@ class Constants {
         //EDIT PHOTO MODES
         const val EDIT_PHOTO_MODE_MOBILE = "mobile"
         const val EDIT_PHOTO_MODE_DESKTOP = "desktop"
+        //MODE PHOTO EDIT
+        const val MODE_CROP = "crop"
     }
 }

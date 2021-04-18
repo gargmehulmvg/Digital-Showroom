@@ -8,6 +8,7 @@ import android.net.Uri
 import android.provider.ContactsContract
 import android.provider.MediaStore
 import android.util.Base64
+import android.util.Base64OutputStream
 import android.util.Log
 import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.fragments.BaseFragment
@@ -31,6 +32,18 @@ fun getBitmapFromURL(src: String?): Bitmap? {
         BitmapFactory.decodeStream(URL(src).openConnection().getInputStream())
     } catch (e: Exception) {
         null
+    }
+}
+
+fun convertImageFileToBase64(imageFile: File?): String {
+    if (imageFile == null) return ""
+    return ByteArrayOutputStream().use { outputStream ->
+        Base64OutputStream(outputStream, Base64.DEFAULT).use { base64FilterStream ->
+            imageFile.inputStream().use { inputStream ->
+                inputStream.copyTo(base64FilterStream)
+            }
+        }
+        return@use outputStream.toString()
     }
 }
 

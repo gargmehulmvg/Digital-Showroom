@@ -1,6 +1,7 @@
 package com.digitaldukaan.fragments
 
 import android.app.Dialog
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -14,6 +15,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
+import androidx.core.net.toUri
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -55,6 +57,10 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
     private lateinit var mProfileInfoSettingKeyResponse: ProfilePreviewSettingsKeyResponse
     private lateinit var cancelWarningDialog: Dialog
     private var mStoreLogo: String? = ""
+
+    companion object {
+        private const val TAG = "ProfilePreviewFragment"
+    }
 
     fun newInstance(storeName: String?): ProfilePreviewFragment {
         val fragment = ProfilePreviewFragment()
@@ -327,10 +333,23 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                 bottomSheetEditStoreLinkConditionTwo.text = mProfilePreviewStaticData.storeLinkConditionTwo
                 bottomSheetEditStoreCloseImageView.setOnClickListener { showBottomSheetCancelDialog() }
                 bottomSheetEditStoreSaveTextView.setOnClickListener {
+                    val newStoreLink = bottomSheetEditStoreLinkEditText.text.trim().toString()
+                    if (newStoreLink.isEmpty()) {
+                        bottomSheetEditStoreLinkEditText.apply {
+                            error = mProfilePreviewStaticData.error_mandatory_field
+                            requestFocus()
+                        }
+                        return@setOnClickListener
+                    } else if (newStoreLink.length < resources.getInteger(R.integer.store_name_min_length)) {
+                        bottomSheetEditStoreLinkEditText.apply {
+                            error = mProfilePreviewStaticData.storeLinkConditionTwo
+                            requestFocus()
+                        }
+                        return@setOnClickListener
+                    }
                     if (!isInternetConnectionAvailable(mActivity)) {
                         showNoInternetConnectionDialog()
                     } else {
-                        val newStoreLink = bottomSheetEditStoreLinkEditText.text.trim().toString()
                         val request = StoreLinkRequest(getStringDataFromSharedPref(Constants.STORE_ID).toInt(), newStoreLink)
                         showProgressDialog(mActivity)
                         service.updateStoreLink(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN),request)
@@ -353,9 +372,12 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                                 bottomSheetEditStoreLinkConditionOne.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_exclamation_mark, 0, 0, 0)
                                 bottomSheetEditStoreLinkConditionTwo.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_exclamation_mark, 0, 0, 0)
                             }
-                            string.length >= 4 -> {
+                            string.length >= resources.getInteger(R.integer.store_name_min_length) -> {
                                 bottomSheetEditStoreLinkConditionOne.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_check_small, 0, 0, 0)
                                 bottomSheetEditStoreLinkConditionTwo.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_check_small, 0, 0, 0)
+                            }
+                            string.length <= resources.getInteger(R.integer.store_name_min_length) -> {
+                                bottomSheetEditStoreLinkConditionTwo.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_exclamation_mark, 0, 0, 0)
                             }
                             else -> {
                                 bottomSheetEditStoreLinkConditionOne.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_check_small, 0, 0, 0)
@@ -364,9 +386,11 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                     }
 
                     override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                        Log.d(TAG, "beforeTextChanged: do nothing")
                     }
 
                     override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                        Log.d(TAG, "onTextChanged: do nothing")
                     }
 
                 })
@@ -404,10 +428,10 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         bottomSheetEditStoreSaveTextView.text = mProfilePreviewStaticData.mBottomSheetStoreButtonText
         bottomSheetEditStoreCloseImageView.setOnClickListener { mStoreNameEditBottomSheet?.dismiss() }
         bottomSheetEditStoreSaveTextView.setOnClickListener {
+            val newStoreName = bottomSheetEditStoreLinkEditText.text.trim().toString()
             if (!isInternetConnectionAvailable(mActivity)) {
                 showNoInternetConnectionDialog()
             } else {
-                val newStoreName = bottomSheetEditStoreLinkEditText.text.trim().toString()
                 val request = StoreNameRequest(newStoreName)
                 showProgressDialog(mActivity)
                 service.updateStoreName(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN),request)
@@ -435,11 +459,16 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         fetchProfilePreviewCall()
     }
 
-    override fun onImageSelectionResultFile(file: File?) {
+    override fun onImageSelectionResultFile(file: File?, mode: String) {
+        if (mode == Constants.MODE_CROP) {
+            val fragment = CropPhotoFragment.newInstance(file?.toUri())
+            fragment.setTargetFragment(this, Constants.CROP_IMAGE_REQUEST_CODE)
+            launchFragment(fragment, true)
+            return
+        }
         if (!isInternetConnectionAvailable(mActivity)) {
             showNoInternetConnectionDialog()
         }
-        showProgressDialog(mActivity)
         file?.run {
             val fileRequestBody = MultipartBody.Part.createFormData("image", file.name, RequestBody.create("image/*".toMediaTypeOrNull(), file))
             val imageTypeRequestBody = RequestBody.create("text/plain".toMediaTypeOrNull(), Constants.BASE64_STORE_LOGO)
@@ -470,8 +499,9 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
     }
 
     override fun onImageCDNLinkGenerateResponse(response: CommonApiResponse) {
-        CoroutineScopeUtils().runTaskOnCoroutineMain {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
             val photoResponse = Gson().fromJson<String>(response.mCommonDataStr, String::class.java)
+            stopProgress()
             service.updateStoreLogo(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), StoreLogoRequest(photoResponse))
         }
     }
@@ -482,5 +512,14 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
             if (response.mIsSuccessStatus) openUrlInBrowser(Gson().fromJson<String>(response.mCommonDataStr, String::class.java)) else showShortSnackBar(response.mMessage, true, R.drawable.ic_close_red)
 
         }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == Constants.CROP_IMAGE_REQUEST_CODE) {
+            val file = data?.getSerializableExtra(Constants.MODE_CROP) as File
+            CoroutineScopeUtils().runTaskOnCoroutineMain {
+                onImageSelectionResultFile(file, "")
+            }
+        } else super.onActivityResult(requestCode, resultCode, data)
     }
 }

@@ -88,7 +88,7 @@ class SendBillPhotoFragment: BaseFragment(), ISendBillPhotoServiceInterface {
         amountEditText.text = "${mSendPhotoStaticText?.text_rupees_symbol} ${mMainOrderDetailResponse?.orders?.amount}"
     }
 
-    override fun onImageSelectionResultFile(file: File?) {
+    override fun onImageSelectionResultFile(file: File?, mode: String) {
         mImageFile = file
         val image = BitmapFactory.decodeFile(mImageFile?.absolutePath)
         imageView.setImageBitmap(image)

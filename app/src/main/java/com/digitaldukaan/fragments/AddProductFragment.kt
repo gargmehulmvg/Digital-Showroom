@@ -295,7 +295,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         }.show()
     }
 
-    override fun onImageSelectionResultFile(file: File?) {
+    override fun onImageSelectionResultFile(file: File?, mode: String) {
         if (!isInternetConnectionAvailable(mActivity)) {
             showNoInternetConnectionDialog()
             return

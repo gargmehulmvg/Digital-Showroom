@@ -1,10 +1,12 @@
 package com.digitaldukaan.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
+import androidx.core.net.toUri
 import androidx.transition.TransitionInflater
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
@@ -111,12 +113,17 @@ class ProfilePhotoFragment : BaseFragment(), View.OnClickListener, IProfilePhoto
         exceptionHandlingForAPIResponse(e)
     }
 
-    override fun onImageSelectionResultFile(file: File?) {
+    override fun onImageSelectionResultFile(file: File?, mode: String) {
+        if (mode == Constants.MODE_CROP) {
+            val fragment = CropPhotoFragment.newInstance(file?.toUri())
+            fragment.setTargetFragment(this, Constants.CROP_IMAGE_REQUEST_CODE)
+            launchFragment(fragment, true)
+            return
+        }
         if (!isInternetConnectionAvailable(mActivity)) {
             showNoInternetConnectionDialog()
             return
         }
-        showProgressDialog(mActivity)
         if (file == null) {
             service.uploadStoreLogo(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), StoreLogoRequest(""))
         } else {
@@ -124,6 +131,15 @@ class ProfilePhotoFragment : BaseFragment(), View.OnClickListener, IProfilePhoto
             val imageTypeRequestBody = RequestBody.create("text/plain".toMediaTypeOrNull(), Constants.BASE64_STORE_LOGO)
             service.generateCDNLink(imageTypeRequestBody, fileRequestBody)
         }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == Constants.CROP_IMAGE_REQUEST_CODE) {
+            val file = data?.getSerializableExtra(Constants.MODE_CROP) as File
+            CoroutineScopeUtils().runTaskOnCoroutineMain {
+                onImageSelectionResultFile(file, "")
+            }
+        } else super.onActivityResult(requestCode, resultCode, data)
     }
 
 }

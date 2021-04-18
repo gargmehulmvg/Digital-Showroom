@@ -259,8 +259,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
         }
     }
 
-    override fun onImageSelectionResultFile(file: File?) {
-        super.onImageSelectionResultFile(file)
+    override fun onImageSelectionResultFile(file: File?, mode: String) {
         orderDetailMainResponse?.orders?.run {
             if (otherChargesValueEditText.text?.isNotEmpty() == true) {
                 val orderDetailItemResponse = OrderDetailItemResponse(

@@ -16,8 +16,6 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.text.Html
-import android.util.Base64
-import android.util.Base64OutputStream
 import android.util.Log
 import android.view.*
 import android.view.animation.AccelerateDecelerateInterpolator
@@ -47,7 +45,6 @@ import kotlinx.android.synthetic.main.activity_main2.*
 import kotlinx.android.synthetic.main.bottom_sheet_image_pick.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.io.ByteArrayOutputStream
 import java.io.File
 import java.net.UnknownHostException
 import java.util.concurrent.Executors
@@ -465,6 +462,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                 }
                 mImageAdapter.setSearchImageListener(this@BaseFragment)
                 searchImageImageView.setOnClickListener {
+                    searchImageEditText.hideKeyboard()
                     if (searchImageEditText.text.trim().toString().isEmpty()) {
                         searchImageEditText.error = getString(R.string.mandatory_field_message)
                         searchImageEditText.requestFocus()
@@ -566,21 +564,9 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         }
     }
 
-    open fun onImageSelectionResultFile(file: File?) = Unit
+    open fun onImageSelectionResultFile(file: File?, mode: String = "") = Unit
 
     open fun onImageSelectionResultUri(fileUri: Uri?) = Unit
-
-    open fun convertImageFileToBase64(imageFile: File?): String {
-        if (imageFile == null) return ""
-        return ByteArrayOutputStream().use { outputStream ->
-            Base64OutputStream(outputStream, Base64.DEFAULT).use { base64FilterStream ->
-                imageFile.inputStream().use { inputStream ->
-                    inputStream.copyTo(base64FilterStream)
-                }
-            }
-            return@use outputStream.toString()
-        }
-    }
 
     override fun onSearchImageItemClicked(photoStr: String) {
         showProgressDialog(mActivity)
@@ -591,18 +577,16 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                     val file = getImageFileFromBitmap(it, mActivity)
                     stopProgress()
                     if (::mImagePickBottomSheet.isInitialized) mImagePickBottomSheet.dismiss()
-                    onImageSelectionResultFile(file)
+                    onImageSelectionResultFile(file, Constants.MODE_CROP)
                 }
             }
 
             override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
                 Log.d("TAG", "onPrepareLoad: ")
-                onImageSelectionResultFile(null)
             }
 
             override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
                 Log.d("TAG", "onBitmapFailed: ")
-                onImageSelectionResultFile(null)
             }
         })
     }
