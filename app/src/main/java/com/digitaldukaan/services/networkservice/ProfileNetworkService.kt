@@ -2,8 +2,11 @@ package com.digitaldukaan.services.networkservice
 
 import android.util.Log
 import com.digitaldukaan.models.request.StoreDeliveryStatusChangeRequest
+import com.digitaldukaan.models.request.StoreLogoRequest
 import com.digitaldukaan.network.RetrofitApi
 import com.digitaldukaan.services.serviceinterface.IProfileServiceInterface
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 
 class ProfileNetworkService {
 
@@ -74,6 +77,46 @@ class ProfileNetworkService {
             }
         } catch (e: Exception) {
             Log.e(ProfileNetworkService::class.java.simpleName, "changeStoreAndDeliveryStatusServerCall: ", e)
+            serviceInterface.onProfileDataException(e)
+        }
+    }
+
+    suspend fun getImageUploadCdnLinkServerCall(
+        imageType: RequestBody,
+        imageFile: MultipartBody.Part?,
+        serviceInterface: IProfileServiceInterface
+    ) {
+        try {
+            val response = RetrofitApi().getServerCallObject()?.getImageUploadCdnLink(imageType, imageFile)
+            response?.let {
+                if (it.isSuccessful) {
+                    it.body()?.let { storeLinkResponse ->
+                        serviceInterface.onImageCDNLinkGenerateResponse(storeLinkResponse)
+                    }
+                } else throw Exception(response.message())
+            }
+        } catch (e: Exception) {
+            Log.e(ProfilePhotoNetworkService::class.java.simpleName, "getImageUploadCdnLinkServerCall: ", e)
+            serviceInterface.onProfileDataException(e)
+        }
+    }
+
+    suspend fun updateStoreLogoServerCall(
+        authToken: String,
+        request: StoreLogoRequest,
+        serviceInterface: IProfileServiceInterface
+    ) {
+        try {
+            val response = RetrofitApi().getServerCallObject()?.setStoreLogo(authToken, request)
+            response?.let {
+                if (it.isSuccessful) {
+                    it.body()?.let { storeLinkResponse ->
+                        serviceInterface.onStoreLogoResponse(storeLinkResponse)
+                    }
+                } else throw Exception(response.message())
+            }
+        } catch (e: Exception) {
+            Log.e(ProfilePreviewNetworkService::class.java.simpleName, "updateStoreLogoServerCall: ", e)
             serviceInterface.onProfileDataException(e)
         }
     }

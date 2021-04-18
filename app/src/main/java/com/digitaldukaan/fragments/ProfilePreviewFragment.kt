@@ -467,7 +467,6 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                 showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
             } else showToast(response.mMessage)
         }
-        Log.d(ProfilePreviewFragment::class.simpleName, "onStoreLogoResponse: do nothing")
     }
 
     override fun onImageCDNLinkGenerateResponse(response: CommonApiResponse) {

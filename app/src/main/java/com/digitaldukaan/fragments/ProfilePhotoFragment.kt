@@ -50,6 +50,7 @@ class ProfilePhotoFragment : BaseFragment(), View.OnClickListener, IProfilePhoto
         mContentView = inflater.inflate(R.layout.layout_profile_photo_fragment, container, false)
         service.setServiceInterface(this)
         StaticInstances.sIsStoreImageUploaded = false
+        hideBottomNavigationView(true)
         return mContentView
     }
 

@@ -29,6 +29,7 @@ import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.interfaces.IOnToolbarIconClick
 import com.digitaldukaan.interfaces.IStoreSettingsItemClicked
 import com.digitaldukaan.models.request.StoreDeliveryStatusChangeRequest
+import com.digitaldukaan.models.request.StoreLogoRequest
 import com.digitaldukaan.models.response.*
 import com.digitaldukaan.services.ProfileService
 import com.digitaldukaan.services.isInternetConnectionAvailable
@@ -38,6 +39,10 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.layout_settings_fragment.*
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import java.io.File
 
 
 class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInterface,
@@ -50,6 +55,8 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
     private lateinit var mAppStoreServicesResponse: StoreServicesResponse
     private val mProfileService = ProfileService()
     private var mReferAndEarnResponse: ReferAndEarnItemResponse? = null
+    private var mAccountInfoResponse: AccountInfoResponse? = null
+    private var mStoreLogo: String? = ""
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.layout_settings_fragment, container, false)
@@ -86,8 +93,28 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             deliverySwitch.id -> changeStoreDeliveryStatus()
             moreControlsTextView.id -> launchFragment(MoreControlsFragment.newInstance(mAppSettingsResponseStaticData, mAppStoreServicesResponse), true)
             moreControlsImageView.id -> launchFragment(MoreControlsFragment.newInstance(mAppSettingsResponseStaticData, mAppStoreServicesResponse), true)
-            userProfileLayout.id -> launchFragment(ProfilePreviewFragment().newInstance(mProfileResponse?.mStoreInfo?.storeInfo?.name), true)
-            userProfileLayout.id -> launchFragment(ProfilePreviewFragment().newInstance(mProfileResponse?.mStoreInfo?.storeInfo?.name), true)
+            dukaanNameTextView.id -> launchFragment(ProfilePreviewFragment().newInstance(mProfileResponse?.mStoreInfo?.storeInfo?.name), true)
+            profileStatusRecyclerView.id -> launchFragment(ProfilePreviewFragment().newInstance(mProfileResponse?.mStoreInfo?.storeInfo?.name), true)
+            stepsLeftTextView.id -> launchFragment(ProfilePreviewFragment().newInstance(mProfileResponse?.mStoreInfo?.storeInfo?.name), true)
+            completeProfileTextView.id -> launchFragment(ProfilePreviewFragment().newInstance(mProfileResponse?.mStoreInfo?.storeInfo?.name), true)
+            shapeableImageView.id -> launchFragment(ProfilePreviewFragment().newInstance(mProfileResponse?.mStoreInfo?.storeInfo?.name), true)
+            linearLayout.id -> {
+                var storeLogo = mAccountInfoResponse?.mStoreInfo?.storeInfo?.logoImage
+                if (mStoreLogo?.isNotEmpty() == true) storeLogo = mStoreLogo
+                if (storeLogo?.isNotEmpty() == true) launchFragment(ProfilePhotoFragment.newInstance(storeLogo), true, storePhotoImageView) else askCameraPermission()
+            }
+        }
+    }
+
+    override fun onImageSelectionResultFile(file: File?) {
+        if (!isInternetConnectionAvailable(mActivity)) {
+            showNoInternetConnectionDialog()
+        }
+        showProgressDialog(mActivity)
+        file?.run {
+            val fileRequestBody = MultipartBody.Part.createFormData("image", file.name, RequestBody.create("image/*".toMediaTypeOrNull(), file))
+            val imageTypeRequestBody = RequestBody.create("text/plain".toMediaTypeOrNull(), Constants.BASE64_STORE_LOGO)
+            mProfileService.generateCDNLink(imageTypeRequestBody, fileRequestBody)
         }
     }
 
@@ -194,11 +221,11 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (swipeRefreshLayout.isRefreshing) swipeRefreshLayout.isRefreshing = false
             if (commonResponse.mIsSuccessStatus) {
-                val response = Gson().fromJson<AccountInfoResponse>(commonResponse.mCommonDataStr, AccountInfoResponse::class.java)
-                setupUIFromProfileResponse(response)
-                response?.mAccountStaticText?.run { mAppSettingsResponseStaticData = this }
-                response?.mStoreInfo?.storeServices?.run { mAppStoreServicesResponse = this }
-                response?.mStoreInfo?.bankDetails?.run { StaticInstances.sBankDetails = this }
+                mAccountInfoResponse = Gson().fromJson<AccountInfoResponse>(commonResponse.mCommonDataStr, AccountInfoResponse::class.java)
+                mAccountInfoResponse?.let { setupUIFromProfileResponse(it) }
+                mAccountInfoResponse?.mAccountStaticText?.run { mAppSettingsResponseStaticData = this }
+                mAccountInfoResponse?.mStoreInfo?.storeServices?.run { mAppStoreServicesResponse = this }
+                mAccountInfoResponse?.mStoreInfo?.bankDetails?.run { StaticInstances.sBankDetails = this }
             }
         }
     }
@@ -229,6 +256,35 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             } else {
                 showToast(response.mMessage)
             }
+        }
+    }
+
+    override fun onImageCDNLinkGenerateResponse(response: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            val photoResponse = Gson().fromJson<String>(response.mCommonDataStr, String::class.java)
+            mProfileService.updateStoreLogo(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), StoreLogoRequest(photoResponse))
+        }
+    }
+
+    override fun onStoreLogoResponse(response: CommonApiResponse) {
+        stopProgress()
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            if (response.mIsSuccessStatus) {
+                val photoResponse = Gson().fromJson<StoreResponse>(response.mCommonDataStr, StoreResponse::class.java)
+                mStoreLogo = photoResponse.storeInfo.logoImage
+                if (mStoreLogo?.isNotEmpty() == true) {
+                    storePhotoImageView.visibility = View.VISIBLE
+                    hiddenImageView.visibility = View.INVISIBLE
+                    hiddenTextView.visibility = View.INVISIBLE
+                    Picasso.get().load(mStoreLogo).into(storePhotoImageView)
+                } else {
+                    StaticInstances.sIsStoreImageUploaded = false
+                    storePhotoImageView.visibility = View.GONE
+                    hiddenImageView.visibility = View.VISIBLE
+                    hiddenTextView.visibility = View.VISIBLE
+                }
+                showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
+            } else showToast(response.mMessage)
         }
     }
 

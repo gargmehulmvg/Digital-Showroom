@@ -13,5 +13,9 @@ interface IProfileServiceInterface {
 
     fun onChangeStoreAndDeliveryStatusResponse(response: CommonApiResponse)
 
+    fun onImageCDNLinkGenerateResponse(response: CommonApiResponse)
+
+    fun onStoreLogoResponse(response: CommonApiResponse)
+
     fun onProfileDataException(e: Exception)
 }
