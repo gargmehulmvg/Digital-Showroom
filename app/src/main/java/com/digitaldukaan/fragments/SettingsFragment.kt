@@ -350,14 +350,12 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         stepsLeftTextView.text =
             if (remainingSteps == 1) "$remainingSteps ${infoResponse.mAccountStaticText?.mStepLeft}" else "$remainingSteps ${infoResponse.mAccountStaticText?.mStepsLeft}"
         completeProfileTextView.text = infoResponse.mAccountStaticText?.mCompleteProfile
-        storeStatusTextView.text = "${infoResponse.mAccountStaticText?.mStoreText} : ${infoResponse.mAccountStaticText?.mOffText}"
         storeSwitch.setOnCheckedChangeListener { _, isChecked ->
             run {
                 Log.d(TAG, "storeSwitch.setOnCheckedChangeListener $isChecked")
                 storeStatusTextView.text = "${infoResponse.mAccountStaticText?.mStoreText} : ${if (isChecked) infoResponse.mAccountStaticText?.mOnText else infoResponse.mAccountStaticText?.mOffText}"
             }
         }
-        deliveryStatusTextView.text = "${infoResponse.mAccountStaticText?.mDeliveryText} : ${infoResponse.mAccountStaticText?.mOffText}"
         deliverySwitch.setOnCheckedChangeListener { _, isChecked ->
             run {
                 Log.d(TAG, "deliverySwitch.setOnCheckedChangeListener $isChecked")
@@ -365,7 +363,9 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             }
         }
         deliverySwitch.isChecked = infoResponse.mStoreInfo.storeServices.mDeliveryFlag == 1
+        deliveryStatusTextView.text = "${infoResponse.mAccountStaticText?.mDeliveryText} : ${if (deliverySwitch.isChecked) infoResponse.mAccountStaticText?.mOnText else infoResponse.mAccountStaticText?.mOffText}"
         storeSwitch.isChecked = infoResponse.mStoreInfo.storeServices.mStoreFlag == 1
+        storeStatusTextView.text = "${infoResponse.mAccountStaticText?.mStoreText} : ${if (storeSwitch.isChecked) infoResponse.mAccountStaticText?.mOnText else infoResponse.mAccountStaticText?.mOffText}"
         hiddenTextView.text = infoResponse.mAccountStaticText?.mTextAddPhoto
         moreControlsTextView.text = infoResponse.mAccountStaticText?.page_heading_more_controls
         whatsAppShareTextView.text = infoResponse.mAccountStaticText?.mShareText

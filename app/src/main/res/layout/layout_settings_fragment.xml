@@ -247,7 +247,6 @@
                     android:layout_marginStart="@dimen/_25sdp"
                     android:onClick="onClick"
                     android:thumb="@drawable/ic_delivery_switch_selector"
-                    app:layout_constraintBottom_toBottomOf="@+id/storeSwitch"
                     app:layout_constraintStart_toEndOf="@+id/storeSwitch"
                     app:layout_constraintTop_toTopOf="@+id/storeSwitch"
                     app:track="@drawable/ic_store_switch_track" />
