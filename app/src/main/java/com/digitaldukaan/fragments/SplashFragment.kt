@@ -13,10 +13,7 @@ import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
 import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
-import com.digitaldukaan.constants.Constants
-import com.digitaldukaan.constants.CoroutineScopeUtils
-import com.digitaldukaan.constants.ToolBarManager
-import com.digitaldukaan.constants.getContactsFromStorage2
+import com.digitaldukaan.constants.*
 import com.digitaldukaan.models.response.StaticTextResponse
 import com.digitaldukaan.services.SplashService
 import com.digitaldukaan.services.isInternetConnectionAvailable
@@ -54,6 +51,7 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
         val splashService = SplashService()
         splashService.setSplashServiceInterface(this)
         splashService.getStaticData("0")
+        Log.d("STORE_OBJECT_TEST", "$TAG onViewCreated: ${PrefsManager.getStringDataFromSharedPref(Constants.STORE_NAME)}")
     }
 
     private fun fetchContactsIfPermissionGranted() {
@@ -83,6 +81,7 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
         when {
             mIntentUri != null -> switchToFragmentByDeepLink()
             "" == getStringDataFromSharedPref(Constants.STORE_ID) -> launchFragment(
+                //OnBoardScreenDukaanLocationFragment.newInstance(),
                 LoginFragment.newInstance(),
                 true
             )

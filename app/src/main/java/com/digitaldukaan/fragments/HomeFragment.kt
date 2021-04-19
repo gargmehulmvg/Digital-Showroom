@@ -158,9 +158,9 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         homePageWebView.apply {
             webViewClient = CommonWebViewFragment.WebViewController()
             settings.javaScriptEnabled = true
-            Log.d(TAG, "setupHomePageWebView: $url")
             val url = webViewUrl + "?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&" +
                     "storeName=${getStringDataFromSharedPref(Constants.STORE_NAME)}" + "&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"
+            Log.d(TAG, "setupHomePageWebView: $url")
             loadUrl(url)
         }
     }

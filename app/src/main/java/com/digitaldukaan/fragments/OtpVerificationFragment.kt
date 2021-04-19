@@ -10,6 +10,7 @@ import com.digitaldukaan.R
 import com.digitaldukaan.constants.AppEventsManager
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
+import com.digitaldukaan.constants.PrefsManager
 import com.digitaldukaan.interfaces.IOnOTPFilledListener
 import com.digitaldukaan.models.dto.CleverTapProfile
 import com.digitaldukaan.models.response.CommonApiResponse
@@ -166,17 +167,19 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
                 "${it.address1}, ${it.googleAddress}, ${it.pinCode}"
             }
             AppEventsManager.pushCleverTapProfile(cleverTapProfile)
-            if (validateOtpResponse.mStore == null || mIsNewUser) launchFragment(OnBoardScreenDukaanNameFragment(), true) else launchFragment(HomeFragment(), true)
+            if (validateOtpResponse.mStore == null || mIsNewUser) launchFragment(OnBoardScreenDukaanNameFragment(validateOtpResponse.mStore), true) else launchFragment(HomeFragment(), true)
         }
     }
 
     private fun saveUserDetailsInPref(validateOtpResponse: ValidateOtpResponse) {
-        storeStringDataInSharedPref(Constants.USER_AUTH_TOKEN, validateOtpResponse.mUserAuthToken)
-        storeStringDataInSharedPref(Constants.USER_MOBILE_NUMBER, validateOtpResponse.mUserPhoneNumber)
-        storeStringDataInSharedPref(Constants.USER_ID, validateOtpResponse.mUserId)
+        PrefsManager.storeStringDataInSharedPref(Constants.USER_AUTH_TOKEN, validateOtpResponse.mUserAuthToken)
+        PrefsManager.storeStringDataInSharedPref(Constants.USER_MOBILE_NUMBER, validateOtpResponse.mUserPhoneNumber)
+        PrefsManager.storeStringDataInSharedPref(Constants.USER_ID, validateOtpResponse.mUserId)
         validateOtpResponse.mStore?.run {
-            storeStringDataInSharedPref(Constants.STORE_ID, storeId.toString())
-            storeStringDataInSharedPref(Constants.STORE_NAME, storeInfo.name)
+            PrefsManager.storeStringDataInSharedPref(Constants.STORE_ID, storeId.toString())
+            Log.d("STORE_OBJECT_TEST", "$TAG saveUserDetailsInPref: STORE_ID :: ${PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)}")
+            PrefsManager.storeStringDataInSharedPref(Constants.STORE_NAME, storeInfo.name)
+            Log.d("STORE_OBJECT_TEST", "$TAG saveUserDetailsInPref: STORE_NAME :: ${PrefsManager.getStringDataFromSharedPref(Constants.STORE_NAME)}")
         }
     }
 

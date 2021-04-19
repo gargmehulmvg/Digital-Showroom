@@ -494,6 +494,14 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                     hiddenImageView.visibility = View.VISIBLE
                     hiddenTextView.visibility = View.VISIBLE
                 }
+                StaticInstances.sStepsCompletedList?.run {
+                    for (completedItem in this) {
+                        if (completedItem.action == Constants.ACTION_LOGO) {
+                            completedItem.isCompleted = true
+                            break
+                        }
+                    }
+                }
                 showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
             } else showToast(response.mMessage)
         }

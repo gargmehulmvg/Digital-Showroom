@@ -3,6 +3,7 @@ package com.digitaldukaan.fragments
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,13 +14,16 @@ import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.PrefsManager
 import com.digitaldukaan.models.request.CreateStoreRequest
 import com.digitaldukaan.models.response.CommonApiResponse
+import com.digitaldukaan.models.response.CreateStoreResponse
+import com.digitaldukaan.models.response.StoreResponse
 import com.digitaldukaan.services.CreateStoreService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.ICreateStoreServiceInterface
+import com.google.gson.Gson
 import kotlinx.android.synthetic.main.layout_on_board_screen_dukaan_fragment.*
 
 
-class OnBoardScreenDukaanNameFragment : BaseFragment(),
+class OnBoardScreenDukaanNameFragment(private val mStore: StoreResponse?) : BaseFragment(),
     ICreateStoreServiceInterface {
 
     private val mDukaanNameStaticData = mStaticData.mStaticData.mOnBoardStep1StaticData
@@ -97,6 +101,11 @@ class OnBoardScreenDukaanNameFragment : BaseFragment(),
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (response.mIsSuccessStatus) {
                 showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
+                val createStoreResponse = Gson().fromJson<CreateStoreResponse>(response.mCommonDataStr, CreateStoreResponse::class.java)
+                PrefsManager.storeStringDataInSharedPref(Constants.STORE_ID, "${createStoreResponse.storeId}")
+                Log.d("STORE_OBJECT_TEST", "$TAG onCreateStoreResponse: STORE_ID :: ${PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)}")
+                PrefsManager.storeStringDataInSharedPref(Constants.STORE_NAME, "${createStoreResponse.storeInfo?.name}")
+                Log.d("STORE_OBJECT_TEST", "$TAG onCreateStoreResponse: STORE_NAME :: ${PrefsManager.getStringDataFromSharedPref(Constants.STORE_NAME)}")
                 launchFragment(OnBoardScreenDukaanLocationFragment(), true)
             } else showShortSnackBar(response.mMessage, true, R.drawable.ic_close_red)
         }

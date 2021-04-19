@@ -266,18 +266,21 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
                     "${it.address1}, ${it.googleAddress}, ${it.pinCode}"
                 }
                 AppEventsManager.pushCleverTapProfile(cleverTapProfile)
-                if (validateUserResponse.store == null || validateUserResponse.user.isNewUser) launchFragment(OnBoardScreenDukaanNameFragment(), true) else launchFragment(HomeFragment(), true)
+                if (validateUserResponse.store == null || validateUserResponse.user.isNewUser) launchFragment(OnBoardScreenDukaanNameFragment(
+                    validateUserResponse.store
+                ), true) else launchFragment(HomeFragment(), true)
             } else showShortSnackBar(response.mMessage, true, R.drawable.ic_close_red)
         }
     }
 
     private fun saveUserDetailsInPref(validateOtpResponse: ValidateUserResponse) {
-        storeStringDataInSharedPref(Constants.USER_AUTH_TOKEN, validateOtpResponse.user.authToken)
-        storeStringDataInSharedPref(Constants.USER_ID, validateOtpResponse.user.userId)
-        storeStringDataInSharedPref(Constants.USER_MOBILE_NUMBER, validateOtpResponse.user.phone)
+        PrefsManager.storeStringDataInSharedPref(Constants.USER_AUTH_TOKEN, validateOtpResponse.user.authToken)
+        PrefsManager.storeStringDataInSharedPref(Constants.USER_ID, validateOtpResponse.user.userId)
+        PrefsManager.storeStringDataInSharedPref(Constants.USER_MOBILE_NUMBER, validateOtpResponse.user.phone)
         validateOtpResponse.store?.run {
-            storeStringDataInSharedPref(Constants.STORE_ID, storeId.toString())
-            storeStringDataInSharedPref(Constants.STORE_NAME, storeInfo.name)
+            StaticInstances.sStoreId = storeId
+            PrefsManager.storeStringDataInSharedPref(Constants.STORE_ID, "$storeId")
+            PrefsManager.storeStringDataInSharedPref(Constants.STORE_NAME, storeInfo.name)
         }
     }
 

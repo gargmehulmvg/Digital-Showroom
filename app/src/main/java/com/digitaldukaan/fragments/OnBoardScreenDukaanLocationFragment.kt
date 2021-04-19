@@ -18,6 +18,7 @@ import androidx.core.content.ContextCompat
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
+import com.digitaldukaan.constants.PrefsManager
 import com.digitaldukaan.models.request.StoreAddressRequest
 import com.digitaldukaan.models.response.StoreAddressResponse
 import com.digitaldukaan.services.StoreAddressService
@@ -39,6 +40,9 @@ class OnBoardScreenDukaanLocationFragment : BaseFragment(), IStoreAddressService
     private var lastLocation: Location? = null
 
     companion object {
+        fun newInstance(): OnBoardScreenDukaanLocationFragment {
+            return OnBoardScreenDukaanLocationFragment()
+        }
         private val TAG = OnBoardScreenDukaanLocationFragment::class.simpleName
     }
 
@@ -119,6 +123,7 @@ class OnBoardScreenDukaanLocationFragment : BaseFragment(), IStoreAddressService
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        Log.d("STORE_OBJECT_TEST", "$TAG onViewCreated: ${PrefsManager.getStringDataFromSharedPref(Constants.STORE_NAME)}")
         mContentView = inflater.inflate(R.layout.layout_on_board_screen_dukaan_location_fragment, container, false)
         getLocation()
         return mContentView
@@ -197,7 +202,7 @@ class OnBoardScreenDukaanLocationFragment : BaseFragment(), IStoreAddressService
                         val service = StoreAddressService()
                         service.setServiceInterface(this)
                         val request = StoreAddressRequest(
-                            getStringDataFromSharedPref(Constants.STORE_ID).toInt(),
+                            PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID).toInt(),
                             latitude = mCurrentLatitude,
                             longitude = mCurrentLongitude,
                             address = storeLocation

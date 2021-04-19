@@ -17,4 +17,5 @@ object StaticInstances {
     var sAppSessionId: String? = ""
     var sCleverTapId: String? = ""
     var sFireBaseMessagingToken: String? = ""
+    var sStoreId: Int = 0
 }
