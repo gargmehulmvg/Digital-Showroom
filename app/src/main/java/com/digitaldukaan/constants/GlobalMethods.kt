@@ -89,7 +89,7 @@ fun Bitmap.getImageUri(inContext: Context): Uri? {
     return if (path == null || path.isEmpty()) null else Uri.parse(path)
 }
 
-fun openWebViewFragment(fragment: BaseFragment, title: String, webViewType: String, redirectFromStr: String) {
+fun openWebViewFragment(fragment: BaseFragment, title: String, webViewType: String?, redirectFromStr: String) {
     fragment.launchFragment(
         CommonWebViewFragment().newInstance(title,
             BuildConfig.WEB_VIEW_URL + webViewType + "?storeid=${fragment.getStringDataFromSharedPref(Constants.STORE_ID)}&" + "redirectFrom=$redirectFromStr" + "&token=${fragment.getStringDataFromSharedPref(

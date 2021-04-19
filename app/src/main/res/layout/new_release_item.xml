@@ -46,7 +46,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:clickable="false"
-            android:layout_marginTop="@dimen/_5sdp"
             android:src="@drawable/ic_auto_data_backup"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -59,7 +58,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clickable="false"
-            android:layout_marginTop="@dimen/_5sdp"
+            android:layout_marginTop="@dimen/_8sdp"
+            android:paddingStart="@dimen/_3sdp"
+            android:paddingEnd="@dimen/_3sdp"
             android:gravity="center"
             android:maxLines="@integer/min_lines_two"
             android:minLines="@integer/min_lines_two"
@@ -70,7 +71,7 @@
             app:layout_constraintTop_toBottomOf="@+id/imageView"
             tools:layout_conversion_absoluteHeight="41dp"
             tools:layout_conversion_absoluteWidth="124dp"
-            tools:text="@string/digital_showroom_web" />
+            tools:text="digital _ show room_ web digital _showroom_web" />
 
         <TextView
             android:id="@+id/newTextView"

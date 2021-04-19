@@ -177,4 +177,7 @@ interface Apis {
 
     @POST("api/dotk/premium/setStoreThemeBanner")
     suspend fun setStoreThemeBanner(@Body request: StoreThemeBannerRequest): Response<CommonApiResponse>
+
+    @POST("api/dotk/onboard/createStore")
+    suspend fun createStore(@Body request: CreateStoreRequest?): Response<CommonApiResponse>
 }

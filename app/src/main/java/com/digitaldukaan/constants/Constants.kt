@@ -16,6 +16,7 @@ class Constants {
         const val SHARED_PREF_NAME = "DigitalDukaanPrefs"
         const val USER_AUTH_TOKEN = "USER_AUTH_TOKEN"
         const val STORE_ID = "STORE_ID"
+        const val USER_ID = "USER_ID"
         const val USER_MOBILE_NUMBER = "USER_MOBILE_NUMBER"
         const val STORE_NAME = "STORE_NAME"
         const val WEB_VIEW_HELP = "help"
@@ -32,6 +33,7 @@ class Constants {
         const val KEY_DONT_SHOW_MESSAGE_AGAIN = "KEY_DONT_SHOW_MESSAGE_AGAIN"
         const val TEXT_YES = "yes"
         const val TEXT_NO = "no"
+        const val APP_SECRET_KEY = "yk0i7PDRGbx6UgJN7d3YLAzy8JpZWLl3"
         //ACTIONS
         const val ACTION_LOGOUT = "logout"
         const val ACTION_STORE_DESCRIPTION = "store_description"
@@ -45,6 +47,7 @@ class Constants {
         const val ACTION_QR_DOWNLOAD = "qr_download"
         const val ACTION_SHARE_DATA = "share_text"
         const val ACTION_CATALOG_WHATSAPP = "catalog_whatsapp"
+        const val ACTION_CATALOG_PREMIUM = "theme-discover"
         const val ACTION_KYC_STATUS = "kyc_status"
         //Incomplete profile actions
         const val ACTION_LOGO = "logo"
@@ -100,6 +103,8 @@ class Constants {
         const val CREATOR_TYPE_MERCHANT = 1
         const val CREATOR_TYPE_CUSTOMER = 2
         //NEW RELEASE TYPES
+        const val NEW_RELEASE_TYPE_WEBVIEW = "webview"
+        const val NEW_RELEASE_TYPE_PREMIUM = "premium"
         const val NEW_RELEASE_TYPE_NEW = "new"
         const val NEW_RELEASE_TYPE_TRENDING = "trending"
         const val NEW_RELEASE_TYPE_EXTERNAL = "external"

@@ -5,7 +5,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.digitaldukaan.MainActivity
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.interfaces.IStoreSettingsItemClicked
@@ -14,7 +16,8 @@ import com.squareup.picasso.Picasso
 
 class NewReleaseAdapter(
     private val newReleaseList: ArrayList<TrendingListResponse>?,
-    private val listener: IStoreSettingsItemClicked
+    private val listener: IStoreSettingsItemClicked,
+    private val activity: MainActivity
 ) : RecyclerView.Adapter<NewReleaseAdapter.AppSettingsViewHolder>() {
 
     inner class AppSettingsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -40,6 +43,7 @@ class NewReleaseAdapter(
             textView.text = responseItem?.mText
             Picasso.get().load(responseItem?.mCDN).into(imageView)
             when (responseItem?.mType) {
+                Constants.NEW_RELEASE_TYPE_PREMIUM -> itemLayout.background = ContextCompat.getDrawable(activity, R.drawable.curve_premium_selector)
                 Constants.NEW_RELEASE_TYPE_NEW -> newTextView.visibility = View.VISIBLE
                 Constants.NEW_RELEASE_TYPE_TRENDING -> {
                     newTextView.visibility = View.GONE

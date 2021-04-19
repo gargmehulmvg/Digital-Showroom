@@ -25,6 +25,7 @@ class MarketingCardAdapter(
         val singleSpanBackgroundView: View = itemView.findViewById(R.id.singleSpanBackgroundView)
         val singleSpanImageView: ImageView = itemView.findViewById(R.id.singleSpanImageView)
         val doubleSpanImageView: ImageView = itemView.findViewById(R.id.doubleSpanImageView)
+        val stripTextView: TextView = itemView.findViewById(R.id.stripTextView)
         val singleSpanTextView: TextView = itemView.findViewById(R.id.singleSpanTextView)
         val doubleSpanTextView: TextView = itemView.findViewById(R.id.doubleSpanHeadingTextView)
         val doubleSpanContinueTextView: TextView = itemView.findViewById(R.id.doubleSpanContinueTextView)
@@ -50,6 +51,10 @@ class MarketingCardAdapter(
                 Picasso.get().load(item.logo).into(doubleSpanImageView)
                 doubleSpanTextView.text = item.text
                 doubleSpanContinueTextView.text = item.viewNow
+                if (item.stripText?.isNotEmpty() == true) {
+                    stripTextView.visibility = View.VISIBLE
+                    stripTextView.text = item.stripText
+                } else stripTextView.visibility = View.GONE
             } else {
                 singleSpanContainer.visibility = View.VISIBLE
                 Picasso.get().load(item?.logo).into(singleSpanImageView)

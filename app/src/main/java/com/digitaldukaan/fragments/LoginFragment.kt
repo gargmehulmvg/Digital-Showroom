@@ -273,6 +273,7 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
 
     private fun saveUserDetailsInPref(validateOtpResponse: ValidateUserResponse) {
         storeStringDataInSharedPref(Constants.USER_AUTH_TOKEN, validateOtpResponse.user.authToken)
+        storeStringDataInSharedPref(Constants.USER_ID, validateOtpResponse.user.userId)
         storeStringDataInSharedPref(Constants.USER_MOBILE_NUMBER, validateOtpResponse.user.phone)
         validateOtpResponse.store?.run {
             storeStringDataInSharedPref(Constants.STORE_ID, storeId.toString())

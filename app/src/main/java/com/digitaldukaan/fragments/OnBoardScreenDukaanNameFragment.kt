@@ -3,23 +3,24 @@ package com.digitaldukaan.fragments
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.transition.TransitionInflater
 import com.digitaldukaan.R
+import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
-import com.digitaldukaan.models.request.StoreNameRequest
+import com.digitaldukaan.constants.PrefsManager
+import com.digitaldukaan.models.request.CreateStoreRequest
 import com.digitaldukaan.models.response.CommonApiResponse
-import com.digitaldukaan.models.response.StoreDescriptionResponse
-import com.digitaldukaan.services.ProfilePreviewService
+import com.digitaldukaan.services.CreateStoreService
 import com.digitaldukaan.services.isInternetConnectionAvailable
-import com.digitaldukaan.services.serviceinterface.IProfilePreviewServiceInterface
+import com.digitaldukaan.services.serviceinterface.ICreateStoreServiceInterface
 import kotlinx.android.synthetic.main.layout_on_board_screen_dukaan_fragment.*
 
 
-class OnBoardScreenDukaanNameFragment : BaseFragment(), IProfilePreviewServiceInterface {
+class OnBoardScreenDukaanNameFragment : BaseFragment(),
+    ICreateStoreServiceInterface {
 
     private val mDukaanNameStaticData = mStaticData.mStaticData.mOnBoardStep1StaticData
 
@@ -75,48 +76,33 @@ class OnBoardScreenDukaanNameFragment : BaseFragment(), IProfilePreviewServiceIn
                     if (!isInternetConnectionAvailable(mActivity)) {
                         showNoInternetConnectionDialog()
                     } else {
-                        val service = ProfilePreviewService()
+                        val service = CreateStoreService()
                         service.setServiceInterface(this)
-                        val request = StoreNameRequest(dukanName)
+                        val request = CreateStoreRequest(
+                            PrefsManager.getStringDataFromSharedPref(Constants.USER_MOBILE_NUMBER),
+                            PrefsManager.getStringDataFromSharedPref(Constants.USER_ID).toInt(),
+                            dukanName,
+                            Constants.APP_SECRET_KEY
+                        )
                         showProgressDialog(mActivity)
-                        service.updateStoreName(request)
+                        service.createStore(request)
                     }
                 }
             }
         }
     }
 
-    override fun onProfilePreviewResponse(commonApiResponse: CommonApiResponse) {
-        Log.d(TAG, "onProfilePreviewResponse: do nothing")
-    }
-
-    override fun onStoreNameResponse(response: CommonApiResponse) {
+    override fun onCreateStoreResponse(response: CommonApiResponse) {
         stopProgress()
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (response.mIsSuccessStatus) {
                 showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
                 launchFragment(OnBoardScreenDukaanLocationFragment(), true)
-            } else showToast(response.mMessage)
+            } else showShortSnackBar(response.mMessage, true, R.drawable.ic_close_red)
         }
     }
 
-    override fun onStoreLinkResponse(response: StoreDescriptionResponse) {
-        Log.d(TAG, "onStoreLinkResponse: do nothing")
-    }
-
-    override fun onStoreLogoResponse(response: CommonApiResponse) {
-        Log.d(TAG, "onStoreLogoResponse: do nothing")
-    }
-
-    override fun onImageCDNLinkGenerateResponse(response: CommonApiResponse) {
-        Log.d(TAG, "onImageCDNLinkGenerateResponse: do nothing")
-    }
-
-    override fun onInitiateKycResponse(response: CommonApiResponse) {
-        Log.d(TAG, "onInitiateKycResponse: do nothing")
-    }
-
-    override fun onProfilePreviewServerException(e: Exception) {
+    override fun onCreateStoreServerException(e: Exception) {
         exceptionHandlingForAPIResponse(e)
     }
 

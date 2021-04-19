@@ -24,10 +24,7 @@ import com.digitaldukaan.adapters.NewReleaseAdapter
 import com.digitaldukaan.adapters.ProfileStatusAdapter
 import com.digitaldukaan.adapters.ReferAndEarnAdapter
 import com.digitaldukaan.adapters.SettingsStoreAdapter
-import com.digitaldukaan.constants.Constants
-import com.digitaldukaan.constants.CoroutineScopeUtils
-import com.digitaldukaan.constants.StaticInstances
-import com.digitaldukaan.constants.ToolBarManager
+import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.IOnToolbarIconClick
 import com.digitaldukaan.interfaces.IStoreSettingsItemClicked
 import com.digitaldukaan.models.request.StoreDeliveryStatusChangeRequest
@@ -51,6 +48,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
     SwipeRefreshLayout.OnRefreshListener, IStoreSettingsItemClicked {
 
     companion object {
+        private const val TAG = "SettingsFragment"
         fun newInstance(): SettingsFragment = SettingsFragment()
     }
     private lateinit var mAppSettingsResponseStaticData: AccountStaticTextResponse
@@ -324,7 +322,6 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             hiddenImageView.visibility = View.INVISIBLE
             hiddenTextView.visibility = View.INVISIBLE
         }
-        storeSwitch.isChecked = infoResponse.mStoreInfo.storeServices.mStoreFlag == 1
         infoResponse.mFooterImages?.forEachIndexed { index, imageUrl ->
             if (index == 0) {
                 Picasso.get().load(imageUrl).placeholder(R.drawable.ic_auto_data_backup)
@@ -334,7 +331,6 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                     .into(safeSecureImageView)
             }
         }
-        deliverySwitch.isChecked = infoResponse.mStoreInfo.storeServices.mDeliveryFlag == 1
         profileStatusRecyclerView.apply {
             layoutManager = GridLayoutManager(mActivity, infoResponse.mTotalSteps)
             adapter = ProfileStatusAdapter(infoResponse.mTotalSteps, infoResponse.mCompletedSteps)
@@ -348,35 +344,28 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         }
         newReleaseRecyclerView.apply {
             layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
-            adapter = NewReleaseAdapter(infoResponse.mTrendingList, this@SettingsFragment)
+            adapter = NewReleaseAdapter(infoResponse.mTrendingList, this@SettingsFragment, mActivity)
         }
         val remainingSteps = infoResponse.mTotalSteps.minus(infoResponse.mCompletedSteps)
         stepsLeftTextView.text =
             if (remainingSteps == 1) "$remainingSteps ${infoResponse.mAccountStaticText?.mStepLeft}" else "$remainingSteps ${infoResponse.mAccountStaticText?.mStepsLeft}"
         completeProfileTextView.text = infoResponse.mAccountStaticText?.mCompleteProfile
-//        whatsAppTextView.setOnClickListener {
-//            shareDataOnWhatsApp(infoResponse.waShare)
-//        }
         storeStatusTextView.text = "${infoResponse.mAccountStaticText?.mStoreText} : ${infoResponse.mAccountStaticText?.mOffText}"
         storeSwitch.setOnCheckedChangeListener { _, isChecked ->
             run {
-                Log.d(
-                    SettingsFragment::class.simpleName,
-                    "storeSwitch.setOnCheckedChangeListener $isChecked"
-                )
+                Log.d(TAG, "storeSwitch.setOnCheckedChangeListener $isChecked")
                 storeStatusTextView.text = "${infoResponse.mAccountStaticText?.mStoreText} : ${if (isChecked) infoResponse.mAccountStaticText?.mOnText else infoResponse.mAccountStaticText?.mOffText}"
             }
         }
         deliveryStatusTextView.text = "${infoResponse.mAccountStaticText?.mDeliveryText} : ${infoResponse.mAccountStaticText?.mOffText}"
         deliverySwitch.setOnCheckedChangeListener { _, isChecked ->
             run {
-                Log.d(
-                    SettingsFragment::class.simpleName,
-                    "deliverySwitch.setOnCheckedChangeListener $isChecked"
-                )
+                Log.d(TAG, "deliverySwitch.setOnCheckedChangeListener $isChecked")
                 deliveryStatusTextView.text = "${infoResponse.mAccountStaticText?.mDeliveryText} : ${if (isChecked) infoResponse.mAccountStaticText?.mOnText else infoResponse.mAccountStaticText?.mOffText}"
             }
         }
+        deliverySwitch.isChecked = infoResponse.mStoreInfo.storeServices.mDeliveryFlag == 1
+        storeSwitch.isChecked = infoResponse.mStoreInfo.storeServices.mStoreFlag == 1
         hiddenTextView.text = infoResponse.mAccountStaticText?.mTextAddPhoto
         moreControlsTextView.text = infoResponse.mAccountStaticText?.page_heading_more_controls
         whatsAppShareTextView.text = infoResponse.mAccountStaticText?.mShareText
@@ -433,7 +422,11 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
     }
 
     override fun onNewReleaseItemClicked(responseItem: TrendingListResponse?) {
-        if (responseItem?.mAction == Constants.NEW_RELEASE_TYPE_EXTERNAL) openUrlInBrowser(responseItem.mPage) else showTrendingOffersBottomSheet()
+        when (responseItem?.mAction) {
+            Constants.NEW_RELEASE_TYPE_WEBVIEW -> openWebViewFragment(this, "", BuildConfig.WEB_VIEW_URL + responseItem.mPage)
+            Constants.NEW_RELEASE_TYPE_EXTERNAL -> openUrlInBrowser(responseItem.mPage)
+            else -> showTrendingOffersBottomSheet()
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

@@ -25,5 +25,6 @@
     <color name="profile_preview_banner_background">#DBF8E5</color>
     <color name="add_product_banner_background">#FCF2BF</color>
     <color name="premium_text_color">#C39230</color>
+    <color name="premium_light_color">#FCDDC8</color>
     <color name="non_premium_icons_color">#797979</color>
 </resources>

@@ -11,6 +11,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.MarketingCardAdapter
 import com.digitaldukaan.adapters.SharePDFAdapter
@@ -151,6 +152,9 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                     data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), "type" to AFInAppEventParameterName.SOCIAL)
                 )
                 openWebViewFragment(this, "", Constants.WEB_VIEW_SOCIAL_CREATIVE_LIST, Constants.SETTINGS)
+            }
+            Constants.ACTION_CATALOG_PREMIUM -> {
+                openWebViewFragment(this, "", BuildConfig.WEB_VIEW_URL + response.action)
             }
             Constants.ACTION_QR_DOWNLOAD -> openWebViewFragment(this, "", Constants.WEB_VIEW_QR_DOWNLOAD, Constants.SETTINGS)
             Constants.ACTION_SHARE_DATA -> {
