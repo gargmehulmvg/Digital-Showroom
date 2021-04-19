@@ -196,10 +196,9 @@
                     android:layout_height="wrap_content"
                     android:padding="@dimen/_2sdp"
                     android:textColor="@color/black"
-                    app:layout_constraintBottom_toBottomOf="@+id/storeStatusTextView"
+                    app:layout_constraintBaseline_toBaselineOf="@+id/storeStatusTextView"
                     app:layout_constraintEnd_toEndOf="@+id/deliverySwitch"
                     app:layout_constraintStart_toStartOf="@+id/deliverySwitch"
-                    app:layout_constraintTop_toTopOf="@+id/storeStatusTextView"
                     tools:text="@string/store_controls" />
 
                 <com.google.android.material.imageview.ShapeableImageView
@@ -228,7 +227,7 @@
                     app:layout_constraintTop_toTopOf="@+id/deliveryStatusTextView"
                     tools:text="@string/more_controls" />
 
-                <com.google.android.material.switchmaterial.SwitchMaterial
+                <androidx.appcompat.widget.SwitchCompat
                     android:id="@+id/storeSwitch"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -237,14 +236,13 @@
                     android:thumb="@drawable/ic_store_switch_selector"
                     app:layout_constraintStart_toStartOf="@+id/materialTextView"
                     app:layout_constraintTop_toBottomOf="@+id/materialTextView"
-                    app:track="@drawable/ic_store_switch_track"
-                    app:useMaterialThemeColors="false" />
+                    app:track="@drawable/ic_store_switch_track" />
 
                 <androidx.appcompat.widget.SwitchCompat
                     android:id="@+id/deliverySwitch"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/_25sdp"
+                    android:layout_marginStart="@dimen/_20sdp"
                     android:onClick="onClick"
                     android:thumb="@drawable/ic_delivery_switch_selector"
                     app:layout_constraintStart_toEndOf="@+id/storeSwitch"
