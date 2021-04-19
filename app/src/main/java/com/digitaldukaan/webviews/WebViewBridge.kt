@@ -8,24 +8,24 @@ class WebViewBridge {
 
     companion object {
         var mWebViewListener: IWebViewCallbacks? = null
-        val tag = WebViewBridge::class.simpleName
+        private const val TAG = "WebViewBridge"
     }
 
     @JavascriptInterface
     fun onNativeBackPress() {
-        Log.d(WebViewBridge::class.simpleName, "onNativeBackPress")
+        Log.d(TAG, "onNativeBackPress")
         mWebViewListener?.onNativeBackPressed()
     }
 
     @JavascriptInterface
     fun sendData(value: String) {
-        Log.d(WebViewBridge::class.simpleName, "sendData")
+        Log.d(TAG, "sendData")
         mWebViewListener?.sendData(value)
     }
 
     @JavascriptInterface
     fun showAndroidToast(value: String) {
-        Log.d(WebViewBridge::class.simpleName, "showAndroidToast")
+        Log.d(TAG, "showAndroidToast")
         mWebViewListener?.showAndroidToast(value)
     }
 }

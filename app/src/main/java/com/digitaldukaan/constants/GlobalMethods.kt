@@ -86,7 +86,7 @@ fun Bitmap.getImageUri(inContext: Context): Uri? {
     val bytes = ByteArrayOutputStream()
     this.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
     val path = MediaStore.Images.Media.insertImage(inContext.contentResolver, this, "Title", null)
-    return Uri.parse(path)
+    return if (path == null || path.isEmpty()) null else Uri.parse(path)
 }
 
 fun openWebViewFragment(fragment: BaseFragment, title: String, webViewType: String, redirectFromStr: String) {

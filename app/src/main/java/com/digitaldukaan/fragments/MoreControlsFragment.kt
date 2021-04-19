@@ -69,6 +69,7 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
             onBackPressed(this@MoreControlsFragment)
             hideBackPressFromToolBar(mActivity, false)
         }
+        hideBottomNavigationView(true)
         setUIDataFromResponse()
         if (!isInternetConnectionAvailable(mActivity)) {
             showNoInternetConnectionDialog()

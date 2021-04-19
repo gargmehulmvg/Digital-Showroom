@@ -21,3 +21,6 @@
 #-renamesourcefileattribute SourceFile
 -keep public class com.android.installreferrer.** { *; }
 -keep class androidx.appcompat.widget.** { *; }
+# keping deobfuscated logs
+-keepattributes SourceFile,LineNumberTable        # Keep file names and line numbers.
+-keep public class * extends java.lang.Exception  # Optional: Keep custom exceptions.

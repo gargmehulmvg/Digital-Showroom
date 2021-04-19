@@ -8,6 +8,7 @@ import android.util.Log
 import com.appsflyer.AppsFlyerConversionListener
 import com.appsflyer.AppsFlyerLib
 import com.digitaldukaan.constants.AFInAppEventParameterName
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 
 class App: Application() {
 
@@ -52,5 +53,6 @@ class App: Application() {
             val manager = getSystemService(NotificationManager::class.java)
             manager.createNotificationChannel(notificationChannel)
         }
+        FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(true)
     }
 }
