@@ -10,12 +10,11 @@ import com.google.gson.Gson
 class StoreDescriptionNetworkService {
 
     suspend fun saveStoreDescriptionServerCall(
-        authToken: String,
         request: StoreDescriptionRequest,
         serviceInterface: IStoreDescriptionServiceInterface
     ) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.setStoreDescription(authToken, request)
+            val response = RetrofitApi().getServerCallObject()?.setStoreDescription(request)
             response?.let {
                 if (it.isSuccessful) {
                     it.body()?.let { profilePreviewResponse -> serviceInterface.onStoreDescriptionResponse(profilePreviewResponse) }

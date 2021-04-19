@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.transition.TransitionInflater
 import com.digitaldukaan.R
-import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.models.request.StoreNameRequest
 import com.digitaldukaan.models.response.CommonApiResponse
@@ -80,7 +79,7 @@ class OnBoardScreenDukaanNameFragment : BaseFragment(), IProfilePreviewServiceIn
                         service.setServiceInterface(this)
                         val request = StoreNameRequest(dukanName)
                         showProgressDialog(mActivity)
-                        service.updateStoreName(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN),request)
+                        service.updateStoreName(request)
                     }
                 }
             }

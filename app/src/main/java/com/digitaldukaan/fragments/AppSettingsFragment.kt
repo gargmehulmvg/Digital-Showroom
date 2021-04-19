@@ -72,6 +72,10 @@ class AppSettingsFragment : BaseFragment(), IAppSettingsItemClicked {
                     mActivity.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE).edit().clear().apply()
                     dialog.dismiss()
                     clearFragmentBackStack()
+                    storeStringDataInSharedPref(Constants.USER_AUTH_TOKEN, "")
+                    storeStringDataInSharedPref(Constants.STORE_NAME, "")
+                    storeStringDataInSharedPref(Constants.USER_MOBILE_NUMBER, "")
+                    storeStringDataInSharedPref(Constants.STORE_ID, "")
                     launchFragment(LoginFragment.newInstance(), false)
                 }
                 setNegativeButton(getString(R.string.close)) { dialog, _ -> dialog.dismiss() }

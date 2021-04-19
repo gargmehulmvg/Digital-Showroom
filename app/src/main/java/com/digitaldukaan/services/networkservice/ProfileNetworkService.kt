@@ -13,10 +13,10 @@ import okhttp3.RequestBody
 class ProfileNetworkService {
 
     suspend fun getProfileServerCall(
-        authToken : String,
-        serviceInterface: IProfileServiceInterface) {
+        serviceInterface: IProfileServiceInterface
+    ) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.getProfileResponse(authToken)
+            val response = RetrofitApi().getServerCallObject()?.getProfileResponse()
             response?.let {
                 if (it.isSuccessful) {
                     it.body()?.let { staticTextResponse ->
@@ -31,11 +31,11 @@ class ProfileNetworkService {
     }
 
     suspend fun changeStoreAndDeliveryStatusServerCall(
-        authToken : String,
         request: StoreDeliveryStatusChangeRequest,
-        serviceInterface: IProfileServiceInterface) {
+        serviceInterface: IProfileServiceInterface
+    ) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.changeStoreAndDeliveryStatus(authToken, request)
+            val response = RetrofitApi().getServerCallObject()?.changeStoreAndDeliveryStatus(request)
             response?.let {
                 if (it.isSuccessful) {
                     it.body()?.let { responseBody ->

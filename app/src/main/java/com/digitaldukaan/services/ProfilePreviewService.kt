@@ -18,21 +18,21 @@ class ProfilePreviewService {
         mServiceInterface = serviceInterface
     }
 
-    fun getProfilePreviewData(storeId: String) {
+    fun getProfilePreviewData() {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.getProfilePreviewServerCall(storeId, mServiceInterface)
+            mNetworkService.getProfilePreviewServerCall(mServiceInterface)
         }
     }
 
-    fun updateStoreName(authToken: String, request: StoreNameRequest) {
+    fun updateStoreName(request: StoreNameRequest) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.updateStoreNameServerCall(authToken, request, mServiceInterface)
+            mNetworkService.updateStoreNameServerCall(request, mServiceInterface)
         }
     }
 
-    fun updateStoreLink(authToken: String, request: StoreLinkRequest) {
+    fun updateStoreLink(request: StoreLinkRequest) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.updateStoreLinkServerCall(authToken, request, mServiceInterface)
+            mNetworkService.updateStoreLinkServerCall(request, mServiceInterface)
         }
     }
 

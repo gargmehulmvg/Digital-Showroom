@@ -111,7 +111,7 @@ class StoreDescriptionFragment : BaseFragment(), IStoreDescriptionServiceInterfa
                 service.setServiceInterface(this)
                 val request = StoreDescriptionRequest(storeDescriptionEditText.text.trim().toString())
                 showCancellableProgressDialog(mActivity)
-                service.saveStoreDescriptionData(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
+                service.saveStoreDescriptionData(request)
             }
         }
     }

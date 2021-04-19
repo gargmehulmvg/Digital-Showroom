@@ -202,7 +202,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             return
         }
         showProgressDialog(mActivity, "Fetching user profile...")
-        mProfileService.getUserProfile(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
+        mProfileService.getUserProfile()
     }
 
     private fun changeStoreDeliveryStatus() {
@@ -215,7 +215,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             if (storeSwitch.isChecked) 1 else 0,
             if (deliverySwitch.isChecked) 1 else 0
         )
-        mProfileService.changeStoreAndDeliveryStatus(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
+        mProfileService.changeStoreAndDeliveryStatus(request)
     }
 
     override fun onToolbarSideIconClicked() = launchFragment(

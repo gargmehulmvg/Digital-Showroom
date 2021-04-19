@@ -17,15 +17,18 @@ class ProfileService {
         mProfileServiceInterface = serviceInterface
     }
 
-    fun getUserProfile(authToken: String) {
+    fun getUserProfile() {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.getProfileServerCall(authToken, mProfileServiceInterface)
+            mNetworkService.getProfileServerCall(mProfileServiceInterface)
         }
     }
 
-    fun changeStoreAndDeliveryStatus(authToken : String, request: StoreDeliveryStatusChangeRequest) {
+    fun changeStoreAndDeliveryStatus(request: StoreDeliveryStatusChangeRequest) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.changeStoreAndDeliveryStatusServerCall(authToken ,request, mProfileServiceInterface)
+            mNetworkService.changeStoreAndDeliveryStatusServerCall(
+                request,
+                mProfileServiceInterface
+            )
         }
     }
 

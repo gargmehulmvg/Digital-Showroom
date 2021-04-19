@@ -128,7 +128,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
             return
         }
         showProgressDialog(mActivity)
-        service.getProfilePreviewData(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
+        service.getProfilePreviewData()
         swipeRefreshLayout.setOnRefreshListener(this)
     }
 
@@ -352,7 +352,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                     } else {
                         val request = StoreLinkRequest(getStringDataFromSharedPref(Constants.STORE_ID).toInt(), newStoreLink)
                         showProgressDialog(mActivity)
-                        service.updateStoreLink(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN),request)
+                        service.updateStoreLink(request)
                     }
                 }
                 bottomSheetEditStoreHeading.text = if (bottomSheetEditStoreLinkEditText.text.isEmpty()) mProfilePreviewStaticData.storeLinkTitle else mProfilePreviewStaticData.editStoreLink
@@ -435,7 +435,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                 val request = StoreNameRequest(newStoreName)
                 showProgressDialog(mActivity)
                 bottomSheetEditStoreSaveTextView.isEnabled = false
-                service.updateStoreName(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN),request)
+                service.updateStoreName(request)
             }
         }
         bottomSheetEditStoreHeading.text = mProfilePreviewStaticData.mBottomSheetStoreNameHeading

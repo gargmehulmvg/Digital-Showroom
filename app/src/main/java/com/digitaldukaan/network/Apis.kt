@@ -19,22 +19,22 @@ interface Apis {
     suspend fun getAppStaticText(@Query("lanuageId") languageId:String) : Response<StaticTextResponse>
 
     @GET("api/dotk/settings/getAccountInfo")
-    suspend fun getProfileResponse(@Header("auth_token") authToken:String) : Response<CommonApiResponse>
+    suspend fun getProfileResponse() : Response<CommonApiResponse>
 
     @GET("api/dotk/settings/getProfileInfo")
-    suspend fun getProfilePreviewResponse(@Header("auth_token") authToken:String) : Response<CommonApiResponse>
+    suspend fun getProfilePreviewResponse() : Response<CommonApiResponse>
 
     @POST("api/dotk/settings/setServices")
-    suspend fun changeStoreAndDeliveryStatus(@Header("auth_token") authToken:String, @Body request: StoreDeliveryStatusChangeRequest) : Response<CommonApiResponse>
+    suspend fun changeStoreAndDeliveryStatus(@Body request: StoreDeliveryStatusChangeRequest) : Response<CommonApiResponse>
 
     @POST("api/dotk/settings/setStoreDescription")
-    suspend fun setStoreDescription(@Header("auth_token") authToken:String, @Body request: StoreDescriptionRequest) : Response<CommonApiResponse>
+    suspend fun setStoreDescription(@Body request: StoreDescriptionRequest) : Response<CommonApiResponse>
 
     @POST("api/dotk/settings/setStoreName")
-    suspend fun setStoreName(@Header("auth_token") authToken:String, @Body request: StoreNameRequest) : Response<CommonApiResponse>
+    suspend fun setStoreName(@Body request: StoreNameRequest) : Response<CommonApiResponse>
 
     @POST("api/dotk/merchant/updateStoreDomain")
-    suspend fun updateStoreDomain(@Header("auth_token") authToken:String, @Body request: StoreLinkRequest) : Response<StoreDescriptionResponse>
+    suspend fun updateStoreDomain(@Body request: StoreLinkRequest) : Response<StoreDescriptionResponse>
 
     @POST("api/dotk/merchant/setAddress")
     suspend fun updateStoreAddress(@Header("auth_token") authToken:String, @Body request: StoreAddressRequest) : Response<StoreAddressResponse>

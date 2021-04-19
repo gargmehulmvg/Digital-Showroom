@@ -14,9 +14,9 @@ class StoreDescriptionService {
         mServiceInterface = serviceInterface
     }
 
-    fun saveStoreDescriptionData(authToken: String, request:StoreDescriptionRequest) {
+    fun saveStoreDescriptionData(request: StoreDescriptionRequest) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.saveStoreDescriptionServerCall(authToken, request, mServiceInterface)
+            mNetworkService.saveStoreDescriptionServerCall(request, mServiceInterface)
         }
     }
 

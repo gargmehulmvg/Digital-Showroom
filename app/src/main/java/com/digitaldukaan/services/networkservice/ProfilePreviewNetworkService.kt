@@ -14,11 +14,10 @@ import okhttp3.RequestBody
 class ProfilePreviewNetworkService {
 
     suspend fun getProfilePreviewServerCall(
-        authToken : String,
         serviceInterface: IProfilePreviewServiceInterface
     ) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.getProfilePreviewResponse(authToken)
+            val response = RetrofitApi().getServerCallObject()?.getProfilePreviewResponse()
             response?.let {
                 if (it.isSuccessful) {
                     it.body()?.let { profilePreviewResponse ->
@@ -33,12 +32,11 @@ class ProfilePreviewNetworkService {
     }
 
     suspend fun updateStoreNameServerCall(
-        authToken:String,
-        storeNameRequest : StoreNameRequest,
+        storeNameRequest: StoreNameRequest,
         serviceInterface: IProfilePreviewServiceInterface
     ) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.setStoreName(authToken, storeNameRequest)
+            val response = RetrofitApi().getServerCallObject()?.setStoreName(storeNameRequest)
             response?.let {
                 if (it.isSuccessful) {
                     it.body()?.let { storeNameResponse ->
@@ -59,12 +57,11 @@ class ProfilePreviewNetworkService {
     }
 
     suspend fun updateStoreLinkServerCall(
-        authToken:String,
         storeLinkRequest: StoreLinkRequest,
         serviceInterface: IProfilePreviewServiceInterface
     ) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.updateStoreDomain(authToken, storeLinkRequest)
+            val response = RetrofitApi().getServerCallObject()?.updateStoreDomain(storeLinkRequest)
             response?.let {
                 if (it.isSuccessful) {
                     it.body()?.let { storeLinkResponse ->

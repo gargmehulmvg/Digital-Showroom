@@ -25,7 +25,7 @@ class RetrofitApi {
                         .addHeader("auth_token", PrefsManager.getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
                         .addHeader("session_id", StaticInstances.sAppSessionId ?: "")
                         .addHeader("install_id", PrefsManager.getStringDataFromSharedPref(PrefsManager.APP_INSTANCE_ID))
-                        .addHeader("app_os", "android_native")
+                        .addHeader("app_os", "android")
                         .addHeader("app_version", BuildConfig.VERSION_NAME)
                         .build()
                     it.proceed(newRequest)
