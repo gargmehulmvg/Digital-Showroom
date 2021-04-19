@@ -434,6 +434,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
             } else {
                 val request = StoreNameRequest(newStoreName)
                 showProgressDialog(mActivity)
+                bottomSheetEditStoreSaveTextView.isEnabled = false
                 service.updateStoreName(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN),request)
             }
         }

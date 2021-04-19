@@ -89,7 +89,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
             if (response.mIsSuccessStatus) {
                 val listType = object : TypeToken<List<MarketingCardsItemResponse>>() {}.type
                 val list = Gson().fromJson<ArrayList<MarketingCardsItemResponse>>(response.mCommonDataStr, listType)
-                marketingCardRecyclerView.apply {
+                marketingCardRecyclerView?.apply {
                     val gridLayoutManager = GridLayoutManager(mActivity, 2)
                     layoutManager = gridLayoutManager
                     gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
