@@ -180,4 +180,7 @@ interface Apis {
 
     @POST("api/dotk/onboard/createStore")
     suspend fun createStore(@Body request: CreateStoreRequest?): Response<CommonApiResponse>
+
+    @GET("api/dotk/onboard/getHelpScreens")
+    suspend fun getHelpScreens(): Response<CommonApiResponse>
 }

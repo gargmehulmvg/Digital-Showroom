@@ -18,4 +18,10 @@ class SplashService {
             mSplashNetworkService.getAppStaticTextServerCall(languageId, mSplashServiceInterface)
         }
     }
+
+    fun getHelpScreens() {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mSplashNetworkService.getHelpScreensServerCall(mSplashServiceInterface)
+        }
+    }
 }

@@ -50,6 +50,7 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
         fetchContactsIfPermissionGranted()
         val splashService = SplashService()
         splashService.setSplashServiceInterface(this)
+        splashService.getHelpScreens()
         splashService.getStaticData("0")
         Log.d("STORE_OBJECT_TEST", "$TAG onViewCreated: ${PrefsManager.getStringDataFromSharedPref(Constants.STORE_NAME)}")
     }
@@ -81,8 +82,7 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
         when {
             mIntentUri != null -> switchToFragmentByDeepLink()
             "" == getStringDataFromSharedPref(Constants.STORE_ID) -> launchFragment(
-                //OnBoardScreenDukaanLocationFragment.newInstance(),
-                LoginFragment.newInstance(),
+                OnBoardHelpScreenFragment.newInstance(),
                 true
             )
             else -> launchFragment(HomeFragment.newInstance(), true)

@@ -86,7 +86,6 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
 
         override fun onSuccessProfileShared(response: TrueProfile) {
             Log.d(TAG, "onSuccessProfileShared: $response")
-            showToast("onSuccessProfileShared")
             val request = ValidateUserRequest(
                 response.payload,
                 response.signature,
@@ -99,7 +98,6 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
 
         override fun onVerificationRequired(p0: TrueError?) {
             Log.d(TAG, "onVerificationRequired: $p0")
-            showToast("onVerificationRequired")
         }
     }
     

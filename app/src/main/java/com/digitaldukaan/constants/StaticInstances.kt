@@ -1,10 +1,7 @@
 package com.digitaldukaan.constants
 
 import com.digitaldukaan.models.dto.ContactModel
-import com.digitaldukaan.models.response.BankDetailsResponse
-import com.digitaldukaan.models.response.OrderPageStaticTextResponse
-import com.digitaldukaan.models.response.StepCompletedItem
-import com.digitaldukaan.models.response.StoreInfoResponse
+import com.digitaldukaan.models.response.*
 
 object StaticInstances {
 
@@ -13,6 +10,7 @@ object StaticInstances {
     var sIsStoreImageUploaded: Boolean = false
     var sUserContactList: MutableList<ContactModel> = ArrayList()
     var sStepsCompletedList: ArrayList<StepCompletedItem>? = null
+    var sHelpScreenList: ArrayList<HelpScreenItemResponse> = ArrayList()
     var sOrderPageInfoStaticData: OrderPageStaticTextResponse? = null
     var sAppSessionId: String? = ""
     var sCleverTapId: String? = ""
