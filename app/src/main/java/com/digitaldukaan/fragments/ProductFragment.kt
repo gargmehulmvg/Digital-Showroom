@@ -244,41 +244,22 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
         val optionsMenu = PopupMenu(mActivity, sideView)
         optionsMenu.inflate(R.menu.menu_product_fragment)
         mOptionsMenuResponse?.forEachIndexed { position, response ->
-            val menuOption = optionsMenu.menu?.add(Menu.NONE, position, Menu.NONE, response.mText)
-            /*if (response.mCDN?.isNotEmpty() == true) {
-                Picasso.get().load(response.mCDN).into(object : com.squareup.picasso.Target {
-                    override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
-                        bitmap?.let {
-                            val drawableIcon: Drawable = BitmapDrawable(resources, bitmap)
-                            menuOption?.icon = drawableIcon
-                        }
-                    }
-
-                    override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
-                        Log.d("TAG", "onPrepareLoad: ")
-                    }
-
-                    override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
-                        Log.d("TAG", "onBitmapFailed: ")
-                    }
-                })
-            }*/
+            optionsMenu.menu?.add(Menu.NONE, position, Menu.NONE, response.mText)
         }
         optionsMenu.setOnMenuItemClickListener(this)
         optionsMenu.show()
     }
 
     override fun onMenuItemClick(item: MenuItem?): Boolean {
-        when(item?.itemId) {
-            0 -> openWebViewFragment(this, "", BuildConfig.WEB_VIEW_URL + mOptionsMenuResponse?.get(0)?.mPage)
-            1 -> openWebViewFragment(this, "", BuildConfig.WEB_VIEW_URL + mOptionsMenuResponse?.get(1)?.mPage)
-            2 -> {
-                if (!isInternetConnectionAvailable(mActivity)) {
-                    showNoInternetConnectionDialog()
-                    return true
-                }
+        val optionMenuItemStr = mOptionsMenuResponse?.get(item?.itemId ?: 0)
+        if (optionMenuItemStr?.mPage?.isNotEmpty() == true) {
+            openWebViewFragment(this, "", BuildConfig.WEB_VIEW_URL + optionMenuItemStr.mPage)
+        } else {
+            if (mShareDataOverWhatsAppText.isNotEmpty()) shareDataOnWhatsApp(mShareDataOverWhatsAppText) else if (!isInternetConnectionAvailable(mActivity)) {
+                showNoInternetConnectionDialog()
+            } else {
                 showProgressDialog(mActivity)
-                mService.getProductSharePDFTextData(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
+                mService.getProductShareStoreData()
             }
         }
         return true

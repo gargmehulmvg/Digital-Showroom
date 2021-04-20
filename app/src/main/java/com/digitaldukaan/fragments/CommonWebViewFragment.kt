@@ -94,6 +94,14 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
                 val bitmap = getBitmapFromBase64(imageBase64)
                 shareData("Order From - $domain", bitmap)
             }
+        } else if (jsonData.optBoolean("downloadImage")) {
+            val base64OriginalStr = jsonData.optString("data")
+            Log.d(mTagName, "image BASE64 :: $base64OriginalStr")
+            val base64Str = base64OriginalStr.split("data:image/png;base64,")[1]
+            Log.d(mTagName, "image URL :: $base64Str")
+            val bitmap = getBitmapFromBase64V2(base64Str)
+            saveMediaToStorage(bitmap, mActivity)
+            showToast("Image Saved to Gallery")
         } else if (jsonData.optBoolean("convertImage")) {
             showProgressDialog(mActivity)
             val imageUrl = jsonData.optString("data")
