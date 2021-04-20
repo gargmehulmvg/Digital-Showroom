@@ -103,19 +103,7 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
             saveMediaToStorage(bitmap, mActivity)
             showToast("Image Saved to Gallery")
         } else if (jsonData.optBoolean("convertImage")) {
-            //showProgressDialog(mActivity)
-            val imageUrl = jsonData.optString("data")
-            val image64 = getBase64FromImageURL(imageUrl)
-            Log.d(mTagName, "image BASE64 :: $image64")
-            CoroutineScopeUtils().runTaskOnCoroutineMain {
-                if (jsonData.optString("sharePage") == "social") {
-                    commonWebView?.loadUrl("javascript: receiveAndroidSocialData('$image64')")
-                } else {
-                    commonWebView?.loadUrl("javascript: receiveAndroidData('$image64')")
-                }
-            }
-        } else if (jsonData.optBoolean("convertImage")) {
-            //showProgressDialog(mActivity)
+            showProgressDialog(mActivity)
             val imageUrl = jsonData.optString("data")
             val image64 = getBase64FromImageURL(imageUrl)
             Log.d(mTagName, "image BASE64 :: $image64")
