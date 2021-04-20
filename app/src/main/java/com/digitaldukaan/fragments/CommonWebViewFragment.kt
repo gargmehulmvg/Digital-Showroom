@@ -75,15 +75,18 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
     }
 
     override fun sendData(data: String) {
+        stopProgress()
         Log.d(mTagName, "sendData: $data")
         val jsonData = JSONObject(data)
         if (jsonData.optBoolean("shareCreative")) {
-            if (jsonData.optBoolean("shareType")) {
-                val imageUrl = jsonData.optString("data")
+            if (jsonData.optBoolean("shareSingle")) {
+                val base64OriginalStr = jsonData.optString("data")
                 val domain = jsonData.optString("domain")
-                Log.d(mTagName, "image URL :: $imageUrl")
-                Log.d(mTagName, "image BASE64 :: ${getBase64FromImageURL(imageUrl)}")
-                //shareDataOnWhatsAppWithImage("Order From - $domain", imageUrl)
+                Log.d(mTagName, "image URL :: $base64OriginalStr")
+                val base64Str = base64OriginalStr.split("data:image/png;base64,")[1]
+                Log.d(mTagName, "image URL :: $base64Str")
+                val bitmap = getBitmapFromBase64V2(base64Str)
+                shareDataOnWhatsAppWithImage("Order From - $domain", bitmap)
             } else {
                 val imageBase64 = jsonData.optString("data")
                 Log.d(mTagName, "image URL :: $imageBase64")
@@ -92,11 +95,16 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
                 shareData("Order From - $domain", bitmap)
             }
         } else if (jsonData.optBoolean("convertImage")) {
+            showProgressDialog(mActivity)
             val imageUrl = jsonData.optString("data")
             val image64 = getBase64FromImageURL(imageUrl)
             Log.d(mTagName, "image BASE64 :: $image64")
             CoroutineScopeUtils().runTaskOnCoroutineMain {
-                commonWebView?.loadUrl("javascript: receiveAndroidData('$image64')")
+                if (jsonData.optString("sharePage") == "business") {
+                    commonWebView?.loadUrl("javascript: receiveAndroidData('$image64')")
+                } else {
+                    commonWebView?.loadUrl("javascript: receiveAndroidSocialData('$image64')")
+                }
             }
         }
     }
@@ -107,7 +115,6 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
 
         override fun onPageFinished(view: WebView?, url: String?) {
             Log.d("WebViewController", "onPageFinished: called")
-            commonWebView?.loadUrl("javascript: receiveAndroidData('Mehul')")
         }
 
         override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {

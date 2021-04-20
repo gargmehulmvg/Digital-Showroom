@@ -265,6 +265,22 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         }
     }
 
+    open fun shareDataOnWhatsAppWithImage(sharingData: String?, image: Bitmap?) {
+        val whatsAppIntent = Intent(Intent.ACTION_SEND)
+        whatsAppIntent.type = "text/plain"
+        whatsAppIntent.setPackage("com.whatsapp")
+        whatsAppIntent.putExtra(Intent.EXTRA_TEXT, sharingData)
+        image?.let {
+            whatsAppIntent.type = "image/jpeg"
+            whatsAppIntent.putExtra(Intent.EXTRA_STREAM, image.getImageUri(mActivity))
+        }
+        try {
+            mActivity.startActivity(whatsAppIntent)
+        } catch (ex: ActivityNotFoundException) {
+            showToast(ex.message)
+        }
+    }
+
     open fun shareData(sharingData: String?, image: Bitmap?) {
         val whatsAppIntent = Intent(Intent.ACTION_SEND)
         whatsAppIntent.type = "text/plain"

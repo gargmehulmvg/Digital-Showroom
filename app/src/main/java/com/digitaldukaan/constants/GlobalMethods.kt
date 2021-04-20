@@ -51,15 +51,15 @@ fun getBase64FromImageURL(url: String): String? {
     try {
         val imageUrl = URL(url)
         val ucon: URLConnection = imageUrl.openConnection()
-        val `is`: InputStream = ucon.getInputStream()
+        val inputStream: InputStream = ucon.getInputStream()
         val baos = ByteArrayOutputStream()
         val buffer = ByteArray(1024)
         var read: Int
-        while (`is`.read(buffer, 0, buffer.size).also { read = it } != -1) baos.write(buffer, 0, read)
+        while (inputStream.read(buffer, 0, buffer.size).also { read = it } != -1) baos.write(buffer, 0, read)
         baos.flush()
         return Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT)
     } catch (e: Exception) {
-        Log.d("Error", e.toString())
+        Log.e("Error", "getBase64FromImageURL", e)
     }
     return null
 }
@@ -82,10 +82,15 @@ fun getBitmapFromBase64(base64Str: String?): Bitmap? {
     return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
 }
 
+fun getBitmapFromBase64V2(input: String?): Bitmap? {
+    val decodedByte = Base64.decode(input, 0)
+    return BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.size)
+}
+
 fun Bitmap.getImageUri(inContext: Context): Uri? {
     val bytes = ByteArrayOutputStream()
     this.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
-    val path = MediaStore.Images.Media.insertImage(inContext.contentResolver, this, "Title", null)
+    val path = MediaStore.Images.Media.insertImage(inContext.contentResolver, this, "Title" + Random(4).nextInt(), null)
     return if (path == null || path.isEmpty()) null else Uri.parse(path)
 }
 
