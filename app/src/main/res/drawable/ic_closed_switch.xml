@@ -7,7 +7,7 @@
                 android:height="@dimen/_20sdp" />
         </shape>
     </item>
-    <item android:drawable="@drawable/ic_open"
+    <item android:drawable="@drawable/ic_closed"
         android:left="@dimen/_5sdp"
         android:right="@dimen/_5sdp"
         android:top="@dimen/_5sdp"

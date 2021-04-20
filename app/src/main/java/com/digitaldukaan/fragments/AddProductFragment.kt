@@ -62,11 +62,13 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     private lateinit var addProductChipsAdapter: AddProductsChipsAdapter
     private var mOptionsMenuResponse: ArrayList<TrendingListResponse>? = null
     private var mImageAddAdapter: AddProductsImagesAdapter? = null
+    private var mIsAddNewProduct: Boolean = false
 
     companion object {
-        fun newInstance(itemId:Int): AddProductFragment {
+        fun newInstance(itemId:Int, isAddNewProduct: Boolean): AddProductFragment {
             val fragment = AddProductFragment()
             fragment.mItemId = itemId
+            fragment.mIsAddNewProduct = isAddNewProduct
             return fragment
         }
     }

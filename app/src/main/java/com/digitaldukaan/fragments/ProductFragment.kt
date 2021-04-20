@@ -226,7 +226,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
 
     override fun onClick(view: View?) {
         when(view?.id) {
-            addProductContainer.id -> launchFragment(AddProductFragment.newInstance(0), true)
+            addProductContainer.id -> launchFragment(AddProductFragment.newInstance(0, true), true)
             shareProductContainer.id -> {
                 if (mShareDataOverWhatsAppText.isNotEmpty()) shareDataOnWhatsApp(mShareDataOverWhatsAppText) else if (!isInternetConnectionAvailable(mActivity)) {
                     showNoInternetConnectionDialog()
@@ -302,9 +302,9 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
             showUpdateCategoryBottomSheet(jsonDataObject.optString("name"), jsonDataObject.optInt("id"))
         } else if (jsonData.optBoolean("catalogItemEdit")) {
             val jsonDataObject = JSONObject(jsonData.optString("data"))
-            launchFragment(AddProductFragment.newInstance(jsonDataObject.optInt("id")), true)
+            launchFragment(AddProductFragment.newInstance(jsonDataObject.optInt("id"), false), true)
         } else if (jsonData.optBoolean("catalogAddItem")) {
-            launchFragment(AddProductFragment.newInstance(0), true)
+            launchFragment(AddProductFragment.newInstance(0, true), true)
         } else if (jsonData.optBoolean("viewShopAsCustomer")) {
             val isPremiumEnable = (jsonData.optInt("isPremium") == 1)
             launchFragment(ViewAsCustomerFragment.newInstance(jsonData.optString("domain"), isPremiumEnable, addProductStaticData), true)
