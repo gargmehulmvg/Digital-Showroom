@@ -231,12 +231,13 @@
 
                 <TextView
                     android:id="@+id/originalPriceTextView"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:textSize="@dimen/_14sdp"
                     android:layout_marginTop="@dimen/_8sdp"
+                    android:textSize="@dimen/_14sdp"
+                    android:gravity="center"
                     app:layout_constraintBottom_toBottomOf="@+id/discountedPriceInputLayout"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/discountedPriceTextView"
                     app:layout_constraintHorizontal_bias="0.25"
                     app:layout_constraintStart_toEndOf="@+id/discountedPriceInputLayout"
                     app:layout_constraintTop_toTopOf="@+id/discountedPriceInputLayout"
@@ -251,7 +252,7 @@
                     android:textColor="@color/open_green"
                     android:textSize="@dimen/_11sdp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="@+id/discountedPriceTextView"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/originalPriceTextView"
                     tools:text="50% OFF" />
 
@@ -259,7 +260,6 @@
                     android:id="@+id/discountedPriceTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/_10sdp"
                     android:background="@drawable/slight_curve_red_background"
                     android:fontFamily="@font/montserrat_bold"
                     android:textColor="@color/white"
@@ -267,7 +267,6 @@
                     android:visibility="invisible"
                     app:layout_constraintBottom_toBottomOf="@+id/originalPriceTextView"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/originalPriceTextView"
                     app:layout_constraintTop_toTopOf="@+id/originalPriceTextView"
                     tools:text="₹ 504" />
 
@@ -338,15 +337,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_20sdp"
-                android:layout_marginEnd="@dimen/_20sdp"
                 android:layout_marginTop="@dimen/_15sdp"
+                android:layout_marginEnd="@dimen/_20sdp"
+                android:hint="Enter Description (Optional)"
                 android:visibility="gone"
                 app:counterMaxLength="@integer/description_name_length"
                 app:layout_constraintBottom_toTopOf="@+id/continueTextView"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                android:hint="Enter Description (Optional)"
                 app:layout_constraintVertical_bias="0.0">
 
                 <EditText
@@ -379,6 +378,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:cardElevation="@dimen/_5sdp"
+        android:animateLayoutChanges="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -390,8 +390,8 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/_10sdp"
             android:gravity="center"
-            android:visibility="gone"
             android:onClick="onClick"
+            android:visibility="gone"
             tools:text="@string/save_n_continue" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -400,6 +400,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/_10sdp"
             android:layout_weight="1"
+            android:animateLayoutChanges="true"
             android:background="@drawable/curve_black_background_selector"
             android:onClick="onClick">
 
@@ -410,10 +411,10 @@
                 android:layout_marginEnd="8dp"
                 android:clickable="false"
                 android:contentDescription="@string/image_view_content_description"
+                android:src="@drawable/ic_whatsapp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/shareButtonTextView"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:src="@drawable/ic_whatsapp" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/shareButtonTextView"
@@ -423,14 +424,14 @@
                 android:gravity="center_vertical"
                 android:paddingTop="@dimen/_10sdp"
                 android:paddingBottom="@dimen/_10sdp"
+                android:text="@string/share_product"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_15sdp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.6"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:text="Share Product" />
+                app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

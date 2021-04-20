@@ -15,6 +15,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.AddProductsChipsAdapter
 import com.digitaldukaan.adapters.AddProductsImagesAdapter
@@ -44,6 +45,7 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.File
+import java.util.*
 
 
 class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapterItemClickListener,
@@ -65,6 +67,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     private var mIsAddNewProduct: Boolean = false
 
     companion object {
+        private const val TAG = "AddProductFragment"
         fun newInstance(itemId:Int, isAddNewProduct: Boolean): AddProductFragment {
             val fragment = AddProductFragment()
             fragment.mItemId = itemId
@@ -131,12 +134,15 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                             originalPriceTextView.text = "${addProductStaticData?.text_rupees_symbol} ${priceStr.toDouble()}"
                             discountedPriceTextView.text = "${addProductStaticData?.text_rupees_symbol} ${str.toDouble()}"
                             originalPriceTextView.showStrikeOffText()
-                            val percentage = (str.toDouble() / priceStr.toDouble()) * 100
+                            val priceDouble = priceStr.toDouble()
+                            val discountedPriceDouble = str.toDouble()
+                            val percentage = ((priceDouble - discountedPriceDouble) / priceDouble) * 100
                             pricePercentageOffTextView.text = "${percentage.toInt()}% OFF"
                         }
                     }
                 } else {
                     originalPriceTextView.text = null
+                    pricePercentageOffTextView.text = null
                     discountedPriceTextView.visibility = View.INVISIBLE
                 }
             }
@@ -146,7 +152,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-
+                showAddProductContainer()
             }
 
         })
@@ -154,6 +160,69 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         mImagesStrList.add(0, "")
         mService.getItemInfo(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), mItemId)
         return mContentView
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        handleVisibilityTextWatcher()
+    }
+
+    private fun handleVisibilityTextWatcher() {
+        priceEditText.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                Log.d(TAG, "afterTextChanged: priceEditText :: do nothing")
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                Log.d(TAG, "beforeTextChanged: priceEditText :: do nothing")
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                showAddProductContainer()
+            }
+
+        })
+        nameEditText.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                Log.d(TAG, "afterTextChanged: nameEditText :: do nothing")
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                Log.d(TAG, "beforeTextChanged: nameEditText :: do nothing")
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                showAddProductContainer()
+            }
+
+        })
+        productDescriptionEditText.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                Log.d(TAG, "afterTextChanged: productDescriptionEditText :: do nothing")
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                Log.d(TAG, "beforeTextChanged: productDescriptionEditText :: do nothing")
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                showAddProductContainer()
+            }
+
+        })
+        enterCategoryEditText.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                Log.d(TAG, "afterTextChanged: enterCategoryEditText :: do nothing")
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                Log.d(TAG, "beforeTextChanged: enterCategoryEditText :: do nothing")
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                showAddProductContainer()
+            }
+
+        })
     }
 
     override fun onClick(view: View?) {
@@ -204,6 +273,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 }
             }
             updateCameraImageView.id -> {
+                showAddProductContainer()
                 showAddProductImagePickerBottomSheet(0)
             }
             updateCameraTextView.id -> {
@@ -325,11 +395,11 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 priceEditText.requestFocus()
                 return false
             }
-            discountedPriceEditText.text.trim().isEmpty() -> {
+            /*discountedPriceEditText.text.trim().isEmpty() -> {
                 discountedPriceEditText.error = addProductStaticData?.error_mandatory_field
                 discountedPriceEditText.requestFocus()
                 return false
-            }
+            }*/
             priceEditText.text.toString().toDouble() < discountedPriceEditText.text.toString().toDouble() -> {
                 discountedPriceEditText.text = null
                 discountedPriceEditText.error = addProductStaticData?.error_discount_price_less_then_original_price
@@ -352,6 +422,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             val addProductResponse = Gson().fromJson<AddProductResponse>(commonResponse.mCommonDataStr, AddProductResponse::class.java)
+            Log.d(TAG, "onGetAddProductDataResponse: $addProductResponse")
             addProductStaticData = addProductResponse?.addProductStaticText
             addProductResponse?.storeItem?.run {
                 nameEditText.setText(name)
@@ -409,6 +480,12 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 imagesLeftTextView.text = "${if (count == 0) count else count - 1}/4 $text_images_added"
             }
             mOptionsMenuResponse = addProductResponse?.addProductStoreOptionsMenu
+            shareProductContainer.setOnClickListener {
+                shareDataOnWhatsAppWithImage("ItemName: ${addProductResponse?.storeItem?.name}\nPrice:  ₹${addProductResponse?.storeItem?.price} \nDiscounted Price: ₹${addProductResponse.storeItem?.discountedPrice}\n\n\uD83D\uDED2 ORDER NOW, Click on the link below\n\n" +
+                        "${BuildConfig.WEB_VIEW_SHOW_ROOM_URL}${addProductResponse?.domain}/${addProductResponse?.storeItem?.id}/${addProductResponse.storeItem?.name?.replace(' ', '-')}" ,addProductResponse?.storeItem?.imageUrl)
+            }
+            shareProductContainer.visibility = if (mIsAddNewProduct) View.GONE else View.VISIBLE
+            continueTextView.visibility = if (mIsAddNewProduct) View.VISIBLE else View.GONE
         }
     }
 
@@ -464,6 +541,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
 
     override fun onAdapterItemClickListener(position: Int) {
         mImageChangePosition = position
+        showAddProductContainer()
         showAddProductImagePickerBottomSheet(position)
     }
 
@@ -519,6 +597,13 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             }
             val alertDialog: AlertDialog = builder.create()
             alertDialog.show()
+        }
+    }
+
+    private fun showAddProductContainer() {
+        if (shareProductContainer.visibility == View.VISIBLE) {
+            shareProductContainer.visibility = View.GONE
+            continueTextView.visibility = View.VISIBLE
         }
     }
 }

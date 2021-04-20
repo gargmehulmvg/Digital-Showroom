@@ -19,6 +19,7 @@
             android:id="@+id/marketingCardRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:overScrollMode="never"
             app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
             app:spanCount="2"
             tools:listitem="@layout/marketing_card_item" />

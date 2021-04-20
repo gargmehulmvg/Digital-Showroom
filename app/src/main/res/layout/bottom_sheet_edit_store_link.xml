@@ -67,6 +67,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="0.65"
+            android:maxLength="@integer/store_link_length"
             android:background="@drawable/slight_curve_black_border"
             android:textColor="@color/black"
             tools:text="@string/app_name"
