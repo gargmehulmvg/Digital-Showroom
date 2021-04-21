@@ -26,6 +26,7 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
     private lateinit var mHeaderText: String
     private lateinit var mLoadUrl: String
     private val mTagName = "CommonWebViewFragment"
+    private var mDomainName = ""
 
     fun newInstance(headerText: String, loadUrl:String): CommonWebViewFragment {
         val fragment = CommonWebViewFragment()
@@ -106,13 +107,13 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
                 val base64Str = base64OriginalStr.split("data:image/png;base64,")[1]
                 Log.d(mTagName, "image URL :: $base64Str")
                 val bitmap = getBitmapFromBase64V2(base64Str)
-                shareDataOnWhatsAppWithImage("Order From - $domain", bitmap)
+                shareDataOnWhatsAppWithImage("Order From - ${if (domain.isEmpty()) mDomainName else domain}", bitmap)
             } else {
                 val imageBase64 = jsonData.optString("data")
                 Log.d(mTagName, "image URL :: $imageBase64")
                 val domain = jsonData.optString("domain")
                 val bitmap = getBitmapFromBase64(imageBase64)
-                shareData("Order From - $domain", bitmap)
+                shareData("Order From - ${if (domain.isEmpty()) mDomainName else domain}", bitmap)
             }
         } else if (jsonData.optBoolean("downloadImage")) {
             val base64OriginalStr = jsonData.optString("data")
@@ -123,8 +124,9 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
             saveMediaToStorage(bitmap, mActivity)
             showToast("Image Saved to Gallery")
         } else if (jsonData.optBoolean("convertImage")) {
-            //showProgressDialog(mActivity)
+            showProgressDialog(mActivity)
             val imageUrl = jsonData.optString("data")
+            mDomainName = jsonData.optString("domain")
             val image64 = getBase64FromImageURL(imageUrl)
             Log.d(mTagName, "image BASE64 :: $image64")
             CoroutineScopeUtils().runTaskOnCoroutineMain {

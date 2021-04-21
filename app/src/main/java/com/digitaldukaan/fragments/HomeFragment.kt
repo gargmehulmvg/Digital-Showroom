@@ -34,6 +34,7 @@ import com.google.gson.Gson
 import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration
 import kotlinx.android.synthetic.main.home_fragment.*
 import kotlinx.android.synthetic.main.layout_analytics.*
+import kotlinx.android.synthetic.main.layout_common_webview_fragment.*
 import kotlinx.android.synthetic.main.otp_verification_fragment.*
 
 class HomeFragment : BaseFragment(), IHomeServiceInterface,
@@ -171,7 +172,10 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
 
     private fun setupHomePageWebView(webViewUrl: String) {
         homePageWebView.apply {
-            webViewClient = CommonWebViewFragment.WebViewController()
+            val webViewController = CommonWebViewFragment.WebViewController()
+            webViewController.commonWebView = commonWebView
+            webViewController.activity = mActivity
+            webViewClient = webViewController
             settings.javaScriptEnabled = true
             val url = webViewUrl + "?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&" +
                     "storeName=${getStringDataFromSharedPref(Constants.STORE_NAME)}" + "&token=${getStringDataFromSharedPref(
@@ -180,6 +184,10 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
             Log.d(TAG, "setupHomePageWebView: $url")
             loadUrl(url)
         }
+    }
+
+    override fun showAndroidToast(data: String) {
+        showToast(data)
     }
 
     override fun onPendingOrdersResponse(getOrderResponse: CommonApiResponse) {
