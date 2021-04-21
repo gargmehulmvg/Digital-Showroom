@@ -16,9 +16,7 @@ import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.digitaldukaan.R
-import com.digitaldukaan.constants.Constants
-import com.digitaldukaan.constants.CoroutineScopeUtils
-import com.digitaldukaan.constants.PrefsManager
+import com.digitaldukaan.constants.*
 import com.digitaldukaan.models.request.StoreAddressRequest
 import com.digitaldukaan.models.response.StoreAddressResponse
 import com.digitaldukaan.services.StoreAddressService
@@ -201,6 +199,18 @@ class OnBoardScreenDukaanLocationFragment : BaseFragment(), IStoreAddressService
                     } else {
                         val service = StoreAddressService()
                         service.setServiceInterface(this)
+                        AppEventsManager.pushAppEvents(
+                            eventName = AFInAppEventType.EVENT_VERIFY_LOCATION_SET,
+                            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                            data = mapOf(
+                                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                                AFInAppEventParameterName.ADDRESS to storeLocation,
+                                AFInAppEventParameterName.GOOGLE_ADDRESS to storeLocation,
+                                AFInAppEventParameterName.LATITUDE to "$mCurrentLatitude",
+                                AFInAppEventParameterName.LONGITUDE to "$mCurrentLongitude",
+                                AFInAppEventParameterName.IS_MERCHANT to "1"
+                            )
+                        )
                         val request = StoreAddressRequest(
                             PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID).toInt(),
                             latitude = mCurrentLatitude,

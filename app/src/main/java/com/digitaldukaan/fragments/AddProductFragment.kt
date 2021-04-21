@@ -20,9 +20,7 @@ import com.digitaldukaan.R
 import com.digitaldukaan.adapters.AddProductsChipsAdapter
 import com.digitaldukaan.adapters.AddProductsImagesAdapter
 import com.digitaldukaan.adapters.ImagesSearchAdapter
-import com.digitaldukaan.constants.Constants
-import com.digitaldukaan.constants.CoroutineScopeUtils
-import com.digitaldukaan.constants.ToolBarManager
+import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.IAdapterItemClickListener
 import com.digitaldukaan.interfaces.IChipItemClickListener
 import com.digitaldukaan.interfaces.IOnToolbarIconClick
@@ -80,6 +78,14 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         super.onCreate(savedInstanceState)
         mService = AddProductService()
         mService.setServiceListener(this)
+        AppEventsManager.pushAppEvents(
+            eventName = AFInAppEventType.EVENT_ADD_ITEM,
+            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+            data = mapOf(
+                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                AFInAppEventParameterName.IS_MERCHANT to "1"
+            )
+        )
     }
 
     override fun onStop() {
@@ -569,6 +575,14 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     }
 
     override fun onMenuItemClick(item: MenuItem?): Boolean {
+        AppEventsManager.pushAppEvents(
+            eventName = AFInAppEventType.EVENT_BULK_UPLOAD_ITEMS,
+            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+            data = mapOf(
+                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                AFInAppEventParameterName.CHANNEL to "Catalog"
+            )
+        )
         if (0 == item?.itemId) openUrlInBrowser(mOptionsMenuResponse?.get(0)?.mPage)
         return true
     }

@@ -117,7 +117,14 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                     )
                 )
             }
-            takeOrderTextView.id -> showTakeOrderBottomSheet()
+            takeOrderTextView.id -> {
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_GENERATE_SELF_BILL,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
+                )
+                showTakeOrderBottomSheet()
+            }
             searchImageView.id -> showSearchDialog(
                 mOrderPageInfoStaticData,
                 mMobileNumberString,
@@ -448,6 +455,17 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
     override fun onOrderItemCLickChanged(item: OrderItemResponse?) {
         var isNewOrder = false
         if (item?.displayStatus == Constants.DS_NEW) {
+            AppEventsManager.pushAppEvents(
+                eventName = AFInAppEventType.EVENT_VERIFY_ORDER_SEEN,
+                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                data = mapOf(
+                    AFInAppEventParameterName.ORDER_ID to "${item.orderId}",
+                    AFInAppEventParameterName.PHONE to item.phone,
+                    AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                    AFInAppEventParameterName.ORDER_TYPE to if (item.orderType == Constants.ORDER_TYPE_PICK_UP) "pickup" else "delivery",
+                    AFInAppEventParameterName.IS_MERCHANT to "1"
+                )
+            )
             val request = UpdateOrderStatusRequest(
                 item.orderId.toLong(),
                 Constants.StatusSeenByMerchant.toLong()

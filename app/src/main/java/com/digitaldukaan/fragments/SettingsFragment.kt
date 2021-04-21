@@ -106,6 +106,14 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                 if (storeLogo?.isNotEmpty() == true) launchFragment(ProfilePhotoFragment.newInstance(storeLogo), true, storePhotoImageView) else askCameraPermission()
             }
             whatsAppTextView.id -> {
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_STORE_SHARE,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(
+                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                        AFInAppEventParameterName.IS_SETTINGS to "true"
+                    )
+                )
                 if (mShareDataOverWhatsAppText.isNotEmpty()) shareDataOnWhatsApp(mShareDataOverWhatsAppText) else if (!isInternetConnectionAvailable(mActivity)) {
                     showNoInternetConnectionDialog()
                     return
@@ -378,6 +386,14 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
     private fun checkStoreOptionClick(response: StoreOptionsResponse) {
         when (response.mPage) {
             Constants.PAGE_REFER -> {
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_SETTINGS_REFERRAL,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(
+                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                        AFInAppEventParameterName.LINK to ""
+                    )
+                )
                 if (mReferAndEarnResponse != null) {
                     showReferAndEarnBottomSheet(mReferAndEarnResponse)
                     return
@@ -424,7 +440,17 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
     override fun onNewReleaseItemClicked(responseItem: TrendingListResponse?) {
         when (responseItem?.mAction) {
             Constants.NEW_RELEASE_TYPE_WEBVIEW -> openWebViewFragment(this, "", BuildConfig.WEB_VIEW_URL + responseItem.mPage)
-            Constants.NEW_RELEASE_TYPE_EXTERNAL -> openUrlInBrowser(responseItem.mPage)
+            Constants.NEW_RELEASE_TYPE_EXTERNAL -> {
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_BULK_UPLOAD_ITEMS,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(
+                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                        AFInAppEventParameterName.CHANNEL to "Settings Page"
+                    )
+                )
+                openUrlInBrowser(responseItem.mPage)
+            }
             else -> showTrendingOffersBottomSheet()
         }
     }

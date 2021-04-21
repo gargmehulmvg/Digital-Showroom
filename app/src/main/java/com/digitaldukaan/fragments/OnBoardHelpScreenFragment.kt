@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.viewpager.widget.ViewPager
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.CustomPagerAdapter
-import com.digitaldukaan.constants.ToolBarManager
+import com.digitaldukaan.constants.*
 import com.tbuonomo.viewpagerdotsindicator.DotsIndicator
 import kotlinx.android.synthetic.main.layout_on_board_help_screen.*
 
@@ -39,6 +39,11 @@ class OnBoardHelpScreenFragment : BaseFragment() {
 
     override fun onClick(view: View?) {
         if (view?.id == startNowLayout.id) {
+            AppEventsManager.pushAppEvents(
+                eventName = AFInAppEventType.EVENT_MARKET_START_NOW,
+                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
+            )
             launchFragment(LoginFragment.newInstance(), true)
         }
     }

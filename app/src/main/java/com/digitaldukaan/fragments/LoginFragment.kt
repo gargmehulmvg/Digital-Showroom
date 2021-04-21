@@ -165,6 +165,11 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
                 showNoInternetConnectionDialog()
                 return
             }
+            AppEventsManager.pushAppEvents(
+                eventName = AFInAppEventType.EVENT_MARKET_GET_OTP,
+                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                data = mapOf(AFInAppEventParameterName.PHONE to mobileNumber, AFInAppEventParameterName.IS_MERCHANT to "1")
+            )
             showProgressDialog(mActivity)
             mobileNumberEditText.hideKeyboard()
             mLoginService.generateOTP(mobileNumber)
@@ -264,9 +269,7 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
                     "${it.address1}, ${it.googleAddress}, ${it.pinCode}"
                 }
                 AppEventsManager.pushCleverTapProfile(cleverTapProfile)
-                if (validateUserResponse.store == null || validateUserResponse.user.isNewUser) launchFragment(OnBoardScreenDukaanNameFragment(
-                    validateUserResponse.store
-                ), true) else launchFragment(HomeFragment(), true)
+                if (validateUserResponse.store == null || validateUserResponse.user.isNewUser) launchFragment(OnBoardScreenDukaanNameFragment(), true) else launchFragment(HomeFragment(), true)
             } else showShortSnackBar(response.mMessage, true, R.drawable.ic_close_red)
         }
     }

@@ -7,10 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.digitaldukaan.R
-import com.digitaldukaan.constants.AppEventsManager
-import com.digitaldukaan.constants.Constants
-import com.digitaldukaan.constants.CoroutineScopeUtils
-import com.digitaldukaan.constants.PrefsManager
+import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.IOnOTPFilledListener
 import com.digitaldukaan.models.dto.CleverTapProfile
 import com.digitaldukaan.models.response.CommonApiResponse
@@ -167,7 +164,12 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
                 "${it.address1}, ${it.googleAddress}, ${it.pinCode}"
             }
             AppEventsManager.pushCleverTapProfile(cleverTapProfile)
-            if (validateOtpResponse.mStore == null || mIsNewUser) launchFragment(OnBoardScreenDukaanNameFragment(validateOtpResponse.mStore), true) else launchFragment(HomeFragment(), true)
+            AppEventsManager.pushAppEvents(
+                eventName = AFInAppEventType.EVENT_MARKET_OTP_VERIFIED,
+                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
+            )
+            if (validateOtpResponse.mStore == null || mIsNewUser) launchFragment(OnBoardScreenDukaanNameFragment(), true) else launchFragment(HomeFragment(), true)
         }
     }
 

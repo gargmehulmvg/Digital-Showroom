@@ -18,10 +18,7 @@ import com.digitaldukaan.R
 import com.digitaldukaan.adapters.AddProductsChipsAdapter
 import com.digitaldukaan.adapters.DeleteCategoryAdapter
 import com.digitaldukaan.adapters.SharePDFAdapter
-import com.digitaldukaan.constants.Constants
-import com.digitaldukaan.constants.CoroutineScopeUtils
-import com.digitaldukaan.constants.ToolBarManager
-import com.digitaldukaan.constants.openWebViewFragment
+import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.IChipItemClickListener
 import com.digitaldukaan.interfaces.IOnToolbarIconClick
 import com.digitaldukaan.models.request.DeleteCategoryRequest
@@ -258,6 +255,14 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
             if (mShareDataOverWhatsAppText.isNotEmpty()) shareDataOnWhatsApp(mShareDataOverWhatsAppText) else if (!isInternetConnectionAvailable(mActivity)) {
                 showNoInternetConnectionDialog()
             } else {
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_STORE_SHARE,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(
+                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                        AFInAppEventParameterName.IS_CATALOG to "true"
+                    )
+                )
                 showProgressDialog(mActivity)
                 mService.getProductShareStoreData()
             }

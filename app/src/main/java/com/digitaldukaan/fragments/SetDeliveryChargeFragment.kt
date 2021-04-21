@@ -5,9 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.digitaldukaan.R
-import com.digitaldukaan.constants.Constants
-import com.digitaldukaan.constants.CoroutineScopeUtils
-import com.digitaldukaan.constants.ToolBarManager
+import com.digitaldukaan.constants.*
 import com.digitaldukaan.models.request.MoreControlsRequest
 import com.digitaldukaan.models.response.AccountStaticTextResponse
 import com.digitaldukaan.models.response.CommonApiResponse
@@ -113,18 +111,21 @@ class SetDeliveryChargeFragment : BaseFragment(), IMoreControlsServiceInterface 
                 showFixedDeliveryContainer(false)
             }
             continueTextView.id -> {
+                var selectionStr = ""
                 if (!freeDeliveryRadioButton.isChecked && !fixedDeliveryRadioButton.isChecked && !customDeliveryRadioButton.isChecked) {
                     showShortSnackBar("Please select at least 1 Delivery charge")
                     return
                 }
                 val mMoreControlRequest = MoreControlsRequest(0, 0.0, 0.0, 0.0)
                 if (freeDeliveryRadioButton.isChecked) {
+                    selectionStr = "Free_delivery"
                     mMoreControlRequest.deliveryChargeType = FREE_DELIVERY
                     mMoreControlRequest.deliveryPrice = 0.0
                     mMoreControlRequest.freeDeliveryAbove = 0.0
                     mMoreControlRequest.minOrderValue = mAppStoreServicesResponse.mMinOrderValue ?: 0.0
                 }
                 if (fixedDeliveryRadioButton.isChecked) {
+                    selectionStr = "Fixed_delivery"
                     val fixedDeliveryChargeStr = fixedDeliveryChargeEditText.text.trim().toString()
                     val freeDeliveryAboveStr = freeDeliveryAboveEditText.text.trim().toString()
                     if (fixedDeliveryChargeStr.isEmpty() || fixedDeliveryChargeStr.toDouble() == 0.0) {
@@ -148,6 +149,7 @@ class SetDeliveryChargeFragment : BaseFragment(), IMoreControlsServiceInterface 
                     mMoreControlRequest.minOrderValue = mAppStoreServicesResponse.mMinOrderValue ?: 0.0
                 }
                 if (customDeliveryRadioButton.isChecked) {
+                    selectionStr = "Custom_delivery"
                     val customDeliveryAboveStr = customDeliveryAboveEditText.text.trim().toString()
                     if (customDeliveryAboveStr.isNotEmpty() && (customDeliveryAboveStr.toDouble() == 0.0)) {
                         customDeliveryAboveEditText.requestFocus()
@@ -169,6 +171,14 @@ class SetDeliveryChargeFragment : BaseFragment(), IMoreControlsServiceInterface 
                     return
                 }
                 showProgressDialog(mActivity)
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_DELIVERY_MODEL_SELECT,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(
+                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                        AFInAppEventParameterName.SELECTION to selectionStr
+                    )
+                )
                 val service = MoreControlsService()
                 service.setServiceInterface(this)
                 service.updateDeliveryInfo(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), mMoreControlRequest)

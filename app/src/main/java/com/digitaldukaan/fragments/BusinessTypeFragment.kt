@@ -8,10 +8,7 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.BusinessTypeAdapter
 import com.digitaldukaan.adapters.ProfileStatusAdapter2
-import com.digitaldukaan.constants.Constants
-import com.digitaldukaan.constants.CoroutineScopeUtils
-import com.digitaldukaan.constants.StaticInstances
-import com.digitaldukaan.constants.ToolBarManager
+import com.digitaldukaan.constants.*
 import com.digitaldukaan.models.request.BusinessTypeRequest
 import com.digitaldukaan.models.response.BusinessTypeItemResponse
 import com.digitaldukaan.models.response.CommonApiResponse
@@ -157,6 +154,13 @@ class BusinessTypeFragment : BaseFragment(), IBusinessTypeServiceInterface {
         stopProgress()
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (response.mIsSuccessStatus) {
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_BUSINESS_TYPE_SELECT,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(
+                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)
+                    )
+                )
                 showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
                 if (!mIsSingleStep) {
                     StaticInstances.sStepsCompletedList?.run {

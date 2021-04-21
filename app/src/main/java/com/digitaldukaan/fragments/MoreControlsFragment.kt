@@ -181,8 +181,16 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             if (response.mIsSuccessStatus) {
-                showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
                 val moreControlResponse = Gson().fromJson<StoreServicesResponse>(response.mCommonDataStr, StoreServicesResponse::class.java)
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_SET_MIN_ORDER_VALUE_SAVE,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(
+                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                        AFInAppEventParameterName.AMOUNT to "${moreControlResponse?.mMinOrderValue}"
+                    )
+                )
+                showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
                 updateStoreServiceInstances(moreControlResponse, this)
                 setUIDataFromResponse()
             } else showShortSnackBar(response.mMessage, true, R.drawable.ic_close_red)

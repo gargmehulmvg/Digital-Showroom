@@ -9,13 +9,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.transition.TransitionInflater
 import com.digitaldukaan.R
-import com.digitaldukaan.constants.Constants
-import com.digitaldukaan.constants.CoroutineScopeUtils
-import com.digitaldukaan.constants.PrefsManager
+import com.digitaldukaan.constants.*
 import com.digitaldukaan.models.request.CreateStoreRequest
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.CreateStoreResponse
-import com.digitaldukaan.models.response.StoreResponse
 import com.digitaldukaan.services.CreateStoreService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.ICreateStoreServiceInterface
@@ -23,7 +20,7 @@ import com.google.gson.Gson
 import kotlinx.android.synthetic.main.layout_on_board_screen_dukaan_fragment.*
 
 
-class OnBoardScreenDukaanNameFragment(private val mStore: StoreResponse?) : BaseFragment(),
+class OnBoardScreenDukaanNameFragment : BaseFragment(),
     ICreateStoreServiceInterface {
 
     private val mDukaanNameStaticData = mStaticData.mStaticData.mOnBoardStep1StaticData
@@ -106,6 +103,19 @@ class OnBoardScreenDukaanNameFragment(private val mStore: StoreResponse?) : Base
                 Log.d("STORE_OBJECT_TEST", "$TAG onCreateStoreResponse: STORE_ID :: ${PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)}")
                 PrefsManager.storeStringDataInSharedPref(Constants.STORE_NAME, "${createStoreResponse.storeInfo?.name}")
                 Log.d("STORE_OBJECT_TEST", "$TAG onCreateStoreResponse: STORE_NAME :: ${PrefsManager.getStringDataFromSharedPref(Constants.STORE_NAME)}")
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_MARKET_ENTER_NAME,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(
+                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                        AFInAppEventParameterName.PHONE to PrefsManager.getStringDataFromSharedPref(Constants.USER_MOBILE_NUMBER),
+                        AFInAppEventParameterName.USER_ID to PrefsManager.getStringDataFromSharedPref(Constants.USER_ID),
+                        AFInAppEventParameterName.STORE_NAME to createStoreResponse?.storeInfo?.name,
+                        AFInAppEventParameterName.STORE_TYPE to AFInAppEventParameterName.STORE_TYPE_DUKAAN,
+                        AFInAppEventParameterName.VERIFY_PHONE to "1",
+                        AFInAppEventParameterName.REFERENCE_PHONE to ""
+                    )
+                )
                 launchFragment(OnBoardScreenDukaanLocationFragment(), true)
             } else showShortSnackBar(response.mMessage, true, R.drawable.ic_close_red)
         }

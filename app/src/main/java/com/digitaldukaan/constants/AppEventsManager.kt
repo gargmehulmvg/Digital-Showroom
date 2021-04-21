@@ -26,7 +26,7 @@ class AppEventsManager {
             createNotificationChannel()
         }
 
-        fun pushAppEvents(eventName: String?, isCleverTapEvent: Boolean, isAppFlyerEvent: Boolean, isServerCallEvent: Boolean, data: Map<String, String>) {
+        fun pushAppEvents(eventName: String?, isCleverTapEvent: Boolean, isAppFlyerEvent: Boolean, isServerCallEvent: Boolean, data: Map<String, String?>) {
             if (isCleverTapEvent) {
                 pushCleverTapEvent(eventName, data)
             }
@@ -38,22 +38,23 @@ class AppEventsManager {
             }
         }
 
-        private fun pushServerCallEvent(eventName: String?, data: Map<String, String>) {
+        private fun pushServerCallEvent(eventName: String?, data: Map<String, String?>) {
             CoroutineScopeUtils().runTaskOnCoroutineBackground {
                 Log.d(TAG, "pushServerCallEvent: event name :: $eventName && map :: $data")
-                val request = AndroidEventLogRequest(PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID).toInt(), eventName, data)
+                val storeIdStr = PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)
+                val request = AndroidEventLogRequest(if (storeIdStr.isNotEmpty()) storeIdStr.toInt() else 0, eventName, data)
                 val response = RetrofitApi().getServerCallObject()?.androidEventLog(request)
                 Log.d(TAG, "pushServerCallEvent: $response")
             }
         }
 
-        private fun pushCleverTapEvent(eventName: String?, data: Map<String, String>) {
+        private fun pushCleverTapEvent(eventName: String?, data: Map<String, String?>) {
             Log.d(TAG, "pushCleverTapEvent: event name :: $eventName && map :: $data")
             mCleverTapAPI?.pushEvent(eventName, data)
             Log.d(TAG, "pushCleverTapEvent: DONE")
         }
 
-        private fun pushAppFlyerEvent(eventName: String?, data: Map<String, String>) {
+        private fun pushAppFlyerEvent(eventName: String?, data: Map<String, String?>) {
             Log.d(TAG, "pushAppFlyerEvent: event name :: $eventName && map :: $data")
             val appFlyerInstance = AppsFlyerLib.getInstance()
             appFlyerInstance?.logEvent(mActivityInstance,  eventName, data)

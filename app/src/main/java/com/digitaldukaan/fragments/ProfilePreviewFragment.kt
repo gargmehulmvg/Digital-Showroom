@@ -21,10 +21,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.ProfilePreviewAdapter
-import com.digitaldukaan.constants.Constants
-import com.digitaldukaan.constants.CoroutineScopeUtils
-import com.digitaldukaan.constants.StaticInstances
-import com.digitaldukaan.constants.ToolBarManager
+import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.IProfilePreviewItemClicked
 import com.digitaldukaan.models.request.StoreLinkRequest
 import com.digitaldukaan.models.request.StoreLogoRequest
@@ -192,10 +189,23 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         stopProgress()
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (response.mIsSuccessStatus) {
+                val storeNameResponse = Gson().fromJson<StoreResponse>(response.mCommonDataStr, StoreResponse::class.java)
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_UPDATE_STORE_NAME,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(
+                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                        AFInAppEventParameterName.DOMAIN to storeNameResponse?.storeInfo?.domain,
+                        AFInAppEventParameterName.NAME to storeNameResponse?.storeInfo?.name,
+                        AFInAppEventParameterName.STORE_TYPE to AFInAppEventParameterName.STORE_TYPE_DUKAAN,
+                        AFInAppEventParameterName.LOGO_IMAGE to storeNameResponse?.storeInfo?.logoImage,
+                        AFInAppEventParameterName.STORE_URL to storeNameResponse?.storeInfo?.storeUrl,
+                        AFInAppEventParameterName.REFERENCE_STORE_ID to "${storeNameResponse?.storeInfo?.referenceStoreId}"
+                    )
+                )
                 mStoreNameEditBottomSheet?.run {
                     if (isShowing) dismiss()
                 }
-                val storeNameResponse = Gson().fromJson<StoreResponse>(response.mCommonDataStr, StoreResponse::class.java)
                 mStoreName = storeNameResponse.storeInfo.name
                 showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
                 onRefresh()
@@ -309,6 +319,13 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
     }
 
     private fun showEditStoreLinkBottomSheet(profilePreviewResponse: ProfilePreviewSettingsKeyResponse, isErrorResponse:Boolean = false) {
+        AppEventsManager.pushAppEvents(
+            eventName = AFInAppEventType.EVENT_EDIT_STORE_LINK,
+            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+            data = mapOf(
+                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)
+            )
+        )
         mStoreLinkBottomSheet = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
         val view = LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet_edit_store_link, mActivity.findViewById(R.id.bottomSheetContainer))
         mStoreLinkBottomSheet?.apply {

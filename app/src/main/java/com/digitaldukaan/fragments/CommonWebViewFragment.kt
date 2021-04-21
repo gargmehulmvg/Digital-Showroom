@@ -58,6 +58,7 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
             settings.javaScriptEnabled = true
             addJavascriptInterface(WebViewBridge(), "Android")
             Log.d(CommonWebViewFragment::class.simpleName, "onViewCreated: $mLoadUrl")
+            triggerWebViewOpenEvent()
             loadUrl(mLoadUrl)
         }
         showCancellableProgressDialog(mActivity)
@@ -66,6 +67,20 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
             stopProgress()
         }, Constants.TIMER_INTERVAL)
         WebViewBridge.mWebViewListener = this
+    }
+
+    private fun triggerWebViewOpenEvent() {
+        val eventName =
+            when {
+                mLoadUrl.contains(Constants.WEB_VIEW_RE_ARRANGE) -> AFInAppEventType.EVENT_RE_ARRANGE_PAGE_OPEN
+                mLoadUrl.contains(Constants.WEB_VIEW_HELP) -> AFInAppEventType.EVENT_HELP_SCREEN_OPEN
+                else -> ""
+            }
+        AppEventsManager.pushAppEvents(
+            eventName = eventName,
+            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+            data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
+        )
     }
 
     override fun onNativeBackPressed() {
