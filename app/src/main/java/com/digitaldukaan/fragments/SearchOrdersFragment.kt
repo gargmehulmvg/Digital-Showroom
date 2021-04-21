@@ -100,7 +100,7 @@ class SearchOrdersFragment: BaseFragment(), IOnToolbarIconClick, ISearchOrderSer
                             searchPageCount++
                             val request = SearchOrdersRequest(mOrderIdString.toLong(), mMobileNumberString, searchPageCount)
                             if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else
-                                mService.getSearchOrders(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
+                                mService.getSearchOrders(request)
                         }
                     }
                 }
@@ -119,7 +119,7 @@ class SearchOrdersFragment: BaseFragment(), IOnToolbarIconClick, ISearchOrderSer
         if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog()
         showProgressDialog(mActivity)
         ToolBarManager.getInstance().setHeaderTitle("\"${if (inputMobileNumber.isEmpty()) inputOrderId else inputMobileNumber}\"")
-        mService.getSearchOrders(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
+        mService.getSearchOrders(request)
     }
 
     override fun onSearchOrderResponse(commonResponse: CommonApiResponse) {
@@ -151,7 +151,7 @@ class SearchOrdersFragment: BaseFragment(), IOnToolbarIconClick, ISearchOrderSer
         var isNewOrder = false
         if (item?.displayStatus == Constants.DS_NEW) {
             val request = UpdateOrderStatusRequest(item.orderId.toLong(), Constants.StatusSeenByMerchant.toLong())
-            mService.updateOrderStatus(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
+            mService.updateOrderStatus(request)
             isNewOrder = true
         }
         launchFragment(OrderDetailFragment.newInstance(item?.orderId.toString(), isNewOrder), true)

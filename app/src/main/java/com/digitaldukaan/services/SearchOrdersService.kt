@@ -16,15 +16,15 @@ class SearchOrdersService {
         mServiceInterface = listener
     }
 
-    fun getSearchOrders(authToken: String, request: SearchOrdersRequest) {
+    fun getSearchOrders(request: SearchOrdersRequest) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.getSearchOrdersServerCall(authToken , request, mServiceInterface)
+            mNetworkService.getSearchOrdersServerCall(request, mServiceInterface)
         }
     }
 
-    fun updateOrderStatus(authToken: String, statusRequest: UpdateOrderStatusRequest) {
+    fun updateOrderStatus(statusRequest: UpdateOrderStatusRequest) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.updateOrderStatusServerCall(authToken , statusRequest, mServiceInterface)
+            mNetworkService.updateOrderStatusServerCall(statusRequest, mServiceInterface)
         }
     }
 

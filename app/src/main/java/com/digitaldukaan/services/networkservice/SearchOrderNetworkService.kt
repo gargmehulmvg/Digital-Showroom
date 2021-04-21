@@ -11,12 +11,11 @@ import com.google.gson.Gson
 class SearchOrderNetworkService {
 
     suspend fun getSearchOrdersServerCall(
-        authToken: String,
         request: SearchOrdersRequest,
         serviceInterface: ISearchOrderServiceInterface
     ) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.getSearchOrdersList(authToken, request)
+            val response = RetrofitApi().getServerCallObject()?.getSearchOrdersList(request)
             response?.let {
                 if (it.isSuccessful) it.body()?.let { validateUserResponse -> serviceInterface.onSearchOrderResponse(validateUserResponse) }
                 else {
@@ -34,12 +33,11 @@ class SearchOrderNetworkService {
     }
 
     suspend fun updateOrderStatusServerCall(
-        authToken: String,
         statusRequest: UpdateOrderStatusRequest,
         serviceInterface: ISearchOrderServiceInterface
     ) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.updateOrderStatus(authToken, statusRequest)
+            val response = RetrofitApi().getServerCallObject()?.updateOrderStatus(statusRequest)
             response?.let {
                 if (it.isSuccessful) it.body()?.let { commonApiResponse -> serviceInterface.onOrdersUpdatedStatusResponse(commonApiResponse) }
                 else {

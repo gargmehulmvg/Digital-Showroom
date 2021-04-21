@@ -47,11 +47,10 @@ class HomeNetworkService {
     }
 
     suspend fun getAnalyticsDataServerCall(
-        authToken: String,
         serviceInterface: IHomeServiceInterface
     ) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.getAnalyticsData(authToken)
+            val response = RetrofitApi().getServerCallObject()?.getAnalyticsData()
             response?.let {
                 if (it.isSuccessful) it.body()?.let { validateUserResponse -> serviceInterface.onAnalyticsDataResponse(validateUserResponse) }
                 else {
@@ -69,11 +68,10 @@ class HomeNetworkService {
     }
 
     suspend fun getOrderPageInfoServerCall(
-        authToken: String,
         serviceInterface: IHomeServiceInterface
     ) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.getOrderPageInfo(authToken)
+            val response = RetrofitApi().getServerCallObject()?.getOrderPageInfo()
             response?.let {
                 if (it.isSuccessful) it.body()?.let { validateUserResponse -> serviceInterface.onOrderPageInfoResponse(validateUserResponse) }
                 else {
@@ -91,12 +89,11 @@ class HomeNetworkService {
     }
 
     suspend fun getSearchOrdersServerCall(
-        authToken: String,
         request: SearchOrdersRequest,
         serviceInterface: IHomeServiceInterface
     ) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.getSearchOrdersList(authToken, request)
+            val response = RetrofitApi().getServerCallObject()?.getSearchOrdersList(request)
             response?.let {
                 if (it.isSuccessful) it.body()?.let { validateUserResponse -> serviceInterface.onSearchOrdersResponse(validateUserResponse) }
                 else {
@@ -114,12 +111,11 @@ class HomeNetworkService {
     }
 
     suspend fun updateOrderStatusServerCall(
-        authToken: String,
         statusRequest: UpdateOrderStatusRequest,
         serviceInterface: IHomeServiceInterface
     ) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.updateOrderStatus(authToken, statusRequest)
+            val response = RetrofitApi().getServerCallObject()?.updateOrderStatus(statusRequest)
             response?.let {
                 if (it.isSuccessful) it.body()?.let { commonApiResponse -> serviceInterface.onOrdersUpdatedStatusResponse(commonApiResponse) }
                 else {

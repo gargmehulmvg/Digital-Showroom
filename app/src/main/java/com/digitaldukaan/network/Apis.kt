@@ -89,22 +89,22 @@ interface Apis {
     suspend fun setBankDetails(@Header("auth_token") authToken: String, @Body request: BankDetailsRequest): Response<CommonApiResponse>
 
     @GET("api/dotk/orders/getOrderAnalytics")
-    suspend fun getAnalyticsData(@Header("auth_token") authToken: String) : Response<CommonApiResponse>
+    suspend fun getAnalyticsData() : Response<CommonApiResponse>
 
     @GET("api/dotk/orders/getOrdersPageInfo")
-    suspend fun getOrderPageInfo(@Header("auth_token") authToken: String) : Response<CommonApiResponse>
+    suspend fun getOrderPageInfo() : Response<CommonApiResponse>
 
     @POST("api/dotk/orders/getOrderList")
     suspend fun getOrdersList(@Header("auth_token") authToken: String, @Body request: OrdersRequest): Response<CommonApiResponse>
 
     @POST("api/dotk/orders/getSearchOrdersList")
-    suspend fun getSearchOrdersList(@Header("auth_token") authToken: String, @Body request: SearchOrdersRequest): Response<CommonApiResponse>
+    suspend fun getSearchOrdersList(@Body request: SearchOrdersRequest): Response<CommonApiResponse>
 
     @POST("api/dotk/settings/initiateKyc")
     suspend fun initiateKyc(@Header("auth_token") authToken: String): Response<CommonApiResponse>
 
     @POST("api/dotk/orders/updateOrderStatus")
-    suspend fun updateOrderStatus(@Header("auth_token") authToken: String, @Body statusRequest: UpdateOrderStatusRequest): Response<CommonApiResponse>
+    suspend fun updateOrderStatus(@Body statusRequest: UpdateOrderStatusRequest): Response<CommonApiResponse>
 
     @GET("api/dotk/orders/getOrderDetails/{orderId}")
     suspend fun getOrderDetails(@Header("auth_token") authToken: String, @Path("orderId") orderId: String): Response<CommonApiResponse>

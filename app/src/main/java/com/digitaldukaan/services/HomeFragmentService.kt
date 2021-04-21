@@ -24,15 +24,15 @@ class HomeFragmentService {
         }
     }
 
-    fun getSearchOrders(authToken: String, request: SearchOrdersRequest) {
+    fun getSearchOrders(request: SearchOrdersRequest) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.getSearchOrdersServerCall(authToken , request, mServiceInterface)
+            mNetworkService.getSearchOrdersServerCall(request, mServiceInterface)
         }
     }
 
-    fun updateOrderStatus(authToken: String, statusRequest: UpdateOrderStatusRequest) {
+    fun updateOrderStatus(statusRequest: UpdateOrderStatusRequest) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.updateOrderStatusServerCall(authToken , statusRequest, mServiceInterface)
+            mNetworkService.updateOrderStatusServerCall(statusRequest, mServiceInterface)
         }
     }
 
@@ -42,15 +42,15 @@ class HomeFragmentService {
         }
     }
 
-    fun getAnalyticsData(authToken: String) {
+    fun getAnalyticsData() {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.getAnalyticsDataServerCall(authToken, mServiceInterface)
+            mNetworkService.getAnalyticsDataServerCall(mServiceInterface)
         }
     }
 
-    fun getOrderPageInfo(authToken: String) {
+    fun getOrderPageInfo() {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.getOrderPageInfoServerCall(authToken, mServiceInterface)
+            mNetworkService.getOrderPageInfoServerCall(mServiceInterface)
         }
     }
 
