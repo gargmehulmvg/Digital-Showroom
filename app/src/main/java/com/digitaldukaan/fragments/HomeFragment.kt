@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.OrderAdapterV2
+import com.digitaldukaan.adapters.OrderPageBannerAdapter
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.IOrderListItemListener
 import com.digitaldukaan.models.request.CompleteOrderRequest
@@ -240,6 +241,11 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                             layoutManager = linearLayoutManager
                             adapter = completedOrderAdapter
                             addItemDecoration(StickyRecyclerHeadersDecoration(completedOrderAdapter))
+                        }
+                        bannerRecyclerView.apply {
+                            linearLayoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
+                            layoutManager = linearLayoutManager
+                            adapter = OrderPageBannerAdapter()
                         }
                     }
                     if (mIsHelpOrder.mIsActive) {

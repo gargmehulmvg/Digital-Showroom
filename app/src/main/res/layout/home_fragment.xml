@@ -122,6 +122,14 @@
                 android:orientation="vertical"
                 android:animateLayoutChanges="true">
 
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/bannerRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    android:orientation="horizontal"
+                    tools:listitem="@layout/order_page_banner_item" />
+
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/pendingOrderTextView"
                     android:layout_width="wrap_content"
@@ -129,7 +137,8 @@
                     android:background="@drawable/slight_curve_grey_background"
                     android:fontFamily="@font/montserrat"
                     android:gravity="center"
-                    android:layout_margin="@dimen/_10sdp"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:layout_marginStart="@dimen/_15sdp"
                     android:minWidth="@dimen/_50sdp"
                     android:paddingStart="@dimen/_8sdp"
                     android:paddingTop="@dimen/_2sdp"
@@ -161,7 +170,8 @@
                     android:background="@drawable/slight_curve_grey_background"
                     android:fontFamily="@font/montserrat"
                     android:gravity="center"
-                    android:layout_margin="@dimen/_10sdp"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:layout_marginStart="@dimen/_15sdp"
                     android:minWidth="@dimen/_50sdp"
                     android:paddingStart="@dimen/_8sdp"
                     android:paddingTop="@dimen/_2sdp"
