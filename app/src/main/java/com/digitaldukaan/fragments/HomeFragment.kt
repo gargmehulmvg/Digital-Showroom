@@ -1,6 +1,7 @@
 package com.digitaldukaan.fragments
 
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -8,6 +9,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -25,6 +28,8 @@ import com.digitaldukaan.services.HomeFragmentService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IHomeServiceInterface
 import com.digitaldukaan.webviews.WebViewBridge
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration
 import kotlinx.android.synthetic.main.home_fragment.*
@@ -39,8 +44,8 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         private var mOrderPageInfoStaticData: OrderPageStaticTextResponse? = null
         private var mIsDoublePressToExit = false
         private lateinit var mHomeFragmentService: HomeFragmentService
-        private var mDoubleClickToExitStr:String? = ""
-        private var mFetchingOrdersStr:String? = ""
+        private var mDoubleClickToExitStr: String? = ""
+        private var mFetchingOrdersStr: String? = ""
         private lateinit var orderAdapter: OrderAdapterV2
         private lateinit var completedOrderAdapter: OrderAdapterV2
         private lateinit var linearLayoutManager: LinearLayoutManager
@@ -89,21 +94,42 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         completedPageCount = 1
     }
 
-    private fun fetchLatestOrders(mode: String, fetchingOrderStr: String?, page:Int = 1) {
-        if (fetchingOrderStr?.isNotEmpty() == true) showCancellableProgressDialog(mActivity, fetchingOrderStr)
+    private fun fetchLatestOrders(mode: String, fetchingOrderStr: String?, page: Int = 1) {
+        if (fetchingOrderStr?.isNotEmpty() == true) showCancellableProgressDialog(
+            mActivity,
+            fetchingOrderStr
+        )
         val request = OrdersRequest(mode, page)
-        mHomeFragmentService.getOrders(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
+        mHomeFragmentService.getOrders(
+            getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN),
+            request
+        )
     }
 
     override fun onClick(view: View?) {
         when (view?.id) {
             analyticsImageView.id -> {
                 analyticsContainer.visibility = View.VISIBLE
-                analyticsImageView.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.ic_analytics_green))
+                analyticsImageView.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        mActivity,
+                        R.drawable.ic_analytics_green
+                    )
+                )
             }
-            searchImageView.id -> showSearchDialog(mOrderPageInfoStaticData, mMobileNumberString, mOrderIdString)
+            takeOrderTextView.id -> showTakeOrderBottomSheet()
+            searchImageView.id -> showSearchDialog(
+                mOrderPageInfoStaticData,
+                mMobileNumberString,
+                mOrderIdString
+            )
             closeAnalyticsImageView.id -> {
-                analyticsImageView.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.ic_analytics_black))
+                analyticsImageView.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        mActivity,
+                        R.drawable.ic_analytics_black
+                    )
+                )
                 analyticsContainer.visibility = View.GONE
             }
         }
@@ -111,7 +137,11 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
 
     override fun onBackPressed(): Boolean {
         if (mIsDoublePressToExit) mActivity.finish()
-        showShortSnackBar(if (mDoubleClickToExitStr?.isNotEmpty() == true) mDoubleClickToExitStr else getString(R.string.msg_back_press))
+        showShortSnackBar(
+            if (mDoubleClickToExitStr?.isNotEmpty() == true) mDoubleClickToExitStr else getString(
+                R.string.msg_back_press
+            )
+        )
         mIsDoublePressToExit = true
         Handler(Looper.getMainLooper()).postDelayed(
             { mIsDoublePressToExit = false },
@@ -124,7 +154,11 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             saveUserDetailsInPref(authenticationUserResponse)
-            if (!authenticationUserResponse.mIsSuccessStatus) showShortSnackBar(authenticationUserResponse.mMessage, true, R.drawable.ic_close_red)
+            if (!authenticationUserResponse.mIsSuccessStatus) showShortSnackBar(
+                authenticationUserResponse.mMessage,
+                true,
+                R.drawable.ic_close_red
+            )
         }
     }
 
@@ -133,7 +167,9 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
             webViewClient = CommonWebViewFragment.WebViewController()
             settings.javaScriptEnabled = true
             val url = webViewUrl + "?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&" +
-                    "storeName=${getStringDataFromSharedPref(Constants.STORE_NAME)}" + "&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"
+                    "storeName=${getStringDataFromSharedPref(Constants.STORE_NAME)}" + "&token=${getStringDataFromSharedPref(
+                Constants.USER_AUTH_TOKEN
+            )}"
             Log.d(TAG, "setupHomePageWebView: $url")
             loadUrl(url)
         }
@@ -144,7 +180,10 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
             stopProgress()
             if (swipeRefreshLayout.isRefreshing) swipeRefreshLayout.isRefreshing = false
             if (getOrderResponse.mIsSuccessStatus) {
-                val ordersResponse = Gson().fromJson<OrdersResponse>(getOrderResponse.mCommonDataStr, OrdersResponse::class.java)
+                val ordersResponse = Gson().fromJson<OrdersResponse>(
+                    getOrderResponse.mCommonDataStr,
+                    OrdersResponse::class.java
+                )
                 mIsMorePendingOrderAvailable = ordersResponse.mIsNextDataAvailable
                 if (pendingPageCount == 1) mOrderList.clear()
                 mOrderList.addAll(ordersResponse.mOrdersList)
@@ -166,7 +205,10 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
             stopProgress()
             if (swipeRefreshLayout.isRefreshing) swipeRefreshLayout.isRefreshing = false
             if (getOrderResponse.mIsSuccessStatus) {
-                val ordersResponse = Gson().fromJson<OrdersResponse>(getOrderResponse.mCommonDataStr, OrdersResponse::class.java)
+                val ordersResponse = Gson().fromJson<OrdersResponse>(
+                    getOrderResponse.mCommonDataStr,
+                    OrdersResponse::class.java
+                )
                 mIsMoreCompletedOrderAvailable = ordersResponse.mIsNextDataAvailable
                 if (completedPageCount == 1) mCompletedOrderList.clear()
                 mCompletedOrderList.addAll(ordersResponse.mOrdersList)
@@ -185,11 +227,16 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             if (commonResponse.mIsSuccessStatus) {
-                val analyticsResponse = Gson().fromJson<AnalyticsResponse>(commonResponse.mCommonDataStr, AnalyticsResponse::class.java)
+                val analyticsResponse = Gson().fromJson<AnalyticsResponse>(
+                    commonResponse.mCommonDataStr,
+                    AnalyticsResponse::class.java
+                )
                 todaySaleValue.text = analyticsResponse?.today?.totalCount.toString()
-                amountValue.text = "${analyticsResponse.analyticsStaticData?.textRuppeeSymbol} ${analyticsResponse?.today?.totalAmount}"
+                amountValue.text =
+                    "${analyticsResponse.analyticsStaticData?.textRuppeeSymbol} ${analyticsResponse?.today?.totalAmount}"
                 weekSaleValue.text = analyticsResponse?.thisWeek?.totalCount.toString()
-                weekAmountValue.text = "${analyticsResponse.analyticsStaticData?.textRuppeeSymbol} ${analyticsResponse?.thisWeek?.totalAmount}"
+                weekAmountValue.text =
+                    "${analyticsResponse.analyticsStaticData?.textRuppeeSymbol} ${analyticsResponse?.thisWeek?.totalAmount}"
                 analyticsResponse?.analyticsStaticData?.run {
                     todaySaleHeading.text = textTodaySale
                     amountHeading.text = textTodayAmount
@@ -204,7 +251,10 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             if (commonResponse.mIsSuccessStatus) {
-                val orderPageInfoResponse = Gson().fromJson<OrderPageInfoResponse>(commonResponse.mCommonDataStr, OrderPageInfoResponse::class.java)
+                val orderPageInfoResponse = Gson().fromJson<OrderPageInfoResponse>(
+                    commonResponse.mCommonDataStr,
+                    OrderPageInfoResponse::class.java
+                )
                 orderPageInfoResponse?.run {
                     mOrderPageInfoStaticData = mOrderPageStaticText?.run {
                         mFetchingOrdersStr = fetching_orders
@@ -225,7 +275,11 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                         swipeRefreshLayout.isEnabled = true
                         homePageWebViewLayout.visibility = View.GONE
                         orderLayout.visibility = View.VISIBLE
-                        fetchLatestOrders(Constants.MODE_PENDING, mFetchingOrdersStr, pendingPageCount)
+                        fetchLatestOrders(
+                            Constants.MODE_PENDING,
+                            mFetchingOrdersStr,
+                            pendingPageCount
+                        )
                         ordersRecyclerView.isNestedScrollingEnabled = false
                         ordersRecyclerView.apply {
                             orderAdapter = OrderAdapterV2(mActivity, mOrderList)
@@ -245,16 +299,28 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                             addItemDecoration(StickyRecyclerHeadersDecoration(completedOrderAdapter))
                         }
                         bannerRecyclerView.apply {
-                            linearLayoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
+                            linearLayoutManager = LinearLayoutManager(
+                                mActivity,
+                                LinearLayoutManager.HORIZONTAL,
+                                false
+                            )
                             layoutManager = linearLayoutManager
                             adapter = OrderPageBannerAdapter()
                         }
                     }
                     if (mIsHelpOrder.mIsActive) {
                         helpImageView.visibility = View.VISIBLE
-                        helpImageView.setOnClickListener { openWebViewFragmentV2(this@HomeFragment, getString(R.string.help), mIsHelpOrder.mUrl, Constants.SETTINGS) }
+                        helpImageView.setOnClickListener {
+                            openWebViewFragmentV2(
+                                this@HomeFragment,
+                                getString(R.string.help),
+                                mIsHelpOrder.mUrl,
+                                Constants.SETTINGS
+                            )
+                        }
                     }
-                    analyticsImageView.visibility = if (mIsAnalyticsOrder) View.VISIBLE else View.GONE
+                    analyticsImageView.visibility =
+                        if (mIsAnalyticsOrder) View.VISIBLE else View.GONE
                     searchImageView.visibility = if (mIsSearchOrder) View.VISIBLE else View.GONE
                 }
             }
@@ -266,8 +332,18 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
             stopProgress()
             if (swipeRefreshLayout.isRefreshing) swipeRefreshLayout.isRefreshing = false
             if (commonResponse.mIsSuccessStatus) {
-                val ordersResponse = Gson().fromJson<OrdersResponse>(commonResponse.mCommonDataStr, OrdersResponse::class.java)
-                if (ordersResponse?.mOrdersList?.isNotEmpty() == true) launchFragment(SearchOrdersFragment.newInstance(mOrderIdString, mMobileNumberString, ordersResponse.mOrdersList), true)
+                val ordersResponse = Gson().fromJson<OrdersResponse>(
+                    commonResponse.mCommonDataStr,
+                    OrdersResponse::class.java
+                )
+                if (ordersResponse?.mOrdersList?.isNotEmpty() == true) launchFragment(
+                    SearchOrdersFragment.newInstance(
+                        mOrderIdString,
+                        mMobileNumberString,
+                        ordersResponse.mOrdersList
+                    ),
+                    true
+                )
             } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
         }
     }
@@ -295,11 +371,15 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
 
     private fun saveUserDetailsInPref(validateOtpResponse: ValidateOtpResponse) {
         storeStringDataInSharedPref(Constants.USER_AUTH_TOKEN, validateOtpResponse.mUserAuthToken)
-        storeStringDataInSharedPref(Constants.USER_MOBILE_NUMBER, validateOtpResponse.mUserPhoneNumber)
+        storeStringDataInSharedPref(
+            Constants.USER_MOBILE_NUMBER,
+            validateOtpResponse.mUserPhoneNumber
+        )
         validateOtpResponse.mStore?.run {
             storeStringDataInSharedPref(Constants.STORE_ID, storeId.toString())
             storeStringDataInSharedPref(Constants.STORE_NAME, storeInfo.name)
-            if (this.storeInfo.logoImage?.isNotEmpty() == true) StaticInstances.sIsStoreImageUploaded = true
+            if (this.storeInfo.logoImage?.isNotEmpty() == true) StaticInstances.sIsStoreImageUploaded =
+                true
         }
     }
 
@@ -339,10 +419,17 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         }
     }
 
-    override fun onSearchDialogContinueButtonClicked(inputOrderId: String, inputMobileNumber: String) {
+    override fun onSearchDialogContinueButtonClicked(
+        inputOrderId: String,
+        inputMobileNumber: String
+    ) {
         mOrderIdString = inputOrderId
         mMobileNumberString = inputMobileNumber
-        val request = SearchOrdersRequest(if (mOrderIdString.isNotEmpty()) mOrderIdString.toLong() else 0, mMobileNumberString, 1)
+        val request = SearchOrdersRequest(
+            if (mOrderIdString.isNotEmpty()) mOrderIdString.toLong() else 0,
+            mMobileNumberString,
+            1
+        )
         if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog()
         showProgressDialog(mActivity)
         mHomeFragmentService.getSearchOrders(request)
@@ -358,7 +445,10 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
     override fun onOrderItemCLickChanged(item: OrderItemResponse?) {
         var isNewOrder = false
         if (item?.displayStatus == Constants.DS_NEW) {
-            val request = UpdateOrderStatusRequest(item.orderId.toLong(), Constants.StatusSeenByMerchant.toLong())
+            val request = UpdateOrderStatusRequest(
+                item.orderId.toLong(),
+                Constants.StatusSeenByMerchant.toLong()
+            )
             mHomeFragmentService.updateOrderStatus(request)
             isNewOrder = true
         }
@@ -383,5 +473,33 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             Log.d(TAG, "sendData: $data")
         }
+    }
+
+    override fun onImageSelectionResultUri(fileUri: Uri?) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            launchFragment(SendBillFragment.newInstance(fileUri), true)
+        }
+    }
+
+    private fun showTakeOrderBottomSheet() {
+        val bottomSheetDialog = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
+        val view = LayoutInflater.from(mActivity).inflate(
+            R.layout.bottom_sheet_take_order,
+            mActivity.findViewById(R.id.bottomSheetContainer)
+        )
+        bottomSheetDialog.apply {
+            setContentView(view)
+            behavior.state = BottomSheetBehavior.STATE_EXPANDED
+            view?.run {
+                val imageViewSendBill: ImageView = findViewById(R.id.imageViewSendBill)
+                val takeOrderMessageTextView: TextView = findViewById(R.id.takeOrderMessageTextView)
+                val createNewBillTextView: TextView = findViewById(R.id.createNewBillTextView)
+                val clickBillPhotoContainer: View = findViewById(R.id.clickBillPhotoContainer)
+                clickBillPhotoContainer.setOnClickListener {
+                    bottomSheetDialog.dismiss()
+                    openFullCamera()
+                }
+            }
+        }.show()
     }
 }

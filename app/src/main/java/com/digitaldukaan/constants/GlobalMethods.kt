@@ -35,6 +35,15 @@ fun getBitmapFromURL(src: String?): Bitmap? {
         null
     }
 }
+fun getBitmapFromUri(uri: Uri?, context: Context): Bitmap? {
+    if (uri == null) return null
+    return try {
+        val imageStream = context.contentResolver.openInputStream(uri)
+        return BitmapFactory.decodeStream(imageStream);
+    } catch (e: Exception) {
+        null
+    }
+}
 
 fun convertImageFileToBase64(imageFile: File?): String {
     if (imageFile == null) return ""

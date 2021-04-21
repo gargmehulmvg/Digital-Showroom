@@ -79,6 +79,10 @@
     <string name="view_as_customer">View as Customer</string>
     <string name="share_product">Share Product</string>
     <string name="take_order">Take Order</string>
+    <string name="sample_send_bill"><![CDATA[Send Bill to your customers & collect money online]]></string>
+    <string name="create_a_new_bill">Create a New Bill</string>
+    <string name="enter_bill_amount">Enter Bill Amount</string>
+    <string name="send_bill">Send Bill</string>
     <string-array name="state_array">
         <item >Andhra Pradesh</item>
         <item >Arunachal Pradesh</item>
