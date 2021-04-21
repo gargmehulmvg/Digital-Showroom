@@ -157,7 +157,6 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                     completedPageCount = 1
                     fetchLatestOrders(Constants.MODE_COMPLETED, "", completedPageCount)
                 }
-                swipeRefreshLayout.isEnabled = true
             }
         }
     }
@@ -219,8 +218,11 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                     if (mIsZeroOrder.mIsActive) {
                         homePageWebViewLayout.visibility = View.VISIBLE
                         orderLayout.visibility = View.GONE
+                        takeOrderTextView.visibility = View.GONE
                         setupHomePageWebView(mIsZeroOrder.mUrl)
+                        swipeRefreshLayout.isEnabled = false
                     } else {
+                        swipeRefreshLayout.isEnabled = true
                         homePageWebViewLayout.visibility = View.GONE
                         orderLayout.visibility = View.VISIBLE
                         fetchLatestOrders(Constants.MODE_PENDING, mFetchingOrdersStr, pendingPageCount)

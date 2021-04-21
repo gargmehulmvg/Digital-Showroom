@@ -78,6 +78,7 @@
     <string name="term_and_condition"><![CDATA[Terms & Condition]]></string>
     <string name="view_as_customer">View as Customer</string>
     <string name="share_product">Share Product</string>
+    <string name="take_order">Take Order</string>
     <string-array name="state_array">
         <item >Andhra Pradesh</item>
         <item >Arunachal Pradesh</item>

@@ -196,9 +196,25 @@
                     tools:itemCount="3"
                     tools:listitem="@layout/order_item" />
 
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_50sdp" />
+
             </LinearLayout>
 
         </androidx.core.widget.NestedScrollView>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/takeOrderTextView"
+            style="@style/common_text_view_background"
+            android:layout_marginEnd="@dimen/_10sdp"
+            android:layout_marginBottom="@dimen/_10sdp"
+            android:elevation="@dimen/_5sdp"
+            android:onClick="onClick"
+            android:textSize="@dimen/_12sdp"
+            android:text="@string/take_order"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/homePageWebViewLayout"
