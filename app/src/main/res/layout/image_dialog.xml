@@ -7,7 +7,7 @@
     <com.digitaldukaan.views.ZoomableImageView
         android:id="@+id/imageView"
         android:layout_width="@dimen/_300sdp"
-        android:layout_height="@dimen/_450sdp"
+        android:layout_height="@dimen/_350sdp"
         android:src="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

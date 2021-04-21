@@ -40,6 +40,7 @@ data class OrderDetailItemResponse(
 data class OrderDetailMainResponse(
     @SerializedName("order") var orders: OrderDetailsResponse?,
     @SerializedName("static_text") var staticText: OrderDetailsStaticTextResponse?,
+    @SerializedName("options_menu") var optionMenuList: ArrayList<TrendingListResponse>,
     @SerializedName("store_services") var storeServices: StoreServicesResponse?
 )
 

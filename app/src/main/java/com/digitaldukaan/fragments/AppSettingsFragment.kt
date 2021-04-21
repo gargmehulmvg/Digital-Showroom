@@ -72,6 +72,7 @@ class AppSettingsFragment : BaseFragment(), IAppSettingsItemClicked {
                     mActivity.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE).edit().clear().apply()
                     dialog.dismiss()
                     clearFragmentBackStack()
+                    storeStringDataInSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN, "")
                     storeStringDataInSharedPref(Constants.USER_AUTH_TOKEN, "")
                     storeStringDataInSharedPref(Constants.STORE_NAME, "")
                     storeStringDataInSharedPref(Constants.USER_MOBILE_NUMBER, "")

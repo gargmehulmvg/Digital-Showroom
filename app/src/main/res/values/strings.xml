@@ -83,6 +83,9 @@
     <string name="create_a_new_bill">Create a New Bill</string>
     <string name="enter_bill_amount">Enter Bill Amount</string>
     <string name="send_bill">Send Bill</string>
+    <string name="items_are_not_available">Items are not available</string>
+    <string name="delivery_guy_not_available">Delivery guy not available</string>
+    <string name="why_are_you_rejecting_the_order">Why are you rejecting the Order?</string>
     <string-array name="state_array">
         <item >Andhra Pradesh</item>
         <item >Arunachal Pradesh</item>

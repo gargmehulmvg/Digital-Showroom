@@ -4,11 +4,10 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -21,6 +20,7 @@ import com.digitaldukaan.adapters.OrderDetailsAdapter
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.IChipItemClickListener
 import com.digitaldukaan.interfaces.IOnToolbarIconClick
+import com.digitaldukaan.interfaces.IOnToolbarSecondIconClick
 import com.digitaldukaan.models.dto.CustomerDeliveryAddressDTO
 import com.digitaldukaan.models.request.UpdateOrderRequest
 import com.digitaldukaan.models.response.*
@@ -34,7 +34,8 @@ import kotlinx.android.synthetic.main.layout_order_detail_fragment.*
 import java.io.File
 
 
-class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToolbarIconClick {
+class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToolbarIconClick,
+    IOnToolbarSecondIconClick, PopupMenu.OnMenuItemClickListener {
 
     private var mOrderId = ""
     private var mMobileNumber = ""
@@ -148,8 +149,10 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
         ToolBarManager.getInstance().apply {
             hideToolBar(mActivity, false)
             onBackPressed(this@OrderDetailFragment)
+            setSecondSideIconVisibility(true)
             setSideIconVisibility(true)
-            setSideIcon(ContextCompat.getDrawable(mActivity, R.drawable.ic_call), this@OrderDetailFragment)
+            setSecondSideIcon(ContextCompat.getDrawable(mActivity, R.drawable.ic_call), this@OrderDetailFragment)
+            setSideIcon(ContextCompat.getDrawable(mActivity, R.drawable.ic_options_menu), this@OrderDetailFragment)
         }
         hideBottomNavigationView(true)
     }
@@ -297,8 +300,14 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
     }
 
     override fun onToolbarSideIconClicked() {
-        val intent = Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", mMobileNumber, null))
-        mActivity.startActivity(intent)
+        val sideView:View = mActivity.findViewById(R.id.sideIconToolbar)
+        val optionsMenu = PopupMenu(mActivity, sideView)
+        optionsMenu.inflate(R.menu.menu_product_fragment)
+        orderDetailMainResponse?.optionMenuList?.forEachIndexed { position, response ->
+            optionsMenu.menu?.add(Menu.NONE, position, Menu.NONE, response.mText)
+        }
+        optionsMenu.setOnMenuItemClickListener(this)
+        optionsMenu.show()
     }
 
     private fun showDeliveryTimeBottomSheet(deliveryTimeResponse: DeliveryTimeResponse?, isCallSendBillServerCall: Boolean) {
@@ -388,6 +397,32 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                 }
             }
         }.show()
+    }
+
+    private fun showOrderRejectBottomSheet() {
+        val bottomSheetDialog = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
+        val view = LayoutInflater.from(mActivity).inflate(
+            R.layout.bottom_sheet_order_reject,
+            mActivity.findViewById(R.id.bottomSheetContainer)
+        )
+        bottomSheetDialog.apply {
+            setContentView(view)
+            setBottomSheetCommonProperty()
+            view.run {
+                val orderRejectHeadingTextView: TextView = findViewById(R.id.orderRejectHeadingTextView)
+            }
+        }.show()
+    }
+
+    override fun onToolbarSecondIconClicked() {
+        val intent = Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", mMobileNumber, null))
+        mActivity.startActivity(intent)
+    }
+
+    override fun onMenuItemClick(menu: MenuItem?): Boolean {
+        showToast(menu?.title?.toString())
+        showOrderRejectBottomSheet()
+        return true
     }
 
 }

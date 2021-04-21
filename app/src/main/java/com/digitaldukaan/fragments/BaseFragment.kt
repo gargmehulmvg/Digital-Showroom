@@ -728,7 +728,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     open fun openDontShowDialog(item: OrderItemResponse?, staticData: OrderPageStaticTextResponse?) {
         val builder = AlertDialog.Builder(mActivity)
         val view: View = layoutInflater.inflate(R.layout.dont_show_again_dialog, null)
-        var isCheckBoxVisible = getStringDataFromSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN) == Constants.TEXT_NO
+        var isCheckBoxVisible = "" == PrefsManager.getStringDataFromSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN)
         builder.apply {
             setTitle(staticData?.dialog_text_alert)
             setMessage(staticData?.dialog_message)
@@ -740,7 +740,12 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                     onDontShowDialogPositiveButtonClicked(item)
                 }
             }
-            setNegativeButton(staticData?.dialog_text_no) { dialogInterface, _ -> dialogInterface.dismiss() }
+            setNegativeButton(staticData?.dialog_text_no) { dialogInterface, _ ->
+                run {
+                    dialogInterface.dismiss()
+                    if (isCheckBoxVisible) storeStringDataInSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN, Constants.TEXT_NO)
+                }
+            }
             view.run {
                 val checkBox: CheckBox = view.findViewById(R.id.checkBox)
                 checkBox.text = staticData?.dialog_check_box_text
