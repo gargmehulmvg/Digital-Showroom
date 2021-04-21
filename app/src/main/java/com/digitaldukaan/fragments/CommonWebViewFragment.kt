@@ -1,5 +1,7 @@
 package com.digitaldukaan.fragments
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -9,12 +11,14 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.PopupMenu
 import androidx.core.content.ContextCompat
+import com.digitaldukaan.MainActivity
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.IOnToolbarIconClick
 import com.digitaldukaan.webviews.WebViewBridge
 import kotlinx.android.synthetic.main.layout_common_webview_fragment.*
 import org.json.JSONObject
+
 
 class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
     PopupMenu.OnMenuItemClickListener {
@@ -54,6 +58,7 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
         commonWebView.apply {
             val webViewController = WebViewController()
             webViewController.commonWebView = commonWebView
+            webViewController.activity = mActivity
             commonWebView.webViewClient = webViewController
             settings.javaScriptEnabled = true
             addJavascriptInterface(WebViewBridge(), "Android")
@@ -118,7 +123,7 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
             saveMediaToStorage(bitmap, mActivity)
             showToast("Image Saved to Gallery")
         } else if (jsonData.optBoolean("convertImage")) {
-            showProgressDialog(mActivity)
+            //showProgressDialog(mActivity)
             val imageUrl = jsonData.optString("data")
             val image64 = getBase64FromImageURL(imageUrl)
             Log.d(mTagName, "image BASE64 :: $image64")
@@ -134,6 +139,7 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
 
     class WebViewController : WebViewClient() {
 
+        var activity: MainActivity? = null
         var commonWebView: WebView? = null
 
         override fun onPageFinished(view: WebView?, url: String?) {
@@ -141,8 +147,20 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
         }
 
         override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
-            view.loadUrl(url)
-            return true
+            return when {
+                url.startsWith("tel:") -> {
+                    val tel = Intent(Intent.ACTION_DIAL, Uri.parse(url))
+                    activity?.startActivity(tel)
+                    true
+                }
+                url.contains("mailto:") -> { view.context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                    true
+                }
+                else -> {
+                    view.loadUrl(url)
+                    true
+                }
+            }
         }
     }
 
