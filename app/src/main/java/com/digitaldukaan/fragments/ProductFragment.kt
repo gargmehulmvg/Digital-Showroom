@@ -78,6 +78,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
             setSideIcon(ContextCompat.getDrawable(mActivity, R.drawable.ic_options_menu), this@ProductFragment)
         }
         hideBottomNavigationView(false)
+        updateNavigationBarState(R.id.menuProducts)
         return mContentView
     }
 
