@@ -203,4 +203,8 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
         showToast(data)
     }
 
+    override fun showAndroidLog(data: String) {
+        Log.d(mTagName, "showAndroidLog :: $data")
+    }
+
 }

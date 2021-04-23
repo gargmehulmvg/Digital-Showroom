@@ -109,4 +109,8 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
     override fun showAndroidToast(data: String) {
         showToast(data)
     }
+
+    override fun showAndroidLog(data: String) {
+        Log.d(TAG, "showAndroidLog :: $data")
+    }
 }

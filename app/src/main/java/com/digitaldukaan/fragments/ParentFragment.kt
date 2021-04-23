@@ -8,4 +8,5 @@ open class ParentFragment : Fragment(), IWebViewCallbacks {
     override fun onNativeBackPressed() = Unit
     override fun sendData(data: String) = Unit
     override fun showAndroidToast(data: String) = Unit
+    override fun showAndroidLog(data: String) = Unit
 }

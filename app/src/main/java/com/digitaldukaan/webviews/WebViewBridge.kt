@@ -28,4 +28,10 @@ class WebViewBridge {
         Log.d(TAG, "showAndroidToast")
         mWebViewListener?.showAndroidToast(value)
     }
+
+    @JavascriptInterface
+    fun showAndroidLog(value: String) {
+        Log.d(TAG, "showAndroidLog")
+        mWebViewListener?.showAndroidLog(value)
+    }
 }

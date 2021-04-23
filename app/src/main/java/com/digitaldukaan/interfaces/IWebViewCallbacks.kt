@@ -7,4 +7,6 @@ interface IWebViewCallbacks {
     fun sendData(data: String)
 
     fun showAndroidToast(data: String)
+
+    fun showAndroidLog(data: String)
 }

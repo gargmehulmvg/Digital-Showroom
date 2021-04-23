@@ -193,6 +193,10 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         showToast(data)
     }
 
+    override fun showAndroidLog(data: String) {
+        Log.d(TAG, "showAndroidLog :: $data")
+    }
+
     override fun onPendingOrdersResponse(getOrderResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
