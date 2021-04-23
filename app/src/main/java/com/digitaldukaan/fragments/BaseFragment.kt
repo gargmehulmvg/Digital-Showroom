@@ -787,33 +787,35 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     }
 
     protected fun showMaterCatalogBottomSheet(addProductBannerStaticDataResponse: AddProductBannerTextResponse?, addProductStaticText: AddProductStaticText?) {
-        val bottomSheetDialog = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
-        val view = LayoutInflater.from(mActivity).inflate(
-            R.layout.bottom_sheet_add_products_catalog_builder,
-            mActivity.findViewById(R.id.bottomSheetContainer)
-        )
-        bottomSheetDialog.apply {
-            setContentView(view)
-            setBottomSheetCommonProperty()
-            view.run {
-                val closeImageView: View = findViewById(R.id.closeImageView)
-                val offerTextView: TextView = findViewById(R.id.offerTextView)
-                val headerTextView: TextView = findViewById(R.id.headerTextView)
-                val bodyTextView: TextView = findViewById(R.id.bodyTextView)
-                val bannerImageView: ImageView = findViewById(R.id.bannerImageView)
-                val buttonTextView: TextView = findViewById(R.id.buttonTextView)
-                offerTextView.text = addProductBannerStaticDataResponse?.offer
-                headerTextView.setHtmlData(addProductBannerStaticDataResponse?.header)
-                bodyTextView.text = addProductBannerStaticDataResponse?.body
-                buttonTextView.text = addProductBannerStaticDataResponse?.button_text
-                Picasso.get().load(addProductBannerStaticDataResponse?.image_url).into(bannerImageView)
-                closeImageView.setOnClickListener { bottomSheetDialog.dismiss() }
-                buttonTextView.setOnClickListener{
-                    bottomSheetDialog.dismiss()
-                    launchFragment(ExploreCategoryFragment.newInstance(addProductStaticText), true)
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            val bottomSheetDialog = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
+            val view = LayoutInflater.from(mActivity).inflate(
+                R.layout.bottom_sheet_add_products_catalog_builder,
+                mActivity.findViewById(R.id.bottomSheetContainer)
+            )
+            bottomSheetDialog.apply {
+                setContentView(view)
+                setBottomSheetCommonProperty()
+                view.run {
+                    val closeImageView: View = findViewById(R.id.closeImageView)
+                    val offerTextView: TextView = findViewById(R.id.offerTextView)
+                    val headerTextView: TextView = findViewById(R.id.headerTextView)
+                    val bodyTextView: TextView = findViewById(R.id.bodyTextView)
+                    val bannerImageView: ImageView = findViewById(R.id.bannerImageView)
+                    val buttonTextView: TextView = findViewById(R.id.buttonTextView)
+                    offerTextView.text = addProductBannerStaticDataResponse?.offer
+                    headerTextView.setHtmlData(addProductBannerStaticDataResponse?.header)
+                    bodyTextView.text = addProductBannerStaticDataResponse?.body
+                    buttonTextView.text = addProductBannerStaticDataResponse?.button_text
+                    Picasso.get().load(addProductBannerStaticDataResponse?.image_url).into(bannerImageView)
+                    closeImageView.setOnClickListener { bottomSheetDialog.dismiss() }
+                    buttonTextView.setOnClickListener{
+                        bottomSheetDialog.dismiss()
+                        launchFragment(ExploreCategoryFragment.newInstance(addProductStaticText), true)
+                    }
                 }
-            }
-        }.show()
+            }.show()
+        }
     }
 
 }

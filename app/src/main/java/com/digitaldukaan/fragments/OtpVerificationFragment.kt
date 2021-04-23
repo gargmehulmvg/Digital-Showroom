@@ -189,8 +189,8 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
         mIsServerCallInitiated = false
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
-            otpEditText.clearOTP()
-            showToast(validateOtpErrorResponse.mMessage)
+            otpEditText?.clearOTP()
+            showShortSnackBar(validateOtpErrorResponse.mMessage, true, R.drawable.ic_close_red)
         }
     }
 

@@ -40,11 +40,10 @@ class ProductNetworkService {
     }
 
     suspend fun getProductPageInfoServerCall(
-        authToken: String,
         serviceInterface: IProductServiceInterface
     ) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.getProductPageInfo(authToken)
+            val response = RetrofitApi().getServerCallObject()?.getProductPageInfo()
             response?.let {
                 if (it.isSuccessful) {
                     it.body()?.let { commonApiResponse -> serviceInterface.onProductResponse(commonApiResponse)

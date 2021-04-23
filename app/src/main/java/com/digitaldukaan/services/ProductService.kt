@@ -23,9 +23,9 @@ class ProductService {
         mServiceInterface = listener
     }
 
-    fun getProductPageInfo(authToken: String) {
+    fun getProductPageInfo() {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.getProductPageInfoServerCall(authToken, mServiceInterface)
+            mNetworkService.getProductPageInfoServerCall(mServiceInterface)
         }
     }
 

@@ -58,6 +58,8 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
     private var mAccountInfoResponse: AccountInfoResponse? = null
     private var mStoreLogo: String? = ""
     private var mShareDataOverWhatsAppText = ""
+    private var mReferEarnOverWhatsAppResponse: ReferEarnOverWhatsAppResponse? = null
+    private var mProfileResponse: AccountInfoResponse? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.layout_settings_fragment, container, false)
@@ -185,7 +187,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                 bottomSheetHeadingTextView.text = "${response?.heading1}\n${response?.heading2}"
                 verifyTextView.text = response?.settingsTxt
                 verifyTextView.setOnClickListener{
-                    mReferEarnOverWhatsAppResponse.run {
+                    mReferEarnOverWhatsAppResponse?.run {
                         if (mReferAndEarnData.isShareStoreBanner == true) {
                             shareDataOnWhatsAppWithImage(mReferAndEarnData.whatsAppText, mReferAndEarnData.imageUrl)
                         } else {
@@ -260,9 +262,6 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         mReferAndEarnResponse = responseModel
         CoroutineScopeUtils().runTaskOnCoroutineMain { showReferAndEarnBottomSheet(responseModel) }
     }
-
-    private lateinit var mReferEarnOverWhatsAppResponse: ReferEarnOverWhatsAppResponse
-    private var mProfileResponse: AccountInfoResponse? = null
 
     override fun onReferAndEarnOverWhatsAppResponse(response: ReferEarnOverWhatsAppResponse) {
         mReferEarnOverWhatsAppResponse = response
@@ -361,7 +360,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         storeSwitch.setOnCheckedChangeListener { _, isChecked ->
             run {
                 Log.d(TAG, "storeSwitch.setOnCheckedChangeListener $isChecked")
-                storeStatusTextView.text = "${infoResponse.mAccountStaticText?.mStoreText} : ${if (isChecked) infoResponse.mAccountStaticText?.mOnText else infoResponse.mAccountStaticText?.mOffText}"
+                storeStatusTextView.text = "${infoResponse.mAccountStaticText?.mStoreText} : ${if (isChecked) infoResponse.mAccountStaticText?.mOpenText else infoResponse.mAccountStaticText?.mClosedText}"
             }
         }
         deliverySwitch.setOnCheckedChangeListener { _, isChecked ->
@@ -373,7 +372,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         deliverySwitch.isChecked = infoResponse.mStoreInfo.storeServices.mDeliveryFlag == 1
         deliveryStatusTextView.text = "${infoResponse.mAccountStaticText?.mDeliveryText} : ${if (deliverySwitch.isChecked) infoResponse.mAccountStaticText?.mOnText else infoResponse.mAccountStaticText?.mOffText}"
         storeSwitch.isChecked = infoResponse.mStoreInfo.storeServices.mStoreFlag == 1
-        storeStatusTextView.text = "${infoResponse.mAccountStaticText?.mStoreText} : ${if (storeSwitch.isChecked) infoResponse.mAccountStaticText?.mOnText else infoResponse.mAccountStaticText?.mOffText}"
+        storeStatusTextView.text = "${infoResponse.mAccountStaticText?.mStoreText} : ${if (storeSwitch.isChecked) infoResponse.mAccountStaticText?.mOpenText else infoResponse.mAccountStaticText?.mClosedText}"
         hiddenTextView.text = infoResponse.mAccountStaticText?.mTextAddPhoto
         moreControlsTextView.text = infoResponse.mAccountStaticText?.page_heading_more_controls
         whatsAppShareTextView.text = infoResponse.mAccountStaticText?.mShareText

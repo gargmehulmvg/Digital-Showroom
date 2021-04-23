@@ -45,7 +45,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
     private var mShareDataOverWhatsAppText = ""
     private var mUserCategoryResponse: AddProductStoreCategory? = null
     private var addProductBannerStaticDataResponse: AddProductBannerTextResponse? = null
-    private lateinit var addProductChipsAdapter: AddProductsChipsAdapter
+    private var addProductChipsAdapter: AddProductsChipsAdapter? = null
     private var mSelectedCategoryItem: AddStoreCategoryItem? = null
     private var mDeleteCategoryItemList: ArrayList<DeleteCategoryItemResponse?>? = null
 
@@ -62,14 +62,13 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
         super.onCreate(savedInstanceState)
         mService = ProductService()
         mService.setOrderDetailServiceListener(this)
-        WebViewBridge.mWebViewListener = this
         mService.getUserCategories()
         mService.getDeleteCategoryItem()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.product_fragment, container, false)
-        if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else mService.getProductPageInfo(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
+        if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else mService.getProductPageInfo()
         ToolBarManager.getInstance().apply {
             hideToolBar(mActivity, false)
             hideBackPressFromToolBar(mActivity, false)
@@ -78,6 +77,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
             setSideIcon(ContextCompat.getDrawable(mActivity, R.drawable.ic_options_menu), this@ProductFragment)
         }
         hideBottomNavigationView(false)
+        WebViewBridge.mWebViewListener = this
         updateNavigationBarState(R.id.menuProducts)
         return mContentView
     }
@@ -164,7 +164,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
     override fun onUpdateCategoryResponse(commonResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
-            commonWebView.reload()
+            mService.getProductPageInfo()
             mService.getUserCategories()
             showShortSnackBar(commonResponse.mMessage, true, if (commonResponse.mIsSuccessStatus) R.drawable.ic_check_circle else R.drawable.ic_close_red)
         }
@@ -173,7 +173,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
     override fun onDeleteCategoryResponse(commonResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
-            commonWebView.reload()
+            mService.getProductPageInfo()
             mService.getUserCategories()
             showShortSnackBar(commonResponse.mMessage, true, if (commonResponse.mIsSuccessStatus) R.drawable.ic_check_circle else R.drawable.ic_close_red)
         }
@@ -182,7 +182,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
     override fun onUpdateStockResponse(commonResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
-            commonWebView.reload()
+            mService.getProductPageInfo()
             showShortSnackBar(commonResponse.mMessage, true, if (commonResponse.mIsSuccessStatus) R.drawable.ic_check_circle else R.drawable.ic_close_red)
         }
     }
@@ -342,7 +342,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                                         list[position].isSelected = true
                                         categoryNameEditText.setText(list[position].name)
                                         mSelectedCategoryItem = list[position]
-                                        addProductChipsAdapter.setAddProductStoreCategoryList(list)
+                                        addProductChipsAdapter?.setAddProductStoreCategoryList(list)
                                     }
                                 })
                         adapter = addProductChipsAdapter

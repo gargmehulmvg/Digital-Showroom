@@ -29,6 +29,9 @@ interface Apis {
     suspend fun validateOTP(@Body request: ValidateOtpRequest) : Response<ValidateOtpResponse>
 
     /* ----------------------       Settings         ---------------------- */
+    @POST("api/dotk/vm1/settings/updateStoreDomain")
+    suspend fun updateStoreDomain(@Body request: StoreLinkRequest) : Response<StoreDescriptionResponse>
+
     @GET("api/dotk/vm1/settings/getAccountInfo")
     suspend fun getProfileResponse() : Response<CommonApiResponse>
 
@@ -97,7 +100,7 @@ interface Apis {
     suspend fun getProductShareStoreData(): Response<CommonApiResponse>
 
     @GET("api/dotk/vm1/products/getProductPageInfo")
-    suspend fun getProductPageInfo(@Header("auth_token") authToken: String): Response<CommonApiResponse>
+    suspend fun getProductPageInfo(): Response<CommonApiResponse>
 
     @GET("api/dotk/vm1/products/getMasterCatalogStaticText")
     suspend fun getMasterCatalogStaticText(): Response<CommonApiResponse>
@@ -185,9 +188,6 @@ interface Apis {
 
     @GET("api/dotk/vm1/template/referAppWa")
     suspend fun getReferAndEarnDataOverWhatsApp() : Response<ReferEarnOverWhatsAppResponse>
-
-    @POST("api/dotk/vm1/merchant/updateStoreDomain")
-    suspend fun updateStoreDomain(@Body request: StoreLinkRequest) : Response<StoreDescriptionResponse>
 
     @POST("api/dotk/vm1/merchant/setAddress")
     suspend fun updateStoreAddress(@Header("auth_token") authToken:String, @Body request: StoreAddressRequest) : Response<StoreAddressResponse>
