@@ -177,7 +177,7 @@ class OrderAdapterV2(
 
     private fun getNameFromContactList(phoneNumber: String?): String? {
         StaticInstances.sUserContactList.forEachIndexed { _, contact ->
-            if (contact.mobileNumber == phoneNumber) return contact.name
+            if (contact.number == phoneNumber) return contact.name
         }
         return null
     }

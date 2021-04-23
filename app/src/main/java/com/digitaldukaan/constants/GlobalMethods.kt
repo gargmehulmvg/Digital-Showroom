@@ -219,8 +219,7 @@ fun getContactsFromStorage2(ctx: Context) {
             number = number.replace("-", "")
             number = if (number.startsWith("+91")) number.substring(3, number.length) else number
             if (number.length < 10) continue
-            info.id = contactId
-            info.mobileNumber = number
+            info.number = number
             info.name = name
             list.add(info)
         }

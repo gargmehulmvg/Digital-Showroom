@@ -163,6 +163,7 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
 
         override fun onPageFinished(view: WebView?, url: String?) {
             Log.d("WebViewController", "onPageFinished: called")
+            commonWebView?.loadUrl("javascript: window.contactData(${StaticInstances.sUserContactList})")
         }
 
         override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
