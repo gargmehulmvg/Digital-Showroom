@@ -212,7 +212,7 @@
             android:elevation="@dimen/_5sdp"
             android:onClick="onClick"
             android:textSize="@dimen/_12sdp"
-            android:text="@string/take_order"
+            tools:text="@string/take_order"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 

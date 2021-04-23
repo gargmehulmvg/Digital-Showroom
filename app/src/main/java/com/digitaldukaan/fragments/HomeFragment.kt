@@ -32,6 +32,7 @@ import com.digitaldukaan.webviews.WebViewBridge
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
+import com.squareup.picasso.Picasso
 import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration
 import kotlinx.android.synthetic.main.home_fragment.*
 import kotlinx.android.synthetic.main.layout_analytics.*
@@ -60,6 +61,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         private var mIsMorePendingOrderAvailable = false
         private var mIsMoreCompletedOrderAvailable = false
         private lateinit var mSwipeRefreshLayout: SwipeRefreshLayout
+        private var orderPageInfoResponse: OrderPageInfoResponse? = null
 
         fun newInstance(): HomeFragment {
             return HomeFragment()
@@ -273,10 +275,8 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             if (commonResponse.mIsSuccessStatus) {
-                val orderPageInfoResponse = Gson().fromJson<OrderPageInfoResponse>(
-                    commonResponse.mCommonDataStr,
-                    OrderPageInfoResponse::class.java
-                )
+
+                orderPageInfoResponse = Gson().fromJson<OrderPageInfoResponse>(commonResponse.mCommonDataStr, OrderPageInfoResponse::class.java)
                 orderPageInfoResponse?.run {
                     mOrderPageInfoStaticData = mOrderPageStaticText?.run {
                         mFetchingOrdersStr = fetching_orders
@@ -327,7 +327,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                                 false
                             )
                             layoutManager = linearLayoutManager
-                            adapter = OrderPageBannerAdapter()
+                            adapter = OrderPageBannerAdapter(orderPageInfoResponse?.mBannerList)
                         }
                     }
                     if (mIsHelpOrder.mIsActive) {
@@ -341,9 +341,10 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                             )
                         }
                     }
-                    analyticsImageView.visibility =
-                        if (mIsAnalyticsOrder) View.VISIBLE else View.GONE
+                    takeOrderTextView.text = mOrderPageInfoStaticData?.text_add_new_order
+                    analyticsImageView.visibility = if (mIsAnalyticsOrder) View.VISIBLE else View.GONE
                     searchImageView.visibility = if (mIsSearchOrder) View.VISIBLE else View.GONE
+                    takeOrderTextView.visibility = if (mIsTakeOrder) View.VISIBLE else View.GONE
                 }
             }
         }
@@ -528,6 +529,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
             behavior.state = BottomSheetBehavior.STATE_EXPANDED
             view?.run {
                 val imageViewSendBill: ImageView = findViewById(R.id.imageViewSendBill)
+                val shareButtonTextView: TextView = findViewById(R.id.shareButtonTextView)
                 val takeOrderMessageTextView: TextView = findViewById(R.id.takeOrderMessageTextView)
                 val createNewBillTextView: TextView = findViewById(R.id.createNewBillTextView)
                 val clickBillPhotoContainer: View = findViewById(R.id.clickBillPhotoContainer)
@@ -535,12 +537,16 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                     bottomSheetDialog.dismiss()
                     openFullCamera()
                 }
+                shareButtonTextView.text = mOrderPageInfoStaticData?.bottom_sheet_click_bill_photo
+                takeOrderMessageTextView.text = mOrderPageInfoStaticData?.bottom_sheet_take_order_message
+                createNewBillTextView.text = mOrderPageInfoStaticData?.bottom_sheet_create_a_new_bill
+                Picasso.get().load(orderPageInfoResponse?.mTakeOrderImage).into(imageViewSendBill)
                 createNewBillTextView.setOnClickListener {
                     bottomSheetDialog.dismiss()
                     launchFragment(
                         CommonWebViewFragment().newInstance(
                             "",
-                            BuildConfig.WEB_VIEW_URL + "cataloglist" + "?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&" + "&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"
+                            "${BuildConfig.WEB_VIEW_URL}${WebViewUrls.WEB_VIEW_TAKE_A_ORDER}?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"
                         ), true
                     )
                 }

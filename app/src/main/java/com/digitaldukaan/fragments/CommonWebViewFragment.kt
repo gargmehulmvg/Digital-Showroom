@@ -81,8 +81,8 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
     private fun triggerWebViewOpenEvent() {
         val eventName =
             when {
-                mLoadUrl.contains(Constants.WEB_VIEW_RE_ARRANGE) -> AFInAppEventType.EVENT_RE_ARRANGE_PAGE_OPEN
-                mLoadUrl.contains(Constants.WEB_VIEW_HELP) -> AFInAppEventType.EVENT_HELP_SCREEN_OPEN
+                mLoadUrl.contains(WebViewUrls.WEB_VIEW_RE_ARRANGE) -> AFInAppEventType.EVENT_RE_ARRANGE_PAGE_OPEN
+                mLoadUrl.contains(WebViewUrls.WEB_VIEW_HELP) -> AFInAppEventType.EVENT_HELP_SCREEN_OPEN
                 else -> ""
             }
         AppEventsManager.pushAppEvents(
@@ -194,8 +194,8 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
     }
 
     override fun onMenuItemClick(item: MenuItem?): Boolean {
-        if (0 == item?.itemId) openWebViewFragment(this, getString(R.string.help), Constants.WEB_VIEW_TNC, Constants.SETTINGS)
-        if (1 == item?.itemId) openWebViewFragment(this, getString(R.string.help), Constants.WEB_VIEW_HELP, Constants.SETTINGS)
+        if (0 == item?.itemId) openWebViewFragment(this, getString(R.string.help), WebViewUrls.WEB_VIEW_TNC, Constants.SETTINGS)
+        if (1 == item?.itemId) openWebViewFragment(this, getString(R.string.help), WebViewUrls.WEB_VIEW_HELP, Constants.SETTINGS)
         return true
     }
 

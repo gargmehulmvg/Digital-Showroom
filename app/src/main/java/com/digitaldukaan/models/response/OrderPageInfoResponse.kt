@@ -5,6 +5,7 @@ import com.google.gson.annotations.SerializedName
 data class OrderPageInfoResponse(
     @SerializedName("zero_order")                       var mIsZeroOrder: ZeroOrderPageResponse,
     @SerializedName("is_take_order_on")                 var mIsTakeOrder: Boolean,
+    @SerializedName("take_order_image")                 var mTakeOrderImage: String,
     @SerializedName("is_search_on")                     var mIsSearchOrder: Boolean,
     @SerializedName("help_page")                        var mIsHelpOrder: HelpPageResponse,
     @SerializedName("banners")                          var mBannerList: ArrayList<HomePageBannerResponse>,
@@ -26,7 +27,8 @@ data class HelpPageResponse(
 
 data class HomePageBannerResponse(
     @SerializedName("banner_url")                       var mBannerUrl: String,
-    @SerializedName("deep_link")                        var mUrl: String
+    @SerializedName("action")                           var mAction: String,
+    @SerializedName("deep_link")                        var mDeepLinkUrl: String
 )
 
 data class OrderPageStaticTextResponse(
@@ -50,6 +52,11 @@ data class OrderPageStaticTextResponse(
     @SerializedName("text_paid_online")                 var text_paid_online: String,
     @SerializedName("text_today")                       var text_today: String,
     @SerializedName("error_mandatory_field")            var error_mandatory_field: String,
+
+    @SerializedName("text_add_new_order")               var text_add_new_order: String,
+    @SerializedName("bottom_sheet_click_bill_photo")    var bottom_sheet_click_bill_photo: String,
+    @SerializedName("bottom_sheet_take_order_message")  var bottom_sheet_take_order_message: String,
+    @SerializedName("bottom_sheet_create_a_new_bill")   var bottom_sheet_create_a_new_bill: String,
 
     @SerializedName("dialog_message")                   var dialog_message: String,
     @SerializedName("dialog_check_box_text")            var dialog_check_box_text: String,

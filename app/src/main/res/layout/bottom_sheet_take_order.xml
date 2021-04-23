@@ -13,10 +13,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="@string/image_view_content_description"
-        android:src="@drawable/ic_sendbill"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@drawable/ic_sendbill" />
 
     <TextView
         android:id="@+id/takeOrderMessageTextView"
@@ -25,11 +25,11 @@
         android:layout_marginTop="@dimen/_10sdp"
         android:fontFamily="@font/roboto_bold"
         android:gravity="center"
-        android:text="@string/sample_send_bill"
         android:textColor="@color/black"
         android:textSize="@dimen/_15sdp"
         app:layout_constraintTop_toBottomOf="@+id/imageViewSendBill"
-        tools:layout_editor_absoluteX="13dp" />
+        tools:layout_editor_absoluteX="13dp"
+        tools:text="@string/sample_send_bill" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/createNewBillTextView"
@@ -38,15 +38,15 @@
         android:layout_marginTop="@dimen/_20sdp"
         android:gravity="center"
         android:onClick="onClick"
-        android:text="@string/create_a_new_bill"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/takeOrderMessageTextView" />
+        app:layout_constraintTop_toBottomOf="@+id/takeOrderMessageTextView"
+        tools:text="@string/create_a_new_bill" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/clickBillPhotoContainer"
-        android:layout_width="0dp"
         style="@style/common_text_view_black_border"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_20sdp"
         android:onClick="onClick"
@@ -60,21 +60,22 @@
             android:layout_height="@dimen/_20sdp"
             android:clickable="false"
             android:contentDescription="@string/image_view_content_description"
+            android:src="@drawable/ic_camera_black"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/shareButtonTextView"
             app:layout_constraintTop_toTopOf="parent"
-            tools:src="@drawable/ic_camera_black" />
+            app:tint="@color/black" />
 
         <TextView
             android:id="@+id/shareButtonTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:clickable="false"
+            android:fontFamily="@font/roboto_bold"
             android:paddingStart="@dimen/_5sdp"
             android:paddingEnd="@dimen/_10sdp"
-            android:fontFamily="@font/roboto_bold"
-            android:textSize="@dimen/_15sdp"
             android:textColor="@color/black"
+            android:textSize="@dimen/_15sdp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.65"

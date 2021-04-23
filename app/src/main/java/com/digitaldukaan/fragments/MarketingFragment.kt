@@ -78,7 +78,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
         WebViewBridge.mWebViewListener = this
     }
 
-    override fun onToolbarSideIconClicked() = openWebViewFragment(this, getString(R.string.help), Constants.WEB_VIEW_HELP, Constants.SETTINGS)
+    override fun onToolbarSideIconClicked() = openWebViewFragment(this, getString(R.string.help), WebViewUrls.WEB_VIEW_HELP, Constants.SETTINGS)
 
     override fun onMarketingErrorResponse(e: Exception) {
         exceptionHandlingForAPIResponse(e)
@@ -143,7 +143,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                     isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = true,
                     data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), "type" to AFInAppEventParameterName.SOCIAL)
                 )
-                openWebViewFragment(this, "", Constants.WEB_VIEW_CREATIVE_LIST, Constants.SETTINGS)
+                openWebViewFragment(this, "", WebViewUrls.WEB_VIEW_CREATIVE_LIST, Constants.SETTINGS)
             }
             Constants.ACTION_SOCIAL_CREATIVE -> {
                 AppEventsManager.pushAppEvents(
@@ -151,12 +151,12 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                     isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = true,
                     data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), "type" to AFInAppEventParameterName.SOCIAL)
                 )
-                openWebViewFragment(this, "", Constants.WEB_VIEW_SOCIAL_CREATIVE_LIST, Constants.SETTINGS)
+                openWebViewFragment(this, "", WebViewUrls.WEB_VIEW_SOCIAL_CREATIVE_LIST, Constants.SETTINGS)
             }
             Constants.ACTION_CATALOG_PREMIUM -> {
                 openWebViewFragment(this, "", BuildConfig.WEB_VIEW_URL + response.action)
             }
-            Constants.ACTION_QR_DOWNLOAD -> openWebViewFragment(this, "", Constants.WEB_VIEW_QR_DOWNLOAD, Constants.SETTINGS)
+            Constants.ACTION_QR_DOWNLOAD -> openWebViewFragment(this, "", WebViewUrls.WEB_VIEW_QR_DOWNLOAD, Constants.SETTINGS)
             Constants.ACTION_SHARE_DATA -> {
                 showProgressDialog(mActivity)
                 service.getShareStoreData(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))

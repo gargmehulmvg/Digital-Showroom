@@ -227,7 +227,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
     override fun onToolbarSideIconClicked() = launchFragment(
         CommonWebViewFragment().newInstance(
             getString(R.string.help),
-            BuildConfig.WEB_VIEW_URL + Constants.WEB_VIEW_HELP + "?storeid=${getStringDataFromSharedPref(
+            BuildConfig.WEB_VIEW_URL + WebViewUrls.WEB_VIEW_HELP + "?storeid=${getStringDataFromSharedPref(
                 Constants.STORE_ID
             )}&" + "redirectFrom=settings" + "&token=${getStringDataFromSharedPref(
                 Constants.USER_AUTH_TOKEN
@@ -413,7 +413,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             Constants.PAGE_REWARDS -> launchFragment(
                 CommonWebViewFragment().newInstance(
                     getString(R.string.my_rewards),
-                    BuildConfig.WEB_VIEW_URL + Constants.WEB_VIEW_REWARDS + "?storeid=${getStringDataFromSharedPref(
+                    BuildConfig.WEB_VIEW_URL + WebViewUrls.WEB_VIEW_REWARDS + "?storeid=${getStringDataFromSharedPref(
                         Constants.STORE_ID
                     )}&" + "redirectFrom=settings&token=${getStringDataFromSharedPref(
                         Constants.USER_AUTH_TOKEN
