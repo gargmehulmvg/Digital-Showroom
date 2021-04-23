@@ -151,7 +151,7 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
             val finalConvertedStr = Gson().toJson(convertMultipleImageList)
             Log.d(mTagName, "image BASE64 :: $finalConvertedStr")
             CoroutineScopeUtils().runTaskOnCoroutineMain {
-                commonWebView?.loadUrl("javascript: receiveAndroidData('$finalConvertedStr')")
+                commonWebView?.loadUrl("javascript: receiveAndroidData($finalConvertedStr)")
             }
         }
     }
