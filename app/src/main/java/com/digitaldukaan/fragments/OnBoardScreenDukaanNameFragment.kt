@@ -79,9 +79,10 @@ class OnBoardScreenDukaanNameFragment : BaseFragment(),
                     } else {
                         val service = CreateStoreService()
                         service.setServiceInterface(this)
+                        val storeIdStr = PrefsManager.getStringDataFromSharedPref(Constants.USER_ID)
                         val request = CreateStoreRequest(
                             PrefsManager.getStringDataFromSharedPref(Constants.USER_MOBILE_NUMBER),
-                            PrefsManager.getStringDataFromSharedPref(Constants.USER_ID).toInt(),
+                            if (storeIdStr.isNotEmpty()) storeIdStr.toInt() else 0,
                             dukanName,
                             Constants.APP_SECRET_KEY
                         )

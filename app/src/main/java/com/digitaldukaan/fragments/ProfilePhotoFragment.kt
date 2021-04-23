@@ -127,7 +127,7 @@ class ProfilePhotoFragment : BaseFragment(), View.OnClickListener, IProfilePhoto
         if (file == null) {
             service.uploadStoreLogo(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), StoreLogoRequest(""))
         } else {
-            val fileRequestBody = MultipartBody.Part.createFormData("image", file.name, RequestBody.create("image/*".toMediaTypeOrNull(), file))
+            val fileRequestBody = MultipartBody.Part.createFormData("media", file.name, RequestBody.create("image/*".toMediaTypeOrNull(), file))
             val imageTypeRequestBody = RequestBody.create("text/plain".toMediaTypeOrNull(), Constants.BASE64_STORE_LOGO)
             service.generateCDNLink(imageTypeRequestBody, fileRequestBody)
         }

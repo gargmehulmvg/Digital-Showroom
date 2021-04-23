@@ -15,7 +15,10 @@ import com.digitaldukaan.MainActivity
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.IOnToolbarIconClick
+import com.digitaldukaan.models.dto.ConvertMultiImageDTO
 import com.digitaldukaan.webviews.WebViewBridge
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.layout_common_webview_fragment.*
 import org.json.JSONObject
 
@@ -135,6 +138,20 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
                 } else {
                     commonWebView?.loadUrl("javascript: receiveAndroidData('$image64')")
                 }
+            }
+        } else if (jsonData.optBoolean("convertMultipleImage")) {
+            showProgressDialog(mActivity)
+            val imageArray = jsonData.optJSONArray("imageArray")
+            val listType = object : TypeToken<ArrayList<ConvertMultiImageDTO>>() {}.type
+            val convertMultipleImageList = Gson().fromJson<ArrayList<ConvertMultiImageDTO>>("$imageArray", listType)
+            convertMultipleImageList?.forEachIndexed { _, imageDTO ->
+                val str = getBase64FromImageURL(imageDTO.src)
+                str?.run { imageDTO.src = "data:image/png;base64,$str" }
+            }
+            val finalConvertedStr = Gson().toJson(convertMultipleImageList)
+            Log.d(mTagName, "image BASE64 :: $finalConvertedStr")
+            CoroutineScopeUtils().runTaskOnCoroutineMain {
+                commonWebView?.loadUrl("javascript: receiveAndroidData('$finalConvertedStr')")
             }
         }
     }

@@ -14,6 +14,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.OrderAdapterV2
 import com.digitaldukaan.adapters.OrderPageBannerAdapter
@@ -58,6 +59,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         private var mMobileNumberString = ""
         private var mIsMorePendingOrderAvailable = false
         private var mIsMoreCompletedOrderAvailable = false
+        private lateinit var mSwipeRefreshLayout: SwipeRefreshLayout
 
         fun newInstance(): HomeFragment {
             return HomeFragment()
@@ -81,6 +83,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
             mHomeFragmentService.getOrderPageInfo()
             mHomeFragmentService.getAnalyticsData()
         }
+        mSwipeRefreshLayout = mContentView.findViewById(R.id.swipeRefreshLayout)
         return mContentView
     }
 
@@ -88,7 +91,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         updateNavigationBarState(R.id.menuHome)
         ToolBarManager.getInstance().hideToolBar(mActivity, true)
         hideBottomNavigationView(false)
-        swipeRefreshLayout.setOnRefreshListener(this)
+        mSwipeRefreshLayout.setOnRefreshListener(this)
         orderAdapter = OrderAdapterV2(mActivity, mOrderList)
         completedOrderAdapter = OrderAdapterV2(mActivity, mCompletedOrderList)
         pendingPageCount = 1
@@ -193,7 +196,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
     override fun onPendingOrdersResponse(getOrderResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
-            if (swipeRefreshLayout.isRefreshing) swipeRefreshLayout.isRefreshing = false
+            if (mSwipeRefreshLayout.isRefreshing) mSwipeRefreshLayout.isRefreshing = false
             if (getOrderResponse.mIsSuccessStatus) {
                 val ordersResponse = Gson().fromJson<OrdersResponse>(
                     getOrderResponse.mCommonDataStr,
@@ -201,7 +204,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                 )
                 mIsMorePendingOrderAvailable = ordersResponse.mIsNextDataAvailable
                 if (pendingPageCount == 1) mOrderList.clear()
-                mOrderList.addAll(ordersResponse.mOrdersList)
+                mOrderList.addAll(if (ordersResponse.mOrdersList != null) ordersResponse.mOrdersList else ArrayList())
                 convertDateStringOfOrders(mOrderList)
                 orderAdapter.notifyDataSetChanged()
                 if (mIsMorePendingOrderAvailable) {
@@ -218,7 +221,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
     override fun onCompletedOrdersResponse(getOrderResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
-            if (swipeRefreshLayout.isRefreshing) swipeRefreshLayout.isRefreshing = false
+            if (mSwipeRefreshLayout.isRefreshing) mSwipeRefreshLayout.isRefreshing = false
             if (getOrderResponse.mIsSuccessStatus) {
                 val ordersResponse = Gson().fromJson<OrdersResponse>(
                     getOrderResponse.mCommonDataStr,
@@ -226,7 +229,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                 )
                 mIsMoreCompletedOrderAvailable = ordersResponse.mIsNextDataAvailable
                 if (completedPageCount == 1) mCompletedOrderList.clear()
-                mCompletedOrderList.addAll(ordersResponse.mOrdersList)
+                mCompletedOrderList.addAll(if (ordersResponse.mOrdersList != null) ordersResponse.mOrdersList else ArrayList())
                 convertDateStringOfOrders(mCompletedOrderList)
                 completedOrderAdapter.notifyDataSetChanged()
                 if (mIsMoreCompletedOrderAvailable) {
@@ -285,9 +288,9 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                         orderLayout.visibility = View.GONE
                         takeOrderTextView.visibility = View.GONE
                         setupHomePageWebView(mIsZeroOrder.mUrl)
-                        swipeRefreshLayout.isEnabled = false
+                        mSwipeRefreshLayout.isEnabled = false
                     } else {
-                        swipeRefreshLayout.isEnabled = true
+                        mSwipeRefreshLayout.isEnabled = true
                         homePageWebViewLayout.visibility = View.GONE
                         orderLayout.visibility = View.VISIBLE
                         fetchLatestOrders(
@@ -345,7 +348,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
     override fun onSearchOrdersResponse(commonResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
-            if (swipeRefreshLayout.isRefreshing) swipeRefreshLayout.isRefreshing = false
+            if (mSwipeRefreshLayout.isRefreshing) mSwipeRefreshLayout.isRefreshing = false
             if (commonResponse.mIsSuccessStatus) {
                 val ordersResponse = Gson().fromJson<OrdersResponse>(
                     commonResponse.mCommonDataStr,
@@ -370,7 +373,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
     override fun onCompleteOrderStatusResponse(commonResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
-            if (swipeRefreshLayout.isRefreshing) swipeRefreshLayout.isRefreshing = false
+            if (mSwipeRefreshLayout.isRefreshing) mSwipeRefreshLayout.isRefreshing = false
             if (commonResponse.mIsSuccessStatus) {
                 onRefresh()
             } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
@@ -379,7 +382,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
 
     override fun onHomePageException(e: Exception) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            if (swipeRefreshLayout.isRefreshing) swipeRefreshLayout.isRefreshing = false
+            if (mSwipeRefreshLayout.isRefreshing) mSwipeRefreshLayout.isRefreshing = false
             exceptionHandlingForAPIResponse(e)
         }
     }
@@ -527,6 +530,15 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                 clickBillPhotoContainer.setOnClickListener {
                     bottomSheetDialog.dismiss()
                     openFullCamera()
+                }
+                createNewBillTextView.setOnClickListener {
+                    bottomSheetDialog.dismiss()
+                    launchFragment(
+                        CommonWebViewFragment().newInstance(
+                            "",
+                            BuildConfig.WEB_VIEW_URL + "cataloglist" + "?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&" + "&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"
+                        ), true
+                    )
                 }
             }
         }.show()

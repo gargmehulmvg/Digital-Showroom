@@ -73,7 +73,7 @@ class EditPhotoFragment: BaseFragment() {
 
     private fun uploadImageToGetCDNLink(file: File, mode: String) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            val fileRequestBody = MultipartBody.Part.createFormData("image", file.name, RequestBody.create("image/*".toMediaTypeOrNull(), file))
+            val fileRequestBody = MultipartBody.Part.createFormData("media", file.name, RequestBody.create("image/*".toMediaTypeOrNull(), file))
             val imageTypeRequestBody = RequestBody.create("text/plain".toMediaTypeOrNull(), Constants.BASE64_THEMES)
             val response = RetrofitApi().getServerCallObject()?.getImageUploadCdnLink(imageTypeRequestBody, fileRequestBody)
             response?.let {

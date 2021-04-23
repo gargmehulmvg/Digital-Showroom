@@ -63,7 +63,7 @@ class SendBillPhotoFragment: BaseFragment(), ISendBillPhotoServiceInterface {
                     return
                 }
                 mImageFile?.run {
-                    val fileRequestBody = MultipartBody.Part.createFormData("image", name, RequestBody.create("image/*".toMediaTypeOrNull(), this))
+                    val fileRequestBody = MultipartBody.Part.createFormData("media", name, RequestBody.create("image/*".toMediaTypeOrNull(), this))
                     val imageTypeRequestBody = RequestBody.create("text/plain".toMediaTypeOrNull(), Constants.BASE64_ORDER_BILL)
                     showProgressDialog(mActivity)
                     mService.generateCDNLink(imageTypeRequestBody, fileRequestBody)

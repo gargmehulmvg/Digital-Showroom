@@ -1,7 +1,6 @@
 package com.digitaldukaan.services.networkservice
 
 import android.util.Log
-import com.digitaldukaan.models.request.GenerateOtpRequest
 import com.digitaldukaan.models.request.ValidateUserRequest
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.GenerateOtpResponse
@@ -16,7 +15,7 @@ class LoginNetworkService {
         loginServiceInterface: ILoginServiceInterface
     ) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.generateOTP(GenerateOtpRequest("Digital Dukaan", mobileNumber))
+            val response = RetrofitApi().getServerCallObject()?.generateOTP(mobileNumber)
             response?.let {
                 if (it.isSuccessful) {
                     it.body()?.let { generateOtpResponse -> loginServiceInterface.onGenerateOTPResponse(generateOtpResponse) }

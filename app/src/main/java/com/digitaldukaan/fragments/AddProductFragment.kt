@@ -383,7 +383,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             return
         }
         showProgressDialog(mActivity)
-        val fileRequestBody = MultipartBody.Part.createFormData("image", file.name, RequestBody.create("image/*".toMediaTypeOrNull(), file))
+        val fileRequestBody = MultipartBody.Part.createFormData("media", file.name, RequestBody.create("image/*".toMediaTypeOrNull(), file))
         val imageTypeRequestBody = RequestBody.create("text/plain".toMediaTypeOrNull(), Constants.BASE64_STORE_ITEMS)
         mService.generateCDNLink(imageTypeRequestBody, fileRequestBody)
         if (::imagePickBottomSheet.isInitialized) imagePickBottomSheet.dismiss()
@@ -401,11 +401,6 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 priceEditText.requestFocus()
                 return false
             }
-            /*discountedPriceEditText.text.trim().isEmpty() -> {
-                discountedPriceEditText.error = addProductStaticData?.error_mandatory_field
-                discountedPriceEditText.requestFocus()
-                return false
-            }*/
             priceEditText.text.toString().toDouble() < discountedPriceEditText.text.toString().toDouble() -> {
                 discountedPriceEditText.text = null
                 discountedPriceEditText.error = addProductStaticData?.error_discount_price_less_then_original_price

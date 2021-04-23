@@ -1,6 +1,8 @@
 package com.digitaldukaan.fragments
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +16,8 @@ import kotlinx.android.synthetic.main.layout_on_board_help_screen.*
 class OnBoardHelpScreenFragment : BaseFragment() {
 
     companion object {
+        private var mIsDoublePressToExit = false
+
         fun newInstance(): OnBoardHelpScreenFragment {
             return OnBoardHelpScreenFragment()
         }
@@ -35,6 +39,17 @@ class OnBoardHelpScreenFragment : BaseFragment() {
         viewpager.adapter = pagerAdapter
         indicator.setViewPager(viewpager)
         return mContentView
+    }
+
+    override fun onBackPressed(): Boolean {
+        if (mIsDoublePressToExit) mActivity.finish()
+        showShortSnackBar(getString(R.string.msg_back_press))
+        mIsDoublePressToExit = true
+        Handler(Looper.getMainLooper()).postDelayed(
+            { mIsDoublePressToExit = false },
+            Constants.BACK_PRESS_INTERVAL
+        )
+        return true
     }
 
     override fun onClick(view: View?) {
