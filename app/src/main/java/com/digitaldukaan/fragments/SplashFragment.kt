@@ -93,6 +93,10 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
         exceptionHandlingForAPIResponse(e)
     }
 
+    override fun onNoInternetButtonClick(isNegativeButtonClick: Boolean) {
+        mActivity.finish()
+    }
+
     private fun switchToFragmentByDeepLink() {
         Log.d(TAG, "switchToFragmentByDeepLink: $mIntentUri")
         when(mIntentUri.toString()) {

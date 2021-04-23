@@ -10,6 +10,7 @@ import androidx.viewpager.widget.ViewPager
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.CustomPagerAdapter
 import com.digitaldukaan.constants.*
+import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.tbuonomo.viewpagerdotsindicator.DotsIndicator
 import kotlinx.android.synthetic.main.layout_on_board_help_screen.*
 
@@ -54,6 +55,10 @@ class OnBoardHelpScreenFragment : BaseFragment() {
 
     override fun onClick(view: View?) {
         if (view?.id == startNowLayout.id) {
+            if (!isInternetConnectionAvailable(mActivity)) {
+                showNoInternetConnectionDialog()
+                return
+            }
             AppEventsManager.pushAppEvents(
                 eventName = AFInAppEventType.EVENT_MARKET_START_NOW,
                 isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,

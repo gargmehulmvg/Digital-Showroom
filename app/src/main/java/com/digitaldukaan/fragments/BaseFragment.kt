@@ -227,7 +227,10 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                 setTitle(getString(R.string.no_internet_connection))
                 setMessage(getString(R.string.turn_on_internet_message))
                 setCancelable(false)
-                setNegativeButton(getString(R.string.close)) { dialog, _ -> dialog.dismiss() }
+                setNegativeButton(getString(R.string.close)) { dialog, _ ->
+                    onNoInternetButtonClick(true)
+                    dialog.dismiss()
+                }
             }
             val alertDialog: AlertDialog = builder.create()
             alertDialog.show()
@@ -581,6 +584,8 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     open fun onImageSelectionResultFile(file: File?, mode: String = "") = Unit
 
     open fun onImageSelectionResultUri(fileUri: Uri?) = Unit
+
+    open fun onNoInternetButtonClick(isNegativeButtonClick: Boolean) = Unit
 
     override fun onSearchImageItemClicked(photoStr: String) {
         showProgressDialog(mActivity)
