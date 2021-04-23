@@ -1,5 +1,7 @@
 package com.digitaldukaan.fragments
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -86,6 +88,23 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
                     override fun onPageFinished(view: WebView, url: String) {
                         Log.d(TAG, "onPageFinished: called")
                         stopProgress()
+                    }
+
+                    override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
+                        return when {
+                            url.startsWith("tel:") -> {
+                                val tel = Intent(Intent.ACTION_DIAL, Uri.parse(url))
+                                activity?.startActivity(tel)
+                                true
+                            }
+                            url.contains("mailto:") -> { view.context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                                true
+                            }
+                            else -> {
+                                view.loadUrl(url)
+                                true
+                            }
+                        }
                     }
                 }
             }
