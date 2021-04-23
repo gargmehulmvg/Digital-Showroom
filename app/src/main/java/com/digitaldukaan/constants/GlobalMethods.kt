@@ -135,7 +135,7 @@ fun getBitmapFromBase64V2(input: String?): Bitmap? {
 fun Bitmap.getImageUri(inContext: Context): Uri? {
     val bytes = ByteArrayOutputStream()
     this.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
-    val path = MediaStore.Images.Media.insertImage(inContext.contentResolver, this, "Title" + Random(4).nextInt(), null)
+    val path = MediaStore.Images.Media.insertImage(inContext.contentResolver, this, "IMG_${Calendar.getInstance().time}", null)
     return if (path == null || path.isEmpty()) null else Uri.parse(path)
 }
 
