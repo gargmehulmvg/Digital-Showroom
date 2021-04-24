@@ -271,7 +271,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                             priceStr.toDouble(),
                             if (discountedStr.isNotEmpty()) discountedStr.toDouble() else 0.0,
                             descriptionStr,
-                            if (categoryStr.isEmpty()) AddProductItemCategory(0, "") else AddProductItemCategory(0, categoryStr),
+                            if (categoryStr.trim().isEmpty()) AddProductItemCategory(0, "") else AddProductItemCategory(0, categoryStr),
                             imageListRequest,
                             nameStr
                         )
