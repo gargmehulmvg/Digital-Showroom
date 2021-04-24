@@ -60,10 +60,5 @@ data class OrderPageStaticTextResponse(
     @SerializedName("dialog_check_box_text")            var dialog_check_box_text: String,
     @SerializedName("dialog_text_no")                   var dialog_text_no: String,
     @SerializedName("dialog_text_yes")                  var dialog_text_yes: String,
-    @SerializedName("dialog_text_alert")                var dialog_text_alert: String,
-
-    @SerializedName("bottom_sheet_reject_order_heading") var bottom_sheet_reject_order_heading: String,
-    @SerializedName("text_reject_order")                var text_reject_order: String,
-    @SerializedName("text_delivery_guy_not_available")  var text_delivery_guy_not_available: String,
-    @SerializedName("text_items_are_not_available")     var text_items_are_not_available: String
+    @SerializedName("dialog_text_alert")                var dialog_text_alert: String
 )

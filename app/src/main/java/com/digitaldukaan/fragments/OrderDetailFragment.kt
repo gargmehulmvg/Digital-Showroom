@@ -5,10 +5,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.PopupMenu
-import android.widget.TextView
+import android.widget.*
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -23,6 +20,7 @@ import com.digitaldukaan.interfaces.IOnToolbarIconClick
 import com.digitaldukaan.interfaces.IOnToolbarSecondIconClick
 import com.digitaldukaan.models.dto.CustomerDeliveryAddressDTO
 import com.digitaldukaan.models.request.UpdateOrderRequest
+import com.digitaldukaan.models.request.UpdateOrderStatusRequest
 import com.digitaldukaan.models.response.*
 import com.digitaldukaan.services.OrderDetailService
 import com.digitaldukaan.services.isInternetConnectionAvailable
@@ -273,6 +271,16 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
         }
     }
 
+    override fun onUpdateStatusResponse(commonResponse: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            if (commonResponse.mIsSuccessStatus) {
+                showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_green_check_small)
+                mActivity.onBackPressed()
+            } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
+        }
+    }
+
     override fun onImageSelectionResultFile(file: File?, mode: String) {
         orderDetailMainResponse?.orders?.run {
             if (otherChargesValueEditText.text?.isNotEmpty() == true) {
@@ -423,7 +431,36 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
             setContentView(view)
             setBottomSheetCommonProperty()
             view.run {
+                val rejectOrderRadioGroup: RadioGroup = findViewById(R.id.rejectOrderRadioGroup)
+                val rejectOrderTextView: TextView = findViewById(R.id.startNowTextView)
                 val orderRejectHeadingTextView: TextView = findViewById(R.id.orderRejectHeadingTextView)
+                val itemNotAvailableRadioButton: RadioButton = findViewById(R.id.itemNotAvailableRadioButton)
+                val deliveryGuyNotAvailableRadioButton: RadioButton = findViewById(R.id.deliveryGuyNotAvailableRadioButton)
+                mOrderDetailStaticData?.run {
+                    orderRejectHeadingTextView.text = bottom_sheet_reject_order_heading
+                    itemNotAvailableRadioButton.text = text_items_are_not_available
+                    deliveryGuyNotAvailableRadioButton.text = text_delivery_guy_not_available
+                    rejectOrderTextView.text = text_reject_order
+                }
+                var reason = ""
+                rejectOrderRadioGroup.setOnCheckedChangeListener { _, id ->
+                    when(id) {
+                        itemNotAvailableRadioButton.id -> reason = itemNotAvailableRadioButton.text.toString()
+                        deliveryGuyNotAvailableRadioButton.id -> reason = deliveryGuyNotAvailableRadioButton.text.toString()
+                    }
+                }
+                itemNotAvailableRadioButton.isSelected = true
+                itemNotAvailableRadioButton.isChecked = true
+                rejectOrderTextView.setOnClickListener {
+                    if (!isInternetConnectionAvailable(mActivity)) {
+                        showNoInternetConnectionDialog()
+                        return@setOnClickListener
+                    }
+                    bottomSheetDialog.dismiss()
+                    val request = UpdateOrderStatusRequest(orderDetailMainResponse?.orders?.orderId?.toLong(), Constants.StatusRejected.toLong(), reason)
+                    showProgressDialog(mActivity)
+                    mOrderDetailService.updateOrderStatus(request)
+                }
             }
         }.show()
     }
@@ -434,8 +471,15 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
     }
 
     override fun onMenuItemClick(menu: MenuItem?): Boolean {
-        showToast(menu?.title?.toString())
-        showOrderRejectBottomSheet()
+        val menuItem = orderDetailMainResponse?.optionMenuList?.get(menu?.itemId ?: 0)
+        when(menuItem?.mAction) {
+            Constants.ACTION_REJECT_ORDER -> showOrderRejectBottomSheet()
+            Constants.ACTION_DOWNLOAD_BILL -> {
+                if (orderDetailMainResponse?.orders?.digitalReceipt?.isEmpty() == true) {
+                    showToast(mOrderDetailStaticData?.error_no_bill_available_to_download)
+                } else showToast(orderDetailMainResponse?.orders?.digitalReceipt)
+            }
+        }
         return true
     }
 

@@ -2,6 +2,7 @@ package com.digitaldukaan.services.networkservice
 
 import android.util.Log
 import com.digitaldukaan.models.request.UpdateOrderRequest
+import com.digitaldukaan.models.request.UpdateOrderStatusRequest
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.network.RetrofitApi
 import com.digitaldukaan.services.serviceinterface.IOrderDetailServiceInterface
@@ -93,6 +94,33 @@ class OrderDetailNetworkService {
             }
         } catch (e: Exception) {
             Log.e(SendBillPhotoNetworkService::class.java.simpleName, "updateOrderServerCall: ", e)
+            serviceInterface.onOrderDetailException(e)
+        }
+    }
+
+    suspend fun updateOrderStatusServerCall(
+        request: UpdateOrderStatusRequest,
+        serviceInterface: IOrderDetailServiceInterface
+    ) {
+        try {
+            val response = RetrofitApi().getServerCallObject()?.updateOrderStatus(request)
+            response?.let {
+                if (it.isSuccessful) {
+                    it.body()?.let { commonApiResponse -> serviceInterface.onUpdateStatusResponse(commonApiResponse)
+                    }
+                } else {
+                    val responseBody = it.errorBody()
+                    responseBody?.let {
+                        val errorResponse = Gson().fromJson(
+                            responseBody.string(),
+                            CommonApiResponse::class.java
+                        )
+                        serviceInterface.onUpdateStatusResponse(errorResponse)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(SendBillPhotoNetworkService::class.java.simpleName, "updateOrderStatusServerCall: ", e)
             serviceInterface.onOrderDetailException(e)
         }
     }

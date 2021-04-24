@@ -10,6 +10,8 @@ interface IOrderDetailServiceInterface {
 
     fun onUpdateOrderResponse(commonResponse: CommonApiResponse)
 
+    fun onUpdateStatusResponse(commonResponse: CommonApiResponse)
+
     fun onOrderDetailException(e: Exception)
 
 }

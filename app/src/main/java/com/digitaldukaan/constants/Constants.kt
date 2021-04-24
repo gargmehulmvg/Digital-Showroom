@@ -43,6 +43,10 @@ class Constants {
         const val ACTION_CATALOG_PREMIUM = "theme-discover"
         const val ACTION_KYC_STATUS = "kyc_status"
         const val ACTION_ADD_BANK = "add-bank"
+        const val ACTION_REJECT_ORDER = "reject-order"
+        const val ACTION_SHARE_BILL = "share-bill"
+        const val ACTION_DOWNLOAD_BILL = "download-bill"
+        const val ACTION_CASH_COLLECTED = "cash-collected"
         //Incomplete profile actions
         const val ACTION_LOGO = "logo"
         const val ACTION_DESCRIPTION = "description"

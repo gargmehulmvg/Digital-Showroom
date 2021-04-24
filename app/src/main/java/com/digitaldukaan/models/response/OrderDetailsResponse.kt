@@ -82,5 +82,11 @@ data class OrderDetailsStaticTextResponse(
     @SerializedName("message_customer_paid") val message_customer_paid: String?,
     @SerializedName("message_bill_sent_customer_not_paid") val message_bill_sent_customer_not_paid: String?,
     @SerializedName("text_processing_refund") val text_processing_refund: String?,
-    @SerializedName("text_send_bill") val text_send_bill: String?
+    @SerializedName("text_send_bill") val text_send_bill: String?,
+    @SerializedName("error_no_bill_available_to_download") val error_no_bill_available_to_download: String?,
+
+    @SerializedName("bottom_sheet_reject_order_heading") var bottom_sheet_reject_order_heading: String,
+    @SerializedName("text_reject_order") var text_reject_order: String,
+    @SerializedName("text_delivery_guy_not_available") var text_delivery_guy_not_available: String,
+    @SerializedName("text_items_are_not_available") var text_items_are_not_available: String
 )
