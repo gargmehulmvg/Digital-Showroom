@@ -477,7 +477,10 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
             Constants.ACTION_DOWNLOAD_BILL -> {
                 if (orderDetailMainResponse?.orders?.digitalReceipt?.isEmpty() == true) {
                     showToast(mOrderDetailStaticData?.error_no_bill_available_to_download)
-                } else showToast(orderDetailMainResponse?.orders?.digitalReceipt)
+                } else {
+                    val bitmap = getBitmapFromURL(orderDetailMainResponse?.orders?.digitalReceipt)
+                    downloadMediaToStorage(bitmap, mActivity)
+                }
             }
         }
         return true

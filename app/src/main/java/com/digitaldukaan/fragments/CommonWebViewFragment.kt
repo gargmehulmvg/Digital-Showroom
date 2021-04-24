@@ -124,7 +124,7 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
             val base64Str = base64OriginalStr.split("data:image/png;base64,")[1]
             Log.d(mTagName, "image URL :: $base64Str")
             val bitmap = getBitmapFromBase64V2(base64Str)
-            saveMediaToStorage(bitmap, mActivity)
+            downloadMediaToStorage(bitmap, mActivity)
             showToast("Image Saved to Gallery")
         } else if (jsonData.optBoolean("redirectHomePage")) {
             launchFragment(HomeFragment.newInstance(), true)

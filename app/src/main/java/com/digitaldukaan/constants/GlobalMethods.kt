@@ -57,7 +57,7 @@ fun convertImageFileToBase64(imageFile: File?): String {
     }
 }
 
-fun saveMediaToStorage(bitmap: Bitmap?, activity: MainActivity?) {
+fun downloadMediaToStorage(bitmap: Bitmap?, activity: MainActivity?) {
     //Generating a file name
     val filename = "${System.currentTimeMillis()}.jpg"
     //Output stream
