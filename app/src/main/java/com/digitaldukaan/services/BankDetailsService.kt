@@ -20,4 +20,10 @@ class BankDetailsService {
         }
     }
 
+    fun getBankDetailsPageInfo() {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.getBankDetailsPageInfoServerCall(mServiceInterface)
+        }
+    }
+
 }

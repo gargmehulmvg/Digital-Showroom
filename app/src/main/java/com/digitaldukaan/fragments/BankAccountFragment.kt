@@ -21,25 +21,23 @@ import kotlinx.android.synthetic.main.layout_bank_account_fragment.*
 class BankAccountFragment : BaseFragment(), IBankDetailsServiceInterface {
 
     private var mProfilePreviewResponse: ProfilePreviewSettingsKeyResponse? = null
-    private var mProfilePreviewStaticData: ProfileStaticTextResponse? = null
     private var mProfileInfoResponse: ProfileInfoResponse? = null
     private lateinit var mService: BankDetailsService
     private var mPosition: Int = 0
     private var mIsSingleStep: Boolean = false
+    private var mProfilePreviewStaticData: BankDetailsPageStaticTextResponse? = null
 
     companion object {
         fun newInstance(
             profilePreviewResponse: ProfilePreviewSettingsKeyResponse?,
             position: Int,
             isSingleStep: Boolean,
-            staticData: ProfileStaticTextResponse?,
             profileInfoResponse: ProfileInfoResponse?
         ): BankAccountFragment {
             val fragment = BankAccountFragment()
             fragment.mProfilePreviewResponse = profilePreviewResponse
             fragment.mPosition = position
             fragment.mIsSingleStep = isSingleStep
-            fragment.mProfilePreviewStaticData = staticData
             fragment.mProfileInfoResponse = profileInfoResponse
             return fragment
         }
@@ -68,7 +66,7 @@ class BankAccountFragment : BaseFragment(), IBankDetailsServiceInterface {
             showNoInternetConnectionDialog()
             return
         }
-        setupUIFromStaticData()
+        hideBottomNavigationView(true)
     }
 
     private fun setupUIFromStaticData() {
@@ -93,7 +91,6 @@ class BankAccountFragment : BaseFragment(), IBankDetailsServiceInterface {
     override fun onClick(view: View?) {
         when (view?.id) {
             saveTextView.id -> {
-                //launchFragment(CreateStoreFragment.newInstance(), true)
                 var isValidationFailed = false
                 val accountHolderNameStr = accountHolderNameEditText.run {
                     if (text.trim().toString().isEmpty()) {
@@ -186,6 +183,17 @@ class BankAccountFragment : BaseFragment(), IBankDetailsServiceInterface {
                 } else {
                     mActivity.onBackPressed()
                 }
+            } else showShortSnackBar(response.mMessage, true, R.drawable.ic_close_red)
+        }
+    }
+
+    override fun onBankDetailsPageInfoResponse(response: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            if (response.mIsSuccessStatus) {
+                val bankPageInfoResponse = Gson().fromJson<BankDetailsPageInfoResponse>(response.mCommonDataStr, BankDetailsPageInfoResponse::class.java)
+                mProfilePreviewStaticData = bankPageInfoResponse?.mBankPageStaticText
+                setupUIFromStaticData()
             } else showShortSnackBar(response.mMessage, true, R.drawable.ic_close_red)
         }
     }

@@ -307,6 +307,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                     hiddenImageView.visibility = View.VISIBLE
                     hiddenTextView.visibility = View.VISIBLE
                 }
+                mProfileService.getUserProfile()
                 showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
             } else showToast(response.mMessage)
         }
@@ -338,9 +339,20 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                     .into(safeSecureImageView)
             }
         }
-        profileStatusRecyclerView.apply {
-            layoutManager = GridLayoutManager(mActivity, infoResponse.mTotalSteps)
-            adapter = ProfileStatusAdapter(infoResponse.mTotalSteps, infoResponse.mCompletedSteps)
+        if (infoResponse.mTotalSteps == infoResponse.mCompletedSteps) {
+            profileStatusRecyclerView.visibility = View.GONE
+            stepsLeftTextView.visibility = View.GONE
+            completeProfileTextView.visibility = View.GONE
+            shapeableImageView.visibility = View.GONE
+        } else {
+            stepsLeftTextView.visibility = View.VISIBLE
+            completeProfileTextView.visibility = View.VISIBLE
+            shapeableImageView.visibility = View.VISIBLE
+            profileStatusRecyclerView.apply {
+                visibility = View.VISIBLE
+                layoutManager = GridLayoutManager(mActivity, infoResponse.mTotalSteps)
+                adapter = ProfileStatusAdapter(infoResponse.mTotalSteps, infoResponse.mCompletedSteps)
+            }
         }
         settingStoreOptionRecyclerView.apply {
             val settingsAdapter = SettingsStoreAdapter(this@SettingsFragment)

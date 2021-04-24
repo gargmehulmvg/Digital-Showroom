@@ -42,6 +42,7 @@ class Constants {
         const val ACTION_CATALOG_WHATSAPP = "catalog_whatsapp"
         const val ACTION_CATALOG_PREMIUM = "theme-discover"
         const val ACTION_KYC_STATUS = "kyc_status"
+        const val ACTION_ADD_BANK = "add-bank"
         //Incomplete profile actions
         const val ACTION_LOGO = "logo"
         const val ACTION_DESCRIPTION = "description"

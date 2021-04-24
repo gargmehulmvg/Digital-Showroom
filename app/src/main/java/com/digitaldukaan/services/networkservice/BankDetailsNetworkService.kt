@@ -33,4 +33,26 @@ class BankDetailsNetworkService {
         }
     }
 
+    suspend fun getBankDetailsPageInfoServerCall(
+        serviceInterface: IBankDetailsServiceInterface
+    ) {
+        try {
+            val response = RetrofitApi().getServerCallObject()?.getBankDetailsPageInfo()
+            response?.let {
+                if (it.isSuccessful) {
+                    it.body()?.let { responseBody -> serviceInterface.onBankDetailsResponse(responseBody) }
+                } else {
+                    val errorResponseBody = it.errorBody()
+                    errorResponseBody?.let {
+                        val validateOtpErrorResponse = Gson().fromJson(errorResponseBody.string(), CommonApiResponse::class.java)
+                        serviceInterface.onBankDetailsResponse(validateOtpErrorResponse)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(BankDetailsNetworkService::class.java.simpleName, "saveStoreDescriptionServerCall: ", e)
+            serviceInterface.onBankDetailsServerException(e)
+        }
+    }
+
 }

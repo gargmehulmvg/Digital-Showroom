@@ -19,6 +19,7 @@ import com.digitaldukaan.R
 import com.digitaldukaan.adapters.OrderAdapterV2
 import com.digitaldukaan.adapters.OrderPageBannerAdapter
 import com.digitaldukaan.constants.*
+import com.digitaldukaan.interfaces.IAdapterItemClickListener
 import com.digitaldukaan.interfaces.IOrderListItemListener
 import com.digitaldukaan.models.request.CompleteOrderRequest
 import com.digitaldukaan.models.request.OrdersRequest
@@ -322,7 +323,15 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                                 false
                             )
                             layoutManager = linearLayoutManager
-                            adapter = OrderPageBannerAdapter(orderPageInfoResponse?.mBannerList)
+                            adapter = OrderPageBannerAdapter(orderPageInfoResponse?.mBannerList, object : IAdapterItemClickListener {
+                                override fun onAdapterItemClickListener(position: Int) {
+                                    val item = orderPageInfoResponse?.mBannerList?.get(position)
+                                    when(item?.mAction) {
+                                        Constants.ACTION_ADD_BANK -> launchFragment(BankAccountFragment.newInstance(null,0, false,  null), true)
+                                    }
+                                }
+
+                            })
                         }
                     }
                     if (mIsHelpOrder.mIsActive) {

@@ -646,7 +646,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                         incompleteProfilePageNumber, false, profilePreviewResponse), true)
                 }
                 Constants.ACTION_BANK -> launchFragment(BankAccountFragment.newInstance(getHeaderByActionInSettingKetList(profilePreviewResponse, Constants.ACTION_BANK_ACCOUNT),
-                    incompleteProfilePageNumber, false, profilePreviewResponse?.mProfileStaticText, profilePreviewResponse), true)
+                    incompleteProfilePageNumber, false, profilePreviewResponse), true)
                 else -> launchFragment(HomeFragment.newInstance(), true)
             }
         }
