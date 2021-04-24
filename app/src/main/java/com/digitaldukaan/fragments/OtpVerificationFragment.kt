@@ -165,7 +165,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
             }
             AppEventsManager.pushCleverTapProfile(cleverTapProfile)
             AppEventsManager.pushAppEvents(
-                eventName = AFInAppEventType.EVENT_MARKET_OTP_VERIFIED,
+                eventName = AFInAppEventType.EVENT_OTP_VERIFIED,
                 isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                 data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
             )

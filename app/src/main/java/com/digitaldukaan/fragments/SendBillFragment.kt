@@ -8,15 +8,21 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
-import com.digitaldukaan.constants.CoroutineScopeUtils
-import com.digitaldukaan.constants.ToolBarManager
-import com.digitaldukaan.constants.getBitmapFromUri
+import com.digitaldukaan.constants.*
+import com.digitaldukaan.network.RetrofitApi
+import com.google.gson.Gson
 import kotlinx.android.synthetic.main.layout_send_bill.*
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import java.io.File
 
 class SendBillFragment : BaseFragment() {
 
     private var mImageUri: Uri? = null
+    private var mAmountStr: String? = ""
 
     companion object {
         private const val TAG = "SendBillFragment"
@@ -34,9 +40,7 @@ class SendBillFragment : BaseFragment() {
     ): View? {
         mContentView = inflater.inflate(R.layout.layout_send_bill, container, false)
         hideBottomNavigationView(true)
-        ToolBarManager.getInstance().apply {
-            hideToolBar(mActivity, true)
-        }
+        ToolBarManager.getInstance().apply { hideToolBar(mActivity, true) }
         return mContentView
     }
 
@@ -44,6 +48,7 @@ class SendBillFragment : BaseFragment() {
         loadImageFromUri()
         sendBillEditText.addTextChangedListener(object : TextWatcher{
             override fun afterTextChanged(str: Editable?) {
+                mAmountStr = str?.toString()
                 sendBillTextView.isEnabled = str?.toString()?.isEmpty() != true
             }
 
@@ -71,6 +76,32 @@ class SendBillFragment : BaseFragment() {
         when (view?.id) {
             refreshImageView.id -> openFullCamera()
             backButtonToolbar.id -> mActivity.onBackPressed()
+            sendBillTextView.id -> {
+                val imageFile = File(mImageUri?.path)
+                imageFile.run {
+                    val fileRequestBody = MultipartBody.Part.createFormData("media", name, RequestBody.create("image/*".toMediaTypeOrNull(), this))
+                    val imageTypeRequestBody = RequestBody.create("text/plain".toMediaTypeOrNull(), Constants.BASE64_ORDER_BILL)
+                    showProgressDialog(mActivity)
+                    CoroutineScopeUtils().runTaskOnCoroutineBackground {
+                        val response = RetrofitApi().getServerCallObject()?.getImageUploadCdnLink(imageTypeRequestBody, fileRequestBody)
+                        response?.let {
+                            CoroutineScopeUtils().runTaskOnCoroutineMain {
+                                stopProgress()
+                                if (response.isSuccessful) {
+                                    val base64Str = Gson().fromJson<String>(response.body()?.mCommonDataStr, String::class.java)
+                                    launchFragment(
+                                        CommonWebViewFragment().newInstance(
+                                            "",
+                                            "${BuildConfig.WEB_VIEW_URL}${WebViewUrls.WEB_VIEW_BILL_CONFIRM}?storeid=${getStringDataFromSharedPref(Constants.STORE_ID
+                                            )}&imageURL=$base64Str&amount=${if (mAmountStr?.isEmpty() == true) 0.0 else mAmountStr?.toDouble()}"
+                                        ), true
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 

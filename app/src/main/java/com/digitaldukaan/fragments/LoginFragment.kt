@@ -166,7 +166,7 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
                 return
             }
             AppEventsManager.pushAppEvents(
-                eventName = AFInAppEventType.EVENT_MARKET_GET_OTP,
+                eventName = AFInAppEventType.EVENT_GET_OTP,
                 isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                 data = mapOf(AFInAppEventParameterName.PHONE to mobileNumber, AFInAppEventParameterName.IS_MERCHANT to "1")
             )

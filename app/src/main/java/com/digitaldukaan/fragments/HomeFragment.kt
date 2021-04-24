@@ -552,7 +552,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                     launchFragment(
                         CommonWebViewFragment().newInstance(
                             "",
-                            "${BuildConfig.WEB_VIEW_URL}${WebViewUrls.WEB_VIEW_TAKE_A_ORDER}?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"
+                            "${BuildConfig.WEB_VIEW_URL}${WebViewUrls.WEB_VIEW_TAKE_A_ORDER}?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"
                         ), true
                     )
                 }

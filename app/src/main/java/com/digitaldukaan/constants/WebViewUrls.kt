@@ -11,5 +11,6 @@ interface WebViewUrls {
         const val WEB_VIEW_QR_DOWNLOAD = "qr"
         const val WEB_VIEW_HELP = "help"
         const val WEB_VIEW_RE_ARRANGE = "category-reorder"
+        const val WEB_VIEW_BILL_CONFIRM = "billconfirm"
     }
 }

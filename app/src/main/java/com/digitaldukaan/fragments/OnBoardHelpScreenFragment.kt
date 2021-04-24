@@ -60,7 +60,7 @@ class OnBoardHelpScreenFragment : BaseFragment() {
                 return
             }
             AppEventsManager.pushAppEvents(
-                eventName = AFInAppEventType.EVENT_MARKET_START_NOW,
+                eventName = AFInAppEventType.EVENT_START_NOW,
                 isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                 data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
             )

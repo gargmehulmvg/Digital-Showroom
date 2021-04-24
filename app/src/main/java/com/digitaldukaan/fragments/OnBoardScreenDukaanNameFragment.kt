@@ -105,7 +105,7 @@ class OnBoardScreenDukaanNameFragment : BaseFragment(),
                 PrefsManager.storeStringDataInSharedPref(Constants.STORE_NAME, "${createStoreResponse.storeInfo?.name}")
                 Log.d("STORE_OBJECT_TEST", "$TAG onCreateStoreResponse: STORE_NAME :: ${PrefsManager.getStringDataFromSharedPref(Constants.STORE_NAME)}")
                 AppEventsManager.pushAppEvents(
-                    eventName = AFInAppEventType.EVENT_MARKET_ENTER_NAME,
+                    eventName = AFInAppEventType.EVENT_ENTER_NAME,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                     data = mapOf(
                         AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
