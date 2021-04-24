@@ -51,6 +51,10 @@ class BankAccountFragment : BaseFragment(), IBankDetailsServiceInterface {
         mContentView = inflater.inflate(R.layout.layout_bank_account_fragment, container, false)
         mService = BankDetailsService()
         mService.setServiceInterface(this)
+        if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else {
+            showProgressDialog(mActivity)
+            mService.getBankDetailsPageInfo()
+        }
         return mContentView
     }
 
@@ -69,7 +73,7 @@ class BankAccountFragment : BaseFragment(), IBankDetailsServiceInterface {
         hideBottomNavigationView(true)
     }
 
-    private fun setupUIFromStaticData() {
+    private fun setupUIFromStaticData(bankDetail: BankDetailsResponse?) {
         bankHeadingTextView.text = mProfilePreviewStaticData?.heading_bank_page
         materialTextView3.text = mProfilePreviewStaticData?.sub_heading_bank_page
         accountHolderNameLayout.hint = mProfilePreviewStaticData?.hint_bank_account_holder_name
@@ -79,11 +83,11 @@ class BankAccountFragment : BaseFragment(), IBankDetailsServiceInterface {
         mobileNumberLayout.hint = mProfilePreviewStaticData?.hint_bank_registered_mobile_number
         mobileNumberLayout.hint = mProfilePreviewStaticData?.hint_bank_registered_mobile_number
         saveTextView.text = mProfilePreviewStaticData?.hint_bank_save_changes
-        StaticInstances.sBankDetails?.run {
+        bankDetail?.run {
             accountHolderNameEditText.setText(this.accountHolderName)
             mobileNumberEditText.setText(this.registeredPhone)
         }
-        mobileNumberEditText.setText(mProfileInfoResponse?.mStoreItemResponse?.storeOwner?.phone)
+        mobileNumberEditText.setText(bankDetail?.registeredPhone)
         mobileNumberEditText.isEnabled = false
         ifscEditText.allowOnlyAlphaNumericCharacters()
     }
@@ -193,7 +197,7 @@ class BankAccountFragment : BaseFragment(), IBankDetailsServiceInterface {
             if (response.mIsSuccessStatus) {
                 val bankPageInfoResponse = Gson().fromJson<BankDetailsPageInfoResponse>(response.mCommonDataStr, BankDetailsPageInfoResponse::class.java)
                 mProfilePreviewStaticData = bankPageInfoResponse?.mBankPageStaticText
-                setupUIFromStaticData()
+                setupUIFromStaticData(bankPageInfoResponse?.mBankDetail)
             } else showShortSnackBar(response.mMessage, true, R.drawable.ic_close_red)
         }
     }

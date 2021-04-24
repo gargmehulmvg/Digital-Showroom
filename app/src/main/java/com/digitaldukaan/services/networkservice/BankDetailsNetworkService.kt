@@ -40,17 +40,17 @@ class BankDetailsNetworkService {
             val response = RetrofitApi().getServerCallObject()?.getBankDetailsPageInfo()
             response?.let {
                 if (it.isSuccessful) {
-                    it.body()?.let { responseBody -> serviceInterface.onBankDetailsResponse(responseBody) }
+                    it.body()?.let { responseBody -> serviceInterface.onBankDetailsPageInfoResponse(responseBody) }
                 } else {
                     val errorResponseBody = it.errorBody()
                     errorResponseBody?.let {
                         val validateOtpErrorResponse = Gson().fromJson(errorResponseBody.string(), CommonApiResponse::class.java)
-                        serviceInterface.onBankDetailsResponse(validateOtpErrorResponse)
+                        serviceInterface.onBankDetailsPageInfoResponse(validateOtpErrorResponse)
                     }
                 }
             }
         } catch (e: Exception) {
-            Log.e(BankDetailsNetworkService::class.java.simpleName, "saveStoreDescriptionServerCall: ", e)
+            Log.e(BankDetailsNetworkService::class.java.simpleName, "getBankDetailsPageInfoServerCall: ", e)
             serviceInterface.onBankDetailsServerException(e)
         }
     }

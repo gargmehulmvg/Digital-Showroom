@@ -65,7 +65,7 @@ interface Apis {
     @POST("api/dotk/vm1/settings/initiateKyc")
     suspend fun initiateKyc(@Header("auth_token") authToken: String): Response<CommonApiResponse>
 
-    @POST("api/dotk/vm1/settings/getBankDetailsPageInfo")
+    @GET("api/dotk/vm1/settings/getBankDetailsPageInfo")
     suspend fun getBankDetailsPageInfo(): Response<CommonApiResponse>
 
     /* ----------------------       Images         ---------------------- */

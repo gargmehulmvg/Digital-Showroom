@@ -14,7 +14,8 @@ data class BankDetailsResponse (
 )
 
 data class BankDetailsPageInfoResponse (
-    @SerializedName("static_text") var mBankPageStaticText: BankDetailsPageStaticTextResponse
+    @SerializedName("static_text") var mBankPageStaticText: BankDetailsPageStaticTextResponse,
+    @SerializedName("bank_detail") var mBankDetail: BankDetailsResponse
 )
 
 data class BankDetailsPageStaticTextResponse(
@@ -26,9 +27,9 @@ data class BankDetailsPageStaticTextResponse(
     @SerializedName("hint_bank_ifsc_code") var hint_bank_ifsc_code: String?,
     @SerializedName("hint_bank_registered_mobile_number") var hint_bank_registered_mobile_number: String?,
     @SerializedName("bank_save_changes") var hint_bank_save_changes: String?,
+    @SerializedName("text_skip") var text_skip: String?,
     @SerializedName("error_mandatory_field") var error_mandatory_field: String?,
     @SerializedName("error_invalid_mobile_number_field") var error_invalid_mobile_number: String?,
     @SerializedName("error_invalid_account_number") var error_invalid_account_number: String?,
-    @SerializedName("error_both_account_number_verify_account_number_must_be_same") var error_both_account_number_verify_account_number_must_be_same: String?,
-    @SerializedName("text_no") var mNoText: String?
+    @SerializedName("error_both_account_number_verify_account_number_must_be_same") var error_both_account_number_verify_account_number_must_be_same: String?
 )
