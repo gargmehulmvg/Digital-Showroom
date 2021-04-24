@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/bottomSheetContainer"
     android:layout_width="match_parent"
-    android:background="@drawable/upper_curve_white_background"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@drawable/upper_curve_white_background">
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/bottomSheetHeadingTextView"
@@ -36,10 +36,10 @@
         android:id="@+id/orderIdTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/_15sdp"
         android:fontFamily="@font/montserrat"
         android:textColor="@color/black"
         android:textSize="@dimen/_10sdp"
-        android:layout_marginEnd="@dimen/_15sdp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/bottomSheetHeadingTextView"
         tools:text="Order ID:342" />
@@ -59,9 +59,9 @@
         android:id="@+id/dottedView"
         android:layout_width="@dimen/_50sdp"
         android:layout_height="@dimen/_50sdp"
+        android:layout_marginTop="@dimen/_5sdp"
         android:background="@drawable/dotted_line_view"
         android:rotation="90"
-        android:layout_marginTop="@dimen/_5sdp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imageViewTop" />
 
@@ -88,6 +88,16 @@
         app:layout_constraintBottom_toBottomOf="@+id/imageViewTop"
         app:layout_constraintStart_toEndOf="@+id/dottedView"
         app:layout_constraintTop_toTopOf="@+id/imageViewTop"
+        tools:text="Order ID:342" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/txnId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/montserrat"
+        android:textSize="@dimen/_10sdp"
+        app:layout_constraintStart_toStartOf="@+id/textViewTop"
+        app:layout_constraintTop_toBottomOf="@+id/textViewTop"
         tools:text="Order ID:342" />
 
     <com.google.android.material.textview.MaterialTextView

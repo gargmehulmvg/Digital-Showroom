@@ -52,15 +52,18 @@ data class OrderPageStaticTextResponse(
     @SerializedName("text_paid_online")                 var text_paid_online: String,
     @SerializedName("text_today")                       var text_today: String,
     @SerializedName("error_mandatory_field")            var error_mandatory_field: String,
-
     @SerializedName("text_add_new_order")               var text_add_new_order: String,
     @SerializedName("bottom_sheet_click_bill_photo")    var bottom_sheet_click_bill_photo: String,
     @SerializedName("bottom_sheet_take_order_message")  var bottom_sheet_take_order_message: String,
     @SerializedName("bottom_sheet_create_a_new_bill")   var bottom_sheet_create_a_new_bill: String,
-
     @SerializedName("dialog_message")                   var dialog_message: String,
     @SerializedName("dialog_check_box_text")            var dialog_check_box_text: String,
     @SerializedName("dialog_text_no")                   var dialog_text_no: String,
     @SerializedName("dialog_text_yes")                  var dialog_text_yes: String,
-    @SerializedName("dialog_text_alert")                var dialog_text_alert: String
+    @SerializedName("dialog_text_alert")                var dialog_text_alert: String,
+
+    @SerializedName("bottom_sheet_reject_order_heading") var bottom_sheet_reject_order_heading: String,
+    @SerializedName("text_reject_order")                var text_reject_order: String,
+    @SerializedName("text_delivery_guy_not_available")  var text_delivery_guy_not_available: String,
+    @SerializedName("text_items_are_not_available")     var text_items_are_not_available: String
 )

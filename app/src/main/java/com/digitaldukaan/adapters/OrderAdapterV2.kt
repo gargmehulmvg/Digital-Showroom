@@ -121,12 +121,12 @@ class OrderAdapterV2(
             }
             Constants.DS_PAID_ONLINE -> {
                 orderAddressTextView.setTextColor(mContext.getColor(R.color.open_green))
-                orderAddressTextView.background = ContextCompat.getDrawable(mContext, R.drawable.order_adapter_new)
+                //orderAddressTextView.background = ContextCompat.getDrawable(mContext, R.drawable.order_adapter_new)
                 orderAddressTextView.text = mOrderPageInfoStaticData?.text_paid_online
                 orderAddressTextView.setCompoundDrawablesWithIntrinsicBounds(
-                    0,
-                    0,
                     R.drawable.ic_green_check_small,
+                    0,
+                    0,
                     0
                 )
                 orderCheckBox.isEnabled = false
@@ -134,12 +134,12 @@ class OrderAdapterV2(
             }
             Constants.DS_REJECTED -> {
                 orderAddressTextView.setTextColor(mContext.getColor(R.color.red))
-                orderAddressTextView.background = ContextCompat.getDrawable(mContext, R.drawable.order_adapter_rejected)
+                //orderAddressTextView.background = ContextCompat.getDrawable(mContext, R.drawable.order_adapter_rejected)
                 orderAddressTextView.text = mOrderPageInfoStaticData?.text_rejected
                 orderAddressTextView.setCompoundDrawablesWithIntrinsicBounds(
+                    R.drawable.ic_reject_icon,
                     0,
                     0,
-                    R.drawable.ic_close_red,
                     0
                 )
                 orderCheckBox.isEnabled = false

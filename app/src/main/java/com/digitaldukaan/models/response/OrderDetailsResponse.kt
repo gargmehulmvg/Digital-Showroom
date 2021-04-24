@@ -21,6 +21,7 @@ data class OrderDetailsResponse (
     @SerializedName("image_link") var imageLink: String?,
     @SerializedName("created_at") var createdAt: String?,
     @SerializedName("updated_at") var updatedAt: String?,
+    @SerializedName("order_payment_status") var orderPaymentStatus: String?,
     @SerializedName("digital_receipt") var digitalReceipt: String?,
     @SerializedName("items") var orderDetailsItemsList: ArrayList<OrderDetailItemResponse>?,
     @SerializedName("delivery_info") var deliveryInfo: DeliveryInfoItemResponse?

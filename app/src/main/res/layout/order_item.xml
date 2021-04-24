@@ -65,6 +65,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:clickable="false"
+            android:gravity="center_vertical"
             android:drawablePadding="@dimen/_5sdp"
             android:textColor="@color/default_text_light_grey"
             android:textSize="@dimen/_10sdp"

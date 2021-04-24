@@ -183,29 +183,26 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                 adapter = orderDetailAdapter
             }
             mOrderDetailStaticData?.run {
-                sendBillToCustomerTextView.setHtmlData(heading_send_bill_to_your_customer)
-                sendBillTextView.text = text_send_bill
-                amountEditText.hint = text_rupees_symbol
-                otherChargesEditText.hint = hint_other_charges
-                discountsEditText.hint = hint_discount
-                discountsValueEditText.hint = text_rupees_symbol
-                otherChargesValueEditText.hint = text_rupees_symbol
-                customerCanPayUsingTextView.text = text_customer_can_pay_via
-                deliveryChargeLabel.text = text_delivery_charges
-                addDeliveryChargesLabel.text = heading_add_delivery_and_other_charges
-                instructionsLabel.text = heading_instructions
-                customerDetailsLabel.text = heading_customer_details
-                newOrderTextView.text = text_new_order
-                billAmountLabel.text = "$text_bill_amount:"
-                statusLabel.text = "$text_status:"
-                detailTextView.text = "$text_details:"
-                billAmountValue.text = "$text_rupees_symbol ${orderDetailResponse?.amount}"
+                sendBillToCustomerTextView?.setHtmlData(heading_send_bill_to_your_customer)
+                sendBillTextView?.text = text_send_bill
+                amountEditText?.hint = text_rupees_symbol
+                otherChargesEditText?.hint = hint_other_charges
+                discountsEditText?.hint = hint_discount
+                discountsValueEditText?.hint = text_rupees_symbol
+                otherChargesValueEditText?.hint = text_rupees_symbol
+                customerCanPayUsingTextView?.text = text_customer_can_pay_via
+                deliveryChargeLabel?.text = text_delivery_charges
+                addDeliveryChargesLabel?.text = heading_add_delivery_and_other_charges
+                instructionsLabel?.text = heading_instructions
+                customerDetailsLabel?.text = heading_customer_details
+                newOrderTextView?.text = text_new_order
+                billAmountLabel?.text = "$text_bill_amount:"
+                statusLabel?.text = "$text_status:"
+                detailTextView?.text = "$text_details:"
+                billAmountValue?.text = "$text_rupees_symbol ${orderDetailResponse?.amount}"
                 ToolBarManager.getInstance().setHeaderTitle("$text_order #$mOrderId")
                 if (orderDetailResponse?.deliveryInfo?.customDeliveryTime?.isEmpty() == true) estimateDeliveryTextView.visibility = View.GONE else estimateDeliveryTextView.text = "$text_estimate_delivery : ${orderDetailResponse?.deliveryInfo?.customDeliveryTime}"
-                statusValue.text = when(orderDetailMainResponse?.orders?.displayStatus) {
-                    Constants.DS_BILL_SENT -> message_bill_sent_customer_not_paid
-                    else -> ""
-                }
+                statusValue?.text = orderDetailResponse?.orderPaymentStatus
             }
             ToolBarManager.getInstance().setHeaderSubTitle(getStringDateTimeFromOrderDate(getCompleteDateFromOrderString(orderDetailMainResponse?.orders?.createdAt)))
             customerDeliveryDetailsRecyclerView.apply {
@@ -221,18 +218,18 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
             }
             amountEditText.setText("${orderDetailMainResponse?.orders?.amount}")
             if (orderDetailResponse?.instruction?.isNotEmpty() == true) {
-                instructionsValue.visibility = View.VISIBLE
-                instructionsValue.text = orderDetailResponse.instruction
-                instructionsLabel.visibility = View.VISIBLE
+                instructionsValue?.visibility = View.VISIBLE
+                instructionsValue?.text = orderDetailResponse.instruction
+                instructionsLabel?.visibility = View.VISIBLE
             }
             if (orderDetailMainResponse?.storeServices?.mDeliveryPrice != 0.0) {
-                deliveryChargeLabel.visibility = View.VISIBLE
-                deliveryChargeValue.visibility = View.VISIBLE
-                deliveryChargeValue.text = "${mOrderDetailStaticData?.text_rupees_symbol} ${orderDetailMainResponse?.storeServices?.mDeliveryPrice}"
+                deliveryChargeLabel?.visibility = View.VISIBLE
+                deliveryChargeValue?.visibility = View.VISIBLE
+                deliveryChargeValue?.text = "${mOrderDetailStaticData?.text_rupees_symbol} ${orderDetailMainResponse?.storeServices?.mDeliveryPrice}"
             }
             mMobileNumber = orderDetailResponse?.phone ?: ""
             if (orderDetailResponse?.imageLink?.isNotEmpty() == true) {
-                viewBillTextView.visibility = View.VISIBLE
+                viewBillTextView?.visibility = View.VISIBLE
                 viewBillTextView.setOnClickListener {
                     showImageDialog(orderDetailResponse.imageLink)
                 }
@@ -378,6 +375,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                 val billAmountTextView: TextView = findViewById(R.id.billAmountTextView)
                 val orderIdTextView: TextView = findViewById(R.id.orderIdTextView)
                 val textViewTop: TextView = findViewById(R.id.textViewTop)
+                val txnId: TextView = findViewById(R.id.txnId)
                 val textViewBottom: TextView = findViewById(R.id.textViewBottom)
                 val imageViewTop: ImageView = findViewById(R.id.imageViewTop)
                 val imageViewBottom: ImageView = findViewById(R.id.imageViewBottom)
@@ -386,12 +384,14 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                         bottomSheetHeadingTextView.text = text_details
                         billAmountTextView.text = "$text_bill_amount: ${it.orders?.amount}"
                         orderIdTextView.text = "$text_order_id: ${it.orders?.orderId}"
+                        textViewTop.text = it.staticText?.message_customer_paid
+                        txnId.text = orderDetailMainResponse?.orders?.transactionId
+                        textViewBottom.text = orderDetailMainResponse?.orders?.orderPaymentStatus
                     }
                     when(it.orders?.displayStatus) {
                         Constants.DS_BILL_SENT -> {
                             imageViewTop.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.ic_order_detail_green_tick))
                             imageViewBottom.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.ic_order_detail_green_tick))
-                            textViewTop.text = it.staticText?.message_customer_paid
                         }
                     }
                 }
