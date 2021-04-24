@@ -182,6 +182,8 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
             webViewController.activity = mActivity
             webViewClient = webViewController
             settings.javaScriptEnabled = true
+            settings.domStorageEnabled = true
+            addJavascriptInterface(WebViewBridge(), "Android")
             val url = webViewUrl + "?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&" +
                     "storeName=${getStringDataFromSharedPref(Constants.STORE_NAME)}" + "&token=${getStringDataFromSharedPref(
                 Constants.USER_AUTH_TOKEN

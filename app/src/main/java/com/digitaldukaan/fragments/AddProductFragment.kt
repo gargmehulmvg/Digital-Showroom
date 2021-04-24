@@ -268,7 +268,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                             mItemId,
                             1,
                             priceStr.toDouble(),
-                            discountedStr.toDouble(),
+                            if (discountedStr.isNotEmpty()) discountedStr.toDouble() else 0.0,
                             descriptionStr,
                             AddProductItemCategory(0, categoryStr),
                             imageListRequest,
@@ -378,7 +378,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             showNoInternetConnectionDialog()
             return
         }
-        if (file == null) {
+        if (null == file) {
             showShortSnackBar("Something went wrong", true, R.drawable.ic_close_red)
             return
         }
@@ -401,7 +401,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 priceEditText.requestFocus()
                 return false
             }
-            priceEditText.text.toString().toDouble() < discountedPriceEditText.text.toString().toDouble() -> {
+            discountedPriceEditText.text.toString().isNotEmpty() && (priceEditText.text.toString().toDouble() < discountedPriceEditText.text.toString().toDouble()) -> {
                 discountedPriceEditText.text = null
                 discountedPriceEditText.error = addProductStaticData?.error_discount_price_less_then_original_price
                 discountedPriceEditText.requestFocus()
