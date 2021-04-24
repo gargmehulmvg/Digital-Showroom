@@ -436,10 +436,12 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                 val orderRejectHeadingTextView: TextView = findViewById(R.id.orderRejectHeadingTextView)
                 val itemNotAvailableRadioButton: RadioButton = findViewById(R.id.itemNotAvailableRadioButton)
                 val deliveryGuyNotAvailableRadioButton: RadioButton = findViewById(R.id.deliveryGuyNotAvailableRadioButton)
+                val customerRequestedCancellationRadioButton: RadioButton = findViewById(R.id.customerRequestedCancellationRadioButton)
                 mOrderDetailStaticData?.run {
                     orderRejectHeadingTextView.text = bottom_sheet_reject_order_heading
                     itemNotAvailableRadioButton.text = text_items_are_not_available
                     deliveryGuyNotAvailableRadioButton.text = text_delivery_guy_not_available
+                    customerRequestedCancellationRadioButton.text = text_customer_request_cancellation
                     rejectOrderTextView.text = text_reject_order
                 }
                 var reason = ""

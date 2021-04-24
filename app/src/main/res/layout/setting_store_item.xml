@@ -39,7 +39,7 @@
         android:id="@+id/settingSubTitleTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/slight_curve_red_background"
+        android:background="@drawable/slight_curve_red_background_without_padding"
         android:clickable="false"
         android:fontFamily="@font/montserrat"
         android:textColor="@color/white"
