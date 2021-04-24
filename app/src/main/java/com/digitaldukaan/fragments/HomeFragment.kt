@@ -38,6 +38,7 @@ import kotlinx.android.synthetic.main.home_fragment.*
 import kotlinx.android.synthetic.main.layout_analytics.*
 import kotlinx.android.synthetic.main.layout_common_webview_fragment.*
 import kotlinx.android.synthetic.main.otp_verification_fragment.*
+import org.json.JSONObject
 
 class HomeFragment : BaseFragment(), IHomeServiceInterface,
     SwipeRefreshLayout.OnRefreshListener, IOrderListItemListener {
@@ -190,6 +191,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
             )}"
             Log.d(TAG, "setupHomePageWebView: $url")
             loadUrl(url)
+            commonWebView?.loadUrl("javascript: window = 'MEHUL TESTING'")
         }
     }
 
@@ -253,21 +255,16 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             if (commonResponse.mIsSuccessStatus) {
-                val analyticsResponse = Gson().fromJson<AnalyticsResponse>(
-                    commonResponse.mCommonDataStr,
-                    AnalyticsResponse::class.java
-                )
-                todaySaleValue.text = analyticsResponse?.today?.totalCount.toString()
-                amountValue.text =
-                    "${analyticsResponse.analyticsStaticData?.textRuppeeSymbol} ${analyticsResponse?.today?.totalAmount}"
-                weekSaleValue.text = analyticsResponse?.thisWeek?.totalCount.toString()
-                weekAmountValue.text =
-                    "${analyticsResponse.analyticsStaticData?.textRuppeeSymbol} ${analyticsResponse?.thisWeek?.totalAmount}"
+                val analyticsResponse = Gson().fromJson<AnalyticsResponse>(commonResponse.mCommonDataStr, AnalyticsResponse::class.java)
+                todaySaleValue?.text = analyticsResponse?.today?.totalCount.toString()
+                amountValue?.text = "${analyticsResponse.analyticsStaticData?.textRuppeeSymbol} ${analyticsResponse?.today?.totalAmount}"
+                weekSaleValue?.text = analyticsResponse?.thisWeek?.totalCount.toString()
+                weekAmountValue?.text = "${analyticsResponse.analyticsStaticData?.textRuppeeSymbol} ${analyticsResponse?.thisWeek?.totalAmount}"
                 analyticsResponse?.analyticsStaticData?.run {
-                    todaySaleHeading.text = textTodaySale
-                    amountHeading.text = textTodayAmount
-                    weekSaleHeading.text = textWeekSale
-                    weekAmountHeading.text = textWeekAmount
+                    todaySaleHeading?.text = textTodaySale
+                    amountHeading?.text = textTodayAmount
+                    weekSaleHeading?.text = textWeekSale
+                    weekAmountHeading?.text = textWeekAmount
                 }
             }
         }
@@ -283,12 +280,12 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                     mOrderPageInfoStaticData = mOrderPageStaticText?.run {
                         mFetchingOrdersStr = fetching_orders
                         mDoubleClickToExitStr = msg_double_click_to_exit
-                        appTitleTextView.text = heading_order_page
+                        appTitleTextView?.text = heading_order_page
                         this
                     }
                     StaticInstances.sOrderPageInfoStaticData = mOrderPageInfoStaticData
-                    pendingOrderTextView.text = mOrderPageInfoStaticData?.text_pending
-                    completedOrderTextView.text = mOrderPageInfoStaticData?.text_completed
+                    pendingOrderTextView?.text = mOrderPageInfoStaticData?.text_pending
+                    completedOrderTextView?.text = mOrderPageInfoStaticData?.text_completed
                     if (mIsZeroOrder.mIsActive) {
                         homePageWebViewLayout.visibility = View.VISIBLE
                         orderLayout.visibility = View.GONE
@@ -297,15 +294,11 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                         mSwipeRefreshLayout.isEnabled = false
                     } else {
                         mSwipeRefreshLayout.isEnabled = true
-                        homePageWebViewLayout.visibility = View.GONE
-                        orderLayout.visibility = View.VISIBLE
-                        fetchLatestOrders(
-                            Constants.MODE_PENDING,
-                            mFetchingOrdersStr,
-                            pendingPageCount
-                        )
-                        ordersRecyclerView.isNestedScrollingEnabled = false
-                        ordersRecyclerView.apply {
+                        homePageWebViewLayout?.visibility = View.GONE
+                        orderLayout?.visibility = View.VISIBLE
+                        fetchLatestOrders(Constants.MODE_PENDING, mFetchingOrdersStr, pendingPageCount)
+                        ordersRecyclerView?.apply {
+                            isNestedScrollingEnabled = false
                             orderAdapter = OrderAdapterV2(mActivity, mOrderList)
                             orderAdapter.setCheckBoxListener(this@HomeFragment)
                             linearLayoutManager = LinearLayoutManager(mActivity)
@@ -313,8 +306,8 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                             adapter = orderAdapter
                             addItemDecoration(StickyRecyclerHeadersDecoration(orderAdapter))
                         }
-                        completedOrdersRecyclerView.isNestedScrollingEnabled = false
-                        completedOrdersRecyclerView.apply {
+                        completedOrdersRecyclerView?.apply {
+                            isNestedScrollingEnabled = false
                             completedOrderAdapter = OrderAdapterV2(mActivity, mCompletedOrderList)
                             completedOrderAdapter.setCheckBoxListener(this@HomeFragment)
                             linearLayoutManager = LinearLayoutManager(mActivity)
@@ -322,7 +315,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                             adapter = completedOrderAdapter
                             addItemDecoration(StickyRecyclerHeadersDecoration(completedOrderAdapter))
                         }
-                        bannerRecyclerView.apply {
+                        bannerRecyclerView?.apply {
                             linearLayoutManager = LinearLayoutManager(
                                 mActivity,
                                 LinearLayoutManager.HORIZONTAL,
@@ -333,20 +326,15 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                         }
                     }
                     if (mIsHelpOrder.mIsActive) {
-                        helpImageView.visibility = View.VISIBLE
-                        helpImageView.setOnClickListener {
-                            openWebViewFragmentV2(
-                                this@HomeFragment,
-                                getString(R.string.help),
-                                mIsHelpOrder.mUrl,
-                                Constants.SETTINGS
-                            )
+                        helpImageView?.visibility = View.VISIBLE
+                        helpImageView?.setOnClickListener {
+                            openWebViewFragmentV2(this@HomeFragment, getString(R.string.help), mIsHelpOrder.mUrl, Constants.SETTINGS)
                         }
                     }
-                    takeOrderTextView.text = mOrderPageInfoStaticData?.text_add_new_order
-                    analyticsImageView.visibility = if (mIsAnalyticsOrder) View.VISIBLE else View.GONE
-                    searchImageView.visibility = if (mIsSearchOrder) View.VISIBLE else View.GONE
-                    takeOrderTextView.visibility = if (mIsTakeOrder) View.VISIBLE else View.GONE
+                    takeOrderTextView?.text = mOrderPageInfoStaticData?.text_add_new_order
+                    analyticsImageView?.visibility = if (mIsAnalyticsOrder) View.VISIBLE else View.GONE
+                    searchImageView?.visibility = if (mIsSearchOrder) View.VISIBLE else View.GONE
+                    takeOrderTextView?.visibility = if (mIsTakeOrder) View.VISIBLE else View.GONE
                 }
             }
         }
@@ -510,7 +498,14 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
 
     override fun sendData(data: String) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
             Log.d(TAG, "sendData: $data")
+            val jsonData = JSONObject(data)
+            if (jsonData.optBoolean("takeOrder")) {
+                showTakeOrderBottomSheet()
+            } else {
+                launchFragment(OrderDetailFragment.newInstance("0", true), true)
+            }
         }
     }
 
