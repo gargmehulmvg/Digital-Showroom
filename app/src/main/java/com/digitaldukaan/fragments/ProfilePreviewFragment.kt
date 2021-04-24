@@ -54,6 +54,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
     private lateinit var mProfileInfoSettingKeyResponse: ProfilePreviewSettingsKeyResponse
     private lateinit var cancelWarningDialog: Dialog
     private var mStoreLogo: String? = ""
+    private var mIsCompleteProfileImageInitiated = false
 
     companion object {
         private const val TAG = "ProfilePreviewFragment"
@@ -91,6 +92,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
             if (storeLogo?.isNotEmpty() == true) launchFragment(ProfilePhotoFragment.newInstance(storeLogo), true, storePhotoImageView) else askCameraPermission()
         }
         constraintLayoutBanner.setOnClickListener {
+            mIsCompleteProfileImageInitiated = true
             switchToInCompleteProfileFragment(mProfilePreviewResponse)
         }
     }
@@ -103,18 +105,9 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         Log.d(ProfilePreviewFragment::class.simpleName, "onRequestPermissionResult")
         if (requestCode == Constants.IMAGE_PICK_REQUEST_CODE) {
             when {
-                grantResults.isEmpty() -> {
-                    // If user interaction was interrupted, the permission request is cancelled and you
-                    // receive empty arrays.
-                    Log.i(ProfilePreviewFragment::class.simpleName, "User interaction was cancelled.")
-                }
-                grantResults[0] == PackageManager.PERMISSION_GRANTED -> {
-                    // Permission granted.
-                    showImagePickerBottomSheet()
-                }
-                else -> {
-                    showShortSnackBar("Permission was denied")
-                }
+                grantResults.isEmpty() -> Log.i(ProfilePreviewFragment::class.simpleName, "User interaction was cancelled.")
+                grantResults[0] == PackageManager.PERMISSION_GRANTED -> showImagePickerBottomSheet()
+                else -> showShortSnackBar("Permission was denied")
             }
         }
     }
@@ -511,12 +504,15 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                     hiddenImageView.visibility = View.VISIBLE
                     hiddenTextView.visibility = View.VISIBLE
                 }
-                StaticInstances.sStepsCompletedList?.run {
-                    for (completedItem in this) {
-                        if (completedItem.action == Constants.ACTION_LOGO) {
-                            completedItem.isCompleted = true
-                            break
+                if (mIsCompleteProfileImageInitiated) {
+                    StaticInstances.sStepsCompletedList?.run {
+                        for (completedItem in this) {
+                            if (completedItem.action == Constants.ACTION_LOGO) {
+                                completedItem.isCompleted = true
+                                break
+                            }
                         }
+                        switchToInCompleteProfileFragment(mProfilePreviewResponse)
                     }
                 }
                 showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
