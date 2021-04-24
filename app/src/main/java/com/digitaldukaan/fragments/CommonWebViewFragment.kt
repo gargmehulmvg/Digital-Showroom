@@ -3,8 +3,6 @@ package com.digitaldukaan.fragments
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.*
 import android.webkit.WebView
@@ -70,11 +68,8 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
             triggerWebViewOpenEvent()
             loadUrl(mLoadUrl)
         }
-        showCancellableProgressDialog(mActivity)
+        showProgressDialog(mActivity)
         Log.d(CommonWebViewFragment::class.simpleName, "onViewCreated: $mLoadUrl")
-        Handler(Looper.getMainLooper()).postDelayed({
-            stopProgress()
-        }, Constants.TIMER_INTERVAL)
         WebViewBridge.mWebViewListener = this
     }
 
@@ -167,6 +162,7 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
             Log.d("WebViewController", "onPageFinished: called")
             val contactListJson = Gson().toJson(StaticInstances.sUserContactList)
             commonWebView?.loadUrl("javascript: receiveContactData($contactListJson)")
+            activity?.getCurrentFragment()?.stopProgress()
         }
 
         override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {

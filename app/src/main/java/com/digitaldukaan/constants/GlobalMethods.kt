@@ -10,6 +10,7 @@ import android.os.Build
 import android.os.Environment
 import android.provider.ContactsContract
 import android.provider.MediaStore
+import android.telephony.PhoneNumberUtils
 import android.util.Base64
 import android.util.Base64OutputStream
 import android.util.Log
@@ -200,6 +201,7 @@ fun getContactsFromStorage2(ctx: Context) {
     if (StaticInstances.sUserContactList.isNotEmpty()) return
     Log.d(tag, "getContactsFromStorage: started")
     val list: ArrayList<ContactModel> = ArrayList()
+    val uniqueMobilePhones = ArrayList<String>()
     val phoneCursor: Cursor? = ctx.contentResolver.query(
         ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
         null,
@@ -208,26 +210,35 @@ fun getContactsFromStorage2(ctx: Context) {
         null
     )
     if (phoneCursor != null && phoneCursor.count > 0) {
-        val contactIdIndex = phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.CONTACT_ID)
         val numberIndex = phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)
         val nameIndex = phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)
         while (phoneCursor.moveToNext()) {
-            val contactId = phoneCursor.getString(contactIdIndex)
-            var number: String = phoneCursor.getString(numberIndex)
+            var number: String = phoneCursor.getString(numberIndex).trim()
+            number = number.trim()
             val name: String = phoneCursor.getString(nameIndex)
-            //check if the map contains key or not, if not then create a new array list with number
-            val info = ContactModel()
-            number = number.replace("-", "")
-            number = if (number.startsWith("+91")) number.substring(3, number.length) else number
-            if (number.length < 10) continue
-            info.number = number
-            info.name = name
-            list.add(info)
+            var duplicate = false
+            uniqueMobilePhones.forEach { addedNumber ->
+                if (PhoneNumberUtils.compare(addedNumber, number)) {
+                    duplicate = true
+                }
+            }
+            if (!duplicate) {
+                uniqueMobilePhones.add(number)
+                val info = ContactModel()
+                number = number.replace("-", "")
+                number = number.replace(" ", "")
+                number = if (number.startsWith("+91")) number.substring(3, number.length) else number
+                if (number.length < 10) continue
+                info.number = number.trim()
+                info.name = name
+                list.add(info)
+            }
         }
         //contact contains all the number of a particular contact
         phoneCursor.close()
         list.run { StaticInstances.sUserContactList = this }
         Log.d(tag, "getContactsFromStorage: Completed")
+        Log.d(tag, "StaticInstances.sUserContactList size :: ${StaticInstances.sUserContactList.size}")
     }
 }
 

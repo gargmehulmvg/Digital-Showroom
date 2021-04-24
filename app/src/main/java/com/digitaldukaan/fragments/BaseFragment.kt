@@ -123,7 +123,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         }
     }
 
-    protected fun stopProgress() {
+    public fun stopProgress() {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (mProgressDialog != null) {
                 mProgressDialog?.let {
