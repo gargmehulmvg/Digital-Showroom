@@ -504,7 +504,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
             if (jsonData.optBoolean("takeOrder")) {
                 showTakeOrderBottomSheet()
             } else {
-                launchFragment(OrderDetailFragment.newInstance("0", true), true)
+                launchFragment(AddProductFragment.newInstance(0, true), true)
             }
         }
     }
