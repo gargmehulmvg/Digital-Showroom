@@ -8,10 +8,11 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
 import com.digitaldukaan.interfaces.IAdapterItemClickListener
+import com.digitaldukaan.models.response.AddProductImagesResponse
 import com.squareup.picasso.Picasso
 
 class AddProductsImagesAdapter(
-    private var mImagesList: ArrayList<String>?,
+    private var mImagesList: ArrayList<AddProductImagesResponse>?,
     private var mNoImagesText: String?,
     private var mAdapterItemClick: IAdapterItemClickListener
 ) :
@@ -32,7 +33,7 @@ class AddProductsImagesAdapter(
         return holder
     }
 
-    fun setListToAdapter(imagesList: ArrayList<String>?) {
+    fun setListToAdapter(imagesList: ArrayList<AddProductImagesResponse>?) {
         this.mImagesList = imagesList
         notifyDataSetChanged()
     }
@@ -47,7 +48,7 @@ class AddProductsImagesAdapter(
     ) {
         holder.apply {
             val imageStr = mImagesList?.get(position)
-            if (imageStr?.isEmpty() == true) {
+            if (imageStr?.imageUrl?.isEmpty() == true) {
                 noImagesLayout.visibility = View.VISIBLE
                 image.visibility = View.GONE
                 updateCameraTextView.text = mNoImagesText
@@ -58,7 +59,7 @@ class AddProductsImagesAdapter(
             } else {
                 noImagesLayout.visibility = View.GONE
                 image.visibility = View.VISIBLE
-                Picasso.get().load(imageStr).into(image)
+                Picasso.get().load(imageStr?.imageUrl).into(image)
             }
         }
     }

@@ -54,7 +54,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     private var addProductBannerStaticDataResponse: AddProductBannerTextResponse? = null
     private var addProductStaticData: AddProductStaticText? = null
     private var mItemId = 0
-    private val mImagesStrList: ArrayList<String> = ArrayList()
+    private val mImagesStrList: ArrayList<AddProductImagesResponse> = ArrayList()
     private lateinit var imagePickBottomSheet: BottomSheetDialog
     private var imageAdapter = ImagesSearchAdapter()
     private var mImageChangePosition = 0
@@ -164,7 +164,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
 
         })
         showProgressDialog(mActivity)
-        mImagesStrList.add(0, "")
+        mImagesStrList.add(0, AddProductImagesResponse(0,"", 0))
         mService.getItemInfo(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), mItemId)
         return mContentView
     }
@@ -260,9 +260,9 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     if (!isInternetConnectionAvailable(mActivity)) return else {
                         showProgressDialog(mActivity)
                         val imageListRequest: ArrayList<AddProductImageItem> = ArrayList()
-                        mImagesStrList.forEachIndexed { _, str ->
-                            if (str.isNotEmpty()) {
-                                imageListRequest.add(AddProductImageItem(0, str, 1))
+                        mImagesStrList.forEachIndexed { _, imageItem ->
+                            if (imageItem.imageUrl.isNotEmpty()) {
+                                imageListRequest.add(AddProductImageItem(imageItem.imageId, imageItem.imageUrl, 1))
                             }
                         }
                         val request = AddProductRequest(
@@ -271,7 +271,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                             priceStr.toDouble(),
                             if (discountedStr.isNotEmpty()) discountedStr.toDouble() else 0.0,
                             descriptionStr,
-                            AddProductItemCategory(0, categoryStr),
+                            if (categoryStr.isEmpty()) AddProductItemCategory(0, "") else AddProductItemCategory(0, categoryStr),
                             imageListRequest,
                             nameStr
                         )
@@ -435,10 +435,10 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     imagesRecyclerView.apply {
                         layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
                         mImagesStrList.clear()
+                        if (mImagesStrList.isEmpty()) mImagesStrList.add(AddProductImagesResponse(0, "", 0))
                         addProductResponse.storeItem?.imagesList?.forEachIndexed { _, imagesResponse ->
-                            if (imagesResponse.status != 0) mImagesStrList.add(imagesResponse.imageUrl)
+                            if (imagesResponse.status != 0) mImagesStrList.add(AddProductImagesResponse(imagesResponse.imageId, imagesResponse.imageUrl, 1))
                         }
-                        mImagesStrList[0] = ""
                         mImageAddAdapter = AddProductsImagesAdapter(mImagesStrList ,addProductStaticData?.text_images_added, this@AddProductFragment)
                         adapter = mImageAddAdapter
                     }
@@ -483,7 +483,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 enterCategoryInputLayout.hint = hint_enter_category_optional
                 addItemTextView.text = text_add_item_description
                 continueTextView.text = text_add_item
-                val count = addProductResponse?.storeItem?.imagesList?.size ?: 0
+                val count = mImagesStrList.size
                 imagesLeftTextView.text = "${if (count == 0) count else count - 1}/4 $text_images_added"
             }
             mOptionsMenuResponse = addProductResponse?.addProductStoreOptionsMenu
@@ -512,8 +512,12 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             if (commonResponse.mIsSuccessStatus) {
                 showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_check_circle)
                 val base64Str = Gson().fromJson<String>(commonResponse.mCommonDataStr, String::class.java)
-                if (mImagesStrList.size == 1 || mImageChangePosition == 0) mImagesStrList.add(base64Str) else if (mImageChangePosition != 0) {
-                    mImagesStrList[mImageChangePosition] = base64Str
+                if (mImagesStrList.size == 1 || mImageChangePosition == 0) {
+                    mImagesStrList.add(AddProductImagesResponse(0, base64Str, 1))
+                } else if (mImageChangePosition != 0) {
+                    val imageResponse = mImagesStrList[mImageChangePosition]
+                    imageResponse.imageUrl = base64Str
+                    mImagesStrList[mImageChangePosition] = imageResponse
                 }
                 noImagesLayout.visibility = View.GONE
                 imagesRecyclerView.visibility = View.VISIBLE
