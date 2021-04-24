@@ -21,7 +21,7 @@ data class OrderDetailsResponse (
     @SerializedName("image_link") var imageLink: String?,
     @SerializedName("created_at") var createdAt: String?,
     @SerializedName("updated_at") var updatedAt: String?,
-    @SerializedName("order_payment_status") var orderPaymentStatus: String?,
+    @SerializedName("order_payment_status") var orderPaymentStatus: OrderPaymentStatusResponse?,
     @SerializedName("digital_receipt") var digitalReceipt: String?,
     @SerializedName("items") var orderDetailsItemsList: ArrayList<OrderDetailItemResponse>?,
     @SerializedName("delivery_info") var deliveryInfo: DeliveryInfoItemResponse?
@@ -36,6 +36,12 @@ data class OrderDetailItemResponse(
     @SerializedName("item_status") var item_status: Int?,
     @SerializedName("item_type") var item_type: String?,
     @SerializedName("creator_type") var creator_type: Int?
+)
+
+data class OrderPaymentStatusResponse(
+    @SerializedName("key") var key: String?,
+    @SerializedName("value") var value: String?,
+    @SerializedName("cta") var cta: Any?
 )
 
 data class OrderDetailMainResponse(

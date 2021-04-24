@@ -17,6 +17,7 @@
     <color name="open_green">#1E9848</color>
     <color name="open_green_darker">#2BD36D</color>
     <color name="orange">#F69647</color>
+    <color name="order_detail_in_progress">#F47D07</color>
     <color name="green_alpha">#AFDBBE</color>
     <color name="default_bg">#F7F8F8</color>
     <color name="dark_blackish">#232B2E</color>

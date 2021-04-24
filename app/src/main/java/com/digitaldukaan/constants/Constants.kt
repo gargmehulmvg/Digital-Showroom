@@ -107,5 +107,9 @@ class Constants {
         const val EDIT_PHOTO_MODE_DESKTOP = "desktop"
         //MODE PHOTO EDIT
         const val MODE_CROP = "crop"
+        //MODE ORDER STATUS
+        const val ORDER_STATUS_SUCCESS = "Success"
+        const val ORDER_STATUS_REJECTED = "Rejected"
+        const val ORDER_STATUS_IN_PROGRESS = "In-Progress"
     }
 }

@@ -202,7 +202,21 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                 billAmountValue?.text = "$text_rupees_symbol ${orderDetailResponse?.amount}"
                 ToolBarManager.getInstance().setHeaderTitle("$text_order #$mOrderId")
                 if (orderDetailResponse?.deliveryInfo?.customDeliveryTime?.isEmpty() == true) estimateDeliveryTextView.visibility = View.GONE else estimateDeliveryTextView.text = "$text_estimate_delivery : ${orderDetailResponse?.deliveryInfo?.customDeliveryTime}"
-                statusValue?.text = orderDetailResponse?.orderPaymentStatus
+                statusValue?.text = orderDetailResponse?.orderPaymentStatus?.value
+                when (orderDetailResponse?.orderPaymentStatus?.key) {
+                    Constants.ORDER_STATUS_SUCCESS -> {
+                        statusValue.setCompoundDrawablesWithIntrinsicBounds(
+                            0,
+                            0,
+                            R.drawable.ic_tick_green_hollow,
+                            0
+                        )
+                        orderDetailContainer.setBackgroundColor(ContextCompat.getColor(mActivity, R.color.open_green))
+                    }
+                    Constants.ORDER_STATUS_REJECTED -> orderDetailContainer.setBackgroundColor(ContextCompat.getColor(mActivity, R.color.red))
+                    Constants.ORDER_STATUS_IN_PROGRESS -> orderDetailContainer.setBackgroundColor(ContextCompat.getColor(mActivity, R.color.order_detail_in_progress))
+                    else -> orderDetailContainer.setBackgroundColor(ContextCompat.getColor(mActivity, R.color.black))
+                }
             }
             ToolBarManager.getInstance().setHeaderSubTitle(getStringDateTimeFromOrderDate(getCompleteDateFromOrderString(orderDetailMainResponse?.orders?.createdAt)))
             customerDeliveryDetailsRecyclerView.apply {
@@ -386,7 +400,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                         orderIdTextView.text = "$text_order_id: ${it.orders?.orderId}"
                         textViewTop.text = it.staticText?.message_customer_paid
                         txnId.text = orderDetailMainResponse?.orders?.transactionId
-                        textViewBottom.text = orderDetailMainResponse?.orders?.orderPaymentStatus
+                        textViewBottom.text = orderDetailMainResponse?.orders?.orderPaymentStatus?.value
                     }
                     when(it.orders?.displayStatus) {
                         Constants.DS_BILL_SENT -> {
