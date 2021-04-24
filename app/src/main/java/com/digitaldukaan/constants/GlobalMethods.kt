@@ -26,6 +26,7 @@ import java.net.URLConnection
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 fun getBitmapFromURL(src: String?): Bitmap? {
@@ -198,7 +199,7 @@ fun getContactsFromStorage2(ctx: Context) {
     val tag = "CONTACTS"
     if (StaticInstances.sUserContactList.isNotEmpty()) return
     Log.d(tag, "getContactsFromStorage: started")
-    val list: MutableList<ContactModel> = ArrayList()
+    val list: ArrayList<ContactModel> = ArrayList()
     val phoneCursor: Cursor? = ctx.contentResolver.query(
         ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
         null,

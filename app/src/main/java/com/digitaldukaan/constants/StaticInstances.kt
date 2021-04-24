@@ -8,7 +8,7 @@ object StaticInstances {
     var sStoreInfo: StoreInfoResponse? = null
     var sBankDetails: BankDetailsResponse? = null
     var sIsStoreImageUploaded: Boolean = false
-    var sUserContactList: MutableList<ContactModel> = ArrayList()
+    var sUserContactList: ArrayList<ContactModel> = ArrayList()
     var sStepsCompletedList: ArrayList<StepCompletedItem>? = null
     var sHelpScreenList: ArrayList<HelpScreenItemResponse> = ArrayList()
     var sOrderPageInfoStaticData: OrderPageStaticTextResponse? = null
