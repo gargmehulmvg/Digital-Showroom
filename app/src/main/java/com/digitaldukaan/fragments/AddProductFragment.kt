@@ -59,6 +59,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     private var imageAdapter = ImagesSearchAdapter()
     private var mImageChangePosition = 0
     private var mAddProductStoreCategoryList: ArrayList<AddStoreCategoryItem>? = ArrayList()
+    private val mTempProductCategoryList: ArrayList<AddStoreCategoryItem> = ArrayList()
     private lateinit var addProductChipsAdapter: AddProductsChipsAdapter
     private var mOptionsMenuResponse: ArrayList<TrendingListResponse>? = null
     private var mImageAddAdapter: AddProductsImagesAdapter? = null
@@ -455,21 +456,20 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 chipGroupRecyclerView.apply {
                     layoutManager = StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL)
                     mAddProductStoreCategoryList = addProductResponse.addProductStoreCategories?.storeCategoriesList
-                    if (mAddProductStoreCategoryList?.isNotEmpty() == true)
+                    if (mAddProductStoreCategoryList?.isNotEmpty() == true) {
+                        mTempProductCategoryList.clear()
                         mAddProductStoreCategoryList?.forEachIndexed { _, categoryItem ->
-                            if (categoryItem.name?.isEmpty() == true) {
-                                mAddProductStoreCategoryList?.remove(categoryItem)
-                                return@forEachIndexed
-                            }
+                            if (categoryItem.name?.isNotEmpty() == true) mTempProductCategoryList.add(categoryItem)
                         }
-                        mAddProductStoreCategoryList?.forEachIndexed { _, categoryItem ->
+                        mTempProductCategoryList.forEachIndexed { _, categoryItem ->
                             if (addProductResponse.storeItem?.category?.id == categoryItem.id) {
                                 enterCategoryEditText.setText(categoryItem.name)
                                 categoryItem.isSelected = true
                             } else categoryItem.isSelected = false
                         }
-                    addProductChipsAdapter = AddProductsChipsAdapter(mAddProductStoreCategoryList, this@AddProductFragment)
-                    adapter = addProductChipsAdapter
+                        addProductChipsAdapter = AddProductsChipsAdapter(mTempProductCategoryList, this@AddProductFragment)
+                        adapter = addProductChipsAdapter
+                    }
                 }
             }
             addProductStaticData?.run {
@@ -558,10 +558,10 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     }
 
     override fun onChipItemClickListener(position: Int) {
-        mAddProductStoreCategoryList?.forEachIndexed { _, categoryItem -> categoryItem.isSelected = false }
-        mAddProductStoreCategoryList?.get(position)?.isSelected = true
-        enterCategoryEditText.setText(mAddProductStoreCategoryList?.get(position)?.name)
-        addProductChipsAdapter.setAddProductStoreCategoryList(mAddProductStoreCategoryList)
+        mTempProductCategoryList.forEachIndexed { _, categoryItem -> categoryItem.isSelected = false }
+        mTempProductCategoryList[position].isSelected = true
+        enterCategoryEditText.setText(mTempProductCategoryList[position].name)
+        addProductChipsAdapter.setAddProductStoreCategoryList(mTempProductCategoryList)
     }
 
     override fun onToolbarSideIconClicked() {
