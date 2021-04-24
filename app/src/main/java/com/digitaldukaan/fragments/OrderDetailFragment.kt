@@ -85,7 +85,14 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                 handleDeliveryTimeBottomSheet(false)
             }
             sendBillTextView.id -> handleDeliveryTimeBottomSheet(true)
-            detailTextView.id -> showOrderDetailBottomSheet()
+            detailTextView.id -> {
+                if (!isInternetConnectionAvailable(mActivity)) {
+                    showNoInternetConnectionDialog()
+                } else {
+                    showProgressDialog(mActivity)
+                    mOrderDetailService.getOrderDetailStatus(orderDetailMainResponse?.orders?.orderId)
+                }
+            }
         }
     }
 
@@ -290,6 +297,16 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
             if (commonResponse.mIsSuccessStatus) {
                 mShareBillResponseStr = Gson().fromJson<String>(commonResponse.mCommonDataStr, String::class.java)
                 shareDataOnWhatsAppByNumber(orderDetailMainResponse?.orders?.phone, mShareBillResponseStr)
+            } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
+        }
+    }
+
+    override fun onOrderDetailStatusResponse(commonResponse: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            if (commonResponse.mIsSuccessStatus) {
+                val orderDetailStatusStr = Gson().fromJson<String>(commonResponse.mCommonDataStr, String::class.java)
+                showOrderDetailBottomSheet()
             } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
         }
     }

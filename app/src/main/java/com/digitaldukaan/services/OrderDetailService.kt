@@ -47,6 +47,12 @@ class OrderDetailService {
         }
     }
 
+    fun getOrderDetailStatus(orderId: Int?) {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            orderId?.let { mNetworkService.onOrderDetailStatusResponse("$it", mServiceInterface) }
+        }
+    }
+
     fun completeOrder(request: CompleteOrderRequest) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
             mNetworkService.completeOrderServerCall(request, mServiceInterface)

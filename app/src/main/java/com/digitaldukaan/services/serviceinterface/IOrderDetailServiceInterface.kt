@@ -14,6 +14,8 @@ interface IOrderDetailServiceInterface {
 
     fun onShareBillResponse(commonResponse: CommonApiResponse)
 
+    fun onOrderDetailStatusResponse(commonResponse: CommonApiResponse)
+
     fun onUpdateStatusResponse(commonResponse: CommonApiResponse)
 
     fun onOrderDetailException(e: Exception)

@@ -175,4 +175,26 @@ class OrderDetailNetworkService {
         }
     }
 
+    suspend fun onOrderDetailStatusResponse(
+        orderId: String,
+        serviceInterface: IOrderDetailServiceInterface
+    ) {
+        try {
+            val response = RetrofitApi().getServerCallObject()?.getOrderTransactions(orderId)
+            response?.let {
+                if (it.isSuccessful) it.body()?.let { commonApiResponse -> serviceInterface.onOrderDetailStatusResponse(commonApiResponse) }
+                else {
+                    val responseBody = it.errorBody()
+                    responseBody?.let {
+                        val errorResponse = Gson().fromJson(responseBody.string(), CommonApiResponse::class.java)
+                        serviceInterface.onOrderDetailStatusResponse(errorResponse)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(HomeNetworkService::class.java.simpleName, "onOrderDetailStatusResponse: ", e)
+            serviceInterface.onOrderDetailException(e)
+        }
+    }
+
 }

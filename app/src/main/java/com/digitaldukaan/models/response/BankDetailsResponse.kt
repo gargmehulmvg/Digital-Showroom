@@ -15,7 +15,7 @@ data class BankDetailsResponse (
 
 data class BankDetailsPageInfoResponse (
     @SerializedName("static_text") var mBankPageStaticText: BankDetailsPageStaticTextResponse,
-    @SerializedName("bank_detail") var mBankDetail: BankDetailsResponse
+    @SerializedName("bank_details") var mBankDetail: BankDetailsResponse
 )
 
 data class BankDetailsPageStaticTextResponse(
