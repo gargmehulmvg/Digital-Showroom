@@ -1,6 +1,7 @@
 package com.digitaldukaan.services
 
 import com.digitaldukaan.constants.CoroutineScopeUtils
+import com.digitaldukaan.models.request.CompleteOrderRequest
 import com.digitaldukaan.models.request.UpdateOrderRequest
 import com.digitaldukaan.models.request.UpdateOrderStatusRequest
 import com.digitaldukaan.services.networkservice.OrderDetailNetworkService
@@ -37,6 +38,18 @@ class OrderDetailService {
     fun updateOrderStatus(request: UpdateOrderStatusRequest) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
             mNetworkService.updateOrderStatusServerCall(request, mServiceInterface)
+        }
+    }
+
+    fun shareBillResponse(orderId: Int?) {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            orderId?.let { mNetworkService.shareBillResponseServerCall("$it", mServiceInterface) }
+        }
+    }
+
+    fun completeOrder(request: CompleteOrderRequest) {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.completeOrderServerCall(request, mServiceInterface)
         }
     }
 

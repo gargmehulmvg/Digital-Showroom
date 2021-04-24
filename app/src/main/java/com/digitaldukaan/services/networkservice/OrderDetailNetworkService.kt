@@ -1,6 +1,7 @@
 package com.digitaldukaan.services.networkservice
 
 import android.util.Log
+import com.digitaldukaan.models.request.CompleteOrderRequest
 import com.digitaldukaan.models.request.UpdateOrderRequest
 import com.digitaldukaan.models.request.UpdateOrderStatusRequest
 import com.digitaldukaan.models.response.CommonApiResponse
@@ -121,6 +122,55 @@ class OrderDetailNetworkService {
             }
         } catch (e: Exception) {
             Log.e(SendBillPhotoNetworkService::class.java.simpleName, "updateOrderStatusServerCall: ", e)
+            serviceInterface.onOrderDetailException(e)
+        }
+    }
+
+    suspend fun shareBillResponseServerCall(
+        orderId: String,
+        serviceInterface: IOrderDetailServiceInterface
+    ) {
+        try {
+            val response = RetrofitApi().getServerCallObject()?.shareBill(orderId)
+            response?.let {
+                if (it.isSuccessful) {
+                    it.body()?.let { commonApiResponse -> serviceInterface.onShareBillResponse(commonApiResponse)
+                    }
+                } else {
+                    val responseBody = it.errorBody()
+                    responseBody?.let {
+                        val errorResponse = Gson().fromJson(
+                            responseBody.string(),
+                            CommonApiResponse::class.java
+                        )
+                        serviceInterface.onShareBillResponse(errorResponse)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(SendBillPhotoNetworkService::class.java.simpleName, "shareBillResponseServerCall: ", e)
+            serviceInterface.onOrderDetailException(e)
+        }
+    }
+
+    suspend fun completeOrderServerCall(
+        request: CompleteOrderRequest,
+        serviceInterface: IOrderDetailServiceInterface
+    ) {
+        try {
+            val response = RetrofitApi().getServerCallObject()?.completeOrder(request)
+            response?.let {
+                if (it.isSuccessful) it.body()?.let { commonApiResponse -> serviceInterface.onCompleteOrderStatusResponse(commonApiResponse) }
+                else {
+                    val responseBody = it.errorBody()
+                    responseBody?.let {
+                        val errorResponse = Gson().fromJson(responseBody.string(), CommonApiResponse::class.java)
+                        serviceInterface.onCompleteOrderStatusResponse(errorResponse)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(HomeNetworkService::class.java.simpleName, "completeOrderServerCall: ", e)
             serviceInterface.onOrderDetailException(e)
         }
     }

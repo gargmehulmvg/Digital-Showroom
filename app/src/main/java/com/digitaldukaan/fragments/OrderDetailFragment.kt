@@ -19,6 +19,7 @@ import com.digitaldukaan.interfaces.IChipItemClickListener
 import com.digitaldukaan.interfaces.IOnToolbarIconClick
 import com.digitaldukaan.interfaces.IOnToolbarSecondIconClick
 import com.digitaldukaan.models.dto.CustomerDeliveryAddressDTO
+import com.digitaldukaan.models.request.CompleteOrderRequest
 import com.digitaldukaan.models.request.UpdateOrderRequest
 import com.digitaldukaan.models.request.UpdateOrderStatusRequest
 import com.digitaldukaan.models.response.*
@@ -30,6 +31,7 @@ import com.google.gson.Gson
 import kotlinx.android.synthetic.main.bottom_layout_send_bill.*
 import kotlinx.android.synthetic.main.layout_order_detail_fragment.*
 import java.io.File
+import java.util.*
 
 
 class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToolbarIconClick,
@@ -49,6 +51,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
 
     companion object {
         private const val CUSTOM = "custom"
+        private var mShareBillResponseStr: String? = ""
         fun newInstance(orderId: String, isNewOrder: Boolean): OrderDetailFragment {
             val fragment = OrderDetailFragment()
             fragment.mOrderId = orderId
@@ -265,8 +268,28 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
             if (commonResponse.mIsSuccessStatus) {
                 showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_green_check_small)
                 val response = Gson().fromJson<UpdateOrderResponse>(commonResponse.mCommonDataStr, UpdateOrderResponse::class.java)
-                openWhatsAppChatByNumber(mMobileNumber, response?.whatsAppText)
+                shareDataOnWhatsAppByNumber(mMobileNumber, response?.whatsAppText)
                 launchFragment(HomeFragment.newInstance(), true)
+            } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
+        }
+    }
+
+    override fun onCompleteOrderStatusResponse(commonResponse: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            if (commonResponse.mIsSuccessStatus) {
+                showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_green_check_small)
+                mActivity.onBackPressed()
+            } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
+        }
+    }
+
+    override fun onShareBillResponse(commonResponse: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            if (commonResponse.mIsSuccessStatus) {
+                mShareBillResponseStr = Gson().fromJson<String>(commonResponse.mCommonDataStr, String::class.java)
+                shareDataOnWhatsAppByNumber(orderDetailMainResponse?.orders?.phone, mShareBillResponseStr)
             } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
         }
     }
@@ -476,16 +499,43 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
         val menuItem = orderDetailMainResponse?.optionMenuList?.get(menu?.itemId ?: 0)
         when(menuItem?.mAction) {
             Constants.ACTION_REJECT_ORDER -> showOrderRejectBottomSheet()
-            Constants.ACTION_DOWNLOAD_BILL -> {
-                if (orderDetailMainResponse?.orders?.digitalReceipt?.isEmpty() == true) {
-                    showToast(mOrderDetailStaticData?.error_no_bill_available_to_download)
-                } else {
-                    val bitmap = getBitmapFromURL(orderDetailMainResponse?.orders?.digitalReceipt)
-                    downloadMediaToStorage(bitmap, mActivity)
-                }
-            }
+            Constants.ACTION_CASH_COLLECTED -> cashCollected()
+            Constants.ACTION_SHARE_BILL -> shareBill()
+            Constants.ACTION_DOWNLOAD_BILL -> downloadBill()
         }
         return true
+    }
+
+    private fun downloadBill() {
+        if (orderDetailMainResponse?.orders?.digitalReceipt?.isEmpty() == true) {
+            showToast(mOrderDetailStaticData?.error_no_bill_available_to_download)
+        } else {
+            val bitmap = getBitmapFromURL(orderDetailMainResponse?.orders?.digitalReceipt)
+            downloadMediaToStorage(bitmap, mActivity)
+        }
+    }
+
+    private fun shareBill() {
+        if (mShareBillResponseStr?.isNotEmpty() == true) {
+            shareDataOnWhatsAppByNumber(
+                orderDetailMainResponse?.orders?.phone,
+                mShareBillResponseStr
+            )
+        } else if (!isInternetConnectionAvailable(mActivity)) {
+            showNoInternetConnectionDialog()
+        } else {
+            showProgressDialog(mActivity)
+            mOrderDetailService.shareBillResponse(orderDetailMainResponse?.orders?.orderId)
+        }
+    }
+
+    private fun cashCollected() {
+        if (!isInternetConnectionAvailable(mActivity)) {
+            showNoInternetConnectionDialog()
+        } else {
+            showProgressDialog(mActivity)
+            mOrderDetailService.completeOrder(CompleteOrderRequest(orderDetailMainResponse?.orders?.orderId?.toLong()))
+        }
     }
 
 }

@@ -775,7 +775,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         }.show()
     }
 
-    protected fun openWhatsAppChatByNumber(phone: String?, message: String?) {
+    protected fun shareDataOnWhatsAppByNumber(phone: String?, message: String?) {
         try {
             val uri = Uri.parse("https://api.whatsapp.com/send?phone=91$phone&text=$message")
             val intent = Intent(Intent.ACTION_VIEW, uri)
