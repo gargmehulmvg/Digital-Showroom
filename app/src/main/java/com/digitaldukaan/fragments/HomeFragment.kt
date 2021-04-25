@@ -540,6 +540,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                 val createNewBillTextView: TextView = findViewById(R.id.createNewBillTextView)
                 val clickBillPhotoContainer: View = findViewById(R.id.clickBillPhotoContainer)
                 clickBillPhotoContainer.setOnClickListener {
+                    clickBillPhotoContainer.isEnabled = false
                     bottomSheetDialog.dismiss()
                     openFullCamera()
                 }
@@ -548,6 +549,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                 createNewBillTextView.text = mOrderPageInfoStaticData?.bottom_sheet_create_a_new_bill
                 Picasso.get().load(orderPageInfoResponse?.mTakeOrderImage).into(imageViewSendBill)
                 createNewBillTextView.setOnClickListener {
+                    createNewBillTextView.isEnabled = false
                     bottomSheetDialog.dismiss()
                     launchFragment(
                         CommonWebViewFragment().newInstance(

@@ -26,6 +26,11 @@ class CreateStoreFragment : BaseFragment() {
         return mContentView
     }
 
+    override fun onBackPressed(): Boolean {
+        Log.d(TAG, "onBackPressed: do nothing")
+        return true
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         ToolBarManager.getInstance().hideToolBar(mActivity, true)

@@ -230,7 +230,7 @@ class OnBoardScreenDukaanLocationFragment : BaseFragment(), IStoreAddressService
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (response.mIsSuccessStatus) {
                 showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
-                launchFragment(HomeFragment.newInstance(), true)
+                launchFragment(OnBoardScreenBankDetailsFragment.newInstance(), true)
             } else showToast(response.mMessage)
         }
     }
