@@ -139,6 +139,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                             pricePercentageOffTextView.text = null
                         }
                         else -> {
+                            mIsOrderEdited = true
                             discountedPriceTextView.visibility = View.VISIBLE
                             originalPriceTextView.text = "${addProductStaticData?.text_rupees_symbol} ${priceStr.toDouble()}"
                             discountedPriceTextView.text = "${addProductStaticData?.text_rupees_symbol} ${str.toDouble()}"
@@ -179,7 +180,10 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         priceEditText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 val str = s?.toString()
-                if (str?.trim()?.isNotEmpty() == true) showAddProductContainer()
+                if (str?.trim()?.isNotEmpty() == true) {
+                    mIsOrderEdited = true
+                    showAddProductContainer()
+                }
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -195,7 +199,10 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             override fun afterTextChanged(s: Editable?) {
                 mProductNameStr = s?.toString()
                 val str = s?.toString()
-                if (str?.trim()?.isNotEmpty() == true) showAddProductContainer()
+                if (str?.trim()?.isNotEmpty() == true) {
+                    mIsOrderEdited = true
+                    showAddProductContainer()
+                }
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -210,7 +217,10 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         productDescriptionEditText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 val str = s?.toString()
-                if (str?.trim()?.isNotEmpty() == true) showAddProductContainer()
+                if (str?.trim()?.isNotEmpty() == true) {
+                    mIsOrderEdited = true
+                    showAddProductContainer()
+                }
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -225,7 +235,10 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         enterCategoryEditText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 val str = s?.toString()
-                if (str?.trim()?.isNotEmpty() == true) showAddProductContainer()
+                if (str?.trim()?.isNotEmpty() == true) {
+                    mIsOrderEdited = true
+                    showAddProductContainer()
+                }
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -620,7 +633,10 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         return if (mIsOrderEdited) {
             showGoBackDialog()
             return true
-        } else false
+        } else {
+            fragmentManager?.popBackStack()
+            true
+        }
     }
 
     private fun showGoBackDialog() {
@@ -666,7 +682,6 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     }
 
     private fun showAddProductContainer() {
-        mIsOrderEdited = true
         if (shareProductContainer.visibility == View.VISIBLE) {
             shareProductContainer.visibility = View.GONE
             continueTextView.visibility = View.VISIBLE

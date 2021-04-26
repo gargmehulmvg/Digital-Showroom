@@ -291,6 +291,9 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                     showImageDialog(orderDetailResponse.imageLink)
                 }
             }
+            if (orderDetailMainResponse?.optionMenuList?.isEmpty() == true) {
+                ToolBarManager.getInstance().setSideIconVisibility(false)
+            }
         }
     }
 

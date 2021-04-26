@@ -142,16 +142,6 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
                 verifyTextView.text = mMoreControlsStaticData.save_changes
                 verifyTextView.setOnClickListener {
                     val amount = minDeliveryAmountEditText.text.trim().toString()
-                    if (amount.isEmpty()) {
-                        minDeliveryAmountEditText.error = mMoreControlsStaticData.error_mandatory_field
-                        requestFocus()
-                        return@setOnClickListener
-                    }
-                    if (0.0 == amount.toDouble()) {
-                        minDeliveryAmountEditText.error = mMoreControlsStaticData.error_amount_must_greater_than_zero
-                        requestFocus()
-                        return@setOnClickListener
-                    }
                     if (0.0 != mFreeDeliveryAbove && amount.toDouble() > mFreeDeliveryAbove) {
                         minDeliveryAmountEditText.error = mMoreControlsStaticData.error_amount_must_greater_than_free_delivery_above
                         requestFocus()
@@ -165,7 +155,7 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
                         mDeliveryChargeType,
                         mFreeDeliveryAbove,
                         mDeliveryPrice,
-                        amount.toDouble()
+                        if (amount.isEmpty()) 0.0 else amount.toDouble()
                     )
                     showProgressDialog(mActivity)
                     bottomSheetDialog.dismiss()
