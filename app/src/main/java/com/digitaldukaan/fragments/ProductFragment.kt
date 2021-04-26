@@ -95,12 +95,12 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
     override fun onProductResponse(commonResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             val productResponse = Gson().fromJson(commonResponse.mCommonDataStr, ProductPageResponse::class.java)
-            bottomContainer.visibility = if (productResponse?.isZeroProduct == true) View.GONE else View.VISIBLE
+            bottomContainer?.visibility = if (productResponse?.isZeroProduct == true) View.GONE else View.VISIBLE
             addProductStaticData = productResponse?.static_text
             var url: String
             ToolBarManager.getInstance().setHeaderTitle(productResponse?.static_text?.product_page_heading)
             mOptionsMenuResponse = productResponse?.optionMenuList
-            commonWebView.apply {
+            commonWebView?.apply {
                 settings.javaScriptEnabled = true
                 addJavascriptInterface(WebViewBridge(), "Android")
                 url = BuildConfig.WEB_VIEW_URL + productResponse.product_page_url + "?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"
@@ -112,11 +112,11 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                 }
             }
             productResponse.shareShop.run {
-                shareButtonTextView.text = this.mText
+                shareButtonTextView?.text = this.mText
                 if (mCDN.isNotEmpty()) Picasso.get().load(mCDN).into(shareButtonImageView)
             }
             productResponse.addProduct.run {
-                addProductTextView.text = this.mText
+                addProductTextView?.text = this.mText
                 if (mCDN.isNotEmpty()) Picasso.get().load(mCDN).into(addProductImageView)
             }
         }

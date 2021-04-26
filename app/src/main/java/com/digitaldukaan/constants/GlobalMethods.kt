@@ -1,5 +1,6 @@
 package com.digitaldukaan.constants
 
+import android.app.DownloadManager
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
@@ -14,6 +15,7 @@ import android.telephony.PhoneNumberUtils
 import android.util.Base64
 import android.util.Base64OutputStream
 import android.util.Log
+import android.widget.Toast
 import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.MainActivity
 import com.digitaldukaan.fragments.BaseFragment
@@ -59,6 +61,31 @@ fun convertImageFileToBase64(imageFile: File?): String {
     }
 }
 
+fun downloadImageNew(
+    filename: String,
+    downloadUrlOfImage: String,
+    context: Context
+) {
+    try {
+        val dm = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager?
+        val downloadUri = Uri.parse(downloadUrlOfImage)
+        val request = DownloadManager.Request(downloadUri)
+        request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI or DownloadManager.Request.NETWORK_MOBILE)
+            .setAllowedOverRoaming(false)
+            .setTitle(filename)
+            .setMimeType("image/jpeg") // Your file type. You can use this code to download other file types also.
+            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+            .setDestinationInExternalPublicDir(
+                Environment.DIRECTORY_PICTURES,
+                File.separator.toString() + filename + ".jpg"
+            )
+        dm!!.enqueue(request)
+        Toast.makeText(context, "Image download started.", Toast.LENGTH_SHORT).show()
+    } catch (e: java.lang.Exception) {
+        Toast.makeText(context, "Image download failed.", Toast.LENGTH_SHORT).show()
+    }
+}
+
 fun downloadMediaToStorage(bitmap: Bitmap?, activity: MainActivity?) {
     //Generating a file name
     val filename = "${System.currentTimeMillis()}.jpg"
@@ -90,7 +117,7 @@ fun downloadMediaToStorage(bitmap: Bitmap?, activity: MainActivity?) {
     fos?.use {
         //Finally writing the bitmap to the output stream that we opened
         bitmap?.compress(Bitmap.CompressFormat.JPEG, 100, it)
-        //activity?.Toast("Saved to Photos")
+        activity?.showToast("Image Saved to Gallery successfully")
     }
 }
 

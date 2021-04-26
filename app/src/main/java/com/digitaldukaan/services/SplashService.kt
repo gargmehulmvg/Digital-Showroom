@@ -24,4 +24,10 @@ class SplashService {
             mSplashNetworkService.getHelpScreensServerCall(mSplashServiceInterface)
         }
     }
+
+    fun getAppVersion() {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mSplashNetworkService.getAppVersionServerCall(mSplashServiceInterface)
+        }
+    }
 }

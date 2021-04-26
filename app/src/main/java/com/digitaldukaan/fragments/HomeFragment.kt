@@ -510,10 +510,17 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
             stopProgress()
             Log.d(TAG, "sendData: $data")
             val jsonData = JSONObject(data)
-            if (jsonData.optBoolean("takeOrder")) {
-                showTakeOrderBottomSheet()
-            } else {
-                launchFragment(AddProductFragment.newInstance(0, true), true)
+            when {
+                jsonData.optBoolean("takeOrder") -> {
+                    showTakeOrderBottomSheet()
+                }
+                jsonData.optBoolean("redirectBrowser") -> {
+                    val domain = jsonData.optString("data")
+                    openUrlInBrowser(domain)
+                }
+                else -> {
+                    launchFragment(AddProductFragment.newInstance(0, true), true)
+                }
             }
         }
     }

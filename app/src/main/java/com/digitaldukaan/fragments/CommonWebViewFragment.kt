@@ -123,6 +123,8 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
             showToast("Image Saved to Gallery")
         } else if (jsonData.optBoolean("redirectHomePage")) {
             launchFragment(HomeFragment.newInstance(), true)
+        } else if (jsonData.optBoolean("startLoader")) {
+            showProgressDialog(mActivity)
         } else if (jsonData.optBoolean("convertImage")) {
             showProgressDialog(mActivity)
             val imageUrl = jsonData.optString("data")

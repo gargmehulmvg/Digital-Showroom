@@ -13,6 +13,7 @@ class Constants {
         const val IMAGE_PICK_REQUEST_CODE = 1002
         const val CONTACT_REQUEST_CODE = 1003
         const val CROP_IMAGE_REQUEST_CODE = 1004
+        const val EXTERNAL_STORAGE_REQUEST_CODE = 1005
         const val SHARED_PREF_NAME = "DigitalDukaanPrefs"
         const val USER_AUTH_TOKEN = "USER_AUTH_TOKEN"
         const val STORE_ID = "STORE_ID"
@@ -119,5 +120,9 @@ class Constants {
         const val FREE_DELIVERY = 1
         const val FIXED_DELIVERY_CHARGE = 2
         const val CUSTOM_DELIVERY_CHARGE = 3
+        //ITEM_TYPE_CHARGE
+        const val ITEM_TYPE_DELIVERY_CHARGE = "delivery_charge"
+        const val ITEM_TYPE_CHARGE = "charge"
+        const val ITEM_TYPE_DISCOUNT = "discount"
     }
 }

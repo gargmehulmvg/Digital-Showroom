@@ -53,7 +53,7 @@ class ViewAsCustomerFragment: BaseFragment() {
         getStartedTextView.text = addProductStaticData?.text_get_started
         hideBottomNavigationView(true)
         showProgressDialog(mActivity)
-        premiumBottomContainer.visibility = if (mIsPremiumEnable) View.VISIBLE else View.GONE
+        premiumBottomContainer.visibility = if (mIsPremiumEnable) View.GONE else View.VISIBLE
         webView.apply {
             webViewClient = object : WebViewClient() {
                 override fun onPageFinished(view: WebView, url: String) {

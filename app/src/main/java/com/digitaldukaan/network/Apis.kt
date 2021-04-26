@@ -10,6 +10,9 @@ import retrofit2.http.*
 interface Apis {
 
     /* ----------------------       On-Boarding         ---------------------- */
+    @GET("api/dotk/vo1/onboard/getAppVersion")
+    suspend fun getAppVersion() : Response<CommonApiResponse>
+
     @GET("api/dotk/template/getAppStaticText")
     suspend fun getAppStaticText(@Query("lanuageId") languageId:String) : Response<StaticTextResponse>
 

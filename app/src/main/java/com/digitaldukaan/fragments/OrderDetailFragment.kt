@@ -1,7 +1,9 @@
 package com.digitaldukaan.fragments
 
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.Typeface
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
@@ -35,6 +37,7 @@ import com.digitaldukaan.services.serviceinterface.IOrderDetailServiceInterface
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.bottom_layout_send_bill.*
 import kotlinx.android.synthetic.main.layout_order_detail_fragment.*
 import java.io.File
@@ -126,15 +129,28 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
 
     private fun initiateSendBillServerCall() {
         orderDetailMainResponse?.orders?.run {
+            if (deliveryChargeValueEditText.text?.isNotEmpty() == true) {
+                val orderDetailItemResponse = OrderDetailItemResponse(
+                    0,
+                    0,
+                    "Delivery Charge",
+                    1,
+                    if (deliveryChargeValueEditText.text?.isNotEmpty() == true) deliveryChargeValueEditText.text.toString().toDouble() else 0.0,
+                    1,
+                    Constants.ITEM_TYPE_DELIVERY_CHARGE,
+                    Constants.CREATOR_TYPE_MERCHANT
+                )
+                orderDetailsItemsList?.add(orderDetailItemResponse)
+            }
             if (otherChargesValueEditText.text?.isNotEmpty() == true) {
                 val orderDetailItemResponse = OrderDetailItemResponse(
                     0,
                     0,
-                    if (otherChargesEditText.text?.isNotEmpty() == true) otherChargesEditText.text.toString() else "charge",
+                    if (otherChargesEditText.text?.isNotEmpty() == true) otherChargesEditText.text.toString() else "Charges",
                     1,
                     if (otherChargesValueEditText.text?.isNotEmpty() == true) otherChargesValueEditText.text.toString().toDouble() else 0.0,
                     1,
-                    "charge",
+                    Constants.ITEM_TYPE_CHARGE,
                     Constants.CREATOR_TYPE_MERCHANT
                 )
                 orderDetailsItemsList?.add(orderDetailItemResponse)
@@ -143,11 +159,11 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                 val orderDetailItemResponse = OrderDetailItemResponse(
                     0,
                     0,
-                    if (discountsEditText.text?.isNotEmpty() == true) discountsEditText.text.toString() else "discount",
+                    if (discountsEditText.text?.isNotEmpty() == true) discountsEditText.text.toString() else "Discount",
                     1,
                     if (discountsValueEditText.text?.isNotEmpty() == true) discountsValueEditText.text.toString().toDouble() else 0.0,
                     1,
-                    "charge",
+                    Constants.ITEM_TYPE_DISCOUNT,
                     Constants.CREATOR_TYPE_MERCHANT
                 )
                 orderDetailsItemsList?.add(orderDetailItemResponse)
@@ -276,6 +292,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                 deliveryChargeValue.text = txtSpannable
                 deliveryChargeValue.setTextColor(ContextCompat.getColor(mActivity, R.color.open_green))
                 deliveryChargeValue.background = ContextCompat.getDrawable(mActivity, R.drawable.order_adapter_new)
+                addDeliveryChargesLabel.text = getString(R.string.add_discount_and_other_charges)
             }
             Constants.FIXED_DELIVERY_CHARGE -> {
                 deliveryChargeLabel?.visibility = View.GONE
@@ -705,8 +722,56 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
         if (orderDetailMainResponse?.orders?.digitalReceipt?.isEmpty() == true) {
             showToast(mOrderDetailStaticData?.error_no_bill_available_to_download)
         } else {
-            val bitmap = getBitmapFromURL(orderDetailMainResponse?.orders?.digitalReceipt)
-            downloadMediaToStorage(bitmap, mActivity)
+            showToast("Start Downloading...")
+
+            Picasso.get().load("http://cdn.dotpe.in/kiranaStatic/image/fd%E2%80%93182.png").into(object : com.squareup.picasso.Target {
+                override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
+                    bitmap?.let {
+                        downloadMediaToStorage(bitmap, mActivity)
+                    }
+                }
+
+                override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
+                    Log.d(TAG, "onPrepareLoad: ")
+                }
+
+                override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
+                    Log.d(TAG, "onBitmapFailed: ")
+                }
+            })
+
+
+            //downloadImageNew("Bill#${orderDetailMainResponse?.orders?.orderId}_${System.currentTimeMillis()}", "http://cdn.dotpe.in/kiranaStatic/image/fd%E2%80%93182.png", mActivity)
+            /*Picasso.get().load("http://cdn.dotpe.in/kiranaStatic/image/fd%E2%80%93182.png").into(object : com.squareup.picasso.Target {
+                override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
+                    bitmap?.let {
+                        if (mActivity.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
+                            mActivity.requestPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), Constants.EXTERNAL_STORAGE_REQUEST_CODE)
+                        } else {
+                            val downloadLink = orderDetailMainResponse?.orders?.digitalReceipt
+                            //val request = DownloadManager.Request(Uri.parse(downloadLink))
+                            val imgUri = it.getImageUri(mActivity)
+                            val request = DownloadManager.Request(imgUri)
+                            request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI or DownloadManager.Request.NETWORK_MOBILE)
+                            request.setTitle("Download")
+                            request.setDescription("File is downloading...")
+                            request.allowScanningByMediaScanner()
+                            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "Bill#${orderDetailMainResponse?.orders?.orderId}_${System.currentTimeMillis()}")
+                            val manager = mActivity.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+                            manager.enqueue(request)
+                        }
+                    }
+                }
+
+                override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
+                    Log.d(TAG, "onPrepareLoad: ")
+                }
+
+                override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
+                    Log.d(TAG, "onBitmapFailed: ")
+                }
+            })*/
         }
     }
 

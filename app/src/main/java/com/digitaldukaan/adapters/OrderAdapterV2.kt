@@ -144,6 +144,7 @@ class OrderAdapterV2(
                 )
                 orderCheckBox.isEnabled = false
                 orderCheckBox.alpha = 0.2f
+                orderItemContainer.alpha = 0.2f
             }
             Constants.DS_COMPLETED_CASH -> {
                 orderCheckBox.alpha = 0.2f

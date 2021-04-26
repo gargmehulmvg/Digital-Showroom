@@ -53,8 +53,10 @@ class OrderDetailsAdapter(
         val item = mOrderDetailList?.get(position)
         holder.apply {
             orderDetailNameTextView.text = item?.item_name
-            quantityTextView.text = "${mOrderDetailStaticData?.text_quantity}: ${item?.item_quantity}"
-            priceTextView.text = "${mOrderDetailStaticData?.text_rupees_symbol} ${item?.item_price}"
+            if (!(item?.item_type == Constants.ITEM_TYPE_CHARGE || item?.item_type == Constants.ITEM_TYPE_DELIVERY_CHARGE || item?.item_type == Constants.ITEM_TYPE_DISCOUNT)) {
+                quantityTextView.text = "${mOrderDetailStaticData?.text_quantity}: ${item?.item_quantity}"
+            }
+            priceTextView.text = "${if (item?.item_type == Constants.ITEM_TYPE_DISCOUNT) "- " else ""}${mOrderDetailStaticData?.text_rupees_symbol} ${item?.item_price}"
             closeImageView.visibility = if (Constants.DS_SEND_BILL == mDeliveryStatus || Constants.DS_NEW == mDeliveryStatus) View.VISIBLE else View.GONE
             if (item?.item_status == itemStatusRejected) {
                 closeImageView.setImageResource(R.drawable.ic_undo)

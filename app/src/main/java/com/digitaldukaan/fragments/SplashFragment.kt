@@ -4,8 +4,6 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -13,7 +11,11 @@ import android.view.ViewGroup
 import androidx.core.app.ActivityCompat
 import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
-import com.digitaldukaan.constants.*
+import com.digitaldukaan.constants.Constants
+import com.digitaldukaan.constants.CoroutineScopeUtils
+import com.digitaldukaan.constants.ToolBarManager
+import com.digitaldukaan.constants.getContactsFromStorage2
+import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.StaticTextResponse
 import com.digitaldukaan.services.SplashService
 import com.digitaldukaan.services.isInternetConnectionAvailable
@@ -26,6 +28,8 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
 
     companion object {
         private const val TAG = "SplashFragment"
+        private val splashService: SplashService = SplashService()
+
         fun newInstance(intentUri: Uri?): SplashFragment {
             val fragment = SplashFragment()
             fragment.mIntentUri = intentUri
@@ -48,11 +52,9 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
             return
         }
         fetchContactsIfPermissionGranted()
-        val splashService = SplashService()
         splashService.setSplashServiceInterface(this)
         splashService.getHelpScreens()
         splashService.getStaticData("0")
-        Log.d("STORE_OBJECT_TEST", "$TAG onViewCreated: ${PrefsManager.getStringDataFromSharedPref(Constants.STORE_NAME)}")
     }
 
     private fun fetchContactsIfPermissionGranted() {
@@ -69,12 +71,19 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
     }
 
     override fun onStaticDataResponse(staticDataResponse: StaticTextResponse) {
+        mStaticData = staticDataResponse
+        splashService.getAppVersion()
+    }
+
+    override fun onAppVersionResponse(commonResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            Handler(Looper.getMainLooper()).postDelayed({
-                mStaticData = staticDataResponse
-                stopProgress()
-                launchHomeFragment()
-            }, Constants.SPLASH_TIMER)
+            launchHomeFragment()
+//            if (commonResponse.mIsSuccessStatus) {
+//                val playStoreLinkStr = Gson().fromJson<AppVersionResponse>(commonResponse.mCommonDataStr, AppVersionResponse::class.java)
+//                if (!playStoreLinkStr.mIsActive) {
+//                    openPlayStore()
+//                } else launchHomeFragment()
+//            } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
         }
     }
 

@@ -47,4 +47,22 @@ class SplashNetworkService {
         }
     }
 
+    suspend fun getAppVersionServerCall(
+        splashServiceInterface: ISplashServiceInterface
+    ) {
+        try {
+            val response = RetrofitApi().getServerCallObject()?.getAppVersion()
+            response?.let {
+                if (it.isSuccessful) {
+                    it.body()?.let { commonApiResponse ->
+                        splashServiceInterface.onAppVersionResponse(commonApiResponse)
+                    }
+                } else splashServiceInterface.onStaticDataException(Exception(response.message()))
+            }
+        } catch (e: Exception) {
+            Log.e(SplashNetworkService::class.java.simpleName, "getAppVersionServerCall :: ", e)
+            splashServiceInterface.onStaticDataException(e)
+        }
+    }
+
 }
