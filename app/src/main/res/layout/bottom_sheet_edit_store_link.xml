@@ -98,7 +98,7 @@
         android:paddingBottom="@dimen/_2sdp"
         android:textColor="@color/black"
         android:textSize="@dimen/_10sdp"
-        android:visibility="visible"
+        android:visibility="invisible"
         app:drawableStartCompat="@drawable/ic_exclamation_mark"
         tools:text="app_name" />
 
@@ -114,7 +114,7 @@
         android:paddingBottom="@dimen/_2sdp"
         android:textColor="@color/black"
         android:textSize="@dimen/_10sdp"
-        android:visibility="visible"
+        android:visibility="invisible"
         app:drawableStartCompat="@drawable/ic_exclamation_mark"
         tools:text="app_name" />
 
