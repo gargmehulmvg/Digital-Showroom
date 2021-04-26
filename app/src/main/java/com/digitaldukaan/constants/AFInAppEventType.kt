@@ -23,6 +23,7 @@ interface AFInAppEventType {
         const val EVENT_MARKET_OFFERS_EDIT_BACKGROUND = "Mkt_Offers_Edit_Background"
         const val EVENT_MARKET_OFFERS_SHARE = "Mkt_Offers_Share"
         const val EVENT_START_NOW = "StartNow"
+        const val EVENT_KYC_COMPLETE_NOW = "KYC_Complete_Now"
         const val EVENT_GET_OTP = "GetOTP"
         const val EVENT_OTP_VERIFIED = "OTPVerified"
         const val EVENT_ENTER_NAME = "Enter Name"

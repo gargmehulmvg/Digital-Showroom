@@ -256,6 +256,14 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                     return
                 }
                 showProgressDialog(mActivity)
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_KYC_COMPLETE_NOW,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(
+                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                        AFInAppEventParameterName.KYC_STATUS to mProfileInfoSettingKeyResponse.mDefaultText
+                    )
+                )
                 service.initiateKyc(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
             }
         }
