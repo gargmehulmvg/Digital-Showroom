@@ -5,10 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.digitaldukaan.R
-import com.digitaldukaan.constants.Constants
-import com.digitaldukaan.constants.CoroutineScopeUtils
-import com.digitaldukaan.constants.PrefsManager
-import com.digitaldukaan.constants.ToolBarManager
+import com.digitaldukaan.constants.*
 import com.digitaldukaan.models.request.BankDetailsRequest
 import com.digitaldukaan.models.response.BankDetailsPageInfoResponse
 import com.digitaldukaan.models.response.BankDetailsPageStaticTextResponse
@@ -82,7 +79,14 @@ class OnBoardScreenBankDetailsFragment : BaseFragment(), IBankDetailsServiceInte
 
     override fun onClick(view: View?) {
         when (view?.id) {
-            skipTextView.id -> launchFragment(CreateStoreFragment.newInstance(), true)
+            skipTextView.id -> {
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_SKIP_BANK_ACCOUNT,
+                    isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = true,
+                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
+                )
+                launchFragment(CreateStoreFragment.newInstance(), true)
+            }
             saveTextView.id -> {
                 var isValidationFailed = false
                 val accountHolderNameStr = accountHolderNameEditText.run {
@@ -160,6 +164,11 @@ class OnBoardScreenBankDetailsFragment : BaseFragment(), IBankDetailsServiceInte
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             if (response.mIsSuccessStatus) {
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_BANK_ACCOUNT_ADDED,
+                    isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = true,
+                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
+                )
                 showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
                 launchFragment(CreateStoreFragment.newInstance(), true)
             } else showShortSnackBar(response.mMessage, true, R.drawable.ic_close_red)

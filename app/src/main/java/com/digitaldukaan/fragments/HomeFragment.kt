@@ -117,6 +117,11 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
     override fun onClick(view: View?) {
         when (view?.id) {
             analyticsImageView.id -> {
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_ORDER_ANALYTICS,
+                    isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = true,
+                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
+                )
                 analyticsContainer.visibility = View.VISIBLE
                 analyticsImageView.setImageDrawable(
                     ContextCompat.getDrawable(
@@ -127,17 +132,20 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
             }
             takeOrderTextView.id -> {
                 AppEventsManager.pushAppEvents(
-                    eventName = AFInAppEventType.EVENT_GENERATE_SELF_BILL,
+                    eventName = AFInAppEventType.EVENT_TAKE_ORDER,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                     data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
                 )
                 showTakeOrderBottomSheet()
             }
-            searchImageView.id -> showSearchDialog(
-                mOrderPageInfoStaticData,
-                mMobileNumberString,
-                mOrderIdString
-            )
+            searchImageView.id -> {
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_SEARCH_INTENT,
+                    isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = true,
+                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
+                )
+                showSearchDialog(mOrderPageInfoStaticData, mMobileNumberString, mOrderIdString)
+            }
             closeAnalyticsImageView.id -> {
                 analyticsImageView.setImageDrawable(
                     ContextCompat.getDrawable(

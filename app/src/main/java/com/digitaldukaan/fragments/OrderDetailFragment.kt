@@ -180,6 +180,19 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
             )
             Log.d(OrderDetailFragment::class.java.simpleName, "initiateSendBillServerCall: $request")
             showProgressDialog(mActivity)
+            AppEventsManager.pushAppEvents(
+                eventName = AFInAppEventType.EVENT_BILL_SENT,
+                isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = true,
+                data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                    AFInAppEventParameterName.ORDER_TYPE to "${orderDetailMainResponse?.orders?.orderType}",
+                    AFInAppEventParameterName.ADDRESS to "${orderDetailMainResponse?.orders?.deliveryInfo?.address1}",
+                    AFInAppEventParameterName.ORDER_ID to "${orderDetailMainResponse?.orders?.orderId}",
+                    AFInAppEventParameterName.IS_MERCHANT to "1",
+                    AFInAppEventParameterName.NUMBER_OF_ITEM to "${orderDetailMainResponse?.orders?.orderDetailsItemsList?.size}",
+                    AFInAppEventParameterName.LOCATION to "${orderDetailMainResponse?.orders?.deliveryInfo?.latitude} ${orderDetailMainResponse?.orders?.deliveryInfo?.longitude}",
+                    AFInAppEventParameterName.PHONE to "${orderDetailMainResponse?.orders?.phone}"
+                )
+            )
             mOrderDetailService.updateOrder(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
         }
     }
@@ -696,6 +709,17 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                     bottomSheetDialog.dismiss()
                     val request = UpdateOrderStatusRequest(orderDetailMainResponse?.orders?.orderId?.toLong(), Constants.StatusRejected.toLong(), reason)
                     showProgressDialog(mActivity)
+                    AppEventsManager.pushAppEvents(
+                        eventName = AFInAppEventType.EVENT_ORDER_REJECTED,
+                        isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = true,
+                        data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                        AFInAppEventParameterName.ORDER_ID to "${orderDetailMainResponse?.orders?.orderId}",
+                            AFInAppEventParameterName.PHONE to PrefsManager.getStringDataFromSharedPref(Constants.USER_MOBILE_NUMBER),
+                            AFInAppEventParameterName.REASON to reason,
+                            AFInAppEventParameterName.ORDER_TYPE to "${orderDetailMainResponse?.orders?.orderType}",
+                            AFInAppEventParameterName.NUMBER_OF_ITEM to "1"
+                        )
+                    )
                     mOrderDetailService.updateOrderStatus(request)
                 }
             }
@@ -719,11 +743,15 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
     }
 
     private fun downloadBill() {
+        AppEventsManager.pushAppEvents(
+            eventName = AFInAppEventType.EVENT_DOWNLOAD_BILL,
+            isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = true,
+            data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
+        )
         if (orderDetailMainResponse?.orders?.digitalReceipt?.isEmpty() == true) {
             showToast(mOrderDetailStaticData?.error_no_bill_available_to_download)
         } else {
             showToast("Start Downloading...")
-
             Picasso.get().load("http://cdn.dotpe.in/kiranaStatic/image/fd%E2%80%93182.png").into(object : com.squareup.picasso.Target {
                 override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
                     bitmap?.let {
@@ -739,43 +767,15 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                     Log.d(TAG, "onBitmapFailed: ")
                 }
             })
-
-
-            //downloadImageNew("Bill#${orderDetailMainResponse?.orders?.orderId}_${System.currentTimeMillis()}", "http://cdn.dotpe.in/kiranaStatic/image/fd%E2%80%93182.png", mActivity)
-            /*Picasso.get().load("http://cdn.dotpe.in/kiranaStatic/image/fd%E2%80%93182.png").into(object : com.squareup.picasso.Target {
-                override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
-                    bitmap?.let {
-                        if (mActivity.checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_DENIED) {
-                            mActivity.requestPermissions(arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), Constants.EXTERNAL_STORAGE_REQUEST_CODE)
-                        } else {
-                            val downloadLink = orderDetailMainResponse?.orders?.digitalReceipt
-                            //val request = DownloadManager.Request(Uri.parse(downloadLink))
-                            val imgUri = it.getImageUri(mActivity)
-                            val request = DownloadManager.Request(imgUri)
-                            request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI or DownloadManager.Request.NETWORK_MOBILE)
-                            request.setTitle("Download")
-                            request.setDescription("File is downloading...")
-                            request.allowScanningByMediaScanner()
-                            request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-                            request.setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "Bill#${orderDetailMainResponse?.orders?.orderId}_${System.currentTimeMillis()}")
-                            val manager = mActivity.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-                            manager.enqueue(request)
-                        }
-                    }
-                }
-
-                override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
-                    Log.d(TAG, "onPrepareLoad: ")
-                }
-
-                override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
-                    Log.d(TAG, "onBitmapFailed: ")
-                }
-            })*/
         }
     }
 
     private fun shareBill() {
+        AppEventsManager.pushAppEvents(
+            eventName = AFInAppEventType.EVENT_SHARE_BILL,
+            isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = true,
+            data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
+        )
         if (mShareBillResponseStr?.isNotEmpty() == true) {
             shareDataOnWhatsAppByNumber(
                 orderDetailMainResponse?.orders?.phone,

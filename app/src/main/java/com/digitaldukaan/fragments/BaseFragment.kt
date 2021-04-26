@@ -692,7 +692,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                         confirmTextView.setOnClickListener {
                             var inputOrderId = ""
                             var inputMobileNumber = ""
-                            staticData?.error_mandatory_field = "This field is mandatory" // todo remove this
+                            staticData?.error_mandatory_field = "This field is mandatory"
                             if (orderIdRadioButton.isChecked) {
                                 inputOrderId = mobileNumberEditText.text.trim().toString()
                                 if (inputOrderId.isEmpty()) {
@@ -709,6 +709,12 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                                 }
                             }
                             dismiss()
+                            AppEventsManager.pushAppEvents(
+                                eventName = AFInAppEventType.EVENT_SEARCH_CLICK,
+                                isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = true,
+                                data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)
+                                , AFInAppEventParameterName.SEARCH_BY to if (inputMobileNumber.isEmpty()) AFInAppEventParameterName.PHONE else AFInAppEventParameterName.ORDER_ID)
+                            )
                             onSearchDialogContinueButtonClicked(inputOrderId, inputMobileNumber)
                         }
                     }

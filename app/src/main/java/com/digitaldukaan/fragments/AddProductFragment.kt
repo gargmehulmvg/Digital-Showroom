@@ -282,6 +282,19 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                             imageListRequest,
                             nameStr
                         )
+                        AppEventsManager.pushAppEvents(
+                            eventName = AFInAppEventType.EVENT_SAVE_ITEM,
+                            isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = true,
+                            data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                                AFInAppEventParameterName.IMAGES to Gson().toJson(mImagesStrList),
+                                AFInAppEventParameterName.NAME to mProductNameStr,
+                                AFInAppEventParameterName.AVAILABLE to "1",
+                                AFInAppEventParameterName.DESCRIPTION to descriptionStr,
+                                AFInAppEventParameterName.CATEGORY to categoryStr,
+                                AFInAppEventParameterName.DISCOUNTED_PRICE to discountedStr,
+                                AFInAppEventParameterName.PRICE to priceStr
+                            )
+                        )
                         mService.setItem(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
                     }
                 }
