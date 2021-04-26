@@ -8,9 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import com.digitaldukaan.R
-import com.digitaldukaan.constants.Constants
-import com.digitaldukaan.constants.CoroutineScopeUtils
-import com.digitaldukaan.constants.getImageFileFromBitmap
+import com.digitaldukaan.constants.*
 import com.digitaldukaan.models.request.ImageUrlItemRequest
 import com.digitaldukaan.models.request.StoreThemeBannerRequest
 import com.digitaldukaan.models.response.PremiumPageInfoResponse
@@ -41,6 +39,17 @@ class EditPhotoFragment: BaseFragment() {
             fragment.mPremiumPageInfoResponse = premiumPageInfoResponse
             return fragment
         }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        AppEventsManager.pushAppEvents(
+            eventName = AFInAppEventType.EVENT_MOBILE_BANNER_CROPPED,
+            isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = true,
+            data = mapOf(
+                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)
+            )
+        )
     }
 
     override fun onCreateView(
@@ -80,13 +89,29 @@ class EditPhotoFragment: BaseFragment() {
                 if (response.isSuccessful) {
                     val base64Str = Gson().fromJson<String>(response.body()?.mCommonDataStr, String::class.java)
                     if (mode == Constants.EDIT_PHOTO_MODE_MOBILE) mMobileCdnLink = base64Str else mDesktopCdnLink = base64Str
-                    if (mode == Constants.EDIT_PHOTO_MODE_DESKTOP) onDesktopCDNLinkGenerated()
+                    if (mode == Constants.EDIT_PHOTO_MODE_DESKTOP) {
+                        AppEventsManager.pushAppEvents(
+                            eventName = AFInAppEventType.EVENT_DESKTOP_BANNER_CROPPED,
+                            isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = true,
+                            data = mapOf(
+                                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)
+                            )
+                        )
+                        onDesktopCDNLinkGenerated()
+                    }
                 }
             }
         }
     }
 
     private fun onDesktopCDNLinkGenerated() {
+        AppEventsManager.pushAppEvents(
+            eventName = AFInAppEventType.EVENT_SAVE_THEME_IMAGE,
+            isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = true,
+            data = mapOf(
+                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)
+            )
+        )
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
             val imageUrlItems: ArrayList<ImageUrlItemRequest>? = ArrayList()
             mPremiumPageInfoResponse?.theme?.themeComponent?.body?.get(1)?.images?.forEachIndexed { position, themeBodyResponse ->

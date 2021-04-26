@@ -52,6 +52,17 @@ class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
         }
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        AppEventsManager.pushAppEvents(
+            eventName = AFInAppEventType.EVENT_EDIT_THEME,
+            isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = true,
+            data = mapOf(
+                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)
+            )
+        )
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -101,6 +112,13 @@ class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
                 } else showColorBottomSheet()
             }
             changeImageContainer.id -> {
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_EDIT_THEME_IMAGE,
+                    isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = true,
+                    data = mapOf(
+                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)
+                    )
+                )
                 openGalleryWithoutCrop()
             }
             viewWebsiteImageView.id -> {
@@ -144,6 +162,13 @@ class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
     }
 
     private fun showColorBottomSheet() {
+        AppEventsManager.pushAppEvents(
+            eventName = AFInAppEventType.EVENT_EDIT_COLOR,
+            isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = true,
+            data = mapOf(
+                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)
+            )
+        )
         val bottomSheetDialog = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
         val view = LayoutInflater.from(mActivity).inflate(
             R.layout.bottom_sheet_edit_premium_color,
@@ -187,6 +212,13 @@ class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
                             return@forEachIndexed
                         }
                     }
+                    AppEventsManager.pushAppEvents(
+                        eventName = AFInAppEventType.EVENT_SAVE_THEME_COLOR,
+                        isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = true,
+                        data = mapOf(
+                            AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)
+                        )
+                    )
                     mService.setStoreThemeColorPalette(mPremiumPageInfoResponse?.theme?.storeThemeId, mSelectedColorId)
                 }
             }
