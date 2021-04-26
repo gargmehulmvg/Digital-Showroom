@@ -94,9 +94,9 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
                 deliveryChargeRateValueTextView.text = " ${mMoreControlsStaticData.text_ruppee_symbol} $mFreeDeliveryAbove"
             }
             deliveryChargeTypeValueTextView.text = when (mDeliveryChargeType) {
-                SetDeliveryChargeFragment.FREE_DELIVERY -> mMoreControlsStaticData.heading_free_delivery
-                SetDeliveryChargeFragment.FIXED_DELIVERY_CHARGE -> mMoreControlsStaticData.heading_fixed_delivery_charge
-                SetDeliveryChargeFragment.CUSTOM_DELIVERY_CHARGE -> mMoreControlsStaticData.heading_custom_delivery_charge
+                Constants.FREE_DELIVERY -> mMoreControlsStaticData.heading_free_delivery
+                Constants.FIXED_DELIVERY_CHARGE -> mMoreControlsStaticData.heading_fixed_delivery_charge
+                Constants.CUSTOM_DELIVERY_CHARGE -> mMoreControlsStaticData.heading_custom_delivery_charge
                 else -> ""
             }
         }

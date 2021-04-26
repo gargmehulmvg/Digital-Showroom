@@ -27,10 +27,6 @@ class SetDeliveryChargeFragment : BaseFragment(), IMoreControlsServiceInterface 
             fragment.mAppStoreServicesResponse = appStoreServicesResponse
             return fragment
         }
-        const val UNKNOWN_DELIVERY_CHARGE = 0
-        const val FREE_DELIVERY = 1
-        const val FIXED_DELIVERY_CHARGE = 2
-        const val CUSTOM_DELIVERY_CHARGE = 3
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -66,24 +62,24 @@ class SetDeliveryChargeFragment : BaseFragment(), IMoreControlsServiceInterface 
         customDeliveryTextView.text = mMoreControlsStaticData.custom_delivery_charge_description
         continueTextView.text = mMoreControlsStaticData.bottom_sheet_save_changes
         when (mAppStoreServicesResponse.mDeliveryChargeType) {
-            UNKNOWN_DELIVERY_CHARGE -> {
+            Constants.UNKNOWN_DELIVERY_CHARGE -> {
                 showFreeDeliveryContainer(false)
                 showFixedDeliveryContainer(false)
                 showCustomDeliveryContainer(false)
             }
-            FREE_DELIVERY -> {
+            Constants.FREE_DELIVERY -> {
                 showFreeDeliveryContainer(true)
                 showFixedDeliveryContainer(false)
                 showCustomDeliveryContainer(false)
             }
-            FIXED_DELIVERY_CHARGE -> {
+            Constants.FIXED_DELIVERY_CHARGE -> {
                 showFreeDeliveryContainer(false)
                 showFixedDeliveryContainer(true)
                 showCustomDeliveryContainer(false)
                 fixedDeliveryChargeEditText.setText(mAppStoreServicesResponse.mDeliveryPrice.toString())
                 if (mAppStoreServicesResponse.mFreeDeliveryAbove != 0.0) freeDeliveryAboveEditText.setText(mAppStoreServicesResponse.mFreeDeliveryAbove.toString())
             }
-            CUSTOM_DELIVERY_CHARGE -> {
+            Constants.CUSTOM_DELIVERY_CHARGE -> {
                 showFreeDeliveryContainer(false)
                 showFixedDeliveryContainer(false)
                 showCustomDeliveryContainer(true)
@@ -119,7 +115,7 @@ class SetDeliveryChargeFragment : BaseFragment(), IMoreControlsServiceInterface 
                 val mMoreControlRequest = MoreControlsRequest(0, 0.0, 0.0, 0.0)
                 if (freeDeliveryRadioButton.isChecked) {
                     selectionStr = "Free_delivery"
-                    mMoreControlRequest.deliveryChargeType = FREE_DELIVERY
+                    mMoreControlRequest.deliveryChargeType = Constants.FREE_DELIVERY
                     mMoreControlRequest.deliveryPrice = 0.0
                     mMoreControlRequest.freeDeliveryAbove = 0.0
                     mMoreControlRequest.minOrderValue = mAppStoreServicesResponse.mMinOrderValue ?: 0.0
@@ -143,7 +139,7 @@ class SetDeliveryChargeFragment : BaseFragment(), IMoreControlsServiceInterface 
                         freeDeliveryAboveEditText.error = mMoreControlsStaticData.error_mandatory_field
                         return
                     }
-                    mMoreControlRequest.deliveryChargeType = FIXED_DELIVERY_CHARGE
+                    mMoreControlRequest.deliveryChargeType = Constants.FIXED_DELIVERY_CHARGE
                     mMoreControlRequest.deliveryPrice = fixedDeliveryChargeStr.toDouble()
                     mMoreControlRequest.freeDeliveryAbove = if (freeDeliveryAboveStr.isEmpty()) 0.0 else freeDeliveryAboveStr.toDouble()
                     mMoreControlRequest.minOrderValue = mAppStoreServicesResponse.mMinOrderValue ?: 0.0
@@ -161,7 +157,7 @@ class SetDeliveryChargeFragment : BaseFragment(), IMoreControlsServiceInterface 
                         customDeliveryAboveEditText.error = mMoreControlsStaticData.error_amount_must_greater_than_min_order_value
                         return
                     }
-                    mMoreControlRequest.deliveryChargeType = CUSTOM_DELIVERY_CHARGE
+                    mMoreControlRequest.deliveryChargeType = Constants.CUSTOM_DELIVERY_CHARGE
                     mMoreControlRequest.deliveryPrice = mAppStoreServicesResponse.mDeliveryPrice ?: 0.0
                     mMoreControlRequest.freeDeliveryAbove = if (customDeliveryAboveStr.isEmpty()) 0.0 else customDeliveryAboveStr.toDouble()
                     mMoreControlRequest.minOrderValue = mAppStoreServicesResponse.mMinOrderValue ?: 0.0

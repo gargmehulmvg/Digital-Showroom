@@ -17,6 +17,7 @@
         android:drawablePadding="@dimen/_4sdp"
         android:ellipsize="end"
         tools:text=" app_name"
+        android:gravity="center"
         android:maxLines="1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

@@ -63,9 +63,6 @@ class Constants {
         const val ERROR_DOMAIN_ALREADY_EXISTS = "domain_already_exists"
         //GRID_LAYOUT_SPAN_TYPE
         const val SPAN_TYPE_FULL_WIDTH = "fullWidth"
-        //STICKY_HEADER_VIEW_TYPE
-        const val VIEW_TYPE_HEADER = 0
-        const val VIEW_TYPE_ITEM = 1
         //ORDER_TYPE
         const val ORDER_TYPE_ADDRESS = 1
         const val ORDER_TYPE_PICK_UP = 2
@@ -117,5 +114,10 @@ class Constants {
         const val ORDER_STATUS_IN_PROGRESS = "In-Progress"
         const val ORDER_STATUS_REFUND_SUCCESS  = "refund-success"
         const val ORDER_STATUS_PAYOUT_SUCCESS  = "payout-success"
+        //MODE DELIVERY CHARGE
+        const val UNKNOWN_DELIVERY_CHARGE = 0
+        const val FREE_DELIVERY = 1
+        const val FIXED_DELIVERY_CHARGE = 2
+        const val CUSTOM_DELIVERY_CHARGE = 3
     }
 }

@@ -1,8 +1,14 @@
 package com.digitaldukaan.fragments
 
 import android.content.Intent
+import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
+import android.text.Editable
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.TextWatcher
+import android.text.style.StyleSpan
 import android.util.Log
 import android.view.*
 import android.widget.*
@@ -49,8 +55,13 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
     private var mBillSentCameraClicked = false
     private var mIsNewOrder = false
     private lateinit var deliveryTimeEditText: EditText
+    private var mTotalDisplayAmount = 0.0
+    private var mDeliveryChargeAmount = 0.0
+    private var mOtherChargeAmount = 0.0
+    private var mDiscountAmount = 0.0
 
     companion object {
+        private const val TAG = "OrderDetailFragment"
         private const val CUSTOM = "custom"
         private var mShareBillResponseStr: String? = ""
         fun newInstance(orderId: String, isNewOrder: Boolean): OrderDetailFragment {
@@ -177,79 +188,67 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
             sendBillLayout.visibility = if (orderDetailResponse?.displayStatus == Constants.DS_SEND_BILL) View.VISIBLE else View.GONE
             orderDetailContainer.visibility = if (orderDetailResponse?.displayStatus == Constants.DS_SEND_BILL) View.GONE else View.VISIBLE
             addDeliveryChargesLabel.visibility = if (orderDetailResponse?.displayStatus == Constants.DS_SEND_BILL) View.VISIBLE else View.GONE
-            val createdDate = orderDetailResponse?.createdAt?.let { getCompleteDateFromOrderString(it) }
-            createdDate?.run { ToolBarManager.getInstance().setHeaderSubTitle(getStringDateTimeFromOrderDate(createdDate)) }
             orderDetailItemRecyclerView.apply {
                 layoutManager = LinearLayoutManager(mActivity)
                 val list = orderDetailResponse?.orderDetailsItemsList
+                list?.forEachIndexed { _, itemResponse ->
+                    mTotalDisplayAmount += itemResponse.item_price ?: 0.0
+                }
                 var orderDetailAdapter: OrderDetailsAdapter? = null
                 orderDetailAdapter = OrderDetailsAdapter(list, orderDetailResponse?.displayStatus, mOrderDetailStaticData, object : IChipItemClickListener {
 
                     override fun onChipItemClickListener(position: Int) {
-                        list?.get(position)?.item_status = if (list?.get(position)?.item_status == 2) 1 else 2
+                        val item = list?.get(position)
+                        item?.item_status = if (list?.get(position)?.item_status == 2) 1 else 2
+                        if (item?.item_status == 2) mTotalDisplayAmount -= item.item_price ?: 0.0 else mTotalDisplayAmount += item?.item_price ?: 0.0
                         orderDetailAdapter?.setOrderDetailList(list)
+                        setAmountToEditText()
+                        var isValidOrderAvailable = false
+                        list?.forEachIndexed { _, itemResponse -> if (itemResponse.item_status != 2) isValidOrderAvailable = true }
+                        sendBillTextView.isEnabled = isValidOrderAvailable
                     }
                 })
                 adapter = orderDetailAdapter
             }
-            mOrderDetailStaticData?.run {
-                sendBillToCustomerTextView?.setHtmlData(heading_send_bill_to_your_customer)
-                sendBillTextView?.text = text_send_bill
-                amountEditText?.hint = text_rupees_symbol
-                otherChargesEditText?.hint = hint_other_charges
-                discountsEditText?.hint = hint_discount
-                discountsValueEditText?.hint = text_rupees_symbol
-                otherChargesValueEditText?.hint = text_rupees_symbol
-                customerCanPayUsingTextView?.text = text_customer_can_pay_via
-                deliveryChargeLabel?.text = text_delivery_charges
-                addDeliveryChargesLabel?.text = heading_add_delivery_and_other_charges
-                instructionsLabel?.text = heading_instructions
-                customerDetailsLabel?.text = heading_customer_details
-                newOrderTextView?.text = text_new_order
-                billAmountLabel?.text = "$text_bill_amount:"
-                statusLabel?.text = "$text_status:"
-                detailTextView?.text = "$text_details:"
-                billAmountValue?.text = "$text_rupees_symbol ${orderDetailResponse?.amount}"
-                ToolBarManager.getInstance().setHeaderTitle("$text_order #$mOrderId")
-                if (orderDetailResponse?.deliveryInfo?.customDeliveryTime?.isEmpty() == true) estimateDeliveryTextView.visibility = View.GONE else estimateDeliveryTextView.text = "$text_estimate_delivery : ${orderDetailResponse?.deliveryInfo?.customDeliveryTime}"
-                statusValue?.text = orderDetailResponse?.orderPaymentStatus?.value
-                when (orderDetailResponse?.orderPaymentStatus?.key) {
-                    Constants.ORDER_STATUS_SUCCESS -> {
-                        statusValue.setCompoundDrawablesWithIntrinsicBounds(
-                            0,
-                            0,
-                            R.drawable.ic_tick_green_hollow,
-                            0
-                        )
-                        orderDetailContainer.setBackgroundColor(ContextCompat.getColor(mActivity, R.color.open_green))
-                    }
-                    Constants.ORDER_STATUS_REJECTED -> orderDetailContainer.setBackgroundColor(ContextCompat.getColor(mActivity, R.color.red))
-                    Constants.ORDER_STATUS_IN_PROGRESS -> orderDetailContainer.setBackgroundColor(ContextCompat.getColor(mActivity, R.color.order_detail_in_progress))
-                    else -> orderDetailContainer.setBackgroundColor(ContextCompat.getColor(mActivity, R.color.black))
-                }
-            }
+            amountEditText.setText("$mTotalDisplayAmount")
+            setStaticDataToUI(orderDetailResponse)
             ToolBarManager.getInstance().setHeaderSubTitle(getStringDateTimeFromOrderDate(getCompleteDateFromOrderString(orderDetailMainResponse?.orders?.createdAt)))
-            customerDeliveryDetailsRecyclerView.apply {
+            setupDeliveryChargeUI(orderDetailMainResponse?.storeServices)
+            if (orderDetailResponse?.orderType == Constants.ORDER_TYPE_PICK_UP) {
+                deliveryChargeLabel?.visibility = View.GONE
+                deliveryChargeValue?.visibility = View.GONE
+                customerDetailsLabel.visibility = View.GONE
+                deliveryChargeValueEditText?.visibility = View.GONE
+                addDeliveryChargesLabel.text = getString(R.string.add_discount_and_other_charges)
+            } else {
+                customerDeliveryDetailsRecyclerView.apply {
                 layoutManager = LinearLayoutManager(mActivity)
                 val customerDetailsList = ArrayList<CustomerDeliveryAddressDTO>()
                 orderDetailResponse?.deliveryInfo?.run {
-                    customerDetailsList.add(CustomerDeliveryAddressDTO(mOrderDetailStaticData?.text_name + ":", deliverTo))
-                    customerDetailsList.add(CustomerDeliveryAddressDTO(mOrderDetailStaticData?.text_address + ":", "$address1,$address2"))
-                    customerDetailsList.add(CustomerDeliveryAddressDTO(mOrderDetailStaticData?.text_city_and_pincode + ":", "$city,$pincode"))
-                    customerDetailsList.add(CustomerDeliveryAddressDTO(mOrderDetailStaticData?.text_landmark + ":", landmark))
+                    customerDetailsList.add(CustomerDeliveryAddressDTO("${mOrderDetailStaticData?.text_name}:", deliverTo))
+                    customerDetailsList.add(CustomerDeliveryAddressDTO("${mOrderDetailStaticData?.text_address}:", "$address1,$address2"))
+                    customerDetailsList.add(CustomerDeliveryAddressDTO("${mOrderDetailStaticData?.text_city_and_pincode}:",
+                        if (city == null) {
+                            if (pincode == null) {
+                                ""
+                            } else {
+                                "$pincode"
+                            }
+                        } else if (pincode == null) {
+                            "$city"
+                        } else {
+                            "$city, $pincode"
+                        }
+                    ))
+                    customerDetailsList.add(CustomerDeliveryAddressDTO("${mOrderDetailStaticData?.text_landmark}:", landmark))
                 }
                 adapter = CustomerDeliveryAddressAdapter(customerDetailsList)
             }
-            amountEditText.setText("${orderDetailMainResponse?.orders?.amount}")
+            }
             if (orderDetailResponse?.instruction?.isNotEmpty() == true) {
                 instructionsValue?.visibility = View.VISIBLE
                 instructionsValue?.text = orderDetailResponse.instruction
                 instructionsLabel?.visibility = View.VISIBLE
-            }
-            if (orderDetailMainResponse?.storeServices?.mDeliveryPrice != 0.0) {
-                deliveryChargeLabel?.visibility = View.VISIBLE
-                deliveryChargeValue?.visibility = View.VISIBLE
-                deliveryChargeValue?.text = "${mOrderDetailStaticData?.text_rupees_symbol} ${orderDetailMainResponse?.storeServices?.mDeliveryPrice}"
             }
             mMobileNumber = orderDetailResponse?.phone ?: ""
             if (orderDetailResponse?.imageLink?.isNotEmpty() == true) {
@@ -257,6 +256,157 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                 viewBillTextView.setOnClickListener {
                     showImageDialog(orderDetailResponse.imageLink)
                 }
+            }
+        }
+    }
+
+    private fun setupDeliveryChargeUI(storeServices: StoreServicesResponse?) {
+        deliveryChargeLabel?.visibility = View.VISIBLE
+        deliveryChargeValue?.visibility = View.VISIBLE
+        when(storeServices?.mDeliveryChargeType) {
+            Constants.FREE_DELIVERY -> {
+                val txtSpannable = SpannableString(getString(R.string.free).toUpperCase(Locale.getDefault()))
+                val boldSpan = StyleSpan(Typeface.BOLD)
+                txtSpannable.setSpan(boldSpan, 0, txtSpannable.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                deliveryChargeValue.text = txtSpannable
+                deliveryChargeValue.setTextColor(ContextCompat.getColor(mActivity, R.color.open_green))
+                deliveryChargeValue.background = ContextCompat.getDrawable(mActivity, R.drawable.order_adapter_new)
+            }
+            Constants.FIXED_DELIVERY_CHARGE -> {
+                deliveryChargeLabel?.visibility = View.GONE
+                deliveryChargeValue?.visibility = View.GONE
+                addDeliveryChargesLabel.text = getString(R.string.add_discount_and_other_charges)
+            }
+            Constants.CUSTOM_DELIVERY_CHARGE -> {
+                deliveryChargeLabel?.visibility = View.VISIBLE
+                deliveryChargeValue?.visibility = View.VISIBLE
+                deliveryChargeValueEditText?.visibility = View.VISIBLE
+            }
+            Constants.UNKNOWN_DELIVERY_CHARGE -> {
+                deliveryChargeLabel?.visibility = View.VISIBLE
+                deliveryChargeValue?.visibility = View.VISIBLE
+                deliveryChargeValueEditText?.visibility = View.VISIBLE
+            }
+        }
+        deliveryChargeValueEditText.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(editable: Editable?) {
+                val str = editable?.toString()
+                mDeliveryChargeAmount = if (str?.isNotEmpty() == true) {
+                    str.toDouble()
+                } else 0.0
+                setAmountToEditText()
+
+            }
+
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                Log.d(TAG, "beforeTextChanged: do nothing")
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                Log.d(TAG, "onTextChanged: do nothing")
+            }
+        })
+        otherChargesValueEditText.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(editable: Editable?) {
+                val str = editable?.toString()
+                mOtherChargeAmount = if (str?.isNotEmpty() == true) {
+                    str.toDouble()
+                } else 0.0
+                setAmountToEditText()
+            }
+
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                Log.d(TAG, "beforeTextChanged: do nothing")
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                Log.d(TAG, "onTextChanged: do nothing")
+            }
+        })
+        discountsValueEditText.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(editable: Editable?) {
+                val str = editable?.toString()
+                mDiscountAmount = if (str?.isNotEmpty() == true) {
+                    str.toDouble()
+                } else 0.0
+                if (mDiscountAmount <= 0.0) {
+                    discountsValueEditText.apply {
+                        error = "Invalid Amount"
+                        requestFocus()
+                    }
+                    sendBillTextView.isEnabled = false
+                } else {
+                    sendBillTextView.isEnabled = true
+                    setAmountToEditText()
+                }
+            }
+
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                Log.d(TAG, "beforeTextChanged: do nothing")
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                Log.d(TAG, "onTextChanged: do nothing")
+            }
+        })
+    }
+
+    private fun setAmountToEditText() {
+        val amount = mTotalDisplayAmount + mDeliveryChargeAmount + mOtherChargeAmount - mDiscountAmount
+        amountEditText.setText("$amount")
+    }
+
+    private fun setStaticDataToUI(orderDetailResponse: OrderDetailsResponse?) {
+        mOrderDetailStaticData?.run {
+            sendBillToCustomerTextView?.setHtmlData(heading_send_bill_to_your_customer)
+            sendBillTextView?.text = text_send_bill
+            amountEditText?.hint = text_rupees_symbol
+            otherChargesEditText?.hint = hint_other_charges
+            discountsEditText?.hint = hint_discount
+            discountsValueEditText?.hint = text_rupees_symbol
+            otherChargesValueEditText?.hint = text_rupees_symbol
+            customerCanPayUsingTextView?.text = text_customer_can_pay_via
+            deliveryChargeLabel?.text = text_delivery_charges
+            addDeliveryChargesLabel?.text = heading_add_delivery_and_other_charges
+            instructionsLabel?.text = heading_instructions
+            customerDetailsLabel?.text = heading_customer_details
+            newOrderTextView?.text = text_new_order
+            billAmountLabel?.text = "$text_bill_amount:"
+            statusLabel?.text = "$text_status:"
+            detailTextView?.text = "$text_details:"
+            billAmountValue?.text = "$text_rupees_symbol ${orderDetailResponse?.amount}"
+            ToolBarManager.getInstance().setHeaderTitle("$text_order #$mOrderId")
+            if (orderDetailResponse?.deliveryInfo?.customDeliveryTime?.isEmpty() == true) estimateDeliveryTextView.visibility =
+                View.GONE else estimateDeliveryTextView.text =
+                "$text_estimate_delivery : ${orderDetailResponse?.deliveryInfo?.customDeliveryTime}"
+            statusValue?.text = orderDetailResponse?.orderPaymentStatus?.value
+            when (orderDetailResponse?.orderPaymentStatus?.key) {
+                Constants.ORDER_STATUS_SUCCESS -> {
+                    statusValue.setCompoundDrawablesWithIntrinsicBounds(
+                        0,
+                        0,
+                        R.drawable.ic_tick_green_hollow,
+                        0
+                    )
+                    orderDetailContainer.setBackgroundColor(
+                        ContextCompat.getColor(
+                            mActivity,
+                            R.color.open_green
+                        )
+                    )
+                }
+                Constants.ORDER_STATUS_REJECTED -> orderDetailContainer.setBackgroundColor(
+                    ContextCompat.getColor(mActivity, R.color.red)
+                )
+                Constants.ORDER_STATUS_IN_PROGRESS -> orderDetailContainer.setBackgroundColor(
+                    ContextCompat.getColor(mActivity, R.color.order_detail_in_progress)
+                )
+                else -> orderDetailContainer.setBackgroundColor(
+                    ContextCompat.getColor(
+                        mActivity,
+                        R.color.black
+                    )
+                )
             }
         }
     }

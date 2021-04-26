@@ -33,7 +33,7 @@ class CustomerDeliveryAddressAdapter(
         val item = mCustomerDeliveryAddressList?.get(position)
         holder.apply {
             customerDetailItemLabel.text = item?.customerDeliveryAddressLabel
-            customerDetailItemValue.text = item?.customerDeliveryAddressValue
+            customerDetailItemValue.text = if (item?.customerDeliveryAddressValue == null) "" else item.customerDeliveryAddressValue
         }
     }
 

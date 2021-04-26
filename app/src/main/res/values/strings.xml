@@ -87,6 +87,8 @@
     <string name="delivery_guy_not_available">Delivery guy not available</string>
     <string name="why_are_you_rejecting_the_order">Why are you rejecting the Order?</string>
     <string name="no_internet_message">Make sure Wi-Fi or Cellular data is turned on, then try again</string>
+    <string name="free">free</string>
+    <string name="add_discount_and_other_charges"><![CDATA[Add discount & Other charges]]></string>
     <string-array name="state_array">
         <item >Andhra Pradesh</item>
         <item >Arunachal Pradesh</item>

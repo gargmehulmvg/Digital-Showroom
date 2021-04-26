@@ -61,7 +61,7 @@
         android:layout_height="0dp"
         android:onClick="onClick"
         android:layout_marginStart="@dimen/_5sdp"
-        android:background="@drawable/slight_curve_black_background"
+        android:background="@drawable/slight_curve_black_background_selector"
         android:elevation="@dimen/_4sdp"
         android:fontFamily="@font/montserrat_bold"
         android:gravity="center"

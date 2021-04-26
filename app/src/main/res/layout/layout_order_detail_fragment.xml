@@ -144,10 +144,25 @@
                     android:id="@+id/deliveryChargeValue"
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
-                    app:layout_constraintBottom_toBottomOf="@+id/deliveryChargeLabel"
+                    android:gravity="center"
+                    android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@+id/deliveryChargeLabel"
                     tools:text="Delivery Charges" />
+
+                <EditText
+                    android:id="@+id/deliveryChargeValueEditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:importantForAutofill="no"
+                    android:inputType="number"
+                    android:visibility="gone"
+                    android:maxLength="@integer/amount_length"
+                    android:minWidth="@dimen/_30sdp"
+                    android:textSize="@dimen/_10sdp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/deliveryChargeLabel"
+                    tools:hint="₹" />
 
                 <TextView
                     android:id="@+id/addDeliveryChargesLabel"
