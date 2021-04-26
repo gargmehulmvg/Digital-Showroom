@@ -8,7 +8,7 @@ interface AFInAppEventParameterName {
         const val SOCIAL = "Social"
         const val OFFERS = "Offers"
         const val PHONE = "phone"
-        const val KYC_STATUS = "KYC_STATUS"
+        const val STATE = "STATE"
         const val PRICE = "price"
         const val AVAILABLE = "available"
         const val DESCRIPTION = "description"

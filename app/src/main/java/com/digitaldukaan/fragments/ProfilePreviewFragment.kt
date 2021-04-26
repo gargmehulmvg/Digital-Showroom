@@ -261,7 +261,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                     data = mapOf(
                         AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                        AFInAppEventParameterName.KYC_STATUS to mProfileInfoSettingKeyResponse.mDefaultText
+                        AFInAppEventParameterName.STATE to mProfileInfoSettingKeyResponse.mDefaultText
                     )
                 )
                 service.initiateKyc(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
