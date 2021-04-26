@@ -115,5 +115,7 @@ class Constants {
         const val ORDER_STATUS_SUCCESS = "Success"
         const val ORDER_STATUS_REJECTED = "Rejected"
         const val ORDER_STATUS_IN_PROGRESS = "In-Progress"
+        const val ORDER_STATUS_REFUND_SUCCESS  = "refund-success"
+        const val ORDER_STATUS_PAYOUT_SUCCESS  = "payout-success"
     }
 }

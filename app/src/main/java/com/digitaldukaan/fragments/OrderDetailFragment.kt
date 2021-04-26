@@ -28,6 +28,7 @@ import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IOrderDetailServiceInterface
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.bottom_layout_send_bill.*
 import kotlinx.android.synthetic.main.layout_order_detail_fragment.*
 import java.io.File
@@ -172,6 +173,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
             val orderDetailResponse = orderDetailMainResponse?.orders
             mOrderDetailStaticData = orderDetailMainResponse?.staticText
             newOrderTextView.visibility = if (mIsNewOrder) View.VISIBLE else View.GONE
+            detailTextView.visibility = if (orderDetailResponse?.transactionId?.isEmpty() == true) View.INVISIBLE else View.VISIBLE
             sendBillLayout.visibility = if (orderDetailResponse?.displayStatus == Constants.DS_SEND_BILL) View.VISIBLE else View.GONE
             orderDetailContainer.visibility = if (orderDetailResponse?.displayStatus == Constants.DS_SEND_BILL) View.GONE else View.VISIBLE
             addDeliveryChargesLabel.visibility = if (orderDetailResponse?.displayStatus == Constants.DS_SEND_BILL) View.VISIBLE else View.GONE
@@ -305,8 +307,9 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             if (commonResponse.mIsSuccessStatus) {
-                val orderDetailStatusStr = Gson().fromJson<String>(commonResponse.mCommonDataStr, String::class.java)
-                showOrderDetailBottomSheet()
+                val listType = object : TypeToken<List<OrderDetailTransactionItemResponse?>>() {}.type
+                val txnItemList = Gson().fromJson<ArrayList<OrderDetailTransactionItemResponse?>>(commonResponse.mCommonDataStr, listType)
+                showOrderDetailBottomSheet(txnItemList)
             } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
         }
     }
@@ -423,7 +426,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
         }.show()
     }
 
-    private fun showOrderDetailBottomSheet() {
+    private fun showOrderDetailBottomSheet(txnItemList: ArrayList<OrderDetailTransactionItemResponse?>) {
         val bottomSheetDialog = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
         val view = LayoutInflater.from(mActivity).inflate(
             R.layout.bottom_sheet_order_detail,
@@ -447,18 +450,38 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                         billAmountTextView.text = "$text_bill_amount: ${it.orders?.amount}"
                         orderIdTextView.text = "$text_order_id: ${it.orders?.orderId}"
                         textViewTop.text = it.staticText?.message_customer_paid
-                        txnId.text = orderDetailMainResponse?.orders?.transactionId
-                        textViewBottom.text = orderDetailMainResponse?.orders?.orderPaymentStatus?.value
-                    }
-                    when(it.orders?.displayStatus) {
-                        Constants.DS_BILL_SENT -> {
-                            imageViewTop.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.ic_order_detail_green_tick))
-                            imageViewBottom.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.ic_order_detail_green_tick))
+                        val firstItem = txnItemList[0]
+                        val lastItem = txnItemList[txnItemList.size -1]
+                        firstItem?.run {
+                            setOrderDetailBottomSheetItem(imageViewTop, textViewTop, this)
+                            txnId.text = firstItem.transactionId
+                        }
+                        lastItem?.run {
+                            setOrderDetailBottomSheetItem(imageViewBottom, textViewBottom, this)
                         }
                     }
                 }
             }
         }.show()
+    }
+
+    private fun setOrderDetailBottomSheetItem(imageView:ImageView, textView: TextView, item: OrderDetailTransactionItemResponse) {
+        textView.setTextColor(ContextCompat.getColor(mActivity, R.color.black))
+        when(item.transactionStatus?.toLowerCase(Locale.getDefault())) {
+            "" -> {
+                imageView.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.ic_order_detail_green_tick))
+            }
+            Constants.ORDER_STATUS_PAYOUT_SUCCESS -> {
+                imageView.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.ic_order_detail_green_tick))
+            }
+            Constants.ORDER_STATUS_IN_PROGRESS -> {
+                imageView.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.ic_order_detail_yellow_icon))
+            }
+            Constants.ORDER_STATUS_REFUND_SUCCESS -> {
+                imageView.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.ic_order_detail_black_tick))
+            }
+        }
+
     }
 
     private fun showOrderRejectBottomSheet() {

@@ -17,7 +17,7 @@ data class OrderDetailsResponse (
     @SerializedName("display_status") var displayStatus: String?,
     @SerializedName("status_message") var statusMessage: String?,
     @SerializedName("order_hash") var orderHash: String?,
-    @SerializedName("transaction_id") var transactionId: String?,
+    @SerializedName("transaction_id") var transactionId: String,
     @SerializedName("image_link") var imageLink: String?,
     @SerializedName("created_at") var createdAt: String?,
     @SerializedName("updated_at") var updatedAt: String?,
