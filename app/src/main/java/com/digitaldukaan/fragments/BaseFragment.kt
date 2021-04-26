@@ -123,7 +123,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         }
     }
 
-    public fun stopProgress() {
+    fun stopProgress() {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (mProgressDialog != null) {
                 mProgressDialog?.let {
@@ -487,9 +487,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                     }
                     showProgressDialog(mActivity)
                     CoroutineScopeUtils().runTaskOnCoroutineBackground {
-                        val response = RetrofitApi().getServerCallObject()?.searchImagesFromBing(
-                            getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), searchImageEditText.text.trim().toString(), getStringDataFromSharedPref(Constants.STORE_ID)
-                        )
+                        val response = RetrofitApi().getServerCallObject()?.searchImagesFromBing(searchImageEditText.text.trim().toString(), getStringDataFromSharedPref(Constants.STORE_ID))
                         response?.let {
                             if (it.isSuccessful) {
                                 it.body()?.let {

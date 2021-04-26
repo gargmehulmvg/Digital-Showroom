@@ -14,7 +14,7 @@
         android:id="@+id/imageLayout"
         android:layout_width="@dimen/_65sdp"
         android:layout_height="@dimen/_75sdp"
-        android:background="@drawable/slight_curve_grey_border_without_padding"
+        android:background="@drawable/slight_curve_light_grey_border_without_padding"
         android:gravity="center_horizontal"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">

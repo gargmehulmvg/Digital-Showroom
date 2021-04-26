@@ -218,7 +218,7 @@ class OnBoardScreenDukaanLocationFragment : BaseFragment(), IStoreAddressService
                             address = storeLocation
                         )
                         showProgressDialog(mActivity)
-                        service.updateStoreAddress(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
+                        service.updateStoreAddress(request)
                     }
                 }
             }

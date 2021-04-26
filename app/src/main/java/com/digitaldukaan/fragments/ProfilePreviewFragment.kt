@@ -259,25 +259,24 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                     setContentView(view)
                     setCancelable(false)
                     window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-                }
-                view?.run {
-                    val editStoreDialogConfirmTextView: TextView = findViewById(R.id.editStoreDialogConfirmTextView)
-                    val editStoreDialogWarningOne: TextView = findViewById(R.id.editStoreDialogWarningOne)
-                    val editStoreDialogWarningTwo: TextView = findViewById(R.id.editStoreDialogWarningTwo)
-                    val editStoreDialogYesTextView: TextView = findViewById(R.id.editStoreDialogYesTextView)
-                    val editStoreDialogNoTextView: TextView = findViewById(R.id.editStoreDialogNoTextView)
-                    editStoreDialogConfirmTextView.text = mProfilePreviewStaticData.mStoreLinkChangeDialogHeading
-                    editStoreDialogWarningOne.text = mProfilePreviewStaticData.mStoreLinkChangeWarningOne
-                    editStoreDialogWarningTwo.text = mProfilePreviewStaticData.mStoreLinkChangeWarningTwo
-                    editStoreDialogYesTextView.text = mProfilePreviewStaticData.mYesText
-                    editStoreDialogNoTextView.text = mProfilePreviewStaticData.mNoText
-                    editStoreDialogYesTextView.setOnClickListener {
-                        if (warningDialog.isShowing) warningDialog.dismiss()
-                        showEditStoreLinkBottomSheet(profilePreviewResponse)
+                    view?.run {
+                        val editStoreDialogConfirmTextView: TextView = findViewById(R.id.editStoreDialogConfirmTextView)
+                        val editStoreDialogWarningOne: TextView = findViewById(R.id.editStoreDialogWarningOne)
+                        val editStoreDialogWarningTwo: TextView = findViewById(R.id.editStoreDialogWarningTwo)
+                        val editStoreDialogYesTextView: TextView = findViewById(R.id.editStoreDialogYesTextView)
+                        val editStoreDialogNoTextView: TextView = findViewById(R.id.editStoreDialogNoTextView)
+                        editStoreDialogConfirmTextView.text = mProfilePreviewStaticData.mStoreLinkChangeDialogHeading
+                        editStoreDialogWarningOne.text = mProfilePreviewStaticData.mStoreLinkChangeWarningOne
+                        editStoreDialogWarningTwo.text = mProfilePreviewStaticData.mStoreLinkChangeWarningTwo
+                        editStoreDialogYesTextView.text = mProfilePreviewStaticData.mYesText
+                        editStoreDialogNoTextView.text = mProfilePreviewStaticData.mNoText
+                        editStoreDialogYesTextView.setOnClickListener {
+                            if (warningDialog.isShowing) warningDialog.dismiss()
+                            showEditStoreLinkBottomSheet(profilePreviewResponse)
+                        }
+                        editStoreDialogNoTextView.setOnClickListener{ if (warningDialog.isShowing) warningDialog.dismiss() }
                     }
-                    editStoreDialogNoTextView.setOnClickListener{ if (warningDialog.isShowing) warningDialog.dismiss() }
-                }
-                warningDialog.show()
+                }.show()
             }
         }
     }

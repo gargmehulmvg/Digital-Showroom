@@ -109,7 +109,7 @@ class BankAccountFragment : BaseFragment(), IBankDetailsServiceInterface {
                         requestFocus()
                         error = mProfilePreviewStaticData?.error_mandatory_field
                         isValidationFailed = true
-                    } else if (text.trim().toString().length != resources.getInteger(R.integer.account_number_length)) {
+                    } else if (text.trim().toString().length <= resources.getInteger(R.integer.account_number_length)) {
                         requestFocus()
                         error = mProfilePreviewStaticData?.error_invalid_account_number
                         isValidationFailed = true
@@ -121,7 +121,7 @@ class BankAccountFragment : BaseFragment(), IBankDetailsServiceInterface {
                         requestFocus()
                         error = mProfilePreviewStaticData?.error_mandatory_field
                         isValidationFailed = true
-                    } else if (text.trim().toString().length != resources.getInteger(R.integer.account_number_length)) {
+                    } else if (text.trim().toString().length <= resources.getInteger(R.integer.account_number_length)) {
                         requestFocus()
                         error = mProfilePreviewStaticData?.error_invalid_account_number
                         isValidationFailed = true

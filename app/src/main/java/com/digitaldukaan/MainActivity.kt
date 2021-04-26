@@ -1,7 +1,9 @@
 package com.digitaldukaan
 
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.pm.ActivityInfo
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
@@ -26,6 +28,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     CTPushNotificationListener, InAppNotificationButtonListener {
 
     companion object {
+        private val mNetworkChangeListener = NetworkChangeListener()
         private const val TAG = "MainActivity"
     }
 
@@ -53,6 +56,17 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         CleverTapAPI.getDefaultInstance(this)?.apply {
             setInAppNotificationButtonListener(this@MainActivity)
         }
+    }
+
+    override fun onStart() {
+        val intentFiler = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
+        registerReceiver(mNetworkChangeListener, intentFiler)
+        super.onStart()
+    }
+
+    override fun onStop() {
+        unregisterReceiver(mNetworkChangeListener)
+        super.onStop()
     }
 
     private fun setupBottomNavigation() {

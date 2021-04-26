@@ -26,7 +26,7 @@ class Constants {
         const val KEY_DONT_SHOW_MESSAGE_AGAIN = "KEY_DONT_SHOW_MESSAGE_AGAIN"
         const val TEXT_YES = "yes"
         const val TEXT_NO = "no"
-        const val APP_SECRET_KEY = "yk0i7PDRGbx6UgJN7d3YLAzy8JpZWLl3"
+        const val APP_SECRET_KEY = "wFqjaY2jR85nMmgI7wqvPHd6mYaEN9a1"
         //ACTIONS
         const val ACTION_LOGOUT = "logout"
         const val ACTION_STORE_DESCRIPTION = "store_description"

@@ -76,8 +76,8 @@ interface Apis {
     @POST("api/dotk/vm1/media/uploadMediaToS3")
     suspend fun getImageUploadCdnLink(@Part("media_type") imageType: RequestBody, @Part file: MultipartBody.Part?): Response<CommonApiResponse>
 
-    @GET("api/dotk/vm1/merchant/searchImages")
-    suspend fun searchImagesFromBing(@Header("auth_token") authToken: String, @Query("search_text") searchText: String, @Query("store_id") storeId: String) : Response<ImagesSearchResponse>
+    @GET("api/dotk/merchant/searchImages")
+    suspend fun searchImagesFromBing(@Query("search_text") searchText: String, @Query("store_id") storeId: String) : Response<ImagesSearchResponse>
 
     /* ----------------------       Marketing         ---------------------- */
     @GET("api/dotk/vm1/marketing/getStoreMarketingText")
@@ -200,6 +200,6 @@ interface Apis {
     @GET("api/dotk/vm1/template/referAppWa")
     suspend fun getReferAndEarnDataOverWhatsApp() : Response<ReferEarnOverWhatsAppResponse>
 
-    @POST("api/dotk/vm1/merchant/setAddress")
-    suspend fun updateStoreAddress(@Header("auth_token") authToken:String, @Body request: StoreAddressRequest) : Response<StoreAddressResponse>
+    @POST("api/dotk/merchant/setAddress")
+    suspend fun updateStoreAddress(@Body request: StoreAddressRequest) : Response<StoreAddressResponse>
 }

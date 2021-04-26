@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
+import com.digitaldukaan.constants.PrefsManager
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.models.request.BankDetailsRequest
 import com.digitaldukaan.models.response.BankDetailsPageInfoResponse
@@ -55,6 +56,7 @@ class OnBoardScreenBankDetailsFragment : BaseFragment(), IBankDetailsServiceInte
             hideBackPressFromToolBar(mActivity, false)
         }
         hideBottomNavigationView(true)
+        skipTextView.visibility = View.VISIBLE
     }
 
     private fun setupUIFromStaticData(bankDetail: BankDetailsResponse?) {
@@ -71,13 +73,14 @@ class OnBoardScreenBankDetailsFragment : BaseFragment(), IBankDetailsServiceInte
             accountHolderNameEditText.setText(this.accountHolderName)
             mobileNumberEditText.setText(this.registeredPhone)
         }
-        mobileNumberEditText.setText(bankDetail?.registeredPhone)
+        mobileNumberEditText.setText(PrefsManager.getStringDataFromSharedPref(Constants.USER_MOBILE_NUMBER))
         mobileNumberEditText.isEnabled = false
         ifscEditText.allowOnlyAlphaNumericCharacters()
     }
 
     override fun onClick(view: View?) {
         when (view?.id) {
+            skipTextView.id -> launchFragment(CreateStoreFragment.newInstance(), true)
             saveTextView.id -> {
                 var isValidationFailed = false
                 val accountHolderNameStr = accountHolderNameEditText.run {
@@ -93,7 +96,7 @@ class OnBoardScreenBankDetailsFragment : BaseFragment(), IBankDetailsServiceInte
                         requestFocus()
                         error = mProfilePreviewStaticData?.error_mandatory_field
                         isValidationFailed = true
-                    } else if (text.trim().toString().length != resources.getInteger(R.integer.account_number_length)) {
+                    } else if (text.trim().toString().length <= resources.getInteger(R.integer.account_number_length)) {
                         requestFocus()
                         error = mProfilePreviewStaticData?.error_invalid_account_number
                         isValidationFailed = true
@@ -105,7 +108,7 @@ class OnBoardScreenBankDetailsFragment : BaseFragment(), IBankDetailsServiceInte
                         requestFocus()
                         error = mProfilePreviewStaticData?.error_mandatory_field
                         isValidationFailed = true
-                    } else if (text.trim().toString().length != resources.getInteger(R.integer.account_number_length)) {
+                    } else if (text.trim().toString().length <= resources.getInteger(R.integer.account_number_length)) {
                         requestFocus()
                         error = mProfilePreviewStaticData?.error_invalid_account_number
                         isValidationFailed = true

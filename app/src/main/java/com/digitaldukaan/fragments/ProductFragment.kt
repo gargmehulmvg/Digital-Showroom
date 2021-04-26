@@ -48,6 +48,8 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
     private var addProductChipsAdapter: AddProductsChipsAdapter? = null
     private var mSelectedCategoryItem: AddStoreCategoryItem? = null
     private var mDeleteCategoryItemList: ArrayList<DeleteCategoryItemResponse?>? = null
+    private val mTempProductCategoryList: ArrayList<AddStoreCategoryItem> = ArrayList()
+
 
     companion object {
         private var addProductStaticData: AddProductStaticText? = null
@@ -62,7 +64,6 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
         super.onCreate(savedInstanceState)
         mService = ProductService()
         mService.setOrderDetailServiceListener(this)
-        mService.getUserCategories()
         mService.getDeleteCategoryItem()
     }
 
@@ -79,6 +80,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
         hideBottomNavigationView(false)
         WebViewBridge.mWebViewListener = this
         updateNavigationBarState(R.id.menuProducts)
+        mService.getUserCategories()
         return mContentView
     }
 
@@ -333,16 +335,20 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                 mUserCategoryResponse?.storeCategoriesList?.run {
                     categoryChipRecyclerView.apply {
                         layoutManager = StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL)
+                        mTempProductCategoryList.clear()
                         val list = mUserCategoryResponse?.storeCategoriesList
-                        list?.forEachIndexed { _, categoryItem -> categoryItem.isSelected = (categoryItem.id == categoryId) }
-                        if (list?.isNotEmpty() == true)
-                            addProductChipsAdapter = AddProductsChipsAdapter(list, object : IChipItemClickListener {
+                        list?.forEachIndexed { _, categoryItem ->
+                            if (categoryItem.name?.isNotEmpty() == true) mTempProductCategoryList.add(categoryItem)
+                        }
+                        mTempProductCategoryList.forEachIndexed { _, categoryItem -> categoryItem.isSelected = (categoryItem.id == categoryId) }
+                        if (mTempProductCategoryList.isNotEmpty())
+                            addProductChipsAdapter = AddProductsChipsAdapter(mTempProductCategoryList, object : IChipItemClickListener {
                                     override fun onChipItemClickListener(position: Int) {
-                                        list.forEachIndexed { _, categoryItem -> categoryItem.isSelected = false }
-                                        list[position].isSelected = true
-                                        categoryNameEditText.setText(list[position].name)
-                                        mSelectedCategoryItem = list[position]
-                                        addProductChipsAdapter?.setAddProductStoreCategoryList(list)
+                                        mTempProductCategoryList.forEachIndexed { _, categoryItem -> categoryItem.isSelected = false }
+                                        mTempProductCategoryList[position].isSelected = true
+                                        categoryNameEditText.setText(mTempProductCategoryList[position].name)
+                                        mSelectedCategoryItem = mTempProductCategoryList[position]
+                                        addProductChipsAdapter?.setAddProductStoreCategoryList(mTempProductCategoryList)
                                     }
                                 })
                         adapter = addProductChipsAdapter

@@ -64,6 +64,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     private var mOptionsMenuResponse: ArrayList<TrendingListResponse>? = null
     private var mImageAddAdapter: AddProductsImagesAdapter? = null
     private var mIsAddNewProduct: Boolean = false
+    private var mProductNameStr: String? = ""
 
     companion object {
         private const val TAG = "AddProductFragment"
@@ -176,7 +177,8 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     private fun handleVisibilityTextWatcher() {
         priceEditText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
-                Log.d(TAG, "afterTextChanged: priceEditText :: do nothing")
+                val str = s?.toString()
+                if (str?.trim()?.isNotEmpty() == true) showAddProductContainer()
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -184,13 +186,15 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                showAddProductContainer()
+                Log.d(TAG, "onTextChanged: priceEditText :: do nothing")
             }
 
         })
         nameEditText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
-                Log.d(TAG, "afterTextChanged: nameEditText :: do nothing")
+                mProductNameStr = s?.toString()
+                val str = s?.toString()
+                if (str?.trim()?.isNotEmpty() == true) showAddProductContainer()
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -198,13 +202,14 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                showAddProductContainer()
+                Log.d(TAG, "onTextChanged: nameEditText :: do nothing")
             }
 
         })
         productDescriptionEditText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
-                Log.d(TAG, "afterTextChanged: productDescriptionEditText :: do nothing")
+                val str = s?.toString()
+                if (str?.trim()?.isNotEmpty() == true) showAddProductContainer()
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -212,13 +217,14 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                showAddProductContainer()
+                Log.d(TAG, "onTextChanged: productDescriptionEditText :: do nothing")
             }
 
         })
         enterCategoryEditText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
-                Log.d(TAG, "afterTextChanged: enterCategoryEditText :: do nothing")
+                val str = s?.toString()
+                if (str?.trim()?.isNotEmpty() == true) showAddProductContainer()
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -226,7 +232,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                showAddProductContainer()
+                Log.d(TAG, "onTextChanged: enterCategoryEditText :: do nothing")
             }
 
         })
@@ -294,7 +300,6 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         val view = LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet_image_pick, mActivity.findViewById(R.id.bottomSheetContainer))
         imagePickBottomSheet.apply {
             setContentView(view)
-            //setBottomSheetCommonProperty()
             view?.run {
                 val bottomSheetUploadImageCloseImageView: ImageView = findViewById(R.id.bottomSheetUploadImageCloseImageView)
                 val bottomSheetUploadImageHeading: TextView = findViewById(R.id.bottomSheetUploadImageHeading)
@@ -314,6 +319,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 bottomSheetUploadImageHeading.text = addProductStaticData?.bottom_sheet_add_image
                 bottomSheetUploadImageCameraTextView.text = addProductStaticData?.bottom_sheet_take_a_photo
                 searchImageEditText.hint = addProductStaticData?.bottom_sheet_hint_search_for_images_here
+                mProductNameStr?.run { searchImageEditText.setText(mProductNameStr) }
                 bottomSheetUploadImageCloseImageView.setOnClickListener { if (imagePickBottomSheet.isShowing) imagePickBottomSheet.dismiss() }
                 bottomSheetUploadImageRemovePhotoTextView.visibility = if (position == 0) View.GONE else View.VISIBLE
                 bottomSheetUploadImageRemovePhoto.visibility = if (position == 0) View.GONE else View.VISIBLE
@@ -352,7 +358,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     }
                     showProgressDialog(mActivity)
                     CoroutineScopeUtils().runTaskOnCoroutineBackground {
-                        val response = RetrofitApi().getServerCallObject()?.searchImagesFromBing(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), searchImageEditText.text.trim().toString(), getStringDataFromSharedPref(Constants.STORE_ID))
+                        val response = RetrofitApi().getServerCallObject()?.searchImagesFromBing(searchImageEditText.text.trim().toString(), getStringDataFromSharedPref(Constants.STORE_ID))
                         response?.let {
                             if (it.isSuccessful) {
                                 it.body()?.let {
@@ -488,8 +494,8 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             }
             mOptionsMenuResponse = addProductResponse?.addProductStoreOptionsMenu
             shareProductContainer.setOnClickListener {
-                shareDataOnWhatsAppWithImage("ItemName: ${addProductResponse?.storeItem?.name}\nPrice:  ₹${addProductResponse?.storeItem?.price} \nDiscounted Price: ₹${addProductResponse.storeItem?.discountedPrice}\n\n\uD83D\uDED2 ORDER NOW, Click on the link below\n\n" +
-                        "${BuildConfig.WEB_VIEW_SHOW_ROOM_URL}${addProductResponse?.domain}/${addProductResponse?.storeItem?.id}/${addProductResponse.storeItem?.name?.replace(' ', '-')}" ,addProductResponse?.storeItem?.imageUrl)
+                val sharingData = "ItemName: ${addProductResponse?.storeItem?.name}\nPrice:  ₹${addProductResponse?.storeItem?.price} \nDiscounted Price: ₹${addProductResponse.storeItem?.discountedPrice}\n\n\uD83D\uDED2 ORDER NOW, Click on the link below\n\n" + "${BuildConfig.WEB_VIEW_SHOW_ROOM_URL}${addProductResponse?.domain}/${addProductResponse?.storeItem?.id}/${addProductResponse.storeItem?.name?.replace(' ', '-')}"
+                if (addProductResponse?.storeItem?.imageUrl?.isEmpty() == true) shareDataOnWhatsApp(sharingData) else shareDataOnWhatsAppWithImage(sharingData ,addProductResponse?.storeItem?.imageUrl)
             }
             shareProductContainer.visibility = if (mIsAddNewProduct) View.GONE else View.VISIBLE
             continueTextView.visibility = if (mIsAddNewProduct) View.VISIBLE else View.GONE

@@ -151,7 +151,6 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
                 )
                 showProgressDialog(mActivity)
                 service.updateStoreAddress(
-                    getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN),
                     request
                 )
             }

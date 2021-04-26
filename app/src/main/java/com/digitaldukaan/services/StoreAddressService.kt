@@ -14,9 +14,9 @@ class StoreAddressService {
         mServiceInterface = serviceInterface
     }
 
-    fun updateStoreAddress(authToken: String, request: StoreAddressRequest) {
+    fun updateStoreAddress(request: StoreAddressRequest) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.updateStoreAddressServerCall(authToken, request, mServiceInterface)
+            mNetworkService.updateStoreAddressServerCall(request, mServiceInterface)
         }
     }
 

@@ -8,12 +8,11 @@ import com.digitaldukaan.services.serviceinterface.IStoreAddressServiceInterface
 class StoreAddressNetworkService {
 
     suspend fun updateStoreAddressServerCall(
-        authToken:String,
-        storeAddressRequest : StoreAddressRequest,
+        storeAddressRequest: StoreAddressRequest,
         serviceInterface: IStoreAddressServiceInterface
     ) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.updateStoreAddress(authToken, storeAddressRequest)
+            val response = RetrofitApi().getServerCallObject()?.updateStoreAddress(storeAddressRequest)
             response?.let {
                 if (it.isSuccessful) {
                     it.body()?.let { storeNameResponse ->

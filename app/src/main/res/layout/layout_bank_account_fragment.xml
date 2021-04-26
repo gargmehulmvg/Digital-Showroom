@@ -79,7 +79,6 @@
                 android:focusable="true"
                 android:importantForAutofill="no"
                 android:inputType="numberPassword"
-                android:maxLength="@integer/account_number_length"
                 android:textColor="@color/black"
                 android:textColorHint="@color/default_text_light_grey"
                 android:textSize="@dimen/_12sdp" />
@@ -105,7 +104,6 @@
                 android:focusable="true"
                 android:importantForAutofill="no"
                 android:inputType="number"
-                android:maxLength="@integer/account_number_length"
                 android:textColor="@color/black"
                 android:textColorHint="@color/default_text_light_grey"
                 android:textSize="@dimen/_12sdp" />
@@ -164,6 +162,21 @@
                 android:textSize="@dimen/_12sdp" />
 
         </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/skipTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat_bold"
+            android:onClick="onClick"
+            android:text="@string/skip"
+            android:layout_marginStart="@dimen/_5sdp"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_16sdp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/saveTextView"
+            app:layout_constraintStart_toStartOf="@+id/mobileNumberLayout"
+            app:layout_constraintTop_toTopOf="@+id/saveTextView" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/saveTextView"
