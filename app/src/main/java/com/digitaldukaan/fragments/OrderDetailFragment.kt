@@ -59,6 +59,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
     private var mDeliveryChargeAmount = 0.0
     private var mOtherChargeAmount = 0.0
     private var mDiscountAmount = 0.0
+    private var mIsPickUpOrder = false
 
     companion object {
         private const val TAG = "OrderDetailFragment"
@@ -96,7 +97,9 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                 mBillSentCameraClicked = true
                 handleDeliveryTimeBottomSheet(false)
             }
-            sendBillTextView.id -> handleDeliveryTimeBottomSheet(true)
+            sendBillTextView.id -> {
+                if (mIsPickUpOrder) initiateSendBillServerCall() else handleDeliveryTimeBottomSheet(true)
+            }
             detailTextView.id -> {
                 if (!isInternetConnectionAvailable(mActivity)) {
                     showNoInternetConnectionDialog()
@@ -215,12 +218,14 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
             ToolBarManager.getInstance().setHeaderSubTitle(getStringDateTimeFromOrderDate(getCompleteDateFromOrderString(orderDetailMainResponse?.orders?.createdAt)))
             setupDeliveryChargeUI(orderDetailMainResponse?.storeServices)
             if (orderDetailResponse?.orderType == Constants.ORDER_TYPE_PICK_UP) {
+                mIsPickUpOrder = true
                 deliveryChargeLabel?.visibility = View.GONE
                 deliveryChargeValue?.visibility = View.GONE
                 customerDetailsLabel.visibility = View.GONE
                 deliveryChargeValueEditText?.visibility = View.GONE
                 addDeliveryChargesLabel.text = getString(R.string.add_discount_and_other_charges)
             } else {
+                mIsPickUpOrder = false
                 customerDeliveryDetailsRecyclerView.apply {
                 layoutManager = LinearLayoutManager(mActivity)
                 val customerDetailsList = ArrayList<CustomerDeliveryAddressDTO>()
