@@ -65,6 +65,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     private var mImageAddAdapter: AddProductsImagesAdapter? = null
     private var mIsAddNewProduct: Boolean = false
     private var mProductNameStr: String? = ""
+    private var mIsOrderEdited = false
 
     companion object {
         private const val TAG = "AddProductFragment"
@@ -602,6 +603,32 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         showDeleteConfirmationDialog()
     }
 
+    override fun onBackPressed(): Boolean {
+        return if (mIsOrderEdited) {
+            showGoBackDialog()
+            return true
+        } else false
+    }
+
+    private fun showGoBackDialog() {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            val builder: AlertDialog.Builder = AlertDialog.Builder(mActivity)
+            builder.apply {
+                setTitle(addProductStaticData?.text_go_back)
+                setMessage(addProductStaticData?.text_go_back_message)
+                setCancelable(true)
+                setNegativeButton(getString(R.string.text_no)) { dialog, _ ->
+                    dialog.dismiss()
+                }
+                setPositiveButton(getString(R.string.txt_yes)) { dialog, _ ->
+                    mIsOrderEdited = false
+                    fragmentManager?.popBackStack()
+                    dialog.dismiss()
+                }
+            }.create().show()
+        }
+    }
+
     private fun showDeleteConfirmationDialog() {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             val builder: AlertDialog.Builder = AlertDialog.Builder(mActivity)
@@ -626,6 +653,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     }
 
     private fun showAddProductContainer() {
+        mIsOrderEdited = true
         if (shareProductContainer.visibility == View.VISIBLE) {
             shareProductContainer.visibility = View.GONE
             continueTextView.visibility = View.VISIBLE

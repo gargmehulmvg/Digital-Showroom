@@ -54,6 +54,8 @@ class OnBoardScreenBankDetailsFragment : BaseFragment(), IBankDetailsServiceInte
             setHeaderTitle("")
             onBackPressed(this@OnBoardScreenBankDetailsFragment)
             hideBackPressFromToolBar(mActivity, false)
+            setSideIconVisibility(false)
+            setSecondSideIconVisibility(false)
         }
         hideBottomNavigationView(true)
         skipTextView.visibility = View.VISIBLE

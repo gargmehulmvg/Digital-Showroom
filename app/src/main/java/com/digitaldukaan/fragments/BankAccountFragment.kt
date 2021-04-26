@@ -65,6 +65,8 @@ class BankAccountFragment : BaseFragment(), IBankDetailsServiceInterface {
             setHeaderTitle("")
             onBackPressed(this@BankAccountFragment)
             hideBackPressFromToolBar(mActivity, false)
+            setSideIconVisibility(false)
+            setSecondSideIconVisibility(false)
         }
         if (!isInternetConnectionAvailable(mActivity)) {
             showNoInternetConnectionDialog()
