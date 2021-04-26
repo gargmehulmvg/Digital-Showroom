@@ -46,8 +46,8 @@
 
     <ImageView
         android:id="@+id/imageViewTop"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/_18sdp"
+        android:layout_height="@dimen/_18sdp"
         android:layout_marginTop="@dimen/_20sdp"
         android:contentDescription="@string/image_view_content_description"
         android:src="@drawable/ic_order_detail_green_tick"
@@ -67,12 +67,12 @@
 
     <ImageView
         android:id="@+id/imageViewBottom"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/_18sdp"
+        android:layout_height="@dimen/_18sdp"
         android:layout_marginTop="@dimen/_5sdp"
         android:layout_marginBottom="@dimen/_20sdp"
         android:contentDescription="@string/image_view_content_description"
-        android:src="@drawable/ic_order_detail_black_tick"
+        android:src="@drawable/ic_close_red"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/dottedView"
         app:layout_constraintStart_toStartOf="@+id/dottedView"
@@ -102,12 +102,13 @@
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/textViewBottom"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:fontFamily="@font/montserrat"
         android:textColor="@color/black"
         android:textSize="@dimen/_12sdp"
         app:layout_constraintBottom_toBottomOf="@+id/imageViewBottom"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/dottedView"
         app:layout_constraintTop_toTopOf="@+id/imageViewBottom"
         tools:text="Order ID:342" />

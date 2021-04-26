@@ -179,7 +179,7 @@ interface Apis {
     suspend fun shareBill(@Path("order_id") orderId: String): Response<CommonApiResponse>
 
     /* ----------------------       Payments         ---------------------- */
-    @GET("api/dotstore/payments/getOrderTransactions/{order_id}")
+    @GET("api/dotk/vm1/orders/getOrderTransactions/{order_id}")
     suspend fun getOrderTransactions(@Path("order_id") orderId: String): Response<CommonApiResponse>
 
 

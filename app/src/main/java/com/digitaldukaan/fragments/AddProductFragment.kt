@@ -520,7 +520,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             }
             mOptionsMenuResponse = addProductResponse?.addProductStoreOptionsMenu
             shareProductContainer.setOnClickListener {
-                val sharingData = "ItemName: ${addProductResponse?.storeItem?.name}\nPrice:  ₹${addProductResponse?.storeItem?.price} \nDiscounted Price: ₹${addProductResponse.storeItem?.discountedPrice}\n\n\uD83D\uDED2 ORDER NOW, Click on the link below\n\n" + "${addProductResponse?.domain}/${addProductResponse?.storeItem?.id}/${addProductResponse.storeItem?.name?.replace(' ', '-')}"
+                val sharingData = "ItemName: ${addProductResponse?.storeItem?.name}\nPrice:  ₹${addProductResponse?.storeItem?.price} \nDiscounted Price: ₹${addProductResponse.storeItem?.discountedPrice}\n\n\uD83D\uDED2 ORDER NOW, Click on the link below\n\n" + "${addProductResponse?.domain}/product/${addProductResponse?.storeItem?.id}/${addProductResponse.storeItem?.name?.replace(' ', '-')}"
                 if (addProductResponse?.storeItem?.imageUrl?.isEmpty() == true) shareDataOnWhatsApp(sharingData) else shareDataOnWhatsAppWithImage(sharingData ,addProductResponse?.storeItem?.imageUrl)
             }
             shareProductContainer.visibility = if (mIsAddNewProduct) View.GONE else View.VISIBLE

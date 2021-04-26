@@ -311,9 +311,12 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                 addDeliveryChargesLabel.text = getString(R.string.add_discount_and_other_charges)
             }
             Constants.FIXED_DELIVERY_CHARGE -> {
-                deliveryChargeLabel?.visibility = View.GONE
-                deliveryChargeValue?.visibility = View.GONE
+                deliveryChargeLabel?.visibility = View.VISIBLE
+                deliveryChargeValue?.visibility = View.VISIBLE
                 addDeliveryChargesLabel.text = getString(R.string.add_discount_and_other_charges)
+                deliveryChargeValue?.text = "${storeServices.mDeliveryPrice}"
+                mDeliveryChargeAmount = storeServices.mDeliveryPrice ?: 0.0
+                setAmountToEditText()
             }
             Constants.CUSTOM_DELIVERY_CHARGE -> {
                 deliveryChargeLabel?.visibility = View.VISIBLE
@@ -637,12 +640,11 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                         bottomSheetHeadingTextView.text = text_details
                         billAmountTextView.text = "$text_bill_amount: ${it.orders?.amount}"
                         orderIdTextView.text = "$text_order_id: ${it.orders?.orderId}"
-                        textViewTop.text = it.staticText?.message_customer_paid
                         val firstItem = txnItemList[0]
                         val lastItem = txnItemList[txnItemList.size -1]
                         firstItem?.run {
                             setOrderDetailBottomSheetItem(imageViewTop, textViewTop, this)
-                            txnId.text = firstItem.transactionId
+                            txnId.text = "Txn ID : ${firstItem.transactionId}"
                         }
                         lastItem?.run {
                             setOrderDetailBottomSheetItem(imageViewBottom, textViewBottom, this)
@@ -655,6 +657,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
 
     private fun setOrderDetailBottomSheetItem(imageView:ImageView, textView: TextView, item: OrderDetailTransactionItemResponse) {
         textView.setTextColor(ContextCompat.getColor(mActivity, R.color.black))
+        textView.text = item.settlementStatus
         when(item.transactionStatus?.toLowerCase(Locale.getDefault())) {
             "" -> {
                 imageView.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.ic_order_detail_green_tick))
@@ -667,6 +670,9 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
             }
             Constants.ORDER_STATUS_REFUND_SUCCESS -> {
                 imageView.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.ic_order_detail_black_tick))
+            }
+            Constants.ORDER_STATUS_REJECTED -> {
+                imageView.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.ic_close_red))
             }
         }
 
