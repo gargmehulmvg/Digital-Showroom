@@ -9,7 +9,7 @@
         android:layout_height="@dimen/_8sdp"
         android:layout_marginTop="@dimen/_5sdp"
         android:layout_marginEnd="@dimen/_1sdp"
-        android:background="@drawable/profile_status_selector_red"
+        android:background="@drawable/profile_status_selector_yellow"
         android:enabled="true" />
 
 </LinearLayout>

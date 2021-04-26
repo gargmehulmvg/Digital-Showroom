@@ -92,11 +92,12 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
 
     override fun onClick(view: View?) {
         super.onClick(view)
+        StaticInstances.sAppStoreServicesResponse = mAppStoreServicesResponse
         when (view?.id) {
             storeSwitch.id -> changeStoreDeliveryStatus()
             deliverySwitch.id -> changeStoreDeliveryStatus()
-            moreControlsTextView.id -> launchFragment(MoreControlsFragment.newInstance(mAppSettingsResponseStaticData, mAppStoreServicesResponse), true)
-            moreControlsImageView.id -> launchFragment(MoreControlsFragment.newInstance(mAppSettingsResponseStaticData, mAppStoreServicesResponse), true)
+            moreControlsTextView.id -> launchFragment(MoreControlsFragment.newInstance(mAppSettingsResponseStaticData), true)
+            moreControlsImageView.id -> launchFragment(MoreControlsFragment.newInstance(mAppSettingsResponseStaticData), true)
             dukaanNameTextView.id -> launchFragment(ProfilePreviewFragment().newInstance(mProfileResponse?.mStoreInfo?.storeInfo?.name), true)
             profileStatusRecyclerView.id -> launchFragment(ProfilePreviewFragment().newInstance(mProfileResponse?.mStoreInfo?.storeInfo?.name), true)
             stepsLeftTextView.id -> launchFragment(ProfilePreviewFragment().newInstance(mProfileResponse?.mStoreInfo?.storeInfo?.name), true)
@@ -351,7 +352,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             profileStatusRecyclerView.apply {
                 visibility = View.VISIBLE
                 layoutManager = GridLayoutManager(mActivity, infoResponse.mTotalSteps)
-                adapter = ProfileStatusAdapter(infoResponse.mTotalSteps, infoResponse.mCompletedSteps)
+                adapter = ProfileStatusAdapter(infoResponse.mTotalSteps, infoResponse.mCompletedSteps, mActivity)
             }
         }
         settingStoreOptionRecyclerView.apply {

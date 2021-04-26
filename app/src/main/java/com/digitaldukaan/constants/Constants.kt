@@ -22,7 +22,7 @@ class Constants {
         const val CLIPBOARD_LABEL = "label"
         const val SETTINGS = "settings"
         const val DOTPE_OFFICIAL_URL_CLIPBOARD = "https://web.dotpe.in"
-        const val DOTPE_OFFICIAL_URL = "goto : web.dotpe.in"
+        const val DOTPE_OFFICIAL_URL = "Go to web.dotpe.in"
         const val KEY_DONT_SHOW_MESSAGE_AGAIN = "KEY_DONT_SHOW_MESSAGE_AGAIN"
         const val TEXT_YES = "yes"
         const val TEXT_NO = "no"

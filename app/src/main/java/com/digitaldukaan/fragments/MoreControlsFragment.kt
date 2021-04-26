@@ -24,28 +24,16 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
 
     private lateinit var mMoreControlsStaticData: AccountStaticTextResponse
     private lateinit var mMoreControlsService: MoreControlsService
-    private lateinit var mAppStoreServicesResponse: StoreServicesResponse
     private var mMinOrderValue = 0.0
     private var mDeliveryPrice = 0.0
     private var mFreeDeliveryAbove = 0.0
     private var mDeliveryChargeType = 0
 
     companion object {
-        fun newInstance(appSettingsResponseStaticData: AccountStaticTextResponse, appStoreServicesResponse: StoreServicesResponse): MoreControlsFragment {
+        fun newInstance(appSettingsResponseStaticData: AccountStaticTextResponse): MoreControlsFragment {
             val fragment = MoreControlsFragment()
             fragment.mMoreControlsStaticData = appSettingsResponseStaticData
-            updateStoreServiceInstances(appStoreServicesResponse, fragment)
             return fragment
-        }
-
-        private fun updateStoreServiceInstances(appStoreServicesResponse: StoreServicesResponse, fragment: MoreControlsFragment) {
-            appStoreServicesResponse.apply {
-                fragment.mMinOrderValue = mMinOrderValue ?: 0.0
-                fragment.mDeliveryPrice = mDeliveryPrice ?: 0.0
-                fragment.mFreeDeliveryAbove = mFreeDeliveryAbove ?: 0.0
-                fragment.mDeliveryChargeType = mDeliveryChargeType ?: 0
-            }
-            fragment.mAppStoreServicesResponse = appStoreServicesResponse
         }
     }
 
@@ -70,10 +58,20 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
             hideBackPressFromToolBar(mActivity, false)
         }
         hideBottomNavigationView(true)
+        updateStoreServiceInstances()
         setUIDataFromResponse()
         if (!isInternetConnectionAvailable(mActivity)) {
             showNoInternetConnectionDialog()
             return
+        }
+    }
+
+    private fun updateStoreServiceInstances() {
+        StaticInstances.sAppStoreServicesResponse?.apply {
+            this@MoreControlsFragment.mMinOrderValue = mMinOrderValue ?: 0.0
+            this@MoreControlsFragment.mDeliveryPrice = mDeliveryPrice ?: 0.0
+            this@MoreControlsFragment.mFreeDeliveryAbove = mFreeDeliveryAbove ?: 0.0
+            this@MoreControlsFragment.mDeliveryChargeType = mDeliveryChargeType ?: 0
         }
     }
 
@@ -119,7 +117,7 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
                     isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = true,
                     data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
                 )
-                launchFragment(SetDeliveryChargeFragment.newInstance(mMoreControlsStaticData, mAppStoreServicesResponse), true)
+                launchFragment(SetDeliveryChargeFragment.newInstance(mMoreControlsStaticData), true)
             }
         }
     }
@@ -191,7 +189,8 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
                     )
                 )
                 showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
-                updateStoreServiceInstances(moreControlResponse, this)
+                StaticInstances.sAppStoreServicesResponse = moreControlResponse
+                updateStoreServiceInstances()
                 setUIDataFromResponse()
             } else showShortSnackBar(response.mMessage, true, R.drawable.ic_close_red)
         }
