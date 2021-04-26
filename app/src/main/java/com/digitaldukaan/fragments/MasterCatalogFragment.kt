@@ -19,8 +19,7 @@ import com.digitaldukaan.R
 import com.digitaldukaan.adapters.MasterCatalogItemsAdapter
 import com.digitaldukaan.adapters.MasterCatalogItemsConfirmationAdapter
 import com.digitaldukaan.adapters.SubCategoryAdapter
-import com.digitaldukaan.constants.CoroutineScopeUtils
-import com.digitaldukaan.constants.ToolBarManager
+import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.IOnToolbarIconClick
 import com.digitaldukaan.models.response.*
 import com.digitaldukaan.services.ExploreCategoryService
@@ -184,6 +183,15 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
             addProductTextView.visibility = View.VISIBLE
             val size = mSelectedProductsHashMap.size
             addProductTextView.text = if (size == 1) "${addProductStaticData?.text_add} 1 ${addProductStaticData?.text_product}" else "${addProductStaticData?.text_add} $size ${addProductStaticData?.text_products}"
+            AppEventsManager.pushAppEvents(
+                eventName = AFInAppEventType.EVENT_CATALOG_BUILDER_PRODUCT_SELECT,
+                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                data = mapOf(
+                    AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                    AFInAppEventParameterName.CATEGORY_NAME to response?.itemName,
+                    AFInAppEventParameterName.PRODUCTS_ADDED to "$size"
+                )
+            )
         } else {
             addProductTextView.visibility = View.GONE
         }

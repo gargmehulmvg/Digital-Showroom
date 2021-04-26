@@ -8,8 +8,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.ExploreCategoryAdapter
-import com.digitaldukaan.constants.CoroutineScopeUtils
-import com.digitaldukaan.constants.ToolBarManager
+import com.digitaldukaan.constants.*
 import com.digitaldukaan.models.response.AddProductStaticText
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.ExploreCategoryItemResponse
@@ -42,6 +41,11 @@ class ExploreCategoryFragment: BaseFragment(), IExploreCategoryServiceInterface 
     ): View? {
         mContentView = inflater.inflate(R.layout.layout_explore_category_fragment, container, false)
         mService.setServiceInterface(this)
+        AppEventsManager.pushAppEvents(
+            eventName = AFInAppEventType.EVENT_CATALOG_BUILDER_EXPLORE,
+            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+            data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
+        )
         return mContentView
     }
 
@@ -102,6 +106,14 @@ class ExploreCategoryFragment: BaseFragment(), IExploreCategoryServiceInterface 
     }
 
     override fun onExploreCategoryItemClick(response: ExploreCategoryItemResponse?) {
+        AppEventsManager.pushAppEvents(
+            eventName = AFInAppEventType.EVENT_CATALOG_BUILDER_CATEGORY_SELECT,
+            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+            data = mapOf(
+                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                AFInAppEventParameterName.CATEGORY_NAME to response?.categoryName
+            )
+        )
         launchFragment(MasterCatalogFragment.newInstance(addProductStaticData, response), true)
     }
 

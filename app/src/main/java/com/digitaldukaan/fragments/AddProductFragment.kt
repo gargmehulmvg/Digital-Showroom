@@ -255,7 +255,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     }
                     showProgressDialog(mActivity)
                     mService.getAddOrderBottomSheetData()
-                } else showMaterCatalogBottomSheet(addProductBannerStaticDataResponse, addProductStaticData)
+                } else showMaterCatalogBottomSheet(addProductBannerStaticDataResponse, addProductStaticData, Constants.MODE_ADD_PRODUCT)
             }
             continueTextView.id -> {
                 if (checkValidation()) {
@@ -436,7 +436,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             addProductBannerStaticDataResponse = Gson().fromJson<AddProductBannerTextResponse>(commonResponse.mCommonDataStr, AddProductBannerTextResponse::class.java)
-            addProductBannerStaticDataResponse?.run { showMaterCatalogBottomSheet(addProductBannerStaticDataResponse, addProductStaticData) }
+            addProductBannerStaticDataResponse?.run { showMaterCatalogBottomSheet(addProductBannerStaticDataResponse, addProductStaticData, Constants.MODE_ADD_PRODUCT) }
         }
     }
 
@@ -521,7 +521,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             stopProgress()
             if (commonResponse.mIsSuccessStatus) {
                 showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_check_circle)
-                mActivity.onBackPressed()
+                fragmentManager?.popBackStack()
             } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
         }
     }

@@ -156,8 +156,26 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
             Constants.ACTION_CATALOG_PREMIUM -> {
                 openWebViewFragment(this, "", BuildConfig.WEB_VIEW_URL + response.action)
             }
-            Constants.ACTION_QR_DOWNLOAD -> openWebViewFragment(this, "", WebViewUrls.WEB_VIEW_QR_DOWNLOAD, Constants.SETTINGS)
+            Constants.ACTION_QR_DOWNLOAD -> {
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_QR_DOWNLOAD,
+                    isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = true,
+                    data = mapOf(
+                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                        AFInAppEventParameterName.IS_MARKETING_PAGE to "true"
+                    )
+                )
+                openWebViewFragment(this, "", WebViewUrls.WEB_VIEW_QR_DOWNLOAD, Constants.SETTINGS)
+            }
             Constants.ACTION_SHARE_DATA -> {
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_STORE_SHARE,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(
+                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                        AFInAppEventParameterName.IS_MARKETING_PAGE to "true"
+                    )
+                )
                 showProgressDialog(mActivity)
                 service.getShareStoreData(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
             }
@@ -194,6 +212,14 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                 verifyTextView.text = response?.subHeading
                 verifyTextView.setOnClickListener{
                     showProgressDialog(mActivity)
+                    AppEventsManager.pushAppEvents(
+                        eventName = AFInAppEventType.EVENT_DOWNLOAD_CATALOG,
+                        isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = true,
+                        data = mapOf(
+                            AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                            AFInAppEventParameterName.IS_MARKETING_PAGE to "true"
+                        )
+                    )
                     service.generateStorePdf(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
                     bottomSheetDialog.dismiss()
                 }

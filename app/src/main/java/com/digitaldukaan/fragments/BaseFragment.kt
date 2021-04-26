@@ -790,7 +790,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         }
     }
 
-    protected fun showMaterCatalogBottomSheet(addProductBannerStaticDataResponse: AddProductBannerTextResponse?, addProductStaticText: AddProductStaticText?) {
+    protected fun showMaterCatalogBottomSheet(addProductBannerStaticDataResponse: AddProductBannerTextResponse?, addProductStaticText: AddProductStaticText?, mode: String) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             val bottomSheetDialog = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
             val view = LayoutInflater.from(mActivity).inflate(
@@ -815,6 +815,14 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                     closeImageView.setOnClickListener { bottomSheetDialog.dismiss() }
                     buttonTextView.setOnClickListener{
                         bottomSheetDialog.dismiss()
+                        AppEventsManager.pushAppEvents(
+                            eventName = AFInAppEventType.EVENT_CATALOG_BUILDER_TRY_NOW,
+                            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                            data = mapOf(
+                                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                                AFInAppEventParameterName.PATH to if (mode == Constants.MODE_PRODUCT_LIST) Constants.MODE_PRODUCT_LIST else Constants.MODE_ADD_PRODUCT
+                            )
+                        )
                         launchFragment(ExploreCategoryFragment.newInstance(addProductStaticText), true)
                     }
                 }

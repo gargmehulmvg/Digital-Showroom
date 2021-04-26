@@ -18,10 +18,7 @@ import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.ProfileStatusAdapter2
-import com.digitaldukaan.constants.Constants
-import com.digitaldukaan.constants.CoroutineScopeUtils
-import com.digitaldukaan.constants.StaticInstances
-import com.digitaldukaan.constants.ToolBarManager
+import com.digitaldukaan.constants.*
 import com.digitaldukaan.models.request.StoreAddressRequest
 import com.digitaldukaan.models.response.ProfileInfoResponse
 import com.digitaldukaan.models.response.ProfilePreviewSettingsKeyResponse
@@ -150,9 +147,14 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
                     stateTextView.text.toString()
                 )
                 showProgressDialog(mActivity)
-                service.updateStoreAddress(
-                    request
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_SAVE_ADDRESS_CHANGES,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(
+                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)
+                    )
                 )
+                service.updateStoreAddress(request)
             }
         }
         mProfileInfoResponse?.mStoreItemResponse?.storeAddress?.run {

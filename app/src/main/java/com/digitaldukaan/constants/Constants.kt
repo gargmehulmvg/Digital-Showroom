@@ -107,8 +107,10 @@ class Constants {
         //EDIT PHOTO MODES
         const val EDIT_PHOTO_MODE_MOBILE = "mobile"
         const val EDIT_PHOTO_MODE_DESKTOP = "desktop"
-        //MODE PHOTO EDIT
+        //MODES
         const val MODE_CROP = "crop"
+        const val MODE_ADD_PRODUCT = "add_product"
+        const val MODE_PRODUCT_LIST = "product_list"
         //MODE ORDER STATUS
         const val ORDER_STATUS_SUCCESS = "Success"
         const val ORDER_STATUS_REJECTED = "Rejected"

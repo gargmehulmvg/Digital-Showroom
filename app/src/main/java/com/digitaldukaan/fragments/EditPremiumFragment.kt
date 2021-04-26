@@ -12,9 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.EditPremiumColorAdapter
-import com.digitaldukaan.constants.Constants
-import com.digitaldukaan.constants.CoroutineScopeUtils
-import com.digitaldukaan.constants.ToolBarManager
+import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.IAdapterItemClickListener
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.EditPremiumColorItemResponse
@@ -106,6 +104,14 @@ class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
                 openGalleryWithoutCrop()
             }
             viewWebsiteImageView.id -> {
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_SAVE_ITEM,
+                    isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = true,
+                    data = mapOf(
+                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                        AFInAppEventParameterName.CHANNEL to "isEditor"
+                    )
+                )
                 val url = "${BuildConfig.WEB_VIEW_PREVIEW_URL}${mPremiumPageInfoResponse?.domain}"
                 openUrlInBrowser(url)
             }

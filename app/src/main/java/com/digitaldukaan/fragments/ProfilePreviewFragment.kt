@@ -208,19 +208,30 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
 
     override fun onStoreLinkResponse(response: StoreDescriptionResponse) {
         mStoreLinkErrorResponse = response
+        var resultStr = ""
         stopProgress()
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (response.mStatus) {
+                resultStr = "Available"
                 mStoreLinkBottomSheet?.dismiss()
                 showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
                 onRefresh()
             } else {
                 mStoreLinkBottomSheet?.run {
                     if (isShowing) dismiss()
+                    resultStr = "Unavailable"
                     showEditStoreLinkBottomSheet(mProfileInfoSettingKeyResponse , true)
                 }
             }
         }
+        AppEventsManager.pushAppEvents(
+            eventName = AFInAppEventType.EVENT_EDIT_STORE_LINK_SAVE,
+            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+            data = mapOf(
+                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                AFInAppEventParameterName.RESULT to resultStr
+            )
+        )
     }
 
     override fun onProfilePreviewServerException(e: Exception) {
@@ -271,10 +282,28 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                         editStoreDialogYesTextView.text = mProfilePreviewStaticData.mYesText
                         editStoreDialogNoTextView.text = mProfilePreviewStaticData.mNoText
                         editStoreDialogYesTextView.setOnClickListener {
+                            AppEventsManager.pushAppEvents(
+                                eventName = AFInAppEventType.EVENT_EDIT_STORE_LINK_WARNING,
+                                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                                data = mapOf(
+                                    AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                                    "SELECT" to "yes"
+                                )
+                            )
                             if (warningDialog.isShowing) warningDialog.dismiss()
                             showEditStoreLinkBottomSheet(profilePreviewResponse)
                         }
-                        editStoreDialogNoTextView.setOnClickListener{ if (warningDialog.isShowing) warningDialog.dismiss() }
+                        editStoreDialogNoTextView.setOnClickListener{
+                            AppEventsManager.pushAppEvents(
+                                eventName = AFInAppEventType.EVENT_EDIT_STORE_LINK_WARNING,
+                                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                                data = mapOf(
+                                    AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                                    "SELECT" to "no"
+                                )
+                            )
+                            if (warningDialog.isShowing) warningDialog.dismiss()
+                        }
                     }
                 }.show()
             }

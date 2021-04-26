@@ -88,7 +88,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             addProductBannerStaticDataResponse = Gson().fromJson<AddProductBannerTextResponse>(commonResponse.mCommonDataStr, AddProductBannerTextResponse::class.java)
-            addProductBannerStaticDataResponse?.run { showMaterCatalogBottomSheet(addProductBannerStaticDataResponse, addProductStaticData) }
+            addProductBannerStaticDataResponse?.run { showMaterCatalogBottomSheet(addProductBannerStaticDataResponse, addProductStaticData, Constants.MODE_PRODUCT_LIST) }
         }
     }
 
@@ -284,7 +284,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                 }
                 showProgressDialog(mActivity)
                 mService.getAddOrderBottomSheetData()
-            } else showMaterCatalogBottomSheet(addProductBannerStaticDataResponse, addProductStaticData)
+            } else showMaterCatalogBottomSheet(addProductBannerStaticDataResponse, addProductStaticData, Constants.MODE_PRODUCT_LIST)
         }
         else if (jsonData.optBoolean("catalogCategoryEdit")) {
             val jsonDataObject = JSONObject(jsonData.optString("data"))
@@ -295,6 +295,13 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
         } else if (jsonData.optBoolean("catalogAddItem")) {
             launchFragment(AddProductFragment.newInstance(0, true), true)
         } else if (jsonData.optBoolean("viewShopAsCustomer")) {
+            AppEventsManager.pushAppEvents(
+                eventName = AFInAppEventType.EVENT_SAVE_ITEM,
+                isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = true,
+                data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                    AFInAppEventParameterName.CHANNEL to "isCatalog"
+                )
+            )
             val isPremiumEnable = (jsonData.optInt("isPremium") == 1)
             launchFragment(ViewAsCustomerFragment.newInstance(jsonData.optString("domain"), isPremiumEnable, addProductStaticData), true)
         } else if (jsonData.optBoolean("catalogStockUpdate")) {
