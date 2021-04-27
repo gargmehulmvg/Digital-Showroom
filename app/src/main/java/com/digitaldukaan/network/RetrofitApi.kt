@@ -31,11 +31,27 @@ class RetrofitApi {
                     it.proceed(newRequest)
                 }
                 .addInterceptor(loggingInterface)
-                .protocols(arrayListOf(Protocol.HTTP_1_1)).build()
+                .protocols(arrayListOf(Protocol.HTTP_1_1))
+                .build()
+            val okHttpClientProd = OkHttpClient.Builder()
+                .addInterceptor {
+                    val originalRequest = it.request()
+                    val newRequest = originalRequest.newBuilder()
+                        .addHeader("auth_token", PrefsManager.getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
+                        .addHeader("session_id", StaticInstances.sAppSessionId ?: "")
+                        .addHeader("install_id", PrefsManager.getStringDataFromSharedPref(PrefsManager.APP_INSTANCE_ID))
+                        .addHeader("app_os", "android")
+                        .addHeader("app_version", BuildConfig.VERSION_NAME)
+                        .build()
+                    it.proceed(newRequest)
+                }
+                .protocols(arrayListOf(Protocol.HTTP_1_1))
+                .build()
             val retrofit = Retrofit.Builder()
                 .baseUrl(BuildConfig.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
-                .client(okHttpClient).build()
+                .client(if (BuildConfig.DEBUG) okHttpClient else okHttpClientProd)
+                .build()
             mAppService = retrofit.create(Apis::class.java)
         }
         return mAppService
