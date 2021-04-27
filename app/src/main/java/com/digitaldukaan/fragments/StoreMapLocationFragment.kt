@@ -3,12 +3,14 @@ package com.digitaldukaan.fragments
 import android.Manifest
 import android.app.AlertDialog
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
+import android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -76,6 +78,8 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
             fragment.mPosition = position
             fragment.mIsSingleStep = isSingleStep
             fragment.mProfileInfoResponse = profileInfoResponse
+            fragment.mCurrentLatitude = profileInfoResponse?.mStoreItemResponse?.storeAddress?.latitude ?: 0.0
+            fragment.mCurrentLongitude = profileInfoResponse?.mStoreItemResponse?.storeAddress?.longitude ?: 0.0
             return fragment
         }
     }
@@ -99,6 +103,9 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
         mGoogleApiClient = LocationServices.getFusedLocationProviderClient(mActivity)
         if (checkLocationPermissionWithDialog()) return
         getLastLocation()
+//        if (mCurrentLatitude != 0.0) {
+//            showCurrentLocationMarkers(mCurrentLatitude, mCurrentLongitude)
+//        }
         setupLocationUI()
     }
 
@@ -198,19 +205,32 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
                     showCurrentLocationMarkers(location.latitude, location.longitude)
                 } else {
                     showToast("Location is detecting as null")
+                    if (!isLocationEnabledInSettings(mActivity)) {
+                        openLocationSettings()
+                    }
                 }
             }
     }
 
+    private fun openLocationSettings() {
+        AlertDialog.Builder(mActivity).apply {
+            setTitle("Location Permission")
+            setMessage("Please allow Location permission to continue")
+            setPositiveButton(R.string.ok) { _, _ ->
+                mActivity.onBackPressed()
+                mActivity.startActivity(Intent(ACTION_LOCATION_SOURCE_SETTINGS))
+            }
+        }.create().show()
+    }
+
     private fun getLastLocation() {
         if (checkLocationPermission()) return
-        //val lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 1f, this)
         mGoogleApiClient?.lastLocation?.addOnCompleteListener(mActivity) { task ->
             if (task.isSuccessful && task.result != null) {
                 lastLocation = task.result
-                mCurrentLatitude = lastLocation?.latitude ?: 0.0
-                mCurrentLongitude = lastLocation?.longitude ?: 0.0
+                //mCurrentLatitude = lastLocation?.latitude ?: 0.0
+                //mCurrentLongitude = lastLocation?.longitude ?: 0.0
                 supportMapFragment.getMapAsync{
                     mGoogleMap = it
                     showCurrentLocationMarkers(mCurrentLatitude, mCurrentLongitude)
@@ -226,7 +246,9 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
 
                         override fun onMarkerDragEnd(marker: Marker?) {
                             if (null != mCurrentMarker) mCurrentMarker?.remove()
-                            showCurrentLocationMarkers(marker?.position?.latitude ?: 0.0, marker?.position?.longitude ?: 0.0)
+                            mCurrentLatitude = marker?.position?.latitude ?: 0.0
+                            mCurrentLongitude = marker?.position?.longitude ?: 0.0
+                            showCurrentLocationMarkers(mCurrentLatitude, mCurrentLongitude)
                         }
 
                         override fun onMarkerDragStart(marker: Marker?) {
@@ -238,6 +260,9 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
                     })
                 }
             } else {
+                if (!isLocationEnabledInSettings(mActivity)) {
+                    openLocationSettings()
+                }
                 showToast("No location detected. Make sure location is enabled on the device.")
                 mCurrentLatitude = mProfileInfoResponse?.mStoreItemResponse?.storeAddress?.latitude ?: 0.0
                 mCurrentLongitude = mProfileInfoResponse?.mStoreItemResponse?.storeAddress?.longitude ?: 0.0
@@ -326,18 +351,13 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
     private fun checkLocationPermissionWithDialog(): Boolean {
         return if (ContextCompat.checkSelfPermission(mActivity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale(mActivity, Manifest.permission.ACCESS_FINE_LOCATION)) {
-                // Show an explanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-                AlertDialog.Builder(mActivity)
-                    .setTitle("R.string.title_location_permission")
-                    .setMessage("R.string.text_location_permission")
-                    .setPositiveButton(R.string.ok) { _, _ ->
-                        ActivityCompat.requestPermissions(mActivity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), Constants.LOCATION_REQUEST_CODE)
+                AlertDialog.Builder(mActivity).apply {
+                    setTitle("Location Permission")
+                    setMessage("Please allow Location permission to continue")
+                    setPositiveButton(R.string.ok) { _, _ -> ActivityCompat.requestPermissions(mActivity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), Constants.LOCATION_REQUEST_CODE)
                     }
-                    .create()
-                    .show()
-            } else ActivityCompat.requestPermissions(mActivity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), Constants.LOCATION_REQUEST_CODE)
+                }.create().show()
+            } else ActivityCompat.requestPermissions(mActivity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), Constants.LOCATION_REQUEST_CODE)
             true
         } else false
     }

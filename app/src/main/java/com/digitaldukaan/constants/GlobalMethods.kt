@@ -11,7 +11,9 @@ import android.os.Build
 import android.os.Environment
 import android.provider.ContactsContract
 import android.provider.MediaStore
+import android.provider.Settings
 import android.telephony.PhoneNumberUtils
+import android.text.TextUtils
 import android.util.Base64
 import android.util.Base64OutputStream
 import android.util.Log
@@ -46,6 +48,26 @@ fun getBitmapFromUri(uri: Uri?, context: Context): Bitmap? {
         return BitmapFactory.decodeStream(imageStream);
     } catch (e: Exception) {
         null
+    }
+}
+
+fun isLocationEnabledInSettings(context: Context): Boolean {
+    var locationMode = 0
+    val locationProviders: String
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+        locationMode = try {
+            Settings.Secure.getInt(context.contentResolver, Settings.Secure.LOCATION_MODE)
+        } catch (e: Settings.SettingNotFoundException) {
+            e.printStackTrace()
+            return false
+        }
+        locationMode != Settings.Secure.LOCATION_MODE_OFF
+    } else {
+        locationProviders = Settings.Secure.getString(
+            context.contentResolver,
+            Settings.Secure.LOCATION_PROVIDERS_ALLOWED
+        )
+        !TextUtils.isEmpty(locationProviders)
     }
 }
 

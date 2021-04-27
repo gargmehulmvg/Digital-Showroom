@@ -5,6 +5,7 @@ import com.digitaldukaan.models.request.StoreLinkRequest
 import com.digitaldukaan.models.request.StoreLogoRequest
 import com.digitaldukaan.models.request.StoreNameRequest
 import com.digitaldukaan.models.response.CommonApiResponse
+import com.digitaldukaan.models.response.StoreDescriptionResponse
 import com.digitaldukaan.network.RetrofitApi
 import com.digitaldukaan.services.serviceinterface.IProfilePreviewServiceInterface
 import com.google.gson.Gson
@@ -67,7 +68,19 @@ class ProfilePreviewNetworkService {
                     it.body()?.let { storeLinkResponse ->
                         serviceInterface.onStoreLinkResponse(storeLinkResponse)
                     }
-                } else throw Exception(response.message())
+                } else {
+                    val errorResponseBody = it.errorBody()
+                    errorResponseBody?.let {
+                        val errorResponse = Gson().fromJson(errorResponseBody.string(), CommonApiResponse::class.java)
+                        val errorReturnResponse = StoreDescriptionResponse(
+                            errorResponse.mIsSuccessStatus,
+                            errorResponse.mMessage,
+                            null,
+                            errorResponse.mMessage
+                        )
+                        serviceInterface.onStoreLinkResponse(errorReturnResponse)
+                    }
+                }
             }
         } catch (e: Exception) {
             Log.e(ProfilePreviewNetworkService::class.java.simpleName, "updateStoreLinkServerCall: ", e)
