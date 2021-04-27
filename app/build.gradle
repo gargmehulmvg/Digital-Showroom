@@ -21,7 +21,7 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     signingConfigs {
-        releaseBuild {
+        release {
             keyAlias 'dotpe_alias'
             keyPassword '8377844923'
             storePassword '8377844923'
@@ -39,6 +39,7 @@ android {
             }
         }
         release {
+            signingConfig signingConfigs.release
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'

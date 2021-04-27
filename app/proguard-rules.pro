@@ -19,6 +19,7 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+-keep class com.digitaldukaan.models.** { *;}
 -keep public class com.android.installreferrer.** { *; }
 -keep class androidx.appcompat.widget.** { *; }
 # keping deobfuscated logs
