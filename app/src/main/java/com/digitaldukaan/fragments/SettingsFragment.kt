@@ -192,12 +192,12 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                 verifyTextView.text = response?.settingsTxt
                 verifyTextView.setOnClickListener{
                     mReferEarnOverWhatsAppResponse?.run {
-                        if (mReferAndEarnData.isShareStoreBanner == true) {
-                            shareDataOnWhatsAppWithImage(mReferAndEarnData.whatsAppText, mReferAndEarnData.imageUrl)
-                        } else {
-                            shareDataOnWhatsApp(mReferAndEarnData.whatsAppText)
-                        }
-                        //shareReferAndEarnWithDeepLink(this)
+//                        if (mReferAndEarnData.isShareStoreBanner == true) {
+//                            shareDataOnWhatsAppWithImage(mReferAndEarnData.whatsAppText, mReferAndEarnData.imageUrl)
+//                        } else {
+//                            shareDataOnWhatsApp(mReferAndEarnData.whatsAppText)
+//                        }
+                        shareReferAndEarnWithDeepLink(this)
                         bottomSheetDialog.dismiss()
                     }
                 }
@@ -218,6 +218,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         linkGenerator.generateLink()
         linkGenerator.generateLink(mActivity, object : CreateOneLinkHttpTask.ResponseListener {
             override fun onResponse(p0: String?) {
+                Log.d(TAG, "onResponse: $p0")
                 showToast("SUCCESS :: $p0")
 //                if (referEarnOverWhatsAppResponse.mReferAndEarnData.isShareStoreBanner == true) {
 //                    shareDataOnWhatsAppWithImage(referEarnOverWhatsAppResponse.mReferAndEarnData.whatsAppText, referEarnOverWhatsAppResponse.mReferAndEarnData.imageUrl)

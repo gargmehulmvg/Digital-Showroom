@@ -21,7 +21,7 @@ class AppEventsManager {
         fun setAppEventsManager(activity: Activity) = run {
             mActivityInstance = activity
             mCleverTapAPI = CleverTapAPI.getDefaultInstance(mActivityInstance)
-            AppsFlyerLib.getInstance().setAppInviteOneLink("KgNd")
+            AppsFlyerLib.getInstance().setAppInviteOneLink("FiCx")
             StaticInstances.sCleverTapId = mCleverTapAPI?.cleverTapID
             Log.d(TAG, "setAppEventsManager: ${StaticInstances.sCleverTapId}")
             createNotificationChannel()
