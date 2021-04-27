@@ -68,7 +68,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:animateLayoutChanges="true"
-            android:visibility="gone"
+            android:visibility="visible"
             android:background="@drawable/upper_curve_white_background"
             android:padding="@dimen/_15sdp"
             android:layout_marginStart="@dimen/_5sdp"

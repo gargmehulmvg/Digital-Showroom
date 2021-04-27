@@ -103,9 +103,6 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
         mGoogleApiClient = LocationServices.getFusedLocationProviderClient(mActivity)
         if (checkLocationPermissionWithDialog()) return
         getLastLocation()
-//        if (mCurrentLatitude != 0.0) {
-//            showCurrentLocationMarkers(mCurrentLatitude, mCurrentLongitude)
-//        }
         setupLocationUI()
     }
 
@@ -204,7 +201,6 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
                     mCurrentLongitude = location.longitude
                     showCurrentLocationMarkers(location.latitude, location.longitude)
                 } else {
-                    showToast("Location is detecting as null")
                     if (!isLocationEnabledInSettings(mActivity)) {
                         openLocationSettings()
                     }
@@ -263,7 +259,6 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
                 if (!isLocationEnabledInSettings(mActivity)) {
                     openLocationSettings()
                 }
-                showToast("No location detected. Make sure location is enabled on the device.")
                 mCurrentLatitude = mProfileInfoResponse?.mStoreItemResponse?.storeAddress?.latitude ?: 0.0
                 mCurrentLongitude = mProfileInfoResponse?.mStoreItemResponse?.storeAddress?.longitude ?: 0.0
                 showCurrentLocationMarkers(mCurrentLatitude, mCurrentLongitude)
