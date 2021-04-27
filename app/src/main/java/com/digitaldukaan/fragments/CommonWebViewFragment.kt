@@ -63,6 +63,7 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
             webViewController.activity = mActivity
             commonWebView.webViewClient = webViewController
             settings.javaScriptEnabled = true
+            settings.domStorageEnabled = true
             addJavascriptInterface(WebViewBridge(), "Android")
             Log.d(CommonWebViewFragment::class.simpleName, "onViewCreated: $mLoadUrl")
             triggerWebViewOpenEvent()

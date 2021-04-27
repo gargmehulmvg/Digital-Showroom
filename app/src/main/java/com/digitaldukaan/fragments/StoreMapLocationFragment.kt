@@ -283,17 +283,8 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
     }
 
     private fun requestPermissions() {
-        val shouldProvideRationale = ActivityCompat.shouldShowRequestPermissionRationale(
-            mActivity,
-            Manifest.permission.ACCESS_COARSE_LOCATION
-        )
-        if (shouldProvideRationale) {
-            showShortSnackBar(
-                "Location permission is needed for core functionality"
-            )
-        } else {
-            startLocationPermissionRequest()
-        }
+        val shouldProvideRationale = ActivityCompat.shouldShowRequestPermissionRationale(mActivity, Manifest.permission.ACCESS_COARSE_LOCATION)
+        if (shouldProvideRationale) showShortSnackBar("Location permission is needed for core functionality") else startLocationPermissionRequest()
     }
 
     private fun startLocationPermissionRequest() {
