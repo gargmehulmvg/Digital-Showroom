@@ -249,6 +249,14 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
     }
 
     override fun onAppShareDataResponse(response: CommonApiResponse) {
+        AppEventsManager.pushAppEvents(
+            eventName = AFInAppEventType.EVENT_STORE_SHARE,
+            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+            data = mapOf(
+                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                AFInAppEventParameterName.IS_EDIT_STORE_LINK to "yes"
+            )
+        )
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             if (response.mIsSuccessStatus) shareDataOnWhatsApp(Gson().fromJson<String>(response.mCommonDataStr, String::class.java)) else showShortSnackBar(response.mMessage, true, R.drawable.ic_close_red)

@@ -11,6 +11,7 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
+import com.digitaldukaan.constants.AppEventsManager
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.ToolBarManager
@@ -115,10 +116,24 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
     override fun sendData(data: String) {
         Log.d(TAG, "sendData: $data")
         val jsonData = JSONObject(data)
-        if (jsonData.optBoolean("redirectNative")) {
-            launchFragment(EditPremiumFragment.newInstance(mStaticText, premiumPageInfoResponse), true)
-        } else if (jsonData.optBoolean("redirectBrowser")) {
-            openUrlInBrowser(jsonData.optString("data"))
+        when {
+            jsonData.optBoolean("redirectNative") -> {
+                launchFragment(EditPremiumFragment.newInstance(mStaticText, premiumPageInfoResponse), true)
+            }
+            jsonData.optBoolean("redirectBrowser") -> {
+                openUrlInBrowser(jsonData.optString("data"))
+            }
+            jsonData.optBoolean("trackEventData") -> {
+                val eventName = jsonData.optString("eventName")
+                val additionalData = jsonData.optString("additionalData")
+                val map = Gson().fromJson<HashMap<String, String>>(additionalData.toString(), HashMap::class.java)
+                Log.d(TAG, "sendData: working $map")
+                AppEventsManager.pushAppEvents(
+                    eventName = eventName,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = map
+                )
+            }
         }
     }
 

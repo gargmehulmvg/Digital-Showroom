@@ -15,6 +15,7 @@ interface AFInAppEventParameterName {
         const val CATEGORY = "category"
         const val DISCOUNTED_PRICE = "discounted_price"
         const val IS_MERCHANT = "isMerchant"
+        const val IS_EDIT_STORE_LINK = "iseditstorelink"
         const val IS_CATALOG = "isCatalog"
         const val IS_SETTINGS = "isSettings"
         const val REFERENCE_PHONE = "reference_phone"

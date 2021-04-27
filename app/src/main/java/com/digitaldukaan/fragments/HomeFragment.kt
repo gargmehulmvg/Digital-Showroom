@@ -526,6 +526,17 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                     val domain = jsonData.optString("data")
                     openUrlInBrowser(domain)
                 }
+                jsonData.optBoolean("trackEventData") -> {
+                    val eventName = jsonData.optString("eventName")
+                    val additionalData = jsonData.optString("additionalData")
+                    val map = Gson().fromJson<HashMap<String, String>>(additionalData.toString(), HashMap::class.java)
+                    Log.d(TAG, "sendData: working $map")
+                    AppEventsManager.pushAppEvents(
+                        eventName = eventName,
+                        isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                        data = map
+                    )
+                }
                 else -> {
                     launchFragment(AddProductFragment.newInstance(0, true), true)
                 }
