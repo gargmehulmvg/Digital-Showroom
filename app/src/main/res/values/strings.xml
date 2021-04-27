@@ -89,6 +89,9 @@
     <string name="no_internet_message">Make sure Wi-Fi or Cellular data is turned on, then try again</string>
     <string name="free">free</string>
     <string name="add_discount_and_other_charges"><![CDATA[Add discount & Other charges]]></string>
+    <string name="store_link_saved">Store Link Saved</string>
+    <string name="your_new_store_link">Your New Store Link</string>
+    <string name="share_store_link">Share Store Link</string>
     <string-array name="state_array">
         <item >Andhra Pradesh</item>
         <item >Arunachal Pradesh</item>

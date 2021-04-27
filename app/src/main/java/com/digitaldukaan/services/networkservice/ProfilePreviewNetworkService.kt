@@ -5,7 +5,6 @@ import com.digitaldukaan.models.request.StoreLinkRequest
 import com.digitaldukaan.models.request.StoreLogoRequest
 import com.digitaldukaan.models.request.StoreNameRequest
 import com.digitaldukaan.models.response.CommonApiResponse
-import com.digitaldukaan.models.response.StoreDescriptionResponse
 import com.digitaldukaan.network.RetrofitApi
 import com.digitaldukaan.services.serviceinterface.IProfilePreviewServiceInterface
 import com.google.gson.Gson
@@ -72,13 +71,8 @@ class ProfilePreviewNetworkService {
                     val errorResponseBody = it.errorBody()
                     errorResponseBody?.let {
                         val errorResponse = Gson().fromJson(errorResponseBody.string(), CommonApiResponse::class.java)
-                        val errorReturnResponse = StoreDescriptionResponse(
-                            errorResponse.mIsSuccessStatus,
-                            errorResponse.mMessage,
-                            null,
-                            errorResponse.mMessage
-                        )
-                        serviceInterface.onStoreLinkResponse(errorReturnResponse)
+                        errorResponse.mMessage = errorResponse.mErrorType
+                        serviceInterface.onStoreLinkResponse(errorResponse)
                     }
                 }
             }
@@ -149,6 +143,28 @@ class ProfilePreviewNetworkService {
             }
         } catch (e: Exception) {
             Log.e(ProfilePreviewNetworkService::class.java.simpleName, "updateStoreLogoServerCall: ", e)
+            serviceInterface.onProfilePreviewServerException(e)
+        }
+    }
+
+    suspend fun getShareStoreDataServerCall(
+        serviceInterface: IProfilePreviewServiceInterface
+    ) {
+        try {
+            val response = RetrofitApi().getServerCallObject()?.getShareStore()
+            response?.let {
+                if (it.isSuccessful) {
+                    it.body()?.let { responseBody -> serviceInterface.onAppShareDataResponse(responseBody) }
+                }  else {
+                    val errorResponseBody = it.errorBody()
+                    errorResponseBody?.let {
+                        val validateOtpErrorResponse = Gson().fromJson(errorResponseBody.string(), CommonApiResponse::class.java)
+                        serviceInterface.onAppShareDataResponse(validateOtpErrorResponse)
+                    }
+                }
+            }
+        } catch (e : Exception) {
+            Log.e(MarketingNetworkService::class.java.simpleName, "getShareStoreDataServerCall: ", e)
             serviceInterface.onProfilePreviewServerException(e)
         }
     }

@@ -206,16 +206,23 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         }
     }
 
-    override fun onStoreLinkResponse(response: StoreDescriptionResponse) {
-        mStoreLinkErrorResponse = response
+    override fun onStoreLinkResponse(response: CommonApiResponse) {
         var resultStr = ""
         stopProgress()
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            if (response.mStatus) {
+            val storeShareResponse = Gson().fromJson<ValidateUserResponse>(response.mCommonDataStr, ValidateUserResponse::class.java)
+            mStoreLinkErrorResponse = StoreDescriptionResponse(
+                response.mIsSuccessStatus,
+                response.mMessage,
+                storeShareResponse?.store,
+                response.mErrorType
+            )
+            if (response.mIsSuccessStatus) {
                 resultStr = "Available"
                 mStoreLinkBottomSheet?.dismiss()
                 showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
                 onRefresh()
+                showShareStoreLinkBottomSheet(storeShareResponse.store?.storeInfo?.storeUrl)
             } else {
                 mStoreLinkBottomSheet?.run {
                     if (isShowing) dismiss()
@@ -238,6 +245,13 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (swipeRefreshLayout.isRefreshing) swipeRefreshLayout.isRefreshing = false
             exceptionHandlingForAPIResponse(e)
+        }
+    }
+
+    override fun onAppShareDataResponse(response: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            if (response.mIsSuccessStatus) shareDataOnWhatsApp(Gson().fromJson<String>(response.mCommonDataStr, String::class.java)) else showShortSnackBar(response.mMessage, true, R.drawable.ic_close_red)
         }
     }
 
@@ -567,7 +581,10 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
     override fun onInitiateKycResponse(response: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
-            if (response.mIsSuccessStatus) openUrlInBrowser(Gson().fromJson<String>(response.mCommonDataStr, String::class.java)) else showShortSnackBar(response.mMessage, true, R.drawable.ic_close_red)
+            if (response.mIsSuccessStatus) {
+                onRefresh()
+                openUrlInBrowser(Gson().fromJson<String>(response.mCommonDataStr, String::class.java))
+            } else showShortSnackBar(response.mMessage, true, R.drawable.ic_close_red)
 
         }
     }
@@ -579,5 +596,26 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                 onImageSelectionResultFile(file, "")
             }
         } else super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    private fun showShareStoreLinkBottomSheet(storeDomain: String?) {
+        val shareStoreBottomSheet = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
+        val view = LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet_shre_store, mActivity.findViewById(R.id.bottomSheetContainer))
+        shareStoreBottomSheet.apply {
+            setContentView(view)
+            setBottomSheetCommonProperty()
+            val storeLinkTextView:TextView = view.findViewById(R.id.storeLinkTextView)
+            val shareStoreLinkTextView:TextView = view.findViewById(R.id.shareStoreLinkTextView)
+            storeLinkTextView.text = storeDomain
+            shareStoreLinkTextView.setOnClickListener {
+                if (!isInternetConnectionAvailable(mActivity)) {
+                    showNoInternetConnectionDialog()
+                    return@setOnClickListener
+                }
+                showProgressDialog(mActivity)
+                service.getShareStoreData()
+                shareStoreBottomSheet.dismiss()
+            }
+        }.show()
     }
 }

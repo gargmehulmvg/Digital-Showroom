@@ -20,9 +20,9 @@ class MarketingService {
         }
     }
 
-    fun getShareStoreData(authToken: String) {
+    fun getShareStoreData() {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.getShareStoreDataServerCall(authToken, mServiceInterface)
+            mNetworkService.getShareStoreDataServerCall(mServiceInterface)
         }
     }
 

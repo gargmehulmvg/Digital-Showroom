@@ -177,7 +177,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                     )
                 )
                 showProgressDialog(mActivity)
-                service.getShareStoreData(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
+                service.getShareStoreData()
             }
             Constants.ACTION_CATALOG_WHATSAPP -> {
                 if (mShareStorePDFResponse == null) {

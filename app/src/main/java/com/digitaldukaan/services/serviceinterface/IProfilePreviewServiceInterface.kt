@@ -1,7 +1,6 @@
 package com.digitaldukaan.services.serviceinterface
 
 import com.digitaldukaan.models.response.CommonApiResponse
-import com.digitaldukaan.models.response.StoreDescriptionResponse
 
 interface IProfilePreviewServiceInterface {
 
@@ -9,7 +8,7 @@ interface IProfilePreviewServiceInterface {
 
     fun onStoreNameResponse(response: CommonApiResponse)
 
-    fun onStoreLinkResponse(response: StoreDescriptionResponse)
+    fun onStoreLinkResponse(response: CommonApiResponse)
 
     fun onStoreLogoResponse(response: CommonApiResponse)
 
@@ -18,4 +17,6 @@ interface IProfilePreviewServiceInterface {
     fun onInitiateKycResponse(response: CommonApiResponse)
 
     fun onProfilePreviewServerException(e: Exception)
+
+    fun onAppShareDataResponse(apiResponse: CommonApiResponse)
 }

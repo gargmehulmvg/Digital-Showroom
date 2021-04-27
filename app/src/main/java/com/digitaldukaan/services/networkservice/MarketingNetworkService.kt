@@ -23,11 +23,10 @@ class MarketingNetworkService {
     }
 
     suspend fun getShareStoreDataServerCall(
-        authToken: String,
         serviceInterface: IMarketingServiceInterface
     ) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.getShareStoreData(authToken)
+            val response = RetrofitApi().getServerCallObject()?.getShareStore()
             response?.let {
                 if (it.isSuccessful) {
                     it.body()?.let { responseBody -> serviceInterface.onAppShareDataResponse(responseBody) }

@@ -54,4 +54,10 @@ class ProfilePreviewService {
         }
     }
 
+    fun getShareStoreData() {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.getShareStoreDataServerCall(mServiceInterface)
+        }
+    }
+
 }

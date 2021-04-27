@@ -33,7 +33,7 @@ interface Apis {
 
     /* ----------------------       Settings         ---------------------- */
     @POST("api/dotk/vm1/settings/updateStoreDomain")
-    suspend fun updateStoreDomain(@Body request: StoreLinkRequest) : Response<StoreDescriptionResponse>
+    suspend fun updateStoreDomain(@Body request: StoreLinkRequest) : Response<CommonApiResponse>
 
     @GET("api/dotk/vm1/settings/getAccountInfo")
     suspend fun getProfileResponse() : Response<CommonApiResponse>
@@ -87,7 +87,7 @@ interface Apis {
     suspend fun getMarketingCardsData(): Response<CommonApiResponse>
 
     @POST("api/dotk/vm1/marketing/shareStore")
-    suspend fun getShareStoreData(@Header("auth_token") authToken: String): Response<CommonApiResponse>
+    suspend fun getShareStore(): Response<CommonApiResponse>
 
     @GET("api/dotk/vm1/marketing/shareStorePdfText")
     suspend fun getShareStorePdfText(@Header("auth_token") authToken: String): Response<CommonApiResponse>
