@@ -200,7 +200,7 @@ interface Apis {
     @POST("api/dotanalytics/push/androidEventLog")
     suspend fun androidEventLog(@Body request: AndroidEventLogRequest): Response<CommonApiResponse>
 
-    @GET("api/dotk/vm1/template/referAppWa")
+    @GET("api/dotk/template/referAppWa")
     suspend fun getReferAndEarnDataOverWhatsApp() : Response<ReferEarnOverWhatsAppResponse>
 
     @POST("api/dotk/merchant/setAddress")

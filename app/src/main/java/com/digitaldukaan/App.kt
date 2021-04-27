@@ -42,8 +42,10 @@ class App: Application() {
                 Log.e(TAG, "error onAttributionFailure :  $error")
             }
         }
-        AppsFlyerLib.getInstance().init(APP_FLYER_DEV_KEY, conversionDataListener, this)
-        AppsFlyerLib.getInstance().start(this)
+        AppsFlyerLib.getInstance().apply {
+            init(APP_FLYER_DEV_KEY, conversionDataListener, this@App)
+            start(this@App)
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val notificationChannel = NotificationChannel(
                 AFInAppEventParameterName.NOTIFICATION_CHANNEL_NOTIFICATIONS,
