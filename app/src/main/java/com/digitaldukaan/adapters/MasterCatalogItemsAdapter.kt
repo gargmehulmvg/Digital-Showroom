@@ -50,11 +50,30 @@ class MasterCatalogItemsAdapter(
         view.setPriceTextView.setOnClickListener {
             mCategoryItemClickListener.onCategoryItemsSetPriceClick(view.adapterPosition, mCategoryItemList?.get(view.adapterPosition))
         }
+        view.priceTextView.setOnClickListener {
+            val item = mCategoryItemList?.get(view.adapterPosition)
+            if (item?.price != 0.0) {
+                return@setOnClickListener
+            }
+            mCategoryItemClickListener.onCategoryItemsSetPriceClick(view.adapterPosition, item)
+        }
         view.checkBox.setOnCheckedChangeListener { _, isChecked ->
-            mCategoryItemClickListener.onCategoryCheckBoxClick(view.adapterPosition, mCategoryItemList?.get(view.adapterPosition), isChecked)
+            val item = mCategoryItemList?.get(view.adapterPosition)
+            if (item?.isAdded == true) {
+                view.checkBox.isChecked = false
+                view.checkBox.isSelected = false
+                return@setOnCheckedChangeListener
+            }
+            mCategoryItemClickListener.onCategoryCheckBoxClick(view.adapterPosition, item, isChecked)
         }
         view.titleTextView.setOnClickListener {
-            mCategoryItemClickListener.onCategoryCheckBoxClick(view.adapterPosition, mCategoryItemList?.get(view.adapterPosition), !view.checkBox.isChecked)
+            val item = mCategoryItemList?.get(view.adapterPosition)
+            if (item?.isAdded == true) {
+                view.checkBox.isChecked = false
+                view.checkBox.isSelected = false
+                return@setOnClickListener
+            }
+            mCategoryItemClickListener.onCategoryCheckBoxClick(view.adapterPosition, item, !view.checkBox.isChecked)
             view.checkBox.isChecked = !view.checkBox.isChecked
         }
         return view
@@ -94,6 +113,7 @@ class MasterCatalogItemsAdapter(
                 priceTextView.text = "${mStaticText?.text_set_your_price} ${mStaticText?.text_rupees_symbol}"
                 setPriceTextView.text = item.price.toString()
             } else {
+                setPriceTextView.text = null
                 checkBox.isEnabled = true
             }
             checkBox.isChecked = (item?.isSelected == true || mSelectedProductsHashMap?.containsKey(item?.itemId) == true)

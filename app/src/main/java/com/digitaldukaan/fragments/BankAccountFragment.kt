@@ -5,10 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.digitaldukaan.R
-import com.digitaldukaan.constants.Constants
-import com.digitaldukaan.constants.CoroutineScopeUtils
-import com.digitaldukaan.constants.StaticInstances
-import com.digitaldukaan.constants.ToolBarManager
+import com.digitaldukaan.constants.*
 import com.digitaldukaan.models.request.BankDetailsRequest
 import com.digitaldukaan.models.response.*
 import com.digitaldukaan.services.BankDetailsService
@@ -89,7 +86,7 @@ class BankAccountFragment : BaseFragment(), IBankDetailsServiceInterface {
             accountHolderNameEditText.setText(this.accountHolderName)
             mobileNumberEditText.setText(this.registeredPhone)
         }
-        mobileNumberEditText.setText(bankDetail?.registeredPhone)
+        mobileNumberEditText.setText(if (bankDetail?.registeredPhone?.isEmpty() == true) PrefsManager.getStringDataFromSharedPref(Constants.USER_MOBILE_NUMBER) else bankDetail?.registeredPhone)
         mobileNumberEditText.isEnabled = false
         ifscEditText.allowOnlyAlphaNumericCharacters()
     }
