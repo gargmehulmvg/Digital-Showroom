@@ -92,6 +92,8 @@
     <string name="store_link_saved">Store Link Saved</string>
     <string name="your_new_store_link">Your New Store Link</string>
     <string name="share_store_link">Share Store Link</string>
+    <string name="update">Update</string>
+    <string name="save">Save</string>
     <string-array name="state_array">
         <item >Andhra Pradesh</item>
         <item >Arunachal Pradesh</item>

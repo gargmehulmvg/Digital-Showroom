@@ -1,12 +1,8 @@
 package com.digitaldukaan.services.networkservice
 
 import android.util.Log
-import com.digitaldukaan.constants.StaticInstances
-import com.digitaldukaan.models.response.HelpScreenItemResponse
 import com.digitaldukaan.network.RetrofitApi
 import com.digitaldukaan.services.serviceinterface.ISplashServiceInterface
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 
 class SplashNetworkService {
 
@@ -36,8 +32,7 @@ class SplashNetworkService {
             response?.let {
                 if (it.isSuccessful) {
                     it.body()?.let { helpScreenResponse ->
-                        val listType = object : TypeToken<List<HelpScreenItemResponse>>() {}.type
-                        StaticInstances.sHelpScreenList = Gson().fromJson<ArrayList<HelpScreenItemResponse>>(helpScreenResponse.mCommonDataStr, listType)
+                        splashServiceInterface.onHelpScreenResponse(helpScreenResponse)
                     }
                 } else splashServiceInterface.onStaticDataException(Exception(response.message()))
             }

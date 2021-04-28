@@ -161,7 +161,7 @@
                     android:clickable="true"
                     android:focusable="true"
                     android:importantForAutofill="no"
-                    android:inputType="text"
+                    android:inputType="textPersonName"
                     android:maxLength="@integer/description_name_length"
                     android:textColor="@color/black"
                     android:textColorHint="@color/default_text_light_grey"
@@ -197,8 +197,23 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
+            <TextView
+                android:id="@+id/addDiscountLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto_medium"
+                android:onClick="onClick"
+                android:background="?selectableItemBackground"
+                android:textColor="@color/black"
+                android:layout_marginStart="@dimen/_20sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginEnd="@dimen/_20sdp"
+                tools:text="Add discount on this item (Optional)" />
+
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/discountContainer"
                 android:layout_width="match_parent"
+                android:visibility="gone"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_20sdp"
                 android:layout_marginTop="@dimen/_10sdp"
@@ -292,7 +307,7 @@
                     android:clickable="true"
                     android:focusable="true"
                     android:importantForAutofill="no"
-                    android:inputType="text"
+                    android:inputType="textPersonName"
                     android:maxLength="@integer/description_name_length"
                     android:textColor="@color/black"
                     android:textColorHint="@color/default_text_light_grey"

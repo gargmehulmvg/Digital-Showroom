@@ -444,7 +444,10 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                         mHomeFragmentService.getAnalyticsData()
                     }
                 }
-                else -> showShortSnackBar("Permission was denied")
+                else -> {
+                    mHomeFragmentService.getOrderPageInfo()
+                    mHomeFragmentService.getAnalyticsData()
+                }
             }
         }
     }

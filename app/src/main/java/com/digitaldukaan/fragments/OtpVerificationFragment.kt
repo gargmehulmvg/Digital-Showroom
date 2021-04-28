@@ -94,7 +94,6 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
                         showNoInternetConnectionDialog()
                         return
                     }
-                    showProgressDialog(mActivity)
                     mLoginService.generateOTP(mMobileNumberStr)
                 }
             }

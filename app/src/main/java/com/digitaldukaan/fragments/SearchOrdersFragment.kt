@@ -72,6 +72,7 @@ class SearchOrdersFragment: BaseFragment(), IOnToolbarIconClick, ISearchOrderSer
             hideToolBar(mActivity, false)
             setHeaderTitle("\"${if (mMobileNumberString.isEmpty()) mOrderIdString else mMobileNumberString}\"")
             setSideIconVisibility(true)
+            setSecondSideIconVisibility(false)
             onBackPressed(this@SearchOrdersFragment)
             setSideIcon(ContextCompat.getDrawable(mActivity, R.drawable.ic_search), this@SearchOrdersFragment)
         }

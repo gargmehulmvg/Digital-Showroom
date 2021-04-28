@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="@dimen/_95sdp"
-    android:id="@+id/imageContainer"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:background="@drawable/slight_curve_light_grey_border"
+    android:id="@+id/imageContainer"
+    android:layout_width="@dimen/_100sdp"
+    android:layout_height="@dimen/_100sdp"
     android:layout_gravity="center_horizontal"
     android:layout_marginStart="@dimen/_10sdp"
-    android:layout_height="@dimen/_95sdp">
+    android:background="@drawable/slight_curve_light_grey_border">
 
     <androidx.constraintlayout.widget.Group
         android:id="@+id/noImagesLayout"
@@ -20,21 +20,21 @@
         android:id="@+id/image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="@dimen/_1sdp"
         android:clickable="false"
-        android:visibility="gone"
+        android:contentDescription="@string/image_view_content_description"
+        android:padding="@dimen/_1sdp"
         android:src="@drawable/ic_auto_data_backup"
-        android:contentDescription="@string/image_view_content_description" />
+        android:visibility="gone" />
 
     <ImageView
         android:id="@+id/updateCameraImageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:clickable="false"
         android:contentDescription="@string/image_view_content_description"
         android:src="@drawable/ic_camera_update"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:clickable="false"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.3" />
@@ -43,17 +43,17 @@
         android:id="@+id/updateCameraTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:clickable="false"
         android:fontFamily="sans-serif-medium"
         android:gravity="center"
         android:maxWidth="@dimen/_100sdp"
-        android:clickable="false"
         android:minLines="@integer/min_lines_two"
-        tools:text="Upload or search images"
         android:paddingTop="@dimen/_10sdp"
-        android:textSize="@dimen/_10sdp"
         android:textColor="@color/white"
+        android:textSize="@dimen/_10sdp"
         app:layout_constraintEnd_toEndOf="@+id/updateCameraImageView"
         app:layout_constraintStart_toStartOf="@+id/updateCameraImageView"
-        app:layout_constraintTop_toBottomOf="@+id/updateCameraImageView" />
+        app:layout_constraintTop_toBottomOf="@+id/updateCameraImageView"
+        tools:text="Upload or search images" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

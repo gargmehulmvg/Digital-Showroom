@@ -56,6 +56,7 @@ data class AddProductStaticText(
     @SerializedName("text_rupees_symbol") var text_rupees_symbol: String?,
     @SerializedName("text_set_your_price") var text_set_your_price: String?,
     @SerializedName("text_tap_to_select") var text_tap_to_select: String?,
+    @SerializedName("text_add_discount_on_this_item") var text_add_discount_on_this_item: String?,
     @SerializedName("text_try_now") var text_try_now: String?,
     @SerializedName("text_upload_or_search_images") var text_upload_or_search_images: String?,
     @SerializedName("hint_discounted_price") var hint_discounted_price: String?,
@@ -71,7 +72,6 @@ data class AddProductStaticText(
     @SerializedName("dialog_stock_dont_show_this_again") var dialog_stock_dont_show_this_again: String?,
     @SerializedName("text_yes") var text_yes: String?,
     @SerializedName("text_no") var text_no: String?,
-
     @SerializedName("text_share_product") var text_share_product: String?,
     @SerializedName("text_go_back_message") var text_go_back_message: String?,
     @SerializedName("text_go_back") var text_go_back: String?

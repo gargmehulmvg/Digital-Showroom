@@ -217,7 +217,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
             mOrderDetailStaticData = orderDetailMainResponse?.staticText
             newOrderTextView.visibility = if (mIsNewOrder) View.VISIBLE else View.GONE
             detailTextView.visibility = if (orderDetailResponse?.transactionId?.isEmpty() == true) View.INVISIBLE else View.VISIBLE
-            sendBillLayout.visibility = if (orderDetailResponse?.displayStatus == Constants.DS_SEND_BILL) View.VISIBLE else View.GONE
+            sendBillLayout.visibility = if (orderDetailResponse?.displayStatus == Constants.DS_SEND_BILL || orderDetailResponse?.displayStatus == Constants.DS_NEW) View.VISIBLE else View.GONE
             orderDetailContainer.visibility = if (orderDetailResponse?.displayStatus == Constants.DS_SEND_BILL) View.GONE else View.VISIBLE
             addDeliveryChargesLabel.visibility = if (orderDetailResponse?.displayStatus == Constants.DS_SEND_BILL) View.VISIBLE else View.GONE
             orderDetailItemRecyclerView.apply {
@@ -253,6 +253,8 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                 customerDetailsLabel.visibility = View.GONE
                 deliveryChargeValueEditText?.visibility = View.GONE
                 addDeliveryChargesLabel.text = getString(R.string.add_discount_and_other_charges)
+                mDeliveryChargeAmount = 0.0
+                setAmountToEditText()
             } else {
                 mIsPickUpOrder = false
                 customerDeliveryDetailsRecyclerView.apply {
@@ -587,6 +589,10 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                                 deliveryTimeResponse.deliveryTimeList?.forEachIndexed { _, itemResponse -> itemResponse.isSelected = false }
                                 deliveryTimeResponse.deliveryTimeList?.get(position)?.isSelected = true
                                 deliveryTimeEditText.visibility = if (CUSTOM == deliveryTimeResponse.deliveryTimeList?.get(position)?.key) View.VISIBLE else View.INVISIBLE
+                                if (deliveryTimeEditText.visibility == View.VISIBLE) {
+                                    deliveryTimeEditText.requestFocus()
+                                    deliveryTimeEditText.showKeyboard()
+                                }
                                 mDeliveryTimeAdapter.setDeliveryTimeList(deliveryTimeResponse.deliveryTimeList)
                                 mDeliveryTimeStr = deliveryTimeResponse.deliveryTimeList?.get(position)?.value
                                 bottomSheetSendBillText.isEnabled = true

@@ -121,9 +121,11 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     val priceStr = priceEditText.text.toString()
                     when {
                         priceStr.isEmpty() -> {
-                            priceEditText.error = addProductStaticData?.error_mandatory_field
-                            priceEditText.requestFocus()
-                            discountPriceEditText.text = null
+                            if (str != "0.0") {
+                                priceEditText.error = addProductStaticData?.error_mandatory_field
+                                priceEditText.requestFocus()
+                                discountPriceEditText.text = null
+                            }
                             return
                         }
                         priceStr.toDouble() < str.toDouble() -> {
@@ -181,6 +183,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 val str = s?.toString()
                 if (str?.trim()?.isNotEmpty() == true) {
                     mIsOrderEdited = true
+                    addDiscountLabel.visibility = View.VISIBLE
                     showAddProductContainer()
                 }
             }
@@ -259,6 +262,10 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 productDescriptionEditText.requestFocus()
                 productDescriptionEditText.isFocusable = true
             }
+            addDiscountLabel.id -> {
+                addDiscountLabel.visibility = View.GONE
+                discountContainer.visibility = View.VISIBLE
+            }
             tryNowTextView.id -> {
                 if (addProductBannerStaticDataResponse == null) {
                     if (!isInternetConnectionAvailable(mActivity)) {
@@ -271,11 +278,11 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             }
             continueTextView.id -> {
                 if (checkValidation()) {
-                    val nameStr = nameEditText.text.toString()
-                    val priceStr = priceEditText.text.trim().toString()
-                    val discountedStr = discountedPriceEditText.text.trim().toString()
-                    val descriptionStr = productDescriptionEditText.text.toString()
-                    val categoryStr = enterCategoryEditText.text.toString()
+                    val nameStr = nameEditText?.text.toString()
+                    val priceStr = priceEditText?.text?.trim().toString()
+                    val discountedStr = discountedPriceEditText?.text?.trim().toString()
+                    val descriptionStr = productDescriptionEditText?.text.toString()
+                    val categoryStr = enterCategoryEditText?.text.toString()
                     if (!isInternetConnectionAvailable(mActivity)) return else {
                         showProgressDialog(mActivity)
                         val imageListRequest: ArrayList<AddProductImageItem> = ArrayList()
@@ -402,6 +409,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                         }
                     }
                 }
+                if (searchImageEditText.text.isNotEmpty()) searchImageImageView.callOnClick()
             }
         }.show()
     }
@@ -459,9 +467,9 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             Log.d(TAG, "onGetAddProductDataResponse: $addProductResponse")
             addProductStaticData = addProductResponse?.addProductStaticText
             addProductResponse?.storeItem?.run {
-                nameEditText.setText(name)
-                priceEditText.setText(if (price != 0.0) price.toString() else "")
-                discountedPriceEditText.setText(if (discountedPrice != 0.0) discountedPrice.toString() else "")
+                nameEditText?.setText(name)
+                discountedPriceEditText?.setText(if (discountedPrice != 0.0 && discountedPrice >= price) null else discountedPrice.toString())
+                priceEditText?.setText(if (price != 0.0) price.toString() else null)
                 if (addProductResponse.storeItem?.imagesList?.isNotEmpty() == true) {
                     noImagesLayout.visibility = View.GONE
                     imagesRecyclerView.apply {
@@ -471,7 +479,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                         addProductResponse.storeItem?.imagesList?.forEachIndexed { _, imagesResponse ->
                             if (imagesResponse.status != 0) mImagesStrList.add(AddProductImagesResponse(imagesResponse.imageId, imagesResponse.imageUrl, 1))
                         }
-                        mImageAddAdapter = AddProductsImagesAdapter(mImagesStrList ,addProductStaticData?.text_images_added, this@AddProductFragment)
+                        mImageAddAdapter = AddProductsImagesAdapter(mImagesStrList ,addProductStaticData?.text_upload_or_search_images, this@AddProductFragment)
                         adapter = mImageAddAdapter
                     }
                 } else {
@@ -481,7 +489,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 if (description.isNotEmpty()) {
                     addItemTextView.visibility = View.GONE
                     productDescriptionInputLayout.visibility = View.VISIBLE
-                    productDescriptionEditText.setText(description)
+                    productDescriptionEditText?.setText(description)
                 }
             }
             addProductResponse?.addProductStoreCategories?.run {
@@ -495,7 +503,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                         }
                         mTempProductCategoryList.forEachIndexed { _, categoryItem ->
                             if (addProductResponse.storeItem?.category?.id == categoryItem.id) {
-                                enterCategoryEditText.setText(categoryItem.name)
+                                enterCategoryEditText?.setText(categoryItem.name)
                                 categoryItem.isSelected = true
                             } else categoryItem.isSelected = false
                         }
@@ -506,19 +514,23 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             }
             addProductStaticData?.run {
                 ToolBarManager.getInstance().setHeaderTitle(heading_add_product_page)
-                tryNowTextView.text = text_try_now
-                textView2.text = heading_add_product_banner
-                updateCameraTextView.text = text_upload_or_search_images
+                tryNowTextView?.text = text_try_now
+                addDiscountLabel?.text = text_add_discount_on_this_item
+                textView2?.text = heading_add_product_banner
+                updateCameraTextView?.text = text_upload_or_search_images
                 nameInputLayout.hint = hint_item_name
                 priceInputLayout.hint = hint_price
                 discountedPriceInputLayout.hint = hint_discounted_price
                 enterCategoryInputLayout.hint = hint_enter_category_optional
-                addItemTextView.text = text_add_item_description
-                continueTextView.text = text_add_item
+                addItemTextView?.text = text_add_item_description
+                continueTextView?.text = if (mIsAddNewProduct)  text_add_item else getString(R.string.save)
                 val count = mImagesStrList.size
-                imagesLeftTextView.text = "${if (count == 0) count else count - 1}/4 $text_images_added"
+                imagesLeftTextView?.text = "${if (count == 0) count else count - 1}/4 $text_images_added"
             }
             mOptionsMenuResponse = addProductResponse?.addProductStoreOptionsMenu
+            if (mOptionsMenuResponse?.isEmpty() == true) {
+                ToolBarManager.getInstance().setSideIconVisibility(false)
+            }
             shareProductContainer.setOnClickListener {
                 val sharingData = "ItemName: ${addProductResponse?.storeItem?.name}\nPrice:  ₹${addProductResponse?.storeItem?.price} \nDiscounted Price: ₹${addProductResponse.storeItem?.discountedPrice}\n\n\uD83D\uDED2 ORDER NOW, Click on the link below\n\n" + "${addProductResponse?.domain}/product/${addProductResponse?.storeItem?.id}/${addProductResponse.storeItem?.name?.replace(' ', '-')}"
                 if (addProductResponse?.storeItem?.imageUrl?.isEmpty() == true) shareDataOnWhatsApp(sharingData) else shareDataOnWhatsAppWithImage(sharingData ,addProductResponse?.storeItem?.imageUrl)
@@ -557,13 +569,13 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
                     mImageAddAdapter = AddProductsImagesAdapter(
                         mImagesStrList,
-                        addProductStaticData?.text_images_added,
+                        addProductStaticData?.text_upload_or_search_images,
                         this@AddProductFragment
                     )
                     adapter = mImageAddAdapter
                     mImageAddAdapter?.setListToAdapter(mImagesStrList)
                 }
-                imagesLeftTextView.text = "${mImagesStrList?.size -1}/4 ${addProductStaticData?.text_images_added}"
+                imagesLeftTextView?.text = "${mImagesStrList?.size -1}/4 ${addProductStaticData?.text_images_added}"
             } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
         }
     }
@@ -596,7 +608,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     override fun onChipItemClickListener(position: Int) {
         mTempProductCategoryList.forEachIndexed { _, categoryItem -> categoryItem.isSelected = false }
         mTempProductCategoryList[position].isSelected = true
-        enterCategoryEditText.setText(mTempProductCategoryList[position].name)
+        enterCategoryEditText?.setText(mTempProductCategoryList[position].name)
         addProductChipsAdapter.setAddProductStoreCategoryList(mTempProductCategoryList)
     }
 
@@ -629,7 +641,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     }
 
     override fun onBackPressed(): Boolean {
-        return if (mIsOrderEdited) {
+        return if (mIsOrderEdited && shareProductContainer.visibility != View.VISIBLE) {
             showGoBackDialog()
             return true
         } else {
@@ -649,6 +661,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     dialog.dismiss()
                 }
                 setPositiveButton(getString(R.string.txt_yes)) { dialog, _ ->
+                    nameEditText.hideKeyboard()
                     mIsOrderEdited = false
                     fragmentManager?.popBackStack()
                     dialog.dismiss()
@@ -681,9 +694,10 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     }
 
     private fun showAddProductContainer() {
-        if (shareProductContainer.visibility == View.VISIBLE) {
-            shareProductContainer.visibility = View.GONE
-            continueTextView.visibility = View.VISIBLE
+        if (shareProductContainer?.visibility == View.VISIBLE) {
+            shareProductContainer?.visibility = View.GONE
+            continueTextView?.visibility = View.VISIBLE
+            if (!mIsAddNewProduct) continueTextView?.text = getString(R.string.save)
         }
     }
 }

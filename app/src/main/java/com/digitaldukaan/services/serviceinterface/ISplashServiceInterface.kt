@@ -7,6 +7,8 @@ interface ISplashServiceInterface {
 
     fun onStaticDataResponse(staticDataResponse: StaticTextResponse)
 
+    fun onHelpScreenResponse(commonResponse: CommonApiResponse)
+
     fun onAppVersionResponse(commonResponse: CommonApiResponse)
 
     fun onStaticDataException(e: Exception)
