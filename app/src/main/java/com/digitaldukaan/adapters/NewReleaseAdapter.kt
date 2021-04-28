@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.MainActivity
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
+import com.digitaldukaan.constants.PrefsManager
 import com.digitaldukaan.interfaces.IStoreSettingsItemClicked
 import com.digitaldukaan.models.response.TrendingListResponse
 import com.squareup.picasso.Picasso
@@ -30,7 +31,11 @@ class NewReleaseAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AppSettingsViewHolder {
         val view = AppSettingsViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.new_release_item, parent, false))
-        view.itemLayout.setOnClickListener{listener.onNewReleaseItemClicked(newReleaseList?.get(view.adapterPosition))}
+        view.itemLayout.setOnClickListener{
+            val releaseItem = newReleaseList?.get(view.adapterPosition)
+            if (releaseItem?.mType == Constants.NEW_RELEASE_TYPE_CUSTOM_DOMAIN) releaseItem.mPage = "${releaseItem.mPage}${PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)}"
+            listener.onNewReleaseItemClicked(releaseItem)
+        }
         return view
     }
 
@@ -43,6 +48,10 @@ class NewReleaseAdapter(
             textView.text = responseItem?.mText
             Picasso.get().load(responseItem?.mCDN).into(imageView)
             when (responseItem?.mType) {
+                Constants.NEW_RELEASE_TYPE_CUSTOM_DOMAIN -> {
+                    itemLayout.background = ContextCompat.getDrawable(activity, R.drawable.curve_premium_selector)
+                    newTextView.visibility = View.VISIBLE
+                }
                 Constants.NEW_RELEASE_TYPE_PREMIUM -> itemLayout.background = ContextCompat.getDrawable(activity, R.drawable.curve_premium_selector)
                 Constants.NEW_RELEASE_TYPE_NEW -> newTextView.visibility = View.VISIBLE
                 Constants.NEW_RELEASE_TYPE_TRENDING -> {
