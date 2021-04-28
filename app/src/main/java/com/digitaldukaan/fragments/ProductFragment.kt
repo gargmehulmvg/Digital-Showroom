@@ -9,6 +9,7 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.PopupMenu
 import android.widget.TextView
+import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -306,13 +307,18 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
             launchFragment(ViewAsCustomerFragment.newInstance(jsonData.optString("domain"), isPremiumEnable, addProductStaticData), true)
         } else if (jsonData.optBoolean("catalogStockUpdate")) {
             val jsonDataObject = JSONObject(jsonData.optString("data"))
-            val request = UpdateStockRequest(jsonDataObject.optInt("id"), if (jsonDataObject.optInt("available") == 0) 1 else 0)
-            if (!isInternetConnectionAvailable(mActivity)) {
-                showNoInternetConnectionDialog()
-                return
+            val isAvailable = jsonDataObject.optInt("available")
+            if (isAvailable == 1) {
+                showOutOfStockDialog(jsonDataObject)
+            } else {
+                val request = UpdateStockRequest(jsonDataObject.optInt("id"), if (jsonDataObject.optInt("available") == 0) 1 else 0)
+                if (!isInternetConnectionAvailable(mActivity)) {
+                    showNoInternetConnectionDialog()
+                    return
+                }
+                showProgressDialog(mActivity)
+                mService.updateStock(request)
             }
-            showProgressDialog(mActivity)
-            mService.updateStock(request)
         } else if (jsonData.optBoolean("trackEventData")) {
             val eventName = jsonData.optString("eventName")
             val additionalData = jsonData.optString("additionalData")
@@ -323,6 +329,27 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                 isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                 data = map
             )
+        }
+    }
+
+    private fun showOutOfStockDialog(jsonDataObject: JSONObject) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            val builder: AlertDialog.Builder = AlertDialog.Builder(mActivity)
+            builder.apply {
+                setMessage("Do you want to make this product out of stock?")
+                setCancelable(true)
+                setPositiveButton(getString(R.string.txt_yes)) { dialog, _ ->
+                    dialog.dismiss()
+                    val request = UpdateStockRequest(jsonDataObject.optInt("id"), 0)
+                    if (!isInternetConnectionAvailable(mActivity)) {
+                        showNoInternetConnectionDialog()
+                    } else {
+                        showProgressDialog(mActivity)
+                        mService.updateStock(request)
+                    }
+                }
+                setNegativeButton(getString(R.string.text_no)) { dialog, _ -> dialog.dismiss() }
+            }.create().show()
         }
     }
 

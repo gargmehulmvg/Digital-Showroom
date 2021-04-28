@@ -351,6 +351,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/white"
+                android:layout_marginTop="@dimen/_2sdp"
                 android:orientation="vertical"
                 android:padding="@dimen/_10sdp"
                 app:layout_constraintTop_toBottomOf="@+id/newReleaseLayout">

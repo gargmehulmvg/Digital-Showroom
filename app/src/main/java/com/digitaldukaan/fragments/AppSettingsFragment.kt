@@ -80,9 +80,7 @@ class AppSettingsFragment : BaseFragment(), IAppSettingsItemClicked {
                     launchFragment(LoginFragment.newInstance(), false)
                 }
                 setNegativeButton(getString(R.string.close)) { dialog, _ -> dialog.dismiss() }
-            }
-            val alertDialog: AlertDialog = builder.create()
-            alertDialog.show()
+            }.create().show()
         }
     }
 

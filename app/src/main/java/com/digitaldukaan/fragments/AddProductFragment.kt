@@ -168,7 +168,11 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
 
         })
         showProgressDialog(mActivity)
-        mImagesStrList.add(0, AddProductImagesResponse(0,"", 0))
+        if (mImagesStrList.isEmpty()) {
+            mImagesStrList.add(0, AddProductImagesResponse(0,"", 0))
+        } else {
+            mImagesStrList[0] = AddProductImagesResponse(0,"", 0)
+        }
         mService.getItemInfo(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), mItemId)
         return mContentView
     }

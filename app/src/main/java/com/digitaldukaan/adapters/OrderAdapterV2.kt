@@ -134,12 +134,10 @@ class OrderAdapterV2(
                     0,
                     0
                 )
-                orderCheckBox.isEnabled = false
-                orderCheckBox.alpha = 0.2f
+                orderCheckBox.isEnabled = true
             }
             Constants.DS_REJECTED -> {
                 orderAddressTextView.setTextColor(mContext.getColor(R.color.red))
-                //orderAddressTextView.background = ContextCompat.getDrawable(mContext, R.drawable.order_adapter_rejected)
                 orderAddressTextView.text = mOrderPageInfoStaticData?.text_rejected
                 orderAddressTextView.setCompoundDrawablesWithIntrinsicBounds(
                     R.drawable.ic_reject_icon,
