@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.appsflyer.AppsFlyerLib
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.IOnOTPFilledListener
@@ -162,6 +163,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
             cleverTapProfile.mAddress = validateOtpResponse.mStore?.storeAddress?.let {
                 "${it.address1}, ${it.googleAddress}, ${it.pinCode}"
             }
+            AppsFlyerLib.getInstance().setCustomerUserId(validateOtpResponse.mUserPhoneNumber)
             AppEventsManager.pushCleverTapProfile(cleverTapProfile)
             AppEventsManager.pushAppEvents(
                 eventName = AFInAppEventType.EVENT_OTP_VERIFIED,

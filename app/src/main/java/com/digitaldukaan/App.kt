@@ -43,6 +43,8 @@ class App: Application() {
             }
         }
         AppsFlyerLib.getInstance().apply {
+            setDebugLog(true)
+            setAppInviteOneLink("KgNd")
             init(APP_FLYER_DEV_KEY, conversionDataListener, this@App)
             start(this@App)
         }

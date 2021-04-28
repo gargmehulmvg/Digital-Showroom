@@ -31,6 +31,9 @@ interface Apis {
     @POST("api/dotk/merchant/login")
     suspend fun validateOTP(@Body request: ValidateOtpRequest) : Response<ValidateOtpResponse>
 
+    @POST("dotk/vm1/onboard/setStoreAddress")
+    suspend fun updateStoreAddress(@Body request: StoreAddressRequest) : Response<CommonApiResponse>
+
     /* ----------------------       Settings         ---------------------- */
     @POST("api/dotk/vm1/settings/updateStoreDomain")
     suspend fun updateStoreDomain(@Body request: StoreLinkRequest) : Response<CommonApiResponse>
@@ -202,7 +205,4 @@ interface Apis {
 
     @GET("api/dotk/template/referAppWa")
     suspend fun getReferAndEarnDataOverWhatsApp() : Response<ReferEarnOverWhatsAppResponse>
-
-    @POST("api/dotk/merchant/setAddress")
-    suspend fun updateStoreAddress(@Body request: StoreAddressRequest) : Response<StoreAddressResponse>
 }

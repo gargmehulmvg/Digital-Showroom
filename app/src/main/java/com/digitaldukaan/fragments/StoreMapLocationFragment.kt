@@ -22,9 +22,9 @@ import com.digitaldukaan.R
 import com.digitaldukaan.adapters.ProfileStatusAdapter2
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.models.request.StoreAddressRequest
+import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.ProfileInfoResponse
 import com.digitaldukaan.models.response.ProfilePreviewSettingsKeyResponse
-import com.digitaldukaan.models.response.StoreAddressResponse
 import com.digitaldukaan.services.StoreAddressService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IStoreAddressServiceInterface
@@ -304,7 +304,7 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
         Log.d(TAG, "onProviderDisabled :: $p0")
     }
 
-    override fun onStoreAddressResponse(response: StoreAddressResponse) {
+    override fun onStoreAddressResponse(response: CommonApiResponse) {
         stopProgress()
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (response.mIsSuccessStatus) {

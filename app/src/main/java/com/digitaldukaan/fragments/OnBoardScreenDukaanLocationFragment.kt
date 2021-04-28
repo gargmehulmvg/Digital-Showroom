@@ -19,7 +19,7 @@ import androidx.core.content.ContextCompat
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.models.request.StoreAddressRequest
-import com.digitaldukaan.models.response.StoreAddressResponse
+import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.services.StoreAddressService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IStoreAddressServiceInterface
@@ -217,7 +217,7 @@ class OnBoardScreenDukaanLocationFragment : BaseFragment(), IStoreAddressService
         }
     }
 
-    override fun onStoreAddressResponse(response: StoreAddressResponse) {
+    override fun onStoreAddressResponse(response: CommonApiResponse) {
         stopProgress()
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (response.mIsSuccessStatus) {

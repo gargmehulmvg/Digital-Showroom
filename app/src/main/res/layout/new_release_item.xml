@@ -8,7 +8,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/itemLayout"
-        android:layout_width="@dimen/_105sdp"
+        android:layout_width="@dimen/_90sdp"
         android:layout_height="match_parent"
         android:layout_margin="@dimen/_5sdp"
         android:background="@drawable/curve_white_selector"
