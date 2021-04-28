@@ -369,13 +369,13 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         }
     }
 
+    private var mStoreLinkLastEntered = ""
+
     private fun showEditStoreLinkBottomSheet(profilePreviewResponse: ProfilePreviewSettingsKeyResponse, isErrorResponse:Boolean = false) {
         AppEventsManager.pushAppEvents(
             eventName = AFInAppEventType.EVENT_EDIT_STORE_LINK,
             isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-            data = mapOf(
-                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)
-            )
+            data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
         )
         mStoreLinkBottomSheet = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
         val view = LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet_edit_store_link, mActivity.findViewById(R.id.bottomSheetContainer))
@@ -393,7 +393,6 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                 val bottomSheetEditStoreLinkConditionTwo: TextView = findViewById(R.id.bottomSheetEditStoreLinkConditionTwo)
                 val bottomSheetEditStoreCloseImageView: View = findViewById(R.id.bottomSheetEditStoreCloseImageView)
                 val bottomSheetEditStoreLinkServerError: TextView = findViewById(R.id.bottomSheetEditStoreLinkServerError)
-                bottomSheetEditStoreTitle.text = mProfilePreviewStaticData.currentLink
                 bottomSheetEditStoreLinkDText.text = mProfilePreviewStaticData.dText
                 bottomSheetEditStoreLinkDotpe.text = mProfilePreviewStaticData.dotPeDotInText
                 bottomSheetEditStoreSaveTextView.text = mProfilePreviewStaticData.saveText
@@ -420,6 +419,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                     } else {
                         val request = StoreLinkRequest(getStringDataFromSharedPref(Constants.STORE_ID).toInt(), newStoreLink)
                         showProgressDialog(mActivity)
+                        mStoreLinkLastEntered = newStoreLink
                         service.updateStoreLink(request)
                     }
                 }
@@ -427,7 +427,8 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                 val requiredString = profilePreviewResponse.mValue?.run {
                     substring(indexOf("-") + 1, indexOf("."))
                 }
-                bottomSheetEditStoreLinkEditText.setText(requiredString)
+                bottomSheetEditStoreLinkEditText.setText(if (isErrorResponse) mStoreLinkLastEntered else requiredString)
+                bottomSheetEditStoreTitle.text = if (isErrorResponse) mActivity.getString(R.string.your_edited_link) else mProfilePreviewStaticData.currentLink
                 bottomSheetEditStoreLinkEditText.isEnabled = profilePreviewResponse.mIsEditable ?: true
                 bottomSheetEditStoreLinkEditText.addTextChangedListener(object : TextWatcher{
                     override fun afterTextChanged(s: Editable?) {
@@ -435,6 +436,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                         bottomSheetEditStoreSaveTextView.isEnabled = string.isNotEmpty()
                         bottomSheetEditStoreLinkConditionOne.visibility = View.VISIBLE
                         bottomSheetEditStoreLinkConditionTwo.visibility = View.VISIBLE
+                        bottomSheetEditStoreLinkServerError.visibility = View.GONE
                         when {
                             string.isEmpty() -> {
                                 bottomSheetEditStoreLinkConditionOne.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_exclamation_mark, 0, 0, 0)

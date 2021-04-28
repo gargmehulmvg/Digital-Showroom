@@ -183,15 +183,11 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
             addProductTextView.visibility = View.VISIBLE
             val size = mSelectedProductsHashMap.size
             addProductTextView.text = if (size == 1) "${addProductStaticData?.text_add} 1 ${addProductStaticData?.text_product}" else "${addProductStaticData?.text_add} $size ${addProductStaticData?.text_products}"
-            AppEventsManager.pushAppEvents(
-                eventName = AFInAppEventType.EVENT_CATALOG_BUILDER_PRODUCT_SELECT,
-                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                data = mapOf(
+            AppEventsManager.pushAppEvents(eventName = AFInAppEventType.EVENT_CATALOG_BUILDER_PRODUCT_SELECT, isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true, data = mapOf(
                     AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
                     AFInAppEventParameterName.CATEGORY_NAME to response?.itemName,
                     AFInAppEventParameterName.PRODUCTS_ADDED to "$size"
-                )
-            )
+                ))
         } else {
             addProductTextView.visibility = View.GONE
         }
@@ -222,16 +218,9 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
                 setPriceTextView.text = addProductStaticData?.bottom_sheet_set_price
                 setPriceTextView.setOnClickListener {
                     val price = priceEditText.text.toString()
-                    if (price.isEmpty()) {
-                        priceEditText.apply {
-                            error = addProductStaticData?.error_mandatory_field
-                            requestFocus()
-                        }
-                        return@setOnClickListener
-                    }
                     bottomSheetDialog.dismiss()
                     mCategoryItemsList?.get(position)?.isSelected = true
-                    mCategoryItemsList?.get(position)?.price = price.toDouble()
+                    mCategoryItemsList?.get(position)?.price = if (price.isEmpty()) 0.0 else price.toDouble()
                     masterCatalogAdapter?.notifyItemChanged(position)
                 }
             }

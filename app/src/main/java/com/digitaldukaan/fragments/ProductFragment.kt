@@ -336,7 +336,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             val builder: AlertDialog.Builder = AlertDialog.Builder(mActivity)
             builder.apply {
-                setMessage("Do you want to make this product out of stock?")
+                setMessage(getString(R.string.out_of_stock_message))
                 setCancelable(true)
                 setPositiveButton(getString(R.string.txt_yes)) { dialog, _ ->
                     dialog.dismiss()
