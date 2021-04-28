@@ -173,17 +173,13 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         return mContentView
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        handleVisibilityTextWatcher()
-    }
-
     private fun handleVisibilityTextWatcher() {
         priceEditText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 val str = s?.toString()
                 if (str?.trim()?.isNotEmpty() == true) {
                     mIsOrderEdited = true
-                    addDiscountLabel.visibility = View.VISIBLE
+                    if (discountContainer.visibility != View.VISIBLE) addDiscountLabel.visibility = View.VISIBLE
                     showAddProductContainer()
                 }
             }
@@ -468,8 +464,13 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             addProductStaticData = addProductResponse?.addProductStaticText
             addProductResponse?.storeItem?.run {
                 nameEditText?.setText(name)
-                discountedPriceEditText?.setText(if (discountedPrice != 0.0 && discountedPrice >= price) null else discountedPrice.toString())
                 priceEditText?.setText(if (price != 0.0) price.toString() else null)
+                if (discountedPrice == 0.0 || discountedPrice >= price) {
+                    discountedPriceEditText?.text = null
+                } else {
+                    discountContainer.visibility = View.VISIBLE
+                    discountedPriceEditText?.setText("$discountedPrice")
+                }
                 if (addProductResponse.storeItem?.imagesList?.isNotEmpty() == true) {
                     noImagesLayout.visibility = View.GONE
                     imagesRecyclerView.apply {
@@ -537,6 +538,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             }
             shareProductContainer.visibility = if (mIsAddNewProduct) View.GONE else View.VISIBLE
             continueTextView.visibility = if (mIsAddNewProduct) View.VISIBLE else View.GONE
+            handleVisibilityTextWatcher()
         }
     }
 
