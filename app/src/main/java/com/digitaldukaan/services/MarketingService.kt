@@ -26,15 +26,15 @@ class MarketingService {
         }
     }
 
-    fun generateStorePdf(authToken: String) {
+    fun generateStorePdf() {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.generateStorePdfServerCall(authToken, mServiceInterface)
+            mNetworkService.generateStorePdfServerCall(mServiceInterface)
         }
     }
 
-    fun getShareStorePdfText(authToken: String) {
+    fun getShareStorePdfText() {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.getShareStorePdfTextServerCall(authToken, mServiceInterface)
+            mNetworkService.getShareStorePdfTextServerCall(mServiceInterface)
         }
     }
 

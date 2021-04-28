@@ -8,6 +8,8 @@ interface IProductServiceInterface {
 
     fun onProductResponse(commonResponse: CommonApiResponse)
 
+    fun onShareStorePdfDataResponse(commonResponse: CommonApiResponse)
+
     fun onProductShareStorePDFDataResponse(commonResponse: CommonApiResponse)
 
     fun onProductPDFGenerateResponse(commonResponse: CommonApiResponse)
@@ -23,6 +25,8 @@ interface IProductServiceInterface {
     fun onDeleteCategoryResponse(commonResponse: CommonApiResponse)
 
     fun onUpdateStockResponse(commonResponse: CommonApiResponse)
+
+    fun onGenerateStorePdfResponse(commonResponse: CommonApiResponse)
 
     fun onProductException(e: Exception)
 

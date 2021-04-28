@@ -29,9 +29,15 @@ class ProductService {
         }
     }
 
-    fun getProductSharePDFTextData(authToken: String) {
+    fun getShareStorePdfText() {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.getProductShareStorePdfTextServerCall(authToken, mServiceInterface)
+            mNetworkService.getShareStorePdfTextServerCall(mServiceInterface)
+        }
+    }
+
+    fun generateStorePdf() {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.generateStorePdfServerCall(mServiceInterface)
         }
     }
 

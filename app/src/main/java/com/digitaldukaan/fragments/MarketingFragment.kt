@@ -182,7 +182,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
             Constants.ACTION_CATALOG_WHATSAPP -> {
                 if (mShareStorePDFResponse == null) {
                     showProgressDialog(mActivity)
-                    service.getShareStorePdfText(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
+                    service.getShareStorePdfText()
                 } else {
                     showPDFShareBottomSheet(mShareStorePDFResponse)
                 }
@@ -220,7 +220,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                             AFInAppEventParameterName.IS_MARKETING_PAGE to "true"
                         )
                     )
-                    service.generateStorePdf(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
+                    service.generateStorePdf()
                     bottomSheetDialog.dismiss()
                 }
                 referAndEarnRecyclerView.apply {

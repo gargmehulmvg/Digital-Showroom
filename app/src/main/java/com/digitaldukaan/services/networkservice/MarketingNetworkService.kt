@@ -39,11 +39,10 @@ class MarketingNetworkService {
     }
 
     suspend fun generateStorePdfServerCall(
-        authToken: String,
         serviceInterface: IMarketingServiceInterface
     ) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.generateStorePdf(authToken)
+            val response = RetrofitApi().getServerCallObject()?.generateStorePdf()
             response?.let {
                 if (it.isSuccessful) {
                     it.body()?.let { responseBody -> serviceInterface.onGenerateStorePdfResponse(responseBody) }
@@ -56,11 +55,10 @@ class MarketingNetworkService {
     }
 
     suspend fun getShareStorePdfTextServerCall(
-        authToken: String,
         serviceInterface: IMarketingServiceInterface
     ) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.getShareStorePdfText(authToken)
+            val response = RetrofitApi().getServerCallObject()?.getShareStorePdfText()
             response?.let {
                 if (it.isSuccessful) {
                     it.body()?.let { responseBody -> serviceInterface.onShareStorePdfDataResponse(responseBody) }

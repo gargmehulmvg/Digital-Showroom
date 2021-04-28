@@ -67,29 +67,34 @@ class ProductNetworkService {
         }
     }
 
-    suspend fun getProductShareStorePdfTextServerCall(
-        authToken: String,
+    suspend fun generateStorePdfServerCall(
         serviceInterface: IProductServiceInterface
     ) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.getProductShareStorePdfText(authToken)
+            val response = RetrofitApi().getServerCallObject()?.generateStorePdf()
             response?.let {
                 if (it.isSuccessful) {
-                    it.body()?.let { commonApiResponse -> serviceInterface.onProductShareStorePDFDataResponse(commonApiResponse)
-                    }
-                } else {
-                    val responseBody = it.errorBody()
-                    responseBody?.let {
-                        val errorResponse = Gson().fromJson(
-                            responseBody.string(),
-                            CommonApiResponse::class.java
-                        )
-                        serviceInterface.onProductShareStorePDFDataResponse(errorResponse)
-                    }
-                }
+                    it.body()?.let { responseBody -> serviceInterface.onGenerateStorePdfResponse(responseBody) }
+                } else serviceInterface.onProductException(Exception(response.message()))
             }
-        } catch (e: Exception) {
-            Log.e(ProductNetworkService::class.java.simpleName, "getProductShareStorePdfTextServerCall: ", e)
+        } catch (e : Exception) {
+            Log.e(MarketingNetworkService::class.java.simpleName, "getShareStoreDataServerCall: ", e)
+            serviceInterface.onProductException(e)
+        }
+    }
+
+    suspend fun getShareStorePdfTextServerCall(
+        serviceInterface: IProductServiceInterface
+    ) {
+        try {
+            val response = RetrofitApi().getServerCallObject()?.getShareStorePdfText()
+            response?.let {
+                if (it.isSuccessful) {
+                    it.body()?.let { responseBody -> serviceInterface.onShareStorePdfDataResponse(responseBody) }
+                } else serviceInterface.onProductException(Exception(response.message()))
+            }
+        } catch (e : Exception) {
+            Log.e(MarketingNetworkService::class.java.simpleName, "getShareStoreDataServerCall: ", e)
             serviceInterface.onProductException(e)
         }
     }

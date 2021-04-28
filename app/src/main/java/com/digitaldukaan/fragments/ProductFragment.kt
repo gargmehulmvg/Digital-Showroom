@@ -42,6 +42,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
     PopupMenu.OnMenuItemClickListener {
 
     private lateinit var mService: ProductService
+    private var mShareStorePDFResponse: ShareStorePDFDataItemResponse? = null
     private var mOptionsMenuResponse: ArrayList<TrendingListResponse>? = null
     private var mShareDataOverWhatsAppText = ""
     private var mUserCategoryResponse: AddProductStoreCategory? = null
@@ -124,6 +125,14 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
         stopProgress()
     }
 
+    override fun onShareStorePdfDataResponse(response: CommonApiResponse) {
+        mShareStorePDFResponse = Gson().fromJson<ShareStorePDFDataItemResponse>(response.mCommonDataStr, ShareStorePDFDataItemResponse::class.java)
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            showPDFShareBottomSheet(mShareStorePDFResponse)
+        }
+    }
+
     override fun onProductShareStorePDFDataResponse(commonResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
@@ -187,6 +196,17 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
             stopProgress()
             mService.getProductPageInfo()
             showShortSnackBar(commonResponse.mMessage, true, if (commonResponse.mIsSuccessStatus) R.drawable.ic_check_circle else R.drawable.ic_close_red)
+        }
+    }
+
+    override fun onGenerateStorePdfResponse(response: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            showShortSnackBar(
+                response.mMessage,
+                true,
+                if (response.mIsSuccessStatus) R.drawable.ic_check_circle else R.drawable.ic_close_red
+            )
         }
     }
 
@@ -256,7 +276,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
         if (optionMenuItemStr?.mPage?.isNotEmpty() == true) {
             openWebViewFragment(this, "", BuildConfig.WEB_VIEW_URL + optionMenuItemStr.mPage)
         } else {
-            if (mShareDataOverWhatsAppText.isNotEmpty()) shareDataOnWhatsApp(mShareDataOverWhatsAppText) else if (!isInternetConnectionAvailable(mActivity)) {
+            if (mShareStorePDFResponse != null) showPDFShareBottomSheet(mShareStorePDFResponse) else if (!isInternetConnectionAvailable(mActivity)) {
                 showNoInternetConnectionDialog()
             } else {
                 AppEventsManager.pushAppEvents(
@@ -268,7 +288,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                     )
                 )
                 showProgressDialog(mActivity)
-                mService.getProductShareStoreData()
+                mService.getShareStorePdfText()
             }
         }
         return true

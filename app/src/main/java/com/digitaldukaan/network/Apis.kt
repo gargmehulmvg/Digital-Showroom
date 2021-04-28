@@ -93,10 +93,10 @@ interface Apis {
     suspend fun getShareStore(): Response<CommonApiResponse>
 
     @GET("api/dotk/vm1/marketing/shareStorePdfText")
-    suspend fun getShareStorePdfText(@Header("auth_token") authToken: String): Response<CommonApiResponse>
+    suspend fun getShareStorePdfText(): Response<CommonApiResponse>
 
     @POST("api/dotk/vm1/marketing/generateStorePdf")
-    suspend fun generateStorePdf(@Header("auth_token") authToken: String): Response<CommonApiResponse>
+    suspend fun generateStorePdf(): Response<CommonApiResponse>
 
     @POST("api/dotk/vm1/marketing/generateStorePdf")
     suspend fun generateProductStorePdf(): Response<CommonApiResponse>
