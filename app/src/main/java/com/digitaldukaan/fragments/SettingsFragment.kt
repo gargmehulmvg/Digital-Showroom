@@ -19,7 +19,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.appsflyer.CreateOneLinkHttpTask
-import com.appsflyer.share.LinkGenerator
 import com.appsflyer.share.ShareInviteHelper
 import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
@@ -205,27 +204,25 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
     }
 
     private fun shareReferAndEarnWithDeepLink(referEarnOverWhatsAppResponse: ReferEarnOverWhatsAppResponse) {
-        val linkGenerator: LinkGenerator = ShareInviteHelper.generateInviteUrl(mActivity)
-        linkGenerator.channel = "whatsapp"
-        linkGenerator.campaign = "sharing"
-        linkGenerator.brandDomain = "digitaldukaan.com"
-        linkGenerator.setReferrerCustomerId(PrefsManager.getStringDataFromSharedPref(Constants.USER_MOBILE_NUMBER))
-        linkGenerator.generateLink()
-        linkGenerator.generateLink(mActivity, object : CreateOneLinkHttpTask.ResponseListener {
-            override fun onResponse(p0: String?) {
-                Log.d(TAG, "onResponse: $p0")
-                if (referEarnOverWhatsAppResponse.mReferAndEarnData.isShareStoreBanner == true) {
-                    shareDataOnWhatsAppWithImage("${referEarnOverWhatsAppResponse.mReferAndEarnData.whatsAppText} $p0", referEarnOverWhatsAppResponse.mReferAndEarnData.imageUrl)
-                } else {
-                    shareDataOnWhatsApp("${referEarnOverWhatsAppResponse.mReferAndEarnData.whatsAppText} $p0")
+        ShareInviteHelper.generateInviteUrl(mActivity).apply {
+            channel = "whatsapp"
+            campaign = "sharing"
+            brandDomain = "digitaldukaan.com"
+            setReferrerCustomerId(PrefsManager.getStringDataFromSharedPref(Constants.USER_MOBILE_NUMBER))
+            generateLink(mActivity, object : CreateOneLinkHttpTask.ResponseListener {
+                override fun onResponse(p0: String?) {
+                    Log.d(TAG, "onResponse: $p0")
+                    if (referEarnOverWhatsAppResponse.mReferAndEarnData.isShareStoreBanner == true) {
+                        shareDataOnWhatsAppWithImage("${referEarnOverWhatsAppResponse.mReferAndEarnData.whatsAppText} $p0", referEarnOverWhatsAppResponse.mReferAndEarnData.imageUrl)
+                    } else {
+                        shareDataOnWhatsApp("${referEarnOverWhatsAppResponse.mReferAndEarnData.whatsAppText} $p0")
+                    }
                 }
-            }
-
-            override fun onResponseError(p0: String?) {
-                Log.d(TAG, "onResponseError: $p0")
-            }
-
-        })
+                override fun onResponseError(p0: String?) {
+                    Log.d(TAG, "onResponseError: $p0")
+                }
+            })
+        }
     }
 
     private fun fetchUserProfile() {
@@ -484,7 +481,10 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                         AFInAppEventParameterName.CHANNEL to "Settings Page"
                     )
                 )
-                openUrlInBrowser(responseItem.mPage)
+                if (responseItem.mType == Constants.NEW_RELEASE_TYPE_CUSTOM_DOMAIN) {
+                    openUrlInBrowser(responseItem.mPage + PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
+                } else openUrlInBrowser(responseItem.mPage)
+
             }
             else -> showTrendingOffersBottomSheet()
         }

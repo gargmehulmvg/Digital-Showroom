@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.MainActivity
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
-import com.digitaldukaan.constants.PrefsManager
 import com.digitaldukaan.interfaces.IStoreSettingsItemClicked
 import com.digitaldukaan.models.response.TrendingListResponse
 import com.squareup.picasso.Picasso
@@ -33,7 +32,6 @@ class NewReleaseAdapter(
         val view = AppSettingsViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.new_release_item, parent, false))
         view.itemLayout.setOnClickListener{
             val releaseItem = newReleaseList?.get(view.adapterPosition)
-            if (releaseItem?.mType == Constants.NEW_RELEASE_TYPE_CUSTOM_DOMAIN) releaseItem.mPage = "${releaseItem.mPage}${PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)}"
             listener.onNewReleaseItemClicked(releaseItem)
         }
         return view
