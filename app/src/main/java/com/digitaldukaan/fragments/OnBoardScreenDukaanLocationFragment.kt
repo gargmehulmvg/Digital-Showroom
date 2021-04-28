@@ -1,6 +1,7 @@
 package com.digitaldukaan.fragments
 
 import android.Manifest
+import android.app.AlertDialog
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
@@ -65,26 +66,12 @@ class OnBoardScreenDukaanLocationFragment : BaseFragment(), IStoreAddressService
                 lastLocation = task.result
                 mCurrentLatitude = lastLocation?.latitude ?: 0.0
                 mCurrentLongitude = lastLocation?.longitude ?: 0.0
-            } else {
-                showToast("No location detected. Make sure location is enabled on the device.")
             }
         }
     }
 
-    private fun startLocationPermissionRequest() {
-        ActivityCompat.requestPermissions(
-            mActivity,
-            arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION),
-            Constants.LOCATION_REQUEST_CODE
-        )
-    }
-
     private fun requestPermissions() {
-        val shouldProvideRationale = ActivityCompat.shouldShowRequestPermissionRationale(
-            mActivity,
-            Manifest.permission.ACCESS_COARSE_LOCATION
-        )
-        if (shouldProvideRationale) showToast("Location permission is needed for core functionality") else startLocationPermissionRequest()
+        ActivityCompat.requestPermissions(mActivity, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION), Constants.LOCATION_REQUEST_CODE)
     }
 
     override fun onRequestPermissionsResult(
@@ -123,23 +110,27 @@ class OnBoardScreenDukaanLocationFragment : BaseFragment(), IStoreAddressService
     ): View? {
         Log.d("STORE_OBJECT_TEST", "$TAG onViewCreated: ${PrefsManager.getStringDataFromSharedPref(Constants.STORE_NAME)}")
         mContentView = inflater.inflate(R.layout.layout_on_board_screen_dukaan_location_fragment, container, false)
-        getLocation()
+        if (checkLocationPermissionWithDialog()) {
+            getLastLocation()
+        }
+        if (!isLocationEnabledInSettings(mActivity)) {
+            openLocationSettings(false)
+        }
         return mContentView
     }
 
-    private fun getLocation() {
-        context?.let {
-            if (!(ContextCompat.checkSelfPermission(it, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(it, Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)) {
-                ActivityCompat.requestPermissions(
-                    mActivity,
-                    arrayOf(
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.ACCESS_COARSE_LOCATION
-                    ),
-                    Constants.LOCATION_REQUEST_CODE
-                )
-            }
-        }
+    private fun checkLocationPermissionWithDialog(): Boolean {
+        return if (ContextCompat.checkSelfPermission(mActivity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(mActivity, Manifest.permission.ACCESS_FINE_LOCATION)) {
+                AlertDialog.Builder(mActivity).apply {
+                    setTitle("Location Permission")
+                    setMessage("Please allow Location permission to continue")
+                    setPositiveButton(R.string.ok) { _, _ -> ActivityCompat.requestPermissions(mActivity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), Constants.LOCATION_REQUEST_CODE)
+                    }
+                }.create().show()
+            } else ActivityCompat.requestPermissions(mActivity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), Constants.LOCATION_REQUEST_CODE)
+            true
+        } else false
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -156,11 +147,12 @@ class OnBoardScreenDukaanLocationFragment : BaseFragment(), IStoreAddressService
             }
         })
         setupUIFromStaticData()
-
     }
 
     override fun onLocationChanged(location: Location) {
         Log.d(TAG, "onLocationChanged() Latitude: " + location.latitude + " , Longitude: " + location.longitude)
+        mCurrentLatitude = location.latitude
+        mCurrentLongitude = location.longitude
     }
 
     override fun onStatusChanged(p0: String?, p1: Int, p2: Bundle?) {

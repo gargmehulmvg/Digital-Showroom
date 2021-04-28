@@ -3,14 +3,12 @@ package com.digitaldukaan.fragments
 import android.Manifest
 import android.app.AlertDialog
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
-import android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -202,21 +200,10 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
                     showCurrentLocationMarkers(location.latitude, location.longitude)
                 } else {
                     if (!isLocationEnabledInSettings(mActivity)) {
-                        openLocationSettings()
+                        openLocationSettings(true)
                     }
                 }
             }
-    }
-
-    private fun openLocationSettings() {
-        AlertDialog.Builder(mActivity).apply {
-            setTitle("Location Permission")
-            setMessage("Please allow Location permission to continue")
-            setPositiveButton(R.string.ok) { _, _ ->
-                mActivity.onBackPressed()
-                mActivity.startActivity(Intent(ACTION_LOCATION_SOURCE_SETTINGS))
-            }
-        }.create().show()
     }
 
     private fun getLastLocation() {
@@ -257,7 +244,7 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
                 }
             } else {
                 if (!isLocationEnabledInSettings(mActivity)) {
-                    openLocationSettings()
+                    openLocationSettings(true)
                 }
                 mCurrentLatitude = mProfileInfoResponse?.mStoreItemResponse?.storeAddress?.latitude ?: 0.0
                 mCurrentLongitude = mProfileInfoResponse?.mStoreItemResponse?.storeAddress?.longitude ?: 0.0

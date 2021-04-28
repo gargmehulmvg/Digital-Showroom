@@ -78,7 +78,7 @@
         android:layout_height="@dimen/_12sdp"
         android:layout_marginStart="@dimen/_2sdp"
         android:contentDescription="@string/image_view_content_description"
-        android:src="@drawable/round_black_arrow_small"
+        android:src="@drawable/round_green_arrow_small"
         android:clickable="false"
         app:layout_constraintBottom_toBottomOf="@+id/addSettingKeyHeading"
         app:layout_constraintStart_toEndOf="@+id/addSettingKeyHeading"

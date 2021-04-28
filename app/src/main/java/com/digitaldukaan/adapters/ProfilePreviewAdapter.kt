@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.MainActivity
@@ -53,10 +54,12 @@ class ProfilePreviewAdapter(
                     profilePreviewDefaultScreenGroup.visibility = View.VISIBLE
                     profilePreviewDataGroup.visibility = View.GONE
                     addSettingKeyHeading.text = mDefaultText
+                    addSettingKeyHeading.setTextColor(ContextCompat.getColor(mActivity, R.color.open_green))
                 } else {
                     profilePreviewDefaultScreenGroup.visibility = View.GONE
                     profilePreviewDataGroup.visibility = View.VISIBLE
                     addSettingKeyDataTextView.text = mValue
+                    addSettingKeyHeading.setTextColor(ContextCompat.getColor(mActivity, R.color.black))
                 }
                 settingKeyItem.mIsEditable.run {
                     holder.profilePreviewContainer.isEnabled = this

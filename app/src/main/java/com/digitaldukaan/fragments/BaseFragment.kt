@@ -15,6 +15,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
+import android.provider.Settings
 import android.text.Html
 import android.util.Log
 import android.view.*
@@ -828,6 +829,21 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                 }
             }.show()
         }
+    }
+
+    protected fun openLocationSettings(isBackRequired: Boolean) {
+        AlertDialog.Builder(mActivity).apply {
+            setTitle("Permission")
+            setMessage("Please allow Location permission")
+            setPositiveButton(getString(R.string.txt_yes)) { dialogInterface, _ ->
+                dialogInterface?.dismiss()
+                if (isBackRequired) mActivity.onBackPressed()
+                mActivity.startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+            }
+            setNegativeButton(getString(R.string.text_no)) { dialogInterface, _ ->
+                dialogInterface?.dismiss()
+            }
+        }.create().show()
     }
 
 }
