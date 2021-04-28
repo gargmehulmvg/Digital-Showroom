@@ -348,7 +348,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
     private fun setupUIFromProfileResponse(infoResponse: AccountInfoResponse) {
         StaticInstances.sIsStoreImageUploaded = (StaticInstances.sStoreInfo?.mStoreLogoStr?.isNotEmpty() == true)
         mProfileResponse = infoResponse
-        dukaanNameTextView.text = infoResponse.mStoreInfo.storeInfo.name
+        dukaanNameTextView?.text = infoResponse.mStoreInfo.storeInfo.name
         if (infoResponse.mStoreInfo.storeInfo.logoImage?.isNotEmpty() == true) {
             Picasso.get().load(infoResponse.mStoreInfo.storeInfo.logoImage).into(storePhotoImageView)
             hiddenImageView.visibility = View.INVISIBLE
@@ -390,31 +390,31 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             adapter = NewReleaseAdapter(infoResponse.mTrendingList, this@SettingsFragment, mActivity)
         }
         val remainingSteps = infoResponse.mTotalSteps.minus(infoResponse.mCompletedSteps)
-        stepsLeftTextView.text =
+        stepsLeftTextView?.text =
             if (remainingSteps == 1) "$remainingSteps ${infoResponse.mAccountStaticText?.mStepLeft}" else "$remainingSteps ${infoResponse.mAccountStaticText?.mStepsLeft}"
-        completeProfileTextView.text = infoResponse.mAccountStaticText?.mCompleteProfile
+        completeProfileTextView?.text = infoResponse.mAccountStaticText?.mCompleteProfile
         storeSwitch.setOnCheckedChangeListener { _, isChecked ->
             run {
                 Log.d(TAG, "storeSwitch.setOnCheckedChangeListener $isChecked")
-                storeStatusTextView.text = "${infoResponse.mAccountStaticText?.mStoreText} : ${if (isChecked) infoResponse.mAccountStaticText?.mOpenText else infoResponse.mAccountStaticText?.mClosedText}"
+                storeStatusTextView?.text = "${infoResponse.mAccountStaticText?.mStoreText} : ${if (isChecked) infoResponse.mAccountStaticText?.mOpenText else infoResponse.mAccountStaticText?.mClosedText}"
             }
         }
         deliverySwitch.setOnCheckedChangeListener { _, isChecked ->
             run {
                 Log.d(TAG, "deliverySwitch.setOnCheckedChangeListener $isChecked")
-                deliveryStatusTextView.text = "${infoResponse.mAccountStaticText?.mDeliveryText} : ${if (isChecked) infoResponse.mAccountStaticText?.mOnText else infoResponse.mAccountStaticText?.mOffText}"
+                deliveryStatusTextView?.text = "${infoResponse.mAccountStaticText?.mDeliveryText} : ${if (isChecked) infoResponse.mAccountStaticText?.mOnText else infoResponse.mAccountStaticText?.mOffText}"
             }
         }
         deliverySwitch.isChecked = infoResponse.mStoreInfo.storeServices.mDeliveryFlag == 1
-        deliveryStatusTextView.text = "${infoResponse.mAccountStaticText?.mDeliveryText} : ${if (deliverySwitch.isChecked) infoResponse.mAccountStaticText?.mOnText else infoResponse.mAccountStaticText?.mOffText}"
+        deliveryStatusTextView?.text = "${infoResponse.mAccountStaticText?.mDeliveryText} : ${if (deliverySwitch.isChecked) infoResponse.mAccountStaticText?.mOnText else infoResponse.mAccountStaticText?.mOffText}"
         storeSwitch.isChecked = infoResponse.mStoreInfo.storeServices.mStoreFlag == 1
-        storeStatusTextView.text = "${infoResponse.mAccountStaticText?.mStoreText} : ${if (storeSwitch.isChecked) infoResponse.mAccountStaticText?.mOpenText else infoResponse.mAccountStaticText?.mClosedText}"
-        hiddenTextView.text = infoResponse.mAccountStaticText?.mTextAddPhoto
-        moreControlsTextView.text = infoResponse.mAccountStaticText?.page_heading_more_controls
-        whatsAppShareTextView.text = infoResponse.mAccountStaticText?.mShareText
-        shareShowRoomWithCustomerTextView.text = infoResponse.mAccountStaticText?.mShareMessageText
-        materialTextView.text = infoResponse.mAccountStaticText?.mStoreControlsText
-        newReleaseHeading.text = infoResponse.mAccountStaticText?.mNewReleaseText
+        storeStatusTextView?.text = "${infoResponse.mAccountStaticText?.mStoreText} : ${if (storeSwitch.isChecked) infoResponse.mAccountStaticText?.mOpenText else infoResponse.mAccountStaticText?.mClosedText}"
+        hiddenTextView?.text = infoResponse.mAccountStaticText?.mTextAddPhoto
+        moreControlsTextView?.text = infoResponse.mAccountStaticText?.page_heading_more_controls
+        whatsAppShareTextView?.text = infoResponse.mAccountStaticText?.mShareText
+        shareShowRoomWithCustomerTextView?.text = infoResponse.mAccountStaticText?.mShareMessageText
+        materialTextView?.text = infoResponse.mAccountStaticText?.mStoreControlsText
+        newReleaseHeading?.text = infoResponse.mAccountStaticText?.mNewReleaseText
         ToolBarManager.getInstance().setHeaderTitle(infoResponse.mAccountStaticText?.page_heading)
     }
 

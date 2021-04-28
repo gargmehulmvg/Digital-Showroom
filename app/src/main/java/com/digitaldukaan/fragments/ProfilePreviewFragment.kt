@@ -133,23 +133,23 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         response.mStoreItemResponse?.bankDetails?.run { StaticInstances.sBankDetails = this }
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             mProfilePreviewStaticData.run {
-                profilePreviewStoreNameHeading.text = text_store_name
-                hiddenTextView.text = text_add_photo
+                profilePreviewStoreNameHeading?.text = text_store_name
+                hiddenTextView?.text = text_add_photo
             }
             constraintLayoutBanner.visibility = if (mProfilePreviewResponse?.mIsProfileCompleted == true) View.GONE else View.VISIBLE
             if (swipeRefreshLayout.isRefreshing) swipeRefreshLayout.isRefreshing = false
             stopProgress()
             mProfilePreviewResponse?.mProfilePreviewBanner?.run {
-                profilePreviewBannerHeading.text = mHeading
-                profilePreviewBannerStartNow.text = mStartNow
+                profilePreviewBannerHeading?.text = mHeading
+                profilePreviewBannerStartNow?.text = mStartNow
                 Picasso.get().isLoggingEnabled = true
                 Picasso.get().load(mCDN).into(profilePreviewBannerImageView)
-                profilePreviewBannerSubHeading.text = mSubHeading
+                profilePreviewBannerSubHeading?.text = mSubHeading
             }
             ToolBarManager.getInstance().setHeaderTitle(mProfilePreviewResponse?.mProfileStaticText?.pageHeading)
             mProfilePreviewResponse?.mStoreItemResponse?.run {
-                profilePreviewStoreNameTextView.text = storeInfo.name
-                profilePreviewStoreMobileNumber.text = storeOwner?.phone
+                profilePreviewStoreNameTextView?.text = storeInfo.name
+                profilePreviewStoreMobileNumber?.text = storeOwner?.phone
                 mStoreLogo = storeInfo.logoImage
                 if (mStoreLogo?.isNotEmpty() == true) {
                     hiddenImageView.visibility = View.INVISIBLE
