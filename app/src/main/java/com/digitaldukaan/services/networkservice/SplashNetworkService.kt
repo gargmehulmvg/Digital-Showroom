@@ -1,6 +1,7 @@
 package com.digitaldukaan.services.networkservice
 
 import android.util.Log
+import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.network.RetrofitApi
 import com.digitaldukaan.services.serviceinterface.ISplashServiceInterface
 
@@ -46,7 +47,7 @@ class SplashNetworkService {
         splashServiceInterface: ISplashServiceInterface
     ) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.getAppVersion()
+            val response = RetrofitApi().getServerCallObject()?.getAppVersion("ds_android", BuildConfig.VERSION_NAME)
             response?.let {
                 if (it.isSuccessful) {
                     it.body()?.let { commonApiResponse ->

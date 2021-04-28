@@ -73,9 +73,7 @@ class MasterCatalogItemsConfirmationAdapter(
                 container.isEnabled = false
                 container.alpha = 0.2f
             }
-            if (item?.price != 0.0) {
-                priceEditText.setText("${item?.price}")
-            }
+            priceEditText.setText("${item?.price}")
         }
     }
 

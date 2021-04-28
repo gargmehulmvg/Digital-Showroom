@@ -48,11 +48,18 @@ class MasterCatalogItemsAdapter(
             mCategoryItemClickListener.onCategoryItemsImageClick(mCategoryItemList?.get(view.adapterPosition))
         }
         view.setPriceTextView.setOnClickListener {
+            val item = mCategoryItemList?.get(view.adapterPosition)
+            if (item?.isAdded == true) {
+                return@setOnClickListener
+            }
             mCategoryItemClickListener.onCategoryItemsSetPriceClick(view.adapterPosition, mCategoryItemList?.get(view.adapterPosition))
         }
         view.priceTextView.setOnClickListener {
             val item = mCategoryItemList?.get(view.adapterPosition)
             if (item?.price != 0.0) {
+                return@setOnClickListener
+            }
+            if (item.isAdded) {
                 return@setOnClickListener
             }
             mCategoryItemClickListener.onCategoryItemsSetPriceClick(view.adapterPosition, item)
@@ -109,7 +116,6 @@ class MasterCatalogItemsAdapter(
                 checkBox.isEnabled = true
             }
             if (item?.price == 0.0) {
-                checkBox.isEnabled = false
                 priceTextView.text = "${mStaticText?.text_set_your_price} ${mStaticText?.text_rupees_symbol}"
                 setPriceTextView.text = item.price.toString()
             } else {
