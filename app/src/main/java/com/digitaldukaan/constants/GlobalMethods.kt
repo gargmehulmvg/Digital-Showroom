@@ -122,7 +122,7 @@ fun downloadMediaToStorage(bitmap: Bitmap?, activity: MainActivity?) {
                 //putting file information in content values
                 put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
                 put(MediaStore.MediaColumns.MIME_TYPE, "image/jpg")
-                put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES)
+                put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
             }
             //Inserting the contentValues to contentResolver and getting the Uri
             val imageUri: Uri? = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)

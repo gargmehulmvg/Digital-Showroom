@@ -25,6 +25,7 @@ class Constants {
         const val DOTPE_OFFICIAL_URL_CLIPBOARD = "https://web.dotpe.in"
         const val DOTPE_OFFICIAL_URL = "Go to web.dotpe.in"
         const val KEY_DONT_SHOW_MESSAGE_AGAIN = "KEY_DONT_SHOW_MESSAGE_AGAIN"
+        const val KEY_DONT_SHOW_MESSAGE_AGAIN_STOCK = "KEY_DONT_SHOW_MESSAGE_AGAIN_STOCK"
         const val TEXT_YES = "yes"
         const val TEXT_NO = "no"
         const val APP_SECRET_KEY = "wFqjaY2jR85nMmgI7wqvPHd6mYaEN9a1"

@@ -733,7 +733,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         }
     }
 
-    open fun openDontShowDialog(item: OrderItemResponse?, staticData: OrderPageStaticTextResponse?) {
+    open fun showDontShowDialog(item: OrderItemResponse?, staticData: OrderPageStaticTextResponse?) {
         val builder = AlertDialog.Builder(mActivity)
         val view: View = layoutInflater.inflate(R.layout.dont_show_again_dialog, null)
         var isCheckBoxVisible = "" == PrefsManager.getStringDataFromSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN)

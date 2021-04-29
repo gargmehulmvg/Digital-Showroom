@@ -470,7 +470,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
     override fun onOrderCheckBoxChanged(isChecked: Boolean, item: OrderItemResponse?) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (PrefsManager.getStringDataFromSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN) != Constants.TEXT_YES) {
-                if (isChecked) openDontShowDialog(item, mOrderPageInfoStaticData)
+                if (isChecked) showDontShowDialog(item, mOrderPageInfoStaticData)
             } else {
                 onDontShowDialogPositiveButtonClicked(item)
             }

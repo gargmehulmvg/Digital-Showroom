@@ -5,10 +5,7 @@ import android.util.Log
 import android.view.*
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.PopupMenu
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -353,25 +350,38 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
         }
     }
 
+
     private fun showOutOfStockDialog(jsonDataObject: JSONObject) {
-        CoroutineScopeUtils().runTaskOnCoroutineMain {
-            val builder: AlertDialog.Builder = AlertDialog.Builder(mActivity)
-            builder.apply {
-                setMessage(getString(R.string.out_of_stock_message))
-                setCancelable(true)
-                setPositiveButton(getString(R.string.txt_yes)) { dialog, _ ->
-                    dialog.dismiss()
-                    val request = UpdateStockRequest(jsonDataObject.optInt("id"), 0)
-                    if (!isInternetConnectionAvailable(mActivity)) {
-                        showNoInternetConnectionDialog()
-                    } else {
-                        showProgressDialog(mActivity)
-                        mService.updateStock(request)
-                    }
+        val builder = AlertDialog.Builder(mActivity)
+        val view: View = layoutInflater.inflate(R.layout.dont_show_again_dialog, null)
+        var isCheckBoxVisible = "" == PrefsManager.getStringDataFromSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN_STOCK) || Constants.TEXT_NO == PrefsManager.getStringDataFromSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN_STOCK)
+        builder.apply {
+            setMessage(getString(R.string.out_of_stock_message))
+            if (isCheckBoxVisible) setView(view)
+            setPositiveButton(getString(R.string.txt_yes)) { dialogInterface, _ ->
+                dialogInterface.dismiss()
+                storeStringDataInSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN_STOCK, if (isCheckBoxVisible) Constants.TEXT_YES else Constants.TEXT_NO)
+                val request = UpdateStockRequest(jsonDataObject.optInt("id"), 0)
+                if (!isInternetConnectionAvailable(mActivity)) {
+                    showNoInternetConnectionDialog()
+                } else {
+                    showProgressDialog(mActivity)
+                    mService.updateStock(request)
                 }
-                setNegativeButton(getString(R.string.text_no)) { dialog, _ -> dialog.dismiss() }
-            }.create().show()
-        }
+            }
+            setNegativeButton(getString(R.string.text_no)) { dialogInterface, _ ->
+                run {
+                    dialogInterface.dismiss()
+                    if (isCheckBoxVisible) storeStringDataInSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN, Constants.TEXT_NO)
+                }
+            }
+            view.run {
+                val checkBox: CheckBox = view.findViewById(R.id.checkBox)
+                checkBox.text = getString(R.string.dont_show_again_message)
+                isCheckBoxVisible = false
+                checkBox.setOnCheckedChangeListener { _, isChecked -> isCheckBoxVisible = isChecked }
+            }
+        }.show()
     }
 
     private fun showUpdateCategoryBottomSheet(categoryName: String?, categoryId: Int) {

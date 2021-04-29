@@ -782,7 +782,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
             showToast(mOrderDetailStaticData?.error_no_bill_available_to_download)
         } else {
             showToast("Start Downloading...")
-            Picasso.get().load("http://cdn.dotpe.in/kiranaStatic/image/fd%E2%80%93182.png").into(object : com.squareup.picasso.Target {
+            Picasso.get().load(orderDetailMainResponse?.orders?.digitalReceipt).into(object : com.squareup.picasso.Target {
                 override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
                     bitmap?.let {
                         downloadMediaToStorage(bitmap, mActivity)

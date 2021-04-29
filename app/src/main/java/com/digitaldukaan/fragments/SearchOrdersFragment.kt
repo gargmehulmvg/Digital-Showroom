@@ -144,7 +144,7 @@ class SearchOrdersFragment: BaseFragment(), IOnToolbarIconClick, ISearchOrderSer
     override fun onOrderCheckBoxChanged(isChecked: Boolean, item: OrderItemResponse?) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             showToast(isChecked.toString())
-            if (isChecked) openDontShowDialog(item, StaticInstances.sOrderPageInfoStaticData)
+            if (isChecked) showDontShowDialog(item, StaticInstances.sOrderPageInfoStaticData)
         }
     }
 

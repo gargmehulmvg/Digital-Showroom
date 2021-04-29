@@ -99,6 +99,7 @@
     <string name="your_edited_link">Your edited link</string>
     <string name="add_your_bank_account">Add your bank\nAccount</string>
     <string name="add_bank_account">Add Bank Account</string>
+    <string name="dont_show_again_message">Don\'t show this again</string>
     <string-array name="state_array">
         <item >Andhra Pradesh</item>
         <item >Arunachal Pradesh</item>
