@@ -17,7 +17,6 @@
         android:layout_height="@dimen/_50sdp"
         android:layout_marginTop="@dimen/_10sdp"
         android:contentDescription="@string/image_view_content_description"
-        android:src="@drawable/ic_digital_dukaan_splash"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

@@ -1,5 +1,6 @@
 package com.digitaldukaan.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -11,6 +12,7 @@ import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -410,7 +412,24 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         }.show()
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == Constants.CROP_IMAGE_REQUEST_CODE) {
+            val file = data?.getSerializableExtra(Constants.MODE_CROP) as File
+            CoroutineScopeUtils().runTaskOnCoroutineMain {
+                showAddProductContainer()
+                onImageSelectionResultFile(file, "")
+            }
+        } else super.onActivityResult(requestCode, resultCode, data)
+    }
+
     override fun onImageSelectionResultFile(file: File?, mode: String) {
+        if (mode == Constants.MODE_CROP) {
+            if (::imagePickBottomSheet.isInitialized) imagePickBottomSheet.dismiss()
+            val fragment = CropPhotoFragment.newInstance(file?.toUri())
+            fragment.setTargetFragment(this, Constants.CROP_IMAGE_REQUEST_CODE)
+            launchFragment(fragment, true)
+            return
+        }
         if (!isInternetConnectionAvailable(mActivity)) {
             showNoInternetConnectionDialog()
             return
@@ -419,7 +438,6 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             showShortSnackBar("Something went wrong", true, R.drawable.ic_close_red)
             return
         }
-        showProgressDialog(mActivity)
         val fileRequestBody = MultipartBody.Part.createFormData("media", file.name, RequestBody.create("image/*".toMediaTypeOrNull(), file))
         val imageTypeRequestBody = RequestBody.create("text/plain".toMediaTypeOrNull(), Constants.BASE64_STORE_ITEMS)
         mService.generateCDNLink(imageTypeRequestBody, fileRequestBody)
@@ -556,6 +574,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     override fun onConvertFileToLinkResponse(commonResponse: CommonApiResponse) {
         stopProgress()
         CoroutineScopeUtils().runTaskOnCoroutineMain {
+            showAddProductContainer()
             if (commonResponse.mIsSuccessStatus) {
                 showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_check_circle)
                 val base64Str = Gson().fromJson<String>(commonResponse.mCommonDataStr, String::class.java)
