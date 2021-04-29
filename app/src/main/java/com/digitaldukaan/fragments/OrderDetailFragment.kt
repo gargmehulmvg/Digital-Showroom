@@ -245,7 +245,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
             amountEditText.setText("$mTotalDisplayAmount")
             setStaticDataToUI(orderDetailResponse)
             ToolBarManager.getInstance().setHeaderSubTitle(getStringDateTimeFromOrderDate(getCompleteDateFromOrderString(orderDetailMainResponse?.orders?.createdAt)))
-            setupDeliveryChargeUI(orderDetailMainResponse?.storeServices)
+            setupDeliveryChargeUI(orderDetailResponse?.displayStatus, orderDetailMainResponse?.storeServices)
             if (orderDetailResponse?.orderType == Constants.ORDER_TYPE_PICK_UP) {
                 mIsPickUpOrder = true
                 deliveryChargeLabel?.visibility = View.GONE
@@ -299,11 +299,14 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
         }
     }
 
-    private fun setupDeliveryChargeUI(storeServices: StoreServicesResponse?) {
-        deliveryChargeLabel?.visibility = View.VISIBLE
-        deliveryChargeValue?.visibility = View.VISIBLE
+    private fun setupDeliveryChargeUI(
+        displayStatus: String?,
+        storeServices: StoreServicesResponse?
+    ) {
         when(storeServices?.mDeliveryChargeType) {
             Constants.FREE_DELIVERY -> {
+                deliveryChargeLabel?.visibility = View.VISIBLE
+                deliveryChargeValue?.visibility = View.VISIBLE
                 val txtSpannable = SpannableString(getString(R.string.free).toUpperCase(Locale.getDefault()))
                 val boldSpan = StyleSpan(Typeface.BOLD)
                 txtSpannable.setSpan(boldSpan, 0, txtSpannable.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
@@ -321,14 +324,26 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                 setAmountToEditText()
             }
             Constants.CUSTOM_DELIVERY_CHARGE -> {
-                deliveryChargeLabel?.visibility = View.VISIBLE
-                deliveryChargeValue?.visibility = View.VISIBLE
-                deliveryChargeValueEditText?.visibility = View.VISIBLE
+                if (Constants.DS_SEND_BILL == displayStatus || Constants.DS_NEW == displayStatus) {
+                    deliveryChargeLabel?.visibility = View.VISIBLE
+                    deliveryChargeValue?.visibility = View.VISIBLE
+                    deliveryChargeValueEditText?.visibility = View.VISIBLE
+                } else {
+                    deliveryChargeLabel?.visibility = View.GONE
+                    deliveryChargeValue?.visibility = View.GONE
+                    deliveryChargeValueEditText?.visibility = View.GONE
+                }
             }
             Constants.UNKNOWN_DELIVERY_CHARGE -> {
-                deliveryChargeLabel?.visibility = View.VISIBLE
-                deliveryChargeValue?.visibility = View.VISIBLE
-                deliveryChargeValueEditText?.visibility = View.VISIBLE
+                if (Constants.DS_SEND_BILL == displayStatus || Constants.DS_NEW == displayStatus) {
+                    deliveryChargeLabel?.visibility = View.VISIBLE
+                    deliveryChargeValue?.visibility = View.VISIBLE
+                    deliveryChargeValueEditText?.visibility = View.VISIBLE
+                } else {
+                    deliveryChargeLabel?.visibility = View.GONE
+                    deliveryChargeValue?.visibility = View.GONE
+                    deliveryChargeValueEditText?.visibility = View.GONE
+                }
             }
         }
         deliveryChargeValueEditText.addTextChangedListener(object : TextWatcher {

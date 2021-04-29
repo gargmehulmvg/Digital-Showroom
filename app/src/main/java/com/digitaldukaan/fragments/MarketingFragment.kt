@@ -63,10 +63,9 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
             setSideIconVisibility(true)
             hideBackPressFromToolBar(mActivity, false)
             onBackPressed(this@MarketingFragment)
-            setSideIcon(
-                ContextCompat.getDrawable(mActivity, R.drawable.ic_setting_toolbar),
-                this@MarketingFragment
-            )
+            setSecondSideIconVisibility(false)
+            setSideIconVisibility(true)
+            setSideIcon(ContextCompat.getDrawable(mActivity, R.drawable.ic_setting_toolbar), this@MarketingFragment)
         }
         hideBottomNavigationView(false)
         if (!isInternetConnectionAvailable(mActivity)) {

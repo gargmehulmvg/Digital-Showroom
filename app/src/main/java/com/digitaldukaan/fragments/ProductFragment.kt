@@ -76,6 +76,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
             hideToolBar(mActivity, false)
             hideBackPressFromToolBar(mActivity, false)
             onBackPressed(this@ProductFragment)
+            setSecondSideIconVisibility(false)
             setSideIconVisibility(true)
             setSideIcon(ContextCompat.getDrawable(mActivity, R.drawable.ic_options_menu), this@ProductFragment)
         }
@@ -105,7 +106,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
             commonWebView?.apply {
                 settings.javaScriptEnabled = true
                 addJavascriptInterface(WebViewBridge(), "Android")
-                url = BuildConfig.WEB_VIEW_URL + productResponse.product_page_url + "?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"
+                url = BuildConfig.WEB_VIEW_URL + productResponse.product_page_url + "?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"
                 loadUrl(url)
                 webViewClient = object : WebViewClient() {
                     override fun onPageFinished(view: WebView, url: String) {
@@ -115,11 +116,11 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
             }
             productResponse.shareShop.run {
                 shareButtonTextView?.text = this.mText
-                if (mCDN.isNotEmpty()) Picasso.get().load(mCDN).into(shareButtonImageView)
+                if (mCDN != null && mCDN.isNotEmpty()) Picasso.get().load(mCDN).into(shareButtonImageView)
             }
             productResponse.addProduct.run {
                 addProductTextView?.text = this.mText
-                if (mCDN.isNotEmpty()) Picasso.get().load(mCDN).into(addProductImageView)
+                if (mCDN != null &&mCDN.isNotEmpty()) Picasso.get().load(mCDN).into(addProductImageView)
             }
         }
         stopProgress()

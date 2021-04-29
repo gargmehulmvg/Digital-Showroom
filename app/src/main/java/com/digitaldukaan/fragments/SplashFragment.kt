@@ -13,7 +13,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.app.ActivityCompat
-import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.models.response.CommonApiResponse
@@ -24,7 +23,6 @@ import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.ISplashServiceInterface
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import kotlinx.android.synthetic.main.layout_splash_fragment.*
 
 class SplashFragment : BaseFragment(), ISplashServiceInterface {
 
@@ -50,7 +48,6 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         ToolBarManager.getInstance().hideToolBar(mActivity, true)
-        appVersionTextView.text = StringBuilder().append("v.").append(BuildConfig.VERSION_CODE)
         if (!isInternetConnectionAvailable(mActivity)) {
             showNoInternetConnectionDialog()
             return
@@ -92,8 +89,8 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (commonResponse.mIsSuccessStatus) {
                 splashService.getHelpScreens()
-//                val playStoreLinkStr = Gson().fromJson<AppVersionResponse>(commonResponse.mCommonDataStr, AppVersionResponse::class.java)
-//                if (playStoreLinkStr.mIsActive) splashService.getHelpScreens() else showVersionUpdateDialog()
+                //val playStoreLinkStr = Gson().fromJson<AppVersionResponse>(commonResponse.mCommonDataStr, AppVersionResponse::class.java)
+                //if (playStoreLinkStr.mIsActive) splashService.getHelpScreens() else showVersionUpdateDialog()
             } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
         }
     }

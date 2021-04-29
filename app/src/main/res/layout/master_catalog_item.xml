@@ -86,10 +86,10 @@
         android:onClick="onClick"
         android:background="?selectableItemBackground"
         android:minWidth="@dimen/_25sdp"
-        android:textColor="@color/open_green"
+        android:textColor="@color/default_text_light_grey"
         android:textSize="@dimen/_12sdp"
         app:layout_constraintBaseline_toBaselineOf="@+id/priceTextView"
         app:layout_constraintStart_toEndOf="@+id/priceTextView"
-        tools:text="345" />
+        tools:text="_____" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

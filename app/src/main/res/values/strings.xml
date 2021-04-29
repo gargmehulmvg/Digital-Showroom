@@ -97,6 +97,8 @@
     <string name="save">Save</string>
     <string name="out_of_stock_message">Are you sure you want to make this item out of stock?</string>
     <string name="your_edited_link">Your edited link</string>
+    <string name="add_your_bank_account">Add your bank\nAccount</string>
+    <string name="add_bank_account">Add Bank Account</string>
     <string-array name="state_array">
         <item >Andhra Pradesh</item>
         <item >Arunachal Pradesh</item>

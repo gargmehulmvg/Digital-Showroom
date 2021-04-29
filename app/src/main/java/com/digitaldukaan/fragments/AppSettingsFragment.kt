@@ -16,7 +16,6 @@ import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.interfaces.IAppSettingsItemClicked
 import com.digitaldukaan.models.response.AccountStaticTextResponse
 import com.digitaldukaan.models.response.SubPagesResponse
-import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.android.synthetic.main.layout_app_setting_fragment.*
 
 class AppSettingsFragment : BaseFragment(), IAppSettingsItemClicked {
@@ -86,20 +85,6 @@ class AppSettingsFragment : BaseFragment(), IAppSettingsItemClicked {
 
     override fun onAppSettingItemClicked(subPagesResponse: SubPagesResponse) {
         if (Constants.ACTION_LOGOUT == subPagesResponse.mAction) showLogoutDialog() else openUrlInBrowser(subPagesResponse.mPage)
-    }
-
-    private fun showAddBankBottomSheet() {
-        val bottomSheetDialog = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
-        val view = LayoutInflater.from(mActivity).inflate(
-            R.layout.bottom_sheet_bank_account,
-            mActivity.findViewById(R.id.bottomSheetContainer)
-        )
-        bottomSheetDialog.apply {
-            setContentView(view)
-            setBottomSheetCommonProperty()
-            view.run {
-            }
-        }.show()
     }
 
 }

@@ -4,7 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
+import com.digitaldukaan.adapters.AddBankBottomSheetAdapter
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.models.request.BankDetailsRequest
 import com.digitaldukaan.models.response.BankDetailsPageInfoResponse
@@ -15,6 +19,7 @@ import com.digitaldukaan.services.BankDetailsService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IBankDetailsServiceInterface
 import com.digitaldukaan.views.allowOnlyAlphaNumericCharacters
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.layout_bank_account_fragment.*
 
@@ -29,6 +34,11 @@ class OnBoardScreenBankDetailsFragment : BaseFragment(), IBankDetailsServiceInte
         }
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        showAddBankBottomSheet()
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -37,17 +47,13 @@ class OnBoardScreenBankDetailsFragment : BaseFragment(), IBankDetailsServiceInte
         mContentView = inflater.inflate(R.layout.layout_bank_account_fragment, container, false)
         mService = BankDetailsService()
         mService.setServiceInterface(this)
-        if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else {
-            showProgressDialog(mActivity)
-            mService.getBankDetailsPageInfo()
-        }
         return mContentView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         ToolBarManager.getInstance().apply {
-            hideToolBar(mActivity, false)
+            hideToolBar(mActivity, true)
             setHeaderTitle("")
             onBackPressed(this@OnBoardScreenBankDetailsFragment)
             hideBackPressFromToolBar(mActivity, false)
@@ -55,7 +61,8 @@ class OnBoardScreenBankDetailsFragment : BaseFragment(), IBankDetailsServiceInte
             setSecondSideIconVisibility(false)
         }
         hideBottomNavigationView(true)
-        skipTextView.visibility = View.VISIBLE
+        skipTextView.visibility = View.GONE
+        parentLayout?.visibility = View.INVISIBLE
     }
 
     private fun setupUIFromStaticData(bankDetail: BankDetailsResponse?) {
@@ -188,6 +195,55 @@ class OnBoardScreenBankDetailsFragment : BaseFragment(), IBankDetailsServiceInte
 
     override fun onBankDetailsServerException(e: Exception) {
         exceptionHandlingForAPIResponse(e)
+    }
+
+    private fun showAddBankBottomSheet() {
+        val bottomSheetDialog = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
+        val view = LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet_bank_account, mActivity.findViewById(R.id.bottomSheetContainer))
+        bottomSheetDialog.apply {
+            setContentView(view)
+            setCancelable(false)
+            setBottomSheetCommonProperty()
+            view.run {
+                val bottomSheetBankRecyclerView: RecyclerView = view.findViewById(R.id.bottomSheetBankRecyclerView)
+                val howItWorksTextView: TextView = view.findViewById(R.id.howItWorksTextView)
+                val getOtpTextView: TextView = view.findViewById(R.id.getOtpTextView)
+                getOtpTextView.setOnClickListener {
+                    parentLayout?.visibility = View.VISIBLE
+                    if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else {
+                        showProgressDialog(mActivity)
+                        mService.getBankDetailsPageInfo()
+                    }
+                    ToolBarManager.getInstance().apply {
+                        hideToolBar(mActivity, false)
+                        setHeaderTitle("")
+                        onBackPressed(this@OnBoardScreenBankDetailsFragment)
+                        hideBackPressFromToolBar(mActivity, false)
+                        setSideIconVisibility(false)
+                        setSecondSideIconVisibility(false)
+                    }
+                    bottomSheetDialog.dismiss()
+                }
+                howItWorksTextView.setOnClickListener {
+                    bottomSheetDialog.dismiss()
+                    AppEventsManager.pushAppEvents(
+                        eventName = AFInAppEventType.EVENT_SKIP_BANK_ACCOUNT,
+                        isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = true,
+                        data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
+                    )
+                    launchFragment(CreateStoreFragment.newInstance(), true)
+                }
+                bottomSheetBankRecyclerView.apply {
+                    setHasFixedSize(true)
+                    layoutManager = LinearLayoutManager(mActivity)
+                    val bankList = ArrayList<String>()
+                    bankList.add("Get Instant Settlements.")
+                    bankList.add("Get money directly in your bank account.")
+                    bankList.add("0% commission & No hidden fees.")
+                    adapter = AddBankBottomSheetAdapter(bankList)
+                }
+            }
+        }.show()
     }
 
 }

@@ -87,7 +87,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             setSideIcon(ContextCompat.getDrawable(mActivity, R.drawable.ic_setting_toolbar), this@SettingsFragment)
         }
         hideBottomNavigationView(false)
-        swipeRefreshLayout.setOnRefreshListener(this)
+        swipeRefreshLayout?.setOnRefreshListener(this)
         mStoreLogo = ""
         fetchUserProfile()
     }
@@ -266,7 +266,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
     override fun onProfileResponse(commonResponse: CommonApiResponse) {
         stopProgress()
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            if (swipeRefreshLayout.isRefreshing) swipeRefreshLayout.isRefreshing = false
+            if (swipeRefreshLayout?.isRefreshing == true) swipeRefreshLayout?.isRefreshing = false
             if (commonResponse.mIsSuccessStatus) {
                 mAccountInfoResponse = Gson().fromJson<AccountInfoResponse>(commonResponse.mCommonDataStr, AccountInfoResponse::class.java)
                 mAccountInfoResponse?.let { setupUIFromProfileResponse(it) }
@@ -318,15 +318,15 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                 val photoResponse = Gson().fromJson<StoreResponse>(response.mCommonDataStr, StoreResponse::class.java)
                 mStoreLogo = photoResponse.storeInfo.logoImage
                 if (mStoreLogo?.isNotEmpty() == true) {
-                    storePhotoImageView.visibility = View.VISIBLE
-                    hiddenImageView.visibility = View.INVISIBLE
-                    hiddenTextView.visibility = View.INVISIBLE
+                    storePhotoImageView?.visibility = View.VISIBLE
+                    hiddenImageView?.visibility = View.INVISIBLE
+                    hiddenTextView?.visibility = View.INVISIBLE
                     Picasso.get().load(mStoreLogo).into(storePhotoImageView)
                 } else {
                     StaticInstances.sIsStoreImageUploaded = false
-                    storePhotoImageView.visibility = View.GONE
-                    hiddenImageView.visibility = View.VISIBLE
-                    hiddenTextView.visibility = View.VISIBLE
+                    storePhotoImageView?.visibility = View.GONE
+                    hiddenImageView?.visibility = View.VISIBLE
+                    hiddenTextView?.visibility = View.VISIBLE
                 }
                 mProfileService.getUserProfile()
                 showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
@@ -348,8 +348,8 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         dukaanNameTextView?.text = infoResponse.mStoreInfo.storeInfo.name
         if (infoResponse.mStoreInfo.storeInfo.logoImage?.isNotEmpty() == true) {
             Picasso.get().load(infoResponse.mStoreInfo.storeInfo.logoImage).into(storePhotoImageView)
-            hiddenImageView.visibility = View.INVISIBLE
-            hiddenTextView.visibility = View.INVISIBLE
+            hiddenImageView?.visibility = View.INVISIBLE
+            hiddenTextView?.visibility = View.INVISIBLE
         }
         infoResponse.mFooterImages?.forEachIndexed { index, imageUrl ->
             if (index == 0) {
@@ -361,14 +361,14 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             }
         }
         if (infoResponse.mTotalSteps == infoResponse.mCompletedSteps) {
-            profileStatusRecyclerView.visibility = View.GONE
-            stepsLeftTextView.visibility = View.GONE
-            completeProfileTextView.visibility = View.GONE
-            shapeableImageView.visibility = View.GONE
+            profileStatusRecyclerView?.visibility = View.GONE
+            stepsLeftTextView?.visibility = View.GONE
+            completeProfileTextView?.visibility = View.GONE
+            shapeableImageView?.visibility = View.GONE
         } else {
-            stepsLeftTextView.visibility = View.VISIBLE
-            completeProfileTextView.visibility = View.VISIBLE
-            shapeableImageView.visibility = View.VISIBLE
+            stepsLeftTextView?.visibility = View.VISIBLE
+            completeProfileTextView?.visibility = View.VISIBLE
+            shapeableImageView?.visibility = View.VISIBLE
             profileStatusRecyclerView.apply {
                 visibility = View.VISIBLE
                 layoutManager = GridLayoutManager(mActivity, infoResponse.mTotalSteps)
@@ -457,7 +457,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
 
     override fun onProfileDataException(e: Exception) {
         Log.e(SettingsFragment::class.simpleName, "onProfileDataException", e)
-        if (swipeRefreshLayout.isRefreshing) swipeRefreshLayout.isRefreshing = false
+        if (swipeRefreshLayout?.isRefreshing == true) swipeRefreshLayout?.isRefreshing = false
         exceptionHandlingForAPIResponse(e)
     }
 

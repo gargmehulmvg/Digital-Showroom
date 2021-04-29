@@ -205,7 +205,7 @@
                 android:onClick="onClick"
                 android:visibility="gone"
                 android:background="?selectableItemBackground"
-                android:textColor="@color/black"
+                android:textColor="@color/open_green"
                 android:layout_marginStart="@dimen/_23sdp"
                 android:layout_marginTop="@dimen/_10sdp"
                 android:layout_marginEnd="@dimen/_20sdp"

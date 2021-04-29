@@ -117,7 +117,8 @@ class MasterCatalogItemsAdapter(
             }
             if (item?.price == 0.0) {
                 priceTextView.text = "${mStaticText?.text_set_your_price} ${mStaticText?.text_rupees_symbol}"
-                setPriceTextView.text = item.price.toString()
+                //setPriceTextView.text = item.price.toString()
+                setPriceTextView.text = "_____"
             } else {
                 setPriceTextView.text = null
                 checkBox.isEnabled = true

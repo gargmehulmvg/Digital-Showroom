@@ -14,7 +14,8 @@ class ReferAndEarnAdapter(
     RecyclerView.Adapter<ReferAndEarnAdapter.ReferAndEarnViewHolder>() {
 
     inner class ReferAndEarnViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val referAndEarnAmountTextView: TextView = itemView.findViewById(R.id.referAndEarnAmountTextView)
+        val referAndEarnAmountTextView: TextView =
+            itemView.findViewById(R.id.referAndEarnAmountTextView)
         val referAndEarnTextView: TextView = itemView.findViewById(R.id.referAndEarnTextView)
     }
 
