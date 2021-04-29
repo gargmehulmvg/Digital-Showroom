@@ -122,8 +122,8 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                     isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = true,
                     data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
                 )
-                analyticsContainer.visibility = View.VISIBLE
-                analyticsImageView.setImageDrawable(
+                analyticsContainer?.visibility = View.VISIBLE
+                analyticsImageView?.setImageDrawable(
                     ContextCompat.getDrawable(
                         mActivity,
                         R.drawable.ic_analytics_green
@@ -147,13 +147,13 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                 showSearchDialog(mOrderPageInfoStaticData, mMobileNumberString, mOrderIdString)
             }
             closeAnalyticsImageView.id -> {
-                analyticsImageView.setImageDrawable(
+                analyticsImageView?.setImageDrawable(
                     ContextCompat.getDrawable(
                         mActivity,
                         R.drawable.ic_analytics_black
                     )
                 )
-                analyticsContainer.visibility = View.GONE
+                analyticsContainer?.visibility = View.GONE
             }
         }
     }
@@ -223,7 +223,16 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                 )
                 mIsMorePendingOrderAvailable = ordersResponse.mIsNextDataAvailable
                 if (pendingPageCount == 1) mOrderList.clear()
-                mOrderList.addAll(if (ordersResponse.mOrdersList != null) ordersResponse.mOrdersList else ArrayList())
+                val list = ordersResponse.mOrdersList
+                if (list != null) {
+                    if (list.isEmpty()) pendingOrderTextView?.visibility = View.GONE else {
+                        pendingOrderTextView?.visibility = View.VISIBLE
+                        mOrderList.addAll(list)
+                    }
+                } else {
+                    pendingOrderTextView?.visibility = View.GONE
+                    mOrderList.addAll(ArrayList())
+                }
                 convertDateStringOfOrders(mOrderList)
                 orderAdapter.notifyDataSetChanged()
                 if (mIsMorePendingOrderAvailable) {
@@ -248,7 +257,13 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                 )
                 mIsMoreCompletedOrderAvailable = ordersResponse.mIsNextDataAvailable
                 if (completedPageCount == 1) mCompletedOrderList.clear()
-                mCompletedOrderList.addAll(if (ordersResponse.mOrdersList != null) ordersResponse.mOrdersList else ArrayList())
+                if (ordersResponse.mOrdersList != null) {
+                    completedOrderTextView?.visibility = View.VISIBLE
+                    mCompletedOrderList.addAll(ordersResponse.mOrdersList)
+                } else {
+                    completedOrderTextView?.visibility = View.GONE
+                    mCompletedOrderList.addAll(ArrayList())
+                }
                 convertDateStringOfOrders(mCompletedOrderList)
                 completedOrderAdapter.notifyDataSetChanged()
                 if (mIsMoreCompletedOrderAvailable) {
@@ -296,9 +311,9 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                     pendingOrderTextView?.text = mOrderPageInfoStaticData?.text_pending
                     completedOrderTextView?.text = mOrderPageInfoStaticData?.text_completed
                     if (mIsZeroOrder.mIsActive) {
-                        homePageWebViewLayout.visibility = View.VISIBLE
-                        orderLayout.visibility = View.GONE
-                        takeOrderTextView.visibility = View.GONE
+                        homePageWebViewLayout?.visibility = View.VISIBLE
+                        orderLayout?.visibility = View.GONE
+                        takeOrderTextView?.visibility = View.GONE
                         setupHomePageWebView(mIsZeroOrder.mUrl)
                         mSwipeRefreshLayout.isEnabled = false
                     } else {
