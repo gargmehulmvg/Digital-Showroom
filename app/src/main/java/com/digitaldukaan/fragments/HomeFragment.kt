@@ -6,9 +6,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
@@ -41,8 +39,10 @@ import kotlinx.android.synthetic.main.layout_common_webview_fragment.*
 import kotlinx.android.synthetic.main.otp_verification_fragment.*
 import org.json.JSONObject
 
+
 class HomeFragment : BaseFragment(), IHomeServiceInterface,
-    SwipeRefreshLayout.OnRefreshListener, IOrderListItemListener {
+    SwipeRefreshLayout.OnRefreshListener, IOrderListItemListener, View.OnTouchListener,
+    ViewTreeObserver.OnScrollChangedListener {
 
     companion object {
         private val TAG = HomeFragment::class.simpleName
@@ -88,6 +88,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
             mHomeFragmentService.getAnalyticsData()
         }
         mSwipeRefreshLayout = mContentView.findViewById(R.id.swipeRefreshLayout)
+        mSwipeRefreshLayout.isEnabled = false
         return mContentView
     }
 
@@ -100,18 +101,14 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         completedOrderAdapter = OrderAdapterV2(mActivity, mCompletedOrderList)
         pendingPageCount = 1
         completedPageCount = 1
+        orderLayout?.setOnTouchListener(this)
+        orderLayout?.viewTreeObserver?.addOnScrollChangedListener(this)
     }
 
     private fun fetchLatestOrders(mode: String, fetchingOrderStr: String?, page: Int = 1) {
-        if (fetchingOrderStr?.isNotEmpty() == true) showCancellableProgressDialog(
-            mActivity,
-            fetchingOrderStr
-        )
+        if (fetchingOrderStr?.isNotEmpty() == true) showCancellableProgressDialog(mActivity, fetchingOrderStr)
         val request = OrdersRequest(mode, page)
-        mHomeFragmentService.getOrders(
-            getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN),
-            request
-        )
+        mHomeFragmentService.getOrders(request)
     }
 
     override fun onClick(view: View?) {
@@ -235,13 +232,6 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                 }
                 convertDateStringOfOrders(mOrderList)
                 orderAdapter.notifyDataSetChanged()
-                if (mIsMorePendingOrderAvailable) {
-                    ++pendingPageCount
-                    fetchLatestOrders(Constants.MODE_PENDING, "", pendingPageCount)
-                } else {
-                    completedPageCount = 1
-                    fetchLatestOrders(Constants.MODE_COMPLETED, "", completedPageCount)
-                }
             }
         }
     }
@@ -266,11 +256,6 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                 }
                 convertDateStringOfOrders(mCompletedOrderList)
                 completedOrderAdapter.notifyDataSetChanged()
-                if (mIsMoreCompletedOrderAvailable) {
-                    ++completedPageCount
-                    fetchLatestOrders(Constants.MODE_COMPLETED, "", pendingPageCount)
-                }
-
             }
         }
     }
@@ -298,7 +283,6 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             if (commonResponse.mIsSuccessStatus) {
-
                 orderPageInfoResponse = Gson().fromJson<OrderPageInfoResponse>(commonResponse.mCommonDataStr, OrderPageInfoResponse::class.java)
                 orderPageInfoResponse?.run {
                     mOrderPageInfoStaticData = mOrderPageStaticText?.run {
@@ -317,7 +301,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                         setupHomePageWebView(mIsZeroOrder.mUrl)
                         mSwipeRefreshLayout.isEnabled = false
                     } else {
-                        mSwipeRefreshLayout.isEnabled = true
+                        //mSwipeRefreshLayout.isEnabled = true
                         homePageWebViewLayout?.visibility = View.GONE
                         orderLayout?.visibility = View.VISIBLE
                         fetchLatestOrders(Constants.MODE_PENDING, mFetchingOrdersStr, pendingPageCount)
@@ -604,5 +588,33 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                 }
             }
         }.show()
+    }
+
+    override fun onTouch(p0: View?, p1: MotionEvent?): Boolean {
+        return false
+    }
+
+    override fun onScrollChanged() {
+        if (orderLayout == null) return
+        val view: View = orderLayout.getChildAt(orderLayout.childCount - 1) ?: return
+        val topDetector: Int = orderLayout.scrollY
+        val bottomDetector: Int = view.bottom - (orderLayout.height + orderLayout.scrollY)
+        if (bottomDetector == 0) {
+            when {
+                mIsMorePendingOrderAvailable -> {
+                    ++pendingPageCount
+                    fetchLatestOrders(Constants.MODE_PENDING, "", pendingPageCount)
+                }
+                mIsMoreCompletedOrderAvailable -> {
+                    ++completedPageCount
+                    fetchLatestOrders(Constants.MODE_COMPLETED, "", pendingPageCount)
+                }
+                !mIsMoreCompletedOrderAvailable -> {
+                    completedPageCount = 1
+                    fetchLatestOrders(Constants.MODE_COMPLETED, "", completedPageCount)
+                }
+            }
+        }
+        //if (topDetector <= 0) showToast("Scroll View top reached")
     }
 }

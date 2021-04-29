@@ -158,7 +158,7 @@ interface Apis {
     suspend fun getOrderPageInfo() : Response<CommonApiResponse>
 
     @POST("api/dotk/vm1/orders/getOrderList")
-    suspend fun getOrdersList(@Header("auth_token") authToken: String, @Body request: OrdersRequest): Response<CommonApiResponse>
+    suspend fun getOrdersList(@Body request: OrdersRequest): Response<CommonApiResponse>
 
     @POST("api/dotk/vm1/orders/getSearchOrdersList")
     suspend fun getSearchOrdersList(@Body request: SearchOrdersRequest): Response<CommonApiResponse>

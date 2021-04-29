@@ -318,17 +318,13 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     }
                 }
             }
-            updateCameraImageView.id -> {
-                showAddProductContainer()
-                showAddProductImagePickerBottomSheet(0)
-            }
-            updateCameraTextView.id -> {
-                showAddProductImagePickerBottomSheet(0)
-            }
+            updateCameraImageView.id -> showAddProductImagePickerBottomSheet(0)
+            updateCameraTextView.id -> showAddProductImagePickerBottomSheet(0)
         }
     }
 
     private fun showAddProductImagePickerBottomSheet(position: Int) {
+        showAddProductContainer()
         imagePickBottomSheet = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
         val view = LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet_image_pick, mActivity.findViewById(R.id.bottomSheetContainer))
         imagePickBottomSheet.apply {

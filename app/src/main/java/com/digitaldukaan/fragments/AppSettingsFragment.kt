@@ -68,7 +68,7 @@ class AppSettingsFragment : BaseFragment(), IAppSettingsItemClicked {
                 setTitle(mAppSettingsResponseStaticData.mLogoutTitle)
                 setMessage(mAppSettingsResponseStaticData.mLogoutBody)
                 setCancelable(false)
-                setPositiveButton(mAppSettingsResponseStaticData.mLogoutText) { dialog, _ ->
+                setPositiveButton(mAppSettingsResponseStaticData.text_yes) { dialog, _ ->
                     mActivity.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE).edit().clear().apply()
                     dialog.dismiss()
                     clearFragmentBackStack()
@@ -79,7 +79,7 @@ class AppSettingsFragment : BaseFragment(), IAppSettingsItemClicked {
                     storeStringDataInSharedPref(Constants.STORE_ID, "")
                     launchFragment(LoginFragment.newInstance(), false)
                 }
-                setNegativeButton(getString(R.string.close)) { dialog, _ -> dialog.dismiss() }
+                setNegativeButton(getString(R.string.text_no)) { dialog, _ -> dialog.dismiss() }
             }.create().show()
         }
     }

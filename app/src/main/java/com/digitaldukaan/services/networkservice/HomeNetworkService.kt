@@ -15,12 +15,11 @@ import com.google.gson.Gson
 class HomeNetworkService {
 
     suspend fun getOrdersServerCall(
-        authToken: String,
         request: OrdersRequest,
         serviceInterface: IHomeServiceInterface
     ) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.getOrdersList(authToken, request)
+            val response = RetrofitApi().getServerCallObject()?.getOrdersList(request)
             response?.let {
                 if (it.isSuccessful) {
                     it.body()?.let { commonApiResponse ->
