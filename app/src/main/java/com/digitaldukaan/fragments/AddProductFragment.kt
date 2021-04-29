@@ -464,6 +464,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             addProductStaticData = addProductResponse?.addProductStaticText
             addProductResponse?.storeItem?.run {
                 nameEditText?.setText(name)
+                mProductNameStr = name
                 priceEditText?.setText(if (price != 0.0) price.toString() else null)
                 if (discountedPrice == 0.0 || discountedPrice >= price) {
                     discountedPriceEditText?.text = null
