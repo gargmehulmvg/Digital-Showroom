@@ -207,7 +207,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         ShareInviteHelper.generateInviteUrl(mActivity).apply {
             channel = "whatsapp"
             campaign = "sharing"
-            brandDomain = "digitaldukaan.com"
+            //brandDomain = "digitaldukaan.com"
             setReferrerCustomerId(PrefsManager.getStringDataFromSharedPref(Constants.USER_MOBILE_NUMBER))
             generateLink(mActivity, object : CreateOneLinkHttpTask.ResponseListener {
                 override fun onResponse(p0: String?) {

@@ -52,7 +52,7 @@
 
         <meta-data
             android:name="com.truecaller.android.sdk.PartnerKey"
-            android:value="@string/partnerKey" />
+            android:value="@string/partnerKeyProd" />
 
         <meta-data
             android:name="preloaded_fonts"
