@@ -108,7 +108,7 @@ fun downloadImageNew(
     }
 }
 
-fun downloadMediaToStorage(bitmap: Bitmap?, activity: MainActivity?) {
+fun downloadMediaToStorage(bitmap: Bitmap?, activity: MainActivity?): Boolean {
     //Generating a file name
     val filename = "${System.currentTimeMillis()}.jpg"
     //Output stream
@@ -122,7 +122,7 @@ fun downloadMediaToStorage(bitmap: Bitmap?, activity: MainActivity?) {
                 //putting file information in content values
                 put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
                 put(MediaStore.MediaColumns.MIME_TYPE, "image/jpg")
-                put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS)
+                put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES)
             }
             //Inserting the contentValues to contentResolver and getting the Uri
             val imageUri: Uri? = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
@@ -140,7 +140,9 @@ fun downloadMediaToStorage(bitmap: Bitmap?, activity: MainActivity?) {
         //Finally writing the bitmap to the output stream that we opened
         bitmap?.compress(Bitmap.CompressFormat.JPEG, 100, it)
         activity?.showToast("Image Saved to Gallery successfully")
+        return true
     }
+    return false
 }
 
 fun getBase64FromImageURL(url: String): String? {
@@ -161,10 +163,10 @@ fun getBase64FromImageURL(url: String): String? {
 }
 
 fun getImageFileFromBitmap(bitmap: Bitmap, context: Context): File {
-    val bitmapFile = File(context.cacheDir, "tempFile")
+    val bitmapFile = File(context.cacheDir, "tempFile_${System.currentTimeMillis()}")
     bitmapFile.createNewFile()
     val bos = ByteArrayOutputStream()
-    bitmap.compress(Bitmap.CompressFormat.PNG, 0 /*ignored for PNG*/, bos)
+    bitmap.compress(Bitmap.CompressFormat.JPEG, 100 , bos)
     val bitmapData = bos.toByteArray()
     val fos = FileOutputStream(bitmapFile)
     fos.write(bitmapData)

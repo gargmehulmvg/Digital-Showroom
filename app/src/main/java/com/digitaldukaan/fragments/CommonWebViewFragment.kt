@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.PopupMenu
@@ -62,6 +63,8 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
             webViewController.commonWebView = commonWebView
             webViewController.activity = mActivity
             commonWebView.webViewClient = webViewController
+            settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+            setLayerType(View.LAYER_TYPE_HARDWARE, null)
             settings.javaScriptEnabled = true
             settings.domStorageEnabled = true
             addJavascriptInterface(WebViewBridge(), "Android")

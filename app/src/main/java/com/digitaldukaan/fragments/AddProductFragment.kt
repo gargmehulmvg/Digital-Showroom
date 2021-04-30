@@ -295,7 +295,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                         val request = AddProductRequest(
                             mItemId,
                             1,
-                            priceStr.toDouble(),
+                            if (priceStr.isNotEmpty()) priceStr.toDouble() else 0.0,
                             if (discountedStr.isNotEmpty()) discountedStr.toDouble() else 0.0,
                             descriptionStr,
                             if (categoryStr.trim().isEmpty()) AddProductItemCategory(0, "") else AddProductItemCategory(0, categoryStr),
@@ -363,11 +363,11 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 }
                 bottomSheetUploadImageGallery.setOnClickListener {
                     imagePickBottomSheet.dismiss()
-                    openGallery()
+                    openMobileGalleryWithImage()
                 }
                 bottomSheetUploadImageGalleryTextView.setOnClickListener {
                     imagePickBottomSheet.dismiss()
-                    openGallery()
+                    openMobileGalleryWithImage()
                 }
                 bottomSheetUploadImageRemovePhoto.setOnClickListener {
                     imagePickBottomSheet.dismiss()
@@ -458,24 +458,19 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     }
 
     private fun checkValidation(): Boolean {
-        when {
+        return when {
             nameEditText.text.trim().isEmpty() -> {
                 nameEditText.error = addProductStaticData?.error_mandatory_field
                 nameEditText.requestFocus()
-                return false
-            }
-            priceEditText.text.trim().isEmpty() -> {
-                priceEditText.error = addProductStaticData?.error_mandatory_field
-                priceEditText.requestFocus()
-                return false
+                false
             }
             discountedPriceEditText.text.toString().isNotEmpty() && (priceEditText.text.toString().toDouble() < discountedPriceEditText.text.toString().toDouble()) -> {
                 discountedPriceEditText.text = null
                 discountedPriceEditText.error = addProductStaticData?.error_discount_price_less_then_original_price
                 discountedPriceEditText.requestFocus()
-                return false
+                false
             }
-            else -> return true
+            else -> true
         }
     }
 

@@ -85,6 +85,8 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             setSideIconVisibility(true)
             hideBackPressFromToolBar(mActivity, false)
             setSideIcon(ContextCompat.getDrawable(mActivity, R.drawable.ic_setting_toolbar), this@SettingsFragment)
+            setSecondSideIcon(null, null)
+            setSecondSideIconVisibility(false)
         }
         hideBottomNavigationView(false)
         swipeRefreshLayout?.setOnRefreshListener(this)

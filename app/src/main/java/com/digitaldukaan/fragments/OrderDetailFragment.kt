@@ -778,11 +778,13 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
             isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = true,
             data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
         )
-        if (orderDetailMainResponse?.orders?.digitalReceipt?.isEmpty() == true) {
+        val receiptStr = orderDetailMainResponse?.orders?.digitalReceipt
+        Log.d(TAG, "downloadBill: $receiptStr")
+        if (receiptStr?.isEmpty() == true) {
             showToast(mOrderDetailStaticData?.error_no_bill_available_to_download)
         } else {
             showToast("Start Downloading...")
-            Picasso.get().load(orderDetailMainResponse?.orders?.digitalReceipt).into(object : com.squareup.picasso.Target {
+            Picasso.get().load(receiptStr).into(object : com.squareup.picasso.Target {
                 override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
                     bitmap?.let {
                         downloadMediaToStorage(bitmap, mActivity)

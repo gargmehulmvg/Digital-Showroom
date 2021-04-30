@@ -464,11 +464,11 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                 }
                 bottomSheetUploadImageGallery.setOnClickListener {
                     mImagePickBottomSheet.dismiss()
-                    openGallery()
+                    openMobileGalleryWithImage()
                 }
                 bottomSheetUploadImageGalleryTextView.setOnClickListener {
                     mImagePickBottomSheet.dismiss()
-                    openGallery()
+                    openMobileGalleryWithImage()
                 }
                 bottomSheetUploadImageRemovePhoto.setOnClickListener {
                     mImagePickBottomSheet.dismiss()
@@ -511,7 +511,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         }.show()
     }
 
-    open fun openGallery() {
+    open fun openMobileGalleryWithImage() {
         ImagePicker.with(mActivity)
             .galleryOnly()
             .crop(1f, 1f)            //Crop image(Optional), Check Customization for more option
@@ -757,10 +757,9 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
             view.run {
                 val checkBox: CheckBox = view.findViewById(R.id.checkBox)
                 checkBox.text = staticData?.dialog_check_box_text
+                isCheckBoxVisible = false
                 checkBox.setOnCheckedChangeListener { _, isChecked ->
-                    run {
-                        isCheckBoxVisible = isChecked
-                    }
+                    isCheckBoxVisible = isChecked
                 }
             }
         }.show()
@@ -844,6 +843,14 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                 dialogInterface?.dismiss()
             }
         }.create().show()
+    }
+
+    protected fun openMobileGalleryWithImage(file: File) {
+        Log.d(TAG, "openMobileGalleryWithImage: ${file.name}")
+        val galleryIntent = Intent()
+        galleryIntent.action = Intent.ACTION_VIEW
+        galleryIntent.setDataAndType(Uri.parse("file://${file.absolutePath}"), "image/*")
+        startActivity(galleryIntent)
     }
 
 }

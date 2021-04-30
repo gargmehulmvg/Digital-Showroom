@@ -7,6 +7,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import android.view.*
+import android.webkit.WebSettings
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
@@ -190,6 +191,8 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
             webViewClient = webViewController
             settings.javaScriptEnabled = true
             settings.domStorageEnabled = true
+            settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+            setLayerType(View.LAYER_TYPE_HARDWARE, null)
             addJavascriptInterface(WebViewBridge(), "Android")
             val url = webViewUrl + "?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"
             Log.d(TAG, "setupHomePageWebView: $url")

@@ -53,7 +53,7 @@ class OnBoardScreenBankDetailsFragment : BaseFragment(), IBankDetailsServiceInte
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         ToolBarManager.getInstance().apply {
-            hideToolBar(mActivity, true)
+            hideToolBar(mActivity, false)
             setHeaderTitle("")
             onBackPressed(this@OnBoardScreenBankDetailsFragment)
             hideBackPressFromToolBar(mActivity, false)
@@ -62,7 +62,6 @@ class OnBoardScreenBankDetailsFragment : BaseFragment(), IBankDetailsServiceInte
         }
         hideBottomNavigationView(true)
         skipTextView.visibility = View.GONE
-        parentLayout?.visibility = View.INVISIBLE
     }
 
     private fun setupUIFromStaticData(bankDetail: BankDetailsResponse?) {
@@ -209,7 +208,6 @@ class OnBoardScreenBankDetailsFragment : BaseFragment(), IBankDetailsServiceInte
                 val howItWorksTextView: TextView = view.findViewById(R.id.howItWorksTextView)
                 val getOtpTextView: TextView = view.findViewById(R.id.getOtpTextView)
                 getOtpTextView.setOnClickListener {
-                    parentLayout?.visibility = View.VISIBLE
                     if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else {
                         showProgressDialog(mActivity)
                         mService.getBankDetailsPageInfo()

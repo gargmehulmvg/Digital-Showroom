@@ -134,6 +134,7 @@ class OnBoardScreenDukaanLocationFragment : BaseFragment(), IStoreAddressService
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        ToolBarManager.getInstance().hideToolBar(mActivity, true)
         dukaanLocationEditText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 val str = s.toString()

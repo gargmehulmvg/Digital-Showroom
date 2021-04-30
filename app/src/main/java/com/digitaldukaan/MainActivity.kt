@@ -5,6 +5,7 @@ import android.content.IntentFilter
 import android.content.pm.ActivityInfo
 import android.net.ConnectivityManager
 import android.os.Bundle
+import android.os.StrictMode
 import android.util.Log
 import android.view.MenuItem
 import android.view.View
@@ -58,6 +59,8 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         CleverTapAPI.getDefaultInstance(this)?.apply {
             setInAppNotificationButtonListener(this@MainActivity)
         }
+        val builder: StrictMode.VmPolicy.Builder  = StrictMode.VmPolicy.Builder()
+        StrictMode.setVmPolicy(builder.build())
     }
 
     override fun onStart() {
