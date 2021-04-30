@@ -24,9 +24,9 @@ class AddProductService {
         }
     }
 
-    fun getItemInfo(authToken: String, itemId: Int) {
+    fun getItemInfo(itemId: Int) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.getItemInfoServerCall(authToken, itemId, mServiceInterface)
+            mNetworkService.getItemInfoServerCall(itemId, mServiceInterface)
         }
     }
 

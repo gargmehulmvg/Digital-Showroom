@@ -115,7 +115,7 @@ interface Apis {
     suspend fun getMasterCatalogStaticText(): Response<CommonApiResponse>
 
     @GET("api/dotk/vm1/products/getItemInfo/{itemId}")
-    suspend fun getItemInfo(@Header("auth_token") authToken: String, @Path("itemId") itemId: Int): Response<CommonApiResponse>
+    suspend fun getItemInfo(@Path("itemId") itemId: Int): Response<CommonApiResponse>
 
     @POST("api/dotk/vm1/products/setItem")
     suspend fun setItem(@Header("auth_token") authToken: String, @Body request: AddProductRequest): Response<CommonApiResponse>

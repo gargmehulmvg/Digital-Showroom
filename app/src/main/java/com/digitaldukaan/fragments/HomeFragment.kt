@@ -191,10 +191,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
             settings.javaScriptEnabled = true
             settings.domStorageEnabled = true
             addJavascriptInterface(WebViewBridge(), "Android")
-            val url = webViewUrl + "?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&" +
-                    "storeName=${getStringDataFromSharedPref(Constants.STORE_NAME)}" + "&token=${getStringDataFromSharedPref(
-                Constants.USER_AUTH_TOKEN
-            )}"
+            val url = webViewUrl + "?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"
             Log.d(TAG, "setupHomePageWebView: $url")
             loadUrl(url)
             commonWebView?.loadUrl("javascript: window = 'MEHUL TESTING'")

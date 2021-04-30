@@ -1,6 +1,8 @@
 package com.digitaldukaan.fragments
 
-import android.content.Intent
+import android.app.Dialog
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -37,6 +39,7 @@ import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IAddProductServiceInterface
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
+import com.theartofdev.edmodo.cropper.CropImageView
 import kotlinx.android.synthetic.main.layout_add_product_fragment.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -82,14 +85,10 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         super.onCreate(savedInstanceState)
         mService = AddProductService()
         mService.setServiceListener(this)
-        AppEventsManager.pushAppEvents(
-            eventName = AFInAppEventType.EVENT_ADD_ITEM,
-            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-            data = mapOf(
+        AppEventsManager.pushAppEvents(eventName = AFInAppEventType.EVENT_ADD_ITEM, isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true, data = mapOf(
                 AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
                 AFInAppEventParameterName.IS_MERCHANT to "1"
-            )
-        )
+            ))
     }
 
     override fun onStop() {
@@ -175,7 +174,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         } else {
             mImagesStrList[0] = AddProductImagesResponse(0,"", 0)
         }
-        mService.getItemInfo(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), mItemId)
+        mService.getItemInfo(mItemId)
         return mContentView
     }
 
@@ -412,22 +411,10 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         }.show()
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == Constants.CROP_IMAGE_REQUEST_CODE) {
-            val file = data?.getSerializableExtra(Constants.MODE_CROP) as File
-            CoroutineScopeUtils().runTaskOnCoroutineMain {
-                showAddProductContainer()
-                onImageSelectionResultFile(file, "")
-            }
-        } else super.onActivityResult(requestCode, resultCode, data)
-    }
-
     override fun onImageSelectionResultFile(file: File?, mode: String) {
         if (mode == Constants.MODE_CROP) {
             if (::imagePickBottomSheet.isInitialized) imagePickBottomSheet.dismiss()
-            val fragment = CropPhotoFragment.newInstance(file?.toUri())
-            fragment.setTargetFragment(this, Constants.CROP_IMAGE_REQUEST_CODE)
-            launchFragment(fragment, true)
+            showImageCropDialog(file)
             return
         }
         if (!isInternetConnectionAvailable(mActivity)) {
@@ -440,8 +427,34 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         }
         val fileRequestBody = MultipartBody.Part.createFormData("media", file.name, RequestBody.create("image/*".toMediaTypeOrNull(), file))
         val imageTypeRequestBody = RequestBody.create("text/plain".toMediaTypeOrNull(), Constants.BASE64_STORE_ITEMS)
+        showCancellableProgressDialog(mActivity)
         mService.generateCDNLink(imageTypeRequestBody, fileRequestBody)
         if (::imagePickBottomSheet.isInitialized) imagePickBottomSheet.dismiss()
+    }
+
+    private fun showImageCropDialog(file: File?) {
+        val imageCropDialog: Dialog? = Dialog(mActivity, android.R.style.Theme_Black_NoTitleBar_Fullscreen)
+        imageCropDialog?.apply {
+            val view = LayoutInflater.from(mActivity).inflate(R.layout.layout_crop_photo, null)
+            setContentView(view)
+            window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            val cropImageView: CropImageView = view.findViewById(R.id.cropImageView)
+            val doneImageView: View = view.findViewById(R.id.doneImageView)
+            cropImageView.setAspectRatio(1, 1)
+            cropImageView.setFixedAspectRatio(true)
+            cropImageView.setMaxCropResultSize(2040, 2040)
+            cropImageView.setImageUriAsync(file?.toUri())
+            doneImageView.setOnClickListener {
+                val croppedImage = cropImageView.croppedImage
+                val croppedImageFile = getImageFileFromBitmap(croppedImage, mActivity)
+                CoroutineScopeUtils().runTaskOnCoroutineMain {
+                    showAddProductContainer()
+                    onImageSelectionResultFile(croppedImageFile, "")
+                }
+                imageCropDialog.dismiss()
+            }
+
+        }?.show()
     }
 
     private fun checkValidation(): Boolean {
