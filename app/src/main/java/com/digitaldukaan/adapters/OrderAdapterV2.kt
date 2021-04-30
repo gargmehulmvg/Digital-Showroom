@@ -134,7 +134,7 @@ class OrderAdapterV2(
                     0,
                     0
                 )
-                orderCheckBox.isEnabled = true
+                orderCheckBox.isEnabled = false
             }
             Constants.DS_REJECTED -> {
                 orderAddressTextView.setTextColor(mContext.getColor(R.color.red))

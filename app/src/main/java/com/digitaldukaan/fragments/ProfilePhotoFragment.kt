@@ -1,7 +1,9 @@
 package com.digitaldukaan.fragments
 
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -34,6 +36,7 @@ class ProfilePhotoFragment : BaseFragment(), View.OnClickListener, IProfilePhoto
 
     companion object {
 
+        private const val TAG = "ProfilePhotoFragment"
         private val service: ProfilePhotoService = ProfilePhotoService()
 
         fun newInstance(storeLinkStr: String?): ProfilePhotoFragment {
@@ -69,6 +72,21 @@ class ProfilePhotoFragment : BaseFragment(), View.OnClickListener, IProfilePhoto
             backImageView.id -> mActivity.onBackPressed()
             removePhotoTextView.id -> showImageRemovalApprovalDialog()
             changePhotoTextView.id -> askCameraPermission()
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int, permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        Log.i(TAG, "$TAG onRequestPermissionResult")
+        if (requestCode == Constants.IMAGE_PICK_REQUEST_CODE) {
+            when {
+                grantResults.isEmpty() -> Log.i(TAG, "User interaction was cancelled.")
+                grantResults[0] == PackageManager.PERMISSION_GRANTED -> {
+                    showImagePickerBottomSheet()
+                }
+            }
         }
     }
 

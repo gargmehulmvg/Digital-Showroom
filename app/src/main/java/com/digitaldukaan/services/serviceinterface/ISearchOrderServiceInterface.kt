@@ -8,6 +8,8 @@ interface ISearchOrderServiceInterface {
 
     fun onOrdersUpdatedStatusResponse(commonResponse: CommonApiResponse)
 
+    fun onCompleteOrderStatusResponse(commonResponse: CommonApiResponse)
+
     fun onSearchOrderException(e: Exception)
 
 }

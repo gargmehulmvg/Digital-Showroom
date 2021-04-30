@@ -11,12 +11,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.OrderAdapterV2
-import com.digitaldukaan.constants.Constants
-import com.digitaldukaan.constants.CoroutineScopeUtils
-import com.digitaldukaan.constants.StaticInstances
-import com.digitaldukaan.constants.ToolBarManager
+import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.IOnToolbarIconClick
 import com.digitaldukaan.interfaces.IOrderListItemListener
+import com.digitaldukaan.models.request.CompleteOrderRequest
 import com.digitaldukaan.models.request.SearchOrdersRequest
 import com.digitaldukaan.models.request.UpdateOrderStatusRequest
 import com.digitaldukaan.models.response.CommonApiResponse
@@ -118,8 +116,8 @@ class SearchOrdersFragment: BaseFragment(), IOnToolbarIconClick, ISearchOrderSer
         mMobileNumberString = inputMobileNumber
         val request = SearchOrdersRequest(mOrderIdString.toLong(), mMobileNumberString, searchPageCount)
         if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog()
-        showProgressDialog(mActivity)
         ToolBarManager.getInstance().setHeaderTitle("\"${if (inputMobileNumber.isEmpty()) inputOrderId else inputMobileNumber}\"")
+        showProgressDialog(mActivity)
         mService.getSearchOrders(request)
     }
 
@@ -137,14 +135,34 @@ class SearchOrdersFragment: BaseFragment(), IOnToolbarIconClick, ISearchOrderSer
         Log.d(TAG, "onOrdersUpdatedStatusResponse: do nothing :: $commonResponse")
     }
 
+    override fun onCompleteOrderStatusResponse(commonResponse: CommonApiResponse) {
+        stopProgress()
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            if (commonResponse.mIsSuccessStatus) {
+                onSearchDialogContinueButtonClicked(mOrderIdString, mMobileNumberString)
+            } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
+        }
+    }
+
     override fun onSearchOrderException(e: Exception) {
         exceptionHandlingForAPIResponse(e)
     }
 
     override fun onOrderCheckBoxChanged(isChecked: Boolean, item: OrderItemResponse?) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            showToast(isChecked.toString())
-            if (isChecked) showDontShowDialog(item, StaticInstances.sOrderPageInfoStaticData)
+            if (PrefsManager.getStringDataFromSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN) != Constants.TEXT_YES) {
+                if (isChecked) showDontShowDialog(item, StaticInstances.sOrderPageInfoStaticData)
+            } else {
+                onDontShowDialogPositiveButtonClicked(item)
+            }
+        }
+    }
+
+    override fun onDontShowDialogPositiveButtonClicked(item: OrderItemResponse?) {
+        val request = CompleteOrderRequest(item?.orderId?.toLong())
+        if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else {
+            showProgressDialog(mActivity)
+            mService.completeOrder(request)
         }
     }
 
