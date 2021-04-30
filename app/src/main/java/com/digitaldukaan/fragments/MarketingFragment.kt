@@ -153,6 +153,14 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                 openWebViewFragment(this, "", WebViewUrls.WEB_VIEW_SOCIAL_CREATIVE_LIST, Constants.SETTINGS)
             }
             Constants.ACTION_CATALOG_PREMIUM -> {
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_PREMIUM_PAGE,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(
+                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                        AFInAppEventParameterName.CHANNEL to "isMarketing"
+                    )
+                )
                 openWebViewFragment(this, "", BuildConfig.WEB_VIEW_URL + response.action)
             }
             Constants.ACTION_QR_DOWNLOAD -> {

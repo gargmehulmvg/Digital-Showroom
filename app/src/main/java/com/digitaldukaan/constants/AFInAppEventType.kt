@@ -60,5 +60,6 @@ interface AFInAppEventType {
         const val EVENT_GET_CUSTOM_DOMAIN = "GET_CUSTOM_DOMAIN"
         const val EVENT_HELP_SCREEN_OPEN = "HelpSectionClicked"
         const val EVENT_SETTINGS_REFERRAL = "SettingsReferral"
+        const val EVENT_PREMIUM_PAGE = "Premium_Page"
     }
 }

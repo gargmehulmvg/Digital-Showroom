@@ -247,6 +247,14 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
         when(view?.id) {
             addProductContainer.id -> launchFragment(AddProductFragment.newInstance(0, true), true)
             shareProductContainer.id -> {
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_STORE_SHARE,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(
+                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                        AFInAppEventParameterName.IS_CATALOG to "true"
+                    )
+                )
                 if (mShareDataOverWhatsAppText.isNotEmpty()) shareDataOnWhatsApp(mShareDataOverWhatsAppText) else if (!isInternetConnectionAvailable(mActivity)) {
                     showNoInternetConnectionDialog()
                     return

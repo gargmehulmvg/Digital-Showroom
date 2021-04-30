@@ -229,9 +229,8 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
             val orderDetailResponse = orderDetailMainResponse?.orders
             mOrderDetailStaticData = orderDetailMainResponse?.staticText
             newOrderTextView.visibility = if (mIsNewOrder) View.VISIBLE else View.GONE
-            //detailTextView.visibility = if (orderDetailResponse?.transactionId?.isEmpty() == true) View.INVISIBLE else View.VISIBLE
             sendBillLayout.visibility = if (orderDetailResponse?.displayStatus == Constants.DS_SEND_BILL || orderDetailResponse?.displayStatus == Constants.DS_NEW) View.VISIBLE else View.GONE
-            orderDetailContainer.visibility = if (orderDetailResponse?.displayStatus == Constants.DS_SEND_BILL) View.GONE else View.VISIBLE
+            orderDetailContainer.visibility = if (orderDetailResponse?.displayStatus == Constants.DS_SEND_BILL || orderDetailResponse?.displayStatus == Constants.DS_NEW) View.GONE else View.VISIBLE
             addDeliveryChargesLabel.visibility = if (orderDetailResponse?.displayStatus == Constants.DS_SEND_BILL) View.VISIBLE else View.GONE
             orderDetailItemRecyclerView.apply {
                 layoutManager = LinearLayoutManager(mActivity)

@@ -202,7 +202,17 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             R.id.menuSettings -> if (getCurrentFragment() !is SettingsFragment) launchFragment(SettingsFragment.newInstance(), true)
             R.id.menuMarketing -> if (getCurrentFragment() !is MarketingFragment) launchFragment(MarketingFragment.newInstance(), true)
             R.id.menuProducts -> if (getCurrentFragment() !is ProductFragment) launchFragment(ProductFragment.newInstance(), true)
-            R.id.menuPremium -> if (getCurrentFragment() !is PremiumPageInfoFragment) launchFragment(PremiumPageInfoFragment.newInstance(), true)
+            R.id.menuPremium -> if (getCurrentFragment() !is PremiumPageInfoFragment) {
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_PREMIUM_PAGE,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(
+                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                        AFInAppEventParameterName.CHANNEL to "isBottomNav"
+                    )
+                )
+                launchFragment(PremiumPageInfoFragment.newInstance(), true)
+            }
         }
         return true
     }

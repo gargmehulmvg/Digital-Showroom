@@ -215,6 +215,14 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                 override fun onResponse(p0: String?) {
                     Log.d(TAG, "onResponse: $p0")
                     if (referEarnOverWhatsAppResponse.mReferAndEarnData.isShareStoreBanner == true) {
+                        AppEventsManager.pushAppEvents(
+                            eventName = AFInAppEventType.EVENT_SETTINGS_REFERRAL,
+                            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                            data = mapOf(
+                                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                                AFInAppEventParameterName.LINK to p0
+                            )
+                        )
                         shareDataOnWhatsAppWithImage("${referEarnOverWhatsAppResponse.mReferAndEarnData.whatsAppText} $p0", referEarnOverWhatsAppResponse.mReferAndEarnData.imageUrl)
                     } else {
                         shareDataOnWhatsApp("${referEarnOverWhatsAppResponse.mReferAndEarnData.whatsAppText} $p0")
@@ -420,14 +428,6 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
     private fun checkStoreOptionClick(response: StoreOptionsResponse) {
         when (response.mPage) {
             Constants.PAGE_REFER -> {
-                AppEventsManager.pushAppEvents(
-                    eventName = AFInAppEventType.EVENT_SETTINGS_REFERRAL,
-                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                    data = mapOf(
-                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                        AFInAppEventParameterName.LINK to ""
-                    )
-                )
                 if (mReferAndEarnResponse != null) {
                     showReferAndEarnBottomSheet(mReferAndEarnResponse)
                     return
@@ -442,8 +442,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             }
             Constants.PAGE_HELP -> onToolbarSideIconClicked()
             Constants.PAGE_FEEDBACK -> openPlayStore()
-            Constants.PAGE_APP_SETTINGS -> launchFragment(AppSettingsFragment().newInstance(mProfileResponse?.mSubPages,
-                response.mText, mAppSettingsResponseStaticData), true)
+            Constants.PAGE_APP_SETTINGS -> launchFragment(AppSettingsFragment().newInstance(mProfileResponse?.mSubPages, response.mText, mAppSettingsResponseStaticData), true)
             Constants.PAGE_REWARDS -> launchFragment(
                 CommonWebViewFragment().newInstance(
                     getString(R.string.my_rewards),
@@ -477,6 +476,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             Constants.NEW_RELEASE_TYPE_EXTERNAL -> {
                 val eventName = when (responseItem.mType) {
                     Constants.NEW_RELEASE_TYPE_CUSTOM_DOMAIN -> AFInAppEventType.EVENT_GET_CUSTOM_DOMAIN
+                    Constants.NEW_RELEASE_TYPE_PREMIUM -> AFInAppEventType.EVENT_PREMIUM_PAGE
                     else -> AFInAppEventType.EVENT_VIEW_TOP_STORES
                 }
                 AppEventsManager.pushAppEvents(
