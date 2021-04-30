@@ -49,11 +49,15 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         val intentUri = intent?.data
         launchFragment(SplashFragment.newInstance(intentUri), true)
         FirebaseMessaging.getInstance().token.addOnCompleteListener {
-            if(it.isComplete){
-                StaticInstances.sFireBaseMessagingToken = it.result.toString()
-                Log.d(TAG, "onCreate :: FIREBASE TOKEN :: ${it.result}")
-                AppsFlyerLib.getInstance().updateServerUninstallToken(this, StaticInstances.sFireBaseMessagingToken)
-                CleverTapAPI.getDefaultInstance(this)?.pushFcmRegistrationId(StaticInstances.sFireBaseMessagingToken, true)
+            try {
+                if(it.isComplete){
+                    StaticInstances.sFireBaseMessagingToken = it.result.toString()
+                    Log.d(TAG, "onCreate :: FIREBASE TOKEN :: ${it.result}")
+                    AppsFlyerLib.getInstance().updateServerUninstallToken(this, StaticInstances.sFireBaseMessagingToken)
+                    CleverTapAPI.getDefaultInstance(this)?.pushFcmRegistrationId(StaticInstances.sFireBaseMessagingToken, true)
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, e.message, e)
             }
         }
         CleverTapAPI.getDefaultInstance(this)?.apply {
