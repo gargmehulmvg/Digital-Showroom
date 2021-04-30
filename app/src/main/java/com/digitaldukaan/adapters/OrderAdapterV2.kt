@@ -113,24 +113,22 @@ class OrderAdapterV2(
                 orderAddressTextView.background = ContextCompat.getDrawable(mContext, R.drawable.order_adapter_new)
                 orderCheckBox.isEnabled = false
                 orderCheckBox.alpha = 0.2f
-                orderAddressTextView.setCompoundDrawablesWithIntrinsicBounds(
-                    0,
-                    0,
-                    0,
-                    0
-                )
+                orderAddressTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
+                orderStatusImageView.visibility = View.GONE
             }
             Constants.DS_SEND_BILL -> {
                 orderAddressTextView.setTextColor(mContext.getColor(R.color.orange))
                 orderAddressTextView.background = ContextCompat.getDrawable(mContext, R.drawable.order_adapter_send_bill)
                 orderAddressTextView.text = mOrderPageInfoStaticData?.sendBillText
                 orderCheckBox.isEnabled = true
+                orderStatusImageView.visibility = View.GONE
             }
             Constants.DS_BILL_SENT -> {
                 orderAddressTextView.setTextColor(mContext.getColor(R.color.snack_bar_background))
                 orderAddressTextView.background = ContextCompat.getDrawable(mContext, R.drawable.order_adapter_bill_sent)
                 orderAddressTextView.text = mOrderPageInfoStaticData?.sentBillText
                 orderCheckBox.isEnabled = true
+                orderStatusImageView.visibility = View.GONE
             }
             Constants.DS_PAID_ONLINE -> {
                 orderAddressTextView.text = null
@@ -140,15 +138,11 @@ class OrderAdapterV2(
             Constants.DS_REJECTED -> {
                 orderAddressTextView.setTextColor(mContext.getColor(R.color.red))
                 orderAddressTextView.text = mOrderPageInfoStaticData?.text_rejected
-                orderAddressTextView.setCompoundDrawablesWithIntrinsicBounds(
-                    R.drawable.ic_reject_icon,
-                    0,
-                    0,
-                    0
-                )
+                orderAddressTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_reject_icon, 0, 0, 0)
                 orderCheckBox.isEnabled = false
                 orderCheckBox.alpha = 0.2f
                 orderItemContainer.alpha = 0.2f
+                orderStatusImageView.visibility = View.GONE
             }
             Constants.DS_COMPLETED_CASH -> {
                 orderCheckBox.alpha = 0.2f
@@ -171,6 +165,7 @@ class OrderAdapterV2(
             else -> {
                 orderCheckBox.alpha = 0.2f
                 orderCheckBox.isEnabled = false
+                orderStatusImageView.visibility = View.GONE
             }
         }
     }

@@ -335,8 +335,6 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                         setupHomePageWebView(mIsZeroOrder.mUrl)
                         mSwipeRefreshLayout.isEnabled = false
                     } else {
-                        fetchLatestOrders(Constants.MODE_PENDING, mFetchingOrdersStr, pendingPageCount)
-                        //mSwipeRefreshLayout.isEnabled = true
                         homePageWebViewLayout?.visibility = View.GONE
                         orderLayout?.visibility = View.VISIBLE
                         bannerRecyclerView?.apply {
@@ -352,6 +350,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
 
                             })
                         }
+                        Handler(Looper.getMainLooper()).postDelayed({ fetchLatestOrders(Constants.MODE_PENDING, mFetchingOrdersStr, pendingPageCount) }, 500)
                     }
                     if (mIsHelpOrder.mIsActive) {
                         helpImageView?.visibility = View.VISIBLE

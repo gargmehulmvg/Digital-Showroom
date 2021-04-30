@@ -191,6 +191,9 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
                 url.contains("mailto:") -> { view.context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
                     true
                 }
+                url.contains("whatsapp:") -> { view.context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                    true
+                }
                 else -> {
                     view.loadUrl(url)
                     true

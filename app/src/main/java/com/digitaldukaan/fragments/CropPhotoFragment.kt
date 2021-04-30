@@ -41,6 +41,7 @@ class CropPhotoFragment: BaseFragment() {
         hideBottomNavigationView(true)
         cropImageView.setAspectRatio(1, 1)
         cropImageView.setFixedAspectRatio(true)
+        cropImageView.isAutoZoomEnabled = true
         cropImageView.setMaxCropResultSize(2040, 2040)
         cropImageView.setImageUriAsync(mFileUri)
         doneImageView.setOnClickListener {

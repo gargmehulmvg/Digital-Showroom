@@ -147,30 +147,36 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
         mIsServerCallInitiated = false
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             mCountDownTimer.cancel()
-            mIsNewUser = validateOtpResponse.mIsNewUser
-            stopProgress()
-            showToast(validateOtpResponse.mMessage)
-            saveUserDetailsInPref(validateOtpResponse)
-            val cleverTapProfile = CleverTapProfile()
-            cleverTapProfile.mShopName = validateOtpResponse.mStore?.storeInfo?.name
-            var businessTypeStr = ""
-            validateOtpResponse.mStore?.storeBusiness?.forEachIndexed { _, businessResponse -> businessTypeStr += "$businessResponse ," }
-            cleverTapProfile.mShopCategory = businessTypeStr
-            cleverTapProfile.mPhone = validateOtpResponse.mUserPhoneNumber
-            cleverTapProfile.mIdentity = validateOtpResponse.mUserPhoneNumber
-            cleverTapProfile.mLat = validateOtpResponse.mStore?.storeAddress?.latitude
-            cleverTapProfile.mLong = validateOtpResponse.mStore?.storeAddress?.longitude
-            cleverTapProfile.mAddress = validateOtpResponse.mStore?.storeAddress?.let {
-                "${it.address1}, ${it.googleAddress}, ${it.pinCode}"
+            if (!validateOtpResponse.mIsSuccessStatus) {
+                stopProgress()
+                otpEditText?.clearOTP()
+                showShortSnackBar(validateOtpResponse.mMessage, true, R.drawable.ic_close_red)
+            } else {
+                mIsNewUser = validateOtpResponse.mIsNewUser
+                stopProgress()
+                showToast(validateOtpResponse.mMessage)
+                saveUserDetailsInPref(validateOtpResponse)
+                val cleverTapProfile = CleverTapProfile()
+                cleverTapProfile.mShopName = validateOtpResponse.mStore?.storeInfo?.name
+                var businessTypeStr = ""
+                validateOtpResponse.mStore?.storeBusiness?.forEachIndexed { _, businessResponse -> businessTypeStr += "$businessResponse ," }
+                cleverTapProfile.mShopCategory = businessTypeStr
+                cleverTapProfile.mPhone = validateOtpResponse.mUserPhoneNumber
+                cleverTapProfile.mIdentity = validateOtpResponse.mUserPhoneNumber
+                cleverTapProfile.mLat = validateOtpResponse.mStore?.storeAddress?.latitude
+                cleverTapProfile.mLong = validateOtpResponse.mStore?.storeAddress?.longitude
+                cleverTapProfile.mAddress = validateOtpResponse.mStore?.storeAddress?.let {
+                    "${it.address1}, ${it.googleAddress}, ${it.pinCode}"
+                }
+                AppsFlyerLib.getInstance().setCustomerUserId(validateOtpResponse.mUserPhoneNumber)
+                AppEventsManager.pushCleverTapProfile(cleverTapProfile)
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_OTP_VERIFIED,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
+                )
+                if (validateOtpResponse.mStore == null || mIsNewUser) launchFragment(OnBoardScreenDukaanNameFragment(), true) else launchFragment(HomeFragment(), true)
             }
-            AppsFlyerLib.getInstance().setCustomerUserId(validateOtpResponse.mUserPhoneNumber)
-            AppEventsManager.pushCleverTapProfile(cleverTapProfile)
-            AppEventsManager.pushAppEvents(
-                eventName = AFInAppEventType.EVENT_OTP_VERIFIED,
-                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
-            )
-            if (validateOtpResponse.mStore == null || mIsNewUser) launchFragment(OnBoardScreenDukaanNameFragment(), true) else launchFragment(HomeFragment(), true)
         }
     }
 

@@ -62,13 +62,18 @@ class MyFcmMessageListenerService : FirebaseMessagingService() {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT)
         val notificationBuilder = NotificationCompat.Builder(this, AFInAppEventParameterName.NOTIFICATION_CHANNEL_NOTIFICATIONS).apply {
-            setSmallIcon(R.mipmap.ic_launcher)
+            setSmallIcon(R.drawable.shortcuticon)
             setContentTitle(title)
             setContentText(message)
             val soundUri: Uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
             setSound(soundUri)
             setAutoCancel(true)
-            setLargeIcon(BitmapFactory.decodeResource(this@MyFcmMessageListenerService.resources,R.mipmap.ic_launcher_round))
+            setLargeIcon(
+                BitmapFactory.decodeResource(
+                    this@MyFcmMessageListenerService.resources,
+                    R.drawable.ic_notification_round
+                )
+            )
             setContentIntent(pendingIntent)
         }.build()
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager

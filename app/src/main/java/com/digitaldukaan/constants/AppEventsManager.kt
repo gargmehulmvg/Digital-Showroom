@@ -64,7 +64,7 @@ class AppEventsManager {
 
         fun pushCleverTapProfile(profile: CleverTapProfile) {
             val profileUpdate = HashMap<String, Any?>()
-            profileUpdate["name"] = "dot kirana merchant"
+            profileUpdate["name"] = "Digital Showroom Merchant"
             profileUpdate["Identity"] = profile.mIdentity
             profileUpdate["Phone"] = "+91${profile.mPhone}"
             profileUpdate["isMerchant"] = profile.mIsMerchant

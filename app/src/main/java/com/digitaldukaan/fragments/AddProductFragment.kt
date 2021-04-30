@@ -442,6 +442,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             val doneImageView: View = view.findViewById(R.id.doneImageView)
             cropImageView.setAspectRatio(1, 1)
             cropImageView.setFixedAspectRatio(true)
+            cropImageView.isAutoZoomEnabled = true
             cropImageView.setMaxCropResultSize(2040, 2040)
             cropImageView.setImageUriAsync(file?.toUri())
             doneImageView.setOnClickListener {

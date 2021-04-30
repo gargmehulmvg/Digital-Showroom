@@ -74,6 +74,9 @@
             </intent-filter>
         </service>
 
+        <meta-data android:name="CLEVERTAP_NOTIFICATION_ICON"
+            android:value="shortcuticon"/>
+
         <meta-data
             android:name="CLEVERTAP_ACCOUNT_ID"
             android:value="4R8-94K-895Z"/>
