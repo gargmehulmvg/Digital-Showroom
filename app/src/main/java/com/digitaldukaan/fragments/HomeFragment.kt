@@ -6,11 +6,14 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.webkit.WebSettings
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.core.widget.NestedScrollView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.digitaldukaan.BuildConfig
@@ -42,8 +45,7 @@ import org.json.JSONObject
 
 
 class HomeFragment : BaseFragment(), IHomeServiceInterface,
-    SwipeRefreshLayout.OnRefreshListener, IOrderListItemListener, View.OnTouchListener,
-    ViewTreeObserver.OnScrollChangedListener {
+    SwipeRefreshLayout.OnRefreshListener, IOrderListItemListener {
 
     companion object {
         private val TAG = HomeFragment::class.simpleName
@@ -98,12 +100,48 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         ToolBarManager.getInstance().hideToolBar(mActivity, true)
         hideBottomNavigationView(false)
         mSwipeRefreshLayout.setOnRefreshListener(this)
-        orderAdapter = OrderAdapterV2(mActivity, mOrderList)
-        completedOrderAdapter = OrderAdapterV2(mActivity, mCompletedOrderList)
         pendingPageCount = 1
         completedPageCount = 1
-        orderLayout?.setOnTouchListener(this)
-        orderLayout?.viewTreeObserver?.addOnScrollChangedListener(this)
+        mOrderList.clear()
+        mCompletedOrderList.clear()
+        orderLayout?.setOnScrollChangeListener(NestedScrollView.OnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
+            if (scrollY == (v.getChildAt(0).measuredHeight - v.measuredHeight)) {
+                when {
+                    mIsMorePendingOrderAvailable -> {
+                        ++pendingPageCount
+                        fetchLatestOrders(Constants.MODE_PENDING, "", pendingPageCount)
+                    }
+                mIsMoreCompletedOrderAvailable -> {
+                    ++completedPageCount
+                    fetchLatestOrders(Constants.MODE_COMPLETED, "", pendingPageCount)
+                }
+                !mIsMoreCompletedOrderAvailable -> {
+                    if (mCompletedOrderList.isEmpty()) {
+                        completedPageCount = 1
+                        fetchLatestOrders(Constants.MODE_COMPLETED, "", completedPageCount)
+                    }
+                }
+                }
+            }
+        })
+        ordersRecyclerView?.apply {
+            isNestedScrollingEnabled = false
+            orderAdapter = OrderAdapterV2(mActivity, mOrderList)
+            orderAdapter.setCheckBoxListener(this@HomeFragment)
+            linearLayoutManager = LinearLayoutManager(mActivity)
+            layoutManager = linearLayoutManager
+            adapter = orderAdapter
+            addItemDecoration(StickyRecyclerHeadersDecoration(orderAdapter))
+        }
+        completedOrdersRecyclerView?.apply {
+            isNestedScrollingEnabled = false
+            completedOrderAdapter = OrderAdapterV2(mActivity, mCompletedOrderList)
+            completedOrderAdapter.setCheckBoxListener(this@HomeFragment)
+            linearLayoutManager = LinearLayoutManager(mActivity)
+            layoutManager = linearLayoutManager
+            adapter = completedOrderAdapter
+            addItemDecoration(StickyRecyclerHeadersDecoration(completedOrderAdapter))
+        }
     }
 
     private fun fetchLatestOrders(mode: String, fetchingOrderStr: String?, page: Int = 1) {
@@ -214,21 +252,20 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
             stopProgress()
             if (mSwipeRefreshLayout.isRefreshing) mSwipeRefreshLayout.isRefreshing = false
             if (getOrderResponse.mIsSuccessStatus) {
-                val ordersResponse = Gson().fromJson<OrdersResponse>(
-                    getOrderResponse.mCommonDataStr,
-                    OrdersResponse::class.java
-                )
+                val ordersResponse = Gson().fromJson<OrdersResponse>(getOrderResponse.mCommonDataStr, OrdersResponse::class.java)
                 mIsMorePendingOrderAvailable = ordersResponse.mIsNextDataAvailable
                 if (pendingPageCount == 1) mOrderList.clear()
                 if (ordersResponse.mOrdersList.isNotEmpty()) {
                     pendingOrderTextView?.visibility = View.VISIBLE
                     mOrderList.addAll(ordersResponse.mOrdersList)
+                    if (!mIsMorePendingOrderAvailable) fetchLatestOrders(Constants.MODE_COMPLETED, "", 1)
                 } else {
                     pendingOrderTextView?.visibility = View.GONE
                     mOrderList.addAll(ArrayList())
+                    fetchLatestOrders(Constants.MODE_COMPLETED, "", 1)
                 }
                 convertDateStringOfOrders(mOrderList)
-                orderAdapter.notifyDataSetChanged()
+                orderAdapter.setOrderList(mOrderList)
             }
         }
     }
@@ -252,7 +289,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                     mCompletedOrderList.addAll(ArrayList())
                 }
                 convertDateStringOfOrders(mCompletedOrderList)
-                completedOrderAdapter.notifyDataSetChanged()
+                completedOrderAdapter.setOrderList(mCompletedOrderList)
             }
         }
     }
@@ -298,34 +335,12 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                         setupHomePageWebView(mIsZeroOrder.mUrl)
                         mSwipeRefreshLayout.isEnabled = false
                     } else {
+                        fetchLatestOrders(Constants.MODE_PENDING, mFetchingOrdersStr, pendingPageCount)
                         //mSwipeRefreshLayout.isEnabled = true
                         homePageWebViewLayout?.visibility = View.GONE
                         orderLayout?.visibility = View.VISIBLE
-                        fetchLatestOrders(Constants.MODE_PENDING, mFetchingOrdersStr, pendingPageCount)
-                        ordersRecyclerView?.apply {
-                            isNestedScrollingEnabled = false
-                            orderAdapter = OrderAdapterV2(mActivity, mOrderList)
-                            orderAdapter.setCheckBoxListener(this@HomeFragment)
-                            linearLayoutManager = LinearLayoutManager(mActivity)
-                            layoutManager = linearLayoutManager
-                            adapter = orderAdapter
-                            addItemDecoration(StickyRecyclerHeadersDecoration(orderAdapter))
-                        }
-                        completedOrdersRecyclerView?.apply {
-                            isNestedScrollingEnabled = false
-                            completedOrderAdapter = OrderAdapterV2(mActivity, mCompletedOrderList)
-                            completedOrderAdapter.setCheckBoxListener(this@HomeFragment)
-                            linearLayoutManager = LinearLayoutManager(mActivity)
-                            layoutManager = linearLayoutManager
-                            adapter = completedOrderAdapter
-                            addItemDecoration(StickyRecyclerHeadersDecoration(completedOrderAdapter))
-                        }
                         bannerRecyclerView?.apply {
-                            linearLayoutManager = LinearLayoutManager(
-                                mActivity,
-                                LinearLayoutManager.HORIZONTAL,
-                                false
-                            )
+                            linearLayoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
                             layoutManager = linearLayoutManager
                             adapter = OrderPageBannerAdapter(orderPageInfoResponse?.mBannerList, object : IAdapterItemClickListener {
                                 override fun onAdapterItemClickListener(position: Int) {
@@ -378,7 +393,11 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
             stopProgress()
             if (mSwipeRefreshLayout.isRefreshing) mSwipeRefreshLayout.isRefreshing = false
             if (commonResponse.mIsSuccessStatus) {
-                onRefresh()
+                completedPageCount = 1
+                pendingPageCount = 1
+                mOrderList.clear()
+                mCompletedOrderList.clear()
+                fetchLatestOrders(Constants.MODE_PENDING, mFetchingOrdersStr, pendingPageCount)
             } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
         }
     }
@@ -462,7 +481,9 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
     override fun onOrderCheckBoxChanged(isChecked: Boolean, item: OrderItemResponse?) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (PrefsManager.getStringDataFromSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN) != Constants.TEXT_YES) {
-                if (isChecked) showDontShowDialog(item, mOrderPageInfoStaticData)
+                if (Constants.DS_PAID_ONLINE == item?.displayStatus) {
+                    onDontShowDialogPositiveButtonClicked(item)
+                } else if (isChecked) showDontShowDialog(item, mOrderPageInfoStaticData)
             } else {
                 onDontShowDialogPositiveButtonClicked(item)
             }
@@ -582,33 +603,4 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         }.show()
     }
 
-    override fun onTouch(p0: View?, p1: MotionEvent?): Boolean {
-        return false
-    }
-
-    override fun onScrollChanged() {
-        if (orderLayout == null) return
-        val view: View = orderLayout.getChildAt(orderLayout.childCount - 1) ?: return
-        val topDetector: Int = orderLayout.scrollY
-        val bottomDetector: Int = view.bottom - (orderLayout.height + orderLayout.scrollY)
-        if (bottomDetector == 0) {
-            when {
-                mIsMorePendingOrderAvailable -> {
-                    ++pendingPageCount
-                    fetchLatestOrders(Constants.MODE_PENDING, "", pendingPageCount)
-                }
-                mIsMoreCompletedOrderAvailable -> {
-                    ++completedPageCount
-                    fetchLatestOrders(Constants.MODE_COMPLETED, "", pendingPageCount)
-                }
-                !mIsMoreCompletedOrderAvailable -> {
-                    if (mCompletedOrderList.isEmpty()) {
-                        completedPageCount = 1
-                        fetchLatestOrders(Constants.MODE_COMPLETED, "", completedPageCount)
-                    }
-                }
-            }
-        }
-        //if (topDetector <= 0) showToast("Scroll View top reached")
-    }
 }

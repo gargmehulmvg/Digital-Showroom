@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     xmlns:tools="http://schemas.android.com/tools"
     android:paddingTop="@dimen/_10sdp"
-    android:paddingStart="@dimen/_15sdp"
+    android:paddingStart="@dimen/_5sdp"
     android:paddingEnd="@dimen/_15sdp">
 
     <CheckBox
@@ -19,16 +19,28 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <ImageView
+        android:id="@+id/orderStatusImageView"
+        android:layout_width="@dimen/_30sdp"
+        android:layout_height="@dimen/_30sdp"
+        android:visibility="gone"
+        android:src="@drawable/ic_order_status_paid"
+        app:layout_constraintBottom_toBottomOf="@+id/orderItemContainer"
+        app:layout_constraintStart_toEndOf="@+id/orderCheckBox"
+        app:layout_constraintTop_toTopOf="@+id/orderItemContainer"
+        android:contentDescription="@string/image_view_content_description" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/orderItemContainer"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="?selectableItemBackground"
         android:layout_marginBottom="@dimen/_5sdp"
+        android:layout_marginStart="@dimen/_5sdp"
+        android:background="?selectableItemBackground"
         android:onClick="onClick"
         app:layout_constraintBottom_toTopOf="@+id/view5"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/orderCheckBox"
+        app:layout_constraintStart_toEndOf="@+id/orderStatusImageView"
         app:layout_constraintTop_toTopOf="parent">
 
         <com.google.android.material.textview.MaterialTextView
@@ -36,9 +48,9 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:clickable="false"
-            android:singleLine="true"
             android:ellipsize="marquee"
             android:fontFamily="sans-serif-medium"
+            android:singleLine="true"
             android:textColor="@color/black"
             android:textSize="@dimen/_13sdp"
             app:layout_constraintEnd_toStartOf="@+id/orderTimeTextView"
@@ -51,8 +63,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:clickable="false"
-            android:maxLines="1"
             android:fontFamily="@font/montserrat"
+            android:maxLines="1"
             android:paddingTop="@dimen/_5sdp"
             android:paddingBottom="@dimen/_2sdp"
             android:textColor="@color/default_text_light_grey"
@@ -67,8 +79,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:clickable="false"
-            android:gravity="center_vertical"
             android:drawablePadding="@dimen/_5sdp"
+            android:gravity="center_vertical"
             android:textColor="@color/default_text_light_grey"
             android:textSize="@dimen/_10sdp"
             app:layout_constraintBaseline_toBaselineOf="@+id/orderDetailsTextView"

@@ -51,6 +51,7 @@
                 android:layout_height="wrap_content"
                 android:importantForAutofill="no"
                 android:inputType="text"
+                android:imeOptions="actionDone"
                 android:textColor="@color/black"
                 android:textColorHint="@color/default_text_light_grey"
                 android:textSize="@dimen/_10sdp" />

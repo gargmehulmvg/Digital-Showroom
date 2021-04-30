@@ -58,7 +58,7 @@ class ExploreCategoryFragment: BaseFragment(), IExploreCategoryServiceInterface 
         }
         showProgressDialog(mActivity)
         mService.getMasterCategories()
-        collapsingToolbar.title = addProductStaticData?.heading_explore_categories_page
+        collapsingToolbar?.title = addProductStaticData?.heading_explore_categories_page
     }
 
     override fun onClick(view: View?) {
@@ -73,7 +73,7 @@ class ExploreCategoryFragment: BaseFragment(), IExploreCategoryServiceInterface 
             if (response.mIsSuccessStatus) {
                 val listType = object : TypeToken<List<ExploreCategoryItemResponse>>() {}.type
                 val list = Gson().fromJson<ArrayList<ExploreCategoryItemResponse>>(response.mCommonDataStr, listType)
-                exploreCategoryRecyclerView.apply {
+                exploreCategoryRecyclerView?.apply {
                     layoutManager = LinearLayoutManager(mActivity)
                     adapter = ExploreCategoryAdapter(list, this@ExploreCategoryFragment)
                 }

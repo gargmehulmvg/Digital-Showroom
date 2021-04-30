@@ -129,11 +129,24 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
 
     private fun initiateSendBillServerCall() {
         orderDetailMainResponse?.orders?.run {
+            if (orderDetailMainResponse?.storeServices?.mDeliveryChargeType == Constants.FIXED_DELIVERY_CHARGE && orderDetailMainResponse?.storeServices?.mDeliveryPrice != 0.0) {
+                val orderDetailItemResponse = OrderDetailItemResponse(
+                    0,
+                    0,
+                    "Delivery Charges",
+                    1,
+                    orderDetailMainResponse?.storeServices?.mDeliveryPrice,
+                    1,
+                    Constants.ITEM_TYPE_DELIVERY_CHARGE,
+                    Constants.CREATOR_TYPE_MERCHANT
+                )
+                orderDetailsItemsList?.add(orderDetailItemResponse)
+            }
             if (deliveryChargeValueEditText.text?.isNotEmpty() == true) {
                 val orderDetailItemResponse = OrderDetailItemResponse(
                     0,
                     0,
-                    "Delivery Charge",
+                    "Delivery Charges",
                     1,
                     if (deliveryChargeValueEditText.text?.isNotEmpty() == true) deliveryChargeValueEditText.text.toString().toDouble() else 0.0,
                     1,
@@ -246,40 +259,46 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
             setStaticDataToUI(orderDetailResponse)
             ToolBarManager.getInstance().setHeaderSubTitle(getStringDateTimeFromOrderDate(getCompleteDateFromOrderString(orderDetailMainResponse?.orders?.createdAt)))
             setupDeliveryChargeUI(orderDetailResponse?.displayStatus, orderDetailMainResponse?.storeServices)
-            if (orderDetailResponse?.orderType == Constants.ORDER_TYPE_PICK_UP) {
-                mIsPickUpOrder = true
-                deliveryChargeLabel?.visibility = View.GONE
-                deliveryChargeValue?.visibility = View.GONE
-                customerDetailsLabel.visibility = View.GONE
-                deliveryChargeValueEditText?.visibility = View.GONE
-                addDeliveryChargesLabel.text = getString(R.string.add_discount_and_other_charges)
-                mDeliveryChargeAmount = 0.0
-                setAmountToEditText()
-            } else {
-                mIsPickUpOrder = false
-                customerDeliveryDetailsRecyclerView.apply {
-                layoutManager = LinearLayoutManager(mActivity)
-                val customerDetailsList = ArrayList<CustomerDeliveryAddressDTO>()
-                orderDetailResponse?.deliveryInfo?.run {
-                    customerDetailsList.add(CustomerDeliveryAddressDTO("${mOrderDetailStaticData?.text_name}:", deliverTo))
-                    customerDetailsList.add(CustomerDeliveryAddressDTO("${mOrderDetailStaticData?.text_address}:", "$address1,$address2"))
-                    customerDetailsList.add(CustomerDeliveryAddressDTO("${mOrderDetailStaticData?.text_city_and_pincode}:",
-                        if (city == null) {
-                            if (pincode == null) {
-                                ""
-                            } else {
-                                "$pincode"
-                            }
-                        } else if (pincode == null) {
-                            "$city"
-                        } else {
-                            "$city, $pincode"
-                        }
-                    ))
-                    customerDetailsList.add(CustomerDeliveryAddressDTO("${mOrderDetailStaticData?.text_landmark}:", landmark))
+            when (orderDetailResponse?.orderType) {
+                Constants.ORDER_TYPE_SELF -> {
+                    customerDetailsLabel.visibility = View.GONE
                 }
-                adapter = CustomerDeliveryAddressAdapter(customerDetailsList)
-            }
+                Constants.ORDER_TYPE_PICK_UP -> {
+                    mIsPickUpOrder = true
+                    deliveryChargeLabel?.visibility = View.GONE
+                    deliveryChargeValue?.visibility = View.GONE
+                    customerDetailsLabel.visibility = View.GONE
+                    deliveryChargeValueEditText?.visibility = View.GONE
+                    addDeliveryChargesLabel.text = getString(R.string.add_discount_and_other_charges)
+                    mDeliveryChargeAmount = 0.0
+                    setAmountToEditText()
+                }
+                else -> {
+                    mIsPickUpOrder = false
+                    customerDeliveryDetailsRecyclerView.apply {
+                        layoutManager = LinearLayoutManager(mActivity)
+                        val customerDetailsList = ArrayList<CustomerDeliveryAddressDTO>()
+                        orderDetailResponse?.deliveryInfo?.run {
+                            customerDetailsList.add(CustomerDeliveryAddressDTO("${mOrderDetailStaticData?.text_name}:", deliverTo))
+                            customerDetailsList.add(CustomerDeliveryAddressDTO("${mOrderDetailStaticData?.text_address}:", "$address1,$address2"))
+                            customerDetailsList.add(CustomerDeliveryAddressDTO("${mOrderDetailStaticData?.text_city_and_pincode}:",
+                                if (city == null) {
+                                    if (pincode == null) {
+                                        ""
+                                    } else {
+                                        "$pincode"
+                                    }
+                                } else if (pincode == null) {
+                                    "$city"
+                                } else {
+                                    "$city, $pincode"
+                                }
+                            ))
+                            customerDetailsList.add(CustomerDeliveryAddressDTO("${mOrderDetailStaticData?.text_landmark}:", landmark))
+                        }
+                        adapter = CustomerDeliveryAddressAdapter(customerDetailsList)
+                    }
+                }
             }
             if (orderDetailResponse?.instruction?.isNotEmpty() == true) {
                 instructionsValue?.visibility = View.VISIBLE
@@ -316,12 +335,17 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                 addDeliveryChargesLabel.text = getString(R.string.add_discount_and_other_charges)
             }
             Constants.FIXED_DELIVERY_CHARGE -> {
-                deliveryChargeLabel?.visibility = View.VISIBLE
-                deliveryChargeValue?.visibility = View.VISIBLE
-                addDeliveryChargesLabel.text = getString(R.string.add_discount_and_other_charges)
-                deliveryChargeValue?.text = "${storeServices.mDeliveryPrice}"
-                mDeliveryChargeAmount = storeServices.mDeliveryPrice ?: 0.0
-                setAmountToEditText()
+                if (Constants.DS_SEND_BILL == displayStatus || Constants.DS_NEW == displayStatus) {
+                    deliveryChargeLabel?.visibility = View.VISIBLE
+                    deliveryChargeValue?.visibility = View.VISIBLE
+                    addDeliveryChargesLabel.text = getString(R.string.add_discount_and_other_charges)
+                    deliveryChargeValue?.text = "${storeServices.mDeliveryPrice}"
+                    mDeliveryChargeAmount = storeServices.mDeliveryPrice ?: 0.0
+                    setAmountToEditText()
+                } else {
+                    deliveryChargeLabel?.visibility = View.GONE
+                    deliveryChargeValue?.visibility = View.GONE
+                }
             }
             Constants.CUSTOM_DELIVERY_CHARGE -> {
                 if (Constants.DS_SEND_BILL == displayStatus || Constants.DS_NEW == displayStatus) {
@@ -333,8 +357,10 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                     deliveryChargeValue?.visibility = View.GONE
                     deliveryChargeValueEditText?.visibility = View.GONE
                 }
+                addDeliveryChargesLabel.text = getString(R.string.add_discount_and_other_charges)
             }
             Constants.UNKNOWN_DELIVERY_CHARGE -> {
+                addDeliveryChargesLabel.text = getString(R.string.add_discount_and_other_charges)
                 if (Constants.DS_SEND_BILL == displayStatus || Constants.DS_NEW == displayStatus) {
                     deliveryChargeLabel?.visibility = View.VISIBLE
                     deliveryChargeValue?.visibility = View.VISIBLE

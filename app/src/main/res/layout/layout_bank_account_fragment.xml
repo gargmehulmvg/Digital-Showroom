@@ -193,6 +193,12 @@
             app:layout_constraintVertical_bias="1.0"
             tools:text="@string/verify" />
 
+        <View
+            android:id="@+id/blankView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.core.widget.NestedScrollView>

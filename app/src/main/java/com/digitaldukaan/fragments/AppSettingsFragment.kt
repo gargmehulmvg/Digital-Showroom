@@ -56,7 +56,7 @@ class AppSettingsFragment : BaseFragment(), IAppSettingsItemClicked {
         }
         hideBottomNavigationView(true)
         adapter.setAppSettingsList(mAppSettingsList)
-        appVersionTextView.text = "${mAppSettingsResponseStaticData.mAppVersionText} v.${BuildConfig.VERSION_CODE}"
+        appVersionTextView.text = "${mAppSettingsResponseStaticData.mAppVersionText} v.${BuildConfig.VERSION_NAME}"
         storeIdTextView.text = "${mAppSettingsResponseStaticData.mStoreId} ${getStringDataFromSharedPref(Constants.STORE_ID)}"
     }
 

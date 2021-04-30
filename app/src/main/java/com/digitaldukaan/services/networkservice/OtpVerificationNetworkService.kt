@@ -21,9 +21,7 @@ class OtpVerificationNetworkService {
             response?.let {
                 if (it.isSuccessful) {
                     it.body()?.let { validateOtpSuccessResponse ->
-                        otpVerificationServiceInterface.onOTPVerificationSuccessResponse(
-                            validateOtpSuccessResponse
-                        )
+                        otpVerificationServiceInterface.onOTPVerificationSuccessResponse(validateOtpSuccessResponse)
                     }
                 } else {
                     val validateOtpError = it.errorBody()

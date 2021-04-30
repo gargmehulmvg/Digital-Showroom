@@ -26,6 +26,7 @@ import kotlinx.android.synthetic.main.layout_bank_account_fragment.*
 class OnBoardScreenBankDetailsFragment : BaseFragment(), IBankDetailsServiceInterface {
 
     private lateinit var mService: BankDetailsService
+    private lateinit var mBlankView: View
     private var mProfilePreviewStaticData: BankDetailsPageStaticTextResponse? = null
 
     companion object {
@@ -47,13 +48,14 @@ class OnBoardScreenBankDetailsFragment : BaseFragment(), IBankDetailsServiceInte
         mContentView = inflater.inflate(R.layout.layout_bank_account_fragment, container, false)
         mService = BankDetailsService()
         mService.setServiceInterface(this)
+        mBlankView = mContentView.findViewById(R.id.blankView)
         return mContentView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         ToolBarManager.getInstance().apply {
-            hideToolBar(mActivity, false)
+            hideToolBar(mActivity, true)
             setHeaderTitle("")
             onBackPressed(this@OnBoardScreenBankDetailsFragment)
             hideBackPressFromToolBar(mActivity, false)
@@ -220,6 +222,7 @@ class OnBoardScreenBankDetailsFragment : BaseFragment(), IBankDetailsServiceInte
                         setSideIconVisibility(false)
                         setSecondSideIconVisibility(false)
                     }
+                    mBlankView.visibility = View.GONE
                     bottomSheetDialog.dismiss()
                 }
                 howItWorksTextView.setOnClickListener {

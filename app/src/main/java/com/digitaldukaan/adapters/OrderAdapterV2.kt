@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
@@ -31,6 +32,11 @@ class OrderAdapterV2(
         this.mListItemListener = listener
     }
 
+    fun setOrderList(orderList: ArrayList<OrderItemResponse>?) {
+        this.mOrderList = orderList
+        this.notifyDataSetChanged()
+    }
+
     inner class HeaderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val headerTextView: TextView = itemView.findViewById(R.id.headerTitle)
     }
@@ -38,6 +44,7 @@ class OrderAdapterV2(
     inner class OrderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val orderCheckBox: CheckBox = itemView.findViewById(R.id.orderCheckBox)
         val orderItemContainer: View = itemView.findViewById(R.id.orderItemContainer)
+        val orderStatusImageView: ImageView = itemView.findViewById(R.id.orderStatusImageView)
         val orderAddressTextView: TextView = itemView.findViewById(R.id.orderAddressTextView)
         val orderDetailsTextView: TextView = itemView.findViewById(R.id.orderDetailsTextView)
         val orderStatusTextView: TextView = itemView.findViewById(R.id.orderStatusTextView)
@@ -69,7 +76,7 @@ class OrderAdapterV2(
             orderAddressTextView.text = getAddress(item)
             orderCheckBox.isSelected = false
             orderCheckBox.isChecked = false
-            getOrderStatus(item, orderStatusTextView, orderItemContainer, orderCheckBox)
+            getOrderStatus(item, orderStatusTextView, orderItemContainer, orderCheckBox, orderStatusImageView)
         }
     }
 
@@ -98,7 +105,7 @@ class OrderAdapterV2(
         return position
     }
 
-    private fun getOrderStatus(item: OrderItemResponse?, orderAddressTextView: TextView, orderItemContainer: View, orderCheckBox: CheckBox) {
+    private fun getOrderStatus(item: OrderItemResponse?, orderAddressTextView: TextView, orderItemContainer: View, orderCheckBox: CheckBox, orderStatusImageView: ImageView) {
         when (item?.displayStatus) {
             Constants.DS_NEW -> {
                 orderAddressTextView.text = mOrderPageInfoStaticData?.newText
@@ -126,15 +133,9 @@ class OrderAdapterV2(
                 orderCheckBox.isEnabled = true
             }
             Constants.DS_PAID_ONLINE -> {
-                orderAddressTextView.setTextColor(mContext.getColor(R.color.open_green))
-                orderAddressTextView.text = mOrderPageInfoStaticData?.text_paid_online
-                orderAddressTextView.setCompoundDrawablesWithIntrinsicBounds(
-                    R.drawable.ic_green_check_small,
-                    0,
-                    0,
-                    0
-                )
-                orderCheckBox.isEnabled = false
+                orderAddressTextView.text = null
+                orderStatusImageView.visibility = View.VISIBLE
+                orderStatusImageView.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_order_status_paid))
             }
             Constants.DS_REJECTED -> {
                 orderAddressTextView.setTextColor(mContext.getColor(R.color.red))
@@ -155,6 +156,8 @@ class OrderAdapterV2(
                 orderCheckBox.isSelected = true
                 orderCheckBox.isChecked = true
                 orderCheckBox.isEnabled = false
+                orderStatusImageView.visibility = View.VISIBLE
+                orderStatusImageView.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_order_status_cash))
             }
             Constants.DS_COMPLETED_ONLINE -> {
                 orderCheckBox.alpha = 0.2f
@@ -162,6 +165,8 @@ class OrderAdapterV2(
                 orderCheckBox.isSelected = true
                 orderCheckBox.isChecked = true
                 orderCheckBox.isEnabled = false
+                orderStatusImageView.visibility = View.VISIBLE
+                orderStatusImageView.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_order_status_paid))
             }
             else -> {
                 orderCheckBox.alpha = 0.2f

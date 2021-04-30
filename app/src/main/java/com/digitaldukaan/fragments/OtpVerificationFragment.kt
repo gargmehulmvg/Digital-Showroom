@@ -188,6 +188,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
 
     override fun onOTPVerificationErrorResponse(validateOtpErrorResponse: ValidateOtpErrorResponse) {
         mIsServerCallInitiated = false
+        stopProgress()
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             otpEditText?.clearOTP()

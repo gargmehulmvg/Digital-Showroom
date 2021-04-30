@@ -108,12 +108,10 @@
 
         </LinearLayout>
 
-        <ScrollView
+        <androidx.core.widget.NestedScrollView
             android:id="@+id/orderLayout"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:animateLayoutChanges="true"
-            android:fillViewport="true"
             android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/analyticsContainer">
@@ -149,19 +147,12 @@
                     android:paddingBottom="@dimen/_2sdp"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_9sdp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
                     tools:text="@string/app_name" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/ordersRecyclerView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/pendingOrderTextView"
                     tools:itemCount="3"
                     tools:listitem="@layout/order_item" />
 
@@ -182,19 +173,12 @@
                     android:paddingBottom="@dimen/_2sdp"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_9sdp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
                     tools:text="@string/app_name" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/completedOrdersRecyclerView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/pendingOrderTextView"
                     tools:itemCount="3"
                     tools:listitem="@layout/order_item" />
 
@@ -204,7 +188,7 @@
 
             </LinearLayout>
 
-        </ScrollView>
+        </androidx.core.widget.NestedScrollView>
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/takeOrderTextView"
