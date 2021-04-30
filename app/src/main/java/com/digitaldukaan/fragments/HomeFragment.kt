@@ -235,7 +235,6 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
             val url = webViewUrl + "?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"
             Log.d(TAG, "setupHomePageWebView: $url")
             loadUrl(url)
-            commonWebView?.loadUrl("javascript: window = 'MEHUL TESTING'")
         }
     }
 
@@ -347,16 +346,13 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                                         Constants.ACTION_ADD_BANK -> launchFragment(BankAccountFragment.newInstance(null,0, false,  null), true)
                                     }
                                 }
-
                             })
                         }
-                        Handler(Looper.getMainLooper()).postDelayed({ fetchLatestOrders(Constants.MODE_PENDING, mFetchingOrdersStr, pendingPageCount) }, 500)
+                        Handler(Looper.getMainLooper()).postDelayed({ fetchLatestOrders(Constants.MODE_PENDING, mFetchingOrdersStr, pendingPageCount) }, 200)
                     }
                     if (mIsHelpOrder.mIsActive) {
                         helpImageView?.visibility = View.VISIBLE
-                        helpImageView?.setOnClickListener {
-                            openWebViewFragmentV2(this@HomeFragment, getString(R.string.help), mIsHelpOrder.mUrl, Constants.SETTINGS)
-                        }
+                        helpImageView?.setOnClickListener { openWebViewFragmentV2(this@HomeFragment, getString(R.string.help), mIsHelpOrder.mUrl, Constants.SETTINGS) }
                     }
                     takeOrderTextView?.text = mOrderPageInfoStaticData?.text_add_new_order
                     analyticsImageView?.visibility = if (mIsAnalyticsOrder) View.VISIBLE else View.GONE

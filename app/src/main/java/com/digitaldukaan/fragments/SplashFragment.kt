@@ -147,6 +147,10 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
             "digitaldukaan://ProductAdd" -> launchFragment(ProductFragment.newInstance(), true)
             "digitaldukaan://MarketingBroadCast" -> launchFragment(MarketingFragment.newInstance(), true)
             "digitaldukaan://OTP" -> launchFragment(LoginFragment.newInstance(), true)
+            else -> {
+                mIntentUri = null
+                launchHomeFragment()
+            }
         }
     }
 

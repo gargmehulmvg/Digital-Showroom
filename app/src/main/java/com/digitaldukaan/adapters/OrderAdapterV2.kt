@@ -1,6 +1,7 @@
 package com.digitaldukaan.adapters
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,6 +28,7 @@ class OrderAdapterV2(
 
     private var mListItemListener: IOrderListItemListener? = null
     private var mOrderPageInfoStaticData: OrderPageStaticTextResponse? = StaticInstances.sOrderPageInfoStaticData
+    private val mTag =  OrderAdapterV2::class.java.simpleName
 
     fun setCheckBoxListener(listener: IOrderListItemListener) {
         this.mListItemListener = listener
@@ -108,7 +110,7 @@ class OrderAdapterV2(
     private fun getOrderStatus(item: OrderItemResponse?, orderAddressTextView: TextView, orderItemContainer: View, orderCheckBox: CheckBox, orderStatusImageView: ImageView) {
         when (item?.displayStatus) {
             Constants.DS_NEW -> {
-                orderAddressTextView.text = mOrderPageInfoStaticData?.newText
+                orderAddressTextView.text = if (mOrderPageInfoStaticData?.newText?.isEmpty() == true) mOrderPageInfoStaticData?.newText else "New"
                 orderAddressTextView.setTextColor(mContext.getColor(R.color.open_green))
                 orderAddressTextView.background = ContextCompat.getDrawable(mContext, R.drawable.order_adapter_new)
                 orderCheckBox.isEnabled = false
@@ -119,14 +121,16 @@ class OrderAdapterV2(
             Constants.DS_SEND_BILL -> {
                 orderAddressTextView.setTextColor(mContext.getColor(R.color.orange))
                 orderAddressTextView.background = ContextCompat.getDrawable(mContext, R.drawable.order_adapter_send_bill)
-                orderAddressTextView.text = mOrderPageInfoStaticData?.sendBillText
+                Log.d(mTag, "getOrderStatus: ${mOrderPageInfoStaticData?.sendBillText}")
+                orderAddressTextView.text = if (mOrderPageInfoStaticData?.sendBillText?.isEmpty() == true) mOrderPageInfoStaticData?.sendBillText else "Send Bill"
                 orderCheckBox.isEnabled = true
                 orderStatusImageView.visibility = View.GONE
             }
             Constants.DS_BILL_SENT -> {
                 orderAddressTextView.setTextColor(mContext.getColor(R.color.snack_bar_background))
                 orderAddressTextView.background = ContextCompat.getDrawable(mContext, R.drawable.order_adapter_bill_sent)
-                orderAddressTextView.text = mOrderPageInfoStaticData?.sentBillText
+                Log.d(mTag, "getOrderStatus: ${mOrderPageInfoStaticData?.sentBillText}")
+                orderAddressTextView.text = if (mOrderPageInfoStaticData?.sentBillText?.isEmpty() == true) mOrderPageInfoStaticData?.sentBillText else "Bill Sent"
                 orderCheckBox.isEnabled = true
                 orderStatusImageView.visibility = View.GONE
             }
@@ -137,7 +141,8 @@ class OrderAdapterV2(
             }
             Constants.DS_REJECTED -> {
                 orderAddressTextView.setTextColor(mContext.getColor(R.color.red))
-                orderAddressTextView.text = mOrderPageInfoStaticData?.text_rejected
+                orderAddressTextView.text = if (mOrderPageInfoStaticData?.text_rejected?.isEmpty() == true) mOrderPageInfoStaticData?.text_rejected else "Rejected"
+                Log.d(mTag, "getOrderStatus: ${mOrderPageInfoStaticData?.text_rejected}")
                 orderAddressTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_reject_icon, 0, 0, 0)
                 orderCheckBox.isEnabled = false
                 orderCheckBox.alpha = 0.2f
@@ -173,9 +178,9 @@ class OrderAdapterV2(
     private fun getAddress(item: OrderItemResponse?): String {
         return when (item?.orderType) {
             Constants.ORDER_TYPE_ADDRESS -> "${item.deliveryInfo.address1} ${item.deliveryInfo.address2}"
-            Constants.ORDER_TYPE_PICK_UP -> mOrderPageInfoStaticData?.pickUpOrder ?: ""
-            Constants.ORDER_TYPE_SELF -> mOrderPageInfoStaticData?.selfBilled ?: ""
-            Constants.ORDER_TYPE_SELF_V2 -> mOrderPageInfoStaticData?.selfBilled ?: ""
+            Constants.ORDER_TYPE_PICK_UP -> mOrderPageInfoStaticData?.pickUpOrder ?: "Pick up Order"
+            Constants.ORDER_TYPE_SELF -> mOrderPageInfoStaticData?.selfBilled ?: "Self Billed"
+            Constants.ORDER_TYPE_SELF_V2 -> mOrderPageInfoStaticData?.selfBilled ?: "Self Billed"
             else -> ""
         }
     }

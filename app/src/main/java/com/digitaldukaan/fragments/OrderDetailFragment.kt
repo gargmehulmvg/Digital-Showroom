@@ -324,24 +324,23 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
     ) {
         when(storeServices?.mDeliveryChargeType) {
             Constants.FREE_DELIVERY -> {
-                deliveryChargeLabel?.visibility = View.VISIBLE
-                deliveryChargeValue?.visibility = View.VISIBLE
-                val txtSpannable = SpannableString(getString(R.string.free).toUpperCase(Locale.getDefault()))
-                val boldSpan = StyleSpan(Typeface.BOLD)
-                txtSpannable.setSpan(boldSpan, 0, txtSpannable.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-                deliveryChargeValue.text = txtSpannable
-                deliveryChargeValue.setTextColor(ContextCompat.getColor(mActivity, R.color.open_green))
-                deliveryChargeValue.background = ContextCompat.getDrawable(mActivity, R.drawable.order_adapter_new)
-                addDeliveryChargesLabel.text = getString(R.string.add_discount_and_other_charges)
+                setFreeDelivery()
             }
             Constants.FIXED_DELIVERY_CHARGE -> {
                 if (Constants.DS_SEND_BILL == displayStatus || Constants.DS_NEW == displayStatus) {
-                    deliveryChargeLabel?.visibility = View.VISIBLE
-                    deliveryChargeValue?.visibility = View.VISIBLE
-                    addDeliveryChargesLabel.text = getString(R.string.add_discount_and_other_charges)
-                    deliveryChargeValue?.text = "${storeServices.mDeliveryPrice}"
-                    mDeliveryChargeAmount = storeServices.mDeliveryPrice ?: 0.0
-                    setAmountToEditText()
+                    val amount = getAmountFromEditText()
+                    if (storeServices.mFreeDeliveryAbove <= amount) {
+                        mDeliveryChargeAmount = 0.0
+                        setFreeDelivery()
+                        setAmountToEditText()
+                    } else {
+                        mDeliveryChargeAmount = storeServices.mDeliveryPrice ?: 0.0
+                        deliveryChargeLabel?.visibility = View.VISIBLE
+                        deliveryChargeValue?.visibility = View.VISIBLE
+                        addDeliveryChargesLabel.text = getString(R.string.add_discount_and_other_charges)
+                        deliveryChargeValue?.text = "${storeServices.mDeliveryPrice}"
+                        setAmountToEditText()
+                    }
                 } else {
                     deliveryChargeLabel?.visibility = View.GONE
                     deliveryChargeValue?.visibility = View.GONE
@@ -349,9 +348,16 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
             }
             Constants.CUSTOM_DELIVERY_CHARGE -> {
                 if (Constants.DS_SEND_BILL == displayStatus || Constants.DS_NEW == displayStatus) {
-                    deliveryChargeLabel?.visibility = View.VISIBLE
-                    deliveryChargeValue?.visibility = View.VISIBLE
-                    deliveryChargeValueEditText?.visibility = View.VISIBLE
+                    val amount = getAmountFromEditText()
+                    if (storeServices.mFreeDeliveryAbove <= amount) {
+                        mDeliveryChargeAmount = 0.0
+                        setFreeDelivery()
+                        setAmountToEditText()
+                    } else {
+                        deliveryChargeLabel?.visibility = View.VISIBLE
+                        deliveryChargeValue?.visibility = View.VISIBLE
+                        deliveryChargeValueEditText?.visibility = View.VISIBLE
+                    }
                 } else {
                     deliveryChargeLabel?.visibility = View.GONE
                     deliveryChargeValue?.visibility = View.GONE
@@ -435,9 +441,27 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
         })
     }
 
+    private fun setFreeDelivery() {
+        deliveryChargeLabel?.visibility = View.VISIBLE
+        deliveryChargeValue?.visibility = View.VISIBLE
+        val txtSpannable =
+            SpannableString(getString(R.string.free).toUpperCase(Locale.getDefault()))
+        val boldSpan = StyleSpan(Typeface.BOLD)
+        txtSpannable.setSpan(boldSpan, 0, txtSpannable.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        deliveryChargeValue.text = txtSpannable
+        deliveryChargeValue.setTextColor(ContextCompat.getColor(mActivity, R.color.open_green))
+        deliveryChargeValue.background =
+            ContextCompat.getDrawable(mActivity, R.drawable.order_adapter_new)
+        addDeliveryChargesLabel.text = getString(R.string.add_discount_and_other_charges)
+    }
+
     private fun setAmountToEditText() {
         val amount = mTotalDisplayAmount + mDeliveryChargeAmount + mOtherChargeAmount - mDiscountAmount
         amountEditText.setText("$amount")
+    }
+
+    private fun getAmountFromEditText() : Double{
+        return mTotalDisplayAmount + mDeliveryChargeAmount + mOtherChargeAmount - mDiscountAmount
     }
 
     private fun setStaticDataToUI(orderDetailResponse: OrderDetailsResponse?) {

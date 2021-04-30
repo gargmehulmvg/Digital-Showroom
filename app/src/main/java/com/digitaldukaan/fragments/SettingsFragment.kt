@@ -475,8 +475,12 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         when (responseItem?.mAction) {
             Constants.NEW_RELEASE_TYPE_WEBVIEW -> openWebViewFragment(this, "", BuildConfig.WEB_VIEW_URL + responseItem.mPage)
             Constants.NEW_RELEASE_TYPE_EXTERNAL -> {
+                val eventName = when (responseItem.mType) {
+                    Constants.NEW_RELEASE_TYPE_CUSTOM_DOMAIN -> AFInAppEventType.EVENT_GET_CUSTOM_DOMAIN
+                    else -> AFInAppEventType.EVENT_VIEW_TOP_STORES
+                }
                 AppEventsManager.pushAppEvents(
-                    eventName = AFInAppEventType.EVENT_BULK_UPLOAD_ITEMS,
+                    eventName = eventName,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                     data = mapOf(
                         AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),

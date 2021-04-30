@@ -123,7 +123,7 @@ class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
             }
             viewWebsiteImageView.id -> {
                 AppEventsManager.pushAppEvents(
-                    eventName = AFInAppEventType.EVENT_SAVE_ITEM,
+                    eventName = AFInAppEventType.EVENT_VIEW_AS_CUSTOMER,
                     isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = true,
                     data = mapOf(
                         AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),

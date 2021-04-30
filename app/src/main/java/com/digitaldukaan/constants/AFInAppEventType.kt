@@ -56,6 +56,8 @@ interface AFInAppEventType {
         const val EVENT_BUSINESS_TYPE_SELECT = "Business Type Select"
         const val EVENT_DELIVERY_MODEL_SELECT = "Delivery_model_select"
         const val EVENT_BULK_UPLOAD_ITEMS = "Bulk_Upload_Items"
+        const val EVENT_VIEW_TOP_STORES = "VIEW_TOP_STORES"
+        const val EVENT_GET_CUSTOM_DOMAIN = "GET_CUSTOM_DOMAIN"
         const val EVENT_HELP_SCREEN_OPEN = "HelpSectionClicked"
         const val EVENT_SETTINGS_REFERRAL = "SettingsReferral"
     }
