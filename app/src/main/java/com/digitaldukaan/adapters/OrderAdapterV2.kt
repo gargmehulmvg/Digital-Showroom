@@ -175,6 +175,7 @@ class OrderAdapterV2(
             Constants.ORDER_TYPE_ADDRESS -> "${item.deliveryInfo.address1} ${item.deliveryInfo.address2}"
             Constants.ORDER_TYPE_PICK_UP -> mOrderPageInfoStaticData?.pickUpOrder ?: ""
             Constants.ORDER_TYPE_SELF -> mOrderPageInfoStaticData?.selfBilled ?: ""
+            Constants.ORDER_TYPE_SELF_V2 -> mOrderPageInfoStaticData?.selfBilled ?: ""
             else -> ""
         }
     }

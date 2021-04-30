@@ -71,11 +71,11 @@ class MasterCatalogItemsAdapter(
                 view.checkBox.isSelected = false
                 return@setOnCheckedChangeListener
             }
-            if (mSelectedProductsHashMap?.size == 10) {
-                mActivity.showToast("Only 100 products are allowed to add at a time")
+            if (mSelectedProductsHashMap?.size == mActivity.resources.getInteger(R.integer.max_selection_item_catalog)) {
+                mActivity.showToast("Only ${mActivity.resources.getInteger(R.integer.max_selection_item_catalog)} products are allowed to add at a time")
                 view.checkBox.isChecked = false
                 view.checkBox.isSelected = false
-            } else mCategoryItemClickListener.onCategoryCheckBoxClick(view.adapterPosition, item, isChecked)
+            }  else mCategoryItemClickListener.onCategoryCheckBoxClick(view.adapterPosition, item, isChecked)
         }
         view.titleTextView.setOnClickListener {
             val item = mCategoryItemList?.get(view.adapterPosition)
@@ -84,8 +84,8 @@ class MasterCatalogItemsAdapter(
                 view.checkBox.isSelected = false
                 return@setOnClickListener
             }
-            if (mSelectedProductsHashMap?.size == 10) {
-                mActivity.showToast("Only 100 products are allowed to add at a time")
+            if (mSelectedProductsHashMap?.size == mActivity.resources.getInteger(R.integer.max_selection_item_catalog)) {
+                mActivity.showToast("Only ${mActivity.resources.getInteger(R.integer.max_selection_item_catalog)} products are allowed to add at a time")
                 view.checkBox.isChecked = false
                 view.checkBox.isSelected = false
             } else {

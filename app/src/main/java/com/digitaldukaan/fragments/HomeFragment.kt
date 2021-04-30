@@ -220,12 +220,9 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                 )
                 mIsMorePendingOrderAvailable = ordersResponse.mIsNextDataAvailable
                 if (pendingPageCount == 1) mOrderList.clear()
-                val list = ordersResponse.mOrdersList
-                if (list != null) {
-                    if (list.isEmpty()) pendingOrderTextView?.visibility = View.GONE else {
-                        pendingOrderTextView?.visibility = View.VISIBLE
-                        mOrderList.addAll(list)
-                    }
+                if (ordersResponse.mOrdersList.isNotEmpty()) {
+                    pendingOrderTextView?.visibility = View.VISIBLE
+                    mOrderList.addAll(ordersResponse.mOrdersList)
                 } else {
                     pendingOrderTextView?.visibility = View.GONE
                     mOrderList.addAll(ArrayList())
@@ -605,8 +602,10 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                     fetchLatestOrders(Constants.MODE_COMPLETED, "", pendingPageCount)
                 }
                 !mIsMoreCompletedOrderAvailable -> {
-                    completedPageCount = 1
-                    fetchLatestOrders(Constants.MODE_COMPLETED, "", completedPageCount)
+                    if (mCompletedOrderList.isEmpty()) {
+                        completedPageCount = 1
+                        fetchLatestOrders(Constants.MODE_COMPLETED, "", completedPageCount)
+                    }
                 }
             }
         }

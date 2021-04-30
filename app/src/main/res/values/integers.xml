@@ -7,6 +7,7 @@
     <integer name="description_name_length">500</integer>
     <integer name="store_link_length">50</integer>
     <integer name="store_name_length">50</integer>
+    <integer name="max_selection_item_catalog">100</integer>
     <integer name="amount_length">7</integer>
     <integer name="min_lines_two">2</integer>
     <integer name="min_lines_three">3</integer>
