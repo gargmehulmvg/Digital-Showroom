@@ -61,13 +61,6 @@ android {
             buildConfigField('String', 'WEB_VIEW_PREVIEW_URL', '"https://showroom-preview2.dotq.in/"')
             applicationId "com.digitaldukaan"
         }
-        staging {
-            buildConfigField('String', 'BASE_URL', '"staging"')
-            buildConfigField('String', 'WEB_VIEW_URL', '"https://digitaldukaanwebview.dotq.in/"')
-            buildConfigField('String', 'WEB_VIEW_SHOW_ROOM_URL', '"https://showroom.dotq.in/"')
-            buildConfigField('String', 'WEB_VIEW_PREVIEW_URL', '"https://showroom-preview2.dotq.in/"')
-            applicationId "com.digitaldukaanstaging"
-        }
         prod {
             buildConfigField('String', 'BASE_URL', '"https://api.dotpe.in/"')
             buildConfigField('String', 'WEB_VIEW_URL', '"https://webview.digitaldukaan.co.in/"')

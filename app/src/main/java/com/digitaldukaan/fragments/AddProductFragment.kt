@@ -395,10 +395,10 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                                     withContext(Dispatchers.Main) {
                                         stopProgress()
                                         val list = it.mImagesList
-                                        searchImageRecyclerView.apply {
+                                        searchImageRecyclerView?.apply {
                                             layoutManager = GridLayoutManager(mActivity, 3)
                                             adapter = imageAdapter
-                                            imageAdapter.setSearchImageList(list)
+                                            imageAdapter?.setSearchImageList(list)
                                         }
                                     }
                                 }

@@ -328,7 +328,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
             Constants.FIXED_DELIVERY_CHARGE -> {
                 if (Constants.DS_SEND_BILL == displayStatus || Constants.DS_NEW == displayStatus) {
                     val amount = getAmountFromEditText()
-                    if (storeServices.mFreeDeliveryAbove <= amount) {
+                    if (storeServices.mFreeDeliveryAbove != 0.0 && storeServices.mFreeDeliveryAbove <= amount) {
                         mDeliveryChargeAmount = 0.0
                         setFreeDelivery()
                         setAmountToEditText()
@@ -348,7 +348,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
             Constants.CUSTOM_DELIVERY_CHARGE -> {
                 if (Constants.DS_SEND_BILL == displayStatus || Constants.DS_NEW == displayStatus) {
                     val amount = getAmountFromEditText()
-                    if (storeServices.mFreeDeliveryAbove <= amount) {
+                    if (storeServices.mFreeDeliveryAbove != 0.0 && storeServices.mFreeDeliveryAbove <= amount) {
                         mDeliveryChargeAmount = 0.0
                         setFreeDelivery()
                         setAmountToEditText()
