@@ -114,7 +114,7 @@ class SearchOrdersFragment: BaseFragment(), IOnToolbarIconClick, ISearchOrderSer
     override fun onSearchDialogContinueButtonClicked(inputOrderId: String, inputMobileNumber: String) {
         mOrderIdString = inputOrderId
         mMobileNumberString = inputMobileNumber
-        val request = SearchOrdersRequest(mOrderIdString.toLong(), mMobileNumberString, searchPageCount)
+        val request = SearchOrdersRequest(if (mOrderIdString.isNotEmpty()) mOrderIdString.toLong() else 0, mMobileNumberString, searchPageCount)
         if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog()
         ToolBarManager.getInstance().setHeaderTitle("\"${if (inputMobileNumber.isEmpty()) inputOrderId else inputMobileNumber}\"")
         showProgressDialog(mActivity)
@@ -126,7 +126,9 @@ class SearchOrdersFragment: BaseFragment(), IOnToolbarIconClick, ISearchOrderSer
             stopProgress()
             val ordersResponse = Gson().fromJson<OrdersResponse>(commonResponse.mCommonDataStr, OrdersResponse::class.java)
             mOrderList.clear()
-            if (ordersResponse?.mOrdersList?.isNotEmpty() == true) mOrderList.addAll(ordersResponse.mOrdersList)
+            if (ordersResponse?.mOrdersList?.isNotEmpty() == true) mOrderList.addAll(ordersResponse.mOrdersList) else {
+                showSearchDialog(StaticInstances.sOrderPageInfoStaticData, mMobileNumberString, mOrderIdString, true)
+            }
             orderAdapter.notifyDataSetChanged()
         }
     }

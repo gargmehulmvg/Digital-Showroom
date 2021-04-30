@@ -16,7 +16,9 @@ import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
+import android.text.Editable
 import android.text.Html
+import android.text.TextWatcher
 import android.util.Log
 import android.view.*
 import android.view.animation.AccelerateDecelerateInterpolator
@@ -651,7 +653,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         }
     }
 
-    protected fun showSearchDialog(staticData: OrderPageStaticTextResponse?, mobileNumberString: String, orderIdStr: String) {
+    protected fun showSearchDialog(staticData: OrderPageStaticTextResponse?, mobileNumberString: String, orderIdStr: String, isError: Boolean = false) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             mActivity.let {
                 val view = LayoutInflater.from(mActivity).inflate(R.layout.search_dialog, null)
@@ -667,6 +669,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                         val mobileNumberEditText: EditText = findViewById(R.id.mobileNumberEditText)
                         val searchByHeading: TextView = findViewById(R.id.searchByHeading)
                         val confirmTextView: TextView = findViewById(R.id.confirmTextView)
+                        val errorTextView: TextView = findViewById(R.id.errorTextView)
                         searchByHeading.text = staticData?.heading_search_dialog
                         orderIdRadioButton.text = staticData?.search_dialog_selection_one
                         phoneRadioButton.text = staticData?.search_dialog_selection_two
@@ -717,6 +720,25 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                                 , AFInAppEventParameterName.SEARCH_BY to if (inputMobileNumber.isEmpty()) AFInAppEventParameterName.PHONE else AFInAppEventParameterName.ORDER_ID)
                             )
                             onSearchDialogContinueButtonClicked(inputOrderId, inputMobileNumber)
+                        }
+                        mobileNumberEditText.addTextChangedListener(object : TextWatcher {
+                            override fun afterTextChanged(p0: Editable?) {
+                                val str = p0?.toString()
+                                if (str?.isNotEmpty() == true) errorTextView.visibility = View.GONE
+                            }
+
+                            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                                Log.d(TAG, "beforeTextChanged: do nothing")
+                            }
+
+                            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                                Log.d(TAG, "onTextChanged: do nothing")
+                            }
+
+                        })
+                        if (isError) {
+                            errorTextView.visibility = View.VISIBLE
+                            errorTextView.text = "No order found with this ${if (mobileNumberString.isEmpty()) "Order ID" else "Mobile Number"}"
                         }
                     }
                 }.show()

@@ -7,6 +7,7 @@
     android:background="@drawable/curve_white_background"
     android:minWidth="@dimen/_275sdp"
     android:paddingTop="@dimen/_15sdp"
+    android:animateLayoutChanges="true"
     android:paddingBottom="@dimen/_20sdp"
     android:paddingStart="@dimen/_20sdp"
     android:paddingEnd="@dimen/_20sdp"
@@ -81,17 +82,32 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
+    <TextView
+        android:id="@+id/errorTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:drawablePadding="@dimen/_5sdp"
+        android:visibility="gone"
+        android:textSize="@dimen/_12sdp"
+        android:textColor="@color/red"
+        tools:text="message_camera_permission_denied"
+        app:layout_constraintEnd_toEndOf="@+id/searchInputLayout"
+        app:layout_constraintStart_toStartOf="@+id/searchInputLayout"
+        app:layout_constraintTop_toBottomOf="@+id/searchInputLayout"
+        app:drawableStartCompat="@drawable/ic_close_red_small" />
+
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/confirmTextView"
         style="@style/common_text_view_background"
         android:layout_width="0dp"
-        android:layout_marginTop="@dimen/_25sdp"
         android:gravity="center"
         android:onClick="onClick"
+        android:layout_marginTop="@dimen/_20sdp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/searchInputLayout"
+        app:layout_constraintTop_toBottomOf="@+id/errorTextView"
         tools:text="@string/get_otp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

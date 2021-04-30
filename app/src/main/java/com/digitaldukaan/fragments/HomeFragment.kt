@@ -365,14 +365,9 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                     commonResponse.mCommonDataStr,
                     OrdersResponse::class.java
                 )
-                if (ordersResponse?.mOrdersList?.isNotEmpty() == true) launchFragment(
-                    SearchOrdersFragment.newInstance(
-                        mOrderIdString,
-                        mMobileNumberString,
-                        ordersResponse.mOrdersList
-                    ),
-                    true
-                )
+                if (ordersResponse?.mOrdersList?.isNotEmpty() == true) launchFragment(SearchOrdersFragment.newInstance(mOrderIdString, mMobileNumberString, ordersResponse.mOrdersList), true) else {
+                    showSearchDialog(StaticInstances.sOrderPageInfoStaticData, mMobileNumberString, mOrderIdString, true)
+                }
             } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
         }
     }
