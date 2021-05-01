@@ -107,43 +107,45 @@ class OrderAdapterV2(
         return position
     }
 
-    private fun getOrderStatus(item: OrderItemResponse?, orderAddressTextView: TextView, orderItemContainer: View, orderCheckBox: CheckBox, orderStatusImageView: ImageView) {
+    private fun getOrderStatus(item: OrderItemResponse?, orderStatusTextView: TextView, orderItemContainer: View, orderCheckBox: CheckBox, orderStatusImageView: ImageView) {
         when (item?.displayStatus) {
             Constants.DS_NEW -> {
-                orderAddressTextView.text = if (mOrderPageInfoStaticData?.newText?.isEmpty() == true) mOrderPageInfoStaticData?.newText else "New"
-                orderAddressTextView.setTextColor(mContext.getColor(R.color.open_green))
-                orderAddressTextView.background = ContextCompat.getDrawable(mContext, R.drawable.order_adapter_new)
+                orderStatusTextView.text = if (mOrderPageInfoStaticData?.newText?.isEmpty() == true) mOrderPageInfoStaticData?.newText else "New"
+                orderStatusTextView.setTextColor(mContext.getColor(R.color.open_green))
+                orderStatusTextView.background = ContextCompat.getDrawable(mContext, R.drawable.order_adapter_new)
                 orderCheckBox.isEnabled = false
                 orderCheckBox.alpha = 0.2f
-                orderAddressTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
+                orderStatusTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
                 orderStatusImageView.visibility = View.GONE
             }
             Constants.DS_SEND_BILL -> {
-                orderAddressTextView.setTextColor(mContext.getColor(R.color.orange))
-                orderAddressTextView.background = ContextCompat.getDrawable(mContext, R.drawable.order_adapter_send_bill)
+                orderStatusTextView.setTextColor(mContext.getColor(R.color.orange))
+                orderStatusTextView.background = ContextCompat.getDrawable(mContext, R.drawable.order_adapter_send_bill)
                 Log.d(mTag, "getOrderStatus: ${mOrderPageInfoStaticData?.sendBillText}")
-                orderAddressTextView.text = if (mOrderPageInfoStaticData?.sendBillText?.isEmpty() == true) mOrderPageInfoStaticData?.sendBillText else "Send Bill"
+                orderStatusTextView.text = if (mOrderPageInfoStaticData?.sendBillText?.isEmpty() == true) mOrderPageInfoStaticData?.sendBillText else "Send Bill"
                 orderCheckBox.isEnabled = true
                 orderStatusImageView.visibility = View.GONE
             }
             Constants.DS_BILL_SENT -> {
-                orderAddressTextView.setTextColor(mContext.getColor(R.color.snack_bar_background))
-                orderAddressTextView.background = ContextCompat.getDrawable(mContext, R.drawable.order_adapter_bill_sent)
+                orderStatusTextView.setTextColor(mContext.getColor(R.color.snack_bar_background))
+                orderStatusTextView.background = ContextCompat.getDrawable(mContext, R.drawable.order_adapter_bill_sent)
                 Log.d(mTag, "getOrderStatus: ${mOrderPageInfoStaticData?.sentBillText}")
-                orderAddressTextView.text = if (mOrderPageInfoStaticData?.sentBillText?.isEmpty() == true) mOrderPageInfoStaticData?.sentBillText else "Bill Sent"
+                orderStatusTextView.text = if (mOrderPageInfoStaticData?.sentBillText?.isEmpty() == true) mOrderPageInfoStaticData?.sentBillText else "Bill Sent"
                 orderCheckBox.isEnabled = true
                 orderStatusImageView.visibility = View.GONE
             }
             Constants.DS_PAID_ONLINE -> {
-                orderAddressTextView.text = null
                 orderStatusImageView.visibility = View.VISIBLE
                 orderStatusImageView.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_order_status_paid))
+                orderStatusTextView.text = null
+                orderStatusTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
+                orderStatusTextView.visibility = View.INVISIBLE
             }
             Constants.DS_REJECTED -> {
-                orderAddressTextView.setTextColor(mContext.getColor(R.color.red))
-                orderAddressTextView.text = if (mOrderPageInfoStaticData?.text_rejected?.isEmpty() == true) mOrderPageInfoStaticData?.text_rejected else "Rejected"
+                orderStatusTextView.setTextColor(mContext.getColor(R.color.red))
+                orderStatusTextView.text = if (mOrderPageInfoStaticData?.text_rejected?.isEmpty() == true) mOrderPageInfoStaticData?.text_rejected else "Rejected"
                 Log.d(mTag, "getOrderStatus: ${mOrderPageInfoStaticData?.text_rejected}")
-                orderAddressTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_reject_icon, 0, 0, 0)
+                orderStatusTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_reject_icon, 0, 0, 0)
                 orderCheckBox.isEnabled = false
                 orderCheckBox.alpha = 0.2f
                 orderItemContainer.alpha = 0.2f
@@ -155,6 +157,8 @@ class OrderAdapterV2(
                 orderCheckBox.isSelected = true
                 orderCheckBox.isChecked = true
                 orderCheckBox.isEnabled = false
+                orderStatusTextView.text = null
+                orderStatusTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
                 orderStatusImageView.visibility = View.VISIBLE
                 orderStatusImageView.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_order_status_cash))
             }
@@ -164,6 +168,8 @@ class OrderAdapterV2(
                 orderCheckBox.isSelected = true
                 orderCheckBox.isChecked = true
                 orderCheckBox.isEnabled = false
+                orderStatusTextView.text = null
+                orderStatusTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
                 orderStatusImageView.visibility = View.VISIBLE
                 orderStatusImageView.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_order_status_paid))
             }

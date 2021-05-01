@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebSettings
 import android.widget.ImageView
+import android.widget.ScrollView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.widget.NestedScrollView
@@ -261,6 +262,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                 } else {
                     pendingOrderTextView?.visibility = View.GONE
                     mOrderList.addAll(ArrayList())
+                    mCompletedOrderList.clear()
                     fetchLatestOrders(Constants.MODE_COMPLETED, "", 1)
                 }
                 convertDateStringOfOrders(mOrderList)
@@ -388,6 +390,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
             stopProgress()
             if (mSwipeRefreshLayout.isRefreshing) mSwipeRefreshLayout.isRefreshing = false
             if (commonResponse.mIsSuccessStatus) {
+                orderLayout.fullScroll(ScrollView.FOCUS_UP)
                 completedPageCount = 1
                 pendingPageCount = 1
                 mOrderList.clear()
