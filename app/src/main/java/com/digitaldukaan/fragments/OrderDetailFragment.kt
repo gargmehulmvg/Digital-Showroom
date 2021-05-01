@@ -456,14 +456,12 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
     private fun setFreeDelivery() {
         deliveryChargeLabel?.visibility = View.VISIBLE
         deliveryChargeValue?.visibility = View.VISIBLE
-        val txtSpannable =
-            SpannableString(getString(R.string.free).toUpperCase(Locale.getDefault()))
+        val txtSpannable = SpannableString(getString(R.string.free).toUpperCase(Locale.getDefault()))
         val boldSpan = StyleSpan(Typeface.BOLD)
         txtSpannable.setSpan(boldSpan, 0, txtSpannable.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         deliveryChargeValue.text = txtSpannable
         deliveryChargeValue.setTextColor(ContextCompat.getColor(mActivity, R.color.open_green))
-        deliveryChargeValue.background =
-            ContextCompat.getDrawable(mActivity, R.drawable.order_adapter_new)
+        deliveryChargeValue.background = ContextCompat.getDrawable(mActivity, R.drawable.order_adapter_new)
         addDeliveryChargesLabel.text = getString(R.string.add_discount_and_other_charges)
     }
 

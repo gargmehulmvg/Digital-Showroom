@@ -40,6 +40,9 @@ class AppEventsManager {
         }
 
         private fun pushServerCallEvent(eventName: String?, data: Map<String, String?>) {
+            if (eventName == null || eventName.isEmpty()) {
+                return
+            }
             CoroutineScopeUtils().runTaskOnCoroutineBackground {
                 Log.d(TAG, "pushServerCallEvent: event name :: $eventName && map :: $data")
                 val storeIdStr = PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)
