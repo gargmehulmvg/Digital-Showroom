@@ -143,7 +143,8 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                     orderDetailMainResponse?.storeServices?.mDeliveryPrice,
                     1,
                     Constants.ITEM_TYPE_DELIVERY_CHARGE,
-                    Constants.CREATOR_TYPE_MERCHANT
+                    Constants.CREATOR_TYPE_MERCHANT,
+                    false
                 )
                 orderDetailsItemsList?.add(orderDetailItemResponse)
             }
@@ -156,7 +157,8 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                     if (deliveryChargeValueEditText.text?.isNotEmpty() == true) deliveryChargeValueEditText.text.toString().toDouble() else 0.0,
                     1,
                     Constants.ITEM_TYPE_DELIVERY_CHARGE,
-                    Constants.CREATOR_TYPE_MERCHANT
+                    Constants.CREATOR_TYPE_MERCHANT,
+                    false
                 )
                 orderDetailsItemsList?.add(orderDetailItemResponse)
             }
@@ -169,7 +171,8 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                     if (otherChargesValueEditText.text?.isNotEmpty() == true) otherChargesValueEditText.text.toString().toDouble() else 0.0,
                     1,
                     Constants.ITEM_TYPE_CHARGE,
-                    Constants.CREATOR_TYPE_MERCHANT
+                    Constants.CREATOR_TYPE_MERCHANT,
+                    false
                 )
                 orderDetailsItemsList?.add(orderDetailItemResponse)
             }
@@ -182,7 +185,8 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                     if (discountsValueEditText.text?.isNotEmpty() == true) discountsValueEditText.text.toString().toDouble() else 0.0,
                     1,
                     Constants.ITEM_TYPE_DISCOUNT,
-                    Constants.CREATOR_TYPE_MERCHANT
+                    Constants.CREATOR_TYPE_MERCHANT,
+                    false
                 )
                 orderDetailsItemsList?.add(orderDetailItemResponse)
             }
@@ -240,7 +244,9 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
             orderDetailItemRecyclerView.apply {
                 layoutManager = LinearLayoutManager(mActivity)
                 val list = orderDetailResponse?.orderDetailsItemsList
+                val deliveryStatus = orderDetailResponse?.displayStatus
                 list?.forEachIndexed { _, itemResponse ->
+                    itemResponse.isItemEditable = (((deliveryStatus == Constants.DS_NEW || deliveryStatus == Constants.DS_SEND_BILL)) && itemResponse.item_price == 0.0)
                     mTotalDisplayAmount += itemResponse.item_price ?: 0.0
                 }
                 var orderDetailAdapter: OrderDetailsAdapter? = null
@@ -603,7 +609,8 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                     if (otherChargesValueEditText.text?.isNotEmpty() == true) otherChargesValueEditText.text.toString().toDouble() else 0.0,
                     1,
                     "charge",
-                    Constants.CREATOR_TYPE_MERCHANT
+                    Constants.CREATOR_TYPE_MERCHANT,
+                    false
                 )
                 orderDetailsItemsList?.add(orderDetailItemResponse)
             }
@@ -616,7 +623,8 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                     if (discountsValueEditText.text?.isNotEmpty() == true) discountsValueEditText.text.toString().toDouble() else 0.0,
                     1,
                     "charge",
-                    Constants.CREATOR_TYPE_MERCHANT
+                    Constants.CREATOR_TYPE_MERCHANT,
+                    false
                 )
                 orderDetailsItemsList?.add(orderDetailItemResponse)
             }

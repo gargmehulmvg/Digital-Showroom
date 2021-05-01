@@ -42,6 +42,14 @@ class OrderDetailsAdapter(
         val orderDetailContainer: View = itemView.findViewById(R.id.orderDetailContainer)
     }
 
+    override fun getItemId(position: Int): Long {
+        return position.toLong()
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return position
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OrderDetailViewHolder {
         val holder = OrderDetailViewHolder(
             LayoutInflater.from(parent.context).inflate(R.layout.order_detail_item, parent, false)
@@ -64,12 +72,17 @@ class OrderDetailsAdapter(
             }
             priceTextView.text = "${if (item?.item_type == Constants.ITEM_TYPE_DISCOUNT) "- " else ""}${mOrderDetailStaticData?.text_rupees_symbol} ${item?.item_price}"
             closeImageView.visibility = if (Constants.DS_SEND_BILL == mDeliveryStatus || Constants.DS_NEW == mDeliveryStatus) View.VISIBLE else View.GONE
-            if (item?.item_price == 0.0) {
+            if (item?.item_price == 0.0 && (mDeliveryStatus == Constants.DS_NEW || mDeliveryStatus == Constants.DS_SEND_BILL)) {
                 priceEditText.visibility = View.VISIBLE
                 priceTextView.visibility = View.GONE
             } else {
-                priceTextView.visibility = View.VISIBLE
-                priceEditText.visibility = View.GONE
+                if (item?.isItemEditable == true) {
+                    priceEditText.visibility = View.VISIBLE
+                    priceTextView.visibility = View.GONE
+                } else {
+                    priceTextView.visibility = View.VISIBLE
+                    priceEditText.visibility = View.GONE
+                }
             }
             if (item?.item_status == itemStatusRejected) {
                 closeImageView.setImageResource(R.drawable.ic_undo)

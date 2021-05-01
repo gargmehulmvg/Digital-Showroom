@@ -35,7 +35,8 @@ data class OrderDetailItemResponse(
     @SerializedName("item_price") var item_price: Double?,
     @SerializedName("item_status") var item_status: Int?,
     @SerializedName("item_type") var item_type: String?,
-    @SerializedName("creator_type") var creator_type: Int?
+    @SerializedName("creator_type") var creator_type: Int?,
+    var isItemEditable: Boolean
 )
 
 data class OrderPaymentStatusResponse(
