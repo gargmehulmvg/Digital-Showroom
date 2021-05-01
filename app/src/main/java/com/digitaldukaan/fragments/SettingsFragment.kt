@@ -249,7 +249,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             showNoInternetConnectionDialog()
             return
         }
-        showProgressDialog(mActivity)
+        showCancellableProgressDialog(mActivity)
         val request = StoreDeliveryStatusChangeRequest(
             if (storeSwitch.isChecked) 1 else 0,
             if (deliverySwitch.isChecked) 1 else 0
@@ -260,11 +260,8 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
     override fun onToolbarSideIconClicked() = launchFragment(
         CommonWebViewFragment().newInstance(
             getString(R.string.help),
-            BuildConfig.WEB_VIEW_URL + WebViewUrls.WEB_VIEW_HELP + "?storeid=${getStringDataFromSharedPref(
-                Constants.STORE_ID
-            )}&" + "redirectFrom=settings" + "&token=${getStringDataFromSharedPref(
-                Constants.USER_AUTH_TOKEN
-            )}"
+            BuildConfig.WEB_VIEW_URL + WebViewUrls.WEB_VIEW_HELP + "?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&" +
+                    "redirectFrom=settings&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"
         ), true
     )
 

@@ -335,7 +335,10 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
             val jsonDataObject = JSONObject(jsonData.optString("data"))
             val isAvailable = jsonDataObject.optInt("available")
             if (isAvailable == 1) {
-                showOutOfStockDialog(jsonDataObject)
+                if (Constants.TEXT_YES == PrefsManager.getStringDataFromSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN_STOCK)) {
+                    val request = UpdateStockRequest(jsonDataObject.optInt("id"), 0)
+                    mService.updateStock(request)
+                } else showOutOfStockDialog(jsonDataObject)
             } else {
                 val request = UpdateStockRequest(jsonDataObject.optInt("id"), if (jsonDataObject.optInt("available") == 0) 1 else 0)
                 if (!isInternetConnectionAvailable(mActivity)) {

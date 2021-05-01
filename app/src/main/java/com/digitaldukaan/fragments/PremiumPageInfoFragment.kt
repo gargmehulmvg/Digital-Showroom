@@ -94,9 +94,7 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
 
                     override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
                         return when {
-                            url.startsWith("tel:") -> {
-                                val tel = Intent(Intent.ACTION_DIAL, Uri.parse(url))
-                                activity?.startActivity(tel)
+                            url.startsWith("tel:") -> { activity?.startActivity(Intent(Intent.ACTION_DIAL, Uri.parse(url)))
                                 true
                             }
                             url.contains("mailto:") -> { view.context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
@@ -105,8 +103,7 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
                             url.contains("whatsapp:") -> { view.context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
                                 true
                             }
-                            else -> {
-                                view.loadUrl(url)
+                            else -> { view.loadUrl(url)
                                 true
                             }
                         }

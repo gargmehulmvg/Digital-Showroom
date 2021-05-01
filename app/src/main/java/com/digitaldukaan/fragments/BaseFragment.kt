@@ -131,6 +131,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
             if (mProgressDialog != null) {
                 mProgressDialog?.let {
                     mProgressDialog?.dismiss()
+                    mProgressDialog = null
                 }
             }
         }

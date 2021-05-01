@@ -142,7 +142,7 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
                 verifyTextView.text = mMoreControlsStaticData.save_changes
                 verifyTextView.setOnClickListener {
                     val amount = minDeliveryAmountEditText.text.trim().toString()
-                    if (0.0 != mFreeDeliveryAbove && amount.toDouble() > mFreeDeliveryAbove) {
+                    if (amount.isNotEmpty() && 0.0 != mFreeDeliveryAbove && amount.toDouble() > mFreeDeliveryAbove) {
                         minDeliveryAmountEditText.error = mMoreControlsStaticData.error_amount_must_greater_than_free_delivery_above
                         requestFocus()
                         return@setOnClickListener

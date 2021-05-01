@@ -66,7 +66,7 @@ class ProfilePreviewAdapter(
                     addSettingKeyDataTextView.setCompoundDrawablesWithIntrinsicBounds(
                         0,
                         0,
-                        0,
+                        R.drawable.ic_edit,
                         0
                     )
                 }

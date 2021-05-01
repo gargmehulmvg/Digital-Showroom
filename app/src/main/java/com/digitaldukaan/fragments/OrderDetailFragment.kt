@@ -1,6 +1,8 @@
 package com.digitaldukaan.fragments
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
@@ -14,6 +16,7 @@ import android.text.style.StyleSpan
 import android.util.Log
 import android.view.*
 import android.widget.*
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -39,6 +42,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.squareup.picasso.Picasso
+import com.squareup.picasso.Target
 import kotlinx.android.synthetic.main.bottom_layout_send_bill.*
 import kotlinx.android.synthetic.main.layout_order_detail_fragment.*
 import java.io.File
@@ -838,11 +842,16 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
         )
         val receiptStr = orderDetailMainResponse?.orders?.digitalReceipt
         Log.d(TAG, "downloadBill: $receiptStr")
+        if (askStoragePermission()) return
+        startDownloadBill(receiptStr)
+    }
+
+    private fun startDownloadBill(receiptStr: String?) {
         if (receiptStr?.isEmpty() == true) {
             showToast(mOrderDetailStaticData?.error_no_bill_available_to_download)
         } else {
             showToast("Start Downloading...")
-            Picasso.get().load(receiptStr).into(object : com.squareup.picasso.Target {
+            Picasso.get().load(receiptStr).into(object : Target {
                 override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
                     bitmap?.let {
                         downloadMediaToStorage(bitmap, mActivity)
@@ -857,6 +866,29 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                     Log.d(TAG, "onBitmapFailed: ")
                 }
             })
+        }
+    }
+
+    private fun askStoragePermission(): Boolean {
+        if (ActivityCompat.checkSelfPermission(mActivity, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mActivity, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(mActivity, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE), Constants.EXTERNAL_STORAGE_REQUEST_CODE)
+            return true
+        }
+        return false
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int, permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        Log.i(TAG, "onRequestPermissionResult")
+        if (requestCode == Constants.EXTERNAL_STORAGE_REQUEST_CODE) {
+            when {
+                grantResults.isEmpty() -> Log.i(TAG, "User interaction was cancelled.")
+                grantResults[0] == PackageManager.PERMISSION_GRANTED -> {
+                    startDownloadBill(orderDetailMainResponse?.orders?.digitalReceipt)
+                }
+            }
         }
     }
 

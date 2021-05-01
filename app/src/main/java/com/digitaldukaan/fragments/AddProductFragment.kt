@@ -88,7 +88,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         AppEventsManager.pushAppEvents(eventName = AFInAppEventType.EVENT_ADD_ITEM, isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true, data = mapOf(
                 AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
                 AFInAppEventParameterName.IS_MERCHANT to "1"
-            ))
+        ))
     }
 
     override fun onStop() {
@@ -726,6 +726,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
 
     private fun showAddProductContainer() {
         if (shareProductContainer?.visibility == View.VISIBLE) {
+            mIsOrderEdited = true
             shareProductContainer?.visibility = View.GONE
             continueTextView?.visibility = View.VISIBLE
             if (!mIsAddNewProduct) continueTextView?.text = getString(R.string.save)
