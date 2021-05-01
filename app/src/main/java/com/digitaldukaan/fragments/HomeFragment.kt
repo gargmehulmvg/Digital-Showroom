@@ -92,7 +92,6 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
             mHomeFragmentService.getAnalyticsData()
         }
         mSwipeRefreshLayout = mContentView.findViewById(R.id.swipeRefreshLayout)
-        mSwipeRefreshLayout.isEnabled = false
         return mContentView
     }
 
@@ -336,6 +335,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                         setupHomePageWebView(mIsZeroOrder.mUrl)
                         mSwipeRefreshLayout.isEnabled = false
                     } else {
+                        mSwipeRefreshLayout.isEnabled = true
                         homePageWebViewLayout?.visibility = View.GONE
                         orderLayout?.visibility = View.VISIBLE
                         bannerRecyclerView?.apply {
@@ -430,6 +430,8 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
     }
 
     override fun onRefresh() {
+        mOrderList.clear()
+        mCompletedOrderList.clear()
         completedPageCount = 1
         pendingPageCount = 1
         fetchLatestOrders(Constants.MODE_PENDING, mFetchingOrdersStr, pendingPageCount)

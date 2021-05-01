@@ -417,9 +417,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
         otherChargesValueEditText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(editable: Editable?) {
                 val str = editable?.toString()
-                mOtherChargeAmount = if (str?.isNotEmpty() == true) {
-                    str.toDouble()
-                } else 0.0
+                mOtherChargeAmount = if (str?.isNotEmpty() == true) { str.toDouble() } else 0.0
                 setAmountToEditText()
             }
 
@@ -434,19 +432,8 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
         discountsValueEditText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(editable: Editable?) {
                 val str = editable?.toString()
-                mDiscountAmount = if (str?.isNotEmpty() == true) {
-                    str.toDouble()
-                } else 0.0
-                if (mDiscountAmount <= 0.0) {
-                    discountsValueEditText.apply {
-                        error = "Invalid Amount"
-                        requestFocus()
-                    }
-                    sendBillTextView.isEnabled = false
-                } else {
-                    sendBillTextView.isEnabled = true
-                    setAmountToEditText()
-                }
+                mDiscountAmount = if (str?.isNotEmpty() == true) { str.toDouble() } else 0.0
+                setAmountToEditText()
             }
 
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {

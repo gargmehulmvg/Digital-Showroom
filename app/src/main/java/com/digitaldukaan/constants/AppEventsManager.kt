@@ -21,7 +21,6 @@ class AppEventsManager {
         fun setAppEventsManager(activity: Activity) = run {
             mActivityInstance = activity
             mCleverTapAPI = CleverTapAPI.getDefaultInstance(mActivityInstance)
-
             StaticInstances.sCleverTapId = mCleverTapAPI?.cleverTapID
             Log.d(TAG, "setAppEventsManager: ${StaticInstances.sCleverTapId}")
             createNotificationChannel()

@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.transition.TransitionInflater
+import com.appsflyer.AppsFlyerLib
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.models.request.CreateStoreRequest
@@ -84,7 +85,11 @@ class OnBoardScreenDukaanNameFragment : BaseFragment(),
                             PrefsManager.getStringDataFromSharedPref(Constants.USER_MOBILE_NUMBER),
                             if (storeIdStr.isNotEmpty()) storeIdStr.toInt() else 0,
                             dukanName,
-                            Constants.APP_SECRET_KEY
+                            Constants.APP_SECRET_KEY,
+                            "1",
+                            AppsFlyerLib.getInstance().getAttributionId(mActivity),
+                            StaticInstances.sCleverTapId,
+                            ""
                         )
                         showProgressDialog(mActivity)
                         service.createStore(request)
