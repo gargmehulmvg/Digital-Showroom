@@ -134,7 +134,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
 
     private fun initiateSendBillServerCall() {
         orderDetailMainResponse?.orders?.run {
-            if (orderDetailMainResponse?.storeServices?.mDeliveryChargeType == Constants.FIXED_DELIVERY_CHARGE && orderDetailMainResponse?.storeServices?.mDeliveryPrice != 0.0) {
+            if (!mIsPickUpOrder && orderDetailMainResponse?.storeServices?.mDeliveryChargeType == Constants.FIXED_DELIVERY_CHARGE && orderDetailMainResponse?.storeServices?.mDeliveryPrice != 0.0) {
                 val orderDetailItemResponse = OrderDetailItemResponse(
                     0,
                     0,
