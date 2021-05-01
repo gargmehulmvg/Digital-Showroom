@@ -8,6 +8,7 @@ import android.util.Log
 import com.appsflyer.AppsFlyerConversionListener
 import com.appsflyer.AppsFlyerLib
 import com.digitaldukaan.constants.AFInAppEventParameterName
+import com.digitaldukaan.constants.StaticInstances
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 
 class App: Application() {
@@ -23,7 +24,9 @@ class App: Application() {
             override fun onConversionDataSuccess(data: MutableMap<String, Any>?) {
                 data?.let { cvData ->
                     cvData.map {
-                        Log.i(TAG, "conversion_attribute:  ${it.key} = ${it.value}")
+                        Log.d(TAG, "conversion_attribute:  ${it.key} = ${it.value}")
+                        val phoneNumber = data["af_referrer_customer_id"] as String
+                        StaticInstances.sAppFlyerRefMobileNumber = phoneNumber
                     }
                 }
             }

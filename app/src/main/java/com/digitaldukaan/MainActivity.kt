@@ -46,6 +46,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         if (PrefsManager.getStringDataFromSharedPref(PrefsManager.APP_INSTANCE_ID).isEmpty()) PrefsManager.storeStringDataInSharedPref(PrefsManager.APP_INSTANCE_ID, RandomStringGenerator(16).nextString())
         Log.d(TAG, "appSessionID :: ${StaticInstances.sAppSessionId}")
         Log.d(TAG, "appInstanceID :: ${PrefsManager.getStringDataFromSharedPref(PrefsManager.APP_INSTANCE_ID)}")
+        Log.d(TAG, "userMobileNumber :: ${PrefsManager.getStringDataFromSharedPref(Constants.USER_MOBILE_NUMBER)}")
         val intentUri = intent?.data
         launchFragment(SplashFragment.newInstance(intentUri), true)
         FirebaseMessaging.getInstance().token.addOnCompleteListener {
@@ -54,6 +55,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
                     StaticInstances.sFireBaseMessagingToken = it.result.toString()
                     Log.d(TAG, "onCreate :: FIREBASE TOKEN :: ${it.result}")
                     AppsFlyerLib.getInstance().updateServerUninstallToken(this, StaticInstances.sFireBaseMessagingToken)
+                    AppsFlyerLib.getInstance().setCustomerUserId(PrefsManager.getStringDataFromSharedPref(Constants.USER_MOBILE_NUMBER))
                     CleverTapAPI.getDefaultInstance(this)?.pushFcmRegistrationId(StaticInstances.sFireBaseMessagingToken, true)
                 }
             } catch (e: Exception) {

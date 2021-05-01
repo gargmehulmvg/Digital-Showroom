@@ -17,4 +17,5 @@ object StaticInstances {
     var sFireBaseMessagingToken: String? = ""
     var sStoreId: Int = 0
     var sAppStoreServicesResponse: StoreServicesResponse? = null
+    var sAppFlyerRefMobileNumber: String? = ""
 }

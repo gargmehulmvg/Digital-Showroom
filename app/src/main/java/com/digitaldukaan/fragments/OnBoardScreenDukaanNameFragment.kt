@@ -87,9 +87,9 @@ class OnBoardScreenDukaanNameFragment : BaseFragment(),
                             dukanName,
                             Constants.APP_SECRET_KEY,
                             "1",
+                            StaticInstances.sAppFlyerRefMobileNumber,
                             AppsFlyerLib.getInstance().getAttributionId(mActivity),
-                            StaticInstances.sCleverTapId,
-                            ""
+                            StaticInstances.sCleverTapId
                         )
                         showProgressDialog(mActivity)
                         service.createStore(request)

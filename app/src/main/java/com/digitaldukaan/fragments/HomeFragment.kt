@@ -17,6 +17,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.widget.NestedScrollView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.appsflyer.AppsFlyerLib
 import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.OrderAdapterV2
@@ -78,6 +79,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         super.onCreate(savedInstanceState)
         mHomeFragmentService = HomeFragmentService()
         mHomeFragmentService.setHomeFragmentServiceListener(this)
+        AppsFlyerLib.getInstance().setCustomerUserId(PrefsManager.getStringDataFromSharedPref(Constants.USER_MOBILE_NUMBER))
     }
 
     override fun onCreateView(
@@ -222,7 +224,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
     }
 
     private fun setupHomePageWebView(webViewUrl: String) {
-        homePageWebView.apply {
+        homePageWebView?.apply {
             val webViewController = CommonWebViewFragment.WebViewController()
             webViewController.commonWebView = commonWebView
             webViewController.activity = mActivity
@@ -232,7 +234,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
             settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
             setLayerType(View.LAYER_TYPE_HARDWARE, null)
             addJavascriptInterface(WebViewBridge(), "Android")
-            val url = webViewUrl + "?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"
+            val url = webViewUrl + "?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}?storeName=${getStringDataFromSharedPref(Constants.STORE_NAME)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"
             Log.d(TAG, "setupHomePageWebView: $url")
             loadUrl(url)
         }
