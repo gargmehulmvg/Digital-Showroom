@@ -90,7 +90,7 @@ class OnBoardScreenBankDetailsFragment : BaseFragment(), IBankDetailsServiceInte
             skipTextView.id -> {
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_SKIP_BANK_ACCOUNT,
-                    isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = true,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                     data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
                 )
                 launchFragment(CreateStoreFragment.newInstance(), true)
@@ -174,7 +174,7 @@ class OnBoardScreenBankDetailsFragment : BaseFragment(), IBankDetailsServiceInte
             if (response.mIsSuccessStatus) {
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_BANK_ACCOUNT_ADDED,
-                    isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = true,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                     data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
                 )
                 showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
@@ -229,7 +229,7 @@ class OnBoardScreenBankDetailsFragment : BaseFragment(), IBankDetailsServiceInte
                     bottomSheetDialog.dismiss()
                     AppEventsManager.pushAppEvents(
                         eventName = AFInAppEventType.EVENT_SKIP_BANK_ACCOUNT,
-                        isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = true,
+                        isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                         data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
                     )
                     launchFragment(CreateStoreFragment.newInstance(), true)

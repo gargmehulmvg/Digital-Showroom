@@ -304,7 +304,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                         )
                         AppEventsManager.pushAppEvents(
                             eventName = AFInAppEventType.EVENT_SAVE_ITEM,
-                            isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = true,
+                            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                             data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
                                 AFInAppEventParameterName.IMAGES to Gson().toJson(mImagesStrList),
                                 AFInAppEventParameterName.NAME to mProductNameStr,
@@ -326,6 +326,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
 
     private fun showAddProductImagePickerBottomSheet(position: Int) {
         showAddProductContainer()
+        mIsOrderEdited = true
         imagePickBottomSheet = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
         val view = LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet_image_pick, mActivity.findViewById(R.id.bottomSheetContainer))
         imagePickBottomSheet.apply {
@@ -726,7 +727,6 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
 
     private fun showAddProductContainer() {
         if (shareProductContainer?.visibility == View.VISIBLE) {
-            mIsOrderEdited = true
             shareProductContainer?.visibility = View.GONE
             continueTextView?.visibility = View.VISIBLE
             if (!mIsAddNewProduct) continueTextView?.text = getString(R.string.save)

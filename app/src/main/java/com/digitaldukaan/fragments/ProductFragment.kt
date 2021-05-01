@@ -324,7 +324,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
         } else if (jsonData.optBoolean("viewShopAsCustomer")) {
             AppEventsManager.pushAppEvents(
                 eventName = AFInAppEventType.EVENT_VIEW_AS_CUSTOMER,
-                isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = true,
+                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                 data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
                     AFInAppEventParameterName.CHANNEL to "isCatalog"
                 )

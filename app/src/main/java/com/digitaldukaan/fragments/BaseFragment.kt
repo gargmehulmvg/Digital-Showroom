@@ -716,7 +716,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                             dismiss()
                             AppEventsManager.pushAppEvents(
                                 eventName = AFInAppEventType.EVENT_SEARCH_CLICK,
-                                isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = true,
+                                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                                 data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)
                                 , AFInAppEventParameterName.SEARCH_BY to if (inputMobileNumber.isEmpty()) AFInAppEventParameterName.PHONE else AFInAppEventParameterName.ORDER_ID)
                             )

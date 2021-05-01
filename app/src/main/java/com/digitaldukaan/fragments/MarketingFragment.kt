@@ -139,7 +139,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
             Constants.ACTION_BUSINESS_CREATIVE -> {
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_MARKET_VIEW_NOW,
-                    isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = true,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                     data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), "type" to AFInAppEventParameterName.SOCIAL)
                 )
                 openWebViewFragment(this, "", WebViewUrls.WEB_VIEW_CREATIVE_LIST, Constants.SETTINGS)
@@ -147,7 +147,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
             Constants.ACTION_SOCIAL_CREATIVE -> {
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_MARKET_VIEW_NOW,
-                    isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = true,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                     data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), "type" to AFInAppEventParameterName.SOCIAL)
                 )
                 openWebViewFragment(this, "", WebViewUrls.WEB_VIEW_SOCIAL_CREATIVE_LIST, Constants.SETTINGS)
@@ -166,7 +166,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
             Constants.ACTION_QR_DOWNLOAD -> {
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_QR_DOWNLOAD,
-                    isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = true,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                     data = mapOf(
                         AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
                         AFInAppEventParameterName.IS_MARKETING_PAGE to "true"
@@ -221,7 +221,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                     showProgressDialog(mActivity)
                     AppEventsManager.pushAppEvents(
                         eventName = AFInAppEventType.EVENT_DOWNLOAD_CATALOG,
-                        isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = true,
+                        isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                         data = mapOf(
                             AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
                             AFInAppEventParameterName.IS_MARKETING_PAGE to "true"

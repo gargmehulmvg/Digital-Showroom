@@ -56,7 +56,7 @@ class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
         super.onCreate(savedInstanceState)
         AppEventsManager.pushAppEvents(
             eventName = AFInAppEventType.EVENT_EDIT_THEME,
-            isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = true,
+            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
             data = mapOf(
                 AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)
             )
@@ -114,7 +114,7 @@ class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
             changeImageContainer.id -> {
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_EDIT_THEME_IMAGE,
-                    isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = true,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                     data = mapOf(
                         AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)
                     )
@@ -124,7 +124,7 @@ class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
             viewWebsiteImageView.id -> {
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_VIEW_AS_CUSTOMER,
-                    isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = true,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                     data = mapOf(
                         AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
                         AFInAppEventParameterName.CHANNEL to "isEditor"
@@ -214,7 +214,7 @@ class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
                     }
                     AppEventsManager.pushAppEvents(
                         eventName = AFInAppEventType.EVENT_SAVE_THEME_COLOR,
-                        isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = true,
+                        isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                         data = mapOf(
                             AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)
                         )

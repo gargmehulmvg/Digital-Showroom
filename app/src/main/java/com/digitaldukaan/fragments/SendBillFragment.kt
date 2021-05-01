@@ -79,7 +79,7 @@ class SendBillFragment : BaseFragment() {
             sendBillTextView.id -> {
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_GENERATE_SELF_BILL,
-                    isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = true,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                     data = mapOf(
                         AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)
                     )

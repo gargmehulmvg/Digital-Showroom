@@ -69,7 +69,7 @@ class Constants {
         const val ORDER_TYPE_ADDRESS = 1
         const val ORDER_TYPE_PICK_UP = 2
         const val ORDER_TYPE_SELF = 3
-        const val ORDER_TYPE_SELF_V2 = 4
+        const val ORDER_TYPE_SELF_IMAGE = 4
         //DISPLAY_STATUS
         const val DS_NEW = "new"                                // When order comes but not opened by merchant
         const val DS_SEND_BILL = "sendBill"                     // When order comes opened the order but didn't send bill and exit

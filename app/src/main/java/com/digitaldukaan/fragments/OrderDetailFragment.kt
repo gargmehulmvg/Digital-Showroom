@@ -204,7 +204,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
             showProgressDialog(mActivity)
             AppEventsManager.pushAppEvents(
                 eventName = AFInAppEventType.EVENT_BILL_SENT,
-                isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = true,
+                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                 data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
                     AFInAppEventParameterName.ORDER_TYPE to "${orderDetailMainResponse?.orders?.orderType}",
                     AFInAppEventParameterName.ADDRESS to "${orderDetailMainResponse?.orders?.deliveryInfo?.address1}",
@@ -278,10 +278,19 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
             ToolBarManager.getInstance().setHeaderSubTitle(getStringDateTimeFromOrderDate(getCompleteDateFromOrderString(orderDetailMainResponse?.orders?.createdAt)))
             setupDeliveryChargeUI(orderDetailResponse?.displayStatus, orderDetailMainResponse?.storeServices)
             when (orderDetailResponse?.orderType) {
+                Constants.ORDER_TYPE_SELF_IMAGE -> {
+                    customerDetailsLabel.visibility = View.GONE
+                    billPhotoImageView.visibility = View.VISIBLE
+                    Picasso.get().load(orderDetailResponse.imageLink).into(billPhotoImageView)
+                }
                 Constants.ORDER_TYPE_SELF -> {
                     customerDetailsLabel.visibility = View.GONE
                 }
                 Constants.ORDER_TYPE_PICK_UP -> {
+                    if (orderDetailResponse.imageLink?.isNotEmpty() == true) {
+                        viewBillTextView?.visibility = View.VISIBLE
+                        viewBillTextView.setOnClickListener { showImageDialog(orderDetailResponse.imageLink) }
+                    }
                     mIsPickUpOrder = true
                     deliveryChargeLabel?.visibility = View.GONE
                     deliveryChargeValue?.visibility = View.GONE
@@ -292,6 +301,10 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                     setAmountToEditText()
                 }
                 else -> {
+                    if (orderDetailResponse?.imageLink?.isNotEmpty() == true) {
+                        viewBillTextView?.visibility = View.VISIBLE
+                        viewBillTextView.setOnClickListener { showImageDialog(orderDetailResponse.imageLink) }
+                    }
                     mIsPickUpOrder = false
                     customerDeliveryDetailsRecyclerView.apply {
                         layoutManager = LinearLayoutManager(mActivity)
@@ -324,12 +337,6 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                 instructionsLabel?.visibility = View.VISIBLE
             }
             mMobileNumber = orderDetailResponse?.phone ?: ""
-            if (orderDetailResponse?.imageLink?.isNotEmpty() == true) {
-                viewBillTextView?.visibility = View.VISIBLE
-                viewBillTextView.setOnClickListener {
-                    showImageDialog(orderDetailResponse.imageLink)
-                }
-            }
             if (orderDetailMainResponse?.optionMenuList?.isEmpty() == true) {
                 ToolBarManager.getInstance().setSideIconVisibility(false)
             }
@@ -487,9 +494,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
             detailTextView?.text = "$text_details:"
             billAmountValue?.text = "$text_rupees_symbol ${orderDetailResponse?.amount}"
             ToolBarManager.getInstance().setHeaderTitle("$text_order #$mOrderId")
-            if (orderDetailResponse?.deliveryInfo?.customDeliveryTime?.isEmpty() == true) estimateDeliveryTextView.visibility =
-                View.GONE else estimateDeliveryTextView.text =
-                "$text_estimate_delivery : ${orderDetailResponse?.deliveryInfo?.customDeliveryTime}"
+            if (orderDetailResponse?.deliveryInfo?.customDeliveryTime?.isEmpty() == true) estimateDeliveryTextView.visibility = View.GONE else estimateDeliveryTextView.text = "$text_estimate_delivery : ${orderDetailResponse?.deliveryInfo?.customDeliveryTime}"
             statusValue?.text = orderDetailResponse?.orderPaymentStatus?.value
             when (orderDetailResponse?.orderPaymentStatus?.key) {
                 Constants.ORDER_STATUS_SUCCESS -> {
@@ -796,7 +801,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                     showProgressDialog(mActivity)
                     AppEventsManager.pushAppEvents(
                         eventName = AFInAppEventType.EVENT_ORDER_REJECTED,
-                        isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = true,
+                        isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                         data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
                         AFInAppEventParameterName.ORDER_ID to "${orderDetailMainResponse?.orders?.orderId}",
                             AFInAppEventParameterName.PHONE to PrefsManager.getStringDataFromSharedPref(Constants.USER_MOBILE_NUMBER),
@@ -830,7 +835,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
     private fun downloadBill() {
         AppEventsManager.pushAppEvents(
             eventName = AFInAppEventType.EVENT_DOWNLOAD_BILL,
-            isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = true,
+            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
             data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
         )
         val receiptStr = orderDetailMainResponse?.orders?.digitalReceipt
@@ -888,7 +893,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
     private fun shareBill() {
         AppEventsManager.pushAppEvents(
             eventName = AFInAppEventType.EVENT_SHARE_BILL,
-            isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = true,
+            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
             data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
         )
         if (mShareBillResponseStr?.isNotEmpty() == true) {

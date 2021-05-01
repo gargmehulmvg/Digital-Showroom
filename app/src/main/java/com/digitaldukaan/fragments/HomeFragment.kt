@@ -78,7 +78,6 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         super.onCreate(savedInstanceState)
         mHomeFragmentService = HomeFragmentService()
         mHomeFragmentService.setHomeFragmentServiceListener(this)
-        WebViewBridge.mWebViewListener = this
     }
 
     override fun onCreateView(
@@ -98,13 +97,14 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         updateNavigationBarState(R.id.menuHome)
         ToolBarManager.getInstance().hideToolBar(mActivity, true)
+        WebViewBridge.mWebViewListener = this
         hideBottomNavigationView(false)
         mSwipeRefreshLayout.setOnRefreshListener(this)
         pendingPageCount = 1
         completedPageCount = 1
         mOrderList.clear()
         mCompletedOrderList.clear()
-        orderLayout?.setOnScrollChangeListener(NestedScrollView.OnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
+        orderLayout?.setOnScrollChangeListener(NestedScrollView.OnScrollChangeListener { v, _, scrollY, _, _ ->
             if (scrollY == (v.getChildAt(0).measuredHeight - v.measuredHeight)) {
                 when {
                     mIsMorePendingOrderAvailable -> {
@@ -155,7 +155,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
             analyticsImageView.id -> {
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_ORDER_ANALYTICS,
-                    isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = true,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                     data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
                 )
                 analyticsContainer?.visibility = View.VISIBLE
@@ -177,7 +177,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
             searchImageView.id -> {
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_SEARCH_INTENT,
-                    isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = true,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                     data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
                 )
                 showSearchDialog(mOrderPageInfoStaticData, mMobileNumberString, mOrderIdString)

@@ -45,7 +45,7 @@ class EditPhotoFragment: BaseFragment() {
         super.onCreate(savedInstanceState)
         AppEventsManager.pushAppEvents(
             eventName = AFInAppEventType.EVENT_MOBILE_BANNER_CROPPED,
-            isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = true,
+            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
             data = mapOf(
                 AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)
             )
@@ -92,7 +92,7 @@ class EditPhotoFragment: BaseFragment() {
                     if (mode == Constants.EDIT_PHOTO_MODE_DESKTOP) {
                         AppEventsManager.pushAppEvents(
                             eventName = AFInAppEventType.EVENT_DESKTOP_BANNER_CROPPED,
-                            isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = true,
+                            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                             data = mapOf(
                                 AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)
                             )
@@ -107,7 +107,7 @@ class EditPhotoFragment: BaseFragment() {
     private fun onDesktopCDNLinkGenerated() {
         AppEventsManager.pushAppEvents(
             eventName = AFInAppEventType.EVENT_SAVE_THEME_IMAGE,
-            isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = true,
+            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
             data = mapOf(
                 AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)
             )
