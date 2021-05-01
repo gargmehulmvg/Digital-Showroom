@@ -26,6 +26,7 @@ import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.IChipItemClickListener
 import com.digitaldukaan.interfaces.IOnToolbarIconClick
 import com.digitaldukaan.interfaces.IOnToolbarSecondIconClick
+import com.digitaldukaan.interfaces.IOrderDetailListener
 import com.digitaldukaan.models.dto.CustomerDeliveryAddressDTO
 import com.digitaldukaan.models.request.CompleteOrderRequest
 import com.digitaldukaan.models.request.UpdateOrderRequest
@@ -134,7 +135,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                     0,
                     0,
                     "Delivery Charges",
-                    1,
+                    "1",
                     orderDetailMainResponse?.storeServices?.mDeliveryPrice,
                     1,
                     Constants.ITEM_TYPE_DELIVERY_CHARGE,
@@ -147,7 +148,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                     0,
                     0,
                     "Delivery Charges",
-                    1,
+                    "1",
                     if (deliveryChargeValueEditText.text?.isNotEmpty() == true) deliveryChargeValueEditText.text.toString().toDouble() else 0.0,
                     1,
                     Constants.ITEM_TYPE_DELIVERY_CHARGE,
@@ -160,7 +161,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                     0,
                     0,
                     if (otherChargesEditText.text?.isNotEmpty() == true) otherChargesEditText.text.toString() else "Charges",
-                    1,
+                    "1",
                     if (otherChargesValueEditText.text?.isNotEmpty() == true) otherChargesValueEditText.text.toString().toDouble() else 0.0,
                     1,
                     Constants.ITEM_TYPE_CHARGE,
@@ -173,7 +174,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                     0,
                     0,
                     if (discountsEditText.text?.isNotEmpty() == true) discountsEditText.text.toString() else "Discount",
-                    1,
+                    "1",
                     if (discountsValueEditText.text?.isNotEmpty() == true) discountsValueEditText.text.toString().toDouble() else 0.0,
                     1,
                     Constants.ITEM_TYPE_DISCOUNT,
@@ -239,9 +240,9 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                     mTotalDisplayAmount += itemResponse.item_price ?: 0.0
                 }
                 var orderDetailAdapter: OrderDetailsAdapter? = null
-                orderDetailAdapter = OrderDetailsAdapter(list, orderDetailResponse?.displayStatus, mOrderDetailStaticData, object : IChipItemClickListener {
+                orderDetailAdapter = OrderDetailsAdapter(list, orderDetailResponse?.displayStatus, mOrderDetailStaticData, object : IOrderDetailListener {
 
-                    override fun onChipItemClickListener(position: Int) {
+                    override fun onOrderDetailItemClickListener(position: Int) {
                         val item = list?.get(position)
                         item?.item_status = if (list?.get(position)?.item_status == 2) 1 else 2
                         if (item?.item_status == 2) mTotalDisplayAmount -= item.item_price ?: 0.0 else mTotalDisplayAmount += item?.item_price ?: 0.0
@@ -250,6 +251,14 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                         var isValidOrderAvailable = false
                         list?.forEachIndexed { _, itemResponse -> if (itemResponse.item_status != 2) isValidOrderAvailable = true }
                         sendBillTextView.isEnabled = isValidOrderAvailable
+                    }
+
+                    override fun onOrderDetailListUpdateListener() {
+                        mTotalDisplayAmount = 0.0
+                        list?.forEachIndexed { _, itemResponse ->
+                            mTotalDisplayAmount += itemResponse.item_price ?: 0.0
+                        }
+                        setAmountToEditText()
                     }
                 })
                 adapter = orderDetailAdapter
@@ -588,7 +597,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                     0,
                     0,
                     if (otherChargesEditText.text?.isNotEmpty() == true) otherChargesEditText.text.toString() else "charge",
-                    1,
+                    "1",
                     if (otherChargesValueEditText.text?.isNotEmpty() == true) otherChargesValueEditText.text.toString().toDouble() else 0.0,
                     1,
                     "charge",
@@ -601,7 +610,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                     0,
                     0,
                     if (discountsEditText.text?.isNotEmpty() == true) discountsEditText.text.toString() else "discount",
-                    1,
+                    "1",
                     if (discountsValueEditText.text?.isNotEmpty() == true) discountsValueEditText.text.toString().toDouble() else 0.0,
                     1,
                     "charge",

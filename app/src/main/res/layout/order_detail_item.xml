@@ -56,19 +56,20 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/_1sdp"
             android:background="@color/light_grey_background"
-            app:layout_constraintTop_toBottomOf="@+id/orderDetailNameTextView"
-            tools:layout_editor_absoluteX="11dp" />
+            app:layout_constraintTop_toBottomOf="@id/orderDetailNameTextView" />
 
         <TextView
             android:id="@+id/quantityTextView"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_5sdp"
+            android:maxLines="@integer/min_lines_two"
             android:fontFamily="sans-serif-medium"
             android:textColor="@color/default_text_light_grey"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/orderDetailImageView"
-            app:layout_constraintTop_toBottomOf="@+id/view4"
+            app:layout_constraintEnd_toStartOf="@+id/priceTextView"
+            app:layout_constraintStart_toStartOf="@id/orderDetailImageView"
+            app:layout_constraintTop_toBottomOf="@id/view4"
             tools:text="Qty: 5 pkt" />
 
         <TextView
@@ -76,12 +77,31 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_8sdp"
-            android:fontFamily="sans-serif-medium"
+            android:fontFamily="@font/roboto_medium"
             android:textColor="@color/open_green"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/view4"
+            app:layout_constraintTop_toBottomOf="@id/view4"
             tools:text="Qty: 5 pkt" />
+
+        <EditText
+            android:id="@+id/priceEditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_8sdp"
+            android:inputType="numberDecimal"
+            android:gravity="end"
+            android:paddingEnd="@dimen/_3sdp"
+            android:paddingStart="@dimen/_3sdp"
+            android:maxLength="@integer/amount_length"
+            android:textSize="@dimen/_12sdp"
+            android:visibility="gone"
+            android:minWidth="@dimen/_30sdp"
+            android:fontFamily="@font/roboto_medium"
+            android:textColor="@color/open_green"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/view4" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
