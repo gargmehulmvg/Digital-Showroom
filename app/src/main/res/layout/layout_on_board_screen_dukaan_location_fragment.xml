@@ -1,101 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:fillViewport="true">
+    android:fillViewport="true"
+    android:padding="@dimen/_20sdp">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/backImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onClick"
+        android:rotation="180"
+        android:src="@drawable/ic_arrow_forward_white"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/black" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/dukaanLocationHeading"
+        style="@style/common_bold_text_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toStartOf="@+id/onBoardDukaanNameImageView"
+        app:layout_constraintStart_toStartOf="@+id/step2TextView"
+        app:layout_constraintTop_toBottomOf="@+id/step2TextView"
+        tools:text="@string/enter_your_dukaan_location" />
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/onBoardDukaanNameImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:src="@drawable/ic_on_board_dukaan_name"
+        app:layout_constraintBottom_toBottomOf="@id/dukaanLocationHeading"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/dukaanLocationHeading" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/nextTextView"
+        style="@style/common_text_view_background"
+        android:layout_marginTop="@dimen/_20sdp"
+        android:drawableEnd="@drawable/ic_arrow_forward_white"
+        android:drawablePadding="@dimen/_10sdp"
+        android:enabled="false"
+        android:onClick="onClick"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dukaanNameLayout"
+        app:layout_constraintVertical_bias="1.0"
+        tools:text="@string/next" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/step2TextView"
+        style="@style/common_bold_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_2sdp"
+        android:layout_marginTop="@dimen/_20sdp"
+        android:paddingBottom="@dimen/_3sdp"
+        android:textSize="@dimen/_11sdp"
+        app:layout_constraintStart_toStartOf="@+id/backImageView"
+        app:layout_constraintTop_toBottomOf="@+id/backImageView"
+        tools:text="@string/step_2_2" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/dukaanNameLayout"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="@dimen/_20sdp">
+        android:layout_marginTop="@dimen/_30sdp"
+        app:layout_constraintEnd_toEndOf="@+id/dukaanLocationHeading"
+        app:layout_constraintStart_toStartOf="@+id/dukaanLocationHeading"
+        app:layout_constraintTop_toBottomOf="@+id/dukaanLocationHeading">
 
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/backImageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:rotation="180"
-            android:onClick="onClick"
-            android:src="@drawable/ic_arrow_forward_white"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/black" />
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/dukaanLocationHeading"
-            style="@style/common_bold_text_view"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            tools:text="@string/enter_your_dukaan_location"
-            app:layout_constraintEnd_toStartOf="@+id/onBoardDukaanNameImageView"
-            app:layout_constraintStart_toStartOf="@+id/step2TextView"
-            app:layout_constraintTop_toBottomOf="@+id/step2TextView" />
-
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/onBoardDukaanNameImageView"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:src="@drawable/ic_on_board_dukaan_name"
-            app:layout_constraintBottom_toBottomOf="@id/dukaanLocationHeading"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/dukaanLocationHeading" />
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/nextTextView"
-            style="@style/common_text_view_background"
-            android:drawableEnd="@drawable/ic_arrow_forward_white"
-            android:drawablePadding="@dimen/_10sdp"
-            android:enabled="false"
-            android:onClick="onClick"
-            android:layout_marginTop="@dimen/_20sdp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/dukaanNameLayout"
-            app:layout_constraintVertical_bias="1.0"
-            tools:text="@string/next" />
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/step2TextView"
-            style="@style/common_bold_text_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/_2sdp"
-            android:layout_marginTop="@dimen/_20sdp"
-            android:paddingBottom="@dimen/_3sdp"
-            tools:text="@string/step_2_2"
-            android:textSize="@dimen/_11sdp"
-            app:layout_constraintStart_toStartOf="@+id/backImageView"
-            app:layout_constraintTop_toBottomOf="@+id/backImageView" />
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/dukaanNameLayout"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        <EditText
+            android:id="@+id/dukaanLocationEditText"
             android:layout_width="match_parent"
-            android:layout_marginTop="@dimen/_30sdp"
             android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="@+id/dukaanLocationHeading"
-            app:layout_constraintStart_toStartOf="@+id/dukaanLocationHeading"
-            app:layout_constraintTop_toBottomOf="@+id/dukaanLocationHeading">
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="start"
+            android:importantForAutofill="no"
+            android:inputType="textMultiLine"
+            android:maxLength="@integer/description_name_length"
+            android:minLines="5"
+            android:textColor="@color/black"
+            android:textColorHint="@color/default_text_light_grey"
+            android:textSize="@dimen/_12sdp"
+            tools:hint="@string/enter_location" />
 
-            <EditText
-                android:id="@+id/dukaanLocationEditText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:clickable="true"
-                android:focusable="true"
-                android:minLines="5"
-                android:gravity="start"
-                tools:hint="@string/enter_location"
-                android:importantForAutofill="no"
-                android:inputType="textMultiLine"
-                android:maxLength="@integer/description_name_length"
-                android:textColor="@color/black"
-                android:textColorHint="@color/default_text_light_grey"
-                android:textSize="@dimen/_12sdp" />
-
-        </com.google.android.material.textfield.TextInputLayout>
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
 </androidx.core.widget.NestedScrollView>

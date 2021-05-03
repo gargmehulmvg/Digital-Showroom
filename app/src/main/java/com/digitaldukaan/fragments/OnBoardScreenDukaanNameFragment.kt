@@ -57,10 +57,10 @@ class OnBoardScreenDukaanNameFragment : BaseFragment(),
     }
 
     private fun setupUIFromStaticData() {
-        stepOneTextView.text = mDukaanNameStaticData.mStepCount
-        enterDukaanNameHeading.text = mDukaanNameStaticData.mDukaanName
-        dukaanNameEditText.hint = mDukaanNameStaticData.mTitleHinText
-        nextTextView.text = mDukaanNameStaticData.mNextButton
+        stepOneTextView?.text = mDukaanNameStaticData.mStepCount
+        enterDukaanNameHeading?.text = mDukaanNameStaticData.mDukaanName
+        dukaanNameEditText?.hint = mDukaanNameStaticData.mTitleHinText
+        nextTextView?.text = mDukaanNameStaticData.mNextButton
     }
 
     override fun onClick(view: View?) {
@@ -69,7 +69,7 @@ class OnBoardScreenDukaanNameFragment : BaseFragment(),
                 mActivity.onBackPressed()
             }
             nextTextView.id -> {
-                val dukanName = dukaanNameEditText.text.trim().toString()
+                val dukanName = dukaanNameEditText?.text?.trim().toString()
                 if (dukanName.isEmpty()) {
                     dukaanNameEditText.requestFocus()
                     dukaanNameEditText.showKeyboard()

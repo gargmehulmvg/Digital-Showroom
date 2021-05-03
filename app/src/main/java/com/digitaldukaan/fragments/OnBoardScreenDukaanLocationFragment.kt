@@ -169,10 +169,10 @@ class OnBoardScreenDukaanLocationFragment : BaseFragment(), IStoreAddressService
     }
 
     private fun setupUIFromStaticData() {
-        step2TextView.text = mDukaanLocationStaticData.mStepCount
-        dukaanLocationHeading.text = mDukaanLocationStaticData.mHeading
-        dukaanLocationEditText.hint = mDukaanLocationStaticData.mTitleHinText
-        nextTextView.text = mDukaanLocationStaticData.mNextButton
+        step2TextView?.text = mDukaanLocationStaticData.mStepCount
+        dukaanLocationHeading?.text = mDukaanLocationStaticData.mHeading
+        dukaanLocationEditText?.hint = mDukaanLocationStaticData.mTitleHinText
+        nextTextView?.text = mDukaanLocationStaticData.mNextButton
     }
 
     override fun onClick(view: View?) {
@@ -181,7 +181,7 @@ class OnBoardScreenDukaanLocationFragment : BaseFragment(), IStoreAddressService
                 mActivity.onBackPressed()
             }
             nextTextView.id -> {
-                val storeLocation = dukaanLocationEditText.text.trim().toString()
+                val storeLocation = dukaanLocationEditText?.text?.trim().toString()
                 if (storeLocation.isEmpty()) {
                     dukaanLocationEditText.requestFocus()
                     dukaanLocationEditText.showKeyboard()
