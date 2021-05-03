@@ -29,4 +29,7 @@
     <color name="premium_text_color">#C39230</color>
     <color name="premium_light_color">#FCDDC8</color>
     <color name="non_premium_icons_color">#797979</color>
+    <color name="ucrop_color_toolbar">@color/open_green</color>
+    <color name="ucrop_color_statusbar">@color/open_green</color>
+    <color name="ucrop_color_widget_active">@color/open_green</color>
 </resources>

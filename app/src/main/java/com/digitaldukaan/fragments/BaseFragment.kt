@@ -13,6 +13,7 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
+import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
@@ -516,6 +517,14 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
 
     open fun openMobileGalleryWithImage() {
         ImagePicker.with(mActivity)
+            .saveDir(File(Environment.getExternalStorageDirectory(), "ImagePicker"))
+            .galleryMimeTypes(  //Exclude gif images
+                mimeTypes = arrayOf(
+                    "image/png",
+                    "image/jpg",
+                    "image/jpeg"
+                )
+            )
             .galleryOnly()
             .crop(1f, 1f)            //Crop image(Optional), Check Customization for more option
             .compress(1024)            //Final image size will be less than 1 MB(Optional)
@@ -528,6 +537,14 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
 
     open fun openGalleryWithoutCrop() {
         ImagePicker.with(mActivity)
+            .saveDir(File(Environment.getExternalStorageDirectory(), "ImagePicker"))
+            .galleryMimeTypes(  //Exclude gif images
+                mimeTypes = arrayOf(
+                    "image/png",
+                    "image/jpg",
+                    "image/jpeg"
+                )
+            )
             .galleryOnly()
             .compress(1024)            //Final image size will be less than 1 MB(Optional)
             .maxResultSize(
@@ -540,6 +557,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     open fun openCamera() {
         ImagePicker.with(mActivity)
             .cameraOnly()
+            .saveDir(File(Environment.getExternalStorageDirectory(), "ImagePicker"))
             .crop(1f, 1f) //Crop image(Optional), Check Customization for more option
             .compress(1024)            //Final image size will be less than 1 MB(Optional)
             .maxResultSize(
@@ -552,6 +570,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     open fun openFullCamera() {
         ImagePicker.with(mActivity)
             .cameraOnly()
+            .saveDir(File(Environment.getExternalStorageDirectory(), "ImagePicker"))
             .compress(1024)            //Final image size will be less than 1 MB(Optional)
             .maxResultSize(
                 1080,
@@ -574,12 +593,8 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                 onImageSelectionResultUri(fileUri)
                 onImageSelectionResultFile(file)
             }
-            ImagePicker.RESULT_ERROR -> {
-                Toast.makeText(context, ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
-            }
-            else -> {
-                Toast.makeText(context, "Task Cancelled", Toast.LENGTH_SHORT).show()
-            }
+            ImagePicker.RESULT_ERROR -> Toast.makeText(context, ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
+            else -> Toast.makeText(context, "Task Cancelled", Toast.LENGTH_SHORT).show()
         }
     }
 
