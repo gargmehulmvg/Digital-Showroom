@@ -150,6 +150,7 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
                 initiateAutoDetectMobileNumber()
             }
             getOtpTextView.id -> {
+                if (mobileNumberInputLayout.visibility == View.GONE) return
                 val mobileNumber = mobileNumberEditText.text.trim().toString()
                 val validationFailed = isMobileNumberValidationNotCorrect(mobileNumber)
                 performOTPServerCall(validationFailed, mobileNumber)

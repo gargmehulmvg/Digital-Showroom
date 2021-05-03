@@ -15,6 +15,7 @@ import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.*
+import com.digitaldukaan.models.response.AppVersionResponse
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.HelpScreenItemResponse
 import com.digitaldukaan.models.response.StaticTextResponse
@@ -31,6 +32,7 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
     companion object {
         private const val TAG = "SplashFragment"
         private val splashService: SplashService = SplashService()
+        private var appUpdateDialog: Dialog? = null
 
         fun newInstance(intentUri: Uri?): SplashFragment {
             val fragment = SplashFragment()
@@ -54,7 +56,7 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
         }
         fetchContactsIfPermissionGranted()
         splashService.setSplashServiceInterface(this)
-        splashService.getStaticData("0")
+        splashService.getStaticData("1")
     }
 
     private fun fetchContactsIfPermissionGranted() {
@@ -88,9 +90,8 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
     override fun onAppVersionResponse(commonResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (commonResponse.mIsSuccessStatus) {
-                splashService.getHelpScreens()
-                //val playStoreLinkStr = Gson().fromJson<AppVersionResponse>(commonResponse.mCommonDataStr, AppVersionResponse::class.java)
-                //if (playStoreLinkStr.mIsActive) splashService.getHelpScreens() else showVersionUpdateDialog()
+                val playStoreLinkStr = Gson().fromJson<AppVersionResponse>(commonResponse.mCommonDataStr, AppVersionResponse::class.java)
+                if (playStoreLinkStr.mIsActive) splashService.getHelpScreens() else showVersionUpdateDialog()
             } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
         }
     }
@@ -116,23 +117,22 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
 
     private fun showVersionUpdateDialog() {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
+            if (appUpdateDialog?.isShowing == true) return@runTaskOnCoroutineMain
             mActivity.let {
-                val appUpdateDialog = Dialog(mActivity)
+                appUpdateDialog = Dialog(mActivity)
                 val view = LayoutInflater.from(mActivity).inflate(R.layout.dialog_app_update, null)
-                appUpdateDialog.apply {
+                appUpdateDialog?.apply {
                     setContentView(view)
-                    setCancelable(true)
+                    setCancelable(false)
                     window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
                     view?.run {
-                        val headingTextView: TextView = findViewById(R.id.headingTextView)
-                        val messageTextView: TextView = findViewById(R.id.messageTextView)
                         val updateTextView: TextView = findViewById(R.id.updateTextView)
                         updateTextView.setOnClickListener {
-                            appUpdateDialog.dismiss()
+                            (this@apply).dismiss()
                             openPlayStore()
                         }
                     }
-                }.show()
+                }?.show()
             }
         }
     }

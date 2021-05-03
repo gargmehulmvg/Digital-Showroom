@@ -14,16 +14,17 @@
         android:fontFamily="@font/roboto_bold"
         android:gravity="center"
         android:textColor="@color/black"
-        android:textSize="@dimen/_24sdp"
-        android:text="Update to continue using this app" />
+        android:textSize="@dimen/_22sdp"
+        android:text="@string/force_update_heading" />
 
     <TextView
         android:id="@+id/messageTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_18sdp"
+        android:textSize="@dimen/_12sdp"
         android:gravity="center"
-        android:text="We recommend that you update to the latest version." />
+        android:text="@string/force_update_message" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/updateTextView"

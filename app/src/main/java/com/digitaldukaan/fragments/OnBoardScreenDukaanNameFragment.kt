@@ -86,7 +86,7 @@ class OnBoardScreenDukaanNameFragment : BaseFragment(),
                             if (storeIdStr.isNotEmpty()) storeIdStr.toInt() else 0,
                             dukanName,
                             Constants.APP_SECRET_KEY,
-                            "1",
+                            1,
                             StaticInstances.sAppFlyerRefMobileNumber,
                             AppsFlyerLib.getInstance().getAttributionId(mActivity),
                             StaticInstances.sCleverTapId
