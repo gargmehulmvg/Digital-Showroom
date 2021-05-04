@@ -110,19 +110,23 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
 
     protected fun showCancellableProgressDialog(context: Context?, message: String? = "Please wait...") {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            context?.run {
-                mProgressDialog = Dialog(this)
-                val inflate = LayoutInflater.from(this).inflate(R.layout.progress_dialog, null)
-                mProgressDialog?.setContentView(inflate)
-                message?.run {
-                    val messageTextView : TextView = inflate.findViewById(R.id.progressDialogTextView)
-                    messageTextView.text = this
+            try {
+                context?.run {
+                    mProgressDialog = Dialog(this)
+                    val inflate = LayoutInflater.from(this).inflate(R.layout.progress_dialog, null)
+                    mProgressDialog?.setContentView(inflate)
+                    message?.run {
+                        val messageTextView : TextView = inflate.findViewById(R.id.progressDialogTextView)
+                        messageTextView.text = this
+                    }
+                    mProgressDialog?.setCancelable(true)
+                    mProgressDialog?.window!!.setBackgroundDrawable(
+                        ColorDrawable(Color.TRANSPARENT)
+                    )
+                    mProgressDialog?.show()
                 }
-                mProgressDialog?.setCancelable(true)
-                mProgressDialog?.window!!.setBackgroundDrawable(
-                    ColorDrawable(Color.TRANSPARENT)
-                )
-                mProgressDialog?.show()
+            } catch (e: java.lang.Exception) {
+                Log.e(TAG, "showCancellableProgressDialog: ${e.message}", e)
             }
         }
     }
@@ -151,21 +155,20 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     protected fun showShortSnackBar(message: String? = "sample testing", showDrawable: Boolean = false, drawableID : Int = 0) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             message?.let {
-                Snackbar.make(mContentView, message, Snackbar.LENGTH_SHORT).apply {
-                    if (showDrawable) {
-                        val snackBarView = view
-                        val snackBarTextView:TextView = snackBarView.findViewById(com.google.android.material.R.id.snackbar_text)
-                        snackBarTextView.setCompoundDrawablesWithIntrinsicBounds(
-                            0,
-                            0,
-                            drawableID,
-                            0
-                        )
-                        snackBarTextView.compoundDrawablePadding = resources.getDimensionPixelOffset(R.dimen._5sdp)
-                    }
-                    setBackgroundTint(ContextCompat.getColor(mActivity, R.color.snack_bar_background))
-                    setTextColor(ContextCompat.getColor(mActivity, R.color.white))
-                }.show()
+                try {
+                    Snackbar.make(mContentView, message, Snackbar.LENGTH_SHORT).apply {
+                        if (showDrawable) {
+                            val snackBarView = view
+                            val snackBarTextView: TextView = snackBarView.findViewById(com.google.android.material.R.id.snackbar_text)
+                            snackBarTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, drawableID, 0)
+                            snackBarTextView.compoundDrawablePadding = resources.getDimensionPixelOffset(R.dimen._5sdp)
+                        }
+                        setBackgroundTint(ContextCompat.getColor(mActivity, R.color.snack_bar_background))
+                        setTextColor(ContextCompat.getColor(mActivity, R.color.white))
+                    }.show()
+                } catch (e : java.lang.Exception) {
+                    Log.e(TAG, "showShortSnackBar: ${e.message}", e)
+                }
             }
         }
     }
@@ -435,7 +438,6 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         val view = LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet_image_pick, mActivity.findViewById(R.id.bottomSheetContainer))
         mImagePickBottomSheet.apply {
             setContentView(view)
-            //setBottomSheetCommonProperty()
             view?.run {
                 val bottomSheetUploadImageCloseImageView: ImageView = findViewById(R.id.bottomSheetUploadImageCloseImageView)
                 val bottomSheetUploadImageHeading: TextView = findViewById(R.id.bottomSheetUploadImageHeading)

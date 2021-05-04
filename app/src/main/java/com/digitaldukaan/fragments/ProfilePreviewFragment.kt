@@ -45,12 +45,12 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
     IProfilePreviewItemClicked, SwipeRefreshLayout.OnRefreshListener {
 
     private var mStoreName: String? = ""
-    private lateinit var mProfilePreviewStaticData: ProfileStaticTextResponse
+    private var mProfilePreviewStaticData: ProfileStaticTextResponse? = null
     private val service = ProfilePreviewService()
     private var mStoreLinkBottomSheet: BottomSheetDialog? = null
     private var mStoreNameEditBottomSheet: BottomSheetDialog? = null
     private var mProfilePreviewResponse: ProfileInfoResponse? = null
-    private lateinit var mStoreLinkErrorResponse:StoreDescriptionResponse
+    private lateinit var mStoreLinkErrorResponse: StoreDescriptionResponse
     private lateinit var mProfileInfoSettingKeyResponse: ProfilePreviewSettingsKeyResponse
     private lateinit var cancelWarningDialog: Dialog
     private var mStoreLogo: String? = ""
@@ -132,11 +132,11 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         StaticInstances.sStepsCompletedList = response.mStepsList
         response.mStoreItemResponse?.bankDetails?.run { StaticInstances.sBankDetails = this }
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            mProfilePreviewStaticData.run {
+            mProfilePreviewStaticData?.run {
                 profilePreviewStoreNameHeading?.text = text_store_name
                 hiddenTextView?.text = text_add_photo
             }
-            constraintLayoutBanner.visibility = if (mProfilePreviewResponse?.mIsProfileCompleted == true) View.GONE else View.VISIBLE
+            constraintLayoutBanner?.visibility = if (mProfilePreviewResponse?.mIsProfileCompleted == true) View.GONE else View.VISIBLE
             if (swipeRefreshLayout.isRefreshing) swipeRefreshLayout.isRefreshing = false
             stopProgress()
             mProfilePreviewResponse?.mProfilePreviewBanner?.run {
@@ -152,14 +152,14 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                 profilePreviewStoreMobileNumber?.text = storeOwner?.phone
                 mStoreLogo = storeInfo.logoImage
                 if (mStoreLogo?.isNotEmpty() == true) {
-                    hiddenImageView.visibility = View.INVISIBLE
-                    hiddenTextView.visibility = View.INVISIBLE
-                    storePhotoImageView.visibility = View.VISIBLE
+                    hiddenImageView?.visibility = View.INVISIBLE
+                    hiddenTextView?.visibility = View.INVISIBLE
+                    storePhotoImageView?.visibility = View.VISIBLE
                     Picasso.get().load(mStoreLogo).into(storePhotoImageView)
                 } else {
-                    hiddenImageView.visibility = View.VISIBLE
-                    hiddenTextView.visibility = View.VISIBLE
-                    storePhotoImageView.visibility = View.GONE
+                    hiddenImageView?.visibility = View.VISIBLE
+                    hiddenTextView?.visibility = View.VISIBLE
+                    storePhotoImageView?.visibility = View.GONE
                 }
             }
             mProfilePreviewResponse?.mSettingsKeysList?.run {
@@ -306,11 +306,11 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                         val editStoreDialogWarningTwo: TextView = findViewById(R.id.editStoreDialogWarningTwo)
                         val editStoreDialogYesTextView: TextView = findViewById(R.id.editStoreDialogYesTextView)
                         val editStoreDialogNoTextView: TextView = findViewById(R.id.editStoreDialogNoTextView)
-                        editStoreDialogConfirmTextView.text = mProfilePreviewStaticData.mStoreLinkChangeDialogHeading
-                        editStoreDialogWarningOne.text = mProfilePreviewStaticData.mStoreLinkChangeWarningOne
-                        editStoreDialogWarningTwo.text = mProfilePreviewStaticData.mStoreLinkChangeWarningTwo
-                        editStoreDialogYesTextView.text = mProfilePreviewStaticData.mYesText
-                        editStoreDialogNoTextView.text = mProfilePreviewStaticData.mNoText
+                        editStoreDialogConfirmTextView.text = mProfilePreviewStaticData?.mStoreLinkChangeDialogHeading
+                        editStoreDialogWarningOne.text = mProfilePreviewStaticData?.mStoreLinkChangeWarningOne
+                        editStoreDialogWarningTwo.text = mProfilePreviewStaticData?.mStoreLinkChangeWarningTwo
+                        editStoreDialogYesTextView.text = mProfilePreviewStaticData?.mYesText
+                        editStoreDialogNoTextView.text = mProfilePreviewStaticData?.mNoText
                         editStoreDialogYesTextView.setOnClickListener {
                             AppEventsManager.pushAppEvents(
                                 eventName = AFInAppEventType.EVENT_EDIT_STORE_LINK_WARNING,
@@ -354,10 +354,10 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                         val bottomSheetCancelDialogMessage: TextView = findViewById(R.id.bottomSheetCancelDialogMessage)
                         val bottomSheetCancelDialogYes: TextView = findViewById(R.id.bottomSheetCancelDialogYes)
                         val bottomSheetCancelDialogNo: TextView = findViewById(R.id.bottomSheetCancelDialogNo)
-                        bottomSheetCancelDialogHeading.text = mProfilePreviewStaticData.mStoreLinkChangeDialogHeading
-                        bottomSheetCancelDialogMessage.text = mProfilePreviewStaticData.mBottomSheetCloseConfirmationMessage
-                        bottomSheetCancelDialogYes.text = mProfilePreviewStaticData.mYesText
-                        bottomSheetCancelDialogNo.text = mProfilePreviewStaticData.mNoText
+                        bottomSheetCancelDialogHeading.text = mProfilePreviewStaticData?.mStoreLinkChangeDialogHeading
+                        bottomSheetCancelDialogMessage.text = mProfilePreviewStaticData?.mBottomSheetCloseConfirmationMessage
+                        bottomSheetCancelDialogYes.text = mProfilePreviewStaticData?.mYesText
+                        bottomSheetCancelDialogNo.text = mProfilePreviewStaticData?.mNoText
                         bottomSheetCancelDialogYes.setOnClickListener {
                             cancelWarningDialog.dismiss()
                             mStoreLinkBottomSheet?.dismiss()
@@ -393,23 +393,23 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                 val bottomSheetEditStoreLinkConditionTwo: TextView = findViewById(R.id.bottomSheetEditStoreLinkConditionTwo)
                 val bottomSheetEditStoreCloseImageView: View = findViewById(R.id.bottomSheetEditStoreCloseImageView)
                 val bottomSheetEditStoreLinkServerError: TextView = findViewById(R.id.bottomSheetEditStoreLinkServerError)
-                bottomSheetEditStoreLinkDText.text = mProfilePreviewStaticData.dText
-                bottomSheetEditStoreLinkDotpe.text = mProfilePreviewStaticData.dotPeDotInText
-                bottomSheetEditStoreSaveTextView.text = mProfilePreviewStaticData.saveText
-                bottomSheetEditStoreLinkConditionOne.text = mProfilePreviewStaticData.storeLinkConditionOne
-                bottomSheetEditStoreLinkConditionTwo.text = mProfilePreviewStaticData.storeLinkConditionTwo
+                bottomSheetEditStoreLinkDText.text = mProfilePreviewStaticData?.dText
+                bottomSheetEditStoreLinkDotpe.text = mProfilePreviewStaticData?.dotPeDotInText
+                bottomSheetEditStoreSaveTextView.text = mProfilePreviewStaticData?.saveText
+                bottomSheetEditStoreLinkConditionOne.text = mProfilePreviewStaticData?.storeLinkConditionOne
+                bottomSheetEditStoreLinkConditionTwo.text = mProfilePreviewStaticData?.storeLinkConditionTwo
                 bottomSheetEditStoreCloseImageView.setOnClickListener { showBottomSheetCancelDialog() }
                 bottomSheetEditStoreSaveTextView.setOnClickListener {
                     val newStoreLink = bottomSheetEditStoreLinkEditText.text.trim().toString()
                     if (newStoreLink.isEmpty()) {
                         bottomSheetEditStoreLinkEditText.apply {
-                            error = mProfilePreviewStaticData.error_mandatory_field
+                            error = mProfilePreviewStaticData?.error_mandatory_field
                             requestFocus()
                         }
                         return@setOnClickListener
                     } else if (newStoreLink.length < resources.getInteger(R.integer.store_name_min_length)) {
                         bottomSheetEditStoreLinkEditText.apply {
-                            error = mProfilePreviewStaticData.storeLinkConditionTwo
+                            error = mProfilePreviewStaticData?.storeLinkConditionTwo
                             requestFocus()
                         }
                         return@setOnClickListener
@@ -423,12 +423,12 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                         service.updateStoreLink(request)
                     }
                 }
-                bottomSheetEditStoreHeading.text = if (bottomSheetEditStoreLinkEditText.text.isEmpty()) mProfilePreviewStaticData.storeLinkTitle else mProfilePreviewStaticData.editStoreLink
+                bottomSheetEditStoreHeading.text = if (bottomSheetEditStoreLinkEditText.text.isEmpty()) mProfilePreviewStaticData?.storeLinkTitle else mProfilePreviewStaticData?.editStoreLink
                 val requiredString = profilePreviewResponse.mValue?.run {
                     substring(indexOf("-") + 1, indexOf("."))
                 }
                 bottomSheetEditStoreLinkEditText.setText(if (isErrorResponse) mStoreLinkLastEntered else requiredString)
-                bottomSheetEditStoreTitle.text = if (isErrorResponse) mActivity.getString(R.string.your_edited_link) else mProfilePreviewStaticData.currentLink
+                bottomSheetEditStoreTitle.text = if (isErrorResponse) mActivity.getString(R.string.your_edited_link) else mProfilePreviewStaticData?.currentLink
                 bottomSheetEditStoreLinkEditText.isEnabled = profilePreviewResponse.mIsEditable ?: true
                 bottomSheetEditStoreLinkEditText.addTextChangedListener(object : TextWatcher{
                     override fun afterTextChanged(s: Editable?) {
@@ -469,8 +469,8 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                     bottomSheetEditStoreLinkConditionTwo.visibility = View.GONE
                     bottomSheetEditStoreLinkServerError.visibility = View.VISIBLE
                     bottomSheetEditStoreLinkServerError.text = when (mStoreLinkErrorResponse.mErrorString) {
-                        Constants.ERROR_DOMAIN_ALREADY_EXISTS -> mProfilePreviewStaticData.mDomainAlreadyExistError
-                        else -> mProfilePreviewStaticData.mDomainUnAvailableError
+                        Constants.ERROR_DOMAIN_ALREADY_EXISTS -> mProfilePreviewStaticData?.mDomainAlreadyExistError
+                        else -> mProfilePreviewStaticData?.mDomainUnAvailableError
                     }
                 }
                 bottomSheetEditStoreLinkEditText.allowOnlyAlphaNumericCharacters()
@@ -495,7 +495,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         val bottomSheetEditStoreSaveTextView:TextView = view.findViewById(R.id.bottomSheetEditStoreSaveTextView)
         val bottomSheetEditStoreLinkEditText: EditText = view.findViewById(R.id.bottomSheetEditStoreLinkEditText)
         val bottomSheetEditStoreCloseImageView:View = view.findViewById(R.id.bottomSheetEditStoreCloseImageView)
-        bottomSheetEditStoreSaveTextView.text = mProfilePreviewStaticData.mBottomSheetStoreButtonText
+        bottomSheetEditStoreSaveTextView.text = mProfilePreviewStaticData?.mBottomSheetStoreButtonText
         bottomSheetEditStoreCloseImageView.setOnClickListener { mStoreNameEditBottomSheet?.dismiss() }
         bottomSheetEditStoreSaveTextView.setOnClickListener {
             val newStoreName = bottomSheetEditStoreLinkEditText.text.trim().toString()
@@ -508,8 +508,8 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                 service.updateStoreName(request)
             }
         }
-        bottomSheetEditStoreHeading.text = mProfilePreviewStaticData.mBottomSheetStoreNameHeading
-        bottomSheetEditStoreLinkEditText.hint = mProfilePreviewStaticData.mBottomSheetStoreNameHeading
+        bottomSheetEditStoreHeading.text = mProfilePreviewStaticData?.mBottomSheetStoreNameHeading
+        bottomSheetEditStoreLinkEditText.hint = mProfilePreviewStaticData?.mBottomSheetStoreNameHeading
         if (storeValue?.isNotEmpty() == true) bottomSheetEditStoreLinkEditText.setText(storeValue)
         bottomSheetEditStoreLinkEditText.addTextChangedListener(object : TextWatcher{
             override fun afterTextChanged(s: Editable?) {
@@ -554,15 +554,15 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                 val photoResponse = Gson().fromJson<StoreResponse>(response.mCommonDataStr, StoreResponse::class.java)
                 mStoreLogo = photoResponse.storeInfo.logoImage
                 if (mStoreLogo?.isNotEmpty() == true) {
-                    storePhotoImageView.visibility = View.VISIBLE
-                    hiddenImageView.visibility = View.INVISIBLE
-                    hiddenTextView.visibility = View.INVISIBLE
+                    storePhotoImageView?.visibility = View.VISIBLE
+                    hiddenImageView?.visibility = View.INVISIBLE
+                    hiddenTextView?.visibility = View.INVISIBLE
                     Picasso.get().load(mStoreLogo).into(storePhotoImageView)
                 } else {
                     StaticInstances.sIsStoreImageUploaded = false
-                    storePhotoImageView.visibility = View.GONE
-                    hiddenImageView.visibility = View.VISIBLE
-                    hiddenTextView.visibility = View.VISIBLE
+                    storePhotoImageView?.visibility = View.GONE
+                    hiddenImageView?.visibility = View.VISIBLE
+                    hiddenTextView?.visibility = View.VISIBLE
                 }
                 if (mIsCompleteProfileImageInitiated) {
                     StaticInstances.sStepsCompletedList?.run {

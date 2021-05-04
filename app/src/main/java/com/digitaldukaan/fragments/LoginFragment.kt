@@ -40,7 +40,7 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
     private var mIsDoublePressToExit = false
     private var mIsMobileNumberSearchingDone = false
     private lateinit var mLoginService: LoginService
-    private val mAuthStaticData: AuthNewResponseData = mStaticData.mStaticData.mAuthNew
+    private var mAuthStaticData: AuthNewResponseData? = null
 
     companion object {
         private const val TAG = "LoginFragment"
@@ -107,6 +107,7 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
         savedInstanceState: Bundle?
     ): View? {
         mContentView = inflater.inflate(R.layout.layout_login_fragment, container, false)
+        mAuthStaticData = mStaticData.mStaticData.mAuthNew
         return mContentView
     }
 
@@ -124,19 +125,19 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
     }
 
     private fun setupDataFromStaticResponse() {
-        enterMobileNumberHeading.text = mAuthStaticData.mHeadingText
-        send4DigitOtpHeading.text = mAuthStaticData.mSubHeadingText
-        mobileNumberInputLayout.hint = mAuthStaticData.mInputText
-        mobileNumberTextView.text = mAuthStaticData.mInputText
-        getOtpTextView.text = mAuthStaticData.mButtonText
+        enterMobileNumberHeading.text = mAuthStaticData?.mHeadingText
+        send4DigitOtpHeading.text = mAuthStaticData?.mSubHeadingText
+        mobileNumberInputLayout.hint = mAuthStaticData?.mInputText
+        mobileNumberTextView.text = mAuthStaticData?.mInputText
+        getOtpTextView.text = mAuthStaticData?.mButtonText
     }
 
     private fun setupMobileNumberEditText() {
-        mobileNumberEditText.apply {
+        mobileNumberEditText?.apply {
             requestFocus()
             showKeyboard()
         }
-        mobileNumberEditText.setOnEditorActionListener { _, actionId, _ ->
+        mobileNumberEditText?.setOnEditorActionListener { _, actionId, _ ->
             if (EditorInfo.IME_ACTION_DONE == actionId) getOtpTextView.callOnClick()
             true
         }
@@ -150,8 +151,8 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
                 initiateAutoDetectMobileNumber()
             }
             getOtpTextView.id -> {
-                if (mobileNumberInputLayout.visibility == View.GONE) return
-                val mobileNumber = mobileNumberEditText.text.trim().toString()
+                if (mobileNumberInputLayout?.visibility == View.GONE) return
+                val mobileNumber = mobileNumberEditText?.text?.trim().toString()
                 val validationFailed = isMobileNumberValidationNotCorrect(mobileNumber)
                 performOTPServerCall(validationFailed, mobileNumber)
             }
@@ -160,7 +161,7 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
 
     private fun performOTPServerCall(validationFailed: Boolean, mobileNumber: String) {
         if (validationFailed) {
-            mobileNumberEditText.requestFocus()
+            mobileNumberEditText?.requestFocus()
         } else {
             if (!isInternetConnectionAvailable(mActivity)) {
                 showNoInternetConnectionDialog()
@@ -172,7 +173,7 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
                 data = mapOf(AFInAppEventParameterName.PHONE to mobileNumber, AFInAppEventParameterName.IS_MERCHANT to "1")
             )
             showProgressDialog(mActivity)
-            mobileNumberEditText.hideKeyboard()
+            mobileNumberEditText?.hideKeyboard()
             mLoginService.generateOTP(mobileNumber)
         }
     }
@@ -180,11 +181,11 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
     private fun isMobileNumberValidationNotCorrect(mobileNumber: String): Boolean {
         return when {
             mobileNumber.isEmpty() -> {
-                mobileNumberEditText.error = getString(R.string.mandatory_field_message)
+                mobileNumberEditText?.error = getString(R.string.mandatory_field_message)
                 true
             }
             resources.getInteger(R.integer.mobile_number_length) != mobileNumber.length -> {
-                mobileNumberEditText.error = getString(R.string.mobile_number_length_validation_message)
+                mobileNumberEditText?.error = getString(R.string.mobile_number_length_validation_message)
                 true
             }
             else -> false
@@ -219,11 +220,11 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
             val credentials: Credential? = data?.getParcelableExtra(Credential.EXTRA_KEY)
             credentials?.let {
                 CoroutineScopeUtils().runTaskOnCoroutineMain {
-                    mobileNumberEditText.apply {
+                    mobileNumberEditText?.apply {
                         text = null
                         mMobileNumber = it.id.substring(3)
                         setText(mMobileNumber)
-                        setSelection(mobileNumberEditText.text.trim().length)
+                        setSelection(mobileNumberEditText?.text?.trim()?.length ?: 0)
                     }
                     getOtpTextView.callOnClick()
                 }
@@ -242,7 +243,7 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             if (generateOtpResponse.mStatus) {
-                val mobileNumber = mobileNumberEditText.text.trim().toString()
+                val mobileNumber = mobileNumberEditText?.text?.trim().toString()
                 launchFragment(OtpVerificationFragment.newInstance(mobileNumber), true)
             } else {
                 showToast(generateOtpResponse.mMessage)

@@ -54,7 +54,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         fun newInstance(): SettingsFragment = SettingsFragment()
     }
     private lateinit var mAppSettingsResponseStaticData: AccountStaticTextResponse
-    private lateinit var mAppStoreServicesResponse: StoreServicesResponse
+    private var mAppStoreServicesResponse: StoreServicesResponse? = null
     private val mProfileService = ProfileService()
     private var mReferAndEarnResponse: ReferAndEarnItemResponse? = null
     private var mAccountInfoResponse: AccountInfoResponse? = null

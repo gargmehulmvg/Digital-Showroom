@@ -14,6 +14,7 @@ import com.digitaldukaan.constants.*
 import com.digitaldukaan.models.request.CreateStoreRequest
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.CreateStoreResponse
+import com.digitaldukaan.models.response.OnBoardStep1StaticResponseData
 import com.digitaldukaan.services.CreateStoreService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.ICreateStoreServiceInterface
@@ -24,7 +25,7 @@ import kotlinx.android.synthetic.main.layout_on_board_screen_dukaan_fragment.*
 class OnBoardScreenDukaanNameFragment : BaseFragment(),
     ICreateStoreServiceInterface {
 
-    private val mDukaanNameStaticData = mStaticData.mStaticData.mOnBoardStep1StaticData
+    private var mDukaanNameStaticData: OnBoardStep1StaticResponseData? = null
 
     companion object {
         private val TAG = OnBoardScreenDukaanNameFragment::class.simpleName
@@ -37,6 +38,7 @@ class OnBoardScreenDukaanNameFragment : BaseFragment(),
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.layout_on_board_screen_dukaan_fragment, container, false)
+        mDukaanNameStaticData = mStaticData.mStaticData.mOnBoardStep1StaticData
         return mContentView
     }
 
@@ -57,10 +59,10 @@ class OnBoardScreenDukaanNameFragment : BaseFragment(),
     }
 
     private fun setupUIFromStaticData() {
-        stepOneTextView?.text = mDukaanNameStaticData.mStepCount
-        enterDukaanNameHeading?.text = mDukaanNameStaticData.mDukaanName
-        dukaanNameEditText?.hint = mDukaanNameStaticData.mTitleHinText
-        nextTextView?.text = mDukaanNameStaticData.mNextButton
+        stepOneTextView?.text = mDukaanNameStaticData?.mStepCount
+        enterDukaanNameHeading?.text = mDukaanNameStaticData?.mDukaanName
+        dukaanNameEditText?.hint = mDukaanNameStaticData?.mTitleHinText
+        nextTextView?.text = mDukaanNameStaticData?.mNextButton
     }
 
     override fun onClick(view: View?) {

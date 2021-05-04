@@ -16,13 +16,10 @@ class OtpVerificationNetworkService {
         otpVerificationServiceInterface: IOtpVerificationServiceInterface
     ) {
         try {
-            val response = RetrofitApi().getServerCallObject()
-                ?.validateOTP(ValidateOtpRequest(otpStr, StaticInstances.sCleverTapId, StaticInstances.sFireBaseMessagingToken, mobileNumber))
+            val response = RetrofitApi().getServerCallObject()?.validateOTP(ValidateOtpRequest(otpStr, StaticInstances.sCleverTapId, StaticInstances.sFireBaseMessagingToken, mobileNumber))
             response?.let {
                 if (it.isSuccessful) {
-                    it.body()?.let { validateOtpSuccessResponse ->
-                        otpVerificationServiceInterface.onOTPVerificationSuccessResponse(validateOtpSuccessResponse)
-                    }
+                    it.body()?.let { validateOtpSuccessResponse -> otpVerificationServiceInterface.onOTPVerificationSuccessResponse(validateOtpSuccessResponse) }
                 } else {
                     val validateOtpError = it.errorBody()
                     validateOtpError?.let {
@@ -30,9 +27,7 @@ class OtpVerificationNetworkService {
                             validateOtpError.string(),
                             ValidateOtpErrorResponse::class.java
                         )
-                        otpVerificationServiceInterface.onOTPVerificationErrorResponse(
-                            validateOtpErrorResponse
-                        )
+                        otpVerificationServiceInterface.onOTPVerificationErrorResponse(validateOtpErrorResponse)
                     }
                 }
             }

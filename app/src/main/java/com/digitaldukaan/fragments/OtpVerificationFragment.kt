@@ -11,10 +11,7 @@ import com.digitaldukaan.R
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.IOnOTPFilledListener
 import com.digitaldukaan.models.dto.CleverTapProfile
-import com.digitaldukaan.models.response.CommonApiResponse
-import com.digitaldukaan.models.response.GenerateOtpResponse
-import com.digitaldukaan.models.response.ValidateOtpErrorResponse
-import com.digitaldukaan.models.response.ValidateOtpResponse
+import com.digitaldukaan.models.response.*
 import com.digitaldukaan.services.LoginService
 import com.digitaldukaan.services.OtpVerificationService
 import com.digitaldukaan.services.isInternetConnectionAvailable
@@ -37,7 +34,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
     private lateinit var mLoginService: LoginService
     private var mIsNewUser: Boolean = false
     private var mIsServerCallInitiated: Boolean = false
-    private val mOtpStaticResponseData = mStaticData.mStaticData.mVerifyOtpStaticData
+    private var mOtpStaticResponseData: VerifyOtpStaticResponseData? = null
 
     companion object {
         private const val TAG = "OtpVerificationFragment"
@@ -68,12 +65,13 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
         mContentView = inflater.inflate(R.layout.otp_verification_fragment, container, false)
         mOtpVerificationService = OtpVerificationService()
         mOtpVerificationService.setOtpVerificationListener(this)
+        mOtpStaticResponseData = mStaticData.mStaticData.mVerifyOtpStaticData
         return mContentView
     }
 
     private fun setupUIFromStaticResponse() {
-        enterMobileNumberHeading.text = mOtpStaticResponseData.mHeadingText
-        verifyTextView.text = mOtpStaticResponseData.mVerifyText
+        enterMobileNumberHeading?.text = mOtpStaticResponseData?.mHeadingText
+        verifyTextView?.text = mOtpStaticResponseData?.mVerifyText
     }
 
     override fun onClick(view: View?) {
@@ -85,11 +83,11 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
                 }
                 Log.d(OtpVerificationFragment::class.simpleName, "onClick: clicked")
                 mIsServerCallInitiated = true
-                showProgressDialog(mActivity, mOtpStaticResponseData.mVerifyingText)
+                showProgressDialog(mActivity, mOtpStaticResponseData?.mVerifyingText)
                 mOtpVerificationService.verifyOTP(mMobileNumberStr, mEnteredOtpStr.toInt())
             }
             resendOtpTextView.id -> {
-                if (mOtpStaticResponseData.mResendButtonText == resendOtpTextView.text) {
+                if (resendOtpTextView?.text == mOtpStaticResponseData?.mResendButtonText) {
                     startCountDownTimer()
                     if (!isInternetConnectionAvailable(mActivity)) {
                         showNoInternetConnectionDialog()
@@ -103,7 +101,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setupUIFromStaticResponse()
-        otpEditText.setOtpFilledListener(this)
+        otpEditText?.setOtpFilledListener(this)
         startCountDownTimer()
     }
 
@@ -111,15 +109,15 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
         mCountDownTimer = object: CountDownTimer(Constants.RESEND_OTP_TIMER, Constants.TIMER_INTERVAL) {
             override fun onTick(millisUntilFinished: Long) {
                 CoroutineScopeUtils().runTaskOnCoroutineMain {
-                    resendOtpText.text = getString(R.string.otp_auto_resend_in)
-                    resendOtpTextView.text = "${(millisUntilFinished / 1000)} ${mOtpStaticResponseData.mSecondText}"
+                    resendOtpText?.text = getString(R.string.otp_auto_resend_in)
+                    resendOtpTextView?.text = "${(millisUntilFinished / 1000)} ${mOtpStaticResponseData?.mSecondText}"
                 }
             }
 
             override fun onFinish() {
                 CoroutineScopeUtils().runTaskOnCoroutineMain {
-                    resendOtpText.text = ""
-                    resendOtpTextView.text = mOtpStaticResponseData.mResendButtonText
+                    resendOtpText?.text = ""
+                    resendOtpTextView?.text = mOtpStaticResponseData?.mResendButtonText
                 }
             }
         }
@@ -128,7 +126,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
 
     override fun onStart() {
         super.onStart()
-        otpEditText.clearOTP()
+        otpEditText?.clearOTP()
     }
 
     override fun onDestroy() {
@@ -209,7 +207,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
 
     override fun onNewSmsReceived(sms: String?) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            otpEditText.setText(sms)
+            otpEditText?.setText(sms)
         }
     }
 

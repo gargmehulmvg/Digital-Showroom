@@ -36,7 +36,6 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
     companion object {
         private lateinit var service: MarketingService
         private var mShareStorePDFResponse: ShareStorePDFDataItemResponse? = null
-        private val mMarketingStaticData = mStaticData.mStaticData.mMarketingStaticData
         private const val TAG = "MarketingFragment"
 
         fun newInstance(): MarketingFragment {
@@ -59,7 +58,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
         updateNavigationBarState(R.id.menuMarketing)
         ToolBarManager.getInstance().apply {
             hideToolBar(mActivity, false)
-            setHeaderTitle(mMarketingStaticData.pageHeading)
+            setHeaderTitle(getString(R.string.marketing_page_heading))
             setSideIconVisibility(true)
             hideBackPressFromToolBar(mActivity, false)
             onBackPressed(this@MarketingFragment)

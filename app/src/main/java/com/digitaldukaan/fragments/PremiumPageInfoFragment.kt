@@ -74,7 +74,7 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             premiumPageInfoResponse = Gson().fromJson<PremiumPageInfoResponse>(response.mCommonDataStr, PremiumPageInfoResponse::class.java)
             mStaticText = premiumPageInfoResponse?.staticText
-            commonWebView.apply {
+            commonWebView?.apply {
                 clearHistory()
                 clearCache(true)
                 settings.allowFileAccess = true
@@ -83,7 +83,7 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
                 settings.javaScriptCanOpenWindowsAutomatically = true
                 addJavascriptInterface(WebViewBridge(), "Android")
                 hideBottomNavigationView(premiumPageInfoResponse?.premium?.mIsActive != true)
-                val url = BuildConfig.WEB_VIEW_URL + premiumPageInfoResponse?.premium?.mUrl + "?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}" + "&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"
+                val url = BuildConfig.WEB_VIEW_URL + premiumPageInfoResponse?.premium?.mUrl + "?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"
                 Log.d(PremiumPageInfoFragment::class.simpleName, "onViewCreated: $url")
                 loadUrl(url)
                 webViewClient = object : WebViewClient() {

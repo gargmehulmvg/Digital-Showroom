@@ -154,7 +154,7 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
             stopProgress()
             if (response.mIsSuccessStatus) {
                 val categoryItems = Gson().fromJson<MasterCatalogResponse>(response.mCommonDataStr, MasterCatalogResponse::class.java)
-                productCountTextView.text = "${categoryItems?.totalItems} ${addProductStaticData?.text_tap_to_select}"
+                productCountTextView?.text = "${categoryItems?.totalItems} ${addProductStaticData?.text_tap_to_select}"
                 mIsMoreItemsAvailable = categoryItems.isNext
                 if (categoryItems?.itemList?.isNotEmpty() == true) mCategoryItemsList?.addAll(categoryItems.itemList)
                 masterCatalogAdapter?.setMasterCatalogList(mCategoryItemsList, mSelectedProductsHashMap)

@@ -25,8 +25,8 @@ import org.json.JSONObject
 class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
     PopupMenu.OnMenuItemClickListener {
 
-    private lateinit var mHeaderText: String
-    private lateinit var mLoadUrl: String
+    private var mHeaderText: String = ""
+    private var mLoadUrl: String = ""
     private val mTagName = "CommonWebViewFragment"
     private var mDomainName = ""
 

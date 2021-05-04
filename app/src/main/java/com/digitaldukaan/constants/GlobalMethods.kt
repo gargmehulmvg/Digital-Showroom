@@ -264,15 +264,11 @@ fun getContactsFromStorage2(ctx: Context) {
         val numberIndex = phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)
         val nameIndex = phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)
         while (phoneCursor.moveToNext()) {
-            var number: String = phoneCursor.getString(numberIndex).trim()
+            var number: String = phoneCursor.getString(numberIndex)?.trim() ?: ""
             number = number.trim()
             val name: String = phoneCursor.getString(nameIndex)
             var duplicate = false
-            uniqueMobilePhones.forEach { addedNumber ->
-                if (PhoneNumberUtils.compare(addedNumber, number)) {
-                    duplicate = true
-                }
-            }
+            uniqueMobilePhones.forEach { addedNumber -> if (PhoneNumberUtils.compare(addedNumber, number)) duplicate = true }
             if (!duplicate) {
                 uniqueMobilePhones.add(number)
                 val info = ContactModel()

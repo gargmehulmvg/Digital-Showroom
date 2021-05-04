@@ -20,6 +20,7 @@ import com.digitaldukaan.R
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.models.request.StoreAddressRequest
 import com.digitaldukaan.models.response.CommonApiResponse
+import com.digitaldukaan.models.response.OnBoardStep2StaticResponseData
 import com.digitaldukaan.services.StoreAddressService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IStoreAddressServiceInterface
@@ -30,7 +31,7 @@ import kotlinx.android.synthetic.main.layout_on_board_screen_dukaan_location_fra
 
 class OnBoardScreenDukaanLocationFragment : BaseFragment(), IStoreAddressServiceInterface, LocationListener {
 
-    private val mDukaanLocationStaticData = mStaticData.mStaticData.mOnBoardStep2StaticData
+    private var mDukaanLocationStaticData: OnBoardStep2StaticResponseData? = null
     private var mCurrentLatitude = 0.0
     private var mCurrentLongitude = 0.0
     private lateinit var locationManager: LocationManager
@@ -108,8 +109,8 @@ class OnBoardScreenDukaanLocationFragment : BaseFragment(), IStoreAddressService
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        Log.d("STORE_OBJECT_TEST", "$TAG onViewCreated: ${PrefsManager.getStringDataFromSharedPref(Constants.STORE_NAME)}")
         mContentView = inflater.inflate(R.layout.layout_on_board_screen_dukaan_location_fragment, container, false)
+        mDukaanLocationStaticData = mStaticData.mStaticData.mOnBoardStep2StaticData
         if (checkLocationPermissionWithDialog()) {
             getLastLocation()
         }
@@ -169,10 +170,10 @@ class OnBoardScreenDukaanLocationFragment : BaseFragment(), IStoreAddressService
     }
 
     private fun setupUIFromStaticData() {
-        step2TextView?.text = mDukaanLocationStaticData.mStepCount
-        dukaanLocationHeading?.text = mDukaanLocationStaticData.mHeading
-        dukaanLocationEditText?.hint = mDukaanLocationStaticData.mTitleHinText
-        nextTextView?.text = mDukaanLocationStaticData.mNextButton
+        step2TextView?.text = mDukaanLocationStaticData?.mStepCount
+        dukaanLocationHeading?.text = mDukaanLocationStaticData?.mHeading
+        dukaanLocationEditText?.hint = mDukaanLocationStaticData?.mTitleHinText
+        nextTextView?.text = mDukaanLocationStaticData?.mNextButton
     }
 
     override fun onClick(view: View?) {
