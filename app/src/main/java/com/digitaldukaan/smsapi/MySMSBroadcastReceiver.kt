@@ -34,6 +34,7 @@ class MySMSBroadcastReceiver : BroadcastReceiver() {
                 }
                 CommonStatusCodes.TIMEOUT -> {
                     val message = "Timeout no SMS received"
+                    Log.d(tag, "onReceive: $message")
                 }
             }
         }

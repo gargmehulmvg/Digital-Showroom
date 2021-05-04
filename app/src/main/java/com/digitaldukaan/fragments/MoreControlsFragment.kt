@@ -70,7 +70,7 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
         StaticInstances.sAppStoreServicesResponse?.apply {
             this@MoreControlsFragment.mMinOrderValue = mMinOrderValue ?: 0.0
             this@MoreControlsFragment.mDeliveryPrice = mDeliveryPrice ?: 0.0
-            this@MoreControlsFragment.mFreeDeliveryAbove = mFreeDeliveryAbove ?: 0.0
+            this@MoreControlsFragment.mFreeDeliveryAbove = mFreeDeliveryAbove
             this@MoreControlsFragment.mDeliveryChargeType = mDeliveryChargeType ?: 0
         }
     }

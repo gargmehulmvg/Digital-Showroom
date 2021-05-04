@@ -23,11 +23,13 @@ class App: Application() {
         val conversionDataListener  = object : AppsFlyerConversionListener {
             override fun onConversionDataSuccess(data: MutableMap<String, Any>?) {
                 data?.let { cvData ->
-                    cvData.map {
-                        Log.d(TAG, "conversion_attribute:  ${it.key} = ${it.value}")
-                        val phoneNumber = data["af_referrer_customer_id"] as String
-                        StaticInstances.sAppFlyerRefMobileNumber = phoneNumber
+                    cvData.forEach { (key, value) ->
+                        Log.d(TAG, "conversion_attribute:  $key = $value")
                     }
+                    val phoneNumber = cvData["af_referrer_customer_id"] as String
+                    val isFirstLaunch = cvData["is_first_launch"] as Boolean
+                    if (isFirstLaunch) StaticInstances.sAppFlyerRefMobileNumber = phoneNumber
+                    Log.d(TAG, "conversion_attribute :: StaticInstances.sAppFlyerRefMobileNumber ::  ${StaticInstances.sAppFlyerRefMobileNumber}")
                 }
             }
 
