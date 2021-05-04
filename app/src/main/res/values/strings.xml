@@ -98,8 +98,8 @@
     <string name="add_bank_account">Add Bank Account</string>
     <string name="dont_show_again_message">Don\'t show this again</string>
     <string name="send_bill">Send Bill</string>
-    <string name="force_update_heading">Get the Latest update</string>
-    <string name="force_update_message">Looks like you are using the old version of Digital Showroom. Update now for better performance!</string>
+    <string name="force_update_heading">Get the Latest Update</string>
+    <string name="force_update_message">Update now for all the latest features</string>
     <string-array name="state_array">
         <item >Andhra Pradesh</item>
         <item >Arunachal Pradesh</item>
