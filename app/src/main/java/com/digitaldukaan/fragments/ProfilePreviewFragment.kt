@@ -119,7 +119,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         }
         showProgressDialog(mActivity)
         service.getProfilePreviewData()
-        swipeRefreshLayout.setOnRefreshListener(this)
+        swipeRefreshLayout?.setOnRefreshListener(this)
     }
 
     override fun onProfilePreviewResponse(commonApiResponse: CommonApiResponse) {
@@ -137,7 +137,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                 hiddenTextView?.text = text_add_photo
             }
             constraintLayoutBanner?.visibility = if (mProfilePreviewResponse?.mIsProfileCompleted == true) View.GONE else View.VISIBLE
-            if (swipeRefreshLayout.isRefreshing) swipeRefreshLayout.isRefreshing = false
+            if (swipeRefreshLayout?.isRefreshing == true) swipeRefreshLayout?.isRefreshing = false
             stopProgress()
             mProfilePreviewResponse?.mProfilePreviewBanner?.run {
                 profilePreviewBannerHeading?.text = mHeading
@@ -243,7 +243,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
 
     override fun onProfilePreviewServerException(e: Exception) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            if (swipeRefreshLayout.isRefreshing) swipeRefreshLayout.isRefreshing = false
+            if (swipeRefreshLayout?.isRefreshing == true) swipeRefreshLayout?.isRefreshing = false
             exceptionHandlingForAPIResponse(e)
         }
     }

@@ -61,5 +61,8 @@ interface AFInAppEventType {
         const val EVENT_HELP_SCREEN_OPEN = "HelpSectionClicked"
         const val EVENT_SETTINGS_REFERRAL = "SettingsReferral"
         const val EVENT_PREMIUM_PAGE = "Premium_Page"
+        const val EVENT_APPFLYER_EXCEPTION = "Appflyer_Crash_Exception"
+        const val EVENT_CLERVERTAP_EXCEPTION = "CleverTap_Crash_Exception"
+        const val EVENT_SERVER_EXCEPTION = "Server_Crash_Exception"
     }
 }

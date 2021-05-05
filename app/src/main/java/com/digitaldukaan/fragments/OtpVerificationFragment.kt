@@ -65,7 +65,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
         mContentView = inflater.inflate(R.layout.otp_verification_fragment, container, false)
         mOtpVerificationService = OtpVerificationService()
         mOtpVerificationService.setOtpVerificationListener(this)
-        mOtpStaticResponseData = mStaticData.mStaticData.mVerifyOtpStaticData
+        mOtpStaticResponseData = mStaticData?.mStaticData?.mVerifyOtpStaticData
         return mContentView
     }
 

@@ -66,7 +66,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
 
     companion object {
         private const val TAG = "BaseFragment"
-        lateinit var mStaticData: StaticTextResponse
+        var mStaticData: StaticTextResponse? = null
     }
 
     override fun onAttach(context: Context) {
@@ -132,13 +132,17 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     }
 
     fun stopProgress() {
-        CoroutineScopeUtils().runTaskOnCoroutineMain {
-            if (mProgressDialog != null) {
-                mProgressDialog?.let {
-                    mProgressDialog?.dismiss()
-                    mProgressDialog = null
+        try {
+            CoroutineScopeUtils().runTaskOnCoroutineMain {
+                if (mProgressDialog != null) {
+                    mProgressDialog?.let {
+                        mProgressDialog?.dismiss()
+                        mProgressDialog = null
+                    }
                 }
             }
+        } catch (e: Exception) {
+            Log.e(TAG, "stopProgress: ${e.message}", e)
         }
     }
 
@@ -433,7 +437,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     }
 
     open fun showImagePickerBottomSheet() {
-        val imageUploadStaticData = mStaticData.mStaticData.mCatalogStaticData
+        val imageUploadStaticData = mStaticData?.mStaticData?.mCatalogStaticData
         mImagePickBottomSheet = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
         val view = LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet_image_pick, mActivity.findViewById(R.id.bottomSheetContainer))
         mImagePickBottomSheet.apply {
@@ -449,12 +453,12 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                 val searchImageImageView: View = findViewById(R.id.searchImageImageView)
                 val bottomSheetUploadImageRemovePhoto: View = findViewById(R.id.bottomSheetUploadImageRemovePhoto)
                 val searchImageRecyclerView: RecyclerView = findViewById(R.id.searchImageRecyclerView)
-                bottomSheetUploadImageGalleryTextView.text = imageUploadStaticData.addGallery
-                bottomSheetUploadImageSearchHeading.text = imageUploadStaticData.searchImageSubTitle
-                bottomSheetUploadImageRemovePhotoTextView.text = imageUploadStaticData.removeImageText
-                bottomSheetUploadImageHeading.text = imageUploadStaticData.uploadImageHeading
-                bottomSheetUploadImageCameraTextView.text = imageUploadStaticData.takePhoto
-                searchImageEditText.hint = imageUploadStaticData.searchImageHint
+                bottomSheetUploadImageGalleryTextView.text = imageUploadStaticData?.addGallery
+                bottomSheetUploadImageSearchHeading.text = imageUploadStaticData?.searchImageSubTitle
+                bottomSheetUploadImageRemovePhotoTextView.text = imageUploadStaticData?.removeImageText
+                bottomSheetUploadImageHeading.text = imageUploadStaticData?.uploadImageHeading
+                bottomSheetUploadImageCameraTextView.text = imageUploadStaticData?.takePhoto
+                searchImageEditText.hint = imageUploadStaticData?.searchImageHint
                 bottomSheetUploadImageCloseImageView.setOnClickListener { if (mImagePickBottomSheet.isShowing) mImagePickBottomSheet.dismiss() }
                 if (!StaticInstances.sIsStoreImageUploaded) {
                     bottomSheetUploadImageRemovePhotoTextView.visibility = View.GONE
@@ -504,7 +508,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                                         searchImageRecyclerView.apply {
                                             layoutManager = GridLayoutManager(mActivity, 3)
                                             adapter = mImageAdapter
-                                            mImageAdapter.setSearchImageList(list)
+                                            list?.let { arrayList -> mImageAdapter.setSearchImageList(arrayList) }
                                         }
                                     }
                                 }

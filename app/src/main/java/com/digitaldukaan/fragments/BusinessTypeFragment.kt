@@ -76,7 +76,7 @@ class BusinessTypeFragment : BaseFragment(), IBusinessTypeServiceInterface {
                 adapter = ProfileStatusAdapter2(mProfileInfoResponse?.mTotalSteps?.toInt(), mPosition)
             }
         }
-        verifyTextView.text = mStaticData.mStaticData.mSettingsStaticData.mSaveChanges
+        verifyTextView.text = mStaticData?.mStaticData?.mSettingsStaticData?.mSaveChanges
         businessTypeService = BusinessTypeService()
         businessTypeService.setServiceInterface(this)
         showProgressDialog(mActivity)

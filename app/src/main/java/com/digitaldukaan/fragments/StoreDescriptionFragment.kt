@@ -28,7 +28,7 @@ class StoreDescriptionFragment : BaseFragment(), IStoreDescriptionServiceInterfa
     private var mProfileInfoResponse: ProfileInfoResponse? = null
     private var mPosition: Int = 0
     private var mIsSingleStep: Boolean = false
-    private val mStoreDescriptionStaticData = mStaticData.mStaticData.mProfileStaticData
+    private val mStoreDescriptionStaticData = mStaticData?.mStaticData?.mProfileStaticData
 
     companion object {
         fun newInstance(
@@ -64,7 +64,7 @@ class StoreDescriptionFragment : BaseFragment(), IStoreDescriptionServiceInterfa
             showNoInternetConnectionDialog()
             return
         }
-        storeDescriptionEditText.addTextChangedListener(object : TextWatcher {
+        storeDescriptionEditText?.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 val str = s.toString()
                 continueTextView.isEnabled = str.isNotEmpty()
@@ -77,15 +77,15 @@ class StoreDescriptionFragment : BaseFragment(), IStoreDescriptionServiceInterfa
             }
 
         })
-        storeDescriptionEditText.setText(mProfilePreviewResponse?.mValue)
-        storeDescriptionEditText.hint = mStoreDescriptionStaticData.storeDescriptionHint
-        continueTextView.text = mStoreDescriptionStaticData.saveChanges
+        storeDescriptionEditText?.setText(mProfilePreviewResponse?.mValue)
+        storeDescriptionEditText?.hint = mStoreDescriptionStaticData?.storeDescriptionHint
+        continueTextView?.text = mStoreDescriptionStaticData?.saveChanges
         if (mIsSingleStep) {
-            statusRecyclerView.visibility = View.GONE
-            skipTextView.visibility = View.GONE
+            statusRecyclerView?.visibility = View.GONE
+            skipTextView?.visibility = View.GONE
         } else {
-            skipTextView.visibility = View.VISIBLE
-            statusRecyclerView.apply {
+            skipTextView?.visibility = View.VISIBLE
+            statusRecyclerView?.apply {
                 visibility = View.VISIBLE
                 layoutManager = GridLayoutManager(mActivity, mProfileInfoResponse?.mTotalSteps?.toInt() ?: 0)
                 adapter = ProfileStatusAdapter2(mProfileInfoResponse?.mTotalSteps?.toInt(), mPosition)

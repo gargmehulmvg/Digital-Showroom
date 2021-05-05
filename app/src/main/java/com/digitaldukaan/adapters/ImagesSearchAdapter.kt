@@ -9,10 +9,9 @@ import com.digitaldukaan.R
 import com.digitaldukaan.interfaces.ISearchImageItemClicked
 import com.squareup.picasso.Picasso
 
-class ImagesSearchAdapter :
-    RecyclerView.Adapter<ImagesSearchAdapter.ImagesSearchViewHolder>() {
+class ImagesSearchAdapter : RecyclerView.Adapter<ImagesSearchAdapter.ImagesSearchViewHolder>() {
 
-    private var mSearchImagesList: ArrayList<String> = ArrayList()
+    private var mSearchImagesList: ArrayList<String>? = ArrayList()
     private lateinit var mListener: ISearchImageItemClicked
 
     fun setSearchImageList(list:ArrayList<String>) {
@@ -33,19 +32,16 @@ class ImagesSearchAdapter :
             LayoutInflater.from(parent.context).inflate(R.layout.search_images_item, parent, false)
         )
         view.searchImageView.setOnClickListener {
-            mListener.onSearchImageItemClicked(mSearchImagesList[view.adapterPosition])
+            mSearchImagesList?.let { mListener.onSearchImageItemClicked(it[view.adapterPosition]) }
         }
         return view
     }
 
-    override fun getItemCount(): Int = mSearchImagesList.size
+    override fun getItemCount(): Int = mSearchImagesList?.size ?: 0
 
-    override fun onBindViewHolder(
-        holder: ImagesSearchViewHolder,
-        position: Int
-    ) {
+    override fun onBindViewHolder(holder: ImagesSearchViewHolder, position: Int) {
         holder.searchImageView.apply {
-            Picasso.get().load(mSearchImagesList[position]).into(this)
+            mSearchImagesList?.let { Picasso.get().load(it[position]).into(this) }
         }
     }
 

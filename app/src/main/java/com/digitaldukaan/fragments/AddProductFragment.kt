@@ -399,7 +399,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                                         searchImageRecyclerView?.apply {
                                             layoutManager = GridLayoutManager(mActivity, 3)
                                             adapter = imageAdapter
-                                            imageAdapter?.setSearchImageList(list)
+                                            list?.let { arrayList -> imageAdapter.setSearchImageList(arrayList) }
                                         }
                                     }
                                 }

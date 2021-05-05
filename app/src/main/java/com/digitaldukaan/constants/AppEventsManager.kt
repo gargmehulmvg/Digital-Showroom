@@ -43,25 +43,40 @@ class AppEventsManager {
                 return
             }
             CoroutineScopeUtils().runTaskOnCoroutineBackground {
-                Log.d(TAG, "pushServerCallEvent: event name :: $eventName && map :: $data")
-                val storeIdStr = PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)
-                val request = AndroidEventLogRequest(if (storeIdStr.isNotEmpty()) storeIdStr.toInt() else 0, eventName, data)
-                val response = RetrofitApi().getServerCallObject()?.androidEventLog(request)
-                Log.d(TAG, "pushServerCallEvent: $response")
+                try {
+                    Log.d(TAG, "pushServerCallEvent: event name :: $eventName && map :: $data")
+                    val storeIdStr = PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)
+                    val request = AndroidEventLogRequest(if (storeIdStr.isNotEmpty()) storeIdStr.toInt() else 0, eventName, data)
+                    val response = RetrofitApi().getServerCallObject()?.androidEventLog(request)
+                    Log.d(TAG, "pushServerCallEvent: $response")
+                } catch (e: Exception) {
+                    Log.e(TAG, "pushServerCallEvent: exception", e)
+                    pushServerCallEvent(AFInAppEventType.EVENT_SERVER_EXCEPTION, mapOf("exception" to e.toString()))
+                }
             }
         }
 
         private fun pushCleverTapEvent(eventName: String?, data: Map<String, String?>) {
-            Log.d(TAG, "pushCleverTapEvent: event name :: $eventName && map :: $data")
-            mCleverTapAPI?.pushEvent(eventName, data)
-            Log.d(TAG, "pushCleverTapEvent: DONE")
+            try {
+                Log.d(TAG, "pushCleverTapEvent: event name :: $eventName && map :: $data")
+                mCleverTapAPI?.pushEvent(eventName, data)
+                Log.d(TAG, "pushCleverTapEvent: DONE")
+            } catch (e: Exception) {
+                Log.e(TAG, "pushCleverTapEvent: exception", e)
+                pushServerCallEvent(AFInAppEventType.EVENT_CLERVERTAP_EXCEPTION, mapOf("exception" to e.toString()))
+            }
         }
 
         private fun pushAppFlyerEvent(eventName: String?, data: Map<String, String?>) {
-            Log.d(TAG, "pushAppFlyerEvent: event name :: $eventName && map :: $data")
-            val appFlyerInstance = AppsFlyerLib.getInstance()
-            appFlyerInstance?.logEvent(mActivityInstance,  eventName, data)
-            Log.d(TAG, "pushAppFlyerEvent: DONE")
+            try {
+                Log.d(TAG, "pushAppFlyerEvent: event name :: $eventName && map :: $data")
+                val appFlyerInstance = AppsFlyerLib.getInstance()
+                appFlyerInstance?.logEvent(mActivityInstance,  eventName, data)
+                Log.d(TAG, "pushAppFlyerEvent: DONE")
+            } catch (e: Exception) {
+                Log.e(TAG, "pushAppFlyerEvent: exception", e)
+                pushServerCallEvent(AFInAppEventType.EVENT_APPFLYER_EXCEPTION, mapOf("exception" to e.toString()))
+            }
         }
 
         fun pushCleverTapProfile(profile: CleverTapProfile) {

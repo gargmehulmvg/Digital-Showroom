@@ -107,7 +107,7 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
         savedInstanceState: Bundle?
     ): View? {
         mContentView = inflater.inflate(R.layout.layout_login_fragment, container, false)
-        mAuthStaticData = mStaticData.mStaticData.mAuthNew
+        mAuthStaticData = mStaticData?.mStaticData?.mAuthNew
         return mContentView
     }
 
@@ -226,7 +226,7 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
                         setText(mMobileNumber)
                         setSelection(mobileNumberEditText?.text?.trim()?.length ?: 0)
                     }
-                    getOtpTextView.callOnClick()
+                    getOtpTextView?.callOnClick()
                 }
             }
         } else if (requestCode == CREDENTIAL_PICKER_REQUEST && resultCode == CredentialsApi.ACTIVITY_RESULT_NO_HINTS_AVAILABLE) {

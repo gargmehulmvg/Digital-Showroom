@@ -53,7 +53,7 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
     private lateinit var locationManager: LocationManager
     private lateinit var supportMapFragment: SupportMapFragment
     private var lastLocation: Location? = null
-    private val mMapStaticData = mStaticData.mStaticData.mMapStaticData
+    private val mMapStaticData = mStaticData?.mStaticData?.mMapStaticData
     private lateinit var mapBottomSheetLayout: View
     private lateinit var setLocationTextView: TextView
     private lateinit var stateTextView: TextView
@@ -116,12 +116,12 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
         val pinCodeLayout: TextInputLayout = mContentView.findViewById(R.id.pinCodeLayout)
         setLocationTextView = mContentView.findViewById(R.id.setLocationTextView)
         mapBottomSheetLayout = mContentView.findViewById(R.id.mapBottomSheetLayout)
-        completeAddressLayout.hint = mMapStaticData.completeAddressHint
-        pinCodeLayout.hint = mMapStaticData.pinCodeTextHint
-        cityLayout.hint = mMapStaticData.cityTextHint
-        setLocationTextView.text = mMapStaticData.setLocationText
+        completeAddressLayout.hint = mMapStaticData?.completeAddressHint
+        pinCodeLayout.hint = mMapStaticData?.pinCodeTextHint
+        cityLayout.hint = mMapStaticData?.cityTextHint
+        setLocationTextView.text = mMapStaticData?.setLocationText
         stateTextView.text = getString(R.string.select_state)
-        saveTextView.text = mMapStaticData.saveChangesText
+        saveTextView.text = mMapStaticData?.saveChangesText
         setLocationTextView.setOnClickListener {
             mapBottomSheetLayout.visibility = View.VISIBLE
             setLocationTextView.visibility = View.GONE

@@ -38,7 +38,7 @@ class OnBoardScreenDukaanNameFragment : BaseFragment(),
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.layout_on_board_screen_dukaan_fragment, container, false)
-        mDukaanNameStaticData = mStaticData.mStaticData.mOnBoardStep1StaticData
+        mDukaanNameStaticData = mStaticData?.mStaticData?.mOnBoardStep1StaticData
         return mContentView
     }
 
