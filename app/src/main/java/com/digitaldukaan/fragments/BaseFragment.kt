@@ -151,7 +151,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     open fun exceptionHandlingForAPIResponse(e: Exception) {
         stopProgress()
         if (e is UnknownHostException) showToast(e.message)
-        else showToast(e.message)
+        else showToast("Something went wrong")
     }
 
     protected fun showShortSnackBar(message: String? = "sample testing", showDrawable: Boolean = false, drawableID : Int = 0) {

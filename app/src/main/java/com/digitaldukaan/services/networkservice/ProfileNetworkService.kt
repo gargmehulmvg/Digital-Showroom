@@ -12,9 +12,7 @@ import okhttp3.RequestBody
 
 class ProfileNetworkService {
 
-    suspend fun getProfileServerCall(
-        serviceInterface: IProfileServiceInterface
-    ) {
+    suspend fun getProfileServerCall(serviceInterface: IProfileServiceInterface) {
         try {
             val response = RetrofitApi().getServerCallObject()?.getProfileResponse()
             response?.let {
@@ -41,6 +39,15 @@ class ProfileNetworkService {
                     it.body()?.let { responseBody ->
                         serviceInterface.onChangeStoreAndDeliveryStatusResponse(responseBody)
                     }
+                } else {
+                    val responseBody = it.errorBody()
+                    responseBody?.let {
+                        val errorResponse = Gson().fromJson(
+                            responseBody.string(),
+                            CommonApiResponse::class.java
+                        )
+                        serviceInterface.onChangeStoreAndDeliveryStatusResponse(errorResponse)
+                    }
                 }
             }
         } catch (e: Exception) {
@@ -57,6 +64,15 @@ class ProfileNetworkService {
                 if (it.isSuccessful) {
                     it.body()?.let { responseBody ->
                         serviceInterface.onReferAndEarnResponse(responseBody)
+                    }
+                } else {
+                    val responseBody = it.errorBody()
+                    responseBody?.let {
+                        val errorResponse = Gson().fromJson(
+                            responseBody.string(),
+                            CommonApiResponse::class.java
+                        )
+                        serviceInterface.onReferAndEarnResponse(errorResponse)
                     }
                 }
             }
@@ -75,7 +91,7 @@ class ProfileNetworkService {
                     it.body()?.let { responseBody ->
                         serviceInterface.onReferAndEarnOverWhatsAppResponse(responseBody)
                     }
-                }
+                } else serviceInterface.onProfileDataException(Exception(response.message()))
             }
         } catch (e: Exception) {
             Log.e(ProfileNetworkService::class.java.simpleName, "changeStoreAndDeliveryStatusServerCall: ", e)
