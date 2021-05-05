@@ -19,19 +19,23 @@ class NetworkChangeListener : BroadcastReceiver() {
 
     override fun onReceive(context: Context?, intent: Intent?) {
         Log.d(TAG, "onReceive: called")
-        context?.run {
-            if (noInternetDialog == null) {
-                noInternetDialog = Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen)
+        try {
+            context?.run {
+                if (noInternetDialog == null) {
+                    noInternetDialog = Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen)
+                }
+                if (!isInternetConnectionAvailable(this)) {
+                    noInternetDialog?.apply {
+                        val view = LayoutInflater.from(this@run).inflate(R.layout.layout_no_internet, null)
+                        setContentView(view)
+                        setCancelable(false)
+                        window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                    }?.show()
+                } else if (noInternetDialog?.isShowing == true) noInternetDialog?.dismiss()
+                else noInternetDialog?.dismiss()
             }
-            if (!isInternetConnectionAvailable(this)) {
-                noInternetDialog?.apply {
-                    val view = LayoutInflater.from(this@run).inflate(R.layout.layout_no_internet, null)
-                    setContentView(view)
-                    setCancelable(false)
-                    window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-                }?.show()
-            } else if (noInternetDialog?.isShowing == true) noInternetDialog?.dismiss()
-            else noInternetDialog?.dismiss()
+        } catch (e: Exception) {
+            Log.e(TAG, "onReceive: ${e.message}", e)
         }
     }
 }

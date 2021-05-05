@@ -359,12 +359,8 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         }
         infoResponse.mFooterImages?.forEachIndexed { index, imageUrl ->
             if (index == 0) {
-                Picasso.get().load(imageUrl).placeholder(R.drawable.ic_auto_data_backup)
-                    .into(autoDataBackupImageView)
-            } else {
-                Picasso.get().load(imageUrl).placeholder(R.drawable.ic_safe_secure)
-                    .into(safeSecureImageView)
-            }
+                Picasso.get().load(imageUrl).placeholder(R.drawable.ic_auto_data_backup).into(autoDataBackupImageView)
+            } else Picasso.get().load(imageUrl).placeholder(R.drawable.ic_safe_secure).into(safeSecureImageView)
         }
         if (infoResponse.mTotalSteps == infoResponse.mCompletedSteps) {
             profileStatusRecyclerView?.visibility = View.GONE

@@ -67,22 +67,21 @@ class OnBoardScreenBankDetailsFragment : BaseFragment(), IBankDetailsServiceInte
     }
 
     private fun setupUIFromStaticData(bankDetail: BankDetailsResponse?) {
-        bankHeadingTextView.text = mProfilePreviewStaticData?.heading_bank_page
-        materialTextView3.text = mProfilePreviewStaticData?.sub_heading_bank_page
-        accountHolderNameLayout.hint = mProfilePreviewStaticData?.hint_bank_account_holder_name
-        accountNumberLayout.hint = mProfilePreviewStaticData?.hint_bank_account_number
-        verifyAccountNumberLayout.hint = mProfilePreviewStaticData?.hint_bank_verify_account_number
-        ifscLayout.hint = mProfilePreviewStaticData?.hint_bank_ifsc_code
-        mobileNumberLayout.hint = mProfilePreviewStaticData?.hint_bank_registered_mobile_number
-        mobileNumberLayout.hint = mProfilePreviewStaticData?.hint_bank_registered_mobile_number
-        saveTextView.text = mProfilePreviewStaticData?.hint_bank_save_changes
+        bankHeadingTextView?.text = mProfilePreviewStaticData?.heading_bank_page
+        materialTextView3?.text = mProfilePreviewStaticData?.sub_heading_bank_page
+        accountHolderNameLayout?.hint = mProfilePreviewStaticData?.hint_bank_account_holder_name
+        accountNumberLayout?.hint = mProfilePreviewStaticData?.hint_bank_account_number
+        verifyAccountNumberLayout?.hint = mProfilePreviewStaticData?.hint_bank_verify_account_number
+        ifscLayout?.hint = mProfilePreviewStaticData?.hint_bank_ifsc_code
+        mobileNumberLayout?.hint = mProfilePreviewStaticData?.hint_bank_registered_mobile_number
+        saveTextView?.text = mProfilePreviewStaticData?.hint_bank_save_changes
         bankDetail?.run {
             accountHolderNameEditText.setText(this.accountHolderName)
             mobileNumberEditText.setText(this.registeredPhone)
         }
-        mobileNumberEditText.setText(PrefsManager.getStringDataFromSharedPref(Constants.USER_MOBILE_NUMBER))
-        mobileNumberEditText.isEnabled = false
-        ifscEditText.allowOnlyAlphaNumericCharacters()
+        mobileNumberEditText?.setText(PrefsManager.getStringDataFromSharedPref(Constants.USER_MOBILE_NUMBER))
+        mobileNumberEditText?.isEnabled = false
+        ifscEditText?.allowOnlyAlphaNumericCharacters()
     }
 
     override fun onClick(view: View?) {
