@@ -897,10 +897,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
             data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
         )
         if (mShareBillResponseStr?.isNotEmpty() == true) {
-            shareDataOnWhatsAppByNumber(
-                orderDetailMainResponse?.orders?.phone,
-                mShareBillResponseStr
-            )
+            shareDataOnWhatsAppByNumber(orderDetailMainResponse?.orders?.phone, mShareBillResponseStr)
         } else if (!isInternetConnectionAvailable(mActivity)) {
             showNoInternetConnectionDialog()
         } else {

@@ -265,9 +265,25 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     }
 
     open fun shareDataOnWhatsApp(sharingData: String?) {
+        try {
+            openUrlInBrowser("https://wa.me/?text=$sharingData")
+        } catch (e: Exception) {
+            Log.e(TAG, "shareDataOnWhatsApp: ${e.message}", e)
+        }
+    }
+
+    protected fun shareDataOnWhatsAppByNumber(phone: String?, message: String?) {
+        try {
+            openUrlInBrowser("https://wa.me/$phone?text=$message")
+        } catch (e: java.lang.Exception) {
+            showToast("Error/n$e")
+        }
+    }
+
+    open fun shareData(sharingData: String?, image: Bitmap?) {
         val whatsAppIntent = Intent(Intent.ACTION_SEND)
         whatsAppIntent.type = "text/plain"
-        whatsAppIntent.setPackage("com.whatsapp")
+        image?.let { whatsAppIntent.putExtra(Intent.EXTRA_STREAM, image.getImageUri(mActivity)) }
         whatsAppIntent.putExtra(Intent.EXTRA_TEXT, sharingData)
         try {
             mActivity.startActivity(whatsAppIntent)
@@ -285,18 +301,6 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
             whatsAppIntent.type = "image/jpeg"
             whatsAppIntent.putExtra(Intent.EXTRA_STREAM, image.getImageUri(mActivity))
         }
-        try {
-            mActivity.startActivity(whatsAppIntent)
-        } catch (ex: ActivityNotFoundException) {
-            showToast(ex.message)
-        }
-    }
-
-    open fun shareData(sharingData: String?, image: Bitmap?) {
-        val whatsAppIntent = Intent(Intent.ACTION_SEND)
-        whatsAppIntent.type = "text/plain"
-        image?.let { whatsAppIntent.putExtra(Intent.EXTRA_STREAM, image.getImageUri(mActivity)) }
-        whatsAppIntent.putExtra(Intent.EXTRA_TEXT, sharingData)
         try {
             mActivity.startActivity(whatsAppIntent)
         } catch (ex: ActivityNotFoundException) {
@@ -324,7 +328,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                                 try {
                                     mActivity.startActivity(whatsAppIntent)
                                 } catch (ex: ActivityNotFoundException) {
-                                    showToast("WhatsApp have not been installed.")
+                                    showToast("WhatsApp have not been installed. ${ex.message}")
                                 }
                             }
                         }
@@ -819,17 +823,6 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
             val imageView: ImageView = findViewById(R.id.imageView)
             imageStr?.let { Picasso.get().load(it).into(imageView) }
         }.show()
-    }
-
-    protected fun shareDataOnWhatsAppByNumber(phone: String?, message: String?) {
-        try {
-            val uri = Uri.parse("https://api.whatsapp.com/send?phone=91$phone&text=$message")
-            val intent = Intent(Intent.ACTION_VIEW, uri)
-            intent.setPackage("com.whatsapp")
-            startActivity(intent)
-        } catch (e: java.lang.Exception) {
-            showToast("Error/n$e")
-        }
     }
 
     protected fun showMaterCatalogBottomSheet(addProductBannerStaticDataResponse: AddProductBannerTextResponse?, addProductStaticText: AddProductStaticText?, mode: String) {

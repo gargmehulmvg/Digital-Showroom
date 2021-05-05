@@ -1,8 +1,10 @@
 package com.digitaldukaan.fragments
 
 import android.app.Dialog
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -39,6 +41,7 @@ import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IAddProductServiceInterface
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
+import com.squareup.picasso.Picasso
 import com.theartofdev.edmodo.cropper.CropImageView
 import kotlinx.android.synthetic.main.layout_add_product_fragment.*
 import kotlinx.coroutines.Dispatchers
@@ -563,12 +566,28 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             }
             shareProductContainer.setOnClickListener {
                 val sharingData = "ItemName: ${addProductResponse?.storeItem?.name}\nPrice:  ₹${addProductResponse?.storeItem?.price} \nDiscounted Price: ₹${addProductResponse.storeItem?.discountedPrice}\n\n\uD83D\uDED2 ORDER NOW, Click on the link below\n\n" + "${addProductResponse?.domain}/product/${addProductResponse?.storeItem?.id}/${addProductResponse.storeItem?.name?.replace(' ', '-')}"
-                if (addProductResponse?.storeItem?.imageUrl?.isEmpty() == true) shareDataOnWhatsApp(sharingData) else shareDataOnWhatsAppWithImage(sharingData ,addProductResponse?.storeItem?.imageUrl)
+                if (addProductResponse?.storeItem?.imageUrl?.isEmpty() == true) shareData(sharingData, null) else shareBillWithImage(sharingData, addProductResponse?.storeItem?.imageUrl)
             }
             shareProductContainer.visibility = if (mIsAddNewProduct) View.GONE else View.VISIBLE
             continueTextView.visibility = if (mIsAddNewProduct) View.VISIBLE else View.GONE
             handleVisibilityTextWatcher()
         }
+    }
+
+    private fun shareBillWithImage(str: String, url: String?) {
+        Picasso.get().load(url).into(object : com.squareup.picasso.Target {
+            override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
+                bitmap?.let { shareData(str, bitmap) }
+            }
+
+            override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
+                Log.d(TAG, "onPrepareLoad: ")
+            }
+
+            override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
+                Log.d(TAG, "onBitmapFailed: ")
+            }
+        })
     }
 
     override fun onAddProductDataResponse(commonResponse: CommonApiResponse) {

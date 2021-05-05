@@ -3,6 +3,7 @@ package com.digitaldukaan.constants
 import android.app.DownloadManager
 import android.content.ContentValues
 import android.content.Context
+import android.content.pm.PackageManager
 import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -296,4 +297,16 @@ fun getHeaderByActionInSettingKetList(profilePreviewResponse: ProfileInfoRespons
         }
     }
     return null
+}
+
+fun isAppInstalled(packageName: String, context: Context): Boolean {
+    val pm: PackageManager = context.packageManager
+    val appInstalled: Boolean
+    appInstalled = try {
+        pm.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES)
+        true
+    } catch (e: PackageManager.NameNotFoundException) {
+        false
+    }
+    return appInstalled
 }
