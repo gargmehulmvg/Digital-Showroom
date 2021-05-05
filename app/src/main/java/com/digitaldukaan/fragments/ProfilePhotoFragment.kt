@@ -62,7 +62,7 @@ class ProfilePhotoFragment : BaseFragment(), View.OnClickListener, IProfilePhoto
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         ToolBarManager.getInstance().hideToolBar(mActivity, true)
-        Picasso.get().load(mStoreLogoLinkStr).into(profilePhotoImageView)
+        profilePhotoImageView?.let { Picasso.get().load(mStoreLogoLinkStr).into(it) }
         backImageView.setOnClickListener(this)
     }
 
@@ -113,7 +113,9 @@ class ProfilePhotoFragment : BaseFragment(), View.OnClickListener, IProfilePhoto
             stopProgress()
             val photoResponse = Gson().fromJson<StoreResponse>(response.mCommonDataStr, StoreResponse::class.java)
             mStoreLogoLinkStr = photoResponse.storeInfo.logoImage
-            if (mStoreLogoLinkStr?.isNotEmpty() == true) Picasso.get().load(mStoreLogoLinkStr).into(profilePhotoImageView) else {
+            if (mStoreLogoLinkStr?.isNotEmpty() == true) {
+                profilePhotoImageView?.let { Picasso.get().load(mStoreLogoLinkStr).into(it) }
+            } else {
                 StaticInstances.sIsStoreImageUploaded = false
                 mActivity.onBackPressed()
             }

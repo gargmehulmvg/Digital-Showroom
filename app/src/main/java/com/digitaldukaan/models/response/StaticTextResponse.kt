@@ -16,9 +16,7 @@ data class StaticData(
     @SerializedName("onboarding_step_two") var mOnBoardStep2StaticData: OnBoardStep2StaticResponseData,
     @SerializedName("merchant_address") var mMapStaticData: MapLocationStaticResponseData,
     @SerializedName("catalog_add") var mCatalogStaticData: CatalogStaticData,
-    @SerializedName("marketing") var mMarketingStaticData: MarketingStaticData,
-    @SerializedName("order_list_and_item") var mOrderListStaticData: OrderListStaticData,
-    @SerializedName("settings") var mSettingsStaticData: SettingStaticData
+    @SerializedName("marketing") var mMarketingStaticData: MarketingStaticData
 )
 
 data class OrderListStaticData(
@@ -34,27 +32,8 @@ data class OrderListStaticData(
 )
 
 data class ProfileStaticData(
-    @SerializedName("save_change_text") var saveChanges: String?,
-    @SerializedName("save_text") var saveText: String?,
-    @SerializedName("store_desction_hint_text") var storeDescriptionHint: String?,
-    @SerializedName("warning_one") var mStoreLinkChangeWarningOne: String?,
-    @SerializedName("warning_two") var mStoreLinkChangeWarningTwo: String?,
-    @SerializedName("conform_text") var mStoreLinkChangeDialogHeading: String?,
-    @SerializedName("edit_store_link") var editStoreLink: String?,
-    @SerializedName("edit_store_link_text") var editStoreLinkText: String?,
-    @SerializedName("current_link") var currentLink: String?,
-    @SerializedName("d_text") var dText: String?,
-    @SerializedName("dotpe_dot_in_text") var dotPeDotInText: String?,
-    @SerializedName("store_link_condition_one") var storeLinkConditionOne: String?,
-    @SerializedName("store_link_condition_two") var storeLinkConditionTwo: String?,
-    @SerializedName("store_link_title") var storeLinkTitle: String?,
-    @SerializedName("yes_text") var mYesText: String?,
-    @SerializedName("update_store_text") var mBottomSheetStoreNameHeading: String?,
-    @SerializedName("confirm_text") var mBottomSheetStoreButtonText: String?,
-    @SerializedName("conform_desc_text") var mBottomSheetCloseConfirmationMessage: String?,
-    @SerializedName("domain_already_exists_error") var mDomainAlreadyExistError: String?,
-    @SerializedName("domain_unavailable_error") var mDomainUnAvailableError: String?,
-    @SerializedName("no_text") var mNoText: String?
+    @SerializedName("save_changes_text") var saveChanges: String?,
+    @SerializedName("store_description_hint_text") var storeDescriptionHint: String?
 )
 
 data class MarketingStaticData(

@@ -143,7 +143,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                 profilePreviewBannerHeading?.text = mHeading
                 profilePreviewBannerStartNow?.text = mStartNow
                 Picasso.get().isLoggingEnabled = true
-                Picasso.get().load(mCDN).into(profilePreviewBannerImageView)
+                profilePreviewBannerImageView?.let { Picasso.get().load(mCDN).into(it) }
                 profilePreviewBannerSubHeading?.text = mSubHeading
             }
             ToolBarManager.getInstance().setHeaderTitle(mProfilePreviewResponse?.mProfileStaticText?.pageHeading)
@@ -155,7 +155,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                     hiddenImageView?.visibility = View.INVISIBLE
                     hiddenTextView?.visibility = View.INVISIBLE
                     storePhotoImageView?.visibility = View.VISIBLE
-                    Picasso.get().load(mStoreLogo).into(storePhotoImageView)
+                    storePhotoImageView?.let { Picasso.get().load(mStoreLogo).into(it) }
                 } else {
                     hiddenImageView?.visibility = View.VISIBLE
                     hiddenTextView?.visibility = View.VISIBLE
@@ -557,7 +557,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                     storePhotoImageView?.visibility = View.VISIBLE
                     hiddenImageView?.visibility = View.INVISIBLE
                     hiddenTextView?.visibility = View.INVISIBLE
-                    Picasso.get().load(mStoreLogo).into(storePhotoImageView)
+                    storePhotoImageView?.let { Picasso.get().load(mStoreLogo).into(it) }
                 } else {
                     StaticInstances.sIsStoreImageUploaded = false
                     storePhotoImageView?.visibility = View.GONE

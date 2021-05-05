@@ -43,7 +43,7 @@ class AppSettingsAdapter(private val mAppSettingsItemClicked: IAppSettingsItemCl
     override fun onBindViewHolder(holder: AppSettingsAdapter.AppSettingsViewHolder, position: Int) {
         val response = mAppSettingsList[position]
         holder.mAppSettingTextView.text = response.mText
-        Picasso.get().load(response.mLogo).into(holder.mAppSettingImageView)
+        holder.mAppSettingImageView?.let { Picasso.get().load(response.mLogo).into(it) }
     }
 
 }

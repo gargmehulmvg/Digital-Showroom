@@ -32,7 +32,7 @@ class ProfilePreviewBusinessTypeAdapter(
         position: Int
     ) {
         holder.apply {
-            Picasso.get().load(mBusinessList?.get(position)?.image).into(imageView)
+            imageView?.let { Picasso.get().load(mBusinessList?.get(position)?.image).into(it) }
         }
     }
 

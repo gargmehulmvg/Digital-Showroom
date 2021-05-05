@@ -110,7 +110,7 @@ class OnBoardScreenDukaanLocationFragment : BaseFragment(), IStoreAddressService
         savedInstanceState: Bundle?
     ): View? {
         mContentView = inflater.inflate(R.layout.layout_on_board_screen_dukaan_location_fragment, container, false)
-        mDukaanLocationStaticData = mStaticData?.mStaticData?.mOnBoardStep2StaticData
+        mDukaanLocationStaticData = StaticInstances.mStaticData?.mOnBoardStep2StaticData
         if (checkLocationPermissionWithDialog()) {
             getLastLocation()
         }

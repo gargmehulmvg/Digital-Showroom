@@ -48,7 +48,7 @@ class MarketingCardAdapter(
         holder.run {
             if (item?.type == Constants.SPAN_TYPE_FULL_WIDTH) {
                 doubleSpanContainer.visibility = View.VISIBLE
-                Picasso.get().load(item.logo).into(doubleSpanImageView)
+                doubleSpanImageView?.let { Picasso.get().load(item.logo).into(it) }
                 doubleSpanTextView.text = item.text
                 doubleSpanContinueTextView.text = item.viewNow
                 if (item.stripText?.isNotEmpty() == true) {
@@ -57,7 +57,7 @@ class MarketingCardAdapter(
                 } else stripTextView.visibility = View.GONE
             } else {
                 singleSpanContainer.visibility = View.VISIBLE
-                Picasso.get().load(item?.logo).into(singleSpanImageView)
+                singleSpanImageView?.let { Picasso.get().load(item?.logo).into(it) }
                 singleSpanTextView.text = item?.heading
                 singleSpanBackgroundView.setBackgroundColor(Color.parseColor(item?.color))
             }

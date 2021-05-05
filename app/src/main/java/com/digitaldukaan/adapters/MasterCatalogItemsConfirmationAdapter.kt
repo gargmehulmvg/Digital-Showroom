@@ -65,7 +65,7 @@ class MasterCatalogItemsConfirmationAdapter(
     ) {
         val item = addMasterCatalogConfirmProductsList[position]
         holder.run {
-            Picasso.get().load(item?.imageUrl).into(imageView)
+            imageView?.let { Picasso.get().load(item?.imageUrl).into(it) }
             titleTextView.text = item?.itemName
             priceLayout.hint = "${mStaticText?.hint_mrp} (${mStaticText?.text_rupees_symbol})"
             titleTextView.setTextColor(ContextCompat.getColor(mActivity, if (item?.isSelected == true) R.color.open_green else R.color.black))

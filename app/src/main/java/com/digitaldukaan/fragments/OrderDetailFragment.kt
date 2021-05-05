@@ -279,34 +279,34 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
             setupDeliveryChargeUI(orderDetailResponse?.displayStatus, orderDetailMainResponse?.storeServices)
             when (orderDetailResponse?.orderType) {
                 Constants.ORDER_TYPE_SELF_IMAGE -> {
-                    customerDetailsLabel.visibility = View.GONE
-                    billPhotoImageView.visibility = View.VISIBLE
-                    Picasso.get().load(orderDetailResponse.imageLink).into(billPhotoImageView)
+                    customerDetailsLabel?.visibility = View.GONE
+                    billPhotoImageView?.visibility = View.VISIBLE
+                    billPhotoImageView?.let { Picasso.get().load(orderDetailResponse.imageLink).into(it) }
                 }
                 Constants.ORDER_TYPE_SELF -> {
-                    customerDetailsLabel.visibility = View.GONE
+                    customerDetailsLabel?.visibility = View.GONE
                 }
                 Constants.ORDER_TYPE_PICK_UP -> {
                     if (orderDetailResponse.imageLink?.isNotEmpty() == true) {
                         viewBillTextView?.visibility = View.VISIBLE
-                        viewBillTextView.setOnClickListener { showImageDialog(orderDetailResponse.imageLink) }
+                        viewBillTextView?.setOnClickListener { showImageDialog(orderDetailResponse.imageLink) }
                     }
                     mIsPickUpOrder = true
                     deliveryChargeLabel?.visibility = View.GONE
                     deliveryChargeValue?.visibility = View.GONE
-                    customerDetailsLabel.visibility = View.GONE
+                    customerDetailsLabel?.visibility = View.GONE
                     deliveryChargeValueEditText?.visibility = View.GONE
-                    addDeliveryChargesLabel.text = getString(R.string.add_discount_and_other_charges)
+                    addDeliveryChargesLabel?.text = getString(R.string.add_discount_and_other_charges)
                     mDeliveryChargeAmount = 0.0
                     setAmountToEditText()
                 }
                 else -> {
                     if (orderDetailResponse?.imageLink?.isNotEmpty() == true) {
                         viewBillTextView?.visibility = View.VISIBLE
-                        viewBillTextView.setOnClickListener { showImageDialog(orderDetailResponse.imageLink) }
+                        viewBillTextView?.setOnClickListener { showImageDialog(orderDetailResponse.imageLink) }
                     }
                     mIsPickUpOrder = false
-                    customerDeliveryDetailsRecyclerView.apply {
+                    customerDeliveryDetailsRecyclerView?.apply {
                         layoutManager = LinearLayoutManager(mActivity)
                         val customerDetailsList = ArrayList<CustomerDeliveryAddressDTO>()
                         orderDetailResponse?.deliveryInfo?.run {

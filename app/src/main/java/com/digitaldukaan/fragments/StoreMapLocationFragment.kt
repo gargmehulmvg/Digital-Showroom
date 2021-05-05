@@ -23,6 +23,7 @@ import com.digitaldukaan.adapters.ProfileStatusAdapter2
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.models.request.StoreAddressRequest
 import com.digitaldukaan.models.response.CommonApiResponse
+import com.digitaldukaan.models.response.MapLocationStaticResponseData
 import com.digitaldukaan.models.response.ProfileInfoResponse
 import com.digitaldukaan.models.response.ProfilePreviewSettingsKeyResponse
 import com.digitaldukaan.services.StoreAddressService
@@ -53,7 +54,7 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
     private lateinit var locationManager: LocationManager
     private lateinit var supportMapFragment: SupportMapFragment
     private var lastLocation: Location? = null
-    private val mMapStaticData = mStaticData?.mStaticData?.mMapStaticData
+    private var mMapStaticData: MapLocationStaticResponseData? = null
     private lateinit var mapBottomSheetLayout: View
     private lateinit var setLocationTextView: TextView
     private lateinit var stateTextView: TextView
@@ -85,6 +86,7 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.layout_store_map_location_fragment, container, false)
         locationManager = mActivity.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        mMapStaticData = StaticInstances.mStaticData?.mMapStaticData
         return mContentView
     }
 

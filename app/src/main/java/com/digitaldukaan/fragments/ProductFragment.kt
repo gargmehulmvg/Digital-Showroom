@@ -223,7 +223,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                 val bottomSheetHeadingTextView: TextView = findViewById(R.id.bottomSheetHeadingTextView)
                 val verifyTextView: TextView = findViewById(R.id.verifyTextView)
                 val referAndEarnRecyclerView: RecyclerView = findViewById(R.id.referAndEarnRecyclerView)
-                if (response?.imageUrl?.isNotEmpty() == true) Picasso.get().load(response.imageUrl).into(bottomSheetUpperImageView)
+                if (response?.imageUrl?.isNotEmpty() == true) bottomSheetUpperImageView?.let { Picasso.get().load(response.imageUrl).into(it) }
                 bottomSheetUpperImageView.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.ic_share_pdf_whatsapp))
                 bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
                 bottomSheetHeadingTextView.text = response?.heading

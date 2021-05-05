@@ -212,7 +212,7 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
                 val priceEditText: EditText = findViewById(R.id.priceEditText)
                 bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
                 bottomSheetHeadingTextView.text = addProductStaticData?.bottom_sheet_set_price_below
-                Picasso.get().load(response?.imageUrl).into(imageView)
+                imageView?.let { Picasso.get().load(response?.imageUrl).into(it) }
                 titleTextView.text = response?.itemName
                 priceLayout.hint = addProductStaticData?.hint_price
                 setPriceTextView.text = addProductStaticData?.bottom_sheet_set_price

@@ -18,4 +18,5 @@ object StaticInstances {
     var sStoreId: Int = 0
     var sAppStoreServicesResponse: StoreServicesResponse? = null
     var sAppFlyerRefMobileNumber: String? = ""
+    var mStaticData: StaticData? = null
 }

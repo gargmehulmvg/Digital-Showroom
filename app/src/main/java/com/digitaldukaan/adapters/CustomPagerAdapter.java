@@ -37,7 +37,7 @@ public class CustomPagerAdapter extends PagerAdapter {
     public Object instantiateItem(@NonNull ViewGroup view, int position) {
         View imageLayout = inflater.inflate(R.layout.layout_help_screen_item, view, false);
         final ImageView imageView = imageLayout.findViewById(R.id.image);
-        Picasso.get().load(StaticInstances.INSTANCE.getSHelpScreenList().get(position).getUrl()).into(imageView);
+        if (imageView != null) Picasso.get().load(StaticInstances.INSTANCE.getSHelpScreenList().get(position).getUrl()).into(imageView);
         view.addView(imageLayout, 0);
         return imageLayout;
     }

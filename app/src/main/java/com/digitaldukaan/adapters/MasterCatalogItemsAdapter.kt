@@ -112,7 +112,7 @@ class MasterCatalogItemsAdapter(
     ) {
         val item = mCategoryItemList?.get(position)
         holder.run {
-            Picasso.get().load(item?.imageUrl).into(imageView)
+            imageView?.let { Picasso.get().load(item?.imageUrl).into(it) }
             titleTextView.text = item?.itemName
             priceTextView.text = "${mStaticText?.text_rupees_symbol} ${item?.price}"
             titleTextView.setTextColor(ContextCompat.getColor(mActivity, if (item?.isSelected == true) R.color.open_green else R.color.black))

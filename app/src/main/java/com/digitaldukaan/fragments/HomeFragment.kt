@@ -590,7 +590,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                 shareButtonTextView.text = mOrderPageInfoStaticData?.bottom_sheet_click_bill_photo
                 takeOrderMessageTextView.text = mOrderPageInfoStaticData?.bottom_sheet_take_order_message
                 createNewBillTextView.text = mOrderPageInfoStaticData?.bottom_sheet_create_a_new_bill
-                Picasso.get().load(orderPageInfoResponse?.mTakeOrderImage).into(imageViewSendBill)
+                imageViewSendBill?.let { Picasso.get().load(orderPageInfoResponse?.mTakeOrderImage).into(it) }
                 createNewBillTextView.setOnClickListener {
                     createNewBillTextView.isEnabled = false
                     bottomSheetDialog.dismiss()

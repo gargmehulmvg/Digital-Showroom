@@ -46,7 +46,7 @@ class SettingsStoreAdapter(private val listener: IStoreSettingsItemClicked) : Re
         val response = mStoreOptionsList[position]
         holder.run {
             settingTitleTextView.text = response.mText
-            Picasso.get().load(response.mLogo).into(settingImageView)
+            settingImageView.let { Picasso.get().load(response.mLogo).into(it) }
             if (response.mBannerText?.isEmpty() == false) {
                 settingSubTitleTextView.visibility = View.VISIBLE
                 settingSubTitleTextView.text = response.mBannerText

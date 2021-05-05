@@ -44,7 +44,7 @@ class NewReleaseAdapter(
         val responseItem = newReleaseList?.get(position)
         holder.run {
             textView.text = responseItem?.mText
-            Picasso.get().load(responseItem?.mCDN).into(imageView)
+            imageView?.let { Picasso.get().load(responseItem?.mCDN).into(it) }
             when (responseItem?.mType) {
                 Constants.NEW_RELEASE_TYPE_CUSTOM_DOMAIN -> {
                     itemLayout.background = ContextCompat.getDrawable(activity, R.drawable.curve_premium_selector)

@@ -29,7 +29,7 @@ class OrderPageBannerAdapter(private val bannerList: ArrayList<HomePageBannerRes
         position: Int
     ) {
        holder.run {
-           Picasso.get().load(bannerList?.get(position)?.mBannerUrl).into(doubleSpanImageView)
+           doubleSpanImageView?.let { Picasso.get().load(bannerList?.get(position)?.mBannerUrl).into(it) }
        }
     }
 

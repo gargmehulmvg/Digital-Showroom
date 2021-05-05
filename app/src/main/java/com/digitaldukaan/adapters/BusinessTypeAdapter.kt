@@ -63,7 +63,7 @@ class BusinessTypeAdapter(
                 businessTypeCheckBox.isChecked = true
             }
             businessTypeTextView.text = itemResponse.businessName
-            if (itemResponse.businessImage.isNotEmpty()) Picasso.get().load(itemResponse.businessImage).into(businessTypeImageView)
+            if (itemResponse.businessImage.isNotEmpty()) businessTypeImageView?.let { Picasso.get().load(itemResponse.businessImage).into(it) }
         }
     }
 

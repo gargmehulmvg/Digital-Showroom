@@ -13,8 +13,8 @@ interface Apis {
     @GET("api/dotk/vo1/onboard/getAppVersion")
     suspend fun getAppVersion(@Query("app_name") appName: String, @Query("app_version") appVersion: String) : Response<CommonApiResponse>
 
-    @GET("api/dotk/template/getAppStaticText")
-    suspend fun getAppStaticText(@Query("lanuageId") languageId:String) : Response<StaticTextResponse>
+    @GET("api/dotk/vo1/onboard/getAppStaticText")
+    suspend fun getAppStaticText(@Query("lanuageId") languageId:String) : Response<CommonApiResponse>
 
     @POST("api/dotk/vc1/onboard/createStore")
     suspend fun createStore(@Body request: CreateStoreRequest?): Response<CommonApiResponse>

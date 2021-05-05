@@ -187,7 +187,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                 val bottomSheetHeadingTextView: TextView = findViewById(R.id.bottomSheetHeadingTextView)
                 val verifyTextView: TextView = findViewById(R.id.verifyTextView)
                 val referAndEarnRecyclerView: RecyclerView = findViewById(R.id.referAndEarnRecyclerView)
-                Picasso.get().load(response?.imageUrl).into(bottomSheetUpperImageView)
+                bottomSheetUpperImageView?.let { Picasso.get().load(response?.imageUrl).into(it) }
                 bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
                 bottomSheetHeadingTextView.text = "${response?.heading1}\n${response?.heading2}"
                 verifyTextView.text = response?.settingsTxt
@@ -327,7 +327,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                     storePhotoImageView?.visibility = View.VISIBLE
                     hiddenImageView?.visibility = View.INVISIBLE
                     hiddenTextView?.visibility = View.INVISIBLE
-                    Picasso.get().load(mStoreLogo).into(storePhotoImageView)
+                    storePhotoImageView?.let { Picasso.get().load(mStoreLogo).into(it) }
                 } else {
                     StaticInstances.sIsStoreImageUploaded = false
                     storePhotoImageView?.visibility = View.GONE
@@ -353,7 +353,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         mProfileResponse = infoResponse
         dukaanNameTextView?.text = infoResponse.mStoreInfo.storeInfo.name
         if (infoResponse.mStoreInfo.storeInfo.logoImage?.isNotEmpty() == true) {
-            Picasso.get().load(infoResponse.mStoreInfo.storeInfo.logoImage).into(storePhotoImageView)
+            storePhotoImageView?.let { Picasso.get().load(infoResponse.mStoreInfo.storeInfo.logoImage).into(it) }
             hiddenImageView?.visibility = View.INVISIBLE
             hiddenTextView?.visibility = View.INVISIBLE
         }

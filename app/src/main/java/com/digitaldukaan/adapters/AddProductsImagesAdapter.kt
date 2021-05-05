@@ -59,7 +59,7 @@ class AddProductsImagesAdapter(
             } else {
                 noImagesLayout.visibility = View.GONE
                 image.visibility = View.VISIBLE
-                Picasso.get().load(imageStr?.imageUrl).into(image)
+                image?.let { Picasso.get().load(imageStr?.imageUrl).into(it) }
             }
         }
     }

@@ -46,7 +46,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_main2.*
-import kotlinx.android.synthetic.main.bottom_sheet_image_pick.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -66,7 +65,6 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
 
     companion object {
         private const val TAG = "BaseFragment"
-        var mStaticData: StaticTextResponse? = null
     }
 
     override fun onAttach(context: Context) {
@@ -437,7 +435,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     }
 
     open fun showImagePickerBottomSheet() {
-        val imageUploadStaticData = mStaticData?.mStaticData?.mCatalogStaticData
+        val imageUploadStaticData = StaticInstances.mStaticData?.mCatalogStaticData
         mImagePickBottomSheet = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
         val view = LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet_image_pick, mActivity.findViewById(R.id.bottomSheetContainer))
         mImagePickBottomSheet.apply {
@@ -445,6 +443,8 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
             view?.run {
                 val bottomSheetUploadImageCloseImageView: ImageView = findViewById(R.id.bottomSheetUploadImageCloseImageView)
                 val bottomSheetUploadImageHeading: TextView = findViewById(R.id.bottomSheetUploadImageHeading)
+                val bottomSheetUploadImageCamera: View = findViewById(R.id.bottomSheetUploadImageCamera)
+                val bottomSheetUploadImageGallery: View = findViewById(R.id.bottomSheetUploadImageGallery)
                 val bottomSheetUploadImageCameraTextView: TextView = findViewById(R.id.bottomSheetUploadImageCameraTextView)
                 val bottomSheetUploadImageGalleryTextView: TextView = findViewById(R.id.bottomSheetUploadImageGalleryTextView)
                 val bottomSheetUploadImageSearchHeading: TextView = findViewById(R.id.bottomSheetUploadImageSearchHeading)
@@ -817,9 +817,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
             setCancelable(true)
             setContentView(R.layout.image_dialog)
             val imageView: ImageView = findViewById(R.id.imageView)
-            imageStr?.let {
-                Picasso.get().load(it).into(imageView)
-            }
+            imageStr?.let { Picasso.get().load(it).into(imageView) }
         }.show()
     }
 
@@ -855,7 +853,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                     headerTextView.setHtmlData(addProductBannerStaticDataResponse?.header)
                     bodyTextView.text = addProductBannerStaticDataResponse?.body
                     buttonTextView.text = addProductBannerStaticDataResponse?.button_text
-                    Picasso.get().load(addProductBannerStaticDataResponse?.image_url).into(bannerImageView)
+                    bannerImageView?.let { Picasso.get().load(addProductBannerStaticDataResponse?.image_url).into(it) }
                     closeImageView.setOnClickListener { bottomSheetDialog.dismiss() }
                     buttonTextView.setOnClickListener{
                         bottomSheetDialog.dismiss()

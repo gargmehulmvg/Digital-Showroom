@@ -18,7 +18,7 @@ import com.digitaldukaan.constants.*
 import com.digitaldukaan.models.response.AppVersionResponse
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.HelpScreenItemResponse
-import com.digitaldukaan.models.response.StaticTextResponse
+import com.digitaldukaan.models.response.StaticData
 import com.digitaldukaan.services.SplashService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.ISplashServiceInterface
@@ -72,8 +72,9 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
         return true
     }
 
-    override fun onStaticDataResponse(staticDataResponse: StaticTextResponse) {
-        mStaticData = staticDataResponse
+    override fun onStaticDataResponse(staticDataResponse: CommonApiResponse) {
+        val staticData = Gson().fromJson<StaticData>(staticDataResponse.mCommonDataStr, StaticData::class.java)
+        StaticInstances.mStaticData = staticData
         splashService.getAppVersion()
     }
 

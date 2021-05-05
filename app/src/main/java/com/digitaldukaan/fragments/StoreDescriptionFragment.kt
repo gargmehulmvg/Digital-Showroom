@@ -17,6 +17,7 @@ import com.digitaldukaan.models.request.StoreDescriptionRequest
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.ProfileInfoResponse
 import com.digitaldukaan.models.response.ProfilePreviewSettingsKeyResponse
+import com.digitaldukaan.models.response.ProfileStaticData
 import com.digitaldukaan.services.StoreDescriptionService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IStoreDescriptionServiceInterface
@@ -28,7 +29,7 @@ class StoreDescriptionFragment : BaseFragment(), IStoreDescriptionServiceInterfa
     private var mProfileInfoResponse: ProfileInfoResponse? = null
     private var mPosition: Int = 0
     private var mIsSingleStep: Boolean = false
-    private val mStoreDescriptionStaticData = mStaticData?.mStaticData?.mProfileStaticData
+    private var mStoreDescriptionStaticData: ProfileStaticData? = null
 
     companion object {
         fun newInstance(
@@ -53,6 +54,7 @@ class StoreDescriptionFragment : BaseFragment(), IStoreDescriptionServiceInterfa
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        mStoreDescriptionStaticData = StaticInstances.mStaticData?.mProfileStaticData
         ToolBarManager.getInstance().apply {
             hideToolBar(mActivity, false)
             val stepStr = if (mIsSingleStep) "" else "Step $mPosition : "

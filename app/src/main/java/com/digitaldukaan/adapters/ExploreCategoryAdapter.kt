@@ -41,7 +41,7 @@ class ExploreCategoryAdapter(
     ) {
         val item = mCategoryItemList?.get(position)
         holder.run {
-            Picasso.get().load(item?.imageUrl).into(imageView)
+            imageView?.let { Picasso.get().load(item?.imageUrl).into(it) }
         }
     }
 
