@@ -106,7 +106,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
     override fun onAppShareDataResponse(response: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
-            shareDataOnWhatsApp(Gson().fromJson<String>(response.mCommonDataStr, String::class.java))
+            shareOnWhatsApp(Gson().fromJson<String>(response.mCommonDataStr, String::class.java))
         }
     }
 

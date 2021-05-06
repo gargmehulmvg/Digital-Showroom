@@ -121,7 +121,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                         AFInAppEventParameterName.IS_SETTINGS to "true"
                     )
                 )
-                if (mShareDataOverWhatsAppText.isNotEmpty()) shareDataOnWhatsApp(mShareDataOverWhatsAppText) else if (!isInternetConnectionAvailable(mActivity)) {
+                if (mShareDataOverWhatsAppText.isNotEmpty()) shareOnWhatsApp(mShareDataOverWhatsAppText) else if (!isInternetConnectionAvailable(mActivity)) {
                     showNoInternetConnectionDialog()
                     return
                 } else {
@@ -224,7 +224,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                         )
                         shareDataOnWhatsAppWithImage("${referEarnOverWhatsAppResponse.mReferAndEarnData.whatsAppText} $p0", referEarnOverWhatsAppResponse.mReferAndEarnData.imageUrl)
                     } else {
-                        shareDataOnWhatsApp("${referEarnOverWhatsAppResponse.mReferAndEarnData.whatsAppText} $p0")
+                        shareOnWhatsApp("${referEarnOverWhatsAppResponse.mReferAndEarnData.whatsAppText} $p0")
                     }
                 }
                 override fun onResponseError(p0: String?) {
@@ -344,7 +344,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             mShareDataOverWhatsAppText = Gson().fromJson<String>(commonResponse.mCommonDataStr, String::class.java)
-            shareDataOnWhatsApp(mShareDataOverWhatsAppText)
+            shareOnWhatsApp(mShareDataOverWhatsAppText)
         }
     }
 

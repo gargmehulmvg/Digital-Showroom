@@ -135,7 +135,7 @@ class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
             }
             whatsAppImageView.id -> {
                 if (mShareDataOverWhatsAppText.isNotEmpty()) {
-                    shareDataOnWhatsApp(mShareDataOverWhatsAppText)
+                    shareOnWhatsApp(mShareDataOverWhatsAppText)
                 } else if (!isInternetConnectionAvailable(mActivity)) {
                     showNoInternetConnectionDialog()
                     return
@@ -147,7 +147,7 @@ class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
                             val commonResponse = response?.body()
                             stopProgress()
                             mShareDataOverWhatsAppText = Gson().fromJson<String>(commonResponse?.mCommonDataStr, String::class.java)
-                            shareDataOnWhatsApp(mShareDataOverWhatsAppText)
+                            shareOnWhatsApp(mShareDataOverWhatsAppText)
                         }
                     }
                 }

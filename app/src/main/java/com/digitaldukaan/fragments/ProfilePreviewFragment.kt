@@ -259,7 +259,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         )
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
-            if (response.mIsSuccessStatus) shareDataOnWhatsApp(Gson().fromJson<String>(response.mCommonDataStr, String::class.java)) else showShortSnackBar(response.mMessage, true, R.drawable.ic_close_red)
+            if (response.mIsSuccessStatus) shareOnWhatsApp(Gson().fromJson<String>(response.mCommonDataStr, String::class.java)) else showShortSnackBar(response.mMessage, true, R.drawable.ic_close_red)
         }
     }
 

@@ -150,7 +150,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             mShareDataOverWhatsAppText = Gson().fromJson<String>(commonResponse.mCommonDataStr, String::class.java)
-            shareDataOnWhatsApp(mShareDataOverWhatsAppText)
+            shareOnWhatsApp(mShareDataOverWhatsAppText)
         }
     }
 
@@ -255,7 +255,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                         AFInAppEventParameterName.IS_CATALOG to "true"
                     )
                 )
-                if (mShareDataOverWhatsAppText.isNotEmpty()) shareDataOnWhatsApp(mShareDataOverWhatsAppText) else if (!isInternetConnectionAvailable(mActivity)) {
+                if (mShareDataOverWhatsAppText.isNotEmpty()) shareOnWhatsApp(mShareDataOverWhatsAppText) else if (!isInternetConnectionAvailable(mActivity)) {
                     showNoInternetConnectionDialog()
                     return
                 } else {

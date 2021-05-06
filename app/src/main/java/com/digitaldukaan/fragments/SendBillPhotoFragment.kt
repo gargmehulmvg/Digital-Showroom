@@ -123,7 +123,7 @@ class SendBillPhotoFragment: BaseFragment(), ISendBillPhotoServiceInterface {
             if (commonResponse.mIsSuccessStatus) {
                 showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_green_check_small)
                 val response = Gson().fromJson<UpdateOrderResponse>(commonResponse.mCommonDataStr, UpdateOrderResponse::class.java)
-                shareDataOnWhatsApp(response?.whatsAppText)
+                shareOnWhatsApp(response?.whatsAppText)
                 launchFragment(HomeFragment.newInstance(), true)
             } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
         }

@@ -50,6 +50,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.net.UnknownHostException
+import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
@@ -264,19 +265,48 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         }
     }
 
-    open fun shareDataOnWhatsApp(sharingData: String?) {
-        try {
-            openUrlInBrowser("https://wa.me/?text=$sharingData")
-        } catch (e: Exception) {
-            Log.e(TAG, "shareDataOnWhatsApp: ${e.message}", e)
+    open fun shareOnWhatsApp(sharingData: String?, image: Bitmap? = null) {
+        val shareIntent = Intent()
+        shareIntent.action = Intent.ACTION_SEND
+        shareIntent.type = "text/plain"
+        val resInfoList = activity?.packageManager?.queryIntentActivities(shareIntent, 0)
+        val shareIntentList = arrayListOf<Intent>()
+        if (resInfoList?.isNotEmpty() == true) {
+            for (resInfo in resInfoList) {
+                val packageName = resInfo.activityInfo.packageName
+                if (packageName.toLowerCase(Locale.getDefault()).contains("whatsapp")) {
+                    val intent = Intent()
+                    intent.component = ComponentName(packageName, resInfo.activityInfo.name)
+                    intent.action = Intent.ACTION_SEND
+                    intent.type = "text/plain"
+                    image?.let {
+                        intent.type = "image/jpeg"
+                        intent.putExtra(Intent.EXTRA_STREAM, it.getImageUri(mActivity))
+                    }
+                    intent.`package` = packageName
+                    intent.putExtra(Intent.EXTRA_TEXT, sharingData)
+                    shareIntentList.add(intent)
+                }
+            }
+        }
+        if (shareIntentList.isEmpty()) {
+            showToast("No apps to share!")
+        } else {
+            val chooserIntent = Intent.createChooser(Intent(), "Choose app to share")
+            chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, shareIntentList.toTypedArray())
+            activity?.startActivity(chooserIntent)
         }
     }
 
     protected fun shareDataOnWhatsAppByNumber(phone: String?, message: String?) {
-        try {
-            openUrlInBrowser("https://wa.me/$phone?text=$message")
-        } catch (e: java.lang.Exception) {
-            showToast("Error/n$e")
+        phone?.let {
+            var phoneNumber = it
+            if (!it.contains("+91")) phoneNumber = "+91$phoneNumber"
+            try {
+                openUrlInBrowser("https://wa.me/$phoneNumber?text=$message")
+            } catch (e: Exception) {
+                showToast(e.message)
+            }
         }
     }
 
@@ -292,38 +322,20 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         }
     }
 
-    open fun shareDataOnWhatsAppWithImage(sharingData: String?, image: Bitmap?) {
-        val whatsAppIntent = Intent(Intent.ACTION_SEND)
-        whatsAppIntent.type = "text/plain"
-        whatsAppIntent.setPackage("com.whatsapp")
-        whatsAppIntent.putExtra(Intent.EXTRA_TEXT, sharingData)
-        image?.let {
-            whatsAppIntent.type = "image/jpeg"
-            whatsAppIntent.putExtra(Intent.EXTRA_STREAM, image.getImageUri(mActivity))
-        }
-        try {
-            mActivity.startActivity(whatsAppIntent)
-        } catch (ex: ActivityNotFoundException) {
-            showToast(ex.message)
-        }
-    }
-
     open fun shareDataOnWhatsAppWithImage(sharingData: String?, photoStr: String?) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             Picasso.get().load(photoStr).into(object : com.squareup.picasso.Target {
                 override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
-                    // loaded bitmap is here (bitmap)
                     bitmap?.let {
                         val imgUri = it.getImageUri(mActivity)
                         Log.d(TAG, "onBitmapLoaded: $imgUri")
                         imgUri?.let {
                             val whatsAppIntent = Intent(Intent.ACTION_SEND)
                             whatsAppIntent.apply {
-                                type = "text/plain"
                                 setPackage("com.whatsapp")
                                 putExtra(Intent.EXTRA_TEXT, sharingData)
                                 putExtra(Intent.EXTRA_STREAM, imgUri)
-                                type = "image/jpeg"
+                                type = "image/*"
                                 addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                                 try {
                                     mActivity.startActivity(whatsAppIntent)

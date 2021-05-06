@@ -564,7 +564,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             if (mOptionsMenuResponse?.isEmpty() == true) ToolBarManager.getInstance().setSideIconVisibility(false)
             shareProductContainer?.setOnClickListener {
                 val sharingData = "ItemName: ${addProductResponse?.storeItem?.name}\nPrice:  ₹${addProductResponse?.storeItem?.price} \nDiscounted Price: ₹${addProductResponse.storeItem?.discountedPrice}\n\n\uD83D\uDED2 ORDER NOW, Click on the link below\n\n" + "${addProductResponse?.domain}/product/${addProductResponse?.storeItem?.id}/${addProductResponse.storeItem?.name?.replace(' ', '-')}"
-                if (addProductResponse?.storeItem?.imageUrl?.isEmpty() == true) shareData(sharingData, null) else shareBillWithImage(sharingData, addProductResponse?.storeItem?.imageUrl)
+                if (addProductResponse?.storeItem?.imageUrl?.isEmpty() == true) shareOnWhatsApp(sharingData, null) else shareBillWithImage(sharingData, addProductResponse?.storeItem?.imageUrl)
             }
             shareProductContainer?.visibility = if (mIsAddNewProduct) View.GONE else View.VISIBLE
             continueTextView?.visibility = if (mIsAddNewProduct) View.VISIBLE else View.GONE
@@ -575,7 +575,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     private fun shareBillWithImage(str: String, url: String?) {
         Picasso.get().load(url).into(object : com.squareup.picasso.Target {
             override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
-                bitmap?.let { shareData(str, bitmap) }
+                bitmap?.let { shareOnWhatsApp(str, bitmap) }
             }
 
             override fun onPrepareLoad(placeHolderDrawable: Drawable?) {

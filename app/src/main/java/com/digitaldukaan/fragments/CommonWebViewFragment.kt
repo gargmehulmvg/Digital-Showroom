@@ -109,7 +109,7 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
                 val base64Str = base64OriginalStr.split("data:image/png;base64,")[1]
                 Log.d(mTagName, "image URL :: $base64Str")
                 val bitmap = getBitmapFromBase64V2(base64Str)
-                shareDataOnWhatsAppWithImage("Order From - ${if (domain.isEmpty()) mDomainName else domain}", bitmap)
+                shareOnWhatsApp("Order From - ${if (domain.isEmpty()) mDomainName else domain}", bitmap)
             } else {
                 val imageBase64 = jsonData.optString("data")
                 Log.d(mTagName, "image URL :: $imageBase64")
