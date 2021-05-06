@@ -14,7 +14,7 @@ public class OtpEditText extends androidx.appcompat.widget.AppCompatEditText {
     private float mSpace = 24; //24 dp by default, space between the lines
     private float mNumChars = 4;
     private float mLineSpacing = 8; //8dp by default, height of the text from our lines
-    private int mMaxLength = 4;
+    private static final int MAX_LENGTH = 4;
     private float mLineStroke = 2;
     private Paint mLinesPaint;
     private OnClickListener mClickListener;
@@ -47,7 +47,7 @@ public class OtpEditText extends androidx.appcompat.widget.AppCompatEditText {
         setBackgroundResource(0);
         mSpace = multi * mSpace; //convert to pixels for our density
         mLineSpacing = multi * mLineSpacing; //convert to pixels for our density
-        mNumChars = mMaxLength;
+        mNumChars = MAX_LENGTH;
 
         super.setOnClickListener(v -> {
             // When tapped, move cursor to end of text.
@@ -111,6 +111,7 @@ public class OtpEditText extends androidx.appcompat.widget.AppCompatEditText {
     }
 
     public void clearOTP() {
+        if (this == null) return;
         this.setText("");
     }
 }

@@ -62,7 +62,11 @@ class ProfilePhotoFragment : BaseFragment(), View.OnClickListener, IProfilePhoto
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         ToolBarManager.getInstance().hideToolBar(mActivity, true)
-        profilePhotoImageView?.let { Picasso.get().load(mStoreLogoLinkStr).into(it) }
+        profilePhotoImageView?.let {
+            if (mStoreLogoLinkStr?.isNotEmpty() == true) {
+                Picasso.get().load(mStoreLogoLinkStr).into(it)
+            }
+        }
         backImageView.setOnClickListener(this)
     }
 

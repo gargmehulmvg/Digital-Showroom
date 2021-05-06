@@ -52,8 +52,9 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
     private var mProfilePreviewResponse: ProfileInfoResponse? = null
     private lateinit var mStoreLinkErrorResponse: StoreDescriptionResponse
     private lateinit var mProfileInfoSettingKeyResponse: ProfilePreviewSettingsKeyResponse
-    private lateinit var cancelWarningDialog: Dialog
+    private var cancelWarningDialog: Dialog? = null
     private var mStoreLogo: String? = ""
+    private var mStoreLinkLastEntered = ""
     private var mIsCompleteProfileImageInitiated = false
 
     companion object {
@@ -142,7 +143,6 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
             mProfilePreviewResponse?.mProfilePreviewBanner?.run {
                 profilePreviewBannerHeading?.text = mHeading
                 profilePreviewBannerStartNow?.text = mStartNow
-                Picasso.get().isLoggingEnabled = true
                 profilePreviewBannerImageView?.let { Picasso.get().load(mCDN).into(it) }
                 profilePreviewBannerSubHeading?.text = mSubHeading
             }
@@ -164,7 +164,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
             }
             mProfilePreviewResponse?.mSettingsKeysList?.run {
                 val linearLayoutManager = LinearLayoutManager(mActivity)
-                profilePreviewRecyclerView.apply {
+                profilePreviewRecyclerView?.apply {
                     layoutManager = linearLayoutManager
                     setHasFixedSize(true)
                     adapter = ProfilePreviewAdapter(mActivity, this@run, this@ProfilePreviewFragment, mProfilePreviewResponse?.mStoreItemResponse?.storeBusiness)
@@ -173,7 +173,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                     profilePreviewRecyclerView.context,
                     linearLayoutManager.orientation
                 )
-                profilePreviewRecyclerView.addItemDecoration(dividerItemDecoration)
+                profilePreviewRecyclerView?.addItemDecoration(dividerItemDecoration)
             }
         }
     }
@@ -343,9 +343,8 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
     private fun showBottomSheetCancelDialog() {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             mActivity.let {
-                val view = LayoutInflater.from(mActivity)
-                    .inflate(R.layout.bottom_sheet_cancel_dialog, null)
-                cancelWarningDialog.apply {
+                val view = LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet_cancel_dialog, null)
+                cancelWarningDialog?.apply {
                     setContentView(view)
                     setCancelable(false)
                     window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -359,17 +358,15 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                         bottomSheetCancelDialogYes.text = mProfilePreviewStaticData?.mYesText
                         bottomSheetCancelDialogNo.text = mProfilePreviewStaticData?.mNoText
                         bottomSheetCancelDialogYes.setOnClickListener {
-                            cancelWarningDialog.dismiss()
+                            cancelWarningDialog?.dismiss()
                             mStoreLinkBottomSheet?.dismiss()
                         }
-                        bottomSheetCancelDialogNo.setOnClickListener { cancelWarningDialog.dismiss() }
+                        bottomSheetCancelDialogNo.setOnClickListener { cancelWarningDialog?.dismiss() }
                     }
-                }.show()
+                }?.show()
             }
         }
     }
-
-    private var mStoreLinkLastEntered = ""
 
     private fun showEditStoreLinkBottomSheet(profilePreviewResponse: ProfilePreviewSettingsKeyResponse, isErrorResponse:Boolean = false) {
         AppEventsManager.pushAppEvents(

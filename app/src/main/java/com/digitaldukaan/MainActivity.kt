@@ -86,18 +86,17 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     }
 
     override fun onBackPressed() {
-        val current: BaseFragment = getCurrentFragment()
-        if (current.onBackPressed()) return
+        val current: BaseFragment? = getCurrentFragment()
+        if (current?.onBackPressed() == true) return
         val manager = supportFragmentManager
         if (manager.backStackEntryCount > 0) super.onBackPressed()
     }
 
     fun onClick(v: View?) {
-        val fragment: BaseFragment = getCurrentFragment()
-        fragment.onClick(v)
+        getCurrentFragment()?.onClick(v)
     }
 
-    fun getCurrentFragment(): BaseFragment {
+    fun getCurrentFragment(): BaseFragment? {
         val mgr = supportFragmentManager
         val list = mgr.fragments
         val count = mgr.backStackEntryCount
@@ -112,7 +111,11 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             return BaseFragment()
         }
         val entry = mgr.getBackStackEntryAt(count - 1)
-        return mgr.findFragmentByTag(entry.name) as BaseFragment
+        return try {
+            mgr.findFragmentByTag(entry.name) as BaseFragment
+        } catch (e: Exception) {
+            null
+        }
     }
 
     fun showToast(message: String?) {
@@ -128,7 +131,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         permissions: Array<out String>,
         grantResults: IntArray
     ) {
-        getCurrentFragment().onRequestPermissionsResult(requestCode, permissions, grantResults)
+        getCurrentFragment()?.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
     private fun doSwitchToScreen(fragment: Fragment?, addToBackStack: Boolean) {
@@ -195,16 +198,17 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        getCurrentFragment().onActivityResult(requestCode, resultCode, data)
+        getCurrentFragment()?.onActivityResult(requestCode, resultCode, data)
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        val fragment = getCurrentFragment() ?: return false
         when (item.itemId) {
-            R.id.menuHome -> if (getCurrentFragment() !is HomeFragment) launchFragment(HomeFragment.newInstance(), true)
-            R.id.menuSettings -> if (getCurrentFragment() !is SettingsFragment) launchFragment(SettingsFragment.newInstance(), true)
-            R.id.menuMarketing -> if (getCurrentFragment() !is MarketingFragment) launchFragment(MarketingFragment.newInstance(), true)
-            R.id.menuProducts -> if (getCurrentFragment() !is ProductFragment) launchFragment(ProductFragment.newInstance(), true)
-            R.id.menuPremium -> if (getCurrentFragment() !is PremiumPageInfoFragment) {
+            R.id.menuHome -> if (fragment !is HomeFragment) launchFragment(HomeFragment.newInstance(), true)
+            R.id.menuSettings -> if (fragment !is SettingsFragment) launchFragment(SettingsFragment.newInstance(), true)
+            R.id.menuMarketing -> if (fragment !is MarketingFragment) launchFragment(MarketingFragment.newInstance(), true)
+            R.id.menuProducts -> if (fragment !is ProductFragment) launchFragment(ProductFragment.newInstance(), true)
+            R.id.menuPremium -> if (fragment !is PremiumPageInfoFragment) {
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_PREMIUM_PAGE,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,

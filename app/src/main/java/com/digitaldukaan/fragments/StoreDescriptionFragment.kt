@@ -89,7 +89,7 @@ class StoreDescriptionFragment : BaseFragment(), IStoreDescriptionServiceInterfa
             skipTextView?.visibility = View.VISIBLE
             statusRecyclerView?.apply {
                 visibility = View.VISIBLE
-                layoutManager = GridLayoutManager(mActivity, mProfileInfoResponse?.mTotalSteps?.toInt() ?: 0)
+                layoutManager = GridLayoutManager(mActivity, mProfileInfoResponse?.mTotalSteps?.toInt() ?: 1)
                 adapter = ProfileStatusAdapter2(mProfileInfoResponse?.mTotalSteps?.toInt(), mPosition)
             }
         }

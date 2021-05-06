@@ -27,7 +27,7 @@ import kotlinx.android.synthetic.main.otp_verification_fragment.*
 class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerificationServiceInterface, ISmsReceivedListener,
     ILoginServiceInterface {
 
-    private lateinit var mCountDownTimer: CountDownTimer
+    private var mCountDownTimer: CountDownTimer? = null
     private lateinit var mOtpVerificationService: OtpVerificationService
     private var mEnteredOtpStr = ""
     private var mMobileNumberStr = ""
@@ -121,7 +121,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
                 }
             }
         }
-        mCountDownTimer.start()
+        mCountDownTimer?.start()
     }
 
     override fun onStart() {
@@ -131,7 +131,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
 
     override fun onDestroy() {
         super.onDestroy()
-        mCountDownTimer.cancel()
+        mCountDownTimer?.cancel()
     }
 
     override fun onOTPFilledListener(otpStr: String) {
@@ -144,7 +144,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
     override fun onOTPVerificationSuccessResponse(validateOtpResponse: ValidateOtpResponse) {
         mIsServerCallInitiated = false
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            mCountDownTimer.cancel()
+            mCountDownTimer?.cancel()
             if (!validateOtpResponse.mIsSuccessStatus) {
                 stopProgress()
                 otpEditText?.clearOTP()

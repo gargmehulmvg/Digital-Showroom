@@ -500,12 +500,12 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 if (discountedPrice == 0.0 || discountedPrice >= price) {
                     discountedPriceEditText?.text = null
                 } else {
-                    discountContainer.visibility = View.VISIBLE
+                    discountContainer?.visibility = View.VISIBLE
                     discountedPriceEditText?.setText("$discountedPrice")
                 }
                 if (addProductResponse.storeItem?.imagesList?.isNotEmpty() == true) {
-                    noImagesLayout.visibility = View.GONE
-                    imagesRecyclerView.apply {
+                    noImagesLayout?.visibility = View.GONE
+                    imagesRecyclerView?.apply {
                         layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
                         mImagesStrList.clear()
                         if (mImagesStrList.isEmpty()) mImagesStrList.add(AddProductImagesResponse(0, "", 0))
@@ -516,17 +516,17 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                         adapter = mImageAddAdapter
                     }
                 } else {
-                    imagesRecyclerView.visibility = View.GONE
-                    noImagesLayout.visibility = View.VISIBLE
+                    imagesRecyclerView?.visibility = View.GONE
+                    noImagesLayout?.visibility = View.VISIBLE
                 }
                 if (description.isNotEmpty()) {
-                    addItemTextView.visibility = View.GONE
-                    productDescriptionInputLayout.visibility = View.VISIBLE
+                    addItemTextView?.visibility = View.GONE
+                    productDescriptionInputLayout?.visibility = View.VISIBLE
                     productDescriptionEditText?.setText(description)
                 }
             }
             addProductResponse?.addProductStoreCategories?.run {
-                chipGroupRecyclerView.apply {
+                chipGroupRecyclerView?.apply {
                     layoutManager = StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL)
                     mAddProductStoreCategoryList = addProductResponse.addProductStoreCategories?.storeCategoriesList
                     if (mAddProductStoreCategoryList?.isNotEmpty() == true) {
@@ -551,25 +551,23 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 addDiscountLabel?.text = text_add_discount_on_this_item
                 textView2?.text = heading_add_product_banner
                 updateCameraTextView?.text = text_upload_or_search_images
-                nameInputLayout.hint = hint_item_name
-                priceInputLayout.hint = hint_price
-                discountedPriceInputLayout.hint = hint_discounted_price
-                enterCategoryInputLayout.hint = hint_enter_category_optional
+                nameInputLayout?.hint = hint_item_name
+                priceInputLayout?.hint = hint_price
+                discountedPriceInputLayout?.hint = hint_discounted_price
+                enterCategoryInputLayout?.hint = hint_enter_category_optional
                 addItemTextView?.text = text_add_item_description
                 continueTextView?.text = if (mIsAddNewProduct)  text_add_item else getString(R.string.save)
                 val count = mImagesStrList.size
                 imagesLeftTextView?.text = "${if (count == 0) count else count - 1}/4 $text_images_added"
             }
             mOptionsMenuResponse = addProductResponse?.addProductStoreOptionsMenu
-            if (mOptionsMenuResponse?.isEmpty() == true) {
-                ToolBarManager.getInstance().setSideIconVisibility(false)
-            }
-            shareProductContainer.setOnClickListener {
+            if (mOptionsMenuResponse?.isEmpty() == true) ToolBarManager.getInstance().setSideIconVisibility(false)
+            shareProductContainer?.setOnClickListener {
                 val sharingData = "ItemName: ${addProductResponse?.storeItem?.name}\nPrice:  ₹${addProductResponse?.storeItem?.price} \nDiscounted Price: ₹${addProductResponse.storeItem?.discountedPrice}\n\n\uD83D\uDED2 ORDER NOW, Click on the link below\n\n" + "${addProductResponse?.domain}/product/${addProductResponse?.storeItem?.id}/${addProductResponse.storeItem?.name?.replace(' ', '-')}"
                 if (addProductResponse?.storeItem?.imageUrl?.isEmpty() == true) shareData(sharingData, null) else shareBillWithImage(sharingData, addProductResponse?.storeItem?.imageUrl)
             }
-            shareProductContainer.visibility = if (mIsAddNewProduct) View.GONE else View.VISIBLE
-            continueTextView.visibility = if (mIsAddNewProduct) View.VISIBLE else View.GONE
+            shareProductContainer?.visibility = if (mIsAddNewProduct) View.GONE else View.VISIBLE
+            continueTextView?.visibility = if (mIsAddNewProduct) View.VISIBLE else View.GONE
             handleVisibilityTextWatcher()
         }
     }
@@ -614,9 +612,9 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     imageResponse.imageUrl = base64Str
                     mImagesStrList[mImageChangePosition] = imageResponse
                 }
-                noImagesLayout.visibility = View.GONE
-                imagesRecyclerView.visibility = View.VISIBLE
-                imagesRecyclerView.apply {
+                noImagesLayout?.visibility = View.GONE
+                imagesRecyclerView?.visibility = View.VISIBLE
+                imagesRecyclerView?.apply {
                     layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
                     mImageAddAdapter = AddProductsImagesAdapter(
                         mImagesStrList,
@@ -703,8 +701,8 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
 
     private fun showGoBackDialog() {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            val builder: AlertDialog.Builder = AlertDialog.Builder(mActivity)
-            builder.apply {
+            val builder: AlertDialog.Builder? = AlertDialog.Builder(mActivity)
+            builder?.apply {
                 setTitle(addProductStaticData?.text_go_back)
                 setMessage(addProductStaticData?.text_go_back_message)
                 setCancelable(true)
@@ -717,14 +715,14 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     fragmentManager?.popBackStack()
                     dialog.dismiss()
                 }
-            }.create().show()
+            }?.create()?.show()
         }
     }
 
     private fun showDeleteConfirmationDialog() {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            val builder: AlertDialog.Builder = AlertDialog.Builder(mActivity)
-            builder.apply {
+            val builder: AlertDialog.Builder? = AlertDialog.Builder(mActivity)
+            builder?.apply {
                 setTitle(getString(R.string.delete_product))
                 setMessage(getString(R.string.are_you_sure_to_delete))
                 setCancelable(false)
@@ -738,9 +736,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     mService.deleteItemServerCall(DeleteItemRequest(mItemId))
                 }
                 setNegativeButton(getString(R.string.text_no)) { dialog, _ -> dialog.dismiss() }
-            }
-            val alertDialog: AlertDialog = builder.create()
-            alertDialog.show()
+            }?.create()?.show()
         }
     }
 
