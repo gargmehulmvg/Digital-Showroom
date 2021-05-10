@@ -426,7 +426,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                 }
                 bottomSheetEditStoreLinkEditText.setText(if (isErrorResponse) mStoreLinkLastEntered else requiredString)
                 bottomSheetEditStoreTitle.text = if (isErrorResponse) mActivity.getString(R.string.your_edited_link) else mProfilePreviewStaticData?.currentLink
-                bottomSheetEditStoreLinkEditText.isEnabled = profilePreviewResponse.mIsEditable ?: true
+                bottomSheetEditStoreLinkEditText.isEnabled = profilePreviewResponse.mIsEditable
                 bottomSheetEditStoreLinkEditText.addTextChangedListener(object : TextWatcher{
                     override fun afterTextChanged(s: Editable?) {
                         val string = s.toString()

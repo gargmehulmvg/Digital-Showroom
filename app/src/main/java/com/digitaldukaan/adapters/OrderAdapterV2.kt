@@ -61,7 +61,11 @@ class OrderAdapterV2(
             view.orderCheckBox.isSelected = false
         }
         view.orderItemContainer.setOnClickListener {
-            mListItemListener?.onOrderItemCLickChanged(mOrderList?.get(view.adapterPosition))
+            try {
+                mListItemListener?.onOrderItemCLickChanged(mOrderList?.get(view.adapterPosition))
+            } catch (e: Exception) {
+                Log.e(mTag, "onCreateViewHolder: ${e.message}", e)
+            }
         }
         return view
     }
@@ -73,7 +77,8 @@ class OrderAdapterV2(
     override fun onBindViewHolder(holder: OrderAdapterV2.OrderViewHolder, position: Int) {
         val item = mOrderList?.get(position)
         holder.apply {
-            orderDetailsTextView.text = "#${item?.orderId} | ${getNameFromContactList(item?.phone) ?: item?.phone}"
+            val str = "#${item?.orderId} | ${getNameFromContactList(item?.phone) ?: item?.phone}"
+            orderDetailsTextView.text = str
             orderTimeTextView.text = getTimeFromOrderString(item?.updatedCompleteDate)
             orderAddressTextView.text = getAddress(item)
             orderCheckBox.isSelected = false

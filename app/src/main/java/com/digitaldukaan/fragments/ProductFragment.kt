@@ -88,7 +88,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             addProductBannerStaticDataResponse = Gson().fromJson<AddProductBannerTextResponse>(commonResponse.mCommonDataStr, AddProductBannerTextResponse::class.java)
-            addProductBannerStaticDataResponse?.run { showMaterCatalogBottomSheet(addProductBannerStaticDataResponse, addProductStaticData, Constants.MODE_PRODUCT_LIST) }
+            addProductBannerStaticDataResponse?.run { showMasterCatalogBottomSheet(addProductBannerStaticDataResponse, addProductStaticData, Constants.MODE_PRODUCT_LIST) }
         }
     }
 
@@ -311,7 +311,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                 }
                 showProgressDialog(mActivity)
                 mService.getAddOrderBottomSheetData()
-            } else showMaterCatalogBottomSheet(addProductBannerStaticDataResponse, addProductStaticData, Constants.MODE_PRODUCT_LIST)
+            } else showMasterCatalogBottomSheet(addProductBannerStaticDataResponse, addProductStaticData, Constants.MODE_PRODUCT_LIST)
         }
         else if (jsonData.optBoolean("catalogCategoryEdit")) {
             val jsonDataObject = JSONObject(jsonData.optString("data"))

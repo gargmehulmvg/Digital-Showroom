@@ -175,10 +175,14 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
         var commonWebView: WebView? = null
 
         override fun onPageFinished(view: WebView?, url: String?) {
-            Log.d("WebViewController", "onPageFinished: called")
-            val contactListJson = Gson().toJson(StaticInstances.sUserContactList)
-            commonWebView?.loadUrl("javascript: receiveContactData($contactListJson)")
-            activity?.getCurrentFragment()?.stopProgress()
+            try {
+                Log.d("WebViewController", "onPageFinished: called")
+                val contactListJson = Gson().toJson(StaticInstances.sUserContactList)
+                commonWebView?.loadUrl("javascript: receiveContactData($contactListJson)")
+                activity?.getCurrentFragment()?.stopProgress()
+            } catch (e: Exception) {
+                Log.e("WebViewController", "onPageFinished: ${e.message}", e)
+            }
         }
 
         override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {

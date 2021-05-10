@@ -132,7 +132,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
 
     fun stopProgress() {
         try {
-            CoroutineScopeUtils().runTaskOnCoroutineMain {
+            mActivity.runOnUiThread {
                 if (mProgressDialog != null) {
                     mProgressDialog?.let {
                         mProgressDialog?.dismiss()
@@ -233,8 +233,8 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
 
     open fun showNoInternetConnectionDialog() {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            val builder: AlertDialog.Builder = AlertDialog.Builder(mActivity)
-            builder.apply {
+            val builder: AlertDialog.Builder? = AlertDialog.Builder(mActivity)
+            builder?.apply {
                 setTitle(getString(R.string.no_internet_connection))
                 setMessage(getString(R.string.turn_on_internet_message))
                 setCancelable(false)
@@ -242,9 +242,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                     onNoInternetButtonClick(true)
                     dialog.dismiss()
                 }
-            }
-            val alertDialog: AlertDialog = builder.create()
-            alertDialog.show()
+            }?.create()?.show()
         }
     }
 
@@ -376,19 +374,9 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     open fun openPlayStore() {
         val appPackageName: String = mActivity.packageName
         try {
-            startActivity(
-                Intent(
-                    Intent.ACTION_VIEW,
-                    Uri.parse("market://details?id=$appPackageName")
-                )
-            )
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$appPackageName")))
         } catch (ignore: ActivityNotFoundException) {
-            startActivity(
-                Intent(
-                    Intent.ACTION_VIEW,
-                    Uri.parse("https://play.google.com/store/apps/details?id=$appPackageName")
-                )
-            )
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=$appPackageName")))
         }
     }
 
@@ -405,16 +393,15 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     }
 
     protected open fun showStateSelectionDialog() {
-        val builder = AlertDialog.Builder(mActivity)
-        builder.setTitle("Select State")
-        builder.setItems(R.array.state_array) { dialogInterface: DialogInterface, i: Int ->
-            val stateList = resources.getStringArray(R.array.state_array).toList()
-            onAlertDialogItemClicked(stateList[i], id, i)
-            dialogInterface.dismiss()
-        }
-        builder.setCancelable(false)
-        val alertDialog = builder.create()
-        alertDialog.show()
+        AlertDialog.Builder(mActivity).apply {
+            setTitle("Select State")
+            setItems(R.array.state_array) { dialogInterface: DialogInterface, i: Int ->
+                val stateList = resources.getStringArray(R.array.state_array).toList()
+                onAlertDialogItemClicked(stateList[i], id, i)
+                dialogInterface.dismiss()
+            }
+            setCancelable(false)
+        }.create().show()
     }
 
     open fun onAlertDialogItemClicked(selectedStr: String?, id: Int, position: Int) = Unit
@@ -604,14 +591,8 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when (resultCode) {
             Activity.RESULT_OK -> {
-                //Image Uri will not be null for RESULT_OK
                 val fileUri = data?.data
-                //imgProfile.setImageURI(fileUri)
-                //You can get File object from intent
                 val file: File? = ImagePicker.getFile(data)
-                //You can also get File Path from intent
-                //val filePath: String? = ImagePicker.getFilePath(data)
-                //onImageSelectionResult(convertImageFileToBase64(file))
                 onImageSelectionResultUri(fileUri)
                 onImageSelectionResultFile(file)
             }
@@ -630,7 +611,6 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         showProgressDialog(mActivity)
         Picasso.get().load(photoStr).into(object : com.squareup.picasso.Target {
             override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
-                // loaded bitmap is here (bitmap)
                 bitmap?.let {
                     val file = getImageFileFromBitmap(it, mActivity)
                     stopProgress()
@@ -673,15 +653,16 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                     break
                 }
             }
+            val currentFragment = mActivity.getCurrentFragment() ?: return
             when (incompleteProfilePageAction) {
                 Constants.ACTION_LOGO -> askCameraPermission()
                 Constants.ACTION_DESCRIPTION -> {
-                    if (mActivity.getCurrentFragment() is StoreDescriptionFragment) {
+                    if (currentFragment is StoreDescriptionFragment) {
                         launchFragment(HomeFragment.newInstance(), true)
                     } else launchFragment(StoreDescriptionFragment.newInstance(getHeaderByActionInSettingKetList(profilePreviewResponse, Constants.ACTION_STORE_DESCRIPTION), incompleteProfilePageNumber, false, profilePreviewResponse), true)
                 }
                 Constants.ACTION_BUSINESS -> {
-                    if (mActivity.getCurrentFragment() is BusinessTypeFragment) launchFragment(HomeFragment.newInstance(), true) else launchFragment(BusinessTypeFragment.newInstance(getHeaderByActionInSettingKetList(profilePreviewResponse, Constants.ACTION_BUSINESS_TYPE),
+                    if (currentFragment is BusinessTypeFragment) launchFragment(HomeFragment.newInstance(), true) else launchFragment(BusinessTypeFragment.newInstance(getHeaderByActionInSettingKetList(profilePreviewResponse, Constants.ACTION_BUSINESS_TYPE),
                         incompleteProfilePageNumber, false, profilePreviewResponse), true)
                 }
                 Constants.ACTION_BANK -> launchFragment(BankAccountFragment.newInstance(getHeaderByActionInSettingKetList(profilePreviewResponse, Constants.ACTION_BANK_ACCOUNT),
@@ -837,7 +818,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         }.show()
     }
 
-    protected fun showMaterCatalogBottomSheet(addProductBannerStaticDataResponse: AddProductBannerTextResponse?, addProductStaticText: AddProductStaticText?, mode: String) {
+    protected fun showMasterCatalogBottomSheet(addProductBannerStaticDataResponse: AddProductBannerTextResponse?, addProductStaticText: AddProductStaticText?, mode: String) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             val bottomSheetDialog = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
             val view = LayoutInflater.from(mActivity).inflate(
@@ -886,9 +867,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                 if (isBackRequired) mActivity.onBackPressed()
                 mActivity.startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
             }
-            setNegativeButton(getString(R.string.text_no)) { dialogInterface, _ ->
-                dialogInterface?.dismiss()
-            }
+            setNegativeButton(getString(R.string.text_no)) { dialogInterface, _ -> dialogInterface?.dismiss() }
         }.create().show()
     }
 

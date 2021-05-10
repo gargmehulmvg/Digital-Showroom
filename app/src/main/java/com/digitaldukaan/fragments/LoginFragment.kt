@@ -80,7 +80,7 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
         override fun onFailureProfileShared(p0: TrueError) {
             Log.d(TAG, "onFailureProfileShared: $p0")
             when (p0.errorType) {
-                USE_ANOTHER_NUMBER -> mobileNumberTextView.callOnClick()
+                USE_ANOTHER_NUMBER -> mobileNumberTextView?.callOnClick()
             }
         }
 

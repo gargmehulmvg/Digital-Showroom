@@ -110,35 +110,24 @@ fun downloadImageNew(
 }
 
 fun downloadMediaToStorage(bitmap: Bitmap?, activity: MainActivity?): Boolean {
-    //Generating a file name
     val filename = "${System.currentTimeMillis()}.jpg"
-    //Output stream
     var fos: OutputStream? = null
-    //For devices running android >= Q
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-        //getting the contentResolver
         activity?.contentResolver?.also { resolver ->
-            //Content resolver will process the contentvalues
             val contentValues = ContentValues().apply {
-                //putting file information in content values
                 put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
                 put(MediaStore.MediaColumns.MIME_TYPE, "image/jpg")
                 put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES)
             }
-            //Inserting the contentValues to contentResolver and getting the Uri
             val imageUri: Uri? = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
-            //Opening an outputstream with the Uri that we got
             fos = imageUri?.let { resolver.openOutputStream(it) }
         }
     } else {
-        //These for devices running on android < Q
-        //So I don't think an explanation is needed here
         val imagesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
         val image = File(imagesDir, filename)
         fos = FileOutputStream(image)
     }
     fos?.use {
-        //Finally writing the bitmap to the output stream that we opened
         bitmap?.compress(Bitmap.CompressFormat.JPEG, 100, it)
         activity?.showToast("Image Saved to Gallery successfully")
         return true
@@ -250,43 +239,40 @@ fun getStringDateTimeFromOrderDate(date: Date?): String {
 
 fun getContactsFromStorage2(ctx: Context) {
     val tag = "CONTACTS"
-    if (StaticInstances.sUserContactList.isNotEmpty()) return
-    Log.d(tag, "getContactsFromStorage: started")
-    val list: ArrayList<ContactModel> = ArrayList()
-    val uniqueMobilePhones = ArrayList<String>()
-    val phoneCursor: Cursor? = ctx.contentResolver.query(
-        ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
-        null,
-        null,
-        null,
-        null
-    )
-    if (phoneCursor != null && phoneCursor.count > 0) {
-        val numberIndex = phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)
-        val nameIndex = phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)
-        while (phoneCursor.moveToNext()) {
-            var number: String = phoneCursor.getString(numberIndex)?.trim() ?: ""
-            number = number.trim()
-            val name: String = phoneCursor.getString(nameIndex)
-            var duplicate = false
-            uniqueMobilePhones.forEach { addedNumber -> if (PhoneNumberUtils.compare(addedNumber, number)) duplicate = true }
-            if (!duplicate) {
-                uniqueMobilePhones.add(number)
-                val info = ContactModel()
-                number = number.replace("-", "")
-                number = number.replace(" ", "")
-                number = if (number.startsWith("+91")) number.substring(3, number.length) else number
-                if (number.length < 10) continue
-                info.number = number.trim()
-                info.name = name
-                list.add(info)
+    try {
+        if (StaticInstances.sUserContactList.isNotEmpty()) return
+        Log.d(tag, "getContactsFromStorage: started")
+        val list: ArrayList<ContactModel> = ArrayList()
+        val uniqueMobilePhones = ArrayList<String>()
+        val phoneCursor: Cursor? = ctx.contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null)
+        if (phoneCursor != null && phoneCursor.count > 0) {
+            val numberIndex = phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)
+            val nameIndex = phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)
+            while (phoneCursor.moveToNext()) {
+                var number: String = phoneCursor.getString(numberIndex)?.trim() ?: ""
+                number = number.trim()
+                val name: String = phoneCursor.getString(nameIndex)
+                var duplicate = false
+                uniqueMobilePhones.forEach { addedNumber -> if (PhoneNumberUtils.compare(addedNumber, number)) duplicate = true }
+                if (!duplicate) {
+                    uniqueMobilePhones.add(number)
+                    val info = ContactModel()
+                    number = number.replace("-", "")
+                    number = number.replace(" ", "")
+                    number = if (number.startsWith("+91")) number.substring(3, number.length) else number
+                    if (number.length < 10) continue
+                    info.number = number.trim()
+                    info.name = name
+                    list.add(info)
+                }
             }
+            phoneCursor.close()
+            list.run { StaticInstances.sUserContactList = this }
+            Log.d(tag, "getContactsFromStorage: Completed")
+            Log.d(tag, "StaticInstances.sUserContactList size :: ${StaticInstances.sUserContactList.size}")
         }
-        //contact contains all the number of a particular contact
-        phoneCursor.close()
-        list.run { StaticInstances.sUserContactList = this }
-        Log.d(tag, "getContactsFromStorage: Completed")
-        Log.d(tag, "StaticInstances.sUserContactList size :: ${StaticInstances.sUserContactList.size}")
+    } catch (e: Exception) {
+        Log.e(tag, "getContactsFromStorage2: ${e.message}", e)
     }
 }
 

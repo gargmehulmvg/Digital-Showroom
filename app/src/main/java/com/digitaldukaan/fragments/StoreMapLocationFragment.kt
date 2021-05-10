@@ -170,10 +170,10 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
             completeAddressEditText.setText(address1)
             stateTextView.text = if (state.isEmpty()) getString(R.string.select_state) else state
         }
-        if (mIsSingleStep)  statusRecyclerView.visibility = View.GONE else {
-            statusRecyclerView.apply {
+        if (mIsSingleStep)  statusRecyclerView?.visibility = View.GONE else {
+            statusRecyclerView?.apply {
                 visibility = View.VISIBLE
-                layoutManager = GridLayoutManager(mActivity, mProfileInfoResponse?.mTotalSteps?.toInt() ?: 0)
+                layoutManager = GridLayoutManager(mActivity, mProfileInfoResponse?.mTotalSteps?.toInt() ?: 1)
                 adapter = ProfileStatusAdapter2(mProfileInfoResponse?.mTotalSteps?.toInt(), mPosition)
             }
         }

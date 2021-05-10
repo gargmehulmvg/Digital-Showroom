@@ -44,20 +44,20 @@ class AppSettingsFragment : BaseFragment(), IAppSettingsItemClicked {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val adapter = AppSettingsAdapter(this)
-        ToolBarManager.getInstance().apply {
+        ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, false)
             onBackPressed(this@AppSettingsFragment)
             setHeaderTitle(mHeaderText)
         }
-        appSettingsRecyclerView.apply {
+        appSettingsRecyclerView?.apply {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(mActivity)
             setAdapter(adapter)
         }
         hideBottomNavigationView(true)
         adapter.setAppSettingsList(mAppSettingsList)
-        appVersionTextView.text = "${mAppSettingsResponseStaticData.mAppVersionText} v.${BuildConfig.VERSION_NAME}"
-        storeIdTextView.text = "${mAppSettingsResponseStaticData.mStoreId} ${getStringDataFromSharedPref(Constants.STORE_ID)}"
+        appVersionTextView?.text = "${mAppSettingsResponseStaticData?.mAppVersionText} v.${BuildConfig.VERSION_NAME}"
+        storeIdTextView?.text = "${mAppSettingsResponseStaticData?.mStoreId} ${getStringDataFromSharedPref(Constants.STORE_ID)}"
     }
 
     private fun showLogoutDialog() {

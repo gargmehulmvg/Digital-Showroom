@@ -76,29 +76,29 @@ class BankAccountFragment : BaseFragment(), IBankDetailsServiceInterface {
     }
 
     private fun setupUIFromStaticData(bankDetail: BankDetailsResponse?) {
-        bankHeadingTextView.text = mProfilePreviewStaticData?.heading_bank_page
-        materialTextView3.text = mProfilePreviewStaticData?.sub_heading_bank_page
-        accountHolderNameLayout.hint = mProfilePreviewStaticData?.hint_bank_account_holder_name
-        accountNumberLayout.hint = mProfilePreviewStaticData?.hint_bank_account_number
-        verifyAccountNumberLayout.hint = mProfilePreviewStaticData?.hint_bank_verify_account_number
-        ifscLayout.hint = mProfilePreviewStaticData?.hint_bank_ifsc_code
-        mobileNumberLayout.hint = mProfilePreviewStaticData?.hint_bank_registered_mobile_number
-        mobileNumberLayout.hint = mProfilePreviewStaticData?.hint_bank_registered_mobile_number
-        saveTextView.text = mProfilePreviewStaticData?.hint_bank_save_changes
+        bankHeadingTextView?.text = mProfilePreviewStaticData?.heading_bank_page
+        materialTextView3?.text = mProfilePreviewStaticData?.sub_heading_bank_page
+        accountHolderNameLayout?.hint = mProfilePreviewStaticData?.hint_bank_account_holder_name
+        accountNumberLayout?.hint = mProfilePreviewStaticData?.hint_bank_account_number
+        verifyAccountNumberLayout?.hint = mProfilePreviewStaticData?.hint_bank_verify_account_number
+        ifscLayout?.hint = mProfilePreviewStaticData?.hint_bank_ifsc_code
+        mobileNumberLayout?.hint = mProfilePreviewStaticData?.hint_bank_registered_mobile_number
+        mobileNumberLayout?.hint = mProfilePreviewStaticData?.hint_bank_registered_mobile_number
+        saveTextView?.text = mProfilePreviewStaticData?.hint_bank_save_changes
         bankDetail?.run {
-            accountHolderNameEditText.setText(this.accountHolderName)
-            mobileNumberEditText.setText(this.registeredPhone)
+            accountHolderNameEditText?.setText(accountHolderName)
+            mobileNumberEditText?.setText(registeredPhone)
         }
-        mobileNumberEditText.setText(if (bankDetail == null || (bankDetail.registeredPhone?.isEmpty() == true)) PrefsManager.getStringDataFromSharedPref(Constants.USER_MOBILE_NUMBER) else bankDetail?.registeredPhone)
-        mobileNumberEditText.isEnabled = false
-        ifscEditText.allowOnlyAlphaNumericCharacters()
+        mobileNumberEditText?.setText(if (bankDetail == null || (bankDetail.registeredPhone?.isEmpty() == true)) PrefsManager.getStringDataFromSharedPref(Constants.USER_MOBILE_NUMBER) else bankDetail.registeredPhone)
+        mobileNumberEditText?.isEnabled = false
+        ifscEditText?.allowOnlyAlphaNumericCharacters()
     }
 
     override fun onClick(view: View?) {
         when (view?.id) {
             saveTextView.id -> {
                 var isValidationFailed = false
-                val accountHolderNameStr = accountHolderNameEditText.run {
+                val accountHolderNameStr = accountHolderNameEditText?.run {
                     if (text.trim().toString().isEmpty()) {
                         requestFocus()
                         error = mProfilePreviewStaticData?.error_mandatory_field
@@ -106,7 +106,7 @@ class BankAccountFragment : BaseFragment(), IBankDetailsServiceInterface {
                     }
                     text.trim().toString()
                 }
-                val accountNumberStr = accountNumberEditText.run {
+                val accountNumberStr = accountNumberEditText?.run {
                     if (text.trim().toString().isEmpty()) {
                         requestFocus()
                         error = mProfilePreviewStaticData?.error_mandatory_field
@@ -118,7 +118,7 @@ class BankAccountFragment : BaseFragment(), IBankDetailsServiceInterface {
                     }
                     text.trim().toString()
                 }
-                val verifyAccountNumberStr = verifyAccountNumberEditText.run {
+                val verifyAccountNumberStr = verifyAccountNumberEditText?.run {
                     if (text.trim().toString().isEmpty()) {
                         requestFocus()
                         error = mProfilePreviewStaticData?.error_mandatory_field
@@ -131,13 +131,13 @@ class BankAccountFragment : BaseFragment(), IBankDetailsServiceInterface {
                     text.trim().toString()
                 }
                 if (accountNumberStr != verifyAccountNumberStr) {
-                    verifyAccountNumberEditText.run {
+                    verifyAccountNumberEditText?.run {
                         requestFocus()
                         error = mProfilePreviewStaticData?.error_both_account_number_verify_account_number_must_be_same
                         isValidationFailed = true
                     }
                 }
-                val ifscCodeStr = ifscEditText.run {
+                val ifscCodeStr = ifscEditText?.run {
                     if (text.trim().toString().isEmpty()) {
                         requestFocus()
                         error = mProfilePreviewStaticData?.error_mandatory_field
@@ -145,7 +145,7 @@ class BankAccountFragment : BaseFragment(), IBankDetailsServiceInterface {
                     }
                     text.trim().toString()
                 }
-                val mobileNumberStr = mobileNumberEditText.run {
+                val mobileNumberStr = mobileNumberEditText?.run {
                     if (text.trim().toString().isEmpty()) {
                         requestFocus()
                         error = mProfilePreviewStaticData?.error_mandatory_field
@@ -207,5 +207,4 @@ class BankAccountFragment : BaseFragment(), IBankDetailsServiceInterface {
     override fun onBankDetailsServerException(e: Exception) {
         exceptionHandlingForAPIResponse(e)
     }
-
 }

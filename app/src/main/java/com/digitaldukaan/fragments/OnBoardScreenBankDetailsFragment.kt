@@ -76,8 +76,8 @@ class OnBoardScreenBankDetailsFragment : BaseFragment(), IBankDetailsServiceInte
         mobileNumberLayout?.hint = mProfilePreviewStaticData?.hint_bank_registered_mobile_number
         saveTextView?.text = mProfilePreviewStaticData?.hint_bank_save_changes
         bankDetail?.run {
-            accountHolderNameEditText.setText(this.accountHolderName)
-            mobileNumberEditText.setText(this.registeredPhone)
+            accountHolderNameEditText?.setText(accountHolderName)
+            mobileNumberEditText?.setText(registeredPhone)
         }
         mobileNumberEditText?.setText(PrefsManager.getStringDataFromSharedPref(Constants.USER_MOBILE_NUMBER))
         mobileNumberEditText?.isEnabled = false
@@ -104,7 +104,7 @@ class OnBoardScreenBankDetailsFragment : BaseFragment(), IBankDetailsServiceInte
                     }
                     text.trim().toString()
                 }
-                val accountNumberStr = accountNumberEditText.run {
+                val accountNumberStr = accountNumberEditText?.run {
                     if (text.trim().toString().isEmpty()) {
                         requestFocus()
                         error = mProfilePreviewStaticData?.error_mandatory_field
@@ -116,7 +116,7 @@ class OnBoardScreenBankDetailsFragment : BaseFragment(), IBankDetailsServiceInte
                     }
                     text.trim().toString()
                 }
-                val verifyAccountNumberStr = verifyAccountNumberEditText.run {
+                val verifyAccountNumberStr = verifyAccountNumberEditText?.run {
                     if (text.trim().toString().isEmpty()) {
                         requestFocus()
                         error = mProfilePreviewStaticData?.error_mandatory_field
@@ -135,7 +135,7 @@ class OnBoardScreenBankDetailsFragment : BaseFragment(), IBankDetailsServiceInte
                         isValidationFailed = true
                     }
                 }
-                val ifscCodeStr = ifscEditText.run {
+                val ifscCodeStr = ifscEditText?.run {
                     if (text.trim().toString().isEmpty()) {
                         requestFocus()
                         error = mProfilePreviewStaticData?.error_mandatory_field
@@ -143,7 +143,7 @@ class OnBoardScreenBankDetailsFragment : BaseFragment(), IBankDetailsServiceInte
                     }
                     text.trim().toString()
                 }
-                val mobileNumberStr = mobileNumberEditText.run {
+                val mobileNumberStr = mobileNumberEditText?.run {
                     if (text.trim().toString().isEmpty()) {
                         requestFocus()
                         error = mProfilePreviewStaticData?.error_mandatory_field
