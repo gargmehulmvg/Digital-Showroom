@@ -505,6 +505,15 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         }
     }
 
+    override fun onBackPressed(): Boolean {
+        Log.d(TAG, "onBackPressed: called")
+        if(fragmentManager != null && fragmentManager?.backStackEntryCount == 1) {
+            launchFragment(HomeFragment.newInstance(), true)
+            return true
+        }
+        return false
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == Constants.CROP_IMAGE_REQUEST_CODE) {
             val file = data?.getSerializableExtra(Constants.MODE_CROP) as File

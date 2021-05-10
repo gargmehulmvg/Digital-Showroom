@@ -230,4 +230,13 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
         Log.d(mTagName, "showAndroidLog :: $data")
     }
 
+    override fun onBackPressed(): Boolean {
+        Log.d(mTagName, "onBackPressed: called")
+        if(fragmentManager != null && fragmentManager?.backStackEntryCount == 1) {
+            clearFragmentBackStack()
+            launchFragment(HomeFragment.newInstance(), true)
+            return true
+        }
+        return false
+    }
 }

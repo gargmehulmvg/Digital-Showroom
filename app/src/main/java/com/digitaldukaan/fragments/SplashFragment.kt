@@ -13,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.app.ActivityCompat
+import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.models.response.AppVersionResponse
@@ -139,15 +140,26 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
     }
 
     private fun switchToFragmentByDeepLink() {
-        Log.d(TAG, "switchToFragmentByDeepLink: $mIntentUri")
-        when(mIntentUri.toString()) {
-            "digitaldukaan://Settings" -> launchFragment(SettingsFragment.newInstance(), true)
-            "digitaldukaan://ProfilePage" -> launchFragment(ProfilePreviewFragment().newInstance(""), true)
-            "digitaldukaan://ProductList" -> launchFragment(HomeFragment.newInstance(), true)
-            "digitaldukaan://OrderList" -> launchFragment(HomeFragment.newInstance(), true)
-            "digitaldukaan://ProductAdd" -> launchFragment(ProductFragment.newInstance(), true)
-            "digitaldukaan://MarketingBroadCast" -> launchFragment(MarketingFragment.newInstance(), true)
-            "digitaldukaan://OTP" -> launchFragment(LoginFragment.newInstance(), true)
+        val intentUriStr = mIntentUri.toString()
+        Log.d(TAG, "switchToFragmentByDeepLink:: $intentUriStr")
+        clearFragmentBackStack()
+        when {
+            intentUriStr.contains("digitaldukaan://Settings") -> launchFragment(SettingsFragment.newInstance(), true)
+            intentUriStr.contains("digitaldukaan://ProfilePage") -> launchFragment(ProfilePreviewFragment().newInstance(), true)
+            intentUriStr.contains("digitaldukaan://ProductList") -> launchFragment(HomeFragment.newInstance(), true)
+            intentUriStr.contains("digitaldukaan://OrderList") -> launchFragment(HomeFragment.newInstance(), true)
+            intentUriStr.contains("digitaldukaan://ProductAdd") -> launchFragment(ProductFragment.newInstance(), true)
+            intentUriStr.contains("digitaldukaan://MarketingBroadCast") -> launchFragment(MarketingFragment.newInstance(), true)
+            intentUriStr.contains("digitaldukaan://OTP") -> launchFragment(LoginFragment.newInstance(), true)
+            intentUriStr.contains("digitaldukaan://Webview") -> {
+                try {
+                    var webViewUrl = intentUriStr.split("digitaldukaan://Webview?webURL=")[1]
+                    if (webViewUrl.contains("&")) webViewUrl = webViewUrl.split("&")[0]
+                    openWebViewFragment(this, "", "${BuildConfig.WEB_VIEW_URL}$webViewUrl")
+                } catch (e: Exception) {
+                    Log.e(TAG, "switchToFragmentByDeepLink: ${e.message}", e)
+                }
+            }
             else -> {
                 mIntentUri = null
                 launchHomeFragment()

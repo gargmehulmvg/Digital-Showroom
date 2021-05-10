@@ -503,4 +503,13 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
         }.show()
     }
 
+    override fun onBackPressed(): Boolean {
+        Log.d(TAG, "onBackPressed: called")
+        if(fragmentManager != null && fragmentManager?.backStackEntryCount == 1) {
+            clearFragmentBackStack()
+            launchFragment(HomeFragment.newInstance(), true)
+            return true
+        }
+        return false
+    }
 }

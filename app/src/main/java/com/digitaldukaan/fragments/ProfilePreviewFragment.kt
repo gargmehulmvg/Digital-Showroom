@@ -61,7 +61,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         private const val TAG = "ProfilePreviewFragment"
     }
 
-    fun newInstance(storeName: String?): ProfilePreviewFragment {
+    fun newInstance(storeName: String? = ""): ProfilePreviewFragment {
         val fragment = ProfilePreviewFragment()
         fragment.mStoreName = storeName
         return fragment
@@ -624,5 +624,15 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                 shareStoreBottomSheet.dismiss()
             }
         }.show()
+    }
+
+    override fun onBackPressed(): Boolean {
+        Log.d(TAG, "onBackPressed: called")
+        if(fragmentManager != null && fragmentManager?.backStackEntryCount == 1) {
+            clearFragmentBackStack()
+            launchFragment(SettingsFragment.newInstance(), true)
+            return true
+        }
+        return false
     }
 }
