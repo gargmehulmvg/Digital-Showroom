@@ -32,7 +32,7 @@ import java.io.File
 
 class ProfilePhotoFragment : BaseFragment(), View.OnClickListener, IProfilePhotoServiceInterface {
 
-    private var mStoreLogoLinkStr:String? = ""
+    private var mStoreLogoLinkStr: String? = ""
 
     companion object {
 
@@ -63,7 +63,7 @@ class ProfilePhotoFragment : BaseFragment(), View.OnClickListener, IProfilePhoto
         super.onViewCreated(view, savedInstanceState)
         ToolBarManager.getInstance().hideToolBar(mActivity, true)
         profilePhotoImageView?.let {
-            if (mStoreLogoLinkStr?.isNotEmpty() == true) {
+            if (mStoreLogoLinkStr?.isEmpty() == false) {
                 Picasso.get().load(mStoreLogoLinkStr).into(it)
             }
         }

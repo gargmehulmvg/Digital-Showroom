@@ -73,50 +73,64 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        ToolBarManager.getInstance().apply { hideToolBar(mActivity, true) }
+        ToolBarManager.getInstance()?.apply { hideToolBar(mActivity, true) }
         val txtSpannable = SpannableString(addProductStaticData?.text_explore + " " + mExploreCategoryItem?.categoryName)
         val boldSpan = StyleSpan(Typeface.BOLD)
         txtSpannable.setSpan(boldSpan, addProductStaticData?.text_explore?.length ?: 6, txtSpannable.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-        exploreTextView.text = txtSpannable
+        exploreTextView?.text = txtSpannable
         if (!isInternetConnectionAvailable(mActivity)) {
             showNoInternetConnectionDialog()
             return
         }
         showProgressDialog(mActivity)
         mService.getMasterSubCategories(mExploreCategoryItem?.categoryId)
-        masterCatalogRecyclerView.apply {
-            layoutManager = mLinearLayoutManager
-            masterCatalogAdapter = MasterCatalogItemsAdapter(mActivity, mCategoryItemsList, this@MasterCatalogFragment, addProductStaticData)
-            adapter = masterCatalogAdapter
-            addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        try {
+            masterCatalogRecyclerView?.apply {
+                layoutManager = mLinearLayoutManager
+                masterCatalogAdapter = MasterCatalogItemsAdapter(mActivity, mCategoryItemsList, this@MasterCatalogFragment, addProductStaticData)
+                adapter = masterCatalogAdapter
 
-                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                    super.onScrollStateChanged(recyclerView, newState)
-                    if (AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL == newState) mIsRecyclerViewScrolling = true
-                }
+                addOnScrollListener(object : RecyclerView.OnScrollListener() {
 
-                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                    super.onScrolled(recyclerView, dx, dy)
-                    mCurrentItems = mLinearLayoutManager.childCount
-                    mTotalItems = masterCatalogAdapter?.itemCount ?: 0
-                    mScrollOutItems = mLinearLayoutManager.findFirstVisibleItemPosition()
-                    if (mIsRecyclerViewScrolling && (mCurrentItems + mScrollOutItems == mTotalItems)) {
-                        mIsRecyclerViewScrolling = false
-                        if (mIsMoreItemsAvailable) {
-                            mPageCount++
-                            mService.getMasterItems(mCategoryId, mPageCount)
+                    override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                        super.onScrollStateChanged(recyclerView, newState)
+                        if (AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL == newState) mIsRecyclerViewScrolling = true
+                    }
+
+                    override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                        super.onScrolled(recyclerView, dx, dy)
+                        mCurrentItems = mLinearLayoutManager.childCount
+                        mTotalItems = masterCatalogAdapter?.itemCount ?: 0
+                        mScrollOutItems = mLinearLayoutManager.findFirstVisibleItemPosition()
+                        if (mIsRecyclerViewScrolling && (mCurrentItems + mScrollOutItems == mTotalItems)) {
+                            mIsRecyclerViewScrolling = false
+                            if (mIsMoreItemsAvailable) {
+                                mPageCount++
+                                mService.getMasterItems(mCategoryId, mPageCount)
+                            }
                         }
                     }
-                }
-            })
+                })
+            }
+        } catch (e: Exception) {
+            AppEventsManager.pushAppEvents(
+                eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
+                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                data = mapOf(
+                    AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                    "exception" to e.toString(),
+                    "CategoryID" to mCategoryId.toString(),
+                    "PageCount" to mPageCount.toString()
+                )
+            )
         }
     }
 
     override fun onClick(view: View?) {
         when(view?.id) {
-            backImageView.id -> mActivity.onBackPressed()
-            searchImageView.id -> showShortSnackBar()
-            addProductTextView.id -> showConfirmationBottomSheet()
+            backImageView?.id -> mActivity.onBackPressed()
+            searchImageView?.id -> showShortSnackBar()
+            addProductTextView?.id -> showConfirmationBottomSheet()
         }
     }
 
@@ -130,7 +144,7 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
                     subCategoryItemList?.get(0)?.isSelected = true
                     mCategoryId = subCategoryItemList?.get(0)?.categoryId ?: 0
                     mService.getMasterItems(mCategoryId, 1)
-                    subCategoryRecyclerView.apply {
+                    subCategoryRecyclerView?.apply {
                         layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
                         subCategoryAdapter = SubCategoryAdapter(mActivity, subCategoryItemList, this@MasterCatalogFragment)
                         adapter = subCategoryAdapter
@@ -180,16 +194,16 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
             mSelectedProductsHashMap[response?.itemId]?.parentCategoryIdForRequest = mCategoryId
         } else mSelectedProductsHashMap.remove(response?.itemId)
         if (mSelectedProductsHashMap.isNotEmpty()) {
-            addProductTextView.visibility = View.VISIBLE
+            addProductTextView?.visibility = View.VISIBLE
             val size = mSelectedProductsHashMap.size
-            addProductTextView.text = if (size == 1) "${addProductStaticData?.text_add} 1 ${addProductStaticData?.text_product}" else "${addProductStaticData?.text_add} $size ${addProductStaticData?.text_products}"
+            addProductTextView?.text = if (size == 1) "${addProductStaticData?.text_add} 1 ${addProductStaticData?.text_product}" else "${addProductStaticData?.text_add} $size ${addProductStaticData?.text_products}"
             AppEventsManager.pushAppEvents(eventName = AFInAppEventType.EVENT_CATALOG_BUILDER_PRODUCT_SELECT, isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true, data = mapOf(
                     AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
                     AFInAppEventParameterName.CATEGORY_NAME to response?.itemName,
                     AFInAppEventParameterName.PRODUCTS_ADDED to "$size"
                 ))
         } else {
-            addProductTextView.visibility = View.GONE
+            addProductTextView?.visibility = View.GONE
         }
     }
 
@@ -284,5 +298,4 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
     override fun onToolbarSideIconClicked() {
         Log.d(TAG, "onToolbarSideIconClicked: do nothing")
     }
-
 }
