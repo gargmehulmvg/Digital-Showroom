@@ -42,19 +42,19 @@ class ViewAsCustomerFragment: BaseFragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        ToolBarManager.getInstance().apply {
+        ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, false)
             hideBackPressFromToolBar(mActivity, false)
             setHeaderTitle(addProductStaticData?.heading_view_store_as_customer)
             onBackPressed(this@ViewAsCustomerFragment)
             setSideIconVisibility(false)
         }
-        getPremiumTextView.setHtmlData(addProductStaticData?.message_get_premium_website_for_your_showroom)
-        getStartedTextView.text = addProductStaticData?.text_get_started
+        getPremiumTextView?.setHtmlData(addProductStaticData?.message_get_premium_website_for_your_showroom)
+        getStartedTextView?.text = addProductStaticData?.text_get_started
         hideBottomNavigationView(true)
         showProgressDialog(mActivity)
-        premiumBottomContainer.visibility = if (mIsPremiumEnable) View.GONE else View.VISIBLE
-        webView.apply {
+        premiumBottomContainer?.visibility = if (mIsPremiumEnable) View.GONE else View.VISIBLE
+        webView?.apply {
             webViewClient = object : WebViewClient() {
                 override fun onPageFinished(view: WebView, url: String) {
                     Log.d(TAG, "onPageFinished: called")
@@ -75,7 +75,7 @@ class ViewAsCustomerFragment: BaseFragment() {
 
     override fun onClick(view: View?) {
         when(view?.id) {
-            getStartedTextView.id -> {
+            getStartedTextView?.id -> {
                 val url = "${BuildConfig.WEB_VIEW_URL}theme-discover?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"
                 launchFragment(CommonWebViewFragment().newInstance("", url), true)
             }

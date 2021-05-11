@@ -79,7 +79,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         updateNavigationBarState(R.id.menuSettings)
-        ToolBarManager.getInstance().apply {
+        ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, false)
             onBackPressed(this@SettingsFragment)
             setSideIconVisibility(true)
@@ -98,21 +98,21 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         super.onClick(view)
         StaticInstances.sAppStoreServicesResponse = mAppStoreServicesResponse
         when (view?.id) {
-            storeSwitch.id -> changeStoreDeliveryStatus()
-            deliverySwitch.id -> changeStoreDeliveryStatus()
-            moreControlsTextView.id -> launchFragment(MoreControlsFragment.newInstance(mAppSettingsResponseStaticData), true)
-            moreControlsImageView.id -> launchFragment(MoreControlsFragment.newInstance(mAppSettingsResponseStaticData), true)
-            dukaanNameTextView.id -> launchFragment(ProfilePreviewFragment().newInstance(mProfileResponse?.mStoreInfo?.storeInfo?.name), true)
-            profileStatusRecyclerView.id -> launchFragment(ProfilePreviewFragment().newInstance(mProfileResponse?.mStoreInfo?.storeInfo?.name), true)
-            stepsLeftTextView.id -> launchFragment(ProfilePreviewFragment().newInstance(mProfileResponse?.mStoreInfo?.storeInfo?.name), true)
-            completeProfileTextView.id -> launchFragment(ProfilePreviewFragment().newInstance(mProfileResponse?.mStoreInfo?.storeInfo?.name), true)
-            shapeableImageView.id -> launchFragment(ProfilePreviewFragment().newInstance(mProfileResponse?.mStoreInfo?.storeInfo?.name), true)
-            linearLayout.id -> {
+            storeSwitch?.id -> changeStoreDeliveryStatus()
+            deliverySwitch?.id -> changeStoreDeliveryStatus()
+            moreControlsTextView?.id -> launchFragment(MoreControlsFragment.newInstance(mAppSettingsResponseStaticData), true)
+            moreControlsImageView?.id -> launchFragment(MoreControlsFragment.newInstance(mAppSettingsResponseStaticData), true)
+            dukaanNameTextView?.id -> launchFragment(ProfilePreviewFragment().newInstance(mProfileResponse?.mStoreInfo?.storeInfo?.name), true)
+            profileStatusRecyclerView?.id -> launchFragment(ProfilePreviewFragment().newInstance(mProfileResponse?.mStoreInfo?.storeInfo?.name), true)
+            stepsLeftTextView?.id -> launchFragment(ProfilePreviewFragment().newInstance(mProfileResponse?.mStoreInfo?.storeInfo?.name), true)
+            completeProfileTextView?.id -> launchFragment(ProfilePreviewFragment().newInstance(mProfileResponse?.mStoreInfo?.storeInfo?.name), true)
+            shapeableImageView?.id -> launchFragment(ProfilePreviewFragment().newInstance(mProfileResponse?.mStoreInfo?.storeInfo?.name), true)
+            linearLayout?.id -> {
                 var storeLogo = mAccountInfoResponse?.mStoreInfo?.storeInfo?.logoImage
                 if (mStoreLogo?.isNotEmpty() == true) storeLogo = mStoreLogo
                 if (storeLogo?.isNotEmpty() == true) launchFragment(ProfilePhotoFragment.newInstance(storeLogo), true, storePhotoImageView) else askCameraPermission()
             }
-            whatsAppTextView.id -> {
+            whatsAppTextView?.id -> {
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_STORE_SHARE,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
@@ -266,7 +266,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
 
     override fun onStop() {
         super.onStop()
-        ToolBarManager.getInstance().setSideIconVisibility(false)
+        ToolBarManager.getInstance()?.setSideIconVisibility(false)
     }
 
     override fun onProfileResponse(commonResponse: CommonApiResponse) {
@@ -299,7 +299,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (response.mIsSuccessStatus) {
                 val storeDeliveryService = Gson().fromJson<StoreDeliveryServiceResponse>(response.mCommonDataStr, StoreDeliveryServiceResponse::class.java)
-                storeDeliveryService.let {
+                storeDeliveryService?.let {
                     storeSwitch.isChecked = (it.mStoreFlag == 1)
                     deliverySwitch.isChecked = (it.mDeliveryFlag == 1)
                 }
@@ -322,7 +322,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (response.mIsSuccessStatus) {
                 val photoResponse = Gson().fromJson<StoreResponse>(response.mCommonDataStr, StoreResponse::class.java)
-                mStoreLogo = photoResponse.storeInfo.logoImage
+                mStoreLogo = photoResponse?.storeInfo?.logoImage
                 if (mStoreLogo?.isNotEmpty() == true) {
                     storePhotoImageView?.visibility = View.VISIBLE
                     hiddenImageView?.visibility = View.INVISIBLE
@@ -391,8 +391,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             adapter = NewReleaseAdapter(infoResponse.mTrendingList, this@SettingsFragment, mActivity)
         }
         val remainingSteps = infoResponse.mTotalSteps.minus(infoResponse.mCompletedSteps)
-        stepsLeftTextView?.text =
-            if (remainingSteps == 1) "$remainingSteps ${infoResponse.mAccountStaticText?.mStepLeft}" else "$remainingSteps ${infoResponse.mAccountStaticText?.mStepsLeft}"
+        stepsLeftTextView?.text = if (remainingSteps == 1) "$remainingSteps ${infoResponse.mAccountStaticText?.mStepLeft}" else "$remainingSteps ${infoResponse.mAccountStaticText?.mStepsLeft}"
         completeProfileTextView?.text = infoResponse.mAccountStaticText?.mCompleteProfile
         storeSwitch?.setOnCheckedChangeListener { _, isChecked ->
             run {
@@ -416,7 +415,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         shareShowRoomWithCustomerTextView?.text = infoResponse.mAccountStaticText?.mShareMessageText
         materialTextView?.text = infoResponse.mAccountStaticText?.mStoreControlsText
         newReleaseHeading?.text = infoResponse.mAccountStaticText?.mNewReleaseText
-        ToolBarManager.getInstance().setHeaderTitle(infoResponse.mAccountStaticText?.page_heading)
+        ToolBarManager.getInstance()?.setHeaderTitle(infoResponse.mAccountStaticText?.page_heading)
     }
 
     private fun checkStoreOptionClick(response: StoreOptionsResponse) {

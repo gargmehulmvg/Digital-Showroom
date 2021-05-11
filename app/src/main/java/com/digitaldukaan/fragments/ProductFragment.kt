@@ -69,7 +69,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.product_fragment, container, false)
         if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else mService.getProductPageInfo()
-        ToolBarManager.getInstance().apply {
+        ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, false)
             hideBackPressFromToolBar(mActivity, false)
             onBackPressed(this@ProductFragment)
@@ -98,7 +98,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
             bottomContainer?.visibility = if (productResponse?.isZeroProduct == true) View.GONE else View.VISIBLE
             addProductStaticData = productResponse?.static_text
             var url: String
-            ToolBarManager.getInstance().setHeaderTitle(productResponse?.static_text?.product_page_heading)
+            ToolBarManager.getInstance()?.setHeaderTitle(productResponse?.static_text?.product_page_heading)
             mOptionsMenuResponse = productResponse?.optionMenuList
             commonWebView?.apply {
                 settings.javaScriptEnabled = true
@@ -111,11 +111,11 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                     }
                 }
             }
-            productResponse.shareShop?.run {
+            productResponse?.shareShop?.run {
                 shareButtonTextView?.text = this.mText
                 if (mCDN != null && mCDN.isNotEmpty() && shareButtonImageView != null) Picasso.get().load(mCDN).into(shareButtonImageView)
             }
-            productResponse.addProduct?.run {
+            productResponse?.addProduct?.run {
                 addProductTextView?.text = this.mText
                 if (mCDN != null && mCDN.isNotEmpty() && addProductImageView != null) Picasso.get().load(mCDN).into(addProductImageView)
             }

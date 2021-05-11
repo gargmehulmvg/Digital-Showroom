@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.text.Editable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.ActionMode;
 
 import com.digitaldukaan.R;
@@ -111,7 +112,11 @@ public class OtpEditText extends androidx.appcompat.widget.AppCompatEditText {
     }
 
     public void clearOTP() {
-        if (this == null) return;
-        this.setText("");
+        try {
+            if (this == null) return;
+            this.setText("");
+        } catch (Exception e) {
+            Log.e("TAG", "clearOTP: ", e);
+        }
     }
 }

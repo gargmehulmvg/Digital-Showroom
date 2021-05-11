@@ -40,13 +40,13 @@ class SendBillFragment : BaseFragment() {
     ): View? {
         mContentView = inflater.inflate(R.layout.layout_send_bill, container, false)
         hideBottomNavigationView(true)
-        ToolBarManager.getInstance().apply { hideToolBar(mActivity, true) }
+        ToolBarManager.getInstance()?.apply { hideToolBar(mActivity, true) }
         return mContentView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         loadImageFromUri()
-        sendBillEditText.addTextChangedListener(object : TextWatcher{
+        sendBillEditText?.addTextChangedListener(object : TextWatcher{
             override fun afterTextChanged(str: Editable?) {
                 mAmountStr = str?.toString()
                 sendBillTextView.isEnabled = str?.toString()?.isEmpty() != true
@@ -67,16 +67,16 @@ class SendBillFragment : BaseFragment() {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             mImageUri?.let {
                 val bitmap = getBitmapFromUri(mImageUri, mActivity)
-                imageView.setImageBitmap(bitmap)
+                imageView?.setImageBitmap(bitmap)
             }
         }
     }
 
     override fun onClick(view: View?) {
         when (view?.id) {
-            refreshImageView.id -> openFullCamera()
-            backButtonToolbar.id -> mActivity.onBackPressed()
-            sendBillTextView.id -> {
+            refreshImageView?.id -> openFullCamera()
+            backButtonToolbar?.id -> mActivity.onBackPressed()
+            sendBillTextView?.id -> {
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_GENERATE_SELF_BILL,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,

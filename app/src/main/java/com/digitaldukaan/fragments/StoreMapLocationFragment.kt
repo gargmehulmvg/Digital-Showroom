@@ -285,9 +285,14 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
     }
 
     private fun getAddress(): String? {
-        val geoCoder = Geocoder(mActivity, Locale.getDefault())
-        val addressList = geoCoder.getFromLocation(mCurrentLatitude, mCurrentLongitude, 1)
-        return if (addressList != null && addressList.isNotEmpty()) addressList[0].getAddressLine(0).toString() else ""
+        return try {
+            val geoCoder = Geocoder(mActivity, Locale.getDefault())
+            val addressList = geoCoder.getFromLocation(mCurrentLatitude, mCurrentLongitude, 1)
+            if (addressList != null && addressList.isNotEmpty()) addressList[0].getAddressLine(0).toString() else ""
+        } catch (e: Exception) {
+            Log.e(TAG, "getAddress: ${e.message}", e)
+            ""
+        }
     }
 
     override fun onLocationChanged(location: Location) {

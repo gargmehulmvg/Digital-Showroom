@@ -49,7 +49,7 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         if (mHeaderText == getString(R.string.my_rewards)) {
-            ToolBarManager.getInstance().apply {
+            ToolBarManager.getInstance()?.apply {
                 hideToolBar(mActivity, false)
                 setHeaderTitle(mHeaderText)
                 setSideIconVisibility(true)
@@ -58,7 +58,7 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
         } else {
             ToolBarManager.getInstance().apply { hideToolBar(mActivity, true) }
         }
-        commonWebView.apply {
+        commonWebView?.apply {
             val webViewController = WebViewController()
             webViewController.commonWebView = commonWebView
             webViewController.activity = mActivity
@@ -73,7 +73,6 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
             loadUrl(mLoadUrl)
         }
         showProgressDialog(mActivity)
-        Log.d(CommonWebViewFragment::class.simpleName, "onViewCreated: $mLoadUrl")
         WebViewBridge.mWebViewListener = this
     }
 

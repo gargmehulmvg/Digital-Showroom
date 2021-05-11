@@ -75,7 +75,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        ToolBarManager.getInstance().apply {
+        ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, false)
             onBackPressed(this@ProfilePreviewFragment)
             setHeaderTitle("")
@@ -84,15 +84,15 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         fetchProfilePreviewCall()
         hideBottomNavigationView(true)
         StaticInstances.sIsStoreImageUploaded = false
-        profilePreviewStoreNameTextView.setOnClickListener {
+        profilePreviewStoreNameTextView?.setOnClickListener {
             showEditStoreNameBottomSheet(mProfilePreviewResponse?.mStoreItemResponse?.storeInfo?.name)
         }
-        storePhotoLayout.setOnClickListener {
+        storePhotoLayout?.setOnClickListener {
             var storeLogo = mProfilePreviewResponse?.mStoreItemResponse?.storeInfo?.logoImage
             if (mStoreLogo?.isNotEmpty() == true) storeLogo = mStoreLogo
             if (storeLogo?.isNotEmpty() == true) launchFragment(ProfilePhotoFragment.newInstance(storeLogo), true, storePhotoImageView) else askCameraPermission()
         }
-        constraintLayoutBanner.setOnClickListener {
+        constraintLayoutBanner?.setOnClickListener {
             mIsCompleteProfileImageInitiated = true
             switchToInCompleteProfileFragment(mProfilePreviewResponse)
         }
@@ -146,7 +146,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                 profilePreviewBannerImageView?.let { Picasso.get().load(mCDN).into(it) }
                 profilePreviewBannerSubHeading?.text = mSubHeading
             }
-            ToolBarManager.getInstance().setHeaderTitle(mProfilePreviewResponse?.mProfileStaticText?.pageHeading)
+            ToolBarManager.getInstance()?.setHeaderTitle(mProfilePreviewResponse?.mProfileStaticText?.pageHeading)
             mProfilePreviewResponse?.mStoreItemResponse?.run {
                 profilePreviewStoreNameTextView?.text = storeInfo.name
                 profilePreviewStoreMobileNumber?.text = storeOwner?.phone

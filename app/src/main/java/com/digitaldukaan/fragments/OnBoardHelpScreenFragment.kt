@@ -31,7 +31,7 @@ class OnBoardHelpScreenFragment : BaseFragment() {
     ): View? {
         mContentView = inflater.inflate(R.layout.layout_on_board_help_screen, container, false)
         hideBottomNavigationView(true)
-        ToolBarManager.getInstance().apply {
+        ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, true)
         }
         val pagerAdapter = CustomPagerAdapter(mActivity)

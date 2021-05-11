@@ -96,14 +96,14 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
 
     override fun onStop() {
         super.onStop()
-        ToolBarManager.getInstance().apply {
+        ToolBarManager.getInstance()?.apply {
             setSecondSideIconVisibility(false)
         }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.layout_add_product_fragment, container, false)
-        ToolBarManager.getInstance().apply {
+        ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, false)
             hideBackPressFromToolBar(mActivity, false)
             onBackPressed(this@AddProductFragment)
@@ -458,18 +458,17 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 }
                 imageCropDialog.dismiss()
             }
-
         }?.show()
     }
 
     private fun checkValidation(): Boolean {
         return when {
-            nameEditText.text.trim().isEmpty() -> {
+            nameEditText?.text?.trim()?.isEmpty() == true -> {
                 nameEditText?.error = addProductStaticData?.error_mandatory_field
                 nameEditText?.requestFocus()
                 false
             }
-            discountedPriceEditText.text.toString().isNotEmpty() && (priceEditText.text.toString().toDouble() < discountedPriceEditText.text.toString().toDouble()) -> {
+            discountedPriceEditText?.text?.toString()?.isNotEmpty() == true && (priceEditText?.text.toString().toDouble() < discountedPriceEditText?.text.toString().toDouble()) -> {
                 discountedPriceEditText?.text = null
                 discountedPriceEditText?.error = addProductStaticData?.error_discount_price_less_then_original_price
                 discountedPriceEditText?.requestFocus()
@@ -563,7 +562,9 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             mOptionsMenuResponse = addProductResponse?.addProductStoreOptionsMenu
             if (mOptionsMenuResponse?.isEmpty() == true) ToolBarManager.getInstance().setSideIconVisibility(false)
             shareProductContainer?.setOnClickListener {
-                val sharingData = "ItemName: ${addProductResponse?.storeItem?.name}\nPrice:  ₹${addProductResponse?.storeItem?.price} \nDiscounted Price: ₹${addProductResponse.storeItem?.discountedPrice}\n\n\uD83D\uDED2 ORDER NOW, Click on the link below\n\n" + "${addProductResponse?.domain}/product/${addProductResponse?.storeItem?.id}/${addProductResponse.storeItem?.name?.replace(' ', '-')}"
+                val productNameStr = addProductResponse.storeItem?.name?.trim()
+                val newProductName = replaceTemplateString(productNameStr)
+                val sharingData = "ItemName: ${addProductResponse?.storeItem?.name}\nPrice:  ₹${addProductResponse?.storeItem?.price} \nDiscounted Price: ₹${addProductResponse.storeItem?.discountedPrice}\n\n\uD83D\uDED2 ORDER NOW, Click on the link below\n\n" + "${addProductResponse?.domain}/product/${addProductResponse?.storeItem?.id}/$newProductName"
                 if (addProductResponse?.storeItem?.imageUrl?.isEmpty() == true) shareOnWhatsApp(sharingData, null) else shareBillWithImage(sharingData, addProductResponse?.storeItem?.imageUrl)
             }
             shareProductContainer?.visibility = if (mIsAddNewProduct) View.GONE else View.VISIBLE
@@ -573,6 +574,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     }
 
     private fun shareBillWithImage(str: String, url: String?) {
+        if (url == null || url.isEmpty()) return
         Picasso.get().load(url).into(object : com.squareup.picasso.Target {
             override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
                 bitmap?.let { shareOnWhatsApp(str, bitmap) }
@@ -589,12 +591,16 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     }
 
     override fun onAddProductDataResponse(commonResponse: CommonApiResponse) {
-        CoroutineScopeUtils().runTaskOnCoroutineMain {
-            stopProgress()
-            if (commonResponse.mIsSuccessStatus) {
-                showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_check_circle)
-                fragmentManager?.popBackStack()
-            } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
+        try {
+            CoroutineScopeUtils().runTaskOnCoroutineMain {
+                stopProgress()
+                if (commonResponse.mIsSuccessStatus) {
+                    showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_check_circle)
+                    fragmentManager?.popBackStack()
+                } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "onAddProductDataResponse: ${e.message}", e)
         }
     }
 

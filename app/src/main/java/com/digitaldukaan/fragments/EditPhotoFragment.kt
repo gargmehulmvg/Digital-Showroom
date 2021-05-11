@@ -66,16 +66,16 @@ class EditPhotoFragment: BaseFragment() {
     }
 
     private fun setupUI() {
-        cropImageView.setImageUriAsync(mFileUri)
-        appSubTitleTextView.text = "Adjust the image in the white box"
+        cropImageView?.setImageUriAsync(mFileUri)
+        appSubTitleTextView?.text = "Adjust the image in the white box"
         when (mMode) {
             Constants.EDIT_PHOTO_MODE_MOBILE -> {
-                appTitleTextView.text = mStaticText?.heading_crop_for_mobile_view
-                cropImageView.setAspectRatio(1, 1)
+                appTitleTextView?.text = mStaticText?.heading_crop_for_mobile_view
+                cropImageView?.setAspectRatio(1, 1)
             }
             Constants.EDIT_PHOTO_MODE_DESKTOP -> {
-                appTitleTextView.text = mStaticText?.heading_crop_for_desktop_view
-                cropImageView.setAspectRatio(2, 1)
+                appTitleTextView?.text = mStaticText?.heading_crop_for_desktop_view
+                cropImageView?.setAspectRatio(2, 1)
             }
         }
     }
@@ -163,7 +163,7 @@ class EditPhotoFragment: BaseFragment() {
 
     private fun showMobileImageUploadDialog() {
         val view = LayoutInflater.from(mActivity).inflate(R.layout.dialog_mobile_view_image_upload, null)
-        val dialog: Dialog = Dialog(mActivity, android.R.style.Theme_Black_NoTitleBar_Fullscreen)
+        val dialog = Dialog(mActivity, android.R.style.Theme_Black_NoTitleBar_Fullscreen)
         dialog.apply {
             setContentView(view)
             setCancelable(false)

@@ -50,8 +50,7 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        ToolBarManager.getInstance().hideToolBar(mActivity, true)
-        ToolBarManager.getInstance().apply {
+        ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, false)
             setHeaderTitle(mMoreControlsStaticData.page_heading_more_controls)
             onBackPressed(this@MoreControlsFragment)
@@ -76,22 +75,21 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
     }
 
     private fun setUIDataFromResponse() {
-        minOrderValueHeadingTextView.text = if (0.0 == mMinOrderValue) mMoreControlsStaticData.heading_set_min_order_value_for_delivery else mMoreControlsStaticData.heading_edit_min_order_value
-        minOrderValueOptionalTextView.text = if (0.0 == mMinOrderValue) mMoreControlsStaticData.text_optional else
-                "${mMoreControlsStaticData.sub_heading_success_set_min_order_value_for_delivery} "
-        minOrderValueAmountTextView.text = if (0.0 != mMinOrderValue) "${mMoreControlsStaticData.text_ruppee_symbol}$mMinOrderValue" else ""
-        deliveryChargeHeadingTextView.text = mMoreControlsStaticData.heading_set_delivery_charge
-        deliveryChargeTypeTextView.text = mMoreControlsStaticData.sub_heading_set_delivery_charge
+        minOrderValueHeadingTextView?.text = if (0.0 == mMinOrderValue) mMoreControlsStaticData.heading_set_min_order_value_for_delivery else mMoreControlsStaticData.heading_edit_min_order_value
+        minOrderValueOptionalTextView?.text = if (0.0 == mMinOrderValue) mMoreControlsStaticData.text_optional else "${mMoreControlsStaticData.sub_heading_success_set_min_order_value_for_delivery} "
+        minOrderValueAmountTextView?.text = if (0.0 != mMinOrderValue) "${mMoreControlsStaticData.text_ruppee_symbol}$mMinOrderValue" else ""
+        deliveryChargeHeadingTextView?.text = mMoreControlsStaticData.heading_set_delivery_charge
+        deliveryChargeTypeTextView?.text = mMoreControlsStaticData.sub_heading_set_delivery_charge
         if (mDeliveryChargeType != 0) {
-            deliveryChargeTypeTextView.text = mMoreControlsStaticData.sub_heading_success_set_delivery_charge
+            deliveryChargeTypeTextView?.text = mMoreControlsStaticData.sub_heading_success_set_delivery_charge
             if (mDeliveryChargeType == 1) {
-                deliveryChargeRateTextView.visibility = View.GONE
-                deliveryChargeRateValueTextView.visibility = View.GONE
+                deliveryChargeRateTextView?.visibility = View.GONE
+                deliveryChargeRateValueTextView?.visibility = View.GONE
             } else{
-                deliveryChargeRateTextView.text = mMoreControlsStaticData.sub_heading_success_set_delivery_charge_amount
-                deliveryChargeRateValueTextView.text = " ${mMoreControlsStaticData.text_ruppee_symbol} $mFreeDeliveryAbove"
+                deliveryChargeRateTextView?.text = mMoreControlsStaticData.sub_heading_success_set_delivery_charge_amount
+                deliveryChargeRateValueTextView?.text = " ${mMoreControlsStaticData.text_ruppee_symbol} $mFreeDeliveryAbove"
             }
-            deliveryChargeTypeValueTextView.text = when (mDeliveryChargeType) {
+            deliveryChargeTypeValueTextView?.text = when (mDeliveryChargeType) {
                 Constants.FREE_DELIVERY -> mMoreControlsStaticData.heading_free_delivery
                 Constants.FIXED_DELIVERY_CHARGE -> mMoreControlsStaticData.heading_fixed_delivery_charge
                 Constants.CUSTOM_DELIVERY_CHARGE -> mMoreControlsStaticData.heading_custom_delivery_charge
@@ -103,7 +101,7 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
     override fun onClick(view: View?) {
         super.onClick(view)
         when (view?.id) {
-            minOrderValueContainer.id -> {
+            minOrderValueContainer?.id -> {
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_SET_MIN_ORDER_VALUE,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
@@ -111,7 +109,7 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
                 )
                 showMinimumDeliveryOrderBottomSheet()
             }
-            deliveryChargeContainer.id -> {
+            deliveryChargeContainer?.id -> {
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_SET_DELIVERY_CHARGE,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,

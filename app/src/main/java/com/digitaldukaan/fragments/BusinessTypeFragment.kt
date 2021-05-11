@@ -53,8 +53,7 @@ class BusinessTypeFragment : BaseFragment(), IBusinessTypeServiceInterface {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        ToolBarManager.getInstance().hideToolBar(mActivity, true)
-        ToolBarManager.getInstance().apply {
+        ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, false)
             val stepStr = if (mIsSingleStep) "" else "Step $mPosition : "
             setHeaderTitle("$stepStr${mProfilePreviewResponse?.mHeadingText}")
@@ -66,17 +65,17 @@ class BusinessTypeFragment : BaseFragment(), IBusinessTypeServiceInterface {
             return
         }
         if (mIsSingleStep) {
-            statusRecyclerView.visibility = View.GONE
-            skipTextView.visibility = View.GONE
+            statusRecyclerView?.visibility = View.GONE
+            skipTextView?.visibility = View.GONE
         } else {
-            skipTextView.visibility = View.VISIBLE
-            statusRecyclerView.apply {
+            skipTextView?.visibility = View.VISIBLE
+            statusRecyclerView?.apply {
                 visibility = View.VISIBLE
                 layoutManager = GridLayoutManager(mActivity, mProfileInfoResponse?.mTotalSteps?.toInt() ?: 1)
                 adapter = ProfileStatusAdapter2(mProfileInfoResponse?.mTotalSteps?.toInt(), mPosition)
             }
         }
-        verifyTextView.text = StaticInstances.mStaticData?.mProfileStaticData?.saveChanges
+        verifyTextView?.text = StaticInstances.mStaticData?.mProfileStaticData?.saveChanges
         businessTypeService = BusinessTypeService()
         businessTypeService.setServiceInterface(this)
         showProgressDialog(mActivity)
