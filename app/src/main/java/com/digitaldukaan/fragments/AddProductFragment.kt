@@ -182,12 +182,12 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     }
 
     private fun handleVisibilityTextWatcher() {
-        priceEditText.addTextChangedListener(object : TextWatcher {
+        priceEditText?.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 val str = s?.toString()
                 if (str?.trim()?.isNotEmpty() == true) {
                     mIsOrderEdited = true
-                    if (discountContainer.visibility != View.VISIBLE) addDiscountLabel.visibility = View.VISIBLE
+                    if (discountContainer?.visibility != View.VISIBLE) addDiscountLabel?.visibility = View.VISIBLE
                     showAddProductContainer()
                 }
             }
@@ -201,7 +201,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             }
 
         })
-        nameEditText.addTextChangedListener(object : TextWatcher {
+        nameEditText?.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 mProductNameStr = s?.toString()
                 val str = s?.toString()
@@ -220,7 +220,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             }
 
         })
-        productDescriptionEditText.addTextChangedListener(object : TextWatcher {
+        productDescriptionEditText?.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 val str = s?.toString()
                 if (str?.trim()?.isNotEmpty() == true) {
@@ -238,7 +238,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             }
 
         })
-        enterCategoryEditText.addTextChangedListener(object : TextWatcher {
+        enterCategoryEditText?.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 val str = s?.toString()
                 if (str?.trim()?.isNotEmpty() == true) {
@@ -260,17 +260,17 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
 
     override fun onClick(view: View?) {
         when(view?.id) {
-            addItemTextView.id -> {
-                addItemTextView.visibility = View.GONE
-                productDescriptionInputLayout.visibility = View.VISIBLE
-                productDescriptionEditText.requestFocus()
-                productDescriptionEditText.isFocusable = true
+            addItemTextView?.id -> {
+                addItemTextView?.visibility = View.GONE
+                productDescriptionInputLayout?.visibility = View.VISIBLE
+                productDescriptionEditText?.requestFocus()
+                productDescriptionEditText?.isFocusable = true
             }
-            addDiscountLabel.id -> {
-                addDiscountLabel.visibility = View.GONE
-                discountContainer.visibility = View.VISIBLE
+            addDiscountLabel?.id -> {
+                addDiscountLabel?.visibility = View.GONE
+                discountContainer?.visibility = View.VISIBLE
             }
-            tryNowTextView.id -> {
+            tryNowTextView?.id -> {
                 if (addProductBannerStaticDataResponse == null) {
                     if (!isInternetConnectionAvailable(mActivity)) {
                         showNoInternetConnectionDialog()
@@ -280,7 +280,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     mService.getAddOrderBottomSheetData()
                 } else showMasterCatalogBottomSheet(addProductBannerStaticDataResponse, addProductStaticData, Constants.MODE_ADD_PRODUCT)
             }
-            continueTextView.id -> {
+            continueTextView?.id -> {
                 if (checkValidation()) {
                     val nameStr = nameEditText?.text.toString()
                     val priceStr = priceEditText?.text?.trim().toString()
@@ -322,8 +322,8 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     }
                 }
             }
-            updateCameraImageView.id -> showAddProductImagePickerBottomSheet(0)
-            updateCameraTextView.id -> showAddProductImagePickerBottomSheet(0)
+            updateCameraImageView?.id -> showAddProductImagePickerBottomSheet(0)
+            updateCameraTextView?.id -> showAddProductImagePickerBottomSheet(0)
         }
     }
 
@@ -416,7 +416,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     }
 
     override fun onImageSelectionResultFile(file: File?, mode: String) {
-        if (mode == Constants.MODE_CROP) {
+        if (Constants.MODE_CROP == mode) {
             if (::imagePickBottomSheet.isInitialized) imagePickBottomSheet.dismiss()
             showImageCropDialog(file)
             return
@@ -465,14 +465,14 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     private fun checkValidation(): Boolean {
         return when {
             nameEditText.text.trim().isEmpty() -> {
-                nameEditText.error = addProductStaticData?.error_mandatory_field
-                nameEditText.requestFocus()
+                nameEditText?.error = addProductStaticData?.error_mandatory_field
+                nameEditText?.requestFocus()
                 false
             }
             discountedPriceEditText.text.toString().isNotEmpty() && (priceEditText.text.toString().toDouble() < discountedPriceEditText.text.toString().toDouble()) -> {
-                discountedPriceEditText.text = null
-                discountedPriceEditText.error = addProductStaticData?.error_discount_price_less_then_original_price
-                discountedPriceEditText.requestFocus()
+                discountedPriceEditText?.text = null
+                discountedPriceEditText?.error = addProductStaticData?.error_discount_price_less_then_original_price
+                discountedPriceEditText?.requestFocus()
                 false
             }
             else -> true
@@ -690,7 +690,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     }
 
     override fun onBackPressed(): Boolean {
-        return if (mIsOrderEdited && shareProductContainer.visibility != View.VISIBLE) {
+        return if (mIsOrderEdited && shareProductContainer?.visibility != View.VISIBLE) {
             showGoBackDialog()
             return true
         } else {

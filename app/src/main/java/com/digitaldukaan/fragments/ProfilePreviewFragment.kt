@@ -170,7 +170,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                     adapter = ProfilePreviewAdapter(mActivity, this@run, this@ProfilePreviewFragment, mProfilePreviewResponse?.mStoreItemResponse?.storeBusiness)
                 }
                 val dividerItemDecoration = DividerItemDecoration(
-                    profilePreviewRecyclerView.context,
+                    profilePreviewRecyclerView?.context,
                     linearLayoutManager.orientation
                 )
                 profilePreviewRecyclerView?.addItemDecoration(dividerItemDecoration)
