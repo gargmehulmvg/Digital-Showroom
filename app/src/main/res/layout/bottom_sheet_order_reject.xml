@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/upper_curve_white_background"
+    android:orientation="vertical"
+    android:padding="@dimen/_20sdp">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/orderRejectHeadingTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:fontFamily="@font/roboto_bold"
+        android:gravity="center_vertical"
+        android:textColor="@color/black"
+        android:alpha="0.8"
+        android:textSize="@dimen/_24sdp"
+        app:layout_constraintStart_toStartOf="@+id/billAmountTextView"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="@string/why_are_you_rejecting_the_order" />
+
+    <RadioGroup
+        android:id="@+id/rejectOrderRadioGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_15sdp">
+
+        <RadioButton
+            android:id="@+id/itemNotAvailableRadioButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/slight_curve_grey_border_without_padding"
+            android:fontFamily="@font/roboto"
+            android:paddingStart="@dimen/_5sdp"
+            android:paddingEnd="@dimen/_2sdp"
+            android:textSize="@dimen/_12sdp"
+            tools:text="@string/items_are_not_available" />
+
+        <RadioButton
+            android:id="@+id/deliveryGuyNotAvailableRadioButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:background="@drawable/slight_curve_grey_border_without_padding"
+            android:fontFamily="@font/roboto"
+            android:paddingStart="@dimen/_5sdp"
+            android:paddingEnd="@dimen/_2sdp"
+            android:textSize="@dimen/_12sdp"
+            tools:text="@string/delivery_guy_not_available" />
+
+        <RadioButton
+            android:id="@+id/customerRequestedCancellationRadioButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:background="@drawable/slight_curve_grey_border_without_padding"
+            android:fontFamily="@font/roboto"
+            android:paddingStart="@dimen/_5sdp"
+            android:paddingEnd="@dimen/_2sdp"
+            android:textSize="@dimen/_12sdp"
+            tools:text="Customer Requested Cancellation" />
+
+    </RadioGroup>
+
+    <TextView
+        android:id="@+id/startNowTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_20sdp"
+        android:background="@drawable/slight_curve_red_background_selector"
+        android:fontFamily="@font/roboto_medium"
+        android:gravity="center"
+        android:onClick="onClick"
+        android:padding="@dimen/_10sdp"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_14sdp"
+        tools:text="@string/start_now" />
+
+</LinearLayout>

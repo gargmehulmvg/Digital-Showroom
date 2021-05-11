@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/_15sdp"
+    android:layout_marginTop="@dimen/_8sdp"
+    android:layout_marginEnd="@dimen/_15sdp"
+    android:layout_marginBottom="@dimen/_3sdp"
+    android:elevation="@dimen/_4sdp"
+    app:cardCornerRadius="@dimen/_4sdp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/orderDetailContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:padding="@dimen/_8sdp">
+
+        <ImageView
+            android:id="@+id/orderDetailImageView"
+            android:layout_width="@dimen/_50sdp"
+            android:layout_height="@dimen/_50sdp"
+            android:visibility="gone"
+            android:contentDescription="@string/image_view_content_description"
+            android:src="@drawable/ic_auto_data_backup"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/orderDetailNameTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:minLines="@integer/min_lines_two"
+            android:textColor="@color/black"
+            android:layout_marginEnd="@dimen/_15sdp"
+            android:textSize="@dimen/_11sdp"
+            app:layout_constraintEnd_toStartOf="@+id/closeImageView"
+            app:layout_constraintStart_toEndOf="@+id/orderDetailImageView"
+            app:layout_constraintTop_toTopOf="@+id/orderDetailImageView"
+            tools:text="Pink cream cake meringues with smudges" />
+
+        <ImageView
+            android:id="@+id/closeImageView"
+            android:layout_width="@dimen/_20sdp"
+            android:layout_height="@dimen/_20sdp"
+            android:contentDescription="@string/image_view_content_description"
+            android:padding="@dimen/_2sdp"
+            android:src="@drawable/ic_close_red"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/view4"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_1sdp"
+            android:background="@color/light_grey_background"
+            app:layout_constraintTop_toBottomOf="@id/orderDetailNameTextView" />
+
+        <TextView
+            android:id="@+id/quantityTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:maxLines="@integer/min_lines_two"
+            android:fontFamily="sans-serif-medium"
+            android:textColor="@color/default_text_light_grey"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/priceTextView"
+            app:layout_constraintStart_toStartOf="@id/orderDetailImageView"
+            app:layout_constraintTop_toBottomOf="@id/view4"
+            tools:text="Qty: 5 pkt" />
+
+        <TextView
+            android:id="@+id/priceTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_8sdp"
+            android:fontFamily="@font/roboto_medium"
+            android:textColor="@color/open_green"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/view4"
+            tools:text="Qty: 5 pkt" />
+
+        <EditText
+            android:id="@+id/priceEditText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_8sdp"
+            android:inputType="numberDecimal"
+            android:gravity="end"
+            android:paddingEnd="@dimen/_3sdp"
+            android:paddingStart="@dimen/_3sdp"
+            android:maxLength="@integer/amount_length"
+            android:textSize="@dimen/_12sdp"
+            android:visibility="gone"
+            android:minWidth="@dimen/_30sdp"
+            android:fontFamily="@font/roboto_medium"
+            android:textColor="@color/open_green"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/view4" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>

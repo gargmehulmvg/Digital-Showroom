@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:animateLayoutChanges="true"
+    android:layout_height="wrap_content"
+    android:background="@drawable/upper_curve_white_background"
+    android:padding="@dimen/_10sdp">
+
+    <ImageView
+        android:id="@+id/bottomSheetEditStoreCloseImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:contentDescription="@string/image_view_content_description"
+        android:src="@drawable/ic_black_close"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/bottomSheetEditStoreHeading"
+        style="@style/common_bold_text_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/_18sdp"
+        app:layout_constraintEnd_toStartOf="@+id/bottomSheetEditStoreCloseImageView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/bottomSheetEditStoreCloseImageView"
+        tools:text="Confirmation" />
+
+    <EditText
+        android:id="@+id/bottomSheetEditStoreLinkEditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:background="@drawable/slight_curve_black_border"
+        android:importantForAutofill="no"
+        android:maxLength="@integer/store_name_length"
+        android:inputType="text"
+        android:textColor="@color/black"
+        tools:text="@string/app_name" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/bottomSheetEditStoreSaveTextView"
+        style="@style/common_text_view_background"
+        android:drawablePadding="@dimen/_10sdp"
+        android:layout_gravity="center"
+        android:textSize="@dimen/_16sdp"
+        android:gravity="center"
+        android:enabled="false"
+        android:layout_marginTop="@dimen/_20sdp"
+        android:layout_marginBottom="@dimen/_15sdp"
+        android:minWidth="@dimen/_200sdp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/bottomSheetEditStoreLinkLayout"
+        tools:text="@string/save_n_continue" />
+
+</LinearLayout>

@@ -1,5 +1,154 @@
-<resources>
-    <string name="app_name">Digital Dukaan</string>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name">Digital Showroom</string>
     <string name="image_view_content_description">image_view_content_description</string>
     <string name="loading">Loading…</string>
+    <string name="msg_back_press">Double click to exit the application</string>
+    <string name="enter_your_mobile_number">Enter your \nmobile number</string>
+    <string name="we_will_send_you_4_digit_otp">We will send you 4 digit OTP</string>
+    <string name="enter_mobile_number">Enter Mobile Number</string>
+    <string name="get_otp">Get OTP</string>
+    <string name="mandatory_field_message">This field is mandatory</string>
+    <string name="mobile_number_length_validation_message">Length of Mobile number must be 10</string>
+    <string name="enter_4_digit_otp_you_received">Enter 4 digit\nOTP you received</string>
+    <string name="verify">Verify</string>
+    <string name="transition_name">transitionName</string>
+    <string name="otp_auto_resend_in">OTP auto resend in</string>
+    <string name="resend_otp">Resend OTP</string>
+    <string name="enter_your_dukaan_name">Enter your\nDukaan name</string>
+    <string name="enter_your_dukaan_location">Enter your\nDukaan location</string>
+    <string name="step_1_2" tools:ignore="TypographyFractions">Step 1/2</string>
+    <string name="next">Next</string>
+    <string name="your_shop_store_dukaan_name">Your Shop/ Store/ Dukaan Name</string>
+    <string name="step_2_2">Step 2/2</string>
+    <string name="enter_location">Enter Location</string>
+    <string name="please_wait">Please wait…</string>
+    <string name="ok">OK</string>
+    <string name="no_internet_connection">No Internet Connection!</string>
+    <string name="turn_on_internet_message">Please turn on internet connection to continue</string>
+    <string name="close">Close</string>
+    <string name="authenticating_user">Authenticating User</string>
+    <string name="complete_profile">Complete Profile</string>
+    <string name="add_logo">+ Add Logo</string>
+    <string name="my_account">My Account</string>
+    <string name="store_controls">Store controls</string>
+    <string name="more_controls">More Controls</string>
+    <string name="share_your_showroom_with_customers">Share your showroom with \ncustomers</string>
+    <string name="share">Share</string>
+    <string name="help">Help</string>
+    <string name="refer_earn"><![CDATA[Refer & Earn]]></string>
+    <string name="my_rewards">My Rewards</string>
+    <string name="app_settings">App Settings</string>
+    <string name="feedback">Feedback</string>
+    <string name="auto_data_backup">100% Auto \nData Backup</string>
+    <string name="safe_secure">100% Safe \nAnd Secure</string>
+    <string name="new_release">New Release</string>
+    <string name="view_top_store">View Top Stores</string>
+    <string name="text_new">New</string>
+    <string name="digital_showroom_web">Digital Showroom Web</string>
+    <string name="trending">Trending</string>
+    <string name="bulk_upload_items">Bulk Upload Items</string>
+    <string name="best_viewed_on">Best viewed on</string>
+    <string name="link_copied">link copied</string>
+    <string name="start_now">Start Now</string>
+    <string name="store_name">Store Name</string>
+    <string name="profile">Profile</string>
+    <string name="step_1_store_description">Step 1: Store Description</string>
+    <string name="save_n_continue"><![CDATA[Save & Continue]]></string>
+    <string name="map_api_key">AIzaSyA9UIK8Gfrvs0JTLjaGKeEB8w7hb_RXKWM</string>
+    <string name="how_it_works">How it works?</string>
+    <string name="text_no">NO</string>
+    <string name="txt_yes">YES</string>
+    <string name="today_s_sale">Today\'s Sale</string>
+    <string name="week_s_sale">Week\'s Sale</string>
+    <string name="amount">Amount</string>
+    <string name="i_will_do_later"><u>I will do it later</u></string>
+    <string name="minus">-</string>
+    <string name="select_state">Select State</string>
+    <string name="skip">Skip</string>
+    <string name="partnerKeyProd">lUfdla502e197aec448d0acc3f837b4003569</string>
+    <string name="default_notification_channel_id">DIGITAL_DUKAAN_ID</string>
+    <string name="orders">Orders</string>
+    <string name="catalog">Catalog</string>
+    <string name="marketing">Marketing</string>
+    <string name="settings">Settings</string>
+    <string name="premium">Premium</string>
+    <string name="delete_product">Delete Product</string>
+    <string name="are_you_sure_to_delete">Are you sure to delete this item permanently?</string>
+    <string name="term_and_condition"><![CDATA[Terms & Condition]]></string>
+    <string name="view_as_customer">View as Customer</string>
+    <string name="share_product">Share Product</string>
+    <string name="take_order">Take Order</string>
+    <string name="sample_send_bill"><![CDATA[Send Bill to your customers & collect money online]]></string>
+    <string name="create_a_new_bill">Create a New Bill</string>
+    <string name="enter_bill_amount">Enter Bill Amount</string>
+    <string name="items_are_not_available">Items are not available</string>
+    <string name="delivery_guy_not_available">Delivery guy not available</string>
+    <string name="why_are_you_rejecting_the_order">Why are you rejecting the Order?</string>
+    <string name="no_internet_message">Make sure Wi-Fi or Cellular data is turned on, then try again</string>
+    <string name="free">free</string>
+    <string name="add_discount_and_other_charges"><![CDATA[Add discount & Other charges]]></string>
+    <string name="store_link_saved">Store Link Saved</string>
+    <string name="your_new_store_link">Your New Store Link</string>
+    <string name="share_store_link">Share Store Link</string>
+    <string name="update">Update</string>
+    <string name="save">Save</string>
+    <string name="out_of_stock_message">Are you sure you want to make this item out of stock?</string>
+    <string name="your_edited_link">Your edited link</string>
+    <string name="add_your_bank_account">Add your bank\nAccount</string>
+    <string name="add_bank_account">Add Bank Account</string>
+    <string name="dont_show_again_message">Don\'t show this again</string>
+    <string name="send_bill">Send Bill</string>
+    <string name="force_update_heading">Get the Latest Update</string>
+    <string name="force_update_message">Update now for all the latest features</string>
+    <string name="marketing_page_heading">Promote your store</string>
+    <string-array name="state_array">
+        <item >Andhra Pradesh</item>
+        <item >Arunachal Pradesh</item>
+        <item >Assam</item>
+        <item >Bihar</item>
+        <item >Chhattisgarh</item>
+        <item >Delhi</item>
+        <item >Goa</item>
+        <item >Gujarat</item>
+        <item >Haryana</item>
+        <item >Himachal Pradesh</item>
+        <item >Jharkhand</item>
+        <item >Karnataka</item>
+        <item >kerala</item>
+        <item >Madhya Pradesh</item>
+        <item >Maharashtra</item>
+        <item >Manipur</item>
+        <item >Meghalaya</item>
+        <item >Mizoram</item>
+        <item >Nagaland</item>
+        <item >Odisha</item>
+        <item >Punjab</item>
+        <item >Rajasthan</item>
+        <item >Sikkim</item>
+        <item >Tamil Nadu</item>
+        <item >Telangana</item>
+        <item >Tripura</item>
+        <item >Uttar Pradesh</item>
+        <item >Uttarakhand</item>
+        <item >West Bengal</item>
+    </string-array>
 </resources>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

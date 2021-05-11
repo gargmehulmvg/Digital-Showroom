@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:cardCornerRadius="@dimen/_5sdp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minWidth="@dimen/_250sdp"
+        android:padding="@dimen/_15sdp">
+
+        <ImageView
+            android:id="@+id/closeImageView"
+            android:layout_width="@dimen/_35sdp"
+            android:layout_height="@dimen/_35sdp"
+            android:paddingBottom="@dimen/_10sdp"
+            android:contentDescription="@string/image_view_content_description"
+            android:src="@drawable/ic_black_close"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/bannerImageView"
+            android:layout_width="@dimen/_125sdp"
+            android:layout_height="@dimen/_120sdp"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:contentDescription="@string/image_view_content_description"
+            android:padding="@dimen/_5sdp"
+            android:src="@drawable/ic_whatsapp"
+            app:layout_constraintEnd_toEndOf="@+id/closeImageView"
+            app:layout_constraintTop_toBottomOf="@+id/closeImageView" />
+
+        <TextView
+            android:id="@+id/offerTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/curve_profile_preview_banner"
+            android:fontFamily="sans-serif-medium"
+            android:paddingStart="@dimen/_10sdp"
+            android:paddingTop="@dimen/_4sdp"
+            android:paddingEnd="@dimen/_10sdp"
+            android:paddingBottom="@dimen/_4sdp"
+            tools:text="Limited Time Offer"
+            android:textSize="@dimen/_12sdp"
+            android:textColor="@color/black"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/bannerImageView" />
+
+        <TextView
+            android:id="@+id/headerTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:fontFamily="sans-serif-medium"
+            tools:text="Free Catalog Builder"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_25sdp"
+            app:layout_constraintEnd_toStartOf="@+id/bannerImageView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/offerTextView" />
+
+        <TextView
+            android:id="@+id/bodyTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:lineSpacingMultiplier="1.2"
+            android:layout_marginEnd="@dimen/_15sdp"
+            tools:text="Add products in your catalog for free"
+            android:textColor="@color/default_text_light_grey"
+            android:textSize="@dimen/_11sdp"
+            app:layout_constraintEnd_toStartOf="@+id/bannerImageView"
+            app:layout_constraintStart_toStartOf="@+id/headerTextView"
+            app:layout_constraintTop_toBottomOf="@+id/headerTextView" />
+
+        <TextView
+            android:id="@+id/buttonTextView"
+            style="@style/common_text_view_background"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_20sdp"
+            android:gravity="center"
+            android:textColor="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.65"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/bodyTextView"
+            tools:text="Explore Categories" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>

@@ -2,26 +2,46 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 'kotlin-android-extensions'
-    id 'androidx.navigation.safeargs.kotlin'
+    id 'com.google.gms.google-services'
+    id 'com.google.firebase.crashlytics'
 }
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 29
     buildToolsVersion "30.0.3"
 
     defaultConfig {
         applicationId "com.digitaldukaan"
-        minSdkVersion 19
-        targetSdkVersion 30
-        versionCode 1
-        versionName "1.0"
+        minSdkVersion 24
+        targetSdkVersion 29
+        versionCode 58
+        versionName "4.0.3"
+        multiDexEnabled true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
-
-    buildTypes {
+    signingConfigs {
         release {
-            minifyEnabled false
+            keyAlias 'dotpe_alias'
+            keyPassword '8377844923'
+            storePassword '8377844923'
+            storeFile file('dotpe-release-key.keystore')
+        }
+    }
+    buildTypes {
+        applicationVariants.all { variant ->
+            variant.outputs.all {
+                def flavor = variant.name
+                def versionCode = variant.versionCode
+                def date = new Date();
+                def formattedDate = date.format('dd_MMM_yy')
+                outputFileName = "ds_${flavor}_v${versionCode}_${formattedDate}.apk"
+            }
+        }
+        release {
+            signingConfig signingConfigs.release
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -32,10 +52,29 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    flavorDimensions "default"
+    productFlavors {
+        local {
+            buildConfigField('String', 'BASE_URL', '"https://api.dotq.in/"')
+            buildConfigField('String', 'WEB_VIEW_URL', '"https://digitaldukaanwebview.dotq.in/"')
+            buildConfigField('String', 'WEB_VIEW_SHOW_ROOM_URL', '"https://showroom.dotq.in/"')
+            buildConfigField('String', 'WEB_VIEW_PREVIEW_URL', '"https://showroom-preview2.dotq.in/"')
+            applicationId "com.digitaldukaan"
+        }
+        prod {
+            buildConfigField('String', 'BASE_URL', '"https://api.dotpe.in/"')
+            buildConfigField('String', 'WEB_VIEW_URL', '"https://webview.digitaldukaan.co.in/"')
+            buildConfigField('String', 'WEB_VIEW_SHOW_ROOM_URL', '"https://showroom.dotpe.in/"')
+            buildConfigField('String', 'WEB_VIEW_PREVIEW_URL', '"https://showroom-preview2.dotpe.in/"')
+            applicationId "com.digitaldukaan"
+        }
+    }
 }
 
 dependencies {
 
+    implementation 'com.google.android.gms:play-services-location:18.0.0'
+    implementation 'com.google.firebase:firebase-messaging:21.0.1'
     def nav_version = "2.3.3"
     def coroutines_version = "1.2.1"
     // Kotlin
@@ -53,14 +92,48 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.7.1'
     implementation 'com.squareup.retrofit2:converter-gson:2.7.1'
     //Logging interceptor dependency
-    implementation 'com.squareup.okhttp3:logging-interceptor:4.5.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.8.0'
     //Coroutines
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutines_version"
-    //LifeCycle
-    implementation 'androidx.lifecycle:lifecycle-common:2.3.0'
-    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.3.0'
-    implementation 'android.arch.lifecycle:extensions:2.2.0'
     //Multi Dimension support
     implementation 'com.intuit.sdp:sdp-android:1.0.6'
+    //auto read Mobile number dependency
+    implementation 'com.google.android.gms:play-services-auth:19.0.0'
+    implementation 'com.google.android.gms:play-services-identity:17.0.0'
+    implementation 'com.google.android.gms:play-services-auth-api-phone:17.5.0'
+    implementation 'com.google.android.gms:play-services-base:17.6.0'
+    //Picasso
+    implementation 'com.squareup.picasso:picasso:2.71828'
+    //Swipe refresh layout
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
+    //maps dependency
+    implementation 'com.google.android.gms:play-services-maps:17.0.0'
+    //image pick dependency
+    implementation 'com.github.dhaval2404:imagepicker-support:1.7.1'
+    //GIF imageView
+    implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.19'
+    //Sticky RecyclerView
+    implementation 'com.timehop.stickyheadersrecyclerview:library:0.4.3'
+    //Clever Tap Integration
+    implementation 'com.clevertap.android:clevertap-android-sdk:4.0.0'
+    implementation 'com.google.android.gms:play-services-base:17.6.0'
+    //Mandatory for CleverTap Android SDK v3.6.4 and above add the following -
+    implementation 'com.android.installreferrer:installreferrer:2.2'
+    //appflyer
+    implementation 'com.appsflyer:af-android-sdk:6.3.0'
+    implementation 'com.appsflyer:af-android-sdk:6.3.0'
+    implementation 'com.android.installreferrer:installreferrer:2.2'
+    //TrueCaller SDK
+    implementation "com.truecaller.android.sdk:truecaller-sdk:2.6.0"
+    //custom crop library
+    implementation 'com.theartofdev.edmodo:android-image-cropper:2.8.0'
+    // Import the BoM for the Firebase platform
+    implementation platform('com.google.firebase:firebase-bom:27.0.0')
+    // Declare the dependencies for the Crashlytics and Analytics libraries
+    // When using the BoM, you don't specify versions in Firebase library dependencies
+    implementation 'com.google.firebase:firebase-crashlytics-ktx'
+    implementation 'com.google.firebase:firebase-analytics-ktx'
+    //Circular Dots
+    implementation 'com.tbuonomo:dotsindicator:4.2'
 }

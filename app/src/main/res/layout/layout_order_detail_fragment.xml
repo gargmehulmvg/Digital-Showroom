@@ -1,0 +1,395 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true">
+
+    <ImageView
+        android:id="@+id/billPhotoImageView"
+        android:layout_width="match_parent"
+        android:visibility="gone"
+        android:background="@color/black"
+        android:layout_marginTop="@dimen/_50sdp"
+        android:layout_height="match_parent"
+        android:contentDescription="@string/image_view_content_description" />
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nestedScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toTopOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:animateLayoutChanges="true"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/newOrderTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/open_green_darker"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center"
+                android:paddingTop="@dimen/_4sdp"
+                android:paddingBottom="@dimen/_4sdp"
+                android:textColor="@color/white"
+                tools:text="New Order" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/orderDetailContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:background="@color/black"
+                android:padding="@dimen/_10sdp">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/billAmountLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:alpha="0.75"
+                    android:textColor="@color/white"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="Bill Amount:" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/billAmountValue"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-medium"
+                    android:paddingStart="@dimen/_5sdp"
+                    android:paddingEnd="@dimen/_5sdp"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_12sdp"
+                    app:layout_constraintBaseline_toBaselineOf="@+id/billAmountLabel"
+                    app:layout_constraintEnd_toStartOf="@+id/detailTextView"
+                    app:layout_constraintStart_toEndOf="@+id/billAmountLabel"
+                    tools:text="Bill Amount:" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/statusValue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawablePadding="@dimen/_4sdp"
+                    android:fontFamily="sans-serif-medium"
+                    android:paddingStart="@dimen/_5sdp"
+                    android:paddingEnd="@dimen/_5sdp"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_12sdp"
+                    app:layout_constraintBaseline_toBaselineOf="@+id/statusLabel"
+                    app:layout_constraintEnd_toStartOf="@+id/detailTextView"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toEndOf="@+id/statusLabel"
+                    tools:text="Bill Amount:" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/statusLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:layout_marginBottom="@dimen/_10sdp"
+                    android:alpha="0.75"
+                    android:textColor="@color/white"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/billAmountLabel"
+                    tools:text="Status:" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/detailTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/search_curve_padding_grey_border"
+                    android:drawableEnd="@drawable/ic_arrow_white_small"
+                    android:drawablePadding="@dimen/_5sdp"
+                    android:drawableTint="@color/white"
+                    android:gravity="center"
+                    android:visibility="gone"
+                    android:onClick="onClick"
+                    android:paddingStart="@dimen/_8sdp"
+                    android:paddingTop="@dimen/_5sdp"
+                    android:paddingEnd="@dimen/_8sdp"
+                    android:paddingBottom="@dimen/_5sdp"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_10sdp"
+                    app:layout_constraintBottom_toBottomOf="@+id/statusValue"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/billAmountValue"
+                    tools:text="Details" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/orderDetailItemRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10sdp"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:itemCount="1"
+                tools:listitem="@layout/order_detail_item" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/deliveryLabelLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:animateLayoutChanges="true"
+                android:padding="@dimen/_12sdp">
+
+                <TextView
+                    android:id="@+id/deliveryChargeLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="Delivery Charges" />
+
+                <TextView
+                    android:id="@+id/deliveryChargeValue"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:gravity="center"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/deliveryChargeLabel"
+                    tools:text="Delivery Charges" />
+
+                <EditText
+                    android:id="@+id/deliveryChargeValueEditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:importantForAutofill="no"
+                    android:inputType="number"
+                    android:gravity="start"
+                    android:visibility="gone"
+                    android:maxLength="@integer/amount_length"
+                    android:minWidth="@dimen/_30sdp"
+                    android:textSize="@dimen/_10sdp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/deliveryChargeLabel"
+                    tools:hint="₹" />
+
+                <TextView
+                    android:id="@+id/addDeliveryChargesLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:background="?selectableItemBackground"
+                    android:fontFamily="sans-serif-medium"
+                    android:onClick="onClick"
+                    android:textColor="@color/open_green"
+                    app:layout_constraintStart_toStartOf="@id/deliveryChargeLabel"
+                    app:layout_constraintTop_toBottomOf="@id/deliveryChargeLabel"
+                    tools:text="+ Add Delivery And Other Charges" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0.4dp"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:layout_marginTop="@dimen/_2sdp"
+                    android:layout_marginEnd="@dimen/_5sdp"
+                    android:background="@color/open_green"
+                    app:layout_constraintEnd_toEndOf="@+id/addDeliveryChargesLabel"
+                    app:layout_constraintStart_toStartOf="@+id/addDeliveryChargesLabel"
+                    app:layout_constraintTop_toBottomOf="@+id/addDeliveryChargesLabel" />
+
+                <androidx.constraintlayout.widget.Group
+                    android:id="@+id/addDeliveryChargesGroup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    app:constraint_referenced_ids="otherChargesEditText,otherChargesValueEditText,discountsEditText,discountsValueEditText" />
+
+                <EditText
+                    android:id="@+id/otherChargesEditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:importantForAutofill="no"
+                    android:inputType="text"
+                    android:gravity="start"
+                    android:minWidth="@dimen/_100sdp"
+                    android:textSize="@dimen/_10sdp"
+                    app:layout_constraintStart_toStartOf="@+id/addDeliveryChargesLabel"
+                    app:layout_constraintTop_toBottomOf="@+id/addDeliveryChargesLabel"
+                    tools:hint="Other charges" />
+
+                <EditText
+                    android:id="@+id/otherChargesValueEditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:importantForAutofill="no"
+                    android:inputType="number"
+                    android:maxLength="@integer/amount_length"
+                    android:gravity="start"
+                    android:minWidth="@dimen/_30sdp"
+                    android:textSize="@dimen/_10sdp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/otherChargesEditText"
+                    tools:hint="₹" />
+
+                <EditText
+                    android:id="@+id/discountsValueEditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:importantForAutofill="no"
+                    android:inputType="number"
+                    android:maxLength="@integer/amount_length"
+                    android:gravity="start"
+                    android:minWidth="@dimen/_30sdp"
+                    android:textSize="@dimen/_10sdp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@+id/otherChargesValueEditText"
+                    app:layout_constraintTop_toBottomOf="@+id/otherChargesValueEditText"
+                    tools:hint="₹" />
+
+                <TextView
+                    android:id="@+id/minusTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/minus"
+                    android:visibility="gone"
+                    android:paddingEnd="@dimen/_5sdp"
+                    android:paddingStart="@dimen/_5sdp"
+                    android:textSize="@dimen/_14sdp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/discountsValueEditText"
+                    app:layout_constraintTop_toBottomOf="@+id/otherChargesValueEditText" />
+
+                <EditText
+                    android:id="@+id/discountsEditText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:importantForAutofill="no"
+                    android:inputType="text"
+                    android:minWidth="@dimen/_100sdp"
+                    android:textSize="@dimen/_10sdp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/addDeliveryChargesLabel"
+                    app:layout_constraintTop_toBottomOf="@+id/otherChargesEditText"
+                    tools:hint="Discounts" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/instructionsLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-medium"
+                android:paddingStart="@dimen/_12sdp"
+                android:paddingTop="@dimen/_12sdp"
+                android:paddingEnd="@dimen/_12sdp"
+                android:paddingBottom="@dimen/_5sdp"
+                android:textColor="@color/default_text_light_grey"
+                android:textSize="@dimen/_11sdp"
+                android:visibility="gone"
+                tools:text="INSTRUCTIONS:" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/instructionsValue"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="@dimen/_12sdp"
+                android:paddingEnd="@dimen/_12sdp"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_12sdp"
+                android:visibility="gone"
+                tools:text="Please mention Happy birthday aditya on the top of the cake" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/estimateDeliveryTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginEnd="@dimen/_10sdp"
+                android:background="@drawable/slight_curve_black_background"
+                android:fontFamily="@font/montserrat"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_10sdp"
+                tools:text="@string/app_name" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/customerDetailsLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-medium"
+                android:paddingStart="@dimen/_12sdp"
+                android:paddingTop="@dimen/_12sdp"
+                android:paddingEnd="@dimen/_12sdp"
+                android:paddingBottom="@dimen/_5sdp"
+                android:textColor="@color/default_text_light_grey"
+                android:textSize="@dimen/_11sdp"
+                tools:text="CUSTOMER DETAILS:" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/customerDeliveryDetailsRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/_60sdp"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:itemCount="5"
+                tools:listitem="@layout/customer_detail_item" />
+
+            <View
+                android:id="@+id/blankSpace"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_100sdp" />
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+    <LinearLayout
+        android:id="@+id/sendBillLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:elevation="@dimen/_5sdp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_2sdp"
+            android:alpha="0.2"
+            android:background="@color/cardview_dark_background" />
+
+        <include
+            layout="@layout/bottom_layout_send_bill"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+    </LinearLayout>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/viewBillTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/_15sdp"
+        android:layout_marginBottom="@dimen/_15sdp"
+        android:background="@drawable/curve_black_background"
+        android:drawableStart="@drawable/ic_view_bill_white"
+        android:drawablePadding="@dimen/_5sdp"
+        android:visibility="gone"
+        android:fontFamily="sans-serif-medium"
+        android:paddingStart="@dimen/_10sdp"
+        android:paddingTop="@dimen/_5sdp"
+        android:paddingEnd="@dimen/_10sdp"
+        android:paddingBottom="@dimen/_5sdp"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_13sdp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:text="View Bill" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

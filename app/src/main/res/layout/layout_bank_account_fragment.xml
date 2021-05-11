@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/parentLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingEnd="@dimen/_25sdp"
+        android:paddingTop="@dimen/_15sdp"
+        android:paddingBottom="@dimen/_15sdp"
+        android:paddingStart="@dimen/_25sdp">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/bankHeadingTextView"
+            style="@style/common_bold_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_10sdp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Enter bank details" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/materialTextView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/default_text_light_grey"
+            app:layout_constraintStart_toStartOf="@+id/bankHeadingTextView"
+            app:layout_constraintTop_toBottomOf="@+id/bankHeadingTextView"
+            tools:text="And Get Instant Settlements" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/accountHolderNameLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_15sdp"
+            app:layout_constraintEnd_toEndOf="@+id/bankHeadingTextView"
+            app:layout_constraintStart_toStartOf="@+id/bankHeadingTextView"
+            app:layout_constraintTop_toBottomOf="@+id/materialTextView3"
+            tools:hint="Account Holder Name">
+
+            <EditText
+                android:id="@+id/accountHolderNameEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
+                android:importantForAutofill="no"
+                android:inputType="text"
+                android:maxLength="@integer/user_name_length"
+                android:textColor="@color/black"
+                android:textColorHint="@color/default_text_light_grey"
+                android:textSize="@dimen/_12sdp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/accountNumberLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_10sdp"
+            app:layout_constraintEnd_toEndOf="@+id/bankHeadingTextView"
+            app:layout_constraintStart_toStartOf="@+id/bankHeadingTextView"
+            app:layout_constraintTop_toBottomOf="@+id/accountHolderNameLayout"
+            tools:hint="Account Number">
+
+            <EditText
+                android:id="@+id/accountNumberEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
+                android:importantForAutofill="no"
+                android:inputType="numberPassword"
+                android:textColor="@color/black"
+                android:textColorHint="@color/default_text_light_grey"
+                android:textSize="@dimen/_12sdp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/verifyAccountNumberLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_10sdp"
+            app:layout_constraintEnd_toEndOf="@+id/bankHeadingTextView"
+            app:layout_constraintStart_toStartOf="@+id/bankHeadingTextView"
+            app:layout_constraintTop_toBottomOf="@+id/accountNumberLayout"
+            tools:hint="Verify Account Number">
+
+            <EditText
+                android:id="@+id/verifyAccountNumberEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
+                android:importantForAutofill="no"
+                android:inputType="number"
+                android:textColor="@color/black"
+                android:textColorHint="@color/default_text_light_grey"
+                android:textSize="@dimen/_12sdp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/ifscLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_10sdp"
+            app:layout_constraintEnd_toEndOf="@+id/bankHeadingTextView"
+            app:layout_constraintStart_toStartOf="@+id/bankHeadingTextView"
+            app:layout_constraintTop_toBottomOf="@+id/verifyAccountNumberLayout"
+            tools:hint="IFSC CODE">
+
+            <EditText
+                android:id="@+id/ifscEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
+                android:inputType="text"
+                android:importantForAutofill="no"
+                android:maxLength="@integer/ifsc_length"
+                android:textColor="@color/black"
+                android:textColorHint="@color/default_text_light_grey"
+                android:textSize="@dimen/_12sdp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/mobileNumberLayout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_10sdp"
+            app:layout_constraintEnd_toEndOf="@+id/bankHeadingTextView"
+            app:layout_constraintStart_toStartOf="@+id/bankHeadingTextView"
+            app:layout_constraintTop_toBottomOf="@+id/ifscLayout"
+            tools:hint="Registered Mobile Number">
+
+            <EditText
+                android:id="@+id/mobileNumberEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true"
+                android:importantForAutofill="no"
+                android:imeOptions="actionDone"
+                android:inputType="number"
+                android:maxLength="@integer/mobile_number_length"
+                android:textColor="@color/black"
+                android:textColorHint="@color/default_text_light_grey"
+                android:textSize="@dimen/_12sdp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/skipTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat_bold"
+            android:onClick="onClick"
+            android:text="@string/skip"
+            android:layout_marginStart="@dimen/_5sdp"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_16sdp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/saveTextView"
+            app:layout_constraintStart_toStartOf="@+id/mobileNumberLayout"
+            app:layout_constraintTop_toTopOf="@+id/saveTextView" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/saveTextView"
+            style="@style/common_text_view_background"
+            android:drawableEnd="@drawable/ic_arrow_forward_white"
+            android:drawablePadding="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_20sdp"
+            android:enabled="true"
+            android:onClick="onClick"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/mobileNumberLayout"
+            app:layout_constraintVertical_bias="1.0"
+            tools:text="@string/verify" />
+
+        <View
+            android:id="@+id/blankView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>

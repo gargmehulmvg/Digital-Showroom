@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="mobile_number_length">10</integer>
+    <integer name="user_name_length">100</integer>
+    <integer name="account_number_length">7</integer>
+    <integer name="ifsc_length">11</integer>
+    <integer name="description_name_length">500</integer>
+    <integer name="store_link_length">50</integer>
+    <integer name="store_name_length">50</integer>
+    <integer name="max_selection_item_catalog">100</integer>
+    <integer name="amount_length">7</integer>
+    <integer name="min_lines_two">2</integer>
+    <integer name="min_lines_three">3</integer>
+    <integer name="pin_code_length">6</integer>
+    <integer name="business_type_count">3</integer>
+    <integer name="store_name_min_length">4</integer>
+</resources>

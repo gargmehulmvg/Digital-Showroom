@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
+    android:padding="@dimen/_20sdp">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/enterMobileNumberHeading"
+        style="@style/common_bold_text_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_40sdp"
+        android:layout_marginEnd="@dimen/_15sdp"
+        android:lineSpacingMultiplier="1.2"
+        android:paddingStart="0dp"
+        android:paddingEnd="@dimen/_10sdp"
+        app:layout_constraintEnd_toStartOf="@+id/smsImageView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="@string/enter_your_mobile_number" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/send4DigitOtpHeading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/default_text_light_grey"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:textSize="@dimen/_13sdp"
+        app:layout_constraintStart_toStartOf="@+id/enterMobileNumberHeading"
+        app:layout_constraintTop_toBottomOf="@+id/enterMobileNumberHeading"
+        tools:text="@string/we_will_send_you_4_digit_otp" />
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/smsImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:src="@drawable/ic_mobile_sms"
+        android:transitionName="@string/transition_name"
+        app:layout_constraintBottom_toBottomOf="@+id/send4DigitOtpHeading"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/enterMobileNumberHeading"
+        tools:targetApi="lollipop" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/mobileNumberInputLayout"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_30sdp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@+id/smsImageView"
+        app:layout_constraintStart_toStartOf="@+id/enterMobileNumberHeading"
+        app:layout_constraintTop_toBottomOf="@+id/send4DigitOtpHeading">
+
+        <EditText
+            android:id="@+id/mobileNumberEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:importantForAutofill="no"
+            android:inputType="number"
+            android:maxLength="@integer/mobile_number_length"
+            android:fontFamily="@font/roboto_medium"
+            android:textColor="@color/black"
+            android:textColorHint="@color/default_text_light_grey"
+            android:textSize="@dimen/_16sdp"
+            tools:hint="@string/enter_mobile_number" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:id="@+id/mobileNumberTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_30sdp"
+        android:background="@drawable/slight_curve_grey_border"
+        android:onClick="onClick"
+        android:visibility="visible"
+        android:fontFamily="@font/roboto_medium"
+        android:textColor="@color/default_text_light_grey"
+        android:textColorHint="@color/default_text_light_grey"
+        android:textSize="@dimen/_16sdp"
+        app:layout_constraintEnd_toEndOf="@+id/smsImageView"
+        app:layout_constraintStart_toStartOf="@+id/enterMobileNumberHeading"
+        app:layout_constraintTop_toBottomOf="@+id/send4DigitOtpHeading"
+        tools:hint="@string/enter_mobile_number" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/getOtpTextView"
+        style="@style/common_text_view_background"
+        android:drawableEnd="@drawable/ic_arrow_forward_white"
+        android:drawablePadding="@dimen/_10sdp"
+        android:onClick="onClick"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:text="@string/get_otp" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

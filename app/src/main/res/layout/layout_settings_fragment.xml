@@ -1,0 +1,407 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/swipeRefreshLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/light_grey_background">
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fillViewport="true">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/userProfileLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/_10sdp"
+                android:background="@drawable/curve_white_selector"
+                android:elevation="@dimen/_4sdp"
+                android:padding="@dimen/_10sdp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:targetApi="lollipop">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/dukaanNameTextView"
+                    style="@style/common_bold_text_view"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:textSize="@dimen/_14sdp"
+                    android:onClick="onClick"
+                    android:gravity="center_vertical"
+                    app:layout_constraintBottom_toBottomOf="@+id/linearLayout"
+                    app:layout_constraintEnd_toStartOf="@+id/linearLayout"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/linearLayout"
+                    tools:text="@string/app_name" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/profileStatusRecyclerView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_8sdp"
+                    android:onClick="onClick"
+                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                    app:layout_constraintEnd_toEndOf="@+id/linearLayout"
+                    app:layout_constraintStart_toStartOf="@+id/dukaanNameTextView"
+                    app:layout_constraintTop_toBottomOf="@+id/linearLayout"
+                    app:spanCount="5"
+                    tools:itemCount="5"
+                    tools:listitem="@layout/profile_status_item" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/completeProfileTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_8sdp"
+                    android:layout_marginBottom="@dimen/_5sdp"
+                    android:fontFamily="@font/montserrat"
+                    android:paddingStart="@dimen/_5sdp"
+                    android:onClick="onClick"
+                    android:paddingEnd="@dimen/_5sdp"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_11sdp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/shapeableImageView"
+                    app:layout_constraintTop_toBottomOf="@id/profileStatusRecyclerView"
+                    tools:text="@string/complete_profile" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/stepsLeftTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_8sdp"
+                    android:layout_marginBottom="@dimen/_5sdp"
+                    android:fontFamily="@font/montserrat"
+                    android:paddingStart="@dimen/_1sdp"
+                    android:onClick="onClick"
+                    android:paddingEnd="@dimen/_5sdp"
+                    android:textColor="@color/default_text_light_grey"
+                    android:textSize="@dimen/_11sdp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/completeProfileTextView"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/profileStatusRecyclerView"
+                    tools:text="@string/complete_profile" />
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/shapeableImageView"
+                    android:layout_width="@dimen/_12sdp"
+                    android:layout_height="@dimen/_12sdp"
+                    android:background="@color/white"
+                    android:onClick="onClick"
+                    android:src="@drawable/round_black_background"
+                    app:layout_constraintBottom_toBottomOf="@+id/completeProfileTextView"
+                    app:layout_constraintEnd_toEndOf="@+id/linearLayout"
+                    app:layout_constraintTop_toTopOf="@+id/completeProfileTextView" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/linearLayout"
+                    android:layout_width="@dimen/_70sdp"
+                    android:layout_height="@dimen/_70sdp"
+                    android:onClick="onClick"
+                    android:background="@drawable/curve_green_dotted_border"
+                    android:gravity="center_horizontal"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:id="@+id/hiddenImageView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:contentDescription="@string/image_view_content_description"
+                        android:src="@drawable/ic_photography"
+                        app:layout_constraintBottom_toTopOf="@+id/hiddenTextView"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/hiddenTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/montserrat"
+                        android:maxLines="1"
+                        android:paddingTop="@dimen/_2sdp"
+                        tools:text="@string/add_logo"
+                        android:textColor="@color/open_green"
+                        android:textSize="@dimen/_9sdp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="0.75" />
+
+                    <ImageView
+                        android:id="@+id/storePhotoImageView"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_margin="@dimen/_4sdp"
+                        android:transitionName="@string/transition_name"
+                        android:contentDescription="@string/image_view_content_description"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraintLayout2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:background="@color/white"
+                app:layout_constraintTop_toBottomOf="@+id/userProfileLayout">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/materialTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_marginTop="@dimen/_13sdp"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_13sdp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="@string/store_controls" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/storeStatusTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_2sdp"
+                    android:padding="@dimen/_2sdp"
+                    android:textColor="@color/black"
+                    app:layout_constraintEnd_toEndOf="@id/storeSwitch"
+                    app:layout_constraintStart_toStartOf="@id/storeSwitch"
+                    app:layout_constraintTop_toBottomOf="@id/storeSwitch"
+                    tools:text="@string/store_controls" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/deliveryStatusTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/_2sdp"
+                    android:textColor="@color/black"
+                    app:layout_constraintBaseline_toBaselineOf="@+id/storeStatusTextView"
+                    app:layout_constraintEnd_toEndOf="@+id/deliverySwitch"
+                    app:layout_constraintStart_toStartOf="@+id/deliverySwitch"
+                    tools:text="@string/store_controls" />
+
+                <com.google.android.material.imageview.ShapeableImageView
+                    android:id="@+id/moreControlsImageView"
+                    android:layout_width="@dimen/_33sdp"
+                    android:layout_height="0dp"
+                    android:background="?android:selectableItemBackground"
+                    android:onClick="onClick"
+                    android:src="@drawable/ic_more_controls"
+                    app:layout_constraintBottom_toTopOf="@+id/deliveryStatusTextView"
+                    app:layout_constraintEnd_toEndOf="@+id/moreControlsTextView"
+                    app:layout_constraintStart_toStartOf="@+id/moreControlsTextView"
+                    app:layout_constraintTop_toTopOf="@+id/deliverySwitch" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/moreControlsTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="onClick"
+                    android:padding="@dimen/_2sdp"
+                    android:textColor="@color/black"
+                    app:layout_constraintBottom_toBottomOf="@+id/deliveryStatusTextView"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.8"
+                    app:layout_constraintStart_toEndOf="@+id/deliveryStatusTextView"
+                    app:layout_constraintTop_toTopOf="@+id/deliveryStatusTextView"
+                    tools:text="@string/more_controls" />
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/storeSwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:onClick="onClick"
+                    android:thumb="@drawable/ic_store_switch_selector"
+                    app:layout_constraintStart_toStartOf="@+id/materialTextView"
+                    app:layout_constraintTop_toBottomOf="@+id/materialTextView"
+                    app:track="@drawable/ic_store_switch_track" />
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/deliverySwitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_20sdp"
+                    android:onClick="onClick"
+                    android:thumb="@drawable/ic_delivery_switch_selector"
+                    app:layout_constraintStart_toEndOf="@+id/storeSwitch"
+                    app:layout_constraintTop_toTopOf="@+id/storeSwitch"
+                    app:track="@drawable/ic_store_switch_track" />
+
+                <View
+                    android:id="@+id/separator"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_1sdp"
+                    android:layout_marginTop="@dimen/_13sdp"
+                    android:background="@color/curve_grey_border"
+                    app:layout_constraintTop_toBottomOf="@+id/deliveryStatusTextView" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/shareShowRoomWithCustomerTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_15sdp"
+                    android:layout_marginBottom="@dimen/_15sdp"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_13sdp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/whatsAppTextView"
+                    app:layout_constraintStart_toStartOf="@+id/materialTextView"
+                    app:layout_constraintTop_toBottomOf="@+id/separator"
+                    tools:text="@string/share_your_showroom_with_customers" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/whatsAppTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/_10sdp"
+                    android:background="@drawable/curve_black_border"
+                    android:gravity="center"
+                    android:onClick="onClick"
+                    android:orientation="horizontal"
+                    app:layout_constraintBottom_toBottomOf="@+id/shareShowRoomWithCustomerTextView"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/shareShowRoomWithCustomerTextView">
+
+                    <ImageView
+                        android:id="@+id/shapeableImageView2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:contentDescription="@string/image_view_content_description"
+                        android:padding="@dimen/_5sdp"
+                        android:src="@drawable/ic_whatsapp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintVertical_bias="1.0" />
+
+                    <TextView
+                        android:id="@+id/whatsAppShareTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:clickable="false"
+                        android:padding="@dimen/_5sdp"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_14sdp"
+                        app:layout_constraintBottom_toBottomOf="@+id/shapeableImageView2"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/shapeableImageView2"
+                        app:layout_constraintTop_toTopOf="@+id/shapeableImageView2"
+                        app:layout_constraintVertical_bias="0.3"
+                        tools:text="@string/share" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/newReleaseLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@+id/constraintLayout2">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/newReleaseHeading"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_marginTop="@dimen/_13sdp"
+                    android:fontFamily="@font/montserrat"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_13sdp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="@string/new_release" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/newReleaseRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    tools:listitem="@layout/new_release_item"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    android:orientation="horizontal"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@+id/newReleaseHeading" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <LinearLayout
+                android:id="@+id/linearLayout2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:layout_marginTop="@dimen/_2sdp"
+                android:orientation="vertical"
+                android:padding="@dimen/_10sdp"
+                app:layout_constraintTop_toBottomOf="@+id/newReleaseLayout">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/settingStoreOptionRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    tools:listitem="@layout/setting_store_item" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_30sdp"
+                    android:background="@color/white" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/dark_blackish"
+                android:orientation="horizontal"
+                android:paddingStart="@dimen/_10sdp"
+                android:paddingTop="@dimen/_10sdp"
+                android:paddingEnd="@dimen/_10sdp"
+                android:paddingBottom="@dimen/_10sdp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
+                app:layout_constraintVertical_bias="1.0">
+
+                <ImageView
+                    android:id="@+id/autoDataBackupImageView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:contentDescription="@string/image_view_content_description"
+                    android:src="@drawable/ic_auto_data_backup" />
+
+                <ImageView
+                    android:id="@+id/safeSecureImageView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:contentDescription="@string/image_view_content_description"
+                    android:src="@drawable/ic_auto_data_backup" />
+
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

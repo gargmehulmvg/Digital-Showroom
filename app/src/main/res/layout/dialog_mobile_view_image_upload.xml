@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white">
+
+    <ImageView
+        android:id="@+id/backButtonToolbar"
+        android:layout_width="@dimen/_35sdp"
+        android:layout_height="@dimen/_30sdp"
+        android:layout_margin="@dimen/_10sdp"
+        android:contentDescription="@string/image_view_content_description"
+        android:onClick="onClick"
+        android:padding="@dimen/_4sdp"
+        android:rotation="180"
+        android:src="@drawable/ic_arrow_forward_white"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/black" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_20sdp"
+        android:layout_marginEnd="@dimen/_20sdp"
+        android:background="@drawable/slight_curve_light_grey_border"
+        android:paddingStart="@dimen/_10sdp"
+        android:paddingTop="@dimen/_30sdp"
+        android:paddingEnd="@dimen/_10sdp"
+        android:paddingBottom="@dimen/_30sdp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/fadedMobileImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ic_mobile_upload"
+            android:contentDescription="@string/image_view_content_description"
+            android:padding="@dimen/_10sdp"
+            android:src="@drawable/ic_mob_faded"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/desktopImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_30sdp"
+            android:background="@drawable/ic_mobile_upload"
+            android:contentDescription="@string/image_view_content_description"
+            android:padding="@dimen/_10sdp"
+            android:src="@drawable/ic_desk"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/fadedMobileImageView" />
+
+        <TextView
+            android:id="@+id/fadedMobileTextView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:paddingStart="@dimen/_5sdp"
+            android:paddingEnd="@dimen/_5sdp"
+            android:textSize="@dimen/_12sdp"
+            app:layout_constraintBottom_toBottomOf="@+id/fadedMobileImageView"
+            app:layout_constraintEnd_toStartOf="@+id/dottedView"
+            app:layout_constraintStart_toEndOf="@+id/fadedMobileImageView"
+            app:layout_constraintTop_toTopOf="@+id/fadedMobileImageView"
+            tools:text="Cropped for Mobile website." />
+
+        <TextView
+            android:id="@+id/desktopTextView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:gravity="center"
+            android:paddingStart="@dimen/_5sdp"
+            android:paddingEnd="@dimen/_5sdp"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_12sdp"
+            app:layout_constraintBottom_toBottomOf="@+id/desktopImageView"
+            app:layout_constraintEnd_toStartOf="@+id/dottedView"
+            app:layout_constraintStart_toEndOf="@+id/desktopImageView"
+            app:layout_constraintTop_toTopOf="@+id/desktopImageView"
+            tools:text="Cropped for Mobile website." />
+
+        <ImageView
+            android:id="@+id/imageViewTop"
+            android:layout_width="@dimen/_20sdp"
+            android:layout_height="@dimen/_20sdp"
+            android:contentDescription="@string/image_view_content_description"
+            android:src="@drawable/ic_order_detail_green_tick"
+            app:layout_constraintBottom_toBottomOf="@+id/fadedMobileTextView"
+            app:layout_constraintEnd_toEndOf="@+id/dottedView"
+            app:layout_constraintStart_toStartOf="@+id/dottedView"
+            app:layout_constraintTop_toTopOf="@+id/fadedMobileTextView" />
+
+        <View
+            android:id="@+id/dottedView"
+            android:layout_width="@dimen/_50sdp"
+            android:layout_height="@dimen/_50sdp"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:background="@drawable/dotted_line_view"
+            android:rotation="90"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imageViewTop" />
+
+        <ImageView
+            android:id="@+id/imageViewBottom"
+            android:layout_width="@dimen/_20sdp"
+            android:layout_height="@dimen/_20sdp"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:contentDescription="@string/image_view_content_description"
+            android:src="@drawable/ic_pending_black"
+            app:layout_constraintEnd_toEndOf="@+id/dottedView"
+            app:layout_constraintStart_toStartOf="@+id/dottedView"
+            app:layout_constraintTop_toBottomOf="@+id/dottedView" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/cropTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_30sdp"
+            android:layout_marginEnd="@dimen/_10sdp"
+            android:background="@drawable/curve_black_background_selector"
+            android:drawablePadding="@dimen/_10sdp"
+            android:fontFamily="@font/montserrat_bold"
+            android:gravity="center"
+            android:onClick="onClick"
+            android:paddingTop="@dimen/_10sdp"
+            android:paddingBottom="@dimen/_10sdp"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_12sdp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/dottedView"
+            app:layout_constraintStart_toStartOf="@+id/desktopImageView"
+            app:layout_constraintTop_toBottomOf="@+id/desktopTextView"
+            tools:text="Crop for Desktop" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

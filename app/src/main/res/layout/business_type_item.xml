@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/businessTypeContainer"
+        android:layout_width="@dimen/_140sdp"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_marginTop="@dimen/_4sdp"
+        android:layout_marginBottom="@dimen/_4sdp"
+        android:background="@drawable/business_type_selector"
+        android:orientation="vertical">
+
+        <CheckBox
+            android:id="@+id/businessTypeCheckBox"
+            android:layout_width="wrap_content"
+            android:clickable="false"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start" />
+
+        <ImageView
+            android:id="@+id/businessTypeImageView"
+            android:layout_width="@dimen/_60sdp"
+            android:layout_height="@dimen/_60sdp"
+            android:clickable="false"
+            android:contentDescription="@string/image_view_content_description"
+            android:src="@drawable/ic_auto_data_backup" />
+
+        <TextView
+            android:id="@+id/businessTypeTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/montserrat"
+            android:gravity="center"
+            android:clickable="false"
+            android:maxLines="@integer/min_lines_two"
+            android:minLines="@integer/min_lines_two"
+            android:padding="@dimen/_5sdp"
+            android:src="@drawable/ic_auto_data_backup"
+            android:textColor="@color/black"
+            tools:text="string/app_name string/app_name string/app_name" />
+
+    </LinearLayout>
+
+</LinearLayout>

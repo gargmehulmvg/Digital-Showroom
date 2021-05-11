@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/bottomSheetContainer"
+    android:orientation="vertical"
+    android:background="@drawable/upper_curve_white_background"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/_5sdp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/bottomSheetClose"
+            android:layout_width="@dimen/_22sdp"
+            android:layout_height="@dimen/_22sdp"
+            android:contentDescription="@string/image_view_content_description"
+            android:elevation="@dimen/_4sdp"
+            android:visibility="invisible"
+            android:layout_marginEnd="@dimen/_5sdp"
+            android:src="@drawable/ic_black_close"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/bottomSheetUpperImageView"
+            android:layout_width="@dimen/_110sdp"
+            android:layout_height="@dimen/_220sdp"
+            android:contentDescription="@string/image_view_content_description"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/bottomSheetClose"
+            android:src="@drawable/ic_bottom_sheet_bank_details" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/bottomSheetHeadingTextView"
+            android:layout_width="0dp"
+            style="@style/common_bold_text_view"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:textSize="@dimen/_24sdp"
+            android:lineSpacingMultiplier="1.2"
+            android:paddingStart="@dimen/_10sdp"
+            android:paddingEnd="@dimen/_10sdp"
+            app:layout_constraintEnd_toStartOf="@+id/bottomSheetUpperImageView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/bottomSheetUpperImageView"
+            android:text="@string/add_your_bank_account" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/bottomSheetBankRecyclerView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/_10sdp"
+            android:paddingEnd="@dimen/_5sdp"
+            app:layout_constraintBottom_toBottomOf="@+id/bottomSheetUpperImageView"
+            app:layout_constraintEnd_toStartOf="@+id/bottomSheetUpperImageView"
+            app:layout_constraintStart_toStartOf="@+id/bottomSheetHeadingTextView"
+            app:layout_constraintTop_toBottomOf="@+id/bottomSheetHeadingTextView"
+            tools:itemCount="1"
+            tools:listitem="@layout/add_bank_bottom_sheet_item" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/getOtpTextView"
+        style="@style/common_text_view_background"
+        android:layout_width="match_parent"
+        android:drawableEnd="@drawable/ic_arrow_forward_white"
+        android:layout_marginStart="@dimen/_15sdp"
+        android:layout_marginTop="@dimen/_20sdp"
+        android:layout_marginEnd="@dimen/_15sdp"
+        android:elevation="@dimen/_4sdp"
+        android:gravity="center"
+        android:text="@string/add_bank_account" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/howItWorksTextView"
+        android:layout_width="match_parent"
+        android:gravity="center"
+        app:fontFamily="@font/roboto_medium"
+        android:layout_marginBottom="@dimen/_25sdp"
+        android:layout_marginTop="@dimen/_25sdp"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/_15sdp"
+        android:fontFamily="@font/montserrat"
+        android:text="@string/i_will_do_later"
+        android:textColor="@color/dark_blackish" />
+
+</LinearLayout>

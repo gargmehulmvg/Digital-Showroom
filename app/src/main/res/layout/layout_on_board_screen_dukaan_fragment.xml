@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:padding="@dimen/_20sdp">
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/backImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="onClick"
+        android:rotation="180"
+        android:src="@drawable/ic_arrow_forward_white"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="@color/black" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/enterDukaanNameHeading"
+        style="@style/common_bold_text_view"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toStartOf="@id/onBoardDukaanNameImageView"
+        app:layout_constraintStart_toStartOf="@id/stepOneTextView"
+        app:layout_constraintTop_toBottomOf="@id/stepOneTextView"
+        tools:text="@string/enter_your_dukaan_name" />
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/onBoardDukaanNameImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:src="@drawable/ic_on_board_dukaan_name"
+        app:layout_constraintBottom_toBottomOf="@id/enterDukaanNameHeading"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/enterDukaanNameHeading" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/nextTextView"
+        style="@style/common_text_view_background"
+        android:drawableEnd="@drawable/ic_arrow_forward_white"
+        android:drawablePadding="@dimen/_10sdp"
+        android:enabled="false"
+        android:onClick="onClick"
+        android:text="@string/next"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/stepOneTextView"
+        style="@style/common_bold_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_2sdp"
+        android:layout_marginTop="@dimen/_20sdp"
+        android:paddingBottom="@dimen/_3sdp"
+        android:textSize="@dimen/_11sdp"
+        app:layout_constraintStart_toStartOf="@id/backImageView"
+        app:layout_constraintTop_toBottomOf="@id/backImageView"
+        tools:text="@string/step_1_2" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/dukaanNameLayout"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_30sdp"
+        app:layout_constraintEnd_toEndOf="@id/enterDukaanNameHeading"
+        app:layout_constraintStart_toStartOf="@id/enterDukaanNameHeading"
+        app:layout_constraintTop_toBottomOf="@id/enterDukaanNameHeading">
+
+        <EditText
+            android:id="@+id/dukaanNameEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="true"
+            android:importantForAutofill="no"
+            android:inputType="text"
+            android:maxLength="@integer/description_name_length"
+            android:textColor="@color/black"
+            android:textColorHint="@color/default_text_light_grey"
+            android:textSize="@dimen/_12sdp"
+            tools:hint="@string/your_shop_store_dukaan_name" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minWidth="@dimen/_220sdp"
+    android:background="@drawable/curve_white_background"
+    android:orientation="vertical"
+    android:padding="@dimen/_15sdp">
+
+    <TextView
+        android:id="@+id/headingTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/roboto_bold"
+        android:gravity="center"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_22sdp"
+        android:text="@string/force_update_heading" />
+
+    <TextView
+        android:id="@+id/messageTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_18sdp"
+        android:textSize="@dimen/_12sdp"
+        android:gravity="center"
+        android:text="@string/force_update_message" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/updateTextView"
+        style="@style/common_text_view_background"
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/_18sdp"
+        android:gravity="center"
+        android:onClick="onClick"
+        android:text="@string/update" />
+
+</LinearLayout>
