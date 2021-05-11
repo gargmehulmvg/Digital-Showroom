@@ -359,9 +359,9 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         }
         infoResponse.mFooterImages?.forEachIndexed { index, imageUrl ->
             if (index == 0) {
-                autoDataBackupImageView?.let { Picasso.get().load(imageUrl).placeholder(R.drawable.ic_auto_data_backup).into(it) }
+                autoDataBackupImageView?.let { Picasso.get().load(imageUrl).into(it) }
             } else {
-                safeSecureImageView?.let { Picasso.get().load(imageUrl).placeholder(R.drawable.ic_safe_secure).into(it) }
+                safeSecureImageView?.let { Picasso.get().load(imageUrl).into(it) }
             }
         }
         if (infoResponse.mTotalSteps == infoResponse.mCompletedSteps) {
