@@ -300,8 +300,8 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             if (response.mIsSuccessStatus) {
                 val storeDeliveryService = Gson().fromJson<StoreDeliveryServiceResponse>(response.mCommonDataStr, StoreDeliveryServiceResponse::class.java)
                 storeDeliveryService?.let {
-                    storeSwitch.isChecked = (it.mStoreFlag == 1)
-                    deliverySwitch.isChecked = (it.mDeliveryFlag == 1)
+                    storeSwitch?.isChecked = (it.mStoreFlag == 1)
+                    deliverySwitch?.isChecked = (it.mDeliveryFlag == 1)
                 }
             } else {
                 showToast(response.mMessage)
@@ -406,9 +406,9 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             }
         }
         deliverySwitch?.isChecked = infoResponse.mStoreInfo.storeServices.mDeliveryFlag == 1
-        deliveryStatusTextView?.text = "${infoResponse.mAccountStaticText?.mDeliveryText} : ${if (deliverySwitch.isChecked) infoResponse.mAccountStaticText?.mOnText else infoResponse.mAccountStaticText?.mOffText}"
+        deliveryStatusTextView?.text = "${infoResponse.mAccountStaticText?.mDeliveryText} : ${if (deliverySwitch?.isChecked == true) infoResponse.mAccountStaticText?.mOnText else infoResponse.mAccountStaticText?.mOffText}"
         storeSwitch?.isChecked = infoResponse.mStoreInfo.storeServices.mStoreFlag == 1
-        storeStatusTextView?.text = "${infoResponse.mAccountStaticText?.mStoreText} : ${if (storeSwitch.isChecked) infoResponse.mAccountStaticText?.mOpenText else infoResponse.mAccountStaticText?.mClosedText}"
+        storeStatusTextView?.text = "${infoResponse.mAccountStaticText?.mStoreText} : ${if (storeSwitch?.isChecked == true) infoResponse.mAccountStaticText?.mOpenText else infoResponse.mAccountStaticText?.mClosedText}"
         hiddenTextView?.text = infoResponse.mAccountStaticText?.mTextAddPhoto
         moreControlsTextView?.text = infoResponse.mAccountStaticText?.page_heading_more_controls
         whatsAppShareTextView?.text = infoResponse.mAccountStaticText?.mShareText

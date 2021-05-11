@@ -119,8 +119,12 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     }
 
     fun showToast(message: String?) {
-        runOnUiThread {
-            Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show()
+        try {
+            runOnUiThread {
+                Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show()
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "showToast: ${e.message}", e)
         }
     }
 

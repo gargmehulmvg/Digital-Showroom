@@ -218,9 +218,13 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     }
 
     open fun clearFragmentBackStack() {
-        val fm = mActivity.supportFragmentManager
-        for (i in 0 until fm.backStackEntryCount) {
-            fm.popBackStack()
+        try {
+            val fm = mActivity.supportFragmentManager
+            for (i in 0 until fm.backStackEntryCount) {
+                fm.popBackStack()
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "clearFragmentBackStack: ${e.message}", e)
         }
     }
 
@@ -258,8 +262,13 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     }
 
     open fun openUrlInBrowser(url:String?) {
-        url?.let {
-            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+        try {
+            url?.let {
+                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "openUrlInBrowser: ${e.message}", e)
+            showToast(getString(R.string.something_went_wrong))
         }
     }
 
@@ -321,38 +330,43 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     }
 
     open fun shareDataOnWhatsAppWithImage(sharingData: String?, photoStr: String?) {
-        CoroutineScopeUtils().runTaskOnCoroutineMain {
-            Picasso.get().load(photoStr).into(object : com.squareup.picasso.Target {
-                override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
-                    bitmap?.let {
-                        val imgUri = it.getImageUri(mActivity)
-                        Log.d(TAG, "onBitmapLoaded: $imgUri")
-                        imgUri?.let {
-                            val whatsAppIntent = Intent(Intent.ACTION_SEND)
-                            whatsAppIntent.apply {
-                                setPackage("com.whatsapp")
-                                putExtra(Intent.EXTRA_TEXT, sharingData)
-                                putExtra(Intent.EXTRA_STREAM, imgUri)
-                                type = "image/*"
-                                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                                try {
-                                    mActivity.startActivity(whatsAppIntent)
-                                } catch (ex: ActivityNotFoundException) {
-                                    showToast("WhatsApp have not been installed. ${ex.message}")
+        try {
+            CoroutineScopeUtils().runTaskOnCoroutineMain {
+                Picasso.get().load(photoStr).into(object : com.squareup.picasso.Target {
+                    override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
+                        bitmap?.let {
+                            val imgUri = it.getImageUri(mActivity)
+                            Log.d(TAG, "onBitmapLoaded: $imgUri")
+                            imgUri?.let {
+                                val whatsAppIntent = Intent(Intent.ACTION_SEND)
+                                whatsAppIntent.apply {
+                                    try {
+                                        setPackage("com.whatsapp")
+                                        putExtra(Intent.EXTRA_TEXT, sharingData)
+                                        putExtra(Intent.EXTRA_STREAM, imgUri)
+                                        type = "image/*"
+                                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                        mActivity.startActivity(whatsAppIntent)
+                                    } catch (ex: ActivityNotFoundException) {
+                                        showToast("WhatsApp have not been installed. ${ex.message}")
+                                    }
                                 }
                             }
                         }
                     }
-                }
 
-                override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
-                    Log.d(TAG, "onPrepareLoad: ")
-                }
+                    override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
+                        Log.d(TAG, "onPrepareLoad: ")
+                    }
 
-                override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
-                    Log.d(TAG, "onBitmapFailed: ")
-                }
-            })
+                    override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
+                        Log.d(TAG, "onBitmapFailed: ")
+                    }
+                })
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "shareDataOnWhatsAppWithImage: ${e.message}", e)
+            showToast(getString(R.string.something_went_wrong))
         }
     }
 
