@@ -226,7 +226,13 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
                 val priceEditText: EditText = findViewById(R.id.priceEditText)
                 bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
                 bottomSheetHeadingTextView.text = addProductStaticData?.bottom_sheet_set_price_below
-                imageView?.let { Picasso.get().load(response?.imageUrl).into(it) }
+                imageView?.let {
+                    try {
+                        Picasso.get().load(response?.imageUrl).into(it)
+                    } catch (e: Exception) {
+                        Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+                    }
+                }
                 titleTextView.text = response?.itemName
                 priceLayout.hint = addProductStaticData?.hint_price
                 setPriceTextView.text = addProductStaticData?.bottom_sheet_set_price
@@ -277,7 +283,8 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
     }
 
     override fun onExploreCategoryItemClick(response: ExploreCategoryItemResponse?) {
-        mCategoryItemsList?.clear()
+        val newEmptyArrayList: ArrayList<MasterCatalogItemResponse> = ArrayList()
+        mCategoryItemsList = newEmptyArrayList
         var position = 0
         subCategoryItemList?.forEachIndexed { pos, itemResponse -> itemResponse.isSelected = false
             if (response?.categoryId == itemResponse.categoryId) position = pos

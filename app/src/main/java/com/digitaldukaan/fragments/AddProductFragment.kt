@@ -704,20 +704,24 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     }
 
     private fun shareBillWithImage(str: String, url: String?) {
-        if (url == null || url.isEmpty()) return
-        Picasso.get().load(url).into(object : com.squareup.picasso.Target {
-            override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
-                bitmap?.let { shareOnWhatsApp(str, bitmap) }
-            }
+        try {
+            if (url == null || url.isEmpty()) return
+            Picasso.get().load(url).into(object : com.squareup.picasso.Target {
+                override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
+                    bitmap?.let { shareOnWhatsApp(str, bitmap) }
+                }
 
-            override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
-                Log.d(TAG, "onPrepareLoad: ")
-            }
+                override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
+                    Log.d(TAG, "onPrepareLoad: ")
+                }
 
-            override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
-                Log.d(TAG, "onBitmapFailed: ")
-            }
-        })
+                override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
+                    Log.d(TAG, "onBitmapFailed: ")
+                }
+            })
+        } catch (e: Exception) {
+            Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+        }
     }
 
     override fun onAddProductDataResponse(commonResponse: CommonApiResponse) {

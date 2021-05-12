@@ -1,5 +1,6 @@
 package com.digitaldukaan.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -32,7 +33,13 @@ class ProfilePreviewBusinessTypeAdapter(
         position: Int
     ) {
         holder.apply {
-            imageView?.let { Picasso.get().load(mBusinessList?.get(position)?.image).into(it) }
+            imageView?.let {
+                try {
+                    Picasso.get().load(mBusinessList?.get(position)?.image).into(it)
+                } catch (e: Exception) {
+                    Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+                }
+            }
         }
     }
 

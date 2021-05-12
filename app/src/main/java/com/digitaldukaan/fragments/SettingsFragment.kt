@@ -187,7 +187,13 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                 val bottomSheetHeadingTextView: TextView = findViewById(R.id.bottomSheetHeadingTextView)
                 val verifyTextView: TextView = findViewById(R.id.verifyTextView)
                 val referAndEarnRecyclerView: RecyclerView = findViewById(R.id.referAndEarnRecyclerView)
-                bottomSheetUpperImageView?.let { Picasso.get().load(response?.imageUrl).into(it) }
+                bottomSheetUpperImageView?.let {
+                    try {
+                        Picasso.get().load(response?.imageUrl).into(it)
+                    } catch (e: Exception) {
+                        Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+                    }
+                }
                 bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
                 bottomSheetHeadingTextView.text = "${response?.heading1}\n${response?.heading2}"
                 verifyTextView.text = response?.settingsTxt
@@ -327,7 +333,13 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                     storePhotoImageView?.visibility = View.VISIBLE
                     hiddenImageView?.visibility = View.INVISIBLE
                     hiddenTextView?.visibility = View.INVISIBLE
-                    storePhotoImageView?.let { Picasso.get().load(mStoreLogo).into(it) }
+                    storePhotoImageView?.let {
+                        try {
+                            Picasso.get().load(mStoreLogo).into(it)
+                        } catch (e: Exception) {
+                            Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+                        }
+                    }
                 } else {
                     StaticInstances.sIsStoreImageUploaded = false
                     storePhotoImageView?.visibility = View.GONE
@@ -353,15 +365,33 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         mProfileResponse = infoResponse
         dukaanNameTextView?.text = infoResponse.mStoreInfo.storeInfo.name
         if (infoResponse.mStoreInfo.storeInfo.logoImage?.isNotEmpty() == true) {
-            storePhotoImageView?.let { Picasso.get().load(infoResponse.mStoreInfo.storeInfo.logoImage).into(it) }
+            storePhotoImageView?.let {
+                try {
+                    Picasso.get().load(infoResponse.mStoreInfo.storeInfo.logoImage).into(it)
+                } catch (e: Exception) {
+                    Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+                }
+            }
             hiddenImageView?.visibility = View.INVISIBLE
             hiddenTextView?.visibility = View.INVISIBLE
         }
         infoResponse.mFooterImages?.forEachIndexed { index, imageUrl ->
             if (index == 0) {
-                autoDataBackupImageView?.let { Picasso.get().load(imageUrl).into(it) }
+                autoDataBackupImageView?.let {
+                    try {
+                        Picasso.get().load(imageUrl).into(it)
+                    } catch (e: Exception) {
+                        Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+                    }
+                }
             } else {
-                safeSecureImageView?.let { Picasso.get().load(imageUrl).into(it) }
+                safeSecureImageView?.let {
+                    try {
+                        Picasso.get().load(imageUrl).into(it)
+                    } catch (e: Exception) {
+                        Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+                    }
+                }
             }
         }
         if (infoResponse.mTotalSteps == infoResponse.mCompletedSteps) {

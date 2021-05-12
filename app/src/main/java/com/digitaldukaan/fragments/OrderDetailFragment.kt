@@ -281,7 +281,13 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                 Constants.ORDER_TYPE_SELF_IMAGE -> {
                     customerDetailsLabel?.visibility = View.GONE
                     billPhotoImageView?.visibility = View.VISIBLE
-                    billPhotoImageView?.let { Picasso.get().load(orderDetailResponse.imageLink).into(it) }
+                    billPhotoImageView?.let {
+                        try {
+                            Picasso.get().load(orderDetailResponse.imageLink).into(it)
+                        } catch (e: Exception) {
+                            Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+                        }
+                    }
                 }
                 Constants.ORDER_TYPE_SELF -> {
                     customerDetailsLabel?.visibility = View.GONE

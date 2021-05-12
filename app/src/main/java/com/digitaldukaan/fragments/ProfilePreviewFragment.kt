@@ -142,7 +142,13 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
             mProfilePreviewResponse?.mProfilePreviewBanner?.run {
                 profilePreviewBannerHeading?.text = mHeading
                 profilePreviewBannerStartNow?.text = mStartNow
-                profilePreviewBannerImageView?.let { Picasso.get().load(mCDN).into(it) }
+                profilePreviewBannerImageView?.let {
+                    try {
+                        Picasso.get().load(mCDN).into(it)
+                    } catch (e: Exception) {
+                        Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+                    }
+                }
                 profilePreviewBannerSubHeading?.text = mSubHeading
             }
             ToolBarManager.getInstance()?.setHeaderTitle(mProfilePreviewResponse?.mProfileStaticText?.pageHeading)
@@ -154,7 +160,13 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                     hiddenImageView?.visibility = View.INVISIBLE
                     hiddenTextView?.visibility = View.INVISIBLE
                     storePhotoImageView?.visibility = View.VISIBLE
-                    storePhotoImageView?.let { Picasso.get().load(mStoreLogo).into(it) }
+                    storePhotoImageView?.let {
+                        try {
+                            Picasso.get().load(mStoreLogo).into(it)
+                        } catch (e: Exception) {
+                            Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+                        }
+                    }
                 } else {
                     hiddenImageView?.visibility = View.VISIBLE
                     hiddenTextView?.visibility = View.VISIBLE
@@ -547,7 +559,13 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                     storePhotoImageView?.visibility = View.VISIBLE
                     hiddenImageView?.visibility = View.INVISIBLE
                     hiddenTextView?.visibility = View.INVISIBLE
-                    storePhotoImageView?.let { Picasso.get().load(mStoreLogo).into(it) }
+                    storePhotoImageView?.let {
+                        try {
+                            Picasso.get().load(mStoreLogo).into(it)
+                        } catch (e: Exception) {
+                            Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+                        }
+                    }
                 } else {
                     StaticInstances.sIsStoreImageUploaded = false
                     storePhotoImageView?.visibility = View.GONE

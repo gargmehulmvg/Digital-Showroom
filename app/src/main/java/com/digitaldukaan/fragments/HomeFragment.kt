@@ -42,7 +42,6 @@ import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration
 import kotlinx.android.synthetic.main.home_fragment.*
 import kotlinx.android.synthetic.main.layout_analytics.*
 import kotlinx.android.synthetic.main.layout_common_webview_fragment.*
-import kotlinx.android.synthetic.main.otp_verification_fragment.*
 import org.json.JSONObject
 
 
@@ -414,7 +413,6 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
     override fun onOTPVerificationErrorResponse(validateOtpErrorResponse: ValidateOtpErrorResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
-            otpEditText.clearOTP()
             showToast(validateOtpErrorResponse.mMessage)
         }
     }
@@ -578,7 +576,13 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                 shareButtonTextView.text = mOrderPageInfoStaticData?.bottom_sheet_click_bill_photo
                 takeOrderMessageTextView.text = mOrderPageInfoStaticData?.bottom_sheet_take_order_message
                 createNewBillTextView.text = mOrderPageInfoStaticData?.bottom_sheet_create_a_new_bill
-                imageViewSendBill?.let { Picasso.get().load(orderPageInfoResponse?.mTakeOrderImage).into(it) }
+                imageViewSendBill?.let {
+                    try {
+                        Picasso.get().load(orderPageInfoResponse?.mTakeOrderImage).into(it)
+                    } catch (e: Exception) {
+                        Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+                    }
+                }
                 createNewBillTextView.setOnClickListener {
                     createNewBillTextView.isEnabled = false
                     bottomSheetDialog.dismiss()

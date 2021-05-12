@@ -211,7 +211,13 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                 val bottomSheetHeadingTextView: TextView = findViewById(R.id.bottomSheetHeadingTextView)
                 val verifyTextView: TextView = findViewById(R.id.verifyTextView)
                 val referAndEarnRecyclerView: RecyclerView = findViewById(R.id.referAndEarnRecyclerView)
-                if (response?.imageUrl?.isNotEmpty() == true) bottomSheetUpperImageView?.let { Picasso.get().load(response.imageUrl).into(it) }
+                if (response?.imageUrl?.isNotEmpty() == true) bottomSheetUpperImageView?.let {
+                    try {
+                        Picasso.get().load(response.imageUrl).into(it)
+                    } catch (e: Exception) {
+                        Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+                    }
+                }
                 bottomSheetUpperImageView.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.ic_share_pdf_whatsapp))
                 bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
                 bottomSheetHeadingTextView.text = response?.heading

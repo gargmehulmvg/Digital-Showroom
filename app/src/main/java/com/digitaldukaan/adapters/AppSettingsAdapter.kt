@@ -1,5 +1,6 @@
 package com.digitaldukaan.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -43,7 +44,13 @@ class AppSettingsAdapter(private val mAppSettingsItemClicked: IAppSettingsItemCl
     override fun onBindViewHolder(holder: AppSettingsAdapter.AppSettingsViewHolder, position: Int) {
         val response = mAppSettingsList[position]
         holder.mAppSettingTextView.text = response.mText
-        holder.mAppSettingImageView?.let { Picasso.get().load(response.mLogo).into(it) }
+        holder.mAppSettingImageView?.let {
+            try {
+                Picasso.get().load(response.mLogo).into(it)
+            } catch (e: Exception) {
+                Log.e(AppSettingsAdapter::class.java.simpleName, "picasso image loading issue: ${e.message}", e)
+            }
+        }
     }
 
 }

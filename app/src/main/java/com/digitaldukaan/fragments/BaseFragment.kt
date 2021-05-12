@@ -622,25 +622,29 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     open fun onNoInternetButtonClick(isNegativeButtonClick: Boolean) = Unit
 
     override fun onSearchImageItemClicked(photoStr: String) {
-        showCancellableProgressDialog(mActivity)
-        Picasso.get().load(photoStr).into(object : com.squareup.picasso.Target {
-            override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
-                bitmap?.let {
-                    val file = getImageFileFromBitmap(it, mActivity)
-                    stopProgress()
-                    if (::mImagePickBottomSheet.isInitialized) mImagePickBottomSheet.dismiss()
-                    onImageSelectionResultFile(file, Constants.MODE_CROP)
+        try {
+            showCancellableProgressDialog(mActivity)
+            Picasso.get().load(photoStr).into(object : com.squareup.picasso.Target {
+                override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
+                    bitmap?.let {
+                        val file = getImageFileFromBitmap(it, mActivity)
+                        stopProgress()
+                        if (::mImagePickBottomSheet.isInitialized) mImagePickBottomSheet.dismiss()
+                        onImageSelectionResultFile(file, Constants.MODE_CROP)
+                    }
                 }
-            }
 
-            override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
-                Log.d("TAG", "onPrepareLoad: ")
-            }
+                override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
+                    Log.d("TAG", "onPrepareLoad: ")
+                }
 
-            override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
-                Log.d("TAG", "onBitmapFailed: ")
-            }
-        })
+                override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
+                    Log.d("TAG", "onBitmapFailed: ")
+                }
+            })
+        } catch (e: Exception) {
+            Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+        }
     }
 
     protected fun updateNavigationBarState(actionId: Int) {
@@ -828,7 +832,13 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
             setCancelable(true)
             setContentView(R.layout.image_dialog)
             val imageView: ImageView = findViewById(R.id.imageView)
-            imageStr?.let { Picasso.get().load(it).into(imageView) }
+            imageStr?.let {
+                try {
+                    Picasso.get().load(it).into(imageView)
+                } catch (e: Exception) {
+                    Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+                }
+            }
         }.show()
     }
 
@@ -853,7 +863,13 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                     headerTextView.setHtmlData(addProductBannerStaticDataResponse?.header)
                     bodyTextView.text = addProductBannerStaticDataResponse?.body
                     buttonTextView.text = addProductBannerStaticDataResponse?.button_text
-                    bannerImageView?.let { Picasso.get().load(addProductBannerStaticDataResponse?.image_url).into(it) }
+                    bannerImageView?.let {
+                        try {
+                            Picasso.get().load(addProductBannerStaticDataResponse?.image_url).into(it)
+                        } catch (e: Exception) {
+                            Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+                        }
+                    }
                     closeImageView.setOnClickListener { bottomSheetDialog.dismiss() }
                     buttonTextView.setOnClickListener{
                         bottomSheetDialog.dismiss()

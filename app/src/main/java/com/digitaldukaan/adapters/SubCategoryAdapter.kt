@@ -1,5 +1,6 @@
 package com.digitaldukaan.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -50,7 +51,13 @@ class SubCategoryAdapter(
     ) {
         val item = mCategoryItemList?.get(position)
         holder.run {
-            imageView?.let { Picasso.get().load(item?.imageUrl).into(it) }
+            imageView?.let {
+                try {
+                    Picasso.get().load(item?.imageUrl).into(it)
+                } catch (e: Exception) {
+                    Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+                }
+            }
             titleTextView.text = item?.categoryName
             titleTextView.setTextColor(ContextCompat.getColor(mActivity, if (item?.isSelected == true) R.color.open_green else R.color.black))
             selectedView.visibility = if (item?.isSelected == true) View.VISIBLE else View.INVISIBLE

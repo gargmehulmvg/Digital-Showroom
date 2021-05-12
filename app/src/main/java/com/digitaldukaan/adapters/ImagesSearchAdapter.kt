@@ -1,5 +1,6 @@
 package com.digitaldukaan.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -41,7 +42,13 @@ class ImagesSearchAdapter : RecyclerView.Adapter<ImagesSearchAdapter.ImagesSearc
 
     override fun onBindViewHolder(holder: ImagesSearchViewHolder, position: Int) {
         holder.searchImageView.apply {
-            mSearchImagesList?.let { Picasso.get().load(it[position]).into(this) }
+            mSearchImagesList?.let {
+                try {
+                    Picasso.get().load(it[position]).into(this)
+                } catch (e: Exception) {
+                    Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+                }
+            }
         }
     }
 
