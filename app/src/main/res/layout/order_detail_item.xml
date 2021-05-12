@@ -41,6 +41,18 @@
             app:layout_constraintTop_toTopOf="@+id/orderDetailImageView"
             tools:text="Pink cream cake meringues with smudges" />
 
+        <TextView
+            android:id="@+id/orderDetailVariantNameTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:fontFamily="@font/roboto_light"
+            android:textColor="@color/default_text_light_grey"
+            android:textSize="@dimen/_11sdp"
+            app:layout_constraintStart_toStartOf="@+id/orderDetailNameTextView"
+            app:layout_constraintTop_toBottomOf="@+id/orderDetailNameTextView"
+            tools:text="Pink" />
+
         <ImageView
             android:id="@+id/closeImageView"
             android:layout_width="@dimen/_20sdp"
@@ -55,8 +67,9 @@
             android:id="@+id/view4"
             android:layout_width="match_parent"
             android:layout_height="@dimen/_1sdp"
+            android:layout_marginTop="@dimen/_5sdp"
             android:background="@color/light_grey_background"
-            app:layout_constraintTop_toBottomOf="@id/orderDetailNameTextView" />
+            app:layout_constraintTop_toBottomOf="@id/orderDetailVariantNameTextView" />
 
         <TextView
             android:id="@+id/quantityTextView"

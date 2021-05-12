@@ -51,7 +51,6 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.File
-import java.util.*
 
 
 class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapterItemClickListener,
@@ -398,6 +397,9 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                                 imageListRequest.add(AddProductImageItem(imageItem.imageId, imageItem.imageUrl, 1))
                             }
                         }
+                        val variant = VariantItemResponse(0, 1,1,"Large")
+                        val variantList: ArrayList<VariantItemResponse> = ArrayList()
+                        variantList.add(variant)
                         val request = AddProductRequest(
                             mItemId,
                             1,
@@ -406,7 +408,8 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                             descriptionStr,
                             if (categoryStr.trim().isEmpty()) AddProductItemCategory(0, "") else AddProductItemCategory(0, categoryStr),
                             imageListRequest,
-                            nameStr
+                            nameStr,
+                            variantList
                         )
                         AppEventsManager.pushAppEvents(
                             eventName = AFInAppEventType.EVENT_SAVE_ITEM,
@@ -427,6 +430,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             }
             updateCameraImageView?.id -> showAddProductImagePickerBottomSheet(0)
             updateCameraTextView?.id -> showAddProductImagePickerBottomSheet(0)
+            addVariantsTextView?.id -> launchFragment(AddVariantFragment.newInstance(mAddProductResponse?.storeItem?.variantsList), true)
         }
     }
 

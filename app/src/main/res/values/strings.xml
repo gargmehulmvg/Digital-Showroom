@@ -102,6 +102,10 @@
     <string name="force_update_message">Update now for all the latest features</string>
     <string name="marketing_page_heading">Promote your store</string>
     <string name="something_went_wrong">Something went wrong</string>
+    <string name="enter_description_optional">Enter Description (Optional)</string>
+    <string name="edit">Edit</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
     <string-array name="state_array">
         <item >Andhra Pradesh</item>
         <item >Arunachal Pradesh</item>

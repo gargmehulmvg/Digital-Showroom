@@ -144,6 +144,8 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                     1,
                     Constants.ITEM_TYPE_DELIVERY_CHARGE,
                     Constants.CREATOR_TYPE_MERCHANT,
+                    0,
+                    "",
                     false
                 )
                 orderDetailsItemsList?.add(orderDetailItemResponse)
@@ -158,6 +160,8 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                     1,
                     Constants.ITEM_TYPE_DELIVERY_CHARGE,
                     Constants.CREATOR_TYPE_MERCHANT,
+                    0,
+                    "",
                     false
                 )
                 orderDetailsItemsList?.add(orderDetailItemResponse)
@@ -172,6 +176,8 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                     1,
                     Constants.ITEM_TYPE_CHARGE,
                     Constants.CREATOR_TYPE_MERCHANT,
+                    0,
+                    "",
                     false
                 )
                 orderDetailsItemsList?.add(orderDetailItemResponse)
@@ -186,6 +192,8 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                     1,
                     Constants.ITEM_TYPE_DISCOUNT,
                     Constants.CREATOR_TYPE_MERCHANT,
+                    0,
+                    "",
                     false
                 )
                 orderDetailsItemsList?.add(orderDetailItemResponse)
@@ -602,6 +610,8 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                     1,
                     "charge",
                     Constants.CREATOR_TYPE_MERCHANT,
+                    0,
+                    "",
                     false
                 )
                 orderDetailsItemsList?.add(orderDetailItemResponse)
@@ -616,6 +626,8 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                     1,
                     "charge",
                     Constants.CREATOR_TYPE_MERCHANT,
+                    0,
+                    "",
                     false
                 )
                 orderDetailsItemsList?.add(orderDetailItemResponse)

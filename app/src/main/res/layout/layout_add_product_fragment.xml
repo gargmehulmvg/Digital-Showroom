@@ -51,12 +51,12 @@
                     android:background="@drawable/curve_green_border"
                     android:fontFamily="@font/roboto_medium"
                     android:onClick="onClick"
-                    android:text="Try Now"
                     android:textColor="@color/open_green"
                     android:textSize="@dimen/_12sdp"
                     app:layout_constraintBottom_toBottomOf="@+id/textView2"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/textView2" />
+                    app:layout_constraintTop_toTopOf="@+id/textView2"
+                    tools:text="Try Now" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -336,13 +336,15 @@
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/addItemTextView"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_20sdp"
-                android:layout_marginTop="@dimen/_15sdp"
                 android:background="?selectableItemBackground"
                 android:fontFamily="@font/roboto_medium"
                 android:onClick="onClick"
+                android:paddingStart="@dimen/_20sdp"
+                android:paddingTop="@dimen/_10sdp"
+                android:paddingEnd="@dimen/_20sdp"
+                android:paddingBottom="@dimen/_10sdp"
                 android:textColor="@color/open_green"
                 android:textSize="@dimen/_13sdp"
                 tools:text="+ Add Item Description" />
@@ -354,8 +356,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_20sdp"
                 android:layout_marginTop="@dimen/_15sdp"
+                android:layout_marginBottom="@dimen/_15sdp"
                 android:layout_marginEnd="@dimen/_20sdp"
-                android:hint="Enter Description (Optional)"
+                android:hint="@string/enter_description_optional"
                 android:visibility="gone"
                 app:counterMaxLength="@integer/description_name_length"
                 app:layout_constraintBottom_toTopOf="@+id/continueTextView"
@@ -380,6 +383,26 @@
                     android:textSize="@dimen/_12sdp" />
 
             </com.google.android.material.textfield.TextInputLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_1sdp"
+                android:background="@color/curve_grey_border" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/addVariantsTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingStart="@dimen/_20sdp"
+                android:paddingTop="@dimen/_10sdp"
+                android:paddingEnd="@dimen/_20sdp"
+                android:paddingBottom="@dimen/_10sdp"
+                android:background="?selectableItemBackground"
+                android:fontFamily="@font/roboto_medium"
+                android:onClick="onClick"
+                android:textColor="@color/open_green"
+                android:textSize="@dimen/_13sdp"
+                android:text="+ Add Variants" />
 
             <View
                 android:layout_width="match_parent"
