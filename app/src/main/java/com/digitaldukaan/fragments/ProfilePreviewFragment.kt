@@ -16,7 +16,6 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
 import androidx.core.net.toUri
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.digitaldukaan.R
@@ -163,17 +162,11 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                 }
             }
             mProfilePreviewResponse?.mSettingsKeysList?.run {
-                val linearLayoutManager = LinearLayoutManager(mActivity)
                 profilePreviewRecyclerView?.apply {
-                    layoutManager = linearLayoutManager
+                    layoutManager = LinearLayoutManager(mActivity)
                     setHasFixedSize(true)
                     adapter = ProfilePreviewAdapter(mActivity, this@run, this@ProfilePreviewFragment, mProfilePreviewResponse?.mStoreItemResponse?.storeBusiness)
                 }
-                val dividerItemDecoration = DividerItemDecoration(
-                    profilePreviewRecyclerView?.context,
-                    linearLayoutManager.orientation
-                )
-                profilePreviewRecyclerView?.addItemDecoration(dividerItemDecoration)
             }
         }
     }
