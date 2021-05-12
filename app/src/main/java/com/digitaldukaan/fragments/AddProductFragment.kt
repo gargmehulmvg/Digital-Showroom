@@ -73,6 +73,9 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     private var mImageAddAdapter: AddProductsImagesAdapter? = null
     private var mIsAddNewProduct: Boolean = false
     private var mProductNameStr: String? = ""
+    private var mProductPriceStr: String? = ""
+    private var mProductDiscountedPriceStr: String? = ""
+    private var mProductDescriptionPriceStr: String? = ""
     private var mIsOrderEdited = false
 
     private var mAddProductResponse: AddProductResponse? = null
@@ -235,8 +238,33 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 productDescriptionEditText?.setText(mAddProductResponse?.storeItem?.description)
             }
             handleVisibilityTextWatcher()
+            val price = mAddProductResponse?.storeItem?.price ?: 0.0
+            val discountedPrice = mAddProductResponse?.storeItem?.discountedPrice ?: 0.0
+            if (discountedPrice == 0.0 || discountedPrice >= price) {
+                discountPriceEditText?.text = null
+            } else {
+                discountContainer?.visibility = View.VISIBLE
+            }
         }
         return mContentView
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        if (productDescriptionInputLayout?.visibility == View.GONE) {
+            if (mProductDescriptionPriceStr?.isNotEmpty() == true) {
+                addItemTextView?.visibility = View.GONE
+                productDescriptionInputLayout?.visibility = View.VISIBLE
+            }
+        }
+        if (discountContainer?.visibility == View.GONE) {
+            val price = if (mProductPriceStr?.isEmpty() == true) 0.0 else mProductPriceStr?.toDouble() ?: 0.0
+            val discountedPrice = if (mProductDiscountedPriceStr?.isEmpty() == true) 0.0 else mProductDiscountedPriceStr?.toDouble() ?: 0.0
+            if (discountedPrice == 0.0 || discountedPrice >= price) {
+                discountPriceEditText?.text = null
+            } else {
+                discountContainer?.visibility = View.VISIBLE
+            }
+        }
     }
 
     private fun handleVisibilityTextWatcher() {
@@ -248,6 +276,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     if (discountContainer?.visibility != View.VISIBLE) addDiscountLabel?.visibility = View.VISIBLE
                     showAddProductContainer()
                 }
+                mProductPriceStr = str
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -284,6 +313,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 if (str?.trim()?.isNotEmpty() == true) {
                     mIsOrderEdited = true
                     showAddProductContainer()
+                    mProductDescriptionPriceStr = str
                 }
             }
 
@@ -327,6 +357,21 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             addDiscountLabel?.id -> {
                 addDiscountLabel?.visibility = View.GONE
                 discountContainer?.visibility = View.VISIBLE
+                discountPriceEditText?.addTextChangedListener(object : TextWatcher {
+                    override fun afterTextChanged(s: Editable?) {
+                        val str = s?.toString()
+                        mProductDiscountedPriceStr = str
+                    }
+
+                    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                        Log.d(TAG, "beforeTextChanged: priceEditText :: do nothing")
+                    }
+
+                    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                        Log.d(TAG, "onTextChanged: priceEditText :: do nothing")
+                    }
+
+                })
             }
             tryNowTextView?.id -> {
                 if (addProductBannerStaticDataResponse == null) {
