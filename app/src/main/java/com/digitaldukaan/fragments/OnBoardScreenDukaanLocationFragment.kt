@@ -126,8 +126,7 @@ class OnBoardScreenDukaanLocationFragment : BaseFragment(), IStoreAddressService
                 AlertDialog.Builder(mActivity).apply {
                     setTitle("Location Permission")
                     setMessage("Please allow Location permission to continue")
-                    setPositiveButton(R.string.ok) { _, _ -> ActivityCompat.requestPermissions(mActivity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), Constants.LOCATION_REQUEST_CODE)
-                    }
+                    setPositiveButton(R.string.ok) { _, _ -> ActivityCompat.requestPermissions(mActivity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), Constants.LOCATION_REQUEST_CODE) }
                 }.create().show()
             } else ActivityCompat.requestPermissions(mActivity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), Constants.LOCATION_REQUEST_CODE)
             true
@@ -139,7 +138,7 @@ class OnBoardScreenDukaanLocationFragment : BaseFragment(), IStoreAddressService
         dukaanLocationEditText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 val str = s.toString()
-                nextTextView.isEnabled = str.isNotBlank()
+                nextTextView?.isEnabled = str.isNotBlank()
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -184,9 +183,9 @@ class OnBoardScreenDukaanLocationFragment : BaseFragment(), IStoreAddressService
             nextTextView.id -> {
                 val storeLocation = dukaanLocationEditText?.text?.trim().toString()
                 if (storeLocation.isEmpty()) {
-                    dukaanLocationEditText.requestFocus()
-                    dukaanLocationEditText.showKeyboard()
-                    dukaanLocationEditText.error = getString(R.string.mandatory_field_message)
+                    dukaanLocationEditText?.requestFocus()
+                    dukaanLocationEditText?.showKeyboard()
+                    dukaanLocationEditText?.error = getString(R.string.mandatory_field_message)
                 } else {
                     if (!isInternetConnectionAvailable(mActivity)) {
                         showNoInternetConnectionDialog()

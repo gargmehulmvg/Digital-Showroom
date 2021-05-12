@@ -12,7 +12,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.transition.TransitionInflater
 import com.digitaldukaan.R
@@ -61,18 +60,22 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
     }
 
     private fun initializeTrueCaller() {
-        val trueScope = TruecallerSdkScope.Builder(mActivity, sdkCallback)
-            .consentMode(TruecallerSdkScope.CONSENT_MODE_BOTTOMSHEET)
-            .loginTextPrefix(TruecallerSdkScope.LOGIN_TEXT_PREFIX_TO_GET_STARTED)
-            .loginTextSuffix(TruecallerSdkScope.LOGIN_TEXT_SUFFIX_PLEASE_VERIFY_MOBILE_NO)
-            .buttonColor(ContextCompat.getColor(mActivity, R.color.black))
-            .buttonTextColor(ContextCompat.getColor(mActivity, R.color.white))
-            .consentTitleOption(TruecallerSdkScope.SDK_CONSENT_TITLE_VERIFY)
-            .footerType(TruecallerSdkScope.FOOTER_TYPE_CONTINUE)
-            .sdkOptions(TruecallerSdkScope.SDK_OPTION_WITHOUT_OTP)
-            .buttonShapeOptions(TruecallerSdkScope.BUTTON_SHAPE_ROUNDED)
-            .build()
-        TruecallerSDK.init(trueScope)
+        try {
+            val trueScope = TruecallerSdkScope.Builder(mActivity, sdkCallback)
+                .consentMode(TruecallerSdkScope.CONSENT_MODE_BOTTOMSHEET)
+                .loginTextPrefix(TruecallerSdkScope.LOGIN_TEXT_PREFIX_TO_GET_STARTED)
+                .loginTextSuffix(TruecallerSdkScope.LOGIN_TEXT_SUFFIX_PLEASE_VERIFY_MOBILE_NO)
+                .buttonColor(ContextCompat.getColor(mActivity, R.color.black))
+                .buttonTextColor(ContextCompat.getColor(mActivity, R.color.white))
+                .consentTitleOption(TruecallerSdkScope.SDK_CONSENT_TITLE_VERIFY)
+                .footerType(TruecallerSdkScope.FOOTER_TYPE_CONTINUE)
+                .sdkOptions(TruecallerSdkScope.SDK_OPTION_WITHOUT_OTP)
+                .buttonShapeOptions(TruecallerSdkScope.BUTTON_SHAPE_ROUNDED)
+                .build()
+            TruecallerSDK.init(trueScope)
+        } catch (e: Exception) {
+            Log.e(TAG, "initializeTrueCaller: ${e.message}", e)
+        }
     }
 
     private val sdkCallback = object : ITrueCallback {
@@ -112,24 +115,24 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        ToolBarManager.getInstance().apply {
+        ToolBarManager.getInstance()?.apply {
             setHeaderTitle("")
             hideToolBar(mActivity, true)
         }
         setupDataFromStaticResponse()
         setupMobileNumberEditText()
         if (mMobileNumber.isNotEmpty()) {
-            mobileNumberInputLayout.visibility = View.VISIBLE
-            mobileNumberTextView.visibility = View.GONE
+            mobileNumberInputLayout?.visibility = View.VISIBLE
+            mobileNumberTextView?.visibility = View.GONE
         }
     }
 
     private fun setupDataFromStaticResponse() {
-        enterMobileNumberHeading.text = mAuthStaticData?.mHeadingText
-        send4DigitOtpHeading.text = mAuthStaticData?.mSubHeadingText
-        mobileNumberInputLayout.hint = mAuthStaticData?.mInputText
-        mobileNumberTextView.text = mAuthStaticData?.mInputText
-        getOtpTextView.text = mAuthStaticData?.mButtonText
+        enterMobileNumberHeading?.text = mAuthStaticData?.mHeadingText
+        send4DigitOtpHeading?.text = mAuthStaticData?.mSubHeadingText
+        mobileNumberInputLayout?.hint = mAuthStaticData?.mInputText
+        mobileNumberTextView?.text = mAuthStaticData?.mInputText
+        getOtpTextView?.text = mAuthStaticData?.mButtonText
     }
 
     private fun setupMobileNumberEditText() {
@@ -138,19 +141,19 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
             showKeyboard()
         }
         mobileNumberEditText?.setOnEditorActionListener { _, actionId, _ ->
-            if (EditorInfo.IME_ACTION_DONE == actionId) getOtpTextView.callOnClick()
+            if (EditorInfo.IME_ACTION_DONE == actionId) getOtpTextView?.callOnClick()
             true
         }
     }
 
     override fun onClick(view: View?) {
         when (view?.id) {
-            mobileNumberTextView.id -> {
-                mobileNumberTextView.visibility = View.GONE
-                mobileNumberInputLayout.visibility = View.VISIBLE
+            mobileNumberTextView?.id -> {
+                mobileNumberTextView?.visibility = View.GONE
+                mobileNumberInputLayout?.visibility = View.VISIBLE
                 initiateAutoDetectMobileNumber()
             }
-            getOtpTextView.id -> {
+            getOtpTextView?.id -> {
                 if (mobileNumberInputLayout?.visibility == View.GONE) return
                 val mobileNumber = mobileNumberEditText?.text?.trim().toString()
                 val validationFailed = isMobileNumberValidationNotCorrect(mobileNumber)
@@ -204,11 +207,10 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
     }
 
     private fun initiateAutoDetectMobileNumber() {
+        try {
         mIsMobileNumberSearchingDone = true
         val hintRequest = HintRequest.Builder().setPhoneNumberIdentifierSupported(true).build()
-        val intent: PendingIntent =
-            Credentials.getClient(mActivity).getHintPickerIntent(hintRequest)
-        try {
+        val intent: PendingIntent = Credentials.getClient(mActivity).getHintPickerIntent(hintRequest)
             startIntentSenderForResult(intent.intentSender, CREDENTIAL_PICKER_REQUEST, null, 0, 0, 0, Bundle())
         } catch (e: IntentSender.SendIntentException) {
             e.printStackTrace()
@@ -230,7 +232,7 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
                 }
             }
         } else if (requestCode == CREDENTIAL_PICKER_REQUEST && resultCode == CredentialsApi.ACTIVITY_RESULT_NO_HINTS_AVAILABLE) {
-            Toast.makeText(context, "No phone numbers found", Toast.LENGTH_LONG).show()
+            showToast("No phone numbers found")
         } else if (requestCode == TruecallerSDK.SHARE_PROFILE_REQUEST_CODE) {
             TruecallerSDK.getInstance().onActivityResultObtained(mActivity, requestCode, resultCode, data)
             mIsMobileNumberSearchingDone = true

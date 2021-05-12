@@ -66,7 +66,7 @@ class SearchOrdersFragment: BaseFragment(), IOnToolbarIconClick, ISearchOrderSer
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        ToolBarManager.getInstance().apply {
+        ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, false)
             setHeaderTitle("\"${if (mMobileNumberString.isEmpty()) mOrderIdString else mMobileNumberString}\"")
             setSideIconVisibility(true)
@@ -74,7 +74,7 @@ class SearchOrdersFragment: BaseFragment(), IOnToolbarIconClick, ISearchOrderSer
             onBackPressed(this@SearchOrdersFragment)
             setSideIcon(ContextCompat.getDrawable(mActivity, R.drawable.ic_search), this@SearchOrdersFragment)
         }
-        ordersRecyclerView.apply {
+        ordersRecyclerView?.apply {
             convertDateStringOfOrders(mOrderList)
             orderAdapter = OrderAdapterV2(mActivity, mOrderList)
             linearLayoutManager = LinearLayoutManager(mActivity)
@@ -116,7 +116,7 @@ class SearchOrdersFragment: BaseFragment(), IOnToolbarIconClick, ISearchOrderSer
         mMobileNumberString = inputMobileNumber
         val request = SearchOrdersRequest(if (mOrderIdString.isNotEmpty()) mOrderIdString.toLong() else 0, mMobileNumberString, searchPageCount)
         if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog()
-        ToolBarManager.getInstance().setHeaderTitle("\"${if (inputMobileNumber.isEmpty()) inputOrderId else inputMobileNumber}\"")
+        ToolBarManager.getInstance()?.setHeaderTitle("\"${if (inputMobileNumber.isEmpty()) inputOrderId else inputMobileNumber}\"")
         showProgressDialog(mActivity)
         mService.getSearchOrders(request)
     }

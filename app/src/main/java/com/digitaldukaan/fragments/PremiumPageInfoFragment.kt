@@ -51,7 +51,7 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         updateNavigationBarState(R.id.menuPremium)
-        ToolBarManager.getInstance().apply {
+        ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, true)
         }
         WebViewBridge.mWebViewListener = this

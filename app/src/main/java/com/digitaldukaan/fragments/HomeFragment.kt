@@ -98,7 +98,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         updateNavigationBarState(R.id.menuHome)
-        ToolBarManager.getInstance().hideToolBar(mActivity, true)
+        ToolBarManager.getInstance()?.hideToolBar(mActivity, true)
         WebViewBridge.mWebViewListener = this
         hideBottomNavigationView(false)
         mSwipeRefreshLayout.setOnRefreshListener(this)
@@ -154,21 +154,16 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
 
     override fun onClick(view: View?) {
         when (view?.id) {
-            analyticsImageView.id -> {
+            analyticsImageView?.id -> {
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_ORDER_ANALYTICS,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                     data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
                 )
                 analyticsContainer?.visibility = View.VISIBLE
-                analyticsImageView?.setImageDrawable(
-                    ContextCompat.getDrawable(
-                        mActivity,
-                        R.drawable.ic_analytics_green
-                    )
-                )
+                analyticsImageView?.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.ic_analytics_green))
             }
-            takeOrderTextView.id -> {
+            takeOrderTextView?.id -> {
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_TAKE_ORDER,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
@@ -176,7 +171,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                 )
                 showTakeOrderBottomSheet()
             }
-            searchImageView.id -> {
+            searchImageView?.id -> {
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_SEARCH_INTENT,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
@@ -184,13 +179,8 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                 )
                 showSearchDialog(mOrderPageInfoStaticData, mMobileNumberString, mOrderIdString)
             }
-            closeAnalyticsImageView.id -> {
-                analyticsImageView?.setImageDrawable(
-                    ContextCompat.getDrawable(
-                        mActivity,
-                        R.drawable.ic_analytics_black
-                    )
-                )
+            closeAnalyticsImageView?.id -> {
+                analyticsImageView?.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.ic_analytics_black))
                 analyticsContainer?.visibility = View.GONE
             }
         }
@@ -198,11 +188,9 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
 
     override fun onBackPressed(): Boolean {
         if (mIsDoublePressToExit) mActivity.finish()
-        showShortSnackBar(
-            if (mDoubleClickToExitStr?.isNotEmpty() == true) mDoubleClickToExitStr else getString(
+        showShortSnackBar(if (mDoubleClickToExitStr?.isNotEmpty() == true) mDoubleClickToExitStr else getString(
                 R.string.msg_back_press
-            )
-        )
+            ))
         mIsDoublePressToExit = true
         Handler(Looper.getMainLooper()).postDelayed(
             { mIsDoublePressToExit = false },

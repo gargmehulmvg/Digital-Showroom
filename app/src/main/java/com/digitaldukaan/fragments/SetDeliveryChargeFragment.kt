@@ -38,7 +38,7 @@ class SetDeliveryChargeFragment : BaseFragment(), IMoreControlsServiceInterface 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         ToolBarManager.getInstance().hideToolBar(mActivity, true)
-        ToolBarManager.getInstance().apply {
+        ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, false)
             setHeaderTitle(mMoreControlsStaticData.page_heading_set_delivery_charge)
             onBackPressed(this@SetDeliveryChargeFragment)
@@ -53,15 +53,15 @@ class SetDeliveryChargeFragment : BaseFragment(), IMoreControlsServiceInterface 
     }
 
     private fun setupTextFromResponse() {
-        freeDeliveryRadioButton.text = mMoreControlsStaticData.heading_free_delivery
-        freeDeliveryTextView.text = mMoreControlsStaticData.free_delivery_description
-        fixedDeliveryRadioButton.text = mMoreControlsStaticData.heading_fixed_delivery_charge
-        fixedDeliveryChargeLayout.hint = mMoreControlsStaticData.hint_free_delivery_charge
-        freeDeliveryAboveLayout.hint = mMoreControlsStaticData.hint_free_delivery_above_optional
-        customDeliveryRadioButton.text = mMoreControlsStaticData.heading_custom_delivery_charge
-        customDeliveryAboveLayout.hint = mMoreControlsStaticData.hint_custom_delivery_charge
-        customDeliveryTextView.text = mMoreControlsStaticData.custom_delivery_charge_description
-        continueTextView.text = mMoreControlsStaticData.bottom_sheet_save_changes
+        freeDeliveryRadioButton?.text = mMoreControlsStaticData.heading_free_delivery
+        freeDeliveryTextView?.text = mMoreControlsStaticData.free_delivery_description
+        fixedDeliveryRadioButton?.text = mMoreControlsStaticData.heading_fixed_delivery_charge
+        fixedDeliveryChargeLayout?.hint = mMoreControlsStaticData.hint_free_delivery_charge
+        freeDeliveryAboveLayout?.hint = mMoreControlsStaticData.hint_free_delivery_above_optional
+        customDeliveryRadioButton?.text = mMoreControlsStaticData.heading_custom_delivery_charge
+        customDeliveryAboveLayout?.hint = mMoreControlsStaticData.hint_custom_delivery_charge
+        customDeliveryTextView?.text = mMoreControlsStaticData.custom_delivery_charge_description
+        continueTextView?.text = mMoreControlsStaticData.bottom_sheet_save_changes
         when (mAppStoreServicesResponse?.mDeliveryChargeType) {
             Constants.UNKNOWN_DELIVERY_CHARGE -> {
                 showFreeDeliveryContainer(false)
@@ -77,7 +77,7 @@ class SetDeliveryChargeFragment : BaseFragment(), IMoreControlsServiceInterface 
                 showFreeDeliveryContainer(false)
                 showFixedDeliveryContainer(true)
                 showCustomDeliveryContainer(false)
-                fixedDeliveryChargeEditText.setText(mAppStoreServicesResponse?.mDeliveryPrice.toString())
+                fixedDeliveryChargeEditText?.setText(mAppStoreServicesResponse?.mDeliveryPrice.toString())
                 if (mAppStoreServicesResponse?.mFreeDeliveryAbove != 0.0) freeDeliveryAboveEditText.setText(mAppStoreServicesResponse?.mFreeDeliveryAbove.toString())
             }
             Constants.CUSTOM_DELIVERY_CHARGE -> {
@@ -92,22 +92,22 @@ class SetDeliveryChargeFragment : BaseFragment(), IMoreControlsServiceInterface 
     override fun onClick(view: View?) {
         super.onClick(view)
         when (view?.id) {
-            freeDeliveryRadioButton.id -> {
+            freeDeliveryRadioButton?.id -> {
                 showFreeDeliveryContainer(true)
                 showFixedDeliveryContainer(false)
                 showCustomDeliveryContainer(false)
             }
-            fixedDeliveryRadioButton.id -> {
+            fixedDeliveryRadioButton?.id -> {
                 showFixedDeliveryContainer(true)
                 showFreeDeliveryContainer(false)
                 showCustomDeliveryContainer(false)
             }
-            customDeliveryRadioButton.id -> {
+            customDeliveryRadioButton?.id -> {
                 showCustomDeliveryContainer(true)
                 showFreeDeliveryContainer(false)
                 showFixedDeliveryContainer(false)
             }
-            continueTextView.id -> {
+            continueTextView?.id -> {
                 var selectionStr = ""
                 if (!freeDeliveryRadioButton.isChecked && !fixedDeliveryRadioButton.isChecked && !customDeliveryRadioButton.isChecked) {
                     showShortSnackBar("Please select at least 1 Delivery charge")
@@ -131,13 +131,13 @@ class SetDeliveryChargeFragment : BaseFragment(), IMoreControlsServiceInterface 
                         return
                     }
                     if (freeDeliveryAboveStr.isNotEmpty() && (freeDeliveryAboveStr.toDouble() < (mAppStoreServicesResponse?.mMinOrderValue ?: 0.0))) {
-                        freeDeliveryAboveEditText.requestFocus()
-                        freeDeliveryAboveEditText.error = mMoreControlsStaticData.error_amount_must_greater_than_min_order_value
+                        freeDeliveryAboveEditText?.requestFocus()
+                        freeDeliveryAboveEditText?.error = mMoreControlsStaticData.error_amount_must_greater_than_min_order_value
                         return
                     }
                     if (freeDeliveryAboveStr.isNotEmpty() && (freeDeliveryAboveStr.toDouble() == 0.0)) {
-                        freeDeliveryAboveEditText.requestFocus()
-                        freeDeliveryAboveEditText.error = mMoreControlsStaticData.error_mandatory_field
+                        freeDeliveryAboveEditText?.requestFocus()
+                        freeDeliveryAboveEditText?.error = mMoreControlsStaticData.error_mandatory_field
                         return
                     }
                     mMoreControlRequest.deliveryChargeType = Constants.FIXED_DELIVERY_CHARGE
@@ -149,13 +149,13 @@ class SetDeliveryChargeFragment : BaseFragment(), IMoreControlsServiceInterface 
                     selectionStr = "Custom_delivery"
                     val customDeliveryAboveStr = customDeliveryAboveEditText.text.trim().toString()
                     if (customDeliveryAboveStr.isNotEmpty() && (customDeliveryAboveStr.toDouble() == 0.0)) {
-                        customDeliveryAboveEditText.requestFocus()
-                        customDeliveryAboveEditText.error = mMoreControlsStaticData.error_mandatory_field
+                        customDeliveryAboveEditText?.requestFocus()
+                        customDeliveryAboveEditText?.error = mMoreControlsStaticData.error_mandatory_field
                         return
                     }
                     if (customDeliveryAboveStr.isNotEmpty() && (customDeliveryAboveStr.toDouble() < (mAppStoreServicesResponse?.mMinOrderValue ?: 0.0))) {
-                        customDeliveryAboveEditText.requestFocus()
-                        customDeliveryAboveEditText.error = mMoreControlsStaticData.error_amount_must_greater_than_min_order_value
+                        customDeliveryAboveEditText?.requestFocus()
+                        customDeliveryAboveEditText?.error = mMoreControlsStaticData.error_amount_must_greater_than_min_order_value
                         return
                     }
                     mMoreControlRequest.deliveryChargeType = Constants.CUSTOM_DELIVERY_CHARGE
@@ -185,49 +185,49 @@ class SetDeliveryChargeFragment : BaseFragment(), IMoreControlsServiceInterface 
 
     private fun showFreeDeliveryContainer(toShow: Boolean) {
         if (toShow) {
-            freeDeliveryRadioButton.isChecked = true
-            freeDeliveryRadioButton.isSelected = true
-            freeDeliverySeparator.visibility = View.VISIBLE
-            freeDeliveryTextView.visibility = View.VISIBLE
+            freeDeliveryRadioButton?.isChecked = true
+            freeDeliveryRadioButton?.isSelected = true
+            freeDeliverySeparator?.visibility = View.VISIBLE
+            freeDeliveryTextView?.visibility = View.VISIBLE
         } else {
-            freeDeliveryRadioButton.isChecked = false
-            freeDeliveryRadioButton.isSelected = false
-            freeDeliverySeparator.visibility = View.GONE
-            freeDeliveryTextView.visibility = View.GONE
+            freeDeliveryRadioButton?.isChecked = false
+            freeDeliveryRadioButton?.isSelected = false
+            freeDeliverySeparator?.visibility = View.GONE
+            freeDeliveryTextView?.visibility = View.GONE
         }
     }
 
     private fun showFixedDeliveryContainer(toShow: Boolean) {
         if (toShow) {
-            fixedDeliveryRadioButton.isChecked = true
-            fixedDeliveryRadioButton.isSelected = true
-            fixedDeliverySeparator.visibility = View.VISIBLE
-            fixedDeliveryChargeLayout.visibility = View.VISIBLE
-            freeDeliveryAboveLayout.visibility = View.VISIBLE
+            fixedDeliveryRadioButton?.isChecked = true
+            fixedDeliveryRadioButton?.isSelected = true
+            fixedDeliverySeparator?.visibility = View.VISIBLE
+            fixedDeliveryChargeLayout?.visibility = View.VISIBLE
+            freeDeliveryAboveLayout?.visibility = View.VISIBLE
         } else {
-            fixedDeliveryRadioButton.isChecked = false
-            fixedDeliveryRadioButton.isSelected = false
-            fixedDeliverySeparator.visibility = View.GONE
-            fixedDeliveryChargeLayout.visibility = View.GONE
-            freeDeliveryAboveLayout.visibility = View.GONE
+            fixedDeliveryRadioButton?.isChecked = false
+            fixedDeliveryRadioButton?.isSelected = false
+            fixedDeliverySeparator?.visibility = View.GONE
+            fixedDeliveryChargeLayout?.visibility = View.GONE
+            freeDeliveryAboveLayout?.visibility = View.GONE
         }
     }
 
     private fun showCustomDeliveryContainer(toShow: Boolean) {
         if (toShow) {
-            customDeliveryRadioButton.isChecked = true
-            customDeliveryRadioButton.isSelected = true
-            customDeliverySeparator.visibility = View.VISIBLE
-            customDeliveryAboveLayout.visibility = View.VISIBLE
-            customDeliveryTextView.visibility = View.VISIBLE
-            customDeliveryImageView.visibility = View.VISIBLE
+            customDeliveryRadioButton?.isChecked = true
+            customDeliveryRadioButton?.isSelected = true
+            customDeliverySeparator?.visibility = View.VISIBLE
+            customDeliveryAboveLayout?.visibility = View.VISIBLE
+            customDeliveryTextView?.visibility = View.VISIBLE
+            customDeliveryImageView?.visibility = View.VISIBLE
         } else {
-            customDeliveryRadioButton.isChecked = false
-            customDeliveryRadioButton.isSelected = false
-            customDeliverySeparator.visibility = View.GONE
-            customDeliveryAboveLayout.visibility = View.GONE
-            customDeliveryTextView.visibility = View.GONE
-            customDeliveryImageView.visibility = View.GONE
+            customDeliveryRadioButton?.isChecked = false
+            customDeliveryRadioButton?.isSelected = false
+            customDeliverySeparator?.visibility = View.GONE
+            customDeliveryAboveLayout?.visibility = View.GONE
+            customDeliveryTextView?.visibility = View.GONE
+            customDeliveryImageView?.visibility = View.GONE
         }
     }
 

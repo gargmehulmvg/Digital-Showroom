@@ -73,7 +73,7 @@ class SendBillPhotoFragment: BaseFragment(), ISendBillPhotoServiceInterface {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        ToolBarManager.getInstance().apply {
+        ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, false)
             setHeaderTitle(mSendPhotoStaticText?.text_send_bill)
             setSideIconVisibility(true)
@@ -86,14 +86,14 @@ class SendBillPhotoFragment: BaseFragment(), ISendBillPhotoServiceInterface {
         }
         sendBillTextView.text = mSendPhotoStaticText?.text_send_bill
         val image = BitmapFactory.decodeFile(mImageFile?.absolutePath)
-        imageView.setImageBitmap(image)
-        amountEditText.text = "${mSendPhotoStaticText?.text_rupees_symbol} ${mMainOrderDetailResponse?.orders?.amount}"
+        imageView?.setImageBitmap(image)
+        amountEditText?.text = "${mSendPhotoStaticText?.text_rupees_symbol} ${mMainOrderDetailResponse?.orders?.amount}"
     }
 
     override fun onImageSelectionResultFile(file: File?, mode: String) {
         mImageFile = file
         val image = BitmapFactory.decodeFile(mImageFile?.absolutePath)
-        imageView.setImageBitmap(image)
+        imageView?.setImageBitmap(image)
     }
 
     override fun onConvertFileToLinkResponse(commonResponse: CommonApiResponse) {

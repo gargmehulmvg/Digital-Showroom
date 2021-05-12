@@ -56,7 +56,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         updateNavigationBarState(R.id.menuMarketing)
-        ToolBarManager.getInstance().apply {
+        ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, false)
             setHeaderTitle(getString(R.string.marketing_page_heading))
             setSideIconVisibility(true)

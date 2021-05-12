@@ -9,7 +9,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/parentLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:paddingEnd="@dimen/_25sdp"
         android:paddingTop="@dimen/_15sdp"
         android:paddingBottom="@dimen/_15sdp"

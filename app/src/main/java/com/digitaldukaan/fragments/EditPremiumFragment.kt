@@ -75,7 +75,7 @@ class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        ToolBarManager.getInstance().apply {
+        ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, true)
         }
         WebViewBridge.mWebViewListener = this
@@ -84,7 +84,7 @@ class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
             showNoInternetConnectionDialog()
             return
         }
-        editPremiumWebView.apply {
+        editPremiumWebView?.apply {
             settings.javaScriptEnabled = true
             settings.domStorageEnabled = true
             addJavascriptInterface(WebViewBridge(), "Android")
@@ -92,16 +92,16 @@ class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
             Log.d(EditPremiumFragment::class.simpleName, "onViewCreated: $url")
             loadUrl(url)
         }
-        appTitleTextView.text = mStaticText?.heading_edit_theme
-        textView3.text = mStaticText?.text_customer_will_see
-        editColorTextView.text = mStaticText?.text_edit_colors
-        changeImageTextView.text = mStaticText?.text_edit_image
+        appTitleTextView?.text = mStaticText?.heading_edit_theme
+        textView3?.text = mStaticText?.text_customer_will_see
+        editColorTextView?.text = mStaticText?.text_edit_colors
+        changeImageTextView?.text = mStaticText?.text_edit_image
     }
 
     override fun onClick(view: View?) {
         when (view?.id) {
-            backButtonToolbar.id -> mActivity.onBackPressed()
-            editColorContainer.id -> {
+            backButtonToolbar?.id -> mActivity.onBackPressed()
+            editColorContainer?.id -> {
                 if (mEditPremiumColorList == null || mEditPremiumColorList?.isEmpty() == true) {
                     if (!isInternetConnectionAvailable(mActivity)) {
                         showNoInternetConnectionDialog()
@@ -111,7 +111,7 @@ class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
                     mService.getPremiumColors()
                 } else showColorBottomSheet()
             }
-            changeImageContainer.id -> {
+            changeImageContainer?.id -> {
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_EDIT_THEME_IMAGE,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
@@ -121,7 +121,7 @@ class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
                 )
                 openGalleryWithoutCrop()
             }
-            viewWebsiteImageView.id -> {
+            viewWebsiteImageView?.id -> {
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_VIEW_AS_CUSTOMER,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
@@ -133,7 +133,7 @@ class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
                 val url = "${BuildConfig.WEB_VIEW_PREVIEW_URL}${mPremiumPageInfoResponse?.domain}"
                 openUrlInBrowser(url)
             }
-            whatsAppImageView.id -> {
+            whatsAppImageView?.id -> {
                 if (mShareDataOverWhatsAppText.isNotEmpty()) {
                     shareOnWhatsApp(mShareDataOverWhatsAppText)
                 } else if (!isInternetConnectionAvailable(mActivity)) {
@@ -243,7 +243,7 @@ class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
             stopProgress()
             if (response.mIsSuccessStatus) {
                 showShortSnackBar(response.mMessage, true, R.drawable.ic_green_check_small)
-                editPremiumWebView.reload()
+                editPremiumWebView?.reload()
             } else showShortSnackBar(response.mMessage, true, R.drawable.ic_close_red)
         }
     }

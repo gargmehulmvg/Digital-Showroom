@@ -55,7 +55,7 @@ class StoreDescriptionFragment : BaseFragment(), IStoreDescriptionServiceInterfa
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         mStoreDescriptionStaticData = StaticInstances.mStaticData?.mProfileStaticData
-        ToolBarManager.getInstance().apply {
+        ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, false)
             val stepStr = if (mIsSingleStep) "" else "Step $mPosition : "
             setHeaderTitle("$stepStr${mProfilePreviewResponse?.mHeadingText}")
@@ -97,7 +97,7 @@ class StoreDescriptionFragment : BaseFragment(), IStoreDescriptionServiceInterfa
 
     override fun onClick(view: View?) {
         when (view?.id) {
-            skipTextView.id -> {
+            skipTextView?.id -> {
                 StaticInstances.sStepsCompletedList?.run {
                     for (completedItem in this) {
                         if (completedItem.action == Constants.ACTION_DESCRIPTION) {
@@ -108,7 +108,7 @@ class StoreDescriptionFragment : BaseFragment(), IStoreDescriptionServiceInterfa
                     switchToInCompleteProfileFragment(mProfileInfoResponse)
                 }
             }
-            continueTextView.id -> {
+            continueTextView?.id -> {
                 val service = StoreDescriptionService()
                 service.setServiceInterface(this)
                 val request = StoreDescriptionRequest(storeDescriptionEditText.text.trim().toString())

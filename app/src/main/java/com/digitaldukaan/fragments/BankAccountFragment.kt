@@ -60,7 +60,7 @@ class BankAccountFragment : BaseFragment(), IBankDetailsServiceInterface {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        ToolBarManager.getInstance().apply {
+        ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, false)
             setHeaderTitle("")
             onBackPressed(this@BankAccountFragment)

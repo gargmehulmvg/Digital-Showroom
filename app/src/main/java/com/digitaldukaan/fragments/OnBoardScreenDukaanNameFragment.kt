@@ -73,9 +73,9 @@ class OnBoardScreenDukaanNameFragment : BaseFragment(),
             nextTextView.id -> {
                 val dukanName = dukaanNameEditText?.text?.trim().toString()
                 if (dukanName.isEmpty()) {
-                    dukaanNameEditText.requestFocus()
-                    dukaanNameEditText.showKeyboard()
-                    dukaanNameEditText.error = getString(R.string.mandatory_field_message)
+                    dukaanNameEditText?.requestFocus()
+                    dukaanNameEditText?.showKeyboard()
+                    dukaanNameEditText?.error = getString(R.string.mandatory_field_message)
                 } else {
                     if (!isInternetConnectionAvailable(mActivity)) {
                         showNoInternetConnectionDialog()

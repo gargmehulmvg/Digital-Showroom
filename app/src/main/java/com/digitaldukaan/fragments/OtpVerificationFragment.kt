@@ -50,10 +50,10 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
         val client = SmsRetriever.getClient(mActivity)
         val task = client.startSmsRetriever()
         MySMSBroadcastReceiver.mSmsReceiverListener = this
-        task.addOnSuccessListener {
+        task?.addOnSuccessListener {
             Log.d("OtpVerificationFragment", "onCreate: Auto read SMS retrieval task success")
         }
-        task.addOnFailureListener {
+        task?.addOnFailureListener {
             Log.d("OtpVerificationFragment", "onCreate: Auto read SMS retrieval task failed")
         }
         Log.d("OtpVerificationFragment", "App Signature is ${AppSignatureHelper(mActivity).appSignatures[0]}")
@@ -76,7 +76,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
 
     override fun onClick(view: View?) {
         when (view?.id) {
-            verifyTextView.id -> {
+            verifyTextView?.id -> {
                 if (!isInternetConnectionAvailable(mActivity)) {
                     showNoInternetConnectionDialog()
                     return
@@ -136,9 +136,9 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
 
     override fun onOTPFilledListener(otpStr: String) {
         mEnteredOtpStr = otpStr
-        otpEditText.hideKeyboard()
-        verifyTextView.isEnabled = true
-        if (!mIsServerCallInitiated) verifyTextView.callOnClick()
+        otpEditText?.hideKeyboard()
+        verifyTextView?.isEnabled = true
+        if (!mIsServerCallInitiated) verifyTextView?.callOnClick()
     }
 
     override fun onOTPVerificationSuccessResponse(validateOtpResponse: ValidateOtpResponse) {
@@ -166,7 +166,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
                 cleverTapProfile.mAddress = validateOtpResponse.mStore?.storeAddress?.let {
                     "${it.address1}, ${it.googleAddress}, ${it.pinCode}"
                 }
-                AppsFlyerLib.getInstance().setCustomerUserId(validateOtpResponse.mUserPhoneNumber)
+                AppsFlyerLib.getInstance()?.setCustomerUserId(validateOtpResponse.mUserPhoneNumber)
                 AppEventsManager.pushCleverTapProfile(cleverTapProfile)
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_OTP_VERIFIED,
@@ -184,9 +184,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
         PrefsManager.storeStringDataInSharedPref(Constants.USER_ID, validateOtpResponse.mUserId)
         validateOtpResponse.mStore?.run {
             PrefsManager.storeStringDataInSharedPref(Constants.STORE_ID, storeId.toString())
-            Log.d("STORE_OBJECT_TEST", "$TAG saveUserDetailsInPref: STORE_ID :: ${PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)}")
             PrefsManager.storeStringDataInSharedPref(Constants.STORE_NAME, storeInfo.name)
-            Log.d("STORE_OBJECT_TEST", "$TAG saveUserDetailsInPref: STORE_NAME :: ${PrefsManager.getStringDataFromSharedPref(Constants.STORE_NAME)}")
         }
     }
 

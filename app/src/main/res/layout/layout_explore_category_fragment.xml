@@ -16,10 +16,10 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/white"
-            app:expandedTitleTextAppearance="@font/montserrat_bold"
             app:expandedTitleMarginEnd="@dimen/_20sdp"
             app:expandedTitleMarginStart="@dimen/_25sdp"
-            app:layout_scrollFlags="exitUntilCollapsed|scroll" >
+            app:expandedTitleTextAppearance="@font/montserrat_bold"
+            app:layout_scrollFlags="exitUntilCollapsed|scroll">
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
@@ -36,9 +36,9 @@
                     android:id="@+id/backButton"
                     android:layout_width="@dimen/_35sdp"
                     android:layout_height="@dimen/_30sdp"
+                    android:onClick="onClick"
                     android:padding="@dimen/_4sdp"
                     android:rotation="180"
-                    android:onClick="onClick"
                     android:src="@drawable/ic_arrow_forward_white"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -52,18 +52,12 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.core.widget.NestedScrollView
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/exploreCategoryRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/exploreCategoryRecyclerView"
-            android:layout_width="match_parent"
-            tools:listitem="@layout/explore_category_item"
-            android:paddingBottom="@dimen/_10sdp"
-            android:layout_height="match_parent" />
-
-    </androidx.core.widget.NestedScrollView>
+        android:paddingBottom="@dimen/_10sdp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:listitem="@layout/explore_category_item" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -26,6 +26,7 @@ import com.digitaldukaan.fragments.CommonWebViewFragment
 import com.digitaldukaan.models.dto.ContactModel
 import com.digitaldukaan.models.response.ProfileInfoResponse
 import com.digitaldukaan.models.response.ProfilePreviewSettingsKeyResponse
+import org.shadow.apache.commons.lang3.StringUtils
 import java.io.*
 import java.net.URL
 import java.net.URLConnection
@@ -282,4 +283,30 @@ fun isAppInstalled(packageName: String, context: Context): Boolean {
         false
     }
     return appInstalled
+}
+
+fun replaceTemplateString(text: String?): String? {
+    if (text == null || text.isEmpty()) return ""
+    var returnText = text
+    returnText = StringUtils.replace(returnText," ", "-")
+    returnText = StringUtils.replace(returnText,"(", "-")
+    returnText = StringUtils.replace(returnText,")", "-")
+    returnText = StringUtils.replace(returnText,"<", "-")
+    returnText = StringUtils.replace(returnText,">", "-")
+    returnText = StringUtils.replace(returnText,"{", "-")
+    returnText = StringUtils.replace(returnText,"}", "-")
+    returnText = StringUtils.replace(returnText,"+", "-")
+    returnText = StringUtils.replace(returnText,"~", "-")
+    returnText = StringUtils.replace(returnText,"$", "-")
+    returnText = StringUtils.replace(returnText,"%", "-")
+    returnText = StringUtils.replace(returnText,";", "-")
+    returnText = StringUtils.replace(returnText,":", "-")
+    returnText = StringUtils.replace(returnText,"/", "-")
+    returnText = StringUtils.replace(returnText,"*", "-")
+    returnText = StringUtils.replace(returnText,"#", "-")
+    returnText = StringUtils.replace(returnText,"[", "-")
+    returnText = StringUtils.replace(returnText,"]", "-")
+    returnText = StringUtils.replace(returnText,"&", "-")
+    returnText = StringUtils.replace(returnText,"@", "-")
+    return returnText
 }

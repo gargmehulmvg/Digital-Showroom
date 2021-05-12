@@ -54,7 +54,7 @@ class OnBoardScreenBankDetailsFragment : BaseFragment(), IBankDetailsServiceInte
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        ToolBarManager.getInstance().apply {
+        ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, true)
             setHeaderTitle("")
             onBackPressed(this@OnBoardScreenBankDetailsFragment)
@@ -63,7 +63,7 @@ class OnBoardScreenBankDetailsFragment : BaseFragment(), IBankDetailsServiceInte
             setSecondSideIconVisibility(false)
         }
         hideBottomNavigationView(true)
-        skipTextView.visibility = View.GONE
+        skipTextView?.visibility = View.GONE
     }
 
     private fun setupUIFromStaticData(bankDetail: BankDetailsResponse?) {
@@ -86,7 +86,7 @@ class OnBoardScreenBankDetailsFragment : BaseFragment(), IBankDetailsServiceInte
 
     override fun onClick(view: View?) {
         when (view?.id) {
-            skipTextView.id -> {
+            skipTextView?.id -> {
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_SKIP_BANK_ACCOUNT,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
@@ -94,9 +94,9 @@ class OnBoardScreenBankDetailsFragment : BaseFragment(), IBankDetailsServiceInte
                 )
                 launchFragment(CreateStoreFragment.newInstance(), true)
             }
-            saveTextView.id -> {
+            saveTextView?.id -> {
                 var isValidationFailed = false
-                val accountHolderNameStr = accountHolderNameEditText.run {
+                val accountHolderNameStr = accountHolderNameEditText?.run {
                     if (text.trim().toString().isEmpty()) {
                         requestFocus()
                         error = mProfilePreviewStaticData?.error_mandatory_field
@@ -129,7 +129,7 @@ class OnBoardScreenBankDetailsFragment : BaseFragment(), IBankDetailsServiceInte
                     text.trim().toString()
                 }
                 if (accountNumberStr != verifyAccountNumberStr) {
-                    verifyAccountNumberEditText.run {
+                    verifyAccountNumberEditText?.run {
                         requestFocus()
                         error = mProfilePreviewStaticData?.error_both_account_number_verify_account_number_must_be_same
                         isValidationFailed = true
@@ -213,7 +213,7 @@ class OnBoardScreenBankDetailsFragment : BaseFragment(), IBankDetailsServiceInte
                         showProgressDialog(mActivity)
                         mService.getBankDetailsPageInfo()
                     }
-                    ToolBarManager.getInstance().apply {
+                    ToolBarManager.getInstance()?.apply {
                         hideToolBar(mActivity, false)
                         setHeaderTitle("")
                         onBackPressed(this@OnBoardScreenBankDetailsFragment)

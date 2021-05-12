@@ -96,19 +96,19 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
 
     override fun onClick(view: View?) {
         when(view?.id) {
-            addDeliveryChargesLabel.id -> {
-                addDeliveryChargesLabel.visibility = View.GONE
-                addDeliveryChargesGroup.visibility = View.VISIBLE
-                minusTextView.visibility = View.VISIBLE
+            addDeliveryChargesLabel?.id -> {
+                addDeliveryChargesLabel?.visibility = View.GONE
+                addDeliveryChargesGroup?.visibility = View.VISIBLE
+                minusTextView?.visibility = View.VISIBLE
             }
-            billCameraImageView.id -> {
+            billCameraImageView?.id -> {
                 mBillSentCameraClicked = true
                 handleDeliveryTimeBottomSheet(false)
             }
-            sendBillTextView.id -> {
+            sendBillTextView?.id -> {
                 if (mIsPickUpOrder) initiateSendBillServerCall() else handleDeliveryTimeBottomSheet(true)
             }
-            detailTextView.id -> {
+            detailTextView?.id -> {
                 if (!isInternetConnectionAvailable(mActivity)) {
                     showNoInternetConnectionDialog()
                 } else {
@@ -220,7 +220,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        ToolBarManager.getInstance().apply {
+        ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, false)
             onBackPressed(this@OrderDetailFragment)
             setSecondSideIconVisibility(true)
@@ -237,11 +237,11 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
             orderDetailMainResponse = Gson().fromJson<OrderDetailMainResponse>(commonResponse.mCommonDataStr, OrderDetailMainResponse::class.java)
             val orderDetailResponse = orderDetailMainResponse?.orders
             mOrderDetailStaticData = orderDetailMainResponse?.staticText
-            newOrderTextView.visibility = if (mIsNewOrder) View.VISIBLE else View.GONE
-            sendBillLayout.visibility = if (orderDetailResponse?.displayStatus == Constants.DS_SEND_BILL || orderDetailResponse?.displayStatus == Constants.DS_NEW) View.VISIBLE else View.GONE
-            orderDetailContainer.visibility = if (orderDetailResponse?.displayStatus == Constants.DS_SEND_BILL || orderDetailResponse?.displayStatus == Constants.DS_NEW) View.GONE else View.VISIBLE
-            addDeliveryChargesLabel.visibility = if (orderDetailResponse?.displayStatus == Constants.DS_SEND_BILL) View.VISIBLE else View.GONE
-            orderDetailItemRecyclerView.apply {
+            newOrderTextView?.visibility = if (mIsNewOrder) View.VISIBLE else View.GONE
+            sendBillLayout?.visibility = if (orderDetailResponse?.displayStatus == Constants.DS_SEND_BILL || orderDetailResponse?.displayStatus == Constants.DS_NEW) View.VISIBLE else View.GONE
+            orderDetailContainer?.visibility = if (orderDetailResponse?.displayStatus == Constants.DS_SEND_BILL || orderDetailResponse?.displayStatus == Constants.DS_NEW) View.GONE else View.VISIBLE
+            addDeliveryChargesLabel?.visibility = if (orderDetailResponse?.displayStatus == Constants.DS_SEND_BILL) View.VISIBLE else View.GONE
+            orderDetailItemRecyclerView?.apply {
                 layoutManager = LinearLayoutManager(mActivity)
                 val list = orderDetailResponse?.orderDetailsItemsList
                 val deliveryStatus = orderDetailResponse?.displayStatus
@@ -273,7 +273,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                 })
                 adapter = orderDetailAdapter
             }
-            amountEditText.setText("$mTotalDisplayAmount")
+            amountEditText?.setText("$mTotalDisplayAmount")
             setStaticDataToUI(orderDetailResponse)
             ToolBarManager.getInstance().setHeaderSubTitle(getStringDateTimeFromOrderDate(getCompleteDateFromOrderString(orderDetailMainResponse?.orders?.createdAt)))
             setupDeliveryChargeUI(orderDetailResponse?.displayStatus, orderDetailMainResponse?.storeServices)
@@ -362,7 +362,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                         mDeliveryChargeAmount = storeServices.mDeliveryPrice ?: 0.0
                         deliveryChargeLabel?.visibility = View.VISIBLE
                         deliveryChargeValue?.visibility = View.VISIBLE
-                        addDeliveryChargesLabel.text = getString(R.string.add_discount_and_other_charges)
+                        addDeliveryChargesLabel?.text = getString(R.string.add_discount_and_other_charges)
                         deliveryChargeValue?.text = "${storeServices.mDeliveryPrice}"
                         setAmountToEditText()
                     }
@@ -403,7 +403,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                 }
             }
         }
-        deliveryChargeValueEditText.addTextChangedListener(object : TextWatcher {
+        deliveryChargeValueEditText?.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(editable: Editable?) {
                 val str = editable?.toString()
                 mDeliveryChargeAmount = if (str?.isNotEmpty() == true) {
@@ -421,7 +421,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                 Log.d(TAG, "onTextChanged: do nothing")
             }
         })
-        otherChargesValueEditText.addTextChangedListener(object : TextWatcher {
+        otherChargesValueEditText?.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(editable: Editable?) {
                 val str = editable?.toString()
                 mOtherChargeAmount = if (str?.isNotEmpty() == true) { str.toDouble() } else 0.0
@@ -436,7 +436,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                 Log.d(TAG, "onTextChanged: do nothing")
             }
         })
-        discountsValueEditText.addTextChangedListener(object : TextWatcher {
+        discountsValueEditText?.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(editable: Editable?) {
                 val str = editable?.toString()
                 mDiscountAmount = if (str?.isNotEmpty() == true) { str.toDouble() } else 0.0
@@ -459,15 +459,15 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
         val txtSpannable = SpannableString(getString(R.string.free).toUpperCase(Locale.getDefault()))
         val boldSpan = StyleSpan(Typeface.BOLD)
         txtSpannable.setSpan(boldSpan, 0, txtSpannable.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-        deliveryChargeValue.text = txtSpannable
-        deliveryChargeValue.setTextColor(ContextCompat.getColor(mActivity, R.color.open_green))
-        deliveryChargeValue.background = ContextCompat.getDrawable(mActivity, R.drawable.order_adapter_new)
-        addDeliveryChargesLabel.text = getString(R.string.add_discount_and_other_charges)
+        deliveryChargeValue?.text = txtSpannable
+        deliveryChargeValue?.setTextColor(ContextCompat.getColor(mActivity, R.color.open_green))
+        deliveryChargeValue?.background = ContextCompat.getDrawable(mActivity, R.drawable.order_adapter_new)
+        addDeliveryChargesLabel?.text = getString(R.string.add_discount_and_other_charges)
     }
 
     private fun setAmountToEditText() {
         val amount = mTotalDisplayAmount + mDeliveryChargeAmount + mOtherChargeAmount - mDiscountAmount
-        amountEditText.setText("$amount")
+        amountEditText?.setText("$amount")
     }
 
     private fun getAmountFromEditText() : Double{
@@ -493,7 +493,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
             statusLabel?.text = "$text_status:"
             detailTextView?.text = "$text_details:"
             billAmountValue?.text = "$text_rupees_symbol ${orderDetailResponse?.amount}"
-            ToolBarManager.getInstance().setHeaderTitle("$text_order #$mOrderId")
+            ToolBarManager.getInstance()?.setHeaderTitle("$text_order #$mOrderId")
             if (orderDetailResponse?.deliveryInfo?.customDeliveryTime?.isEmpty() == true) estimateDeliveryTextView.visibility = View.GONE else estimateDeliveryTextView.text = "$text_estimate_delivery : ${orderDetailResponse?.deliveryInfo?.customDeliveryTime}"
             statusValue?.text = orderDetailResponse?.orderPaymentStatus?.value
             when (orderDetailResponse?.orderPaymentStatus?.key) {
@@ -849,21 +849,26 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
             showToast(mOrderDetailStaticData?.error_no_bill_available_to_download)
         } else {
             showToast("Start Downloading...")
-            Picasso.get().load(receiptStr).into(object : Target {
-                override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
-                    bitmap?.let {
-                        downloadMediaToStorage(bitmap, mActivity)
+            try {
+                Picasso.get().load(receiptStr).into(object : Target {
+                    override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
+                        bitmap?.let {
+                            downloadMediaToStorage(bitmap, mActivity)
+                        }
                     }
-                }
 
-                override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
-                    Log.d(TAG, "onPrepareLoad: ")
-                }
+                    override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
+                        Log.d(TAG, "onPrepareLoad: ")
+                    }
 
-                override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
-                    Log.d(TAG, "onBitmapFailed: ")
-                }
-            })
+                    override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
+                        Log.d(TAG, "onBitmapFailed: ")
+                    }
+                })
+            } catch (e: Exception) {
+                Log.e(TAG, "startDownloadBill: ${e.message}", e)
+                showToast("Something went wrong")
+            }
         }
     }
 
@@ -883,9 +888,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
         if (requestCode == Constants.EXTERNAL_STORAGE_REQUEST_CODE) {
             when {
                 grantResults.isEmpty() -> Log.i(TAG, "User interaction was cancelled.")
-                grantResults[0] == PackageManager.PERMISSION_GRANTED -> {
-                    startDownloadBill(orderDetailMainResponse?.orders?.digitalReceipt)
-                }
+                grantResults[0] == PackageManager.PERMISSION_GRANTED -> startDownloadBill(orderDetailMainResponse?.orders?.digitalReceipt)
             }
         }
     }
