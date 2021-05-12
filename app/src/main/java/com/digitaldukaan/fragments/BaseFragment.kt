@@ -622,7 +622,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     open fun onNoInternetButtonClick(isNegativeButtonClick: Boolean) = Unit
 
     override fun onSearchImageItemClicked(photoStr: String) {
-        showProgressDialog(mActivity)
+        showCancellableProgressDialog(mActivity)
         Picasso.get().load(photoStr).into(object : com.squareup.picasso.Target {
             override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
                 bitmap?.let {
