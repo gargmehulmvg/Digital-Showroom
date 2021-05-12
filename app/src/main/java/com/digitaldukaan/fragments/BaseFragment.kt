@@ -268,7 +268,6 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
             }
         } catch (e: Exception) {
             Log.e(TAG, "openUrlInBrowser: ${e.message}", e)
-            showToast(getString(R.string.something_went_wrong))
         }
     }
 
