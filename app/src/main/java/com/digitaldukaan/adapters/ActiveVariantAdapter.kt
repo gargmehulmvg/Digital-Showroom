@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
 import com.digitaldukaan.interfaces.IVariantItemClickListener
 import com.digitaldukaan.models.response.VariantItemResponse
+import com.google.android.material.switchmaterial.SwitchMaterial
 
 class ActiveVariantAdapter(
     private var mContext: Context?,
@@ -21,6 +22,7 @@ class ActiveVariantAdapter(
     inner class ReferAndEarnViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val variantNameTextView: TextView = itemView.findViewById(R.id.variantNameTextView)
         val optionsMenuImageView: View = itemView.findViewById(R.id.optionsMenuImageView)
+        val variantSwitch: SwitchMaterial = itemView.findViewById(R.id.variantSwitch)
     }
 
     fun setActiveVariantList(activeVariantList: ArrayList<VariantItemResponse>?) {
@@ -51,7 +53,7 @@ class ActiveVariantAdapter(
                     setOnMenuItemClickListener { menuItem ->
                         when (menuItem?.itemId) {
                             R.id.menu_edit -> {
-                                mListener?.onVariantEditNameClicked(mActiveVariantList?.get(position))
+                                mListener?.onVariantEditNameClicked(mActiveVariantList?.get(position), position)
                             }
                             R.id.menu_delete -> {
                                 mListener?.onVariantDeleteClicked(position)
@@ -61,6 +63,10 @@ class ActiveVariantAdapter(
                     }
                 }
             }
+            variantSwitch.setOnCheckedChangeListener { _, isChecked ->
+                item?.available = if (isChecked) 1 else 0
+            }
+            variantSwitch.isChecked = (item?.available == 1)
         }
     }
 

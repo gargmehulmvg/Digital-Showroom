@@ -16,6 +16,7 @@ import com.digitaldukaan.adapters.ActiveVariantAdapter
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.interfaces.IVariantItemClickListener
 import com.digitaldukaan.models.response.VariantItemResponse
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.android.synthetic.main.layout_add_variant.*
 import java.util.*
 
@@ -55,8 +56,8 @@ class AddVariantFragment: BaseFragment() {
 
             }
 
-            override fun onVariantEditNameClicked(variant: VariantItemResponse?) {
-                showToast(variant?.variantName)
+            override fun onVariantEditNameClicked(variant: VariantItemResponse?, position: Int) {
+                showEditVariantNameBottomSheet(variant, position)
             }
 
             override fun onVariantDeleteClicked(position: Int) {
@@ -95,16 +96,26 @@ class AddVariantFragment: BaseFragment() {
 
     private fun addVariantToActiveVariantList() {
         val variantName = variantNameEditText?.text?.toString()
+        if (isVariantNameUnique(variantName, variantNameEditText)) return
+        val variant = VariantItemResponse(0, 1, 1, variantName)
+        mVariantsList?.add(variant)
+        mActiveVariantAdapter?.setActiveVariantList(mVariantsList)
+        variantNameEditText?.text = null
+    }
+
+    private fun isVariantNameUnique(variantName: String?, variantNameEditText: EditText?): Boolean {
         if (variantName?.isEmpty() == true) {
             variantNameEditText?.apply {
                 error = getString(R.string.mandatory_field_message)
                 requestFocus()
             }
-            return
+            return true
         }
         var isVariantNameExist = false
         mVariantsList?.forEachIndexed { _, itemResponse ->
-            if (itemResponse.variantName?.toLowerCase(Locale.getDefault())?.trim() == variantName?.toLowerCase(Locale.getDefault())?.trim()) {
+            if (itemResponse.variantName?.toLowerCase(Locale.getDefault())
+                    ?.trim() == variantName?.toLowerCase(Locale.getDefault())?.trim()
+            ) {
                 isVariantNameExist = true
                 return@forEachIndexed
             }
@@ -114,12 +125,33 @@ class AddVariantFragment: BaseFragment() {
                 error = "Unique variant name is required"
                 requestFocus()
             }
-            return
+            return true
         }
-        val variant = VariantItemResponse(0, 1, 1, variantName)
-        mVariantsList?.add(variant)
-        mActiveVariantAdapter?.setActiveVariantList(mVariantsList)
-        variantNameEditText?.text = null
+        return false
+    }
+
+    private fun showEditVariantNameBottomSheet(variant: VariantItemResponse?, position: Int) {
+        val bottomSheetDialog = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
+        val view = LayoutInflater.from(mActivity).inflate(
+            R.layout.bottom_sheet_edit_variant_name,
+            mActivity.findViewById(R.id.bottomSheetContainer)
+        )
+        bottomSheetDialog.apply {
+            setContentView(view)
+            setBottomSheetCommonProperty()
+            view.run {
+                val saveTextView: TextView = findViewById(R.id.saveTextView)
+                val variantNameEditText: EditText = findViewById(R.id.variantNameEditText)
+                variantNameEditText.setText(variant?.variantName)
+                saveTextView.setOnClickListener {
+                    val variantName = variantNameEditText.text.toString().trim()
+                    if (isVariantNameUnique(variantName, variantNameEditText)) return@setOnClickListener
+                    mVariantsList?.get(position)?.variantName = variantName
+                    mActiveVariantAdapter?.notifyDataSetChanged()
+                    bottomSheetDialog.dismiss()
+                }
+            }
+        }.show()
     }
 
 }

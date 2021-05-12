@@ -470,6 +470,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
             }
         }.show()
     }
+
     private fun showDeleteCategoryBottomSheet(categoryName: String?, categoryId: Int) {
         val bottomSheetDialog = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
         val view = LayoutInflater.from(mActivity).inflate(

@@ -197,7 +197,7 @@
             android:id="@+id/verifyTextView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/curve_black_background_selector"
+            android:background="@drawable/ripple_grey"
             android:fontFamily="@font/roboto_bold"
             android:gravity="center"
             android:onClick="onClick"

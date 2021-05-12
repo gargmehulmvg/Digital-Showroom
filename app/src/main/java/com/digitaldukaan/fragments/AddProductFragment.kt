@@ -397,7 +397,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                                 imageListRequest.add(AddProductImageItem(imageItem.imageId, imageItem.imageUrl, 1))
                             }
                         }
-                        val variant = VariantItemResponse(0, 1,1,"Large")
+                        val variant = VariantItemResponse(0, 1, 1, "Large")
                         val variantList: ArrayList<VariantItemResponse> = ArrayList()
                         variantList.add(variant)
                         val request = AddProductRequest(

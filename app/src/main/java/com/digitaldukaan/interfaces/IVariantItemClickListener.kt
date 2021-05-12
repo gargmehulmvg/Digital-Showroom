@@ -6,7 +6,7 @@ interface IVariantItemClickListener {
 
     fun onVariantItemClickListener(position: Int)
 
-    fun onVariantEditNameClicked(variant: VariantItemResponse?)
+    fun onVariantEditNameClicked(variant: VariantItemResponse?, position: Int)
 
     fun onVariantDeleteClicked(position: Int)
 
