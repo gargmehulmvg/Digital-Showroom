@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
 import com.digitaldukaan.interfaces.IVariantItemClickListener
@@ -25,6 +26,7 @@ class ActiveVariantAdapter(
         val variantNameTextView: TextView = itemView.findViewById(R.id.variantNameTextView)
         val optionsMenuImageView: View = itemView.findViewById(R.id.optionsMenuImageView)
         val variantSwitch: SwitchMaterial = itemView.findViewById(R.id.variantSwitch)
+        val variantView: ConstraintLayout = itemView.findViewById(R.id.constraintLayout8)
     }
 
     fun setActiveVariantList(activeVariantList: ArrayList<VariantItemResponse>?) {
@@ -63,12 +65,22 @@ class ActiveVariantAdapter(
             }
             variantSwitch.setOnCheckedChangeListener { _, isChecked ->
                 item?.available = if (isChecked) 1 else 0
-                if (isChecked) inStockTextView.text = mInStockText else inStockTextView.text = mContext?.getString(R.string.out_of_stock)
+                if (isChecked) {
+                    inStockTextView.text = mInStockText
+                    variantView.isSelected = true
+                } else {
+                    inStockTextView.text = mContext?.getString(R.string.out_of_stock)
+                    variantView.isSelected = false
+                }
             }
             variantSwitch.isChecked = (item?.available == 1)
             if (variantSwitch.isChecked) {
                 inStockTextView.text = mInStockText
-            } else inStockTextView.text = mContext?.getString(R.string.out_of_stock)
+                variantView.isSelected = true
+            } else {
+                inStockTextView.text = mContext?.getString(R.string.out_of_stock)
+                variantView.isSelected = false
+            }
         }
     }
 
