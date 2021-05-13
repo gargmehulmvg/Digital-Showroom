@@ -84,29 +84,43 @@ class SendBillFragment : BaseFragment() {
                         AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)
                     )
                 )
-                val imageFile = File(mImageUri?.path)
-                imageFile.run {
-                    val fileRequestBody = MultipartBody.Part.createFormData("media", name, RequestBody.create("image/*".toMediaTypeOrNull(), this))
-                    val imageTypeRequestBody = RequestBody.create("text/plain".toMediaTypeOrNull(), Constants.BASE64_ORDER_BILL)
-                    showProgressDialog(mActivity)
-                    CoroutineScopeUtils().runTaskOnCoroutineBackground {
-                        val response = RetrofitApi().getServerCallObject()?.getImageUploadCdnLink(imageTypeRequestBody, fileRequestBody)
-                        response?.let {
-                            CoroutineScopeUtils().runTaskOnCoroutineMain {
-                                stopProgress()
-                                if (response.isSuccessful) {
-                                    val base64Str = Gson().fromJson<String>(response.body()?.mCommonDataStr, String::class.java)
-                                    launchFragment(
-                                        CommonWebViewFragment().newInstance(
-                                            "",
-                                            "${BuildConfig.WEB_VIEW_URL}${WebViewUrls.WEB_VIEW_BILL_CONFIRM}?storeid=${getStringDataFromSharedPref(Constants.STORE_ID
-                                            )}&imageURL=$base64Str&amount=${if (mAmountStr?.isEmpty() == true) 0.0 else mAmountStr?.toDouble()}"
-                                        ), true
-                                    )
+                try {
+                    val imageFile = File(mImageUri?.path)
+                    imageFile.run {
+                        val fileRequestBody = MultipartBody.Part.createFormData("media", name, RequestBody.create("image/*".toMediaTypeOrNull(), this))
+                        val imageTypeRequestBody = RequestBody.create("text/plain".toMediaTypeOrNull(), Constants.BASE64_ORDER_BILL)
+                        showProgressDialog(mActivity)
+                        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+                            val response = RetrofitApi().getServerCallObject()?.getImageUploadCdnLink(imageTypeRequestBody, fileRequestBody)
+                            response?.let {
+                                CoroutineScopeUtils().runTaskOnCoroutineMain {
+                                    stopProgress()
+                                    if (response.isSuccessful) {
+                                        val base64Str = Gson().fromJson<String>(response.body()?.mCommonDataStr, String::class.java)
+                                        launchFragment(
+                                            CommonWebViewFragment().newInstance(
+                                                "",
+                                                "${BuildConfig.WEB_VIEW_URL}${WebViewUrls.WEB_VIEW_BILL_CONFIRM}?storeid=${getStringDataFromSharedPref(Constants.STORE_ID
+                                                )}&imageURL=$base64Str&amount=${if (mAmountStr?.isEmpty() == true) 0.0 else mAmountStr?.toDouble()}"
+                                            ), true
+                                        )
+                                    }
                                 }
                             }
                         }
                     }
+                } catch (e: Exception) {
+                    Log.e(TAG, "sendBillTextView: ${e.message}", e)
+                    AppEventsManager.pushAppEvents(
+                        eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
+                        isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                        data = mapOf(
+                            AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                            "Exception Point" to "sendBillTextView Click for Image Conversion",
+                            "Exception Message" to e.message,
+                            "Exception Logs" to e.toString()
+                        )
+                    )
                 }
             }
         }

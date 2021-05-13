@@ -26,8 +26,7 @@ import kotlinx.android.synthetic.main.activity_main2.*
 import java.util.*
 
 
-class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener,
-    CTPushNotificationListener, InAppNotificationButtonListener {
+class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener, CTPushNotificationListener, InAppNotificationButtonListener {
 
     companion object {
         private val mNetworkChangeListener = NetworkChangeListener()
@@ -49,24 +48,52 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         Log.d(TAG, "userMobileNumber :: ${PrefsManager.getStringDataFromSharedPref(Constants.USER_MOBILE_NUMBER)}")
         val intentUri = intent?.data
         launchFragment(SplashFragment.newInstance(intentUri), true)
-        try {
-            FirebaseMessaging.getInstance().token.addOnCompleteListener {
-                if (it.isComplete) {
-                    StaticInstances.sFireBaseMessagingToken = it.result.toString()
-                    Log.d(TAG, "onCreate :: FIREBASE TOKEN :: ${it.result}")
-                    AppsFlyerLib.getInstance().updateServerUninstallToken(this, StaticInstances.sFireBaseMessagingToken)
-                    AppsFlyerLib.getInstance().setCustomerUserId(PrefsManager.getStringDataFromSharedPref(Constants.USER_MOBILE_NUMBER))
-                    CleverTapAPI.getDefaultInstance(this)?.pushFcmRegistrationId(StaticInstances.sFireBaseMessagingToken, true)
-                }
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, e.message, e)
-        }
+        handlingFirebaseToken()
+        AppsFlyerLib.getInstance().setCustomerUserId(PrefsManager.getStringDataFromSharedPref(Constants.USER_MOBILE_NUMBER))
         CleverTapAPI.getDefaultInstance(this)?.apply {
             setInAppNotificationButtonListener(this@MainActivity)
         }
         val builder: StrictMode.VmPolicy.Builder  = StrictMode.VmPolicy.Builder()
         StrictMode.setVmPolicy(builder.build())
+    }
+
+    private fun handlingFirebaseToken() {
+        try {
+            FirebaseMessaging.getInstance().token.addOnCompleteListener {
+                try {
+                    if (it.isComplete) {
+                        StaticInstances.sFireBaseMessagingToken = it.result.toString()
+                        Log.d(TAG, "onCreate :: FIREBASE TOKEN :: ${it.result}")
+                        AppsFlyerLib.getInstance().updateServerUninstallToken(this, StaticInstances.sFireBaseMessagingToken)
+                        CleverTapAPI.getDefaultInstance(this)?.pushFcmRegistrationId(StaticInstances.sFireBaseMessagingToken, true)
+                    }
+                } catch (e: Exception) {
+                    Log.e(TAG, e.message, e)
+                    AppEventsManager.pushAppEvents(
+                        eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
+                        isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                        data = mapOf(
+                            AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                            "Exception Point" to "handlingFirebaseToken",
+                            "Exception Message" to e.message,
+                            "Exception Logs" to e.toString()
+                        )
+                    )
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, e.message, e)
+            AppEventsManager.pushAppEvents(
+                eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
+                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                data = mapOf(
+                    AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                    "Exception Point" to "handlingFirebaseToken",
+                    "Exception Message" to e.message,
+                    "Exception Logs" to e.toString()
+                )
+            )
+        }
     }
 
     override fun onStart() {
@@ -114,17 +141,35 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         return try {
             mgr.findFragmentByTag(entry.name) as BaseFragment
         } catch (e: Exception) {
+            AppEventsManager.pushAppEvents(
+                eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
+                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                data = mapOf(
+                    AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                    "Exception Point" to "getCurrentFragment",
+                    "Exception Message" to e.message,
+                    "Exception Logs" to e.toString()
+                )
+            )
             null
         }
     }
 
     fun showToast(message: String?) {
         try {
-            runOnUiThread {
-                Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show()
-            }
+            runOnUiThread { Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show() }
         } catch (e: Exception) {
             Log.e(TAG, "showToast: ${e.message}", e)
+            AppEventsManager.pushAppEvents(
+                eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
+                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                data = mapOf(
+                    AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                    "Exception Point" to "showToast",
+                    "Exception Message" to e.message,
+                    "Exception Logs" to e.toString()
+                )
+            )
         }
     }
 

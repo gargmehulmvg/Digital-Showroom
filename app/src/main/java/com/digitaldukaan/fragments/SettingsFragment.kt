@@ -53,7 +53,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         private const val TAG = "SettingsFragment"
         fun newInstance(): SettingsFragment = SettingsFragment()
     }
-    private lateinit var mAppSettingsResponseStaticData: AccountStaticTextResponse
+    private var mAppSettingsResponseStaticData: AccountStaticTextResponse? = null
     private var mAppStoreServicesResponse: StoreServicesResponse? = null
     private val mProfileService = ProfileService()
     private var mReferAndEarnResponse: ReferAndEarnItemResponse? = null
@@ -161,12 +161,12 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         val bottomSheetHeadingTextView: TextView = view.findViewById(R.id.bottomSheetHeadingTextView)
         val bottomSheetUrl: TextView = view.findViewById(R.id.bottomSheetUrl)
         val bottomSheetClose: View = view.findViewById(R.id.bottomSheetClose)
-        bottomSheetBrowserText.text = mAppSettingsResponseStaticData.mBestViewedText
+        bottomSheetBrowserText.text = mAppSettingsResponseStaticData?.mBestViewedText
         val txtSpannable = SpannableString(Constants.DOTPE_OFFICIAL_URL)
         val boldSpan = StyleSpan(Typeface.BOLD)
         txtSpannable.setSpan(boldSpan, 6, txtSpannable.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         bottomSheetUrl.text = txtSpannable
-        bottomSheetHeadingTextView.setHtmlData(mAppSettingsResponseStaticData.mBottomSheetText)
+        bottomSheetHeadingTextView.setHtmlData(mAppSettingsResponseStaticData?.mBottomSheetText)
         bottomSheetUrl.setOnClickListener { copyDataToClipboard(Constants.DOTPE_OFFICIAL_URL_CLIPBOARD) }
         bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
         bottomSheetDialog.show()
