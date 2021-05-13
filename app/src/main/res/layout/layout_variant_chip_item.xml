@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/_2sdp"
-        android:background="@drawable/chip_selector"
+        android:background="@drawable/variant_chip_selector"
         android:padding="@dimen/_5sdp"
         android:textColor="@color/dark_blackish"
         android:drawablePadding="@dimen/_4sdp"

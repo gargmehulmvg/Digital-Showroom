@@ -9,29 +9,42 @@ import android.view.Window
 import android.widget.EditText
 import android.widget.TextView
 import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.ActiveVariantAdapter
+import com.digitaldukaan.adapters.MasterVariantsAdapter
 import com.digitaldukaan.constants.ToolBarManager
+import com.digitaldukaan.constants.isEmpty
+import com.digitaldukaan.interfaces.IChipItemClickListener
 import com.digitaldukaan.interfaces.IVariantItemClickListener
 import com.digitaldukaan.models.response.VariantItemResponse
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.android.synthetic.main.layout_add_variant.*
 import java.util.*
+import kotlin.collections.ArrayList
 
 
-class AddVariantFragment: BaseFragment() {
+class AddVariantFragment: BaseFragment(), IChipItemClickListener {
 
     private var mVariantsList: ArrayList<VariantItemResponse>? = null
+    private var mRecentVariantsList: ArrayList<VariantItemResponse>? = null
+    private var mMasterVariantsList: ArrayList<VariantItemResponse>? = null
     private var variantNameEditText: EditText? = null
     private var activeVariantRecyclerView: RecyclerView? = null
-    private var mActiveVariantAdapter:ActiveVariantAdapter? = null
+    private var masterVariantRecyclerView: RecyclerView? = null
+    private var recentVariantRecyclerView: RecyclerView? = null
+    private var mActiveVariantAdapter: ActiveVariantAdapter? = null
+    private var mMasterVariantsAdapter: MasterVariantsAdapter? = null
+    private var mRecentVariantsAdapter: MasterVariantsAdapter? = null
 
     companion object {
-        fun newInstance(variantsList: ArrayList<VariantItemResponse>?): AddVariantFragment{
+        fun newInstance(variantsList: ArrayList<VariantItemResponse>?, recentVariantsList: ArrayList<VariantItemResponse>?, masterVariantsList: ArrayList<VariantItemResponse>?): AddVariantFragment{
             val fragment = AddVariantFragment()
             fragment.mVariantsList = variantsList
+            fragment.mRecentVariantsList = recentVariantsList
+            fragment.mMasterVariantsList = masterVariantsList
             return fragment
         }
     }
@@ -46,11 +59,14 @@ class AddVariantFragment: BaseFragment() {
             hideToolBar(mActivity, true)
         }
         activeVariantRecyclerView = mContentView.findViewById(R.id.activeVariantRecyclerView)
+        masterVariantRecyclerView = mContentView.findViewById(R.id.masterVariantRecyclerView)
+        recentVariantRecyclerView = mContentView.findViewById(R.id.recentVariantRecyclerView)
         variantNameEditText = mContentView.findViewById(R.id.variantNameEditText)
         return mContentView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        if (isEmpty(mVariantsList)) mVariantsList = ArrayList()
         mActiveVariantAdapter = ActiveVariantAdapter(mActivity, mVariantsList, object : IVariantItemClickListener {
             override fun onVariantItemClickListener(position: Int) {
 
@@ -69,22 +85,45 @@ class AddVariantFragment: BaseFragment() {
             layoutManager = LinearLayoutManager(mActivity)
             adapter = mActiveVariantAdapter
         }
+        mMasterVariantsAdapter = MasterVariantsAdapter(mActivity, mMasterVariantsList, this@AddVariantFragment)
+        masterVariantRecyclerView?.apply {
+            layoutManager = GridLayoutManager(mActivity, 3)
+            adapter = mMasterVariantsAdapter
+        }
+        mRecentVariantsAdapter = MasterVariantsAdapter(mActivity, mRecentVariantsList, object : IChipItemClickListener {
+            override fun onChipItemClickListener(position: Int) {
+                val recentVariant = mRecentVariantsList?.get(position)
+                val isVariantNameAlreadyExist = isVariantNameAlreadyExist(recentVariant?.variantName, null)
+                if (isVariantNameAlreadyExist) return
+                val variant = VariantItemResponse(0, 1, 1, recentVariant?.variantName, 0, false)
+                mVariantsList?.add(variant)
+                mActiveVariantAdapter?.setActiveVariantList(mVariantsList)
+                recentVariant?.isSelected = true
+                mRecentVariantsAdapter?.setMasterVariantList(mRecentVariantsList)
+
+            }
+        })
+        recentVariantRecyclerView?.apply {
+            layoutManager = LinearLayoutManager(mActivity)
+            adapter = mRecentVariantsAdapter
+        }
     }
 
     private fun showDeleteVariantConfirmationDialog(position: Int) {
         val dialog = Dialog(mActivity)
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        dialog.setCancelable(true)
-        dialog.setContentView(R.layout.dialog_delete_variant_confirmation)
-        val deleteVariantMessageTextView = dialog.findViewById(R.id.deleteVariantMessageTextView) as TextView
-        val deleteVariantTextView: View = dialog.findViewById(R.id.deleteVariantTextView)
-        val deleteVariantCancelTextView: View = dialog.findViewById(R.id.deleteVariantCancelTextView)
-        deleteVariantTextView.setOnClickListener {
-            dialog.dismiss()
-            mActiveVariantAdapter?.deleteItemFromActiveVariantList(position)
-        }
-        deleteVariantCancelTextView.setOnClickListener { dialog.dismiss() }
-        dialog.show()
+        dialog.apply {
+            requestWindowFeature(Window.FEATURE_NO_TITLE)
+            setCancelable(true)
+            setContentView(R.layout.dialog_delete_variant_confirmation)
+            val deleteVariantMessageTextView: TextView = dialog.findViewById(R.id.deleteVariantMessageTextView)
+            val deleteVariantTextView: View = dialog.findViewById(R.id.deleteVariantTextView)
+            val deleteVariantCancelTextView: View = dialog.findViewById(R.id.deleteVariantCancelTextView)
+            deleteVariantTextView.setOnClickListener {
+                dialog.dismiss()
+                mActiveVariantAdapter?.deleteItemFromActiveVariantList(position)
+            }
+            deleteVariantCancelTextView.setOnClickListener { dialog.dismiss() }
+        }.show()
     }
 
     override fun onClick(view: View?) {
@@ -96,15 +135,15 @@ class AddVariantFragment: BaseFragment() {
 
     private fun addVariantToActiveVariantList() {
         val variantName = variantNameEditText?.text?.toString()
-        if (isVariantNameUnique(variantName, variantNameEditText)) return
-        val variant = VariantItemResponse(0, 1, 1, variantName)
+        if (isVariantNameAlreadyExist(variantName, variantNameEditText)) return
+        val variant = VariantItemResponse(0, 1, 1, variantName, 0, false)
         mVariantsList?.add(variant)
         mActiveVariantAdapter?.setActiveVariantList(mVariantsList)
         variantNameEditText?.text = null
     }
 
-    private fun isVariantNameUnique(variantName: String?, variantNameEditText: EditText?): Boolean {
-        if (variantName?.isEmpty() == true) {
+    private fun isVariantNameAlreadyExist(variantName: String?, variantNameEditText: EditText?): Boolean {
+        if (isEmpty(variantName)) {
             variantNameEditText?.apply {
                 error = getString(R.string.mandatory_field_message)
                 requestFocus()
@@ -113,9 +152,7 @@ class AddVariantFragment: BaseFragment() {
         }
         var isVariantNameExist = false
         mVariantsList?.forEachIndexed { _, itemResponse ->
-            if (itemResponse.variantName?.toLowerCase(Locale.getDefault())
-                    ?.trim() == variantName?.toLowerCase(Locale.getDefault())?.trim()
-            ) {
+            if (itemResponse.variantName?.toLowerCase(Locale.getDefault())?.trim() == variantName?.toLowerCase(Locale.getDefault())?.trim()) {
                 isVariantNameExist = true
                 return@forEachIndexed
             }
@@ -145,13 +182,24 @@ class AddVariantFragment: BaseFragment() {
                 variantNameEditText.setText(variant?.variantName)
                 saveTextView.setOnClickListener {
                     val variantName = variantNameEditText.text.toString().trim()
-                    if (isVariantNameUnique(variantName, variantNameEditText)) return@setOnClickListener
+                    if (isVariantNameAlreadyExist(variantName, variantNameEditText)) return@setOnClickListener
                     mVariantsList?.get(position)?.variantName = variantName
                     mActiveVariantAdapter?.notifyDataSetChanged()
                     bottomSheetDialog.dismiss()
                 }
             }
         }.show()
+    }
+
+    override fun onChipItemClickListener(position: Int) {
+        val masterVariant = mMasterVariantsList?.get(position)
+        val isVariantNameAlreadyExist = isVariantNameAlreadyExist(masterVariant?.variantName, null)
+        if (isVariantNameAlreadyExist) return
+        val variant = VariantItemResponse(0, 1, 1, masterVariant?.variantName, masterVariant?.masterId, false)
+        mVariantsList?.add(variant)
+        mActiveVariantAdapter?.setActiveVariantList(mVariantsList)
+        masterVariant?.isSelected = true
+        mMasterVariantsAdapter?.setMasterVariantList(mMasterVariantsList)
     }
 
 }

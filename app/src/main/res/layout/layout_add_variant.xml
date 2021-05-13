@@ -169,6 +169,16 @@
                 android:textColor="@color/black"
                 android:textSize="@dimen/_14sdp" />
 
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recentVariantRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                tools:listitem="@layout/chip_item_layout2"
+                tools:itemCount="2"
+                android:layout_marginStart="@dimen/_15sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginEnd="@dimen/_15sdp" />
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -179,6 +189,18 @@
                 android:text="Suggestions"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_14sdp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/masterVariantRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                app:spanCount="3"
+                tools:listitem="@layout/chip_item_layout2"
+                tools:itemCount="2"
+                android:layout_marginStart="@dimen/_15sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginEnd="@dimen/_15sdp" />
 
         </LinearLayout>
 
@@ -197,7 +219,7 @@
             android:id="@+id/verifyTextView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@drawable/ripple_grey"
+            android:background="@drawable/ripple_grey_black_background"
             android:fontFamily="@font/roboto_bold"
             android:gravity="center"
             android:onClick="onClick"

@@ -310,3 +310,11 @@ fun replaceTemplateString(text: String?): String? {
     returnText = StringUtils.replace(returnText,"@", "-")
     return returnText
 }
+
+fun isEmpty(list: List<Any>?): Boolean {
+    return list == null || list.isEmpty()
+}
+
+fun isEmpty(string: String?): Boolean {
+    return string == null || string.isEmpty()
+}

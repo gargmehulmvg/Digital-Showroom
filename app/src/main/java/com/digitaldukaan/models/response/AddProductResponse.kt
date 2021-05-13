@@ -7,6 +7,8 @@ data class AddProductResponse(
     @SerializedName("domain") var domain: String?,
     @SerializedName("categories") var addProductStoreCategories: AddProductStoreCategory?,
     @SerializedName("option_menu") var addProductStoreOptionsMenu: ArrayList<TrendingListResponse>?,
+    @SerializedName("recent_variants") var recentVariantsList: ArrayList<VariantItemResponse>?,
+    @SerializedName("master_variants") var masterVariantsList: ArrayList<VariantItemResponse>?,
     @SerializedName("store_item") var storeItem: AddProductItemResponse?
 )
 

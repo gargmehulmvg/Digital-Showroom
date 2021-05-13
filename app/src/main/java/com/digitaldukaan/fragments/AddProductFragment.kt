@@ -397,9 +397,6 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                                 imageListRequest.add(AddProductImageItem(imageItem.imageId, imageItem.imageUrl, 1))
                             }
                         }
-                        val variant = VariantItemResponse(0, 1, 1, "Large")
-                        val variantList: ArrayList<VariantItemResponse> = ArrayList()
-                        variantList.add(variant)
                         val request = AddProductRequest(
                             mItemId,
                             1,
@@ -409,7 +406,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                             if (categoryStr.trim().isEmpty()) AddProductItemCategory(0, "") else AddProductItemCategory(0, categoryStr),
                             imageListRequest,
                             nameStr,
-                            variantList
+                            null
                         )
                         AppEventsManager.pushAppEvents(
                             eventName = AFInAppEventType.EVENT_SAVE_ITEM,
@@ -430,7 +427,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             }
             updateCameraImageView?.id -> showAddProductImagePickerBottomSheet(0)
             updateCameraTextView?.id -> showAddProductImagePickerBottomSheet(0)
-            addVariantsTextView?.id -> launchFragment(AddVariantFragment.newInstance(mAddProductResponse?.storeItem?.variantsList), true)
+            addVariantsTextView?.id -> launchFragment(AddVariantFragment.newInstance(mAddProductResponse?.storeItem?.variantsList, mAddProductResponse?.recentVariantsList, mAddProductResponse?.masterVariantsList), true)
         }
     }
 
