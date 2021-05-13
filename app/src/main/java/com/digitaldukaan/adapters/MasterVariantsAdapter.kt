@@ -14,7 +14,7 @@ import com.digitaldukaan.models.response.VariantItemResponse
 class MasterVariantsAdapter(
     private var mContext: Context,
     private var mMasterVariantList: ArrayList<VariantItemResponse>?,
-    private var mListener: IChipItemClickListener
+    private var mListener: IChipItemClickListener?
 ) : RecyclerView.Adapter<MasterVariantsAdapter.AddProductsChipsViewHolder>() {
 
     fun setMasterVariantList(list: ArrayList<VariantItemResponse>?) {
@@ -30,7 +30,7 @@ class MasterVariantsAdapter(
         val holder = AddProductsChipsViewHolder(
             LayoutInflater.from(parent.context).inflate(R.layout.layout_variant_chip_item, parent, false)
         )
-        holder.chipTextView.setOnClickListener { mListener.onChipItemClickListener(holder.adapterPosition) }
+        holder.chipTextView.setOnClickListener { mListener?.onChipItemClickListener(holder.adapterPosition) }
         return holder
     }
 

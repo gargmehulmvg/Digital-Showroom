@@ -334,6 +334,59 @@
                 android:alpha="0.5"
                 android:background="@color/curve_grey_border" />
 
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/variantContainer"
+                android:layout_width="match_parent"
+                android:visibility="gone"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/variantsHeading"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/roboto_medium"
+                    android:text="Variants"
+                    android:layout_marginStart="@dimen/_22sdp"
+                    android:layout_marginTop="@dimen/_20sdp"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_13sdp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <ImageView
+                    android:id="@+id/editVariantImageView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_edit"
+                    android:layout_marginEnd="@dimen/_22sdp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@+id/variantsHeading"
+                    android:contentDescription="@string/image_view_content_description" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/variantRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/_20sdp"
+                    android:layout_marginStart="@dimen/_20sdp"
+                    android:layout_marginBottom="@dimen/_20sdp"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    app:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/variantsHeading"
+                    app:spanCount="2"
+                    tools:listitem="@layout/chip_item_layout2" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_5sdp"
+                    android:layout_marginTop="@dimen/_15sdp"
+                    app:layout_constraintTop_toBottomOf="@+id/variantRecyclerView"
+                    android:alpha="0.5"
+                    android:background="@color/curve_grey_border" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/addItemTextView"
                 android:layout_width="match_parent"

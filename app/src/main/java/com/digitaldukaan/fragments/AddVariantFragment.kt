@@ -19,6 +19,7 @@ import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.constants.isEmpty
 import com.digitaldukaan.interfaces.IChipItemClickListener
 import com.digitaldukaan.interfaces.IVariantItemClickListener
+import com.digitaldukaan.models.response.AddProductResponse
 import com.digitaldukaan.models.response.VariantItemResponse
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.android.synthetic.main.layout_add_variant.*
@@ -31,6 +32,7 @@ class AddVariantFragment: BaseFragment(), IChipItemClickListener {
     private var mVariantsList: ArrayList<VariantItemResponse>? = null
     private var mRecentVariantsList: ArrayList<VariantItemResponse>? = null
     private var mMasterVariantsList: ArrayList<VariantItemResponse>? = null
+    private var appSubTitleTextView: TextView? = null
     private var variantNameEditText: EditText? = null
     private var activeVariantRecyclerView: RecyclerView? = null
     private var masterVariantRecyclerView: RecyclerView? = null
@@ -38,13 +40,31 @@ class AddVariantFragment: BaseFragment(), IChipItemClickListener {
     private var mActiveVariantAdapter: ActiveVariantAdapter? = null
     private var mMasterVariantsAdapter: MasterVariantsAdapter? = null
     private var mRecentVariantsAdapter: MasterVariantsAdapter? = null
+    private var mProductName: String? = ""
+    private var mAddProductResponse: AddProductResponse? = null
 
     companion object {
-        fun newInstance(variantsList: ArrayList<VariantItemResponse>?, recentVariantsList: ArrayList<VariantItemResponse>?, masterVariantsList: ArrayList<VariantItemResponse>?): AddVariantFragment{
+        fun newInstance(addProductResponse: AddProductResponse?): AddVariantFragment{
             val fragment = AddVariantFragment()
-            fragment.mVariantsList = variantsList
-            fragment.mRecentVariantsList = recentVariantsList
-            fragment.mMasterVariantsList = masterVariantsList
+            fragment.mAddProductResponse = addProductResponse
+            val variantsList = addProductResponse?.storeItem?.variantsList
+            if (!isEmpty(variantsList)) {
+                fragment.mVariantsList = ArrayList()
+                variantsList?.forEachIndexed { _, itemResponse ->
+                    val variant = VariantItemResponse(
+                        itemResponse.variantId,
+                        itemResponse.status,
+                        itemResponse.available,
+                        itemResponse.variantName,
+                        itemResponse.masterId,
+                        itemResponse.isSelected
+                    )
+                    fragment.mVariantsList?.add(variant)
+                }
+            } else fragment.mVariantsList = variantsList
+            fragment.mRecentVariantsList = addProductResponse?.recentVariantsList
+            fragment.mMasterVariantsList = addProductResponse?.masterVariantsList
+            fragment.mProductName = addProductResponse?.storeItem?.name
             return fragment
         }
     }
@@ -62,11 +82,16 @@ class AddVariantFragment: BaseFragment(), IChipItemClickListener {
         masterVariantRecyclerView = mContentView.findViewById(R.id.masterVariantRecyclerView)
         recentVariantRecyclerView = mContentView.findViewById(R.id.recentVariantRecyclerView)
         variantNameEditText = mContentView.findViewById(R.id.variantNameEditText)
+        appSubTitleTextView = mContentView.findViewById(R.id.appSubTitleTextView)
+        if (isEmpty(mProductName)) {
+            appSubTitleTextView?.visibility = View.GONE
+        } else appSubTitleTextView?.text = mProductName
         return mContentView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         if (isEmpty(mVariantsList)) mVariantsList = ArrayList()
+        refreshAllVariantsList()
         mActiveVariantAdapter = ActiveVariantAdapter(mActivity, mVariantsList, object : IVariantItemClickListener {
             override fun onVariantItemClickListener(position: Int) {
 
@@ -109,6 +134,29 @@ class AddVariantFragment: BaseFragment(), IChipItemClickListener {
         }
     }
 
+    private fun refreshAllVariantsList() {
+        mMasterVariantsList?.forEachIndexed { _, itemResponse -> itemResponse.isSelected = false }
+        mRecentVariantsList?.forEachIndexed { _, itemResponse -> itemResponse.isSelected = false }
+        mVariantsList?.let {
+            for (item in it) {
+                mMasterVariantsList?.forEachIndexed { _, itemResponse ->
+                    if (item.variantName == itemResponse.variantName) {
+                        itemResponse.isSelected = true
+                        return@forEachIndexed
+                    }
+                }
+            }
+            for (item in it) {
+                mRecentVariantsList?.forEachIndexed { _, itemResponse ->
+                    if (item.variantName == itemResponse.variantName) {
+                        itemResponse.isSelected = true
+                        return@forEachIndexed
+                    }
+                }
+            }
+        }
+    }
+
     private fun showDeleteVariantConfirmationDialog(position: Int) {
         val dialog = Dialog(mActivity)
         dialog.apply {
@@ -121,6 +169,9 @@ class AddVariantFragment: BaseFragment(), IChipItemClickListener {
             deleteVariantTextView.setOnClickListener {
                 dialog.dismiss()
                 mActiveVariantAdapter?.deleteItemFromActiveVariantList(position)
+                refreshAllVariantsList()
+                mRecentVariantsAdapter?.notifyDataSetChanged()
+                mMasterVariantsAdapter?.notifyDataSetChanged()
             }
             deleteVariantCancelTextView.setOnClickListener { dialog.dismiss() }
         }.show()
@@ -130,6 +181,16 @@ class AddVariantFragment: BaseFragment(), IChipItemClickListener {
         when (view?.id) {
             backButtonToolbar?.id -> mActivity.onBackPressed()
             addTextView?.id -> addVariantToActiveVariantList()
+            saveTextView?.id -> saveVariantList()
+        }
+    }
+
+    private fun saveVariantList() {
+        if (isEmpty(mVariantsList)) {
+            showToast("Please add at least 1 variant")
+        } else {
+            mAddProductResponse?.storeItem?.variantsList = mVariantsList
+            mActivity.onBackPressed()
         }
     }
 
@@ -185,6 +246,9 @@ class AddVariantFragment: BaseFragment(), IChipItemClickListener {
                     if (isVariantNameAlreadyExist(variantName, variantNameEditText)) return@setOnClickListener
                     mVariantsList?.get(position)?.variantName = variantName
                     mActiveVariantAdapter?.notifyDataSetChanged()
+                    refreshAllVariantsList()
+                    mRecentVariantsAdapter?.notifyDataSetChanged()
+                    mMasterVariantsAdapter?.notifyDataSetChanged()
                     bottomSheetDialog.dismiss()
                 }
             }
@@ -195,7 +259,7 @@ class AddVariantFragment: BaseFragment(), IChipItemClickListener {
         val masterVariant = mMasterVariantsList?.get(position)
         val isVariantNameAlreadyExist = isVariantNameAlreadyExist(masterVariant?.variantName, null)
         if (isVariantNameAlreadyExist) return
-        val variant = VariantItemResponse(0, 1, 1, masterVariant?.variantName, masterVariant?.masterId, false)
+        val variant = VariantItemResponse(0, 1, 1, masterVariant?.variantName, masterVariant?.variantId, false)
         mVariantsList?.add(variant)
         mActiveVariantAdapter?.setActiveVariantList(mVariantsList)
         masterVariant?.isSelected = true

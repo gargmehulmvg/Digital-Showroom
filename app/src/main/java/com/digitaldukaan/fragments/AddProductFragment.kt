@@ -25,6 +25,7 @@ import com.digitaldukaan.R
 import com.digitaldukaan.adapters.AddProductsChipsAdapter
 import com.digitaldukaan.adapters.AddProductsImagesAdapter
 import com.digitaldukaan.adapters.ImagesSearchAdapter
+import com.digitaldukaan.adapters.MasterVariantsAdapter
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.IAdapterItemClickListener
 import com.digitaldukaan.interfaces.IChipItemClickListener
@@ -90,9 +91,12 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     private var imagesLeftTextView: TextView? = null
     private var addDiscountLabel: TextView? = null
     private var addItemTextView: TextView? = null
+    private var addVariantsTextView: TextView? = null
     private var shareProductContainer: View? = null
     private var noImagesLayout: View? = null
     private var discountContainer: View? = null
+    private var variantContainer: View? = null
+    private var variantRecyclerView: RecyclerView? = null
     private var imagesRecyclerView: RecyclerView? = null
     private var chipGroupRecyclerView: RecyclerView? = null
     private var productDescriptionInputLayout: TextInputLayout? = null
@@ -136,6 +140,8 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             setSideIcon(ContextCompat.getDrawable(mActivity, R.drawable.ic_options_menu), this@AddProductFragment)
         }
         hideBottomNavigationView(true)
+        addVariantsTextView = mContentView.findViewById(R.id.addVariantsTextView)
+        variantContainer = mContentView.findViewById(R.id.variantContainer)
         addItemTextView = mContentView.findViewById(R.id.addItemTextView)
         discountContainer = mContentView.findViewById(R.id.discountContainer)
         noImagesLayout = mContentView.findViewById(R.id.noImagesLayout)
@@ -153,6 +159,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         originalPriceTextView = mContentView.findViewById(R.id.originalPriceTextView)
         discountedPriceTextView = mContentView.findViewById(R.id.discountedPriceTextView)
         pricePercentageOffTextView = mContentView.findViewById(R.id.pricePercentageOffTextView)
+        variantRecyclerView = mContentView.findViewById(R.id.variantRecyclerView)
         imagesLeftTextView = mContentView.findViewById(R.id.imagesLeftTextView)
         discountPriceEditText?.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
@@ -262,6 +269,20 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 discountPriceEditText?.text = null
             } else {
                 discountContainer?.visibility = View.VISIBLE
+            }
+        }
+        setupVariantContainer()
+    }
+
+    private fun setupVariantContainer() {
+        if (variantContainer?.visibility == View.GONE) {
+            if (!isEmpty(mAddProductResponse?.storeItem?.variantsList)) {
+                variantContainer?.visibility = View.VISIBLE
+                addVariantsTextView?.visibility = View.GONE
+                variantRecyclerView?.apply {
+                    layoutManager = LinearLayoutManager(mActivity)
+                    adapter = MasterVariantsAdapter(mActivity, mAddProductResponse?.storeItem?.variantsList, null)
+                }
             }
         }
     }
@@ -427,7 +448,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             }
             updateCameraImageView?.id -> showAddProductImagePickerBottomSheet(0)
             updateCameraTextView?.id -> showAddProductImagePickerBottomSheet(0)
-            addVariantsTextView?.id -> launchFragment(AddVariantFragment.newInstance(mAddProductResponse?.storeItem?.variantsList, mAddProductResponse?.recentVariantsList, mAddProductResponse?.masterVariantsList), true)
+            addVariantsTextView?.id -> launchFragment(AddVariantFragment.newInstance(mAddProductResponse), true)
         }
     }
 
@@ -632,6 +653,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     productDescriptionEditText?.setText(description)
                 }
             }
+            setupVariantContainer()
             setupCategoryChipRecyclerView()
             setStaticDataFromResponse()
             setupOptionsMenu()
