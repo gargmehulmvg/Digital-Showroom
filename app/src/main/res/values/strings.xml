@@ -106,6 +106,7 @@
     <string name="edit">Edit</string>
     <string name="cancel">Cancel</string>
     <string name="delete">Delete</string>
+    <string name="out_of_stock">(out of stock)</string>
     <string-array name="state_array">
         <item >Andhra Pradesh</item>
         <item >Arunachal Pradesh</item>

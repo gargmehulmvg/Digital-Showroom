@@ -56,4 +56,8 @@
         <item name="android:statusBarColor" tools:targetApi="lollipop">@android:color/transparent</item>
         <item name="android:windowSoftInputMode">adjustResize</item>
     </style>
+    <style name="CustomAppSwitch" parent="Theme.AppCompat.Light">
+        <item name="colorControlActivated">@color/open_green</item>
+        <item name="colorSwitchThumbNormal">@color/red</item>
+    </style>
 </resources>

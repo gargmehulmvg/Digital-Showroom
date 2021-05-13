@@ -459,9 +459,9 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             updateCameraTextView?.id -> showAddProductImagePickerBottomSheet(0)
             addVariantsTextView?.id -> {
                 mAddProductResponse?.deletedVariants = HashMap()
-                launchFragment(AddVariantFragment.newInstance(mAddProductResponse), true)
+                launchFragment(AddVariantFragment.newInstance(mAddProductResponse, mProductNameStr), true)
             }
-            editVariantImageView?.id -> launchFragment(AddVariantFragment.newInstance(mAddProductResponse), true)
+            editVariantImageView?.id -> launchFragment(AddVariantFragment.newInstance(mAddProductResponse, mProductNameStr), true)
         }
     }
 

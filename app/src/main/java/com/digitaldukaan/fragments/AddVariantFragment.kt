@@ -49,7 +49,7 @@ class AddVariantFragment: BaseFragment(), IChipItemClickListener {
     private var mStaticData: AddProductStaticText? = null
 
     companion object {
-        fun newInstance(addProductResponse: AddProductResponse?): AddVariantFragment{
+        fun newInstance(addProductResponse: AddProductResponse?, productName: String?): AddVariantFragment{
             val fragment = AddVariantFragment()
             if (addProductResponse?.deletedVariants == null) addProductResponse?.deletedVariants = HashMap()
             fragment.mAddProductResponse = addProductResponse
@@ -70,7 +70,7 @@ class AddVariantFragment: BaseFragment(), IChipItemClickListener {
             } else fragment.mVariantsList = variantsList
             fragment.mRecentVariantsList = addProductResponse?.recentVariantsList
             fragment.mMasterVariantsList = addProductResponse?.masterVariantsList
-            fragment.mProductName = addProductResponse?.storeItem?.name
+            fragment.mProductName = if (isEmpty(addProductResponse?.storeItem?.name)) productName else addProductResponse?.storeItem?.name
             return fragment
         }
     }
@@ -128,7 +128,7 @@ class AddVariantFragment: BaseFragment(), IChipItemClickListener {
         }
         mMasterVariantsAdapter = MasterVariantsAdapter(mActivity, mMasterVariantsList, this@AddVariantFragment)
         masterVariantRecyclerView?.apply {
-            layoutManager = GridLayoutManager(mActivity, 3)
+            layoutManager = GridLayoutManager(mActivity, 4)
             adapter = mMasterVariantsAdapter
         }
         mRecentVariantsAdapter = MasterVariantsAdapter(mActivity, mRecentVariantsList, object : IChipItemClickListener {
@@ -304,6 +304,8 @@ class AddVariantFragment: BaseFragment(), IChipItemClickListener {
                         data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
                     )
                 }
+                variantNameEditText.requestFocus()
+                variantNameEditText.showKeyboard()
             }
         }.show()
     }

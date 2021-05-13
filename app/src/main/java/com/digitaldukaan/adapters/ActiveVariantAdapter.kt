@@ -47,7 +47,6 @@ class ActiveVariantAdapter(
         val item = mActiveVariantList?.get(position)
         holder.apply {
             variantNameTextView.text = item?.variantName
-            inStockTextView.text = mInStockText
             optionsMenuImageView.setOnClickListener {
                 val menu = PopupMenu(mContext, it)
                 menu.apply {
@@ -55,12 +54,8 @@ class ActiveVariantAdapter(
                     show()
                     setOnMenuItemClickListener { menuItem ->
                         when (menuItem?.itemId) {
-                            R.id.menu_edit -> {
-                                mListener?.onVariantEditNameClicked(mActiveVariantList?.get(position), position)
-                            }
-                            R.id.menu_delete -> {
-                                mListener?.onVariantDeleteClicked(position)
-                            }
+                            R.id.menu_edit -> mListener?.onVariantEditNameClicked(mActiveVariantList?.get(position), position)
+                            R.id.menu_delete -> mListener?.onVariantDeleteClicked(position)
                         }
                         true
                     }
@@ -68,8 +63,12 @@ class ActiveVariantAdapter(
             }
             variantSwitch.setOnCheckedChangeListener { _, isChecked ->
                 item?.available = if (isChecked) 1 else 0
+                if (isChecked) inStockTextView.text = mInStockText else inStockTextView.text = mContext?.getString(R.string.out_of_stock)
             }
             variantSwitch.isChecked = (item?.available == 1)
+            if (variantSwitch.isChecked) {
+                inStockTextView.text = mInStockText
+            } else inStockTextView.text = mContext?.getString(R.string.out_of_stock)
         }
     }
 

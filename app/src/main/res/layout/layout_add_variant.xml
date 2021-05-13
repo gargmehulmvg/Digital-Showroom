@@ -113,6 +113,7 @@
                         android:background="@drawable/curve_black_background_selector"
                         android:fontFamily="@font/roboto_medium"
                         android:gravity="center"
+                        android:elevation="@dimen/_4sdp"
                         android:onClick="onClick"
                         android:paddingStart="@dimen/_12sdp"
                         android:paddingTop="@dimen/_5sdp"
@@ -130,8 +131,9 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:background="@android:color/transparent"
-                        android:fontFamily="@font/roboto_medium"
+                        android:fontFamily="@font/roboto"
                         tools:hint="Enter Variant"
+                        android:imeOptions="actionDone"
                         android:importantForAutofill="no"
                         android:inputType="text"
                         android:maxLength="@integer/variant_name_length"
@@ -216,6 +218,11 @@
                     android:layout_marginStart="@dimen/_15sdp"
                     android:layout_marginTop="@dimen/_10sdp"
                     android:layout_marginEnd="@dimen/_15sdp" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_50sdp"
+                    android:background="@android:color/transparent" />
 
             </LinearLayout>
 
