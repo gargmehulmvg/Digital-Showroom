@@ -52,7 +52,7 @@ class RetrofitApi {
     }
 
     private fun getNewRequest(originalRequest: Request): Request {
-        val newRequest = originalRequest.newBuilder()
+        return originalRequest.newBuilder()
             .addHeader(
                 "auth_token",
                 PrefsManager.getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)
@@ -65,7 +65,6 @@ class RetrofitApi {
             .addHeader("app_os", "android_native")
             .addHeader("app_version", BuildConfig.VERSION_NAME)
             .build()
-        return newRequest
     }
 
 }

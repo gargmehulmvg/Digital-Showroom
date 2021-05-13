@@ -53,7 +53,7 @@
                     android:paddingTop="@dimen/_8sdp"
                     android:paddingEnd="@dimen/_5sdp"
                     android:paddingBottom="@dimen/_5sdp"
-                    android:text="Add Variant"
+                    tools:text="Add Variant"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_14sdp"
                     app:layout_constraintBottom_toTopOf="@+id/appSubTitleTextView"
@@ -70,7 +70,7 @@
                     android:gravity="center_vertical"
                     android:paddingBottom="@dimen/_8sdp"
                     android:singleLine="true"
-                    android:text="Pink cream cake meringues with smudges…"
+                    tools:text="Pink cream cake meringues with smudges…"
                     android:textColor="@color/open_green"
                     android:textSize="@dimen/_11sdp"
                     android:visibility="visible"
@@ -118,7 +118,7 @@
                         android:paddingTop="@dimen/_5sdp"
                         android:paddingEnd="@dimen/_12sdp"
                         android:paddingBottom="@dimen/_5sdp"
-                        android:text="+ Add"
+                        tools:text="+ Add"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_12sdp"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -131,7 +131,7 @@
                         android:layout_height="match_parent"
                         android:background="@android:color/transparent"
                         android:fontFamily="@font/roboto_medium"
-                        android:hint="Enter Variant"
+                        tools:hint="Enter Variant"
                         android:importantForAutofill="no"
                         android:inputType="text"
                         android:maxLength="@integer/variant_name_length"
@@ -151,7 +151,7 @@
                     android:layout_marginTop="@dimen/_20sdp"
                     android:layout_marginEnd="@dimen/_15sdp"
                     android:fontFamily="@font/roboto_medium"
-                    android:text="Active Variants"
+                    tools:text="Active Variants"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_14sdp" />
 
@@ -179,7 +179,7 @@
                     android:layout_marginTop="@dimen/_15sdp"
                     android:layout_marginEnd="@dimen/_15sdp"
                     android:fontFamily="@font/roboto_medium"
-                    android:text="Recently Created"
+                    tools:text="Recently Created"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_14sdp" />
 
@@ -194,13 +194,14 @@
                     android:layout_marginEnd="@dimen/_15sdp" />
 
                 <TextView
+                    android:id="@+id/suggestionHeadingTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/_15sdp"
                     android:layout_marginTop="@dimen/_15sdp"
                     android:layout_marginEnd="@dimen/_15sdp"
                     android:fontFamily="@font/roboto_medium"
-                    android:text="Suggestions"
+                    tools:text="Suggestions"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_14sdp" />
 

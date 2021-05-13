@@ -20,11 +20,14 @@ import com.digitaldukaan.constants.isEmpty
 import com.digitaldukaan.interfaces.IChipItemClickListener
 import com.digitaldukaan.interfaces.IVariantItemClickListener
 import com.digitaldukaan.models.response.AddProductResponse
+import com.digitaldukaan.models.response.AddProductStaticText
 import com.digitaldukaan.models.response.VariantItemResponse
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.textfield.TextInputLayout
 import kotlinx.android.synthetic.main.layout_add_variant.*
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 
 class AddVariantFragment: BaseFragment(), IChipItemClickListener {
@@ -44,10 +47,12 @@ class AddVariantFragment: BaseFragment(), IChipItemClickListener {
     private var mRecentVariantsAdapter: MasterVariantsAdapter? = null
     private var mProductName: String? = ""
     private var mAddProductResponse: AddProductResponse? = null
+    private var mStaticData: AddProductStaticText? = null
 
     companion object {
         fun newInstance(addProductResponse: AddProductResponse?): AddVariantFragment{
             val fragment = AddVariantFragment()
+            if (addProductResponse?.deletedVariants == null) addProductResponse?.deletedVariants = HashMap()
             fragment.mAddProductResponse = addProductResponse
             val variantsList = addProductResponse?.storeItem?.variantsList
             if (!isEmpty(variantsList)) {
@@ -90,13 +95,21 @@ class AddVariantFragment: BaseFragment(), IChipItemClickListener {
         if (isEmpty(mProductName)) {
             appSubTitleTextView?.visibility = View.GONE
         } else appSubTitleTextView?.text = mProductName
+        mStaticData = mAddProductResponse?.addProductStaticText
+        appTitleTextView?.text = mStaticData?.text_add_variant
+        addTextView?.text = mStaticData?.text_plus_add
+        variantNameEditText?.hint = mStaticData?.hint_variant_name
+        activeVariantHeading?.text = mStaticData?.text_active_variants
+        recentVariantHeading?.text = mStaticData?.text_recently_created
+        suggestionHeadingTextView?.text = mStaticData?.text_suggestions
+        saveTextView?.text = mStaticData?.text_save
         return mContentView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         if (isEmpty(mVariantsList)) mVariantsList = ArrayList()
         refreshAllVariantsList()
-        mActiveVariantAdapter = ActiveVariantAdapter(mActivity, mVariantsList, object : IVariantItemClickListener {
+        mActiveVariantAdapter = ActiveVariantAdapter(mActivity, mStaticData?.text_in_stock, mVariantsList, object : IVariantItemClickListener {
             override fun onVariantEditNameClicked(variant: VariantItemResponse?, position: Int) {
                 showEditVariantNameBottomSheet(variant, position)
             }
@@ -168,10 +181,15 @@ class AddVariantFragment: BaseFragment(), IChipItemClickListener {
             setCancelable(true)
             setContentView(R.layout.dialog_delete_variant_confirmation)
             val deleteVariantMessageTextView: TextView = dialog.findViewById(R.id.deleteVariantMessageTextView)
-            val deleteVariantTextView: View = dialog.findViewById(R.id.deleteVariantTextView)
-            val deleteVariantCancelTextView: View = dialog.findViewById(R.id.deleteVariantCancelTextView)
+            val deleteVariantTextView: TextView = dialog.findViewById(R.id.deleteVariantTextView)
+            val deleteVariantCancelTextView: TextView = dialog.findViewById(R.id.deleteVariantCancelTextView)
+            deleteVariantMessageTextView.text = mStaticData?.dialog_delete_variant_message
+            deleteVariantTextView.text = mStaticData?.text_delete
+            deleteVariantCancelTextView.text = mStaticData?.text_cancel
             deleteVariantTextView.setOnClickListener {
                 dialog.dismiss()
+                val deletedVariant = mVariantsList?.get(position)
+                mAddProductResponse?.deletedVariants?.put(deletedVariant?.variantName, deletedVariant)
                 mActiveVariantAdapter?.deleteItemFromActiveVariantList(position)
                 refreshAllVariantsList()
                 mRecentVariantsAdapter?.notifyDataSetChanged()
@@ -242,8 +260,13 @@ class AddVariantFragment: BaseFragment(), IChipItemClickListener {
             setContentView(view)
             setBottomSheetCommonProperty()
             view.run {
+                val editVariantHeading: TextView = findViewById(R.id.editVariantHeading)
+                val variantNameInputLayout: TextInputLayout = findViewById(R.id.variantNameInputLayout)
                 val saveTextView: TextView = findViewById(R.id.saveTextView)
                 val variantNameEditText: EditText = findViewById(R.id.variantNameEditText)
+                editVariantHeading.text = mStaticData?.heading_edit_variant
+                variantNameInputLayout.hint = mStaticData?.hint_variant_name
+                saveTextView.text = mStaticData?.text_save
                 variantNameEditText.setText(variant?.variantName)
                 saveTextView.setOnClickListener {
                     val variantName = variantNameEditText.text.toString().trim()

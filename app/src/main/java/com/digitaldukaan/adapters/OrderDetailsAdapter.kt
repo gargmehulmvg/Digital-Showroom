@@ -12,6 +12,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
+import com.digitaldukaan.constants.isEmpty
 import com.digitaldukaan.interfaces.IOrderDetailListener
 import com.digitaldukaan.models.response.OrderDetailItemResponse
 import com.digitaldukaan.models.response.OrderDetailsStaticTextResponse
@@ -94,9 +95,9 @@ class OrderDetailsAdapter(
                 orderDetailContainer.alpha = 1f
                 if (priceEditText.visibility == View.VISIBLE) priceEditText.isEnabled = true
             }
-            if (item?.variantName != null && item.variantName?.isEmpty() == true) {
+            if (!isEmpty(item?.variantName)) {
                 orderDetailVariantNameTextView.visibility = View.VISIBLE
-                orderDetailVariantNameTextView.text = item.variantName
+                orderDetailVariantNameTextView.text = item?.variantName
             } else orderDetailVariantNameTextView.visibility = View.GONE
             if (priceEditText.visibility == View.VISIBLE) {
                 priceEditText.addTextChangedListener(object : TextWatcher {

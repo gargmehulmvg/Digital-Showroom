@@ -14,12 +14,14 @@ import com.google.android.material.switchmaterial.SwitchMaterial
 
 class ActiveVariantAdapter(
     private var mContext: Context?,
+    private var mInStockText: String?,
     private var mActiveVariantList: ArrayList<VariantItemResponse>?,
     private var mListener: IVariantItemClickListener?
 ) :
     RecyclerView.Adapter<ActiveVariantAdapter.ReferAndEarnViewHolder>() {
 
     inner class ReferAndEarnViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val inStockTextView: TextView = itemView.findViewById(R.id.inStockTextView)
         val variantNameTextView: TextView = itemView.findViewById(R.id.variantNameTextView)
         val optionsMenuImageView: View = itemView.findViewById(R.id.optionsMenuImageView)
         val variantSwitch: SwitchMaterial = itemView.findViewById(R.id.variantSwitch)
@@ -45,6 +47,7 @@ class ActiveVariantAdapter(
         val item = mActiveVariantList?.get(position)
         holder.apply {
             variantNameTextView.text = item?.variantName
+            inStockTextView.text = mInStockText
             optionsMenuImageView.setOnClickListener {
                 val menu = PopupMenu(mContext, it)
                 menu.apply {

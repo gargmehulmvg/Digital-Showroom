@@ -418,6 +418,13 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                                 imageListRequest.add(AddProductImageItem(imageItem.imageId, imageItem.imageUrl, 1))
                             }
                         }
+                        if (mAddProductResponse?.deletedVariants?.isEmpty() != true) {
+                            mAddProductResponse?.deletedVariants?.values?.let {
+                                val deletedVariantList = ArrayList<VariantItemResponse>(it)
+                                deletedVariantList.forEachIndexed { _, itemResponse -> itemResponse.status = 0 }
+                                mAddProductResponse?.storeItem?.variantsList?.addAll(deletedVariantList)
+                            }
+                        }
                         val request = AddProductRequest(
                             mItemId,
                             1,
@@ -448,7 +455,10 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             }
             updateCameraImageView?.id -> showAddProductImagePickerBottomSheet(0)
             updateCameraTextView?.id -> showAddProductImagePickerBottomSheet(0)
-            addVariantsTextView?.id -> launchFragment(AddVariantFragment.newInstance(mAddProductResponse), true)
+            addVariantsTextView?.id -> {
+                mAddProductResponse?.deletedVariants = HashMap()
+                launchFragment(AddVariantFragment.newInstance(mAddProductResponse), true)
+            }
             editVariantImageView?.id -> launchFragment(AddVariantFragment.newInstance(mAddProductResponse), true)
         }
     }
