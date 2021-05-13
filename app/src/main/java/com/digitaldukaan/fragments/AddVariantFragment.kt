@@ -32,6 +32,8 @@ class AddVariantFragment: BaseFragment(), IChipItemClickListener {
     private var mVariantsList: ArrayList<VariantItemResponse>? = null
     private var mRecentVariantsList: ArrayList<VariantItemResponse>? = null
     private var mMasterVariantsList: ArrayList<VariantItemResponse>? = null
+    private var activeVariantHeading: TextView? = null
+    private var recentVariantHeading: TextView? = null
     private var appSubTitleTextView: TextView? = null
     private var variantNameEditText: EditText? = null
     private var activeVariantRecyclerView: RecyclerView? = null
@@ -78,6 +80,8 @@ class AddVariantFragment: BaseFragment(), IChipItemClickListener {
         ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, true)
         }
+        recentVariantHeading = mContentView.findViewById(R.id.recentVariantHeading)
+        activeVariantHeading = mContentView.findViewById(R.id.activeVariantHeading)
         activeVariantRecyclerView = mContentView.findViewById(R.id.activeVariantRecyclerView)
         masterVariantRecyclerView = mContentView.findViewById(R.id.masterVariantRecyclerView)
         recentVariantRecyclerView = mContentView.findViewById(R.id.recentVariantRecyclerView)
@@ -93,10 +97,6 @@ class AddVariantFragment: BaseFragment(), IChipItemClickListener {
         if (isEmpty(mVariantsList)) mVariantsList = ArrayList()
         refreshAllVariantsList()
         mActiveVariantAdapter = ActiveVariantAdapter(mActivity, mVariantsList, object : IVariantItemClickListener {
-            override fun onVariantItemClickListener(position: Int) {
-
-            }
-
             override fun onVariantEditNameClicked(variant: VariantItemResponse?, position: Int) {
                 showEditVariantNameBottomSheet(variant, position)
             }
@@ -125,6 +125,7 @@ class AddVariantFragment: BaseFragment(), IChipItemClickListener {
                 mActiveVariantAdapter?.setActiveVariantList(mVariantsList)
                 recentVariant?.isSelected = true
                 mRecentVariantsAdapter?.setMasterVariantList(mRecentVariantsList)
+                activeVariantHeading?.visibility = if (isEmpty(mVariantsList)) View.GONE else View.VISIBLE
 
             }
         })
@@ -132,6 +133,8 @@ class AddVariantFragment: BaseFragment(), IChipItemClickListener {
             layoutManager = LinearLayoutManager(mActivity)
             adapter = mRecentVariantsAdapter
         }
+        if (isEmpty(mVariantsList)) activeVariantHeading?.visibility = View.GONE
+        if (isEmpty(mRecentVariantsList)) recentVariantHeading?.visibility = View.GONE
     }
 
     private fun refreshAllVariantsList() {
@@ -155,6 +158,7 @@ class AddVariantFragment: BaseFragment(), IChipItemClickListener {
                 }
             }
         }
+        activeVariantHeading?.visibility = if (isEmpty(mVariantsList)) View.GONE else View.VISIBLE
     }
 
     private fun showDeleteVariantConfirmationDialog(position: Int) {
@@ -264,6 +268,7 @@ class AddVariantFragment: BaseFragment(), IChipItemClickListener {
         mActiveVariantAdapter?.setActiveVariantList(mVariantsList)
         masterVariant?.isSelected = true
         mMasterVariantsAdapter?.setMasterVariantList(mMasterVariantsList)
+        activeVariantHeading?.visibility = if (isEmpty(mVariantsList)) View.GONE else View.VISIBLE
     }
 
 }

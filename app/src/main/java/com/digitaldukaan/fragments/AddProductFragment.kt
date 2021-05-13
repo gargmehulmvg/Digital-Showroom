@@ -427,7 +427,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                             if (categoryStr.trim().isEmpty()) AddProductItemCategory(0, "") else AddProductItemCategory(0, categoryStr),
                             imageListRequest,
                             nameStr,
-                            null
+                            mAddProductResponse?.storeItem?.variantsList
                         )
                         AppEventsManager.pushAppEvents(
                             eventName = AFInAppEventType.EVENT_SAVE_ITEM,
@@ -449,6 +449,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             updateCameraImageView?.id -> showAddProductImagePickerBottomSheet(0)
             updateCameraTextView?.id -> showAddProductImagePickerBottomSheet(0)
             addVariantsTextView?.id -> launchFragment(AddVariantFragment.newInstance(mAddProductResponse), true)
+            editVariantImageView?.id -> launchFragment(AddVariantFragment.newInstance(mAddProductResponse), true)
         }
     }
 
