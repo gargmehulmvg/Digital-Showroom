@@ -15,8 +15,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.ActiveVariantAdapter
 import com.digitaldukaan.adapters.MasterVariantsAdapter
-import com.digitaldukaan.constants.ToolBarManager
-import com.digitaldukaan.constants.isEmpty
+import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.IChipItemClickListener
 import com.digitaldukaan.interfaces.IVariantItemClickListener
 import com.digitaldukaan.models.response.AddProductResponse
@@ -92,6 +91,10 @@ class AddVariantFragment: BaseFragment(), IChipItemClickListener {
         recentVariantRecyclerView = mContentView.findViewById(R.id.recentVariantRecyclerView)
         variantNameEditText = mContentView.findViewById(R.id.variantNameEditText)
         appSubTitleTextView = mContentView.findViewById(R.id.appSubTitleTextView)
+        val suggestionHeadingTextView: TextView? = mContentView.findViewById(R.id.suggestionHeadingTextView)
+        val saveTextView: TextView? = mContentView.findViewById(R.id.saveTextView)
+        val appTitleTextView: TextView? = mContentView.findViewById(R.id.appTitleTextView)
+        val addTextView: TextView? = mContentView.findViewById(R.id.addTextView)
         if (isEmpty(mProductName)) {
             appSubTitleTextView?.visibility = View.GONE
         } else appSubTitleTextView?.text = mProductName
@@ -194,6 +197,11 @@ class AddVariantFragment: BaseFragment(), IChipItemClickListener {
                 refreshAllVariantsList()
                 mRecentVariantsAdapter?.notifyDataSetChanged()
                 mMasterVariantsAdapter?.notifyDataSetChanged()
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_DELETE_VARIANT,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
+                )
             }
             deleteVariantCancelTextView.setOnClickListener { dialog.dismiss() }
         }.show()
@@ -211,6 +219,14 @@ class AddVariantFragment: BaseFragment(), IChipItemClickListener {
         if (isEmpty(mVariantsList)) {
             showToast("Please add at least 1 variant")
         } else {
+            AppEventsManager.pushAppEvents(
+                eventName = AFInAppEventType.EVENT_ADD_VARIANT,
+                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                data = mapOf(
+                    AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                    AFInAppEventParameterName.VARIANTS_ADDED to "${mVariantsList?.size}"
+                )
+            )
             mAddProductResponse?.storeItem?.variantsList = mVariantsList
             mActivity.onBackPressed()
         }
@@ -223,6 +239,11 @@ class AddVariantFragment: BaseFragment(), IChipItemClickListener {
         mVariantsList?.add(variant)
         mActiveVariantAdapter?.setActiveVariantList(mVariantsList)
         variantNameEditText?.text = null
+        AppEventsManager.pushAppEvents(
+            eventName = AFInAppEventType.EVENT_ADD_VARIANT,
+            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+            data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
+        )
     }
 
     private fun isVariantNameAlreadyExist(variantName: String?, variantNameEditText: EditText?): Boolean {
@@ -277,6 +298,11 @@ class AddVariantFragment: BaseFragment(), IChipItemClickListener {
                     mRecentVariantsAdapter?.notifyDataSetChanged()
                     mMasterVariantsAdapter?.notifyDataSetChanged()
                     bottomSheetDialog.dismiss()
+                    AppEventsManager.pushAppEvents(
+                        eventName = AFInAppEventType.EVENT_EDIT_VARIANT,
+                        isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                        data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
+                    )
                 }
             }
         }.show()

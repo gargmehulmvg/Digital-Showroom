@@ -278,6 +278,8 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         if (variantContainer?.visibility == View.GONE) {
             if (!isEmpty(mAddProductResponse?.storeItem?.variantsList)) {
                 variantContainer?.visibility = View.VISIBLE
+                variantsHeading?.visibility = View.VISIBLE
+                variantsHeading?.text = addProductStaticData?.text_variants
                 addVariantsTextView?.visibility = View.GONE
                 variantRecyclerView?.apply {
                     layoutManager = LinearLayoutManager(mActivity)

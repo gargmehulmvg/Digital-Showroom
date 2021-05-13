@@ -345,7 +345,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/roboto_medium"
-                    android:text="Variants"
+                    tools:text="Variants"
                     android:layout_marginStart="@dimen/_22sdp"
                     android:layout_marginTop="@dimen/_20sdp"
                     android:textColor="@color/black"
