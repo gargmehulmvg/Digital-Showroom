@@ -110,7 +110,7 @@ dependencies {
     //maps dependency
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
     //image pick dependency
-    implementation 'com.github.dhaval2404:imagepicker-support:1.7.1'
+    implementation 'com.github.dhaval2404:imagepicker:1.8'
     //GIF imageView
     implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.19'
     //Sticky RecyclerView

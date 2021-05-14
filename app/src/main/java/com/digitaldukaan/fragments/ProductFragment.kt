@@ -41,7 +41,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
     private lateinit var mService: ProductService
     private var mShareStorePDFResponse: ShareStorePDFDataItemResponse? = null
     private var mOptionsMenuResponse: ArrayList<TrendingListResponse>? = null
-    private var mShareDataOverWhatsAppText = ""
+    private var mShareDataOverWhatsAppText: String? = ""
     private var mUserCategoryResponse: AddProductStoreCategory? = null
     private var addProductBannerStaticDataResponse: AddProductBannerTextResponse? = null
     private var addProductChipsAdapter: AddProductsChipsAdapter? = null
@@ -161,9 +161,23 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
 
     override fun onProductShareStoreWAResponse(commonResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            stopProgress()
-            mShareDataOverWhatsAppText = Gson().fromJson<String>(commonResponse.mCommonDataStr, String::class.java)
-            shareOnWhatsApp(mShareDataOverWhatsAppText)
+            try {
+                stopProgress()
+                mShareDataOverWhatsAppText = Gson().fromJson<String>(commonResponse.mCommonDataStr, String::class.java)
+                shareOnWhatsApp(mShareDataOverWhatsAppText)
+            } catch (e: Exception) {
+                Log.e(TAG, "onProductShareStoreWAResponse: ${e.message}", e)
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(
+                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                        "Exception Point" to "onProductShareStoreWAResponse",
+                        "Exception Message" to e.message,
+                        "Exception Logs" to e.toString()
+                    )
+                )
+            }
         }
     }
 
@@ -274,7 +288,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                         AFInAppEventParameterName.IS_CATALOG to "true"
                     )
                 )
-                if (mShareDataOverWhatsAppText.isNotEmpty()) shareOnWhatsApp(mShareDataOverWhatsAppText) else if (!isInternetConnectionAvailable(mActivity)) {
+                if (!isEmpty(mShareDataOverWhatsAppText)) shareOnWhatsApp(mShareDataOverWhatsAppText) else if (!isInternetConnectionAvailable(mActivity)) {
                     showNoInternetConnectionDialog()
                     return
                 } else {
