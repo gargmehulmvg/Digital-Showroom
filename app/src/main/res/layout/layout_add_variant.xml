@@ -163,6 +163,7 @@
                     android:layout_height="wrap_content"
                     tools:listitem="@layout/layout_active_variant_item"
                     tools:itemCount="2"
+                    android:overScrollMode="never"
                     android:layout_marginStart="@dimen/_15sdp"
                     android:layout_marginTop="@dimen/_10sdp"
                     android:layout_marginEnd="@dimen/_15sdp" />
@@ -190,6 +191,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     tools:listitem="@layout/chip_item_layout2"
+                    android:overScrollMode="never"
                     tools:itemCount="2"
                     android:layout_marginStart="@dimen/_15sdp"
                     android:layout_marginTop="@dimen/_10sdp"
@@ -213,6 +215,7 @@
                     android:layout_height="wrap_content"
                     app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                     app:spanCount="3"
+                    android:overScrollMode="never"
                     tools:listitem="@layout/chip_item_layout2"
                     tools:itemCount="2"
                     android:layout_marginStart="@dimen/_15sdp"

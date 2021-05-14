@@ -247,7 +247,7 @@ class AddVariantFragment: BaseFragment(), IChipItemClickListener {
     }
 
     private fun isVariantNameAlreadyExist(variantName: String?, variantNameEditText: EditText?): Boolean {
-        if (isEmpty(variantName)) {
+        if (isEmpty(variantName) || isEmpty(variantName?.trim())) {
             variantNameEditText?.apply {
                 error = getString(R.string.mandatory_field_message)
                 requestFocus()

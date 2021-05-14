@@ -68,18 +68,22 @@ class ActiveVariantAdapter(
                 if (isChecked) {
                     inStockTextView.text = mInStockText
                     variantView.isSelected = true
+                    variantView.alpha = 1f
                 } else {
                     inStockTextView.text = mContext?.getString(R.string.out_of_stock)
                     variantView.isSelected = false
+                    variantView.alpha = 0.6f
                 }
             }
             variantSwitch.isChecked = (item?.available == 1)
             if (variantSwitch.isChecked) {
                 inStockTextView.text = mInStockText
                 variantView.isSelected = true
+                variantView.alpha = 1f
             } else {
                 inStockTextView.text = mContext?.getString(R.string.out_of_stock)
                 variantView.isSelected = false
+                variantView.alpha = 0.6f
             }
         }
     }
