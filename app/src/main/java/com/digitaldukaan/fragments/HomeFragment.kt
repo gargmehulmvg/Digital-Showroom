@@ -379,7 +379,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
             stopProgress()
             if (mSwipeRefreshLayout.isRefreshing) mSwipeRefreshLayout.isRefreshing = false
             if (commonResponse.mIsSuccessStatus) {
-                orderLayout.fullScroll(ScrollView.FOCUS_UP)
+                orderLayout?.fullScroll(ScrollView.FOCUS_UP)
                 completedPageCount = 1
                 pendingPageCount = 1
                 mOrderList.clear()

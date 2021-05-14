@@ -714,28 +714,42 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     }
 
     private fun setStaticDataFromResponse() {
-        addProductStaticData?.run {
-            ToolBarManager.getInstance()?.setHeaderTitle(heading_add_product_page)
-            val addItemTextView: TextView? = mContentView.findViewById(R.id.addItemTextView)
-            val tryNowTextView: TextView? = mContentView.findViewById(R.id.tryNowTextView)
-            val textView2: TextView? = mContentView.findViewById(R.id.textView2)
-            val updateCameraTextView: TextView? = mContentView.findViewById(R.id.updateCameraTextView)
-            val nameInputLayout: TextInputLayout? = mContentView.findViewById(R.id.nameInputLayout)
-            val priceInputLayout: TextInputLayout? = mContentView.findViewById(R.id.priceInputLayout)
-            val discountedPriceInputLayout: TextInputLayout? = mContentView.findViewById(R.id.discountedPriceInputLayout)
-            val enterCategoryInputLayout: TextInputLayout? = mContentView.findViewById(R.id.enterCategoryInputLayout)
-            tryNowTextView?.text = text_try_now
-            addDiscountLabel?.text = text_add_discount_on_this_item
-            textView2?.text = heading_add_product_banner
-            updateCameraTextView?.text = text_upload_or_search_images
-            nameInputLayout?.hint = hint_item_name
-            priceInputLayout?.hint = hint_price
-            discountedPriceInputLayout?.hint = hint_discounted_price
-            enterCategoryInputLayout?.hint = hint_enter_category_optional
-            addItemTextView?.text = text_add_item_description
-            continueTextView?.text = if (mIsAddNewProduct) text_add_item else getString(R.string.save)
-            val count = mImagesStrList.size
-            imagesLeftTextView?.text = "${if (count == 0) count else count - 1}/4 $text_images_added"
+        try {
+            addProductStaticData?.run {
+                ToolBarManager.getInstance()?.setHeaderTitle(heading_add_product_page)
+                val addItemTextView: TextView? = mContentView.findViewById(R.id.addItemTextView)
+                val tryNowTextView: TextView? = mContentView.findViewById(R.id.tryNowTextView)
+                val textView2: TextView? = mContentView.findViewById(R.id.textView2)
+                val updateCameraTextView: TextView? = mContentView.findViewById(R.id.updateCameraTextView)
+                val nameInputLayout: TextInputLayout? = mContentView.findViewById(R.id.nameInputLayout)
+                val priceInputLayout: TextInputLayout? = mContentView.findViewById(R.id.priceInputLayout)
+                val discountedPriceInputLayout: TextInputLayout? = mContentView.findViewById(R.id.discountedPriceInputLayout)
+                val enterCategoryInputLayout: TextInputLayout? = mContentView.findViewById(R.id.enterCategoryInputLayout)
+                tryNowTextView?.text = text_try_now
+                addDiscountLabel?.text = text_add_discount_on_this_item
+                textView2?.text = heading_add_product_banner
+                updateCameraTextView?.text = text_upload_or_search_images
+                nameInputLayout?.hint = hint_item_name
+                priceInputLayout?.hint = hint_price
+                discountedPriceInputLayout?.hint = hint_discounted_price
+                enterCategoryInputLayout?.hint = hint_enter_category_optional
+                addItemTextView?.text = text_add_item_description
+                continueTextView?.text = if (mIsAddNewProduct) text_add_item else getString(R.string.save)
+                val count = mImagesStrList.size
+                imagesLeftTextView?.text = "${if (count == 0) count else count - 1}/4 $text_images_added"
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "setStaticDataFromResponse: ${e.message}", e)
+            AppEventsManager.pushAppEvents(
+                eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
+                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                data = mapOf(
+                    AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                    "Exception Point" to "setStaticDataFromResponse",
+                    "Exception Message" to e.message,
+                    "Exception Logs" to e.toString()
+                )
+            )
         }
     }
 

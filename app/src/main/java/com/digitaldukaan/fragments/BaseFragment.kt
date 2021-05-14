@@ -276,17 +276,31 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     }
 
     open fun showNoInternetConnectionDialog() {
-        CoroutineScopeUtils().runTaskOnCoroutineMain {
-            val builder: AlertDialog.Builder? = AlertDialog.Builder(mActivity)
-            builder?.apply {
-                setTitle(getString(R.string.no_internet_connection))
-                setMessage(getString(R.string.turn_on_internet_message))
-                setCancelable(false)
-                setNegativeButton(getString(R.string.close)) { dialog, _ ->
-                    onNoInternetButtonClick(true)
-                    dialog.dismiss()
-                }
-            }?.create()?.show()
+        try {
+            CoroutineScopeUtils().runTaskOnCoroutineMain {
+                val builder: AlertDialog.Builder? = AlertDialog.Builder(mActivity)
+                builder?.apply {
+                    setTitle(getString(R.string.no_internet_connection))
+                    setMessage(getString(R.string.turn_on_internet_message))
+                    setCancelable(false)
+                    setNegativeButton(getString(R.string.close)) { dialog, _ ->
+                        onNoInternetButtonClick(true)
+                        dialog.dismiss()
+                    }
+                }?.create()?.show()
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "showNoInternetConnectionDialog: ${e.message}", e)
+            AppEventsManager.pushAppEvents(
+                eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
+                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                data = mapOf(
+                    AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                    "Exception Point" to "showNoInternetConnectionDialog",
+                    "Exception Message" to e.message,
+                    "Exception Logs" to e.toString()
+                )
+            )
         }
     }
 

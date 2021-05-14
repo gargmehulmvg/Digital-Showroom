@@ -207,12 +207,13 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
 
     override fun onToolbarSideIconClicked() {
         val sideView:View = mActivity.findViewById(R.id.sideIconToolbar)
-        val optionsMenu = PopupMenu(mActivity, sideView)
-        optionsMenu.inflate(R.menu.menu_product_fragment)
-        optionsMenu.menu?.add(Menu.NONE, 0, Menu .NONE, getString(R.string.term_and_condition))
-        optionsMenu.menu?.add(Menu.NONE, 1, Menu .NONE, getString(R.string.help))
-        optionsMenu.setOnMenuItemClickListener(this)
-        optionsMenu.show()
+        val optionsMenu: PopupMenu? = PopupMenu(mActivity, sideView)
+        optionsMenu?.apply {
+            inflate(R.menu.menu_product_fragment)
+            menu?.add(Menu.NONE, 0, Menu .NONE, getString(R.string.term_and_condition))
+            menu?.add(Menu.NONE, 1, Menu .NONE, getString(R.string.help))
+            setOnMenuItemClickListener(this@CommonWebViewFragment)
+        }?.show()
     }
 
     override fun onMenuItemClick(item: MenuItem?): Boolean {
