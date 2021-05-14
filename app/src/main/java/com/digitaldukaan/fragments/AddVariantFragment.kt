@@ -220,7 +220,7 @@ class AddVariantFragment: BaseFragment(), IChipItemClickListener {
             showToast("Please add at least 1 variant")
         } else {
             AppEventsManager.pushAppEvents(
-                eventName = AFInAppEventType.EVENT_ADD_VARIANT,
+                eventName = AFInAppEventType.EVENT_SAVE_VARIANT,
                 isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                 data = mapOf(
                     AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
