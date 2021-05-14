@@ -64,7 +64,11 @@ class ProfilePhotoFragment : BaseFragment(), View.OnClickListener, IProfilePhoto
         ToolBarManager.getInstance()?.hideToolBar(mActivity, true)
         profilePhotoImageView?.let {
             if (mStoreLogoLinkStr?.isEmpty() == false) {
-                Picasso.get().load(mStoreLogoLinkStr).into(it)
+                try {
+                    Picasso.get().load(mStoreLogoLinkStr).into(it)
+                } catch (e: Exception) {
+                    Log.e(TAG, "picasso image loading issue: ${e.message}", e)
+                }
             }
         }
         backImageView?.setOnClickListener(this)
@@ -118,7 +122,13 @@ class ProfilePhotoFragment : BaseFragment(), View.OnClickListener, IProfilePhoto
             val photoResponse = Gson().fromJson<StoreResponse>(response.mCommonDataStr, StoreResponse::class.java)
             mStoreLogoLinkStr = photoResponse.storeInfo.logoImage
             if (mStoreLogoLinkStr?.isNotEmpty() == true) {
-                profilePhotoImageView?.let { Picasso.get().load(mStoreLogoLinkStr).into(it) }
+                profilePhotoImageView?.let {
+                    try {
+                        Picasso.get().load(mStoreLogoLinkStr).into(it)
+                    } catch (e: Exception) {
+                        Log.e(TAG, "picasso image loading issue: ${e.message}", e)
+                    }
+                }
             } else {
                 StaticInstances.sIsStoreImageUploaded = false
                 mActivity.onBackPressed()

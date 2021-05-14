@@ -22,9 +22,9 @@ class AppSettingsFragment : BaseFragment(), IAppSettingsItemClicked {
 
     private var mAppSettingsList: ArrayList<SubPagesResponse>? = ArrayList()
     private var mHeaderText: String? = null
-    private lateinit var mAppSettingsResponseStaticData: AccountStaticTextResponse
+    private var mAppSettingsResponseStaticData: AccountStaticTextResponse? = null
 
-    fun newInstance(list: ArrayList<SubPagesResponse>?, headerText: String?, appSettingsResponseStaticData: AccountStaticTextResponse): AppSettingsFragment {
+    fun newInstance(list: ArrayList<SubPagesResponse>?, headerText: String?, appSettingsResponseStaticData: AccountStaticTextResponse?): AppSettingsFragment {
         val fragment = AppSettingsFragment()
         fragment.mAppSettingsList = list
         fragment.mHeaderText = headerText
@@ -64,10 +64,10 @@ class AppSettingsFragment : BaseFragment(), IAppSettingsItemClicked {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             val builder: AlertDialog.Builder = AlertDialog.Builder(mActivity)
             builder.apply {
-                setTitle(mAppSettingsResponseStaticData.mLogoutTitle)
-                setMessage(mAppSettingsResponseStaticData.mLogoutBody)
+                setTitle(mAppSettingsResponseStaticData?.mLogoutTitle)
+                setMessage(mAppSettingsResponseStaticData?.mLogoutBody)
                 setCancelable(false)
-                setPositiveButton(mAppSettingsResponseStaticData.text_yes) { dialog, _ ->
+                setPositiveButton(mAppSettingsResponseStaticData?.text_yes) { dialog, _ ->
                     mActivity.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE).edit().clear().apply()
                     dialog.dismiss()
                     clearFragmentBackStack()

@@ -22,7 +22,7 @@ import kotlinx.android.synthetic.main.layout_more_control_fragment.*
 
 class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
 
-    private lateinit var mMoreControlsStaticData: AccountStaticTextResponse
+    private var mMoreControlsStaticData: AccountStaticTextResponse? = null
     private lateinit var mMoreControlsService: MoreControlsService
     private var mMinOrderValue = 0.0
     private var mDeliveryPrice = 0.0
@@ -30,7 +30,7 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
     private var mDeliveryChargeType = 0
 
     companion object {
-        fun newInstance(appSettingsResponseStaticData: AccountStaticTextResponse): MoreControlsFragment {
+        fun newInstance(appSettingsResponseStaticData: AccountStaticTextResponse?): MoreControlsFragment {
             val fragment = MoreControlsFragment()
             fragment.mMoreControlsStaticData = appSettingsResponseStaticData
             return fragment
@@ -52,7 +52,7 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
         super.onViewCreated(view, savedInstanceState)
         ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, false)
-            setHeaderTitle(mMoreControlsStaticData.page_heading_more_controls)
+            setHeaderTitle(mMoreControlsStaticData?.page_heading_more_controls)
             onBackPressed(this@MoreControlsFragment)
             hideBackPressFromToolBar(mActivity, false)
         }
@@ -75,24 +75,24 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
     }
 
     private fun setUIDataFromResponse() {
-        minOrderValueHeadingTextView?.text = if (0.0 == mMinOrderValue) mMoreControlsStaticData.heading_set_min_order_value_for_delivery else mMoreControlsStaticData.heading_edit_min_order_value
-        minOrderValueOptionalTextView?.text = if (0.0 == mMinOrderValue) mMoreControlsStaticData.text_optional else "${mMoreControlsStaticData.sub_heading_success_set_min_order_value_for_delivery} "
-        minOrderValueAmountTextView?.text = if (0.0 != mMinOrderValue) "${mMoreControlsStaticData.text_ruppee_symbol}$mMinOrderValue" else ""
-        deliveryChargeHeadingTextView?.text = mMoreControlsStaticData.heading_set_delivery_charge
-        deliveryChargeTypeTextView?.text = mMoreControlsStaticData.sub_heading_set_delivery_charge
+        minOrderValueHeadingTextView?.text = if (0.0 == mMinOrderValue) mMoreControlsStaticData?.heading_set_min_order_value_for_delivery else mMoreControlsStaticData?.heading_edit_min_order_value
+        minOrderValueOptionalTextView?.text = if (0.0 == mMinOrderValue) mMoreControlsStaticData?.text_optional else "${mMoreControlsStaticData?.sub_heading_success_set_min_order_value_for_delivery} "
+        minOrderValueAmountTextView?.text = if (0.0 != mMinOrderValue) "${mMoreControlsStaticData?.text_ruppee_symbol}$mMinOrderValue" else ""
+        deliveryChargeHeadingTextView?.text = mMoreControlsStaticData?.heading_set_delivery_charge
+        deliveryChargeTypeTextView?.text = mMoreControlsStaticData?.sub_heading_set_delivery_charge
         if (mDeliveryChargeType != 0) {
-            deliveryChargeTypeTextView?.text = mMoreControlsStaticData.sub_heading_success_set_delivery_charge
+            deliveryChargeTypeTextView?.text = mMoreControlsStaticData?.sub_heading_success_set_delivery_charge
             if (mDeliveryChargeType == 1) {
                 deliveryChargeRateTextView?.visibility = View.GONE
                 deliveryChargeRateValueTextView?.visibility = View.GONE
             } else{
-                deliveryChargeRateTextView?.text = mMoreControlsStaticData.sub_heading_success_set_delivery_charge_amount
-                deliveryChargeRateValueTextView?.text = " ${mMoreControlsStaticData.text_ruppee_symbol} $mFreeDeliveryAbove"
+                deliveryChargeRateTextView?.text = mMoreControlsStaticData?.sub_heading_success_set_delivery_charge_amount
+                deliveryChargeRateValueTextView?.text = " ${mMoreControlsStaticData?.text_ruppee_symbol} $mFreeDeliveryAbove"
             }
             deliveryChargeTypeValueTextView?.text = when (mDeliveryChargeType) {
-                Constants.FREE_DELIVERY -> mMoreControlsStaticData.heading_free_delivery
-                Constants.FIXED_DELIVERY_CHARGE -> mMoreControlsStaticData.heading_fixed_delivery_charge
-                Constants.CUSTOM_DELIVERY_CHARGE -> mMoreControlsStaticData.heading_custom_delivery_charge
+                Constants.FREE_DELIVERY -> mMoreControlsStaticData?.heading_free_delivery
+                Constants.FIXED_DELIVERY_CHARGE -> mMoreControlsStaticData?.heading_fixed_delivery_charge
+                Constants.CUSTOM_DELIVERY_CHARGE -> mMoreControlsStaticData?.heading_custom_delivery_charge
                 else -> ""
             }
         }
@@ -115,7 +115,9 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                     data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
                 )
-                launchFragment(SetDeliveryChargeFragment.newInstance(mMoreControlsStaticData), true)
+                mMoreControlsStaticData?.let {
+                    launchFragment(SetDeliveryChargeFragment.newInstance(it), true)
+                }
             }
         }
     }
@@ -134,14 +136,14 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
                 val minDeliveryHeadingTextView: TextView = findViewById(R.id.minDeliveryHeadingTextView)
                 val minDeliveryAmountContainer: TextInputLayout = findViewById(R.id.minDeliveryAmountContainer)
                 val minDeliveryAmountEditText: EditText = findViewById(R.id.minDeliveryAmountEditText)
-                minDeliveryAmountContainer.hint = mMoreControlsStaticData.bottom_sheet_heading
+                minDeliveryAmountContainer.hint = mMoreControlsStaticData?.bottom_sheet_heading
                 minDeliveryAmountEditText.setText(if (mMinOrderValue != 0.0) mMinOrderValue.toString() else "")
-                minDeliveryHeadingTextView.text = mMoreControlsStaticData.bottom_sheet_hint
-                verifyTextView.text = mMoreControlsStaticData.save_changes
+                minDeliveryHeadingTextView.text = mMoreControlsStaticData?.bottom_sheet_hint
+                verifyTextView.text = mMoreControlsStaticData?.save_changes
                 verifyTextView.setOnClickListener {
                     val amount = minDeliveryAmountEditText.text.trim().toString()
                     if (amount.isNotEmpty() && 0.0 != mFreeDeliveryAbove && amount.toDouble() > mFreeDeliveryAbove) {
-                        minDeliveryAmountEditText.error = mMoreControlsStaticData.error_amount_must_greater_than_free_delivery_above
+                        minDeliveryAmountEditText.error = mMoreControlsStaticData?.error_amount_must_greater_than_free_delivery_above
                         requestFocus()
                         return@setOnClickListener
                     }

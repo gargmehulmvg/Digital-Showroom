@@ -114,11 +114,23 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
             }
             productResponse?.shareShop?.run {
                 shareButtonTextView?.text = this.mText
-                if (mCDN != null && mCDN.isNotEmpty() && shareButtonImageView != null) Picasso.get().load(mCDN).into(shareButtonImageView)
+                if (mCDN != null && mCDN.isNotEmpty() && shareButtonImageView != null) {
+                    try {
+                        Picasso.get().load(mCDN).into(shareButtonImageView)
+                    } catch (e: Exception) {
+                        Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+                    }
+                }
             }
             productResponse?.addProduct?.run {
                 addProductTextView?.text = this.mText
-                if (mCDN != null && mCDN.isNotEmpty() && addProductImageView != null) Picasso.get().load(mCDN).into(addProductImageView)
+                if (mCDN != null && mCDN.isNotEmpty() && addProductImageView != null) {
+                    try {
+                        Picasso.get().load(mCDN).into(addProductImageView)
+                    } catch (e: Exception) {
+                        Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+                    }
+                }
             }
         }
         stopProgress()
@@ -224,7 +236,13 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                 val bottomSheetHeadingTextView: TextView = findViewById(R.id.bottomSheetHeadingTextView)
                 val verifyTextView: TextView = findViewById(R.id.verifyTextView)
                 val referAndEarnRecyclerView: RecyclerView = findViewById(R.id.referAndEarnRecyclerView)
-                if (response?.imageUrl?.isNotEmpty() == true) bottomSheetUpperImageView?.let { Picasso.get().load(response.imageUrl).into(it) }
+                if (response?.imageUrl?.isNotEmpty() == true) bottomSheetUpperImageView?.let {
+                    try {
+                        Picasso.get().load(response.imageUrl).into(it)
+                    } catch (e: Exception) {
+                        Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+                    }
+                }
                 bottomSheetUpperImageView.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.ic_share_pdf_whatsapp))
                 bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
                 bottomSheetHeadingTextView.text = response?.heading

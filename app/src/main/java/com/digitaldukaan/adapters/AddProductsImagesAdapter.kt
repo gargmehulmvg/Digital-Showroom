@@ -1,5 +1,6 @@
 package com.digitaldukaan.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -59,7 +60,13 @@ class AddProductsImagesAdapter(
             } else {
                 noImagesLayout.visibility = View.GONE
                 image.visibility = View.VISIBLE
-                image?.let { Picasso.get().load(imageStr?.imageUrl).into(it) }
+                image?.let {
+                    try {
+                        Picasso.get().load(imageStr?.imageUrl).into(it)
+                    } catch (e: Exception) {
+                        Log.e(AddProductsImagesAdapter::class.java.simpleName, "picasso image loading issue: ${e.message}", e)
+                    }
+                }
             }
         }
     }

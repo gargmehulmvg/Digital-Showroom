@@ -1,5 +1,6 @@
 package com.digitaldukaan.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -46,7 +47,13 @@ class SettingsStoreAdapter(private val listener: IStoreSettingsItemClicked) : Re
         val response = mStoreOptionsList[position]
         holder.run {
             settingTitleTextView.text = response.mText
-            settingImageView.let { Picasso.get().load(response.mLogo).into(it) }
+            settingImageView.let {
+                try {
+                    Picasso.get().load(response.mLogo).into(it)
+                } catch (e: Exception) {
+                    Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+                }
+            }
             if (response.mBannerText?.isEmpty() == false) {
                 settingSubTitleTextView.visibility = View.VISIBLE
                 settingSubTitleTextView.text = response.mBannerText
