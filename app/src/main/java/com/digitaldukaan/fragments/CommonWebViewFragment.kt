@@ -122,8 +122,11 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
             val base64Str = base64OriginalStr.split("data:image/png;base64,")[1]
             Log.d(mTagName, "image URL :: $base64Str")
             val bitmap = getBitmapFromBase64V2(base64Str)
-            downloadMediaToStorage(bitmap, mActivity)
-            showToast("Image Saved to Gallery")
+            bitmap?.let {
+                downloadMediaToStorage(it, mActivity)
+                val file = downloadBillInGallery(it, "my-qr")
+                file?.run { showDownloadNotification(this, "MyQR") }
+            }
         } else if (jsonData.optBoolean("redirectHomePage")) {
             launchFragment(HomeFragment.newInstance(), true)
         } else if (jsonData.optBoolean("startLoader")) {

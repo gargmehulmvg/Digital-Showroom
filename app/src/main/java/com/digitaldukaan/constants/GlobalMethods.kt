@@ -166,6 +166,22 @@ fun getImageFileFromBitmap(bitmap: Bitmap, context: Context): File {
     return bitmapFile
 }
 
+fun downloadBillInGallery(bitmap: Bitmap, orderId: String?): File? {
+    val bytes = ByteArrayOutputStream()
+    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
+    val file = File("${Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)}" + File.separator + "$orderId-${System.currentTimeMillis()}.jpg")
+    return try {
+        val fo = FileOutputStream(file)
+        fo.write(bytes.toByteArray())
+        fo.flush()
+        fo.close()
+        file
+    } catch (e: IOException) {
+        e.printStackTrace()
+        null
+    }
+}
+
 fun getBitmapFromBase64(base64Str: String?): Bitmap? {
     val decodedBytes: ByteArray = Base64.decode(base64Str?.substring(base64Str.indexOf(",") + 1), Base64.DEFAULT)
     return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)

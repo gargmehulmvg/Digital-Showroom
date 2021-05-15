@@ -19,10 +19,6 @@ import com.google.firebase.messaging.RemoteMessage
 
 class MyFcmMessageListenerService : FirebaseMessagingService() {
 
-    companion object {
-        private val TAG = MyFcmMessageListenerService::class.simpleName
-    }
-
     override fun onMessageReceived(message: RemoteMessage) {
         Log.d(TAG, "onMessageReceived: ${message.data}")
         message.data.apply {
@@ -36,7 +32,7 @@ class MyFcmMessageListenerService : FirebaseMessagingService() {
                     if (info.fromCleverTap) {
                         Log.d(TAG, "CLEVER-TAP NOTIFICATIONS :: $info")
                         //CleverTapAPI.createNotification(applicationContext, extras)
-                        sendNotification(extras.getString("nt"), extras.getString("nm"), extras.getString("wzrk_dl"))
+                        prepareNotification(extras.getString("nt"), extras.getString("nm"), extras.getString("wzrk_dl"))
                     }
                 }
             } catch (t: Throwable) {
@@ -47,7 +43,7 @@ class MyFcmMessageListenerService : FirebaseMessagingService() {
             Log.d(TAG, "FIREBASE NOTIFICATIONS")
             val title = message.notification?.title
             val body = message.notification?.body
-            sendNotification(title, body)
+            prepareNotification(title, body)
         }
     }
 
@@ -56,28 +52,38 @@ class MyFcmMessageListenerService : FirebaseMessagingService() {
         Log.d(TAG, "onNewToken: $p0")
     }
 
-    private fun sendNotification(title: String?, message: String?, deepLinkUrl: String? = "") {
+    private fun prepareNotification(title: String?, message: String?, deepLinkUrl: String? = "") {
         val intent = Intent(this, MainActivity::class.java)
         if (deepLinkUrl?.isNotEmpty() == true) intent.data = deepLinkUrl.toUri()
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT)
-        val notificationBuilder = NotificationCompat.Builder(this, AFInAppEventParameterName.NOTIFICATION_CHANNEL_NOTIFICATIONS).apply {
-            setSmallIcon(R.drawable.shortcuticon)
-            setContentTitle(title)
-            setContentText(message)
-            val soundUri: Uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-            setSound(soundUri)
-            setAutoCancel(true)
-            setLargeIcon(
-                BitmapFactory.decodeResource(
-                    this@MyFcmMessageListenerService.resources,
-                    R.drawable.ic_notification_round
-                )
-            )
-            setContentIntent(pendingIntent)
-        }.build()
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.notify(1001, notificationBuilder)
+        createNotification(title, message, pendingIntent, this)
+    }
+    
+    companion object {
+        private val TAG = MyFcmMessageListenerService::class.simpleName
+
+        fun createNotification(title: String?, message: String?, pendingIntent: PendingIntent, context: Context) {
+            try {
+                val intent = Intent(context, MainActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                val notificationBuilder = NotificationCompat.Builder(context, AFInAppEventParameterName.NOTIFICATION_CHANNEL_NOTIFICATIONS).apply {
+                    setSmallIcon(R.drawable.shortcuticon)
+                    setContentTitle(title)
+                    setContentText(message)
+                    val soundUri: Uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+                    setSound(soundUri)
+                    setAutoCancel(true)
+                    setLargeIcon(BitmapFactory.decodeResource(context.resources, R.drawable.ic_notification_round))
+                    setContentIntent(pendingIntent)
+                }.build()
+                val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                notificationManager.notify(1001, notificationBuilder)
+            } catch (e: Exception) {
+                Log.e(TAG, "sendNotification: ${e.message}", e)
+            }
+        }
+
     }
 
 }

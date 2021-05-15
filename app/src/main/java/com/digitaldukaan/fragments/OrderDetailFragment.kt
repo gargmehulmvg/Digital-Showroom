@@ -872,6 +872,8 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                     override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
                         bitmap?.let {
                             downloadMediaToStorage(bitmap, mActivity)
+                            val file = downloadBillInGallery(bitmap, orderDetailMainResponse?.orders?.orderId?.toString())
+                            file?.let { showDownloadNotification(it, "Bill-#${orderDetailMainResponse?.orders?.orderId}") }
                         }
                     }
 

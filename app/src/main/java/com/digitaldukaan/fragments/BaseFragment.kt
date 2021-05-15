@@ -3,6 +3,7 @@ package com.digitaldukaan.fragments
 import android.Manifest
 import android.app.Activity
 import android.app.Dialog
+import android.app.PendingIntent
 import android.content.*
 import android.content.Context.MODE_PRIVATE
 import android.content.pm.PackageManager
@@ -33,6 +34,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.MainActivity
+import com.digitaldukaan.MyFcmMessageListenerService
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.ImagesSearchAdapter
 import com.digitaldukaan.constants.*
@@ -1018,8 +1020,20 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         Log.d(TAG, "openMobileGalleryWithImage: ${file.name}")
         val galleryIntent = Intent()
         galleryIntent.action = Intent.ACTION_VIEW
-        galleryIntent.setDataAndType(Uri.parse("file://${file.absolutePath}"), "image/*")
+        galleryIntent.setDataAndType(Uri.fromFile(file), "image/*")
         startActivity(galleryIntent)
+    }
+
+    fun showDownloadNotification(file: File, titleStr: String?) {
+        try {
+            val intent = Intent(Intent.ACTION_VIEW)
+            intent.setDataAndType(Uri.fromFile(file), "image/*")
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            val pendingIntent: PendingIntent = PendingIntent.getActivity(mActivity, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT)
+            MyFcmMessageListenerService.createNotification(titleStr, "Download completed.", pendingIntent, mActivity)
+        } catch (e: Exception) {
+            showToast(e.message)
+        }
     }
 
 }
