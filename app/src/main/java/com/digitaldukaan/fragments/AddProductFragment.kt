@@ -77,7 +77,6 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     private var mProductDiscountedPriceStr: String? = ""
     private var mProductDescriptionPriceStr: String? = ""
     private var mIsOrderEdited = false
-
     private var mAddProductResponse: AddProductResponse? = null
     private var discountPriceEditText: EditText? = null
     private var productDescriptionEditText: EditText? = null
@@ -196,16 +195,19 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                             mIsOrderEdited = true
                             discountedPriceTextView?.apply {
                                 visibility = View.VISIBLE
-                                text = "${addProductStaticData?.text_rupees_symbol} ${str.toDouble()}"
+                                val discountStr = "${addProductStaticData?.text_rupees_symbol} ${str.toDouble()}"
+                                text = discountStr
                             }
                             originalPriceTextView?.apply {
-                                text = "${addProductStaticData?.text_rupees_symbol} ${priceStr.toDouble()}"
+                                val originalPriceStr = "${addProductStaticData?.text_rupees_symbol} ${priceStr.toDouble()}"
+                                text = originalPriceStr
                                 showStrikeOffText()
                             }
                             val priceDouble = priceStr.toDouble()
                             val discountedPriceDouble = str.toDouble()
                             val percentage = ((priceDouble - discountedPriceDouble) / priceDouble) * 100
-                            pricePercentageOffTextView?.text = "${percentage.toInt()}% OFF"
+                            val percentageOffStr = "${percentage.toInt()}% OFF"
+                            pricePercentageOffTextView?.text = percentageOffStr
                         }
                     }
                 } else {
@@ -540,7 +542,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                                         searchImageRecyclerView?.apply {
                                             layoutManager = GridLayoutManager(mActivity, 3)
                                             adapter = imageAdapter
-                                            list?.let { arrayList -> imageAdapter.setSearchImageList(arrayList) }
+                                            list.let { arrayList -> imageAdapter.setSearchImageList(arrayList) }
                                         }
                                     }
                                 }
@@ -691,28 +693,29 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     }
 
     private fun setupCategoryChipRecyclerView() {
-        mAddProductResponse?.addProductStoreCategories?.run {
-            chipGroupRecyclerView?.apply {
-                layoutManager = StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL)
-                mAddProductStoreCategoryList =
-                    mAddProductResponse?.addProductStoreCategories?.storeCategoriesList
-                if (mAddProductStoreCategoryList?.isNotEmpty() == true) {
-                    mTempProductCategoryList.clear()
-                    mAddProductStoreCategoryList?.forEachIndexed { _, categoryItem ->
-                        if (categoryItem.name?.isNotEmpty() == true) mTempProductCategoryList.add(
-                            categoryItem
-                        )
+        try {
+            mAddProductResponse?.addProductStoreCategories?.run {
+                chipGroupRecyclerView?.apply {
+                    layoutManager = StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL)
+                    mAddProductStoreCategoryList = mAddProductResponse?.addProductStoreCategories?.storeCategoriesList
+                    if (mAddProductStoreCategoryList?.isNotEmpty() == true) {
+                        mTempProductCategoryList.clear()
+                        mAddProductStoreCategoryList?.forEachIndexed { _, categoryItem ->
+                            if (categoryItem.name?.isNotEmpty() == true) mTempProductCategoryList.add(categoryItem)
+                        }
+                        mTempProductCategoryList.forEachIndexed { _, categoryItem ->
+                            if (mAddProductResponse?.storeItem?.category?.id == categoryItem.id) {
+                                enterCategoryEditText?.setText(categoryItem.name)
+                                categoryItem.isSelected = true
+                            } else categoryItem.isSelected = false
+                        }
+                        addProductChipsAdapter = AddProductsChipsAdapter(mTempProductCategoryList, this@AddProductFragment)
+                        adapter = addProductChipsAdapter
                     }
-                    mTempProductCategoryList.forEachIndexed { _, categoryItem ->
-                        if (mAddProductResponse?.storeItem?.category?.id == categoryItem.id) {
-                            enterCategoryEditText?.setText(categoryItem.name)
-                            categoryItem.isSelected = true
-                        } else categoryItem.isSelected = false
-                    }
-                    addProductChipsAdapter = AddProductsChipsAdapter(mTempProductCategoryList, this@AddProductFragment)
-                    adapter = addProductChipsAdapter
                 }
             }
+        } catch (e: Exception) {
+            Log.e(TAG, "setupCategoryChipRecyclerView: ${e.message}", e)
         }
     }
 
@@ -739,7 +742,8 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 addItemTextView?.text = text_add_item_description
                 continueTextView?.text = if (mIsAddNewProduct) text_add_item else getString(R.string.save)
                 val count = mImagesStrList.size
-                imagesLeftTextView?.text = "${if (count == 0) count else count - 1}/4 $text_images_added"
+                val imagesLeftStr = "${if (count == 0) count else count - 1}/4 $text_images_added"
+                imagesLeftTextView?.text = imagesLeftStr
             }
         } catch (e: Exception) {
             Log.e(TAG, "setStaticDataFromResponse: ${e.message}", e)
@@ -823,8 +827,8 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             adapter = mImageAddAdapter
             mImageAddAdapter?.setListToAdapter(mImagesStrList)
         }
-        imagesLeftTextView?.text =
-            "${mImagesStrList?.size - 1}/4 ${addProductStaticData?.text_images_added}"
+        val imagesLeftStr = "${mImagesStrList?.size - 1}/4 ${addProductStaticData?.text_images_added}"
+        imagesLeftTextView?.text = imagesLeftStr
     }
 
     override fun onDeleteItemResponse(commonResponse: CommonApiResponse) {

@@ -54,15 +54,15 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
 
     private var mOrderId = ""
     private var mMobileNumber = ""
-    private lateinit var mOrderDetailService: OrderDetailService
+    private var mOrderDetailService: OrderDetailService? = null
     private var mOrderDetailStaticData: OrderDetailsStaticTextResponse? = null
-    private lateinit var mDeliveryTimeAdapter: DeliveryTimeAdapter
+    private var mDeliveryTimeAdapter: DeliveryTimeAdapter? = null
     private var deliveryTimeResponse: DeliveryTimeResponse? = null
     private var mDeliveryTimeStr: String? = ""
     private var orderDetailMainResponse: OrderDetailMainResponse? = null
     private var mBillSentCameraClicked = false
     private var mIsNewOrder = false
-    private lateinit var deliveryTimeEditText: EditText
+    private var deliveryTimeEditText: EditText? = null
     private var mTotalDisplayAmount = 0.0
     private var mDeliveryChargeAmount = 0.0
     private var mOtherChargeAmount = 0.0
@@ -73,6 +73,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
         private const val TAG = "OrderDetailFragment"
         private const val CUSTOM = "custom"
         private var mShareBillResponseStr: String? = ""
+
         fun newInstance(orderId: String, isNewOrder: Boolean): OrderDetailFragment {
             val fragment = OrderDetailFragment()
             fragment.mOrderId = orderId
@@ -83,14 +84,15 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mOrderDetailService = OrderDetailService()
-        mOrderDetailService.setOrderDetailServiceListener(this)
+        mOrderDetailService?.setOrderDetailServiceListener(this)
         mContentView = inflater.inflate(R.layout.layout_order_detail_fragment, container, false)
         if (!isInternetConnectionAvailable(mActivity)) {
             showNoInternetConnectionDialog()
         } else {
             showProgressDialog(mActivity)
-            mOrderDetailService.getOrderDetail(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), mOrderId)
+            mOrderDetailService?.getOrderDetail(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), mOrderId)
         }
+        mShareBillResponseStr = ""
         return mContentView
     }
 
@@ -113,7 +115,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                     showNoInternetConnectionDialog()
                 } else {
                     showProgressDialog(mActivity)
-                    mOrderDetailService.getOrderDetailStatus(orderDetailMainResponse?.orders?.orderId)
+                    mOrderDetailService?.getOrderDetailStatus(orderDetailMainResponse?.orders?.orderId)
                 }
             }
         }
@@ -128,7 +130,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                 return
             }
             showProgressDialog(mActivity)
-            mOrderDetailService.getDeliveryTime()
+            mOrderDetailService?.getDeliveryTime()
         }
     }
 
@@ -223,7 +225,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                     AFInAppEventParameterName.PHONE to "${orderDetailMainResponse?.orders?.phone}"
                 )
             )
-            mOrderDetailService.updateOrder(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
+            mOrderDetailService?.updateOrder(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
         }
     }
 
@@ -508,35 +510,19 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
             detailTextView?.text = "$text_details:"
             billAmountValue?.text = "$text_rupees_symbol ${orderDetailResponse?.amount}"
             ToolBarManager.getInstance()?.setHeaderTitle("$text_order #$mOrderId")
-            if (orderDetailResponse?.deliveryInfo?.customDeliveryTime?.isEmpty() == true) estimateDeliveryTextView.visibility = View.GONE else estimateDeliveryTextView.text = "$text_estimate_delivery : ${orderDetailResponse?.deliveryInfo?.customDeliveryTime}"
+            if (orderDetailResponse?.deliveryInfo?.customDeliveryTime?.isEmpty() == true) estimateDeliveryTextView.visibility = View.GONE else {
+                val estimatedDeliveryStr = "$text_estimate_delivery : ${orderDetailResponse?.deliveryInfo?.customDeliveryTime}"
+                estimateDeliveryTextView.text = estimatedDeliveryStr
+            }
             statusValue?.text = orderDetailResponse?.orderPaymentStatus?.value
             when (orderDetailResponse?.orderPaymentStatus?.key) {
                 Constants.ORDER_STATUS_SUCCESS -> {
-                    statusValue.setCompoundDrawablesWithIntrinsicBounds(
-                        0,
-                        0,
-                        R.drawable.ic_tick_green_hollow,
-                        0
-                    )
-                    orderDetailContainer.setBackgroundColor(
-                        ContextCompat.getColor(
-                            mActivity,
-                            R.color.open_green
-                        )
-                    )
+                    statusValue.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_tick_green_hollow, 0)
+                    orderDetailContainer.setBackgroundColor(ContextCompat.getColor(mActivity, R.color.open_green))
                 }
-                Constants.ORDER_STATUS_REJECTED -> orderDetailContainer.setBackgroundColor(
-                    ContextCompat.getColor(mActivity, R.color.red)
-                )
-                Constants.ORDER_STATUS_IN_PROGRESS -> orderDetailContainer.setBackgroundColor(
-                    ContextCompat.getColor(mActivity, R.color.order_detail_in_progress)
-                )
-                else -> orderDetailContainer.setBackgroundColor(
-                    ContextCompat.getColor(
-                        mActivity,
-                        R.color.black
-                    )
-                )
+                Constants.ORDER_STATUS_REJECTED -> orderDetailContainer.setBackgroundColor(ContextCompat.getColor(mActivity, R.color.red))
+                Constants.ORDER_STATUS_IN_PROGRESS -> orderDetailContainer.setBackgroundColor(ContextCompat.getColor(mActivity, R.color.order_detail_in_progress))
+                else -> orderDetailContainer.setBackgroundColor(ContextCompat.getColor(mActivity, R.color.black))
             }
         }
     }
@@ -681,12 +667,12 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                             override fun onChipItemClickListener(position: Int) {
                                 deliveryTimeResponse.deliveryTimeList?.forEachIndexed { _, itemResponse -> itemResponse.isSelected = false }
                                 deliveryTimeResponse.deliveryTimeList?.get(position)?.isSelected = true
-                                deliveryTimeEditText.visibility = if (CUSTOM == deliveryTimeResponse.deliveryTimeList?.get(position)?.key) View.VISIBLE else View.INVISIBLE
-                                if (deliveryTimeEditText.visibility == View.VISIBLE) {
-                                    deliveryTimeEditText.requestFocus()
-                                    deliveryTimeEditText.showKeyboard()
+                                deliveryTimeEditText?.visibility = if (CUSTOM == deliveryTimeResponse.deliveryTimeList?.get(position)?.key) View.VISIBLE else View.INVISIBLE
+                                if (deliveryTimeEditText?.visibility == View.VISIBLE) {
+                                    deliveryTimeEditText?.requestFocus()
+                                    deliveryTimeEditText?.showKeyboard()
                                 }
-                                mDeliveryTimeAdapter.setDeliveryTimeList(deliveryTimeResponse.deliveryTimeList)
+                                mDeliveryTimeAdapter?.setDeliveryTimeList(deliveryTimeResponse.deliveryTimeList)
                                 mDeliveryTimeStr = deliveryTimeResponse.deliveryTimeList?.get(position)?.value
                                 bottomSheetSendBillText.isEnabled = true
                             }
@@ -696,9 +682,9 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                 }
                 bottomSheetSendBillText.setOnClickListener {
                     if (mDeliveryTimeStr?.equals(CUSTOM, true) == true) {
-                        mDeliveryTimeStr = deliveryTimeEditText.text.toString()
+                        mDeliveryTimeStr = deliveryTimeEditText?.text.toString()
                         if (mDeliveryTimeStr?.isEmpty() == true) {
-                            deliveryTimeEditText.apply {
+                            deliveryTimeEditText?.apply {
                                 error = getString(R.string.mandatory_field_message)
                                 requestFocus()
                             }
@@ -737,17 +723,18 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                 orderDetailMainResponse?.let {
                     mOrderDetailStaticData?.run {
                         bottomSheetHeadingTextView.text = text_details
-                        billAmountTextView.text = "$text_bill_amount: ${it.orders?.amount}"
-                        orderIdTextView.text = "$text_order_id: ${it.orders?.orderId}"
+                        val billAmountStr = "$text_bill_amount: ${it.orders?.amount}"
+                        billAmountTextView.text = billAmountStr
+                        val orderIdStr = "$text_order_id: ${it.orders?.orderId}"
+                        orderIdTextView.text = orderIdStr
                         val firstItem = txnItemList[0]
                         val lastItem = txnItemList[txnItemList.size -1]
                         firstItem?.run {
                             setOrderDetailBottomSheetItem(imageViewTop, textViewTop, this)
-                            txnId.text = "Txn ID : ${firstItem.transactionId}"
+                            val txnIdStr = "Txn ID : ${firstItem.transactionId}"
+                            txnId.text = txnIdStr
                         }
-                        lastItem?.run {
-                            setOrderDetailBottomSheetItem(imageViewBottom, textViewBottom, this)
-                        }
+                        lastItem?.run { setOrderDetailBottomSheetItem(imageViewBottom, textViewBottom, this) }
                     }
                 }
             }
@@ -758,21 +745,11 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
         textView.setTextColor(ContextCompat.getColor(mActivity, R.color.black))
         textView.text = item.settlementStatus
         when(item.transactionStatus?.toLowerCase(Locale.getDefault())) {
-            "" -> {
-                imageView.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.ic_order_detail_green_tick))
-            }
-            Constants.ORDER_STATUS_PAYOUT_SUCCESS -> {
-                imageView.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.ic_order_detail_green_tick))
-            }
-            Constants.ORDER_STATUS_IN_PROGRESS -> {
-                imageView.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.ic_order_detail_yellow_icon))
-            }
-            Constants.ORDER_STATUS_REFUND_SUCCESS -> {
-                imageView.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.ic_order_detail_black_tick))
-            }
-            Constants.ORDER_STATUS_REJECTED -> {
-                imageView.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.ic_close_red))
-            }
+            "" -> imageView.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.ic_order_detail_green_tick))
+            Constants.ORDER_STATUS_PAYOUT_SUCCESS -> imageView.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.ic_order_detail_green_tick))
+            Constants.ORDER_STATUS_IN_PROGRESS -> imageView.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.ic_order_detail_yellow_icon))
+            Constants.ORDER_STATUS_REFUND_SUCCESS -> imageView.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.ic_order_detail_black_tick))
+            Constants.ORDER_STATUS_REJECTED -> imageView.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.ic_close_red))
         }
 
     }
@@ -828,7 +805,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                             AFInAppEventParameterName.NUMBER_OF_ITEM to "1"
                         )
                     )
-                    mOrderDetailService.updateOrderStatus(request)
+                    mOrderDetailService?.updateOrderStatus(request)
                 }
             }
         }.show()
@@ -862,33 +839,31 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
         startDownloadBill(receiptStr)
     }
 
-    private fun startDownloadBill(receiptStr: String?) {
-        if (receiptStr?.isEmpty() == true) {
-            showToast(mOrderDetailStaticData?.error_no_bill_available_to_download)
-        } else {
-            showToast("Start Downloading...")
-            try {
-                Picasso.get().load(receiptStr).into(object : Target {
-                    override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
-                        bitmap?.let {
-                            downloadMediaToStorage(bitmap, mActivity)
-                            val file = downloadBillInGallery(bitmap, orderDetailMainResponse?.orders?.orderId?.toString())
-                            file?.let { showDownloadNotification(it, "Bill-#${orderDetailMainResponse?.orders?.orderId}") }
-                        }
+    private fun startDownloadBill(receiptStr: String?) = if (receiptStr?.isEmpty() == true) {
+        showToast(mOrderDetailStaticData?.error_no_bill_available_to_download)
+    } else {
+        showToast("Start Downloading...")
+        try {
+            Picasso.get().load(receiptStr).into(object : Target {
+                override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
+                    bitmap?.let {
+                        downloadMediaToStorage(bitmap, mActivity)
+                        val file = downloadBillInGallery(bitmap, orderDetailMainResponse?.orders?.orderId?.toString())
+                        file?.let { showDownloadNotification(it, "Bill-#${orderDetailMainResponse?.orders?.orderId}") }
                     }
+                }
 
-                    override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
-                        Log.d(TAG, "onPrepareLoad: ")
-                    }
+                override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
+                    Log.d(TAG, "onPrepareLoad: ")
+                }
 
-                    override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
-                        Log.d(TAG, "onBitmapFailed: ")
-                    }
-                })
-            } catch (e: Exception) {
-                Log.e(TAG, "startDownloadBill: ${e.message}", e)
-                showToast("Something went wrong")
-            }
+                override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
+                    Log.d(TAG, "onBitmapFailed: ")
+                }
+            })
+        } catch (e: Exception) {
+            Log.e(TAG, "startDownloadBill: ${e.message}", e)
+            showToast("Something went wrong")
         }
     }
 
@@ -925,7 +900,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
             showNoInternetConnectionDialog()
         } else {
             showProgressDialog(mActivity)
-            mOrderDetailService.shareBillResponse(orderDetailMainResponse?.orders?.orderId)
+            mOrderDetailService?.shareBillResponse(orderDetailMainResponse?.orders?.orderId)
         }
     }
 
@@ -934,8 +909,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
             showNoInternetConnectionDialog()
         } else {
             showProgressDialog(mActivity)
-            mOrderDetailService.completeOrder(CompleteOrderRequest(orderDetailMainResponse?.orders?.orderId?.toLong()))
+            mOrderDetailService?.completeOrder(CompleteOrderRequest(orderDetailMainResponse?.orders?.orderId?.toLong()))
         }
     }
-
 }

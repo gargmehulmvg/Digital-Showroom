@@ -641,4 +641,9 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
             }
         }.show()
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        orderPageInfoResponse = null
+    }
 }

@@ -162,6 +162,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
     override fun onProductShareStoreWAResponse(commonResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             try {
+                if (isEmpty(commonResponse.mCommonDataStr)) return@runTaskOnCoroutineMain
                 stopProgress()
                 mShareDataOverWhatsAppText = Gson().fromJson<String>(commonResponse.mCommonDataStr, String::class.java)
                 shareOnWhatsApp(mShareDataOverWhatsAppText)

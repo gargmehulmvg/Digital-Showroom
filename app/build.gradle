@@ -59,6 +59,7 @@ android {
             buildConfigField('String', 'WEB_VIEW_URL', '"https://digitaldukaanwebview.dotq.in/"')
             buildConfigField('String', 'WEB_VIEW_SHOW_ROOM_URL', '"https://showroom.dotq.in/"')
             buildConfigField('String', 'WEB_VIEW_PREVIEW_URL', '"https://showroom-preview2.dotq.in/"')
+            manifestPlaceholders = [appLabel:"@string/app_name_staging"]
             applicationId "com.digitaldukaanlocal"
         }
         prod {
@@ -66,6 +67,7 @@ android {
             buildConfigField('String', 'WEB_VIEW_URL', '"https://webview.digitaldukaan.co.in/"')
             buildConfigField('String', 'WEB_VIEW_SHOW_ROOM_URL', '"https://showroom.dotpe.in/"')
             buildConfigField('String', 'WEB_VIEW_PREVIEW_URL', '"https://showroom-preview2.dotpe.in/"')
+            manifestPlaceholders = [appLabel:"@string/app_name"]
             applicationId "com.digitaldukaan"
         }
     }
