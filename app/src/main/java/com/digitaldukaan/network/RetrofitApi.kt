@@ -5,9 +5,7 @@ import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.PrefsManager
 import com.digitaldukaan.constants.StaticInstances
-import okhttp3.OkHttpClient
-import okhttp3.Protocol
-import okhttp3.Request
+import okhttp3.*
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -38,11 +36,7 @@ class RetrofitApi {
         return OkHttpClient.Builder().apply {
             readTimeout(15, TimeUnit.SECONDS)
             connectTimeout(15, TimeUnit.SECONDS)
-            addInterceptor {
-                val originalRequest = it.request()
-                val newRequest = getNewRequest(originalRequest)
-                it.proceed(newRequest)
-            }
+            addInterceptor { customizeCustomRequest(it) }
             protocols(arrayListOf(Protocol.HTTP_1_1))
         }.build()
     }
@@ -52,24 +46,29 @@ class RetrofitApi {
         return OkHttpClient.Builder().apply {
             readTimeout(15, TimeUnit.SECONDS)
             connectTimeout(15, TimeUnit.SECONDS)
-            addInterceptor {
-                val originalRequest = it.request()
-                val newRequest = getNewRequest(originalRequest)
-                it.proceed(newRequest)
-            }
+            addInterceptor { customizeCustomRequest(it) }
             addInterceptor(loggingInterface)
             protocols(arrayListOf(Protocol.HTTP_1_1))
         }.build()
     }
 
-    private fun getNewRequest(originalRequest: Request): Request {
-        return originalRequest.newBuilder().apply {
-            addHeader("auth_token", PrefsManager.getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
-            addHeader("session_id", StaticInstances.sAppSessionId ?: "")
-            addHeader("install_id", PrefsManager.getStringDataFromSharedPref(PrefsManager.APP_INSTANCE_ID))
-            addHeader("app_os", "android_native")
-            addHeader("app_version", BuildConfig.VERSION_NAME)
-        }.build()
+    private fun customizeCustomRequest(it: Interceptor.Chain): Response {
+        val originalRequest = it.request()
+        val newRequest = getNewRequest(originalRequest)
+        return if (newRequest == null) it.proceed(originalRequest) else it.proceed(newRequest)
     }
 
+    private fun getNewRequest(originalRequest: Request): Request? {
+        return try {
+            originalRequest.newBuilder().apply {
+                addHeader("auth_token", PrefsManager.getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
+                addHeader("session_id", StaticInstances.sAppSessionId ?: "")
+                addHeader("install_id", PrefsManager.getStringDataFromSharedPref(PrefsManager.APP_INSTANCE_ID))
+                addHeader("app_os", "android_native")
+                addHeader("app_version", BuildConfig.VERSION_NAME)
+            }.build()
+        } catch (e: Exception) {
+            null
+        }
+    }
 }
