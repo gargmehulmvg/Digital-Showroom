@@ -68,5 +68,6 @@ interface AFInAppEventType {
         const val EVENT_SAVE_VARIANT = "Save_Variant"
         const val EVENT_EDIT_VARIANT = "Edit_Variant"
         const val EVENT_DELETE_VARIANT = "Delete_Variant"
+        const val EVENT_PROFILE_PAGE = "ProfilePage"
     }
 }
