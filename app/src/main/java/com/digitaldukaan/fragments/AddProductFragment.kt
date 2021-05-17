@@ -422,7 +422,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                                 imageListRequest.add(AddProductImageItem(imageItem.imageId, imageItem.imageUrl, 1))
                             }
                         }
-                        if (mAddProductResponse?.deletedVariants?.isEmpty() != true) {
+                        if (mAddProductResponse?.deletedVariants?.isEmpty() != true && mAddProductResponse?.isVariantSaved == true) {
                             mAddProductResponse?.deletedVariants?.values?.let {
                                 val deletedVariantList = ArrayList<VariantItemResponse>(it)
                                 deletedVariantList.forEachIndexed { _, itemResponse -> itemResponse.status = 0 }
