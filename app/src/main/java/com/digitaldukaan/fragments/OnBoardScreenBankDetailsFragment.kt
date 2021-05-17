@@ -25,8 +25,8 @@ import kotlinx.android.synthetic.main.layout_bank_account_fragment.*
 
 class OnBoardScreenBankDetailsFragment : BaseFragment(), IBankDetailsServiceInterface {
 
-    private lateinit var mService: BankDetailsService
-    private lateinit var mBlankView: View
+    private var mService: BankDetailsService? = null
+    private var mBlankView: View? = null
     private var mProfilePreviewStaticData: BankDetailsPageStaticTextResponse? = null
 
     companion object {
@@ -47,7 +47,7 @@ class OnBoardScreenBankDetailsFragment : BaseFragment(), IBankDetailsServiceInte
     ): View? {
         mContentView = inflater.inflate(R.layout.layout_bank_account_fragment, container, false)
         mService = BankDetailsService()
-        mService.setServiceInterface(this)
+        mService?.setServiceInterface(this)
         mBlankView = mContentView.findViewById(R.id.blankView)
         return mContentView
     }
@@ -162,7 +162,7 @@ class OnBoardScreenBankDetailsFragment : BaseFragment(), IBankDetailsServiceInte
                     return
                 }
                 showProgressDialog(mActivity)
-                mService.setBankDetails(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
+                mService?.setBankDetails(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
             }
         }
     }
@@ -211,7 +211,7 @@ class OnBoardScreenBankDetailsFragment : BaseFragment(), IBankDetailsServiceInte
                 getOtpTextView.setOnClickListener {
                     if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else {
                         showProgressDialog(mActivity)
-                        mService.getBankDetailsPageInfo()
+                        mService?.getBankDetailsPageInfo()
                     }
                     ToolBarManager.getInstance()?.apply {
                         hideToolBar(mActivity, false)
@@ -221,7 +221,7 @@ class OnBoardScreenBankDetailsFragment : BaseFragment(), IBankDetailsServiceInte
                         setSideIconVisibility(false)
                         setSecondSideIconVisibility(false)
                     }
-                    mBlankView.visibility = View.GONE
+                    mBlankView?.visibility = View.GONE
                     bottomSheetDialog.dismiss()
                 }
                 howItWorksTextView.setOnClickListener {

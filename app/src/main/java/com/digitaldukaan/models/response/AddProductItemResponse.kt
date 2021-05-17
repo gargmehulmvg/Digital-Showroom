@@ -12,6 +12,7 @@ data class AddProductItemResponse(
     @SerializedName("discounted_price") var discountedPrice: Double,
     @SerializedName("category") var category: AddStoreCategoryItem?,
     @SerializedName("images") var imagesList: ArrayList<AddProductImagesResponse>?,
+    @SerializedName("variants") var variantsList: ArrayList<VariantItemResponse>?,
     @SerializedName("description") var description: String
 )
 

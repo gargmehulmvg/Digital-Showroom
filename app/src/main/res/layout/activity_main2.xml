@@ -42,7 +42,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:tint="@color/black"
-                tools:ignore="ContentDescription" />
+                android:contentDescription="@string/image_view_content_description" />
 
             <TextView
                 android:id="@+id/appTitleTextView"
@@ -91,7 +91,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="@+id/appTitleTextView"
                 app:tint="@color/black"
-                tools:ignore="ContentDescription" />
+                android:contentDescription="@string/image_view_content_description" />
 
             <ImageView
                 android:id="@+id/sideIcon2Toolbar"
@@ -105,7 +105,7 @@
                 app:layout_constraintEnd_toStartOf="@+id/sideIconToolbar"
                 app:layout_constraintTop_toTopOf="@+id/appTitleTextView"
                 app:tint="@color/black"
-                tools:ignore="ContentDescription" />
+                android:contentDescription="@string/image_view_content_description" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

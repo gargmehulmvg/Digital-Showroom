@@ -1,5 +1,6 @@
 package com.digitaldukaan.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -29,7 +30,13 @@ class OrderPageBannerAdapter(private val bannerList: ArrayList<HomePageBannerRes
         position: Int
     ) {
        holder.run {
-           doubleSpanImageView?.let { Picasso.get().load(bannerList?.get(position)?.mBannerUrl).into(it) }
+           doubleSpanImageView?.let {
+               try {
+                   Picasso.get().load(bannerList?.get(position)?.mBannerUrl).into(it)
+               } catch (e: Exception) {
+                   Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+               }
+           }
        }
     }
 

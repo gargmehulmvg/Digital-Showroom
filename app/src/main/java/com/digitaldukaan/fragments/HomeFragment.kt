@@ -10,12 +10,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebSettings
+import android.webkit.WebView
 import android.widget.ImageView
 import android.widget.ScrollView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.widget.NestedScrollView
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.appsflyer.AppsFlyerLib
 import com.digitaldukaan.BuildConfig
@@ -42,7 +44,6 @@ import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration
 import kotlinx.android.synthetic.main.home_fragment.*
 import kotlinx.android.synthetic.main.layout_analytics.*
 import kotlinx.android.synthetic.main.layout_common_webview_fragment.*
-import kotlinx.android.synthetic.main.otp_verification_fragment.*
 import org.json.JSONObject
 
 
@@ -53,7 +54,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         private val TAG = HomeFragment::class.simpleName
         private var mOrderPageInfoStaticData: OrderPageStaticTextResponse? = null
         private var mIsDoublePressToExit = false
-        private lateinit var mHomeFragmentService: HomeFragmentService
+        private var mHomeFragmentService: HomeFragmentService? = null
         private var mDoubleClickToExitStr: String? = ""
         private var mFetchingOrdersStr: String? = ""
         private lateinit var orderAdapter: OrderAdapterV2
@@ -69,6 +70,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         private var mIsMoreCompletedOrderAvailable = false
         private lateinit var mSwipeRefreshLayout: SwipeRefreshLayout
         private var orderPageInfoResponse: OrderPageInfoResponse? = null
+        private var analyticsResponse: AnalyticsResponse? = null
 
         fun newInstance(): HomeFragment {
             return HomeFragment()
@@ -78,7 +80,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mHomeFragmentService = HomeFragmentService()
-        mHomeFragmentService.setHomeFragmentServiceListener(this)
+        mHomeFragmentService?.setHomeFragmentServiceListener(this)
         AppsFlyerLib.getInstance().setCustomerUserId(PrefsManager.getStringDataFromSharedPref(Constants.USER_MOBILE_NUMBER))
     }
 
@@ -89,8 +91,13 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
     ): View? {
         mContentView = inflater.inflate(R.layout.home_fragment, container, false)
         if (!askContactPermission()) if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else {
-            mHomeFragmentService.getOrderPageInfo()
-            mHomeFragmentService.getAnalyticsData()
+            if (orderPageInfoResponse == null) {
+                mHomeFragmentService?.getOrderPageInfo()
+                mHomeFragmentService?.getAnalyticsData()
+            } else {
+                setupOrderPageInfoUI()
+                setupAnalyticsUI()
+            }
         }
         mSwipeRefreshLayout = mContentView.findViewById(R.id.swipeRefreshLayout)
         return mContentView
@@ -149,7 +156,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
     private fun fetchLatestOrders(mode: String, fetchingOrderStr: String?, page: Int = 1) {
         if (fetchingOrderStr?.isNotEmpty() == true) showCancellableProgressDialog(mActivity, fetchingOrderStr)
         val request = OrdersRequest(mode, page)
-        mHomeFragmentService.getOrders(request)
+        mHomeFragmentService?.getOrders(request)
     }
 
     override fun onClick(view: View?) {
@@ -212,6 +219,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
     }
 
     private fun setupHomePageWebView(webViewUrl: String) {
+        val homePageWebView: WebView? = mContentView.findViewById(R.id.homePageWebView)
         homePageWebView?.apply {
             val webViewController = CommonWebViewFragment.WebViewController()
             webViewController.commonWebView = commonWebView
@@ -288,18 +296,32 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             if (commonResponse.mIsSuccessStatus) {
-                val analyticsResponse = Gson().fromJson<AnalyticsResponse>(commonResponse.mCommonDataStr, AnalyticsResponse::class.java)
-                todaySaleValue?.text = analyticsResponse?.today?.totalCount.toString()
-                amountValue?.text = "${analyticsResponse.analyticsStaticData?.textRuppeeSymbol} ${analyticsResponse?.today?.totalAmount}"
-                weekSaleValue?.text = analyticsResponse?.thisWeek?.totalCount.toString()
-                weekAmountValue?.text = "${analyticsResponse.analyticsStaticData?.textRuppeeSymbol} ${analyticsResponse?.thisWeek?.totalAmount}"
-                analyticsResponse?.analyticsStaticData?.run {
-                    todaySaleHeading?.text = textTodaySale
-                    amountHeading?.text = textTodayAmount
-                    weekSaleHeading?.text = textWeekSale
-                    weekAmountHeading?.text = textWeekAmount
-                }
+                analyticsResponse = Gson().fromJson<AnalyticsResponse>(commonResponse.mCommonDataStr, AnalyticsResponse::class.java)
+                setupAnalyticsUI()
             }
+        }
+    }
+
+    private fun setupAnalyticsUI() {
+        val todaySaleValue: TextView? = mContentView.findViewById(R.id.todaySaleValue)
+        val amountValue: TextView? = mContentView.findViewById(R.id.amountValue)
+        val weekSaleValue: TextView? = mContentView.findViewById(R.id.weekSaleValue)
+        val weekAmountValue: TextView? = mContentView.findViewById(R.id.weekAmountValue)
+        val todaySaleHeading: TextView? = mContentView.findViewById(R.id.todaySaleHeading)
+        val amountHeading: TextView? = mContentView.findViewById(R.id.amountHeading)
+        val weekSaleHeading: TextView? = mContentView.findViewById(R.id.weekSaleHeading)
+        val weekAmountHeading: TextView? = mContentView.findViewById(R.id.weekAmountHeading)
+        todaySaleValue?.text = analyticsResponse?.today?.totalCount.toString()
+        val amountValueStr = "${analyticsResponse?.analyticsStaticData?.textRuppeeSymbol} ${analyticsResponse?.today?.totalAmount}"
+        amountValue?.text = amountValueStr
+        weekSaleValue?.text = analyticsResponse?.thisWeek?.totalCount.toString()
+        val weekValueStr = "${analyticsResponse?.analyticsStaticData?.textRuppeeSymbol} ${analyticsResponse?.thisWeek?.totalAmount}"
+        weekAmountValue?.text = weekValueStr
+        analyticsResponse?.analyticsStaticData?.run {
+            todaySaleHeading?.text = textTodaySale
+            amountHeading?.text = textTodayAmount
+            weekSaleHeading?.text = textWeekSale
+            weekAmountHeading?.text = textWeekAmount
         }
     }
 
@@ -308,50 +330,80 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
             stopProgress()
             if (commonResponse.mIsSuccessStatus) {
                 orderPageInfoResponse = Gson().fromJson<OrderPageInfoResponse>(commonResponse.mCommonDataStr, OrderPageInfoResponse::class.java)
-                orderPageInfoResponse?.run {
-                    mOrderPageInfoStaticData = mOrderPageStaticText?.run {
-                        mFetchingOrdersStr = fetching_orders
-                        mDoubleClickToExitStr = msg_double_click_to_exit
-                        appTitleTextView?.text = heading_order_page
-                        this
-                    }
-                    StaticInstances.sOrderPageInfoStaticData = mOrderPageInfoStaticData
-                    pendingOrderTextView?.text = mOrderPageInfoStaticData?.text_pending
-                    completedOrderTextView?.text = mOrderPageInfoStaticData?.text_completed
-                    if (mIsZeroOrder.mIsActive) {
-                        homePageWebViewLayout?.visibility = View.VISIBLE
-                        orderLayout?.visibility = View.GONE
-                        takeOrderTextView?.visibility = View.GONE
-                        setupHomePageWebView(mIsZeroOrder.mUrl)
-                        mSwipeRefreshLayout.isEnabled = false
-                    } else {
-                        mSwipeRefreshLayout.isEnabled = true
-                        homePageWebViewLayout?.visibility = View.GONE
-                        orderLayout?.visibility = View.VISIBLE
-                        bannerRecyclerView?.apply {
-                            linearLayoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
-                            layoutManager = linearLayoutManager
-                            adapter = OrderPageBannerAdapter(orderPageInfoResponse?.mBannerList, object : IAdapterItemClickListener {
-                                override fun onAdapterItemClickListener(position: Int) {
-                                    val item = orderPageInfoResponse?.mBannerList?.get(position)
-                                    when(item?.mAction) {
-                                        Constants.ACTION_ADD_BANK -> launchFragment(BankAccountFragment.newInstance(null,0, false,  null), true)
-                                    }
+                setupOrderPageInfoUI()
+            }
+        }
+    }
+
+    private fun setupOrderPageInfoUI() {
+        orderPageInfoResponse?.run {
+            mOrderPageInfoStaticData = mOrderPageStaticText?.run {
+                val appTitleTextView: TextView? = mContentView.findViewById(R.id.appTitleTextView)
+                mFetchingOrdersStr = fetching_orders
+                mDoubleClickToExitStr = msg_double_click_to_exit
+                appTitleTextView?.text = heading_order_page
+                this
+            }
+            StaticInstances.sOrderPageInfoStaticData = mOrderPageInfoStaticData
+            val pendingOrderTextView: TextView? = mContentView.findViewById(R.id.pendingOrderTextView)
+            val completedOrderTextView: TextView? = mContentView.findViewById(R.id.completedOrderTextView)
+            val takeOrderTextView: TextView? = mContentView.findViewById(R.id.takeOrderTextView)
+            val homePageWebViewLayout: View? = mContentView.findViewById(R.id.homePageWebViewLayout)
+            val orderLayout: View? = mContentView.findViewById(R.id.orderLayout)
+            val analyticsImageView: View? = mContentView.findViewById(R.id.analyticsImageView)
+            val searchImageView: View? = mContentView.findViewById(R.id.searchImageView)
+            val helpImageView: View? = mContentView.findViewById(R.id.helpImageView)
+            val bannerRecyclerView: RecyclerView? = mContentView.findViewById(R.id.bannerRecyclerView)
+            pendingOrderTextView?.text = mOrderPageInfoStaticData?.text_pending
+            completedOrderTextView?.text = mOrderPageInfoStaticData?.text_completed
+            if (mIsZeroOrder.mIsActive) {
+                homePageWebViewLayout?.visibility = View.VISIBLE
+                orderLayout?.visibility = View.GONE
+                takeOrderTextView?.visibility = View.GONE
+                setupHomePageWebView(mIsZeroOrder.mUrl)
+                mSwipeRefreshLayout.isEnabled = false
+            } else {
+                mSwipeRefreshLayout.isEnabled = true
+                homePageWebViewLayout?.visibility = View.GONE
+                orderLayout?.visibility = View.VISIBLE
+                bannerRecyclerView?.apply {
+                    linearLayoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
+                    layoutManager = linearLayoutManager
+                    adapter = OrderPageBannerAdapter(
+                        orderPageInfoResponse?.mBannerList,
+                        object : IAdapterItemClickListener {
+                            override fun onAdapterItemClickListener(position: Int) {
+                                val item = orderPageInfoResponse?.mBannerList?.get(position)
+                                when (item?.mAction) {
+                                    Constants.ACTION_ADD_BANK -> launchFragment(
+                                        BankAccountFragment.newInstance(
+                                            null,
+                                            0,
+                                            false,
+                                            null
+                                        ), true
+                                    )
                                 }
-                            })
-                        }
-                        Handler(Looper.getMainLooper()).postDelayed({ fetchLatestOrders(Constants.MODE_PENDING, mFetchingOrdersStr, pendingPageCount) }, 200)
-                    }
-                    if (mIsHelpOrder.mIsActive) {
-                        helpImageView?.visibility = View.VISIBLE
-                        helpImageView?.setOnClickListener { openWebViewFragmentV2(this@HomeFragment, getString(R.string.help), mIsHelpOrder.mUrl, Constants.SETTINGS) }
-                    }
-                    takeOrderTextView?.text = mOrderPageInfoStaticData?.text_add_new_order
-                    analyticsImageView?.visibility = if (mIsAnalyticsOrder) View.VISIBLE else View.GONE
-                    searchImageView?.visibility = if (mIsSearchOrder) View.VISIBLE else View.GONE
-                    takeOrderTextView?.visibility = if (mIsTakeOrder) View.VISIBLE else View.GONE
+                            }
+                        })
+                }
+                Handler(Looper.getMainLooper()).postDelayed({ fetchLatestOrders(Constants.MODE_PENDING, mFetchingOrdersStr, pendingPageCount) }, 150)
+            }
+            if (mIsHelpOrder.mIsActive) {
+                helpImageView?.visibility = View.VISIBLE
+                helpImageView?.setOnClickListener {
+                    openWebViewFragmentV2(
+                        this@HomeFragment,
+                        getString(R.string.help),
+                        mIsHelpOrder.mUrl,
+                        Constants.SETTINGS
+                    )
                 }
             }
+            takeOrderTextView?.text = mOrderPageInfoStaticData?.text_add_new_order
+            analyticsImageView?.visibility = if (mIsAnalyticsOrder) View.VISIBLE else View.GONE
+            searchImageView?.visibility = if (mIsSearchOrder) View.VISIBLE else View.GONE
+            takeOrderTextView?.visibility = if (mIsTakeOrder) View.VISIBLE else View.GONE
         }
     }
 
@@ -380,7 +432,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
             stopProgress()
             if (mSwipeRefreshLayout.isRefreshing) mSwipeRefreshLayout.isRefreshing = false
             if (commonResponse.mIsSuccessStatus) {
-                orderLayout.fullScroll(ScrollView.FOCUS_UP)
+                orderLayout?.fullScroll(ScrollView.FOCUS_UP)
                 completedPageCount = 1
                 pendingPageCount = 1
                 mOrderList.clear()
@@ -399,22 +451,17 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
 
     private fun saveUserDetailsInPref(validateOtpResponse: ValidateOtpResponse) {
         storeStringDataInSharedPref(Constants.USER_AUTH_TOKEN, validateOtpResponse.mUserAuthToken)
-        storeStringDataInSharedPref(
-            Constants.USER_MOBILE_NUMBER,
-            validateOtpResponse.mUserPhoneNumber
-        )
+        storeStringDataInSharedPref(Constants.USER_MOBILE_NUMBER, validateOtpResponse.mUserPhoneNumber)
         validateOtpResponse.mStore?.run {
             storeStringDataInSharedPref(Constants.STORE_ID, storeId.toString())
             storeStringDataInSharedPref(Constants.STORE_NAME, storeInfo.name)
-            if (this.storeInfo.logoImage?.isNotEmpty() == true) StaticInstances.sIsStoreImageUploaded =
-                true
+            if (this.storeInfo.logoImage?.isNotEmpty() == true) StaticInstances.sIsStoreImageUploaded = true
         }
     }
 
     override fun onOTPVerificationErrorResponse(validateOtpErrorResponse: ValidateOtpErrorResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
-            otpEditText.clearOTP()
             showToast(validateOtpErrorResponse.mMessage)
         }
     }
@@ -425,6 +472,8 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         completedPageCount = 1
         pendingPageCount = 1
         fetchLatestOrders(Constants.MODE_PENDING, mFetchingOrdersStr, pendingPageCount)
+        mHomeFragmentService?.getOrderPageInfo()
+        mHomeFragmentService?.getAnalyticsData()
     }
 
     override fun onRequestPermissionsResult(
@@ -436,17 +485,15 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
             when {
                 grantResults.isEmpty() -> Log.i(TAG, "User interaction was cancelled.")
                 grantResults[0] == PackageManager.PERMISSION_GRANTED -> {
-                    CoroutineScopeUtils().runTaskOnCoroutineBackground {
-                        getContactsFromStorage2(mActivity)
-                    }
+                    CoroutineScopeUtils().runTaskOnCoroutineBackground { getContactsFromStorage2(mActivity) }
                     if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else {
-                        mHomeFragmentService.getOrderPageInfo()
-                        mHomeFragmentService.getAnalyticsData()
+                        mHomeFragmentService?.getOrderPageInfo()
+                        mHomeFragmentService?.getAnalyticsData()
                     }
                 }
                 else -> {
-                    mHomeFragmentService.getOrderPageInfo()
-                    mHomeFragmentService.getAnalyticsData()
+                    mHomeFragmentService?.getOrderPageInfo()
+                    mHomeFragmentService?.getAnalyticsData()
                 }
             }
         }
@@ -458,14 +505,10 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
     ) {
         mOrderIdString = inputOrderId
         mMobileNumberString = inputMobileNumber
-        val request = SearchOrdersRequest(
-            if (mOrderIdString.isNotEmpty()) mOrderIdString.toLong() else 0,
-            mMobileNumberString,
-            1
-        )
+        val request = SearchOrdersRequest(if (mOrderIdString.isNotEmpty()) mOrderIdString.toLong() else 0, mMobileNumberString, 1)
         if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog()
         showProgressDialog(mActivity)
-        mHomeFragmentService.getSearchOrders(request)
+        mHomeFragmentService?.getSearchOrders(request)
     }
 
     override fun onOrderCheckBoxChanged(isChecked: Boolean, item: OrderItemResponse?) {
@@ -498,7 +541,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                 item.orderId.toLong(),
                 Constants.StatusSeenByMerchant.toLong()
             )
-            mHomeFragmentService.updateOrderStatus(request)
+            mHomeFragmentService?.updateOrderStatus(request)
             isNewOrder = true
         }
         launchFragment(OrderDetailFragment.newInstance(item?.orderId.toString(), isNewOrder), true)
@@ -508,7 +551,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         val request = CompleteOrderRequest(item?.orderId?.toLong())
         if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else {
             showProgressDialog(mActivity)
-            mHomeFragmentService.completeOrder(request)
+            mHomeFragmentService?.completeOrder(request)
         }
     }
 
@@ -551,7 +594,21 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
 
     override fun onImageSelectionResultUri(fileUri: Uri?) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            launchFragment(SendBillFragment.newInstance(fileUri), true)
+            try {
+                launchFragment(SendBillFragment.newInstance(fileUri), true)
+            } catch (e: Exception) {
+                Log.e(TAG, "onImageSelectionResultUri: ${e.message}", e)
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(
+                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                        "Exception Point" to "onImageSelectionResultUri",
+                        "Exception Message" to e.message,
+                        "Exception Logs" to e.toString()
+                    )
+                )
+            }
         }
     }
 
@@ -578,7 +635,13 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                 shareButtonTextView.text = mOrderPageInfoStaticData?.bottom_sheet_click_bill_photo
                 takeOrderMessageTextView.text = mOrderPageInfoStaticData?.bottom_sheet_take_order_message
                 createNewBillTextView.text = mOrderPageInfoStaticData?.bottom_sheet_create_a_new_bill
-                imageViewSendBill?.let { Picasso.get().load(orderPageInfoResponse?.mTakeOrderImage).into(it) }
+                imageViewSendBill?.let {
+                    try {
+                        Picasso.get().load(orderPageInfoResponse?.mTakeOrderImage).into(it)
+                    } catch (e: Exception) {
+                        Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+                    }
+                }
                 createNewBillTextView.setOnClickListener {
                     createNewBillTextView.isEnabled = false
                     bottomSheetDialog.dismiss()
@@ -593,4 +656,8 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         }.show()
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        orderPageInfoResponse = null
+    }
 }

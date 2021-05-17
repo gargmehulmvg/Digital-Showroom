@@ -1,6 +1,7 @@
 package com.digitaldukaan.adapters
 
 import android.graphics.Color
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -48,7 +49,13 @@ class MarketingCardAdapter(
         holder.run {
             if (item?.type == Constants.SPAN_TYPE_FULL_WIDTH) {
                 doubleSpanContainer.visibility = View.VISIBLE
-                doubleSpanImageView?.let { Picasso.get().load(item.logo).into(it) }
+                doubleSpanImageView?.let {
+                    try {
+                        Picasso.get().load(item.logo).into(it)
+                    } catch (e: Exception) {
+                        Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+                    }
+                }
                 doubleSpanTextView.text = item.text
                 doubleSpanContinueTextView.text = item.viewNow
                 if (item.stripText?.isNotEmpty() == true) {
@@ -57,7 +64,13 @@ class MarketingCardAdapter(
                 } else stripTextView.visibility = View.GONE
             } else {
                 singleSpanContainer.visibility = View.VISIBLE
-                singleSpanImageView?.let { Picasso.get().load(item?.logo).into(it) }
+                singleSpanImageView?.let {
+                    try {
+                        Picasso.get().load(item?.logo).into(it)
+                    } catch (e: Exception) {
+                        Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+                    }
+                }
                 singleSpanTextView.text = item?.heading
                 singleSpanBackgroundView.setBackgroundColor(Color.parseColor(item?.color))
             }

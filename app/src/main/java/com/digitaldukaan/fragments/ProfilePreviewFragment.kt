@@ -16,7 +16,6 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
 import androidx.core.net.toUri
-import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.digitaldukaan.R
@@ -59,6 +58,15 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
 
     companion object {
         private const val TAG = "ProfilePreviewFragment"
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        AppEventsManager.pushAppEvents(
+            eventName = AFInAppEventType.EVENT_PROFILE_PAGE,
+            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+            data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
+        )
     }
 
     fun newInstance(storeName: String? = ""): ProfilePreviewFragment {
@@ -143,7 +151,13 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
             mProfilePreviewResponse?.mProfilePreviewBanner?.run {
                 profilePreviewBannerHeading?.text = mHeading
                 profilePreviewBannerStartNow?.text = mStartNow
-                profilePreviewBannerImageView?.let { Picasso.get().load(mCDN).into(it) }
+                profilePreviewBannerImageView?.let {
+                    try {
+                        Picasso.get().load(mCDN).into(it)
+                    } catch (e: Exception) {
+                        Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+                    }
+                }
                 profilePreviewBannerSubHeading?.text = mSubHeading
             }
             ToolBarManager.getInstance()?.setHeaderTitle(mProfilePreviewResponse?.mProfileStaticText?.pageHeading)
@@ -155,7 +169,13 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                     hiddenImageView?.visibility = View.INVISIBLE
                     hiddenTextView?.visibility = View.INVISIBLE
                     storePhotoImageView?.visibility = View.VISIBLE
-                    storePhotoImageView?.let { Picasso.get().load(mStoreLogo).into(it) }
+                    storePhotoImageView?.let {
+                        try {
+                            Picasso.get().load(mStoreLogo).into(it)
+                        } catch (e: Exception) {
+                            Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+                        }
+                    }
                 } else {
                     hiddenImageView?.visibility = View.VISIBLE
                     hiddenTextView?.visibility = View.VISIBLE
@@ -163,17 +183,11 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                 }
             }
             mProfilePreviewResponse?.mSettingsKeysList?.run {
-                val linearLayoutManager = LinearLayoutManager(mActivity)
                 profilePreviewRecyclerView?.apply {
-                    layoutManager = linearLayoutManager
+                    layoutManager = LinearLayoutManager(mActivity)
                     setHasFixedSize(true)
                     adapter = ProfilePreviewAdapter(mActivity, this@run, this@ProfilePreviewFragment, mProfilePreviewResponse?.mStoreItemResponse?.storeBusiness)
                 }
-                val dividerItemDecoration = DividerItemDecoration(
-                    profilePreviewRecyclerView?.context,
-                    linearLayoutManager.orientation
-                )
-                profilePreviewRecyclerView?.addItemDecoration(dividerItemDecoration)
             }
         }
     }
@@ -554,7 +568,13 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                     storePhotoImageView?.visibility = View.VISIBLE
                     hiddenImageView?.visibility = View.INVISIBLE
                     hiddenTextView?.visibility = View.INVISIBLE
-                    storePhotoImageView?.let { Picasso.get().load(mStoreLogo).into(it) }
+                    storePhotoImageView?.let {
+                        try {
+                            Picasso.get().load(mStoreLogo).into(it)
+                        } catch (e: Exception) {
+                            Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+                        }
+                    }
                 } else {
                     StaticInstances.sIsStoreImageUploaded = false
                     storePhotoImageView?.visibility = View.GONE

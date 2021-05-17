@@ -3,6 +3,7 @@ package com.digitaldukaan.fragments
 import android.Manifest
 import android.app.Activity
 import android.app.Dialog
+import android.app.PendingIntent
 import android.content.*
 import android.content.Context.MODE_PRIVATE
 import android.content.pm.PackageManager
@@ -33,6 +34,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.MainActivity
+import com.digitaldukaan.MyFcmMessageListenerService
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.ImagesSearchAdapter
 import com.digitaldukaan.constants.*
@@ -77,19 +79,31 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     protected fun showProgressDialog(context: Context?, message: String? = "Please wait...") {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             context?.run {
-                mProgressDialog = Dialog(this)
-                mProgressDialog?.apply {
-                    val view = LayoutInflater.from(context).inflate(R.layout.progress_dialog, null)
-                    message?.run {
-                        val messageTextView : TextView = view.findViewById(R.id.progressDialogTextView)
-                        messageTextView.text = this
-                    }
-                    setContentView(view)
-                    setCancelable(false)
-                    window!!.setBackgroundDrawable(
-                        ColorDrawable(Color.TRANSPARENT)
+                try {
+                    mProgressDialog = Dialog(this)
+                    mProgressDialog?.apply {
+                        val view = LayoutInflater.from(context).inflate(R.layout.progress_dialog, null)
+                        message?.run {
+                            val messageTextView : TextView = view.findViewById(R.id.progressDialogTextView)
+                            messageTextView.text = this
+                        }
+                        setContentView(view)
+                        setCancelable(false)
+                        window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                    }?.show()
+                } catch (e: Exception) {
+                    Log.e(TAG, "showProgressDialog: ${e.message}", e)
+                    AppEventsManager.pushAppEvents(
+                        eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
+                        isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                        data = mapOf(
+                            AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                            "Exception Point" to "showProgressDialog",
+                            "Exception Message" to e.message,
+                            "Exception Logs" to e.toString()
+                        )
                     )
-                }?.show()
+                }
             }
         }
     }
@@ -119,13 +133,21 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                         messageTextView.text = this
                     }
                     mProgressDialog?.setCancelable(true)
-                    mProgressDialog?.window!!.setBackgroundDrawable(
-                        ColorDrawable(Color.TRANSPARENT)
-                    )
+                    mProgressDialog?.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
                     mProgressDialog?.show()
                 }
             } catch (e: java.lang.Exception) {
                 Log.e(TAG, "showCancellableProgressDialog: ${e.message}", e)
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(
+                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                        "Exception Point" to "showCancellableProgressDialog",
+                        "Exception Message" to e.message,
+                        "Exception Logs" to e.toString()
+                    )
+                )
             }
         }
     }
@@ -134,14 +156,22 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         try {
             mActivity.runOnUiThread {
                 if (mProgressDialog != null) {
-                    mProgressDialog?.let {
-                        mProgressDialog?.dismiss()
-                        mProgressDialog = null
-                    }
+                    mProgressDialog?.dismiss()
+                    mProgressDialog = null
                 }
             }
         } catch (e: Exception) {
             Log.e(TAG, "stopProgress: ${e.message}", e)
+            AppEventsManager.pushAppEvents(
+                eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
+                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                data = mapOf(
+                    AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                    "Exception Point" to "stopProgress",
+                    "Exception Message" to e.message,
+                    "Exception Logs" to e.toString()
+                )
+            )
         }
     }
 
@@ -169,8 +199,18 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                         setBackgroundTint(ContextCompat.getColor(mActivity, R.color.snack_bar_background))
                         setTextColor(ContextCompat.getColor(mActivity, R.color.white))
                     }.show()
-                } catch (e : java.lang.Exception) {
+                } catch (e : Exception) {
                     Log.e(TAG, "showShortSnackBar: ${e.message}", e)
+                    AppEventsManager.pushAppEvents(
+                        eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
+                        isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                        data = mapOf(
+                            AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                            "Exception Point" to "showShortSnackBar",
+                            "Exception Message" to e.message,
+                            "Exception Logs" to e.toString()
+                        )
+                    )
                 }
             }
         }
@@ -225,6 +265,16 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
             }
         } catch (e: Exception) {
             Log.e(TAG, "clearFragmentBackStack: ${e.message}", e)
+            AppEventsManager.pushAppEvents(
+                eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
+                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                data = mapOf(
+                    AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                    "Exception Point" to "clearFragmentBackStack",
+                    "Exception Message" to e.message,
+                    "Exception Logs" to e.toString()
+                )
+            )
         }
     }
 
@@ -237,16 +287,29 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
 
     open fun showNoInternetConnectionDialog() {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            val builder: AlertDialog.Builder? = AlertDialog.Builder(mActivity)
-            builder?.apply {
-                setTitle(getString(R.string.no_internet_connection))
-                setMessage(getString(R.string.turn_on_internet_message))
-                setCancelable(false)
-                setNegativeButton(getString(R.string.close)) { dialog, _ ->
-                    onNoInternetButtonClick(true)
-                    dialog.dismiss()
-                }
-            }?.create()?.show()
+            try {
+                val builder: AlertDialog.Builder? = AlertDialog.Builder(mActivity)
+                builder?.apply {
+                    setTitle(getString(R.string.no_internet_connection))
+                    setMessage(getString(R.string.turn_on_internet_message))
+                    setCancelable(false)
+                    setNegativeButton(getString(R.string.close)) { dialog, _ ->
+                        onNoInternetButtonClick(true)
+                        dialog.dismiss()
+                    }
+                }?.create()?.show()
+            } catch (e: Exception) {
+                Log.e(TAG, "showNoInternetConnectionDialog: ${e.message}", e)
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                        "Exception Point" to "showNoInternetConnectionDialog",
+                        "Exception Message" to e.message,
+                        "Exception Logs" to e.toString()
+                    )
+                )
+            }
         }
     }
 
@@ -263,12 +326,19 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
 
     open fun openUrlInBrowser(url:String?) {
         try {
-            url?.let {
-                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
-            }
+            url?.let { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it))) }
         } catch (e: Exception) {
             Log.e(TAG, "openUrlInBrowser: ${e.message}", e)
-            showToast(getString(R.string.something_went_wrong))
+            AppEventsManager.pushAppEvents(
+                eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
+                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                data = mapOf(
+                    AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                    "Exception Point" to "openUrlInBrowser",
+                    "Exception Message" to e.message,
+                    "Exception Logs" to e.toString()
+                )
+            )
         }
     }
 
@@ -305,15 +375,33 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         }
     }
 
-    protected fun shareDataOnWhatsAppByNumber(phone: String?, message: String?) {
+    protected fun shareDataOnWhatsAppByNumber(phone: String?, message: String? = "") {
         phone?.let {
             var phoneNumber = it
             if (!it.contains("+91")) phoneNumber = "+91$phoneNumber"
             try {
-                openUrlInBrowser("https://wa.me/$phoneNumber?text=$message")
+                openWhatsAppInBrowser(phoneNumber, message)
             } catch (e: Exception) {
                 showToast(e.message)
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(
+                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                        "Exception Point" to "shareDataOnWhatsAppByNumber",
+                        "Exception Message" to e.message,
+                        "Exception Logs" to e.toString()
+                    )
+                )
             }
+        }
+    }
+
+    private fun openWhatsAppInBrowser(mobile: String?, data: String?) {
+        try {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("whatsapp://send?phone=$mobile&text=$data")))
+        } catch (e: Exception) {
+            Log.e(TAG, "openWhatsApp: ", e)
         }
     }
 
@@ -326,6 +414,16 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
             mActivity.startActivity(whatsAppIntent)
         } catch (ex: ActivityNotFoundException) {
             showToast(ex.message)
+            AppEventsManager.pushAppEvents(
+                eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
+                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                data = mapOf(
+                    AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                    "Exception Point" to "shareData",
+                    "Exception Message" to ex.message,
+                    "Exception Logs" to ex.toString()
+                )
+            )
         }
     }
 
@@ -367,6 +465,16 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         } catch (e: Exception) {
             Log.e(TAG, "shareDataOnWhatsAppWithImage: ${e.message}", e)
             showToast(getString(R.string.something_went_wrong))
+            AppEventsManager.pushAppEvents(
+                eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
+                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                data = mapOf(
+                    AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                    "Exception Point" to "shareDataOnWhatsAppWithImage",
+                    "Exception Message" to e.message,
+                    "Exception Logs" to e.toString()
+                )
+            )
         }
     }
 
@@ -622,25 +730,39 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     open fun onNoInternetButtonClick(isNegativeButtonClick: Boolean) = Unit
 
     override fun onSearchImageItemClicked(photoStr: String) {
-        showProgressDialog(mActivity)
-        Picasso.get().load(photoStr).into(object : com.squareup.picasso.Target {
-            override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
-                bitmap?.let {
-                    val file = getImageFileFromBitmap(it, mActivity)
-                    stopProgress()
-                    if (::mImagePickBottomSheet.isInitialized) mImagePickBottomSheet.dismiss()
-                    onImageSelectionResultFile(file, Constants.MODE_CROP)
+        try {
+            showCancellableProgressDialog(mActivity)
+            Picasso.get().load(photoStr).into(object : com.squareup.picasso.Target {
+                override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
+                    bitmap?.let {
+                        val file = getImageFileFromBitmap(it, mActivity)
+                        stopProgress()
+                        if (::mImagePickBottomSheet.isInitialized) mImagePickBottomSheet.dismiss()
+                        onImageSelectionResultFile(file, Constants.MODE_CROP)
+                    }
                 }
-            }
 
-            override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
-                Log.d("TAG", "onPrepareLoad: ")
-            }
+                override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
+                    Log.d("TAG", "onPrepareLoad: ")
+                }
 
-            override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
-                Log.d("TAG", "onBitmapFailed: ")
-            }
-        })
+                override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
+                    Log.d("TAG", "onBitmapFailed: ")
+                }
+            })
+        } catch (e: Exception) {
+            Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+            AppEventsManager.pushAppEvents(
+                eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
+                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                data = mapOf(
+                    AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                    "Exception Point" to "onSearchImageItemClicked",
+                    "Exception Message" to e.message,
+                    "Exception Logs" to e.toString()
+                )
+            )
+        }
     }
 
     protected fun updateNavigationBarState(actionId: Int) {
@@ -828,47 +950,83 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
             setCancelable(true)
             setContentView(R.layout.image_dialog)
             val imageView: ImageView = findViewById(R.id.imageView)
-            imageStr?.let { Picasso.get().load(it).into(imageView) }
+            imageStr?.let {
+                try {
+                    Picasso.get().load(it).into(imageView)
+                } catch (e: Exception) {
+                    Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+                    AppEventsManager.pushAppEvents(
+                        eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
+                        isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                        data = mapOf(
+                            AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                            "Exception Point" to "showImageDialog",
+                            "Exception Message" to e.message,
+                            "Exception Logs" to e.toString()
+                        )
+                    )
+                }
+            }
         }.show()
     }
 
     protected fun showMasterCatalogBottomSheet(addProductBannerStaticDataResponse: AddProductBannerTextResponse?, addProductStaticText: AddProductStaticText?, mode: String) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            val bottomSheetDialog = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
-            val view = LayoutInflater.from(mActivity).inflate(
-                R.layout.bottom_sheet_add_products_catalog_builder,
-                mActivity.findViewById(R.id.bottomSheetContainer)
-            )
-            bottomSheetDialog.apply {
-                setContentView(view)
-                setBottomSheetCommonProperty()
-                view.run {
-                    val closeImageView: View = findViewById(R.id.closeImageView)
-                    val offerTextView: TextView = findViewById(R.id.offerTextView)
-                    val headerTextView: TextView = findViewById(R.id.headerTextView)
-                    val bodyTextView: TextView = findViewById(R.id.bodyTextView)
-                    val bannerImageView: ImageView = findViewById(R.id.bannerImageView)
-                    val buttonTextView: TextView = findViewById(R.id.buttonTextView)
-                    offerTextView.text = addProductBannerStaticDataResponse?.offer
-                    headerTextView.setHtmlData(addProductBannerStaticDataResponse?.header)
-                    bodyTextView.text = addProductBannerStaticDataResponse?.body
-                    buttonTextView.text = addProductBannerStaticDataResponse?.button_text
-                    bannerImageView?.let { Picasso.get().load(addProductBannerStaticDataResponse?.image_url).into(it) }
-                    closeImageView.setOnClickListener { bottomSheetDialog.dismiss() }
-                    buttonTextView.setOnClickListener{
-                        bottomSheetDialog.dismiss()
-                        AppEventsManager.pushAppEvents(
-                            eventName = AFInAppEventType.EVENT_CATALOG_BUILDER_TRY_NOW,
-                            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                            data = mapOf(
-                                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                                AFInAppEventParameterName.PATH to if (mode == Constants.MODE_PRODUCT_LIST) Constants.MODE_PRODUCT_LIST else Constants.MODE_ADD_PRODUCT
+            try {
+                val bottomSheetDialog = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
+                val view = LayoutInflater.from(mActivity).inflate(
+                    R.layout.bottom_sheet_add_products_catalog_builder,
+                    mActivity.findViewById(R.id.bottomSheetContainer)
+                )
+                bottomSheetDialog.apply {
+                    setContentView(view)
+                    setBottomSheetCommonProperty()
+                    view.run {
+                        val closeImageView: View = findViewById(R.id.closeImageView)
+                        val offerTextView: TextView = findViewById(R.id.offerTextView)
+                        val headerTextView: TextView = findViewById(R.id.headerTextView)
+                        val bodyTextView: TextView = findViewById(R.id.bodyTextView)
+                        val bannerImageView: ImageView = findViewById(R.id.bannerImageView)
+                        val buttonTextView: TextView = findViewById(R.id.buttonTextView)
+                        offerTextView.text = addProductBannerStaticDataResponse?.offer
+                        headerTextView.setHtmlData(addProductBannerStaticDataResponse?.header)
+                        bodyTextView.text = addProductBannerStaticDataResponse?.body
+                        buttonTextView.text = addProductBannerStaticDataResponse?.button_text
+                        bannerImageView?.let {
+                            try {
+                                Picasso.get().load(addProductBannerStaticDataResponse?.image_url).into(it)
+                            } catch (e: Exception) {
+                                Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+                            }
+                        }
+                        closeImageView.setOnClickListener { bottomSheetDialog.dismiss() }
+                        buttonTextView.setOnClickListener{
+                            bottomSheetDialog.dismiss()
+                            AppEventsManager.pushAppEvents(
+                                eventName = AFInAppEventType.EVENT_CATALOG_BUILDER_TRY_NOW,
+                                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                                data = mapOf(
+                                    AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                                    AFInAppEventParameterName.PATH to if (mode == Constants.MODE_PRODUCT_LIST) Constants.MODE_PRODUCT_LIST else Constants.MODE_ADD_PRODUCT
+                                )
                             )
-                        )
-                        launchFragment(ExploreCategoryFragment.newInstance(addProductStaticText), true)
+                            launchFragment(ExploreCategoryFragment.newInstance(addProductStaticText), true)
+                        }
                     }
-                }
-            }.show()
+                }.show()
+            } catch (e: Exception) {
+                Log.e(TAG, "showMasterCatalogBottomSheet: ${e.message}", e)
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(
+                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                        "Exception Point" to "showMasterCatalogBottomSheet",
+                        "Exception Message" to e.message,
+                        "Exception Logs" to e.toString()
+                    )
+                )
+            }
         }
     }
 
@@ -889,8 +1047,20 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         Log.d(TAG, "openMobileGalleryWithImage: ${file.name}")
         val galleryIntent = Intent()
         galleryIntent.action = Intent.ACTION_VIEW
-        galleryIntent.setDataAndType(Uri.parse("file://${file.absolutePath}"), "image/*")
+        galleryIntent.setDataAndType(Uri.fromFile(file), "image/*")
         startActivity(galleryIntent)
+    }
+
+    fun showDownloadNotification(file: File, titleStr: String?) {
+        try {
+            val intent = Intent(Intent.ACTION_VIEW)
+            intent.setDataAndType(Uri.fromFile(file), "image/*")
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            val pendingIntent: PendingIntent = PendingIntent.getActivity(mActivity, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT)
+            MyFcmMessageListenerService.createNotification(titleStr, "Download completed.", pendingIntent, mActivity)
+        } catch (e: Exception) {
+            showToast(e.message)
+        }
     }
 
 }

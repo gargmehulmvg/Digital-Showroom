@@ -25,6 +25,7 @@ import com.digitaldukaan.R
 import com.digitaldukaan.adapters.AddProductsChipsAdapter
 import com.digitaldukaan.adapters.AddProductsImagesAdapter
 import com.digitaldukaan.adapters.ImagesSearchAdapter
+import com.digitaldukaan.adapters.MasterVariantsAdapter
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.IAdapterItemClickListener
 import com.digitaldukaan.interfaces.IChipItemClickListener
@@ -40,6 +41,7 @@ import com.digitaldukaan.services.AddProductService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IAddProductServiceInterface
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.textfield.TextInputLayout
 import com.google.gson.Gson
 import com.squareup.picasso.Picasso
 import com.theartofdev.edmodo.cropper.CropImageView
@@ -50,29 +52,53 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.File
-import java.util.*
 
 
 class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapterItemClickListener,
     IChipItemClickListener, IOnToolbarIconClick, PopupMenu.OnMenuItemClickListener,
     IOnToolbarSecondIconClick {
 
-    private lateinit var mService: AddProductService
+    private var mService: AddProductService? = null
     private var addProductBannerStaticDataResponse: AddProductBannerTextResponse? = null
     private var addProductStaticData: AddProductStaticText? = null
     private var mItemId = 0
     private val mImagesStrList: ArrayList<AddProductImagesResponse> = ArrayList()
-    private lateinit var imagePickBottomSheet: BottomSheetDialog
+    private var imagePickBottomSheet: BottomSheetDialog? = null
     private var imageAdapter = ImagesSearchAdapter()
     private var mImageChangePosition = 0
     private var mAddProductStoreCategoryList: ArrayList<AddStoreCategoryItem>? = ArrayList()
     private val mTempProductCategoryList: ArrayList<AddStoreCategoryItem> = ArrayList()
-    private lateinit var addProductChipsAdapter: AddProductsChipsAdapter
+    private var addProductChipsAdapter: AddProductsChipsAdapter? = null
     private var mOptionsMenuResponse: ArrayList<TrendingListResponse>? = null
     private var mImageAddAdapter: AddProductsImagesAdapter? = null
     private var mIsAddNewProduct: Boolean = false
     private var mProductNameStr: String? = ""
+    private var mProductPriceStr: String? = ""
+    private var mProductDiscountedPriceStr: String? = ""
+    private var mProductDescriptionPriceStr: String? = ""
     private var mIsOrderEdited = false
+    private var mAddProductResponse: AddProductResponse? = null
+    private var discountPriceEditText: EditText? = null
+    private var productDescriptionEditText: EditText? = null
+    private var enterCategoryEditText: EditText? = null
+    private var priceEditText: EditText? = null
+    private var nameEditText: EditText? = null
+    private var continueTextView: TextView? = null
+    private var originalPriceTextView: TextView? = null
+    private var discountedPriceTextView: TextView? = null
+    private var pricePercentageOffTextView: TextView? = null
+    private var imagesLeftTextView: TextView? = null
+    private var addDiscountLabel: TextView? = null
+    private var addItemTextView: TextView? = null
+    private var addVariantsTextView: TextView? = null
+    private var shareProductContainer: View? = null
+    private var noImagesLayout: View? = null
+    private var discountContainer: View? = null
+    private var variantContainer: View? = null
+    private var variantRecyclerView: RecyclerView? = null
+    private var imagesRecyclerView: RecyclerView? = null
+    private var chipGroupRecyclerView: RecyclerView? = null
+    private var productDescriptionInputLayout: TextInputLayout? = null
 
     companion object {
         private const val TAG = "AddProductFragment"
@@ -87,7 +113,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mService = AddProductService()
-        mService.setServiceListener(this)
+        mService?.setServiceListener(this)
         AppEventsManager.pushAppEvents(eventName = AFInAppEventType.EVENT_ADD_ITEM, isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true, data = mapOf(
                 AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
                 AFInAppEventParameterName.IS_MERCHANT to "1"
@@ -113,52 +139,81 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             setSideIcon(ContextCompat.getDrawable(mActivity, R.drawable.ic_options_menu), this@AddProductFragment)
         }
         hideBottomNavigationView(true)
-        val discountPriceEditText: EditText = mContentView.findViewById(R.id.discountedPriceEditText)
-        val priceEditText: EditText = mContentView.findViewById(R.id.priceEditText)
-        val originalPriceTextView: TextView = mContentView.findViewById(R.id.originalPriceTextView)
-        val discountedPriceTextView: TextView = mContentView.findViewById(R.id.discountedPriceTextView)
-        val pricePercentageOffTextView: TextView = mContentView.findViewById(R.id.pricePercentageOffTextView)
-        discountPriceEditText.addTextChangedListener(object : TextWatcher {
+        addVariantsTextView = mContentView.findViewById(R.id.addVariantsTextView)
+        variantContainer = mContentView.findViewById(R.id.variantContainer)
+        addItemTextView = mContentView.findViewById(R.id.addItemTextView)
+        discountContainer = mContentView.findViewById(R.id.discountContainer)
+        noImagesLayout = mContentView.findViewById(R.id.noImagesLayout)
+        imagesRecyclerView = mContentView.findViewById(R.id.imagesRecyclerView)
+        chipGroupRecyclerView = mContentView.findViewById(R.id.chipGroupRecyclerView)
+        addDiscountLabel = mContentView.findViewById(R.id.addDiscountLabel)
+        productDescriptionInputLayout = mContentView.findViewById(R.id.productDescriptionInputLayout)
+        continueTextView = mContentView.findViewById(R.id.continueTextView)
+        enterCategoryEditText = mContentView.findViewById(R.id.enterCategoryEditText)
+        shareProductContainer = mContentView.findViewById(R.id.shareProductContainer)
+        discountPriceEditText = mContentView.findViewById(R.id.discountedPriceEditText)
+        productDescriptionEditText = mContentView.findViewById(R.id.productDescriptionEditText)
+        priceEditText = mContentView.findViewById(R.id.priceEditText)
+        nameEditText = mContentView.findViewById(R.id.nameEditText)
+        originalPriceTextView = mContentView.findViewById(R.id.originalPriceTextView)
+        discountedPriceTextView = mContentView.findViewById(R.id.discountedPriceTextView)
+        pricePercentageOffTextView = mContentView.findViewById(R.id.pricePercentageOffTextView)
+        variantRecyclerView = mContentView.findViewById(R.id.variantRecyclerView)
+        imagesLeftTextView = mContentView.findViewById(R.id.imagesLeftTextView)
+        discountPriceEditText?.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 val str = s?.toString()
                 if (str?.isNotEmpty() == true) {
-                    val priceStr = priceEditText.text.toString()
+                    val priceStr = priceEditText?.text.toString()
                     when {
                         priceStr.isEmpty() -> {
                             if (str != "0.0") {
-                                priceEditText.error = addProductStaticData?.error_mandatory_field
-                                priceEditText.requestFocus()
-                                discountPriceEditText.text = null
+                                priceEditText?.apply {
+                                    error = addProductStaticData?.error_mandatory_field
+                                    requestFocus()
+                                }
+                                discountPriceEditText?.text = null
                             }
                             return
                         }
                         priceStr.toDouble() < str.toDouble() -> {
-                            discountPriceEditText.error = addProductStaticData?.error_discount_price_less_then_original_price
-                            discountPriceEditText.text = null
-                            discountPriceEditText.requestFocus()
+                            discountPriceEditText?.apply {
+                                error = addProductStaticData?.error_discount_price_less_then_original_price
+                                text = null
+                                requestFocus()
+                            }
                         }
                         str.toDouble() == 0.0 -> {
-                            discountedPriceTextView.visibility = View.INVISIBLE
-                            originalPriceTextView.text = null
-                            discountedPriceTextView.text = null
-                            pricePercentageOffTextView.text = null
+                            originalPriceTextView?.text = null
+                            discountedPriceTextView?.apply {
+                                visibility = View.INVISIBLE
+                                text = null
+                            }
+                            pricePercentageOffTextView?.text = null
                         }
                         else -> {
                             mIsOrderEdited = true
-                            discountedPriceTextView.visibility = View.VISIBLE
-                            originalPriceTextView.text = "${addProductStaticData?.text_rupees_symbol} ${priceStr.toDouble()}"
-                            discountedPriceTextView.text = "${addProductStaticData?.text_rupees_symbol} ${str.toDouble()}"
-                            originalPriceTextView.showStrikeOffText()
+                            discountedPriceTextView?.apply {
+                                visibility = View.VISIBLE
+                                val discountStr = "${addProductStaticData?.text_rupees_symbol} ${str.toDouble()}"
+                                text = discountStr
+                            }
+                            originalPriceTextView?.apply {
+                                val originalPriceStr = "${addProductStaticData?.text_rupees_symbol} ${priceStr.toDouble()}"
+                                text = originalPriceStr
+                                showStrikeOffText()
+                            }
                             val priceDouble = priceStr.toDouble()
                             val discountedPriceDouble = str.toDouble()
                             val percentage = ((priceDouble - discountedPriceDouble) / priceDouble) * 100
-                            pricePercentageOffTextView.text = "${percentage.toInt()}% OFF"
+                            val percentageOffStr = "${percentage.toInt()}% OFF"
+                            pricePercentageOffTextView?.text = percentageOffStr
                         }
                     }
                 } else {
-                    originalPriceTextView.text = null
-                    pricePercentageOffTextView.text = null
-                    discountedPriceTextView.visibility = View.INVISIBLE
+                    originalPriceTextView?.text = null
+                    pricePercentageOffTextView?.text = null
+                    discountedPriceTextView?.visibility = View.INVISIBLE
                 }
             }
 
@@ -171,14 +226,69 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             }
 
         })
-        showProgressDialog(mActivity)
         if (mImagesStrList.isEmpty()) {
             mImagesStrList.add(0, AddProductImagesResponse(0,"", 0))
         } else {
             mImagesStrList[0] = AddProductImagesResponse(0,"", 0)
         }
-        mService.getItemInfo(mItemId)
+        if (mAddProductResponse == null) {
+            showProgressDialog(mActivity)
+            mService?.getItemInfo(mItemId)
+        } else {
+            addProductStaticData = mAddProductResponse?.addProductStaticText
+            setStaticDataFromResponse()
+            setupImagesRecyclerView()
+            setupCategoryChipRecyclerView()
+            setupOptionsMenu()
+            if (mAddProductResponse?.storeItem?.description?.isNotEmpty() == true) {
+                addItemTextView?.visibility = View.GONE
+                productDescriptionInputLayout?.visibility = View.VISIBLE
+                productDescriptionEditText?.setText(mAddProductResponse?.storeItem?.description)
+            }
+            handleVisibilityTextWatcher()
+            val price = mAddProductResponse?.storeItem?.price ?: 0.0
+            val discountedPrice = mAddProductResponse?.storeItem?.discountedPrice ?: 0.0
+            if (discountedPrice == 0.0 || discountedPrice >= price) {
+                discountPriceEditText?.text = null
+            } else {
+                discountContainer?.visibility = View.VISIBLE
+            }
+        }
         return mContentView
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        if (productDescriptionInputLayout?.visibility == View.GONE) {
+            if (mProductDescriptionPriceStr?.isNotEmpty() == true) {
+                addItemTextView?.visibility = View.GONE
+                productDescriptionInputLayout?.visibility = View.VISIBLE
+            }
+        }
+        if (discountContainer?.visibility == View.GONE) {
+            val price = if (mProductPriceStr?.isEmpty() == true) 0.0 else mProductPriceStr?.toDouble() ?: 0.0
+            val discountedPrice = if (mProductDiscountedPriceStr?.isEmpty() == true) 0.0 else mProductDiscountedPriceStr?.toDouble() ?: 0.0
+            if (discountedPrice == 0.0 || discountedPrice >= price) {
+                discountPriceEditText?.text = null
+            } else {
+                discountContainer?.visibility = View.VISIBLE
+            }
+        }
+        setupVariantContainer()
+    }
+
+    private fun setupVariantContainer() {
+        if (variantContainer?.visibility == View.GONE) {
+            if (!isEmpty(mAddProductResponse?.storeItem?.variantsList)) {
+                variantContainer?.visibility = View.VISIBLE
+                variantsHeading?.visibility = View.VISIBLE
+                variantsHeading?.text = addProductStaticData?.text_variants
+                addVariantsTextView?.visibility = View.GONE
+                variantRecyclerView?.apply {
+                    layoutManager = LinearLayoutManager(mActivity)
+                    adapter = MasterVariantsAdapter(mActivity, mAddProductResponse?.storeItem?.variantsList, null)
+                }
+            }
+        }
     }
 
     private fun handleVisibilityTextWatcher() {
@@ -190,6 +300,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     if (discountContainer?.visibility != View.VISIBLE) addDiscountLabel?.visibility = View.VISIBLE
                     showAddProductContainer()
                 }
+                mProductPriceStr = str
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -226,6 +337,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 if (str?.trim()?.isNotEmpty() == true) {
                     mIsOrderEdited = true
                     showAddProductContainer()
+                    mProductDescriptionPriceStr = str
                 }
             }
 
@@ -269,6 +381,21 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             addDiscountLabel?.id -> {
                 addDiscountLabel?.visibility = View.GONE
                 discountContainer?.visibility = View.VISIBLE
+                discountPriceEditText?.addTextChangedListener(object : TextWatcher {
+                    override fun afterTextChanged(s: Editable?) {
+                        val str = s?.toString()
+                        mProductDiscountedPriceStr = str
+                    }
+
+                    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                        Log.d(TAG, "beforeTextChanged: priceEditText :: do nothing")
+                    }
+
+                    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                        Log.d(TAG, "onTextChanged: priceEditText :: do nothing")
+                    }
+
+                })
             }
             tryNowTextView?.id -> {
                 if (addProductBannerStaticDataResponse == null) {
@@ -277,14 +404,14 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                         return
                     }
                     showProgressDialog(mActivity)
-                    mService.getAddOrderBottomSheetData()
+                    mService?.getAddOrderBottomSheetData()
                 } else showMasterCatalogBottomSheet(addProductBannerStaticDataResponse, addProductStaticData, Constants.MODE_ADD_PRODUCT)
             }
             continueTextView?.id -> {
                 if (checkValidation()) {
                     val nameStr = nameEditText?.text.toString()
                     val priceStr = priceEditText?.text?.trim().toString()
-                    val discountedStr = discountedPriceEditText?.text?.trim().toString()
+                    val discountedStr = discountPriceEditText?.text?.trim().toString()
                     val descriptionStr = productDescriptionEditText?.text.toString()
                     val categoryStr = enterCategoryEditText?.text.toString()
                     if (!isInternetConnectionAvailable(mActivity)) return else {
@@ -295,6 +422,13 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                                 imageListRequest.add(AddProductImageItem(imageItem.imageId, imageItem.imageUrl, 1))
                             }
                         }
+                        if (mAddProductResponse?.deletedVariants?.isEmpty() != true && mAddProductResponse?.isVariantSaved == true) {
+                            mAddProductResponse?.deletedVariants?.values?.let {
+                                val deletedVariantList = ArrayList<VariantItemResponse>(it)
+                                deletedVariantList.forEachIndexed { _, itemResponse -> itemResponse.status = 0 }
+                                mAddProductResponse?.storeItem?.variantsList?.addAll(deletedVariantList)
+                            }
+                        }
                         val request = AddProductRequest(
                             mItemId,
                             1,
@@ -303,7 +437,8 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                             descriptionStr,
                             if (categoryStr.trim().isEmpty()) AddProductItemCategory(0, "") else AddProductItemCategory(0, categoryStr),
                             imageListRequest,
-                            nameStr
+                            nameStr,
+                            mAddProductResponse?.storeItem?.variantsList
                         )
                         AppEventsManager.pushAppEvents(
                             eventName = AFInAppEventType.EVENT_SAVE_ITEM,
@@ -318,12 +453,17 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                                 AFInAppEventParameterName.PRICE to priceStr
                             )
                         )
-                        mService.setItem(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
+                        mService?.setItem(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
                     }
                 }
             }
             updateCameraImageView?.id -> showAddProductImagePickerBottomSheet(0)
             updateCameraTextView?.id -> showAddProductImagePickerBottomSheet(0)
+            addVariantsTextView?.id -> {
+                mAddProductResponse?.deletedVariants = HashMap()
+                launchFragment(AddVariantFragment.newInstance(mAddProductResponse, mProductNameStr), true)
+            }
+            editVariantImageView?.id -> launchFragment(AddVariantFragment.newInstance(mAddProductResponse, mProductNameStr), true)
         }
     }
 
@@ -332,7 +472,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         mIsOrderEdited = true
         imagePickBottomSheet = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
         val view = LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet_image_pick, mActivity.findViewById(R.id.bottomSheetContainer))
-        imagePickBottomSheet.apply {
+        imagePickBottomSheet?.apply {
             setContentView(view)
             view?.run {
                 val bottomSheetUploadImageCloseImageView: ImageView = findViewById(R.id.bottomSheetUploadImageCloseImageView)
@@ -354,32 +494,32 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 bottomSheetUploadImageCameraTextView.text = addProductStaticData?.bottom_sheet_take_a_photo
                 searchImageEditText.hint = addProductStaticData?.bottom_sheet_hint_search_for_images_here
                 mProductNameStr?.run { searchImageEditText.setText(mProductNameStr) }
-                bottomSheetUploadImageCloseImageView.setOnClickListener { if (imagePickBottomSheet.isShowing) imagePickBottomSheet.dismiss() }
+                bottomSheetUploadImageCloseImageView.setOnClickListener { if (imagePickBottomSheet?.isShowing == true) imagePickBottomSheet?.dismiss() }
                 bottomSheetUploadImageRemovePhotoTextView.visibility = if (position == 0) View.GONE else View.VISIBLE
                 bottomSheetUploadImageRemovePhoto.visibility = if (position == 0) View.GONE else View.VISIBLE
                 bottomSheetUploadImageCamera.setOnClickListener {
-                    imagePickBottomSheet.dismiss()
+                    imagePickBottomSheet?.dismiss()
                     openCamera()
                 }
                 bottomSheetUploadImageCameraTextView.setOnClickListener {
-                    imagePickBottomSheet.dismiss()
+                    imagePickBottomSheet?.dismiss()
                     openCamera()
                 }
                 bottomSheetUploadImageGallery.setOnClickListener {
-                    imagePickBottomSheet.dismiss()
+                    imagePickBottomSheet?.dismiss()
                     openMobileGalleryWithImage()
                 }
                 bottomSheetUploadImageGalleryTextView.setOnClickListener {
-                    imagePickBottomSheet.dismiss()
+                    imagePickBottomSheet?.dismiss()
                     openMobileGalleryWithImage()
                 }
                 bottomSheetUploadImageRemovePhoto.setOnClickListener {
-                    imagePickBottomSheet.dismiss()
+                    imagePickBottomSheet?.dismiss()
                     mImagesStrList.removeAt(mImageChangePosition)
                     mImageAddAdapter?.setListToAdapter(mImagesStrList)
                 }
                 bottomSheetUploadImageRemovePhotoTextView.setOnClickListener {
-                    imagePickBottomSheet.dismiss()
+                    imagePickBottomSheet?.dismiss()
                     mImagesStrList.removeAt(mImageChangePosition)
                     mImageAddAdapter?.setListToAdapter(mImagesStrList)
                 }
@@ -402,7 +542,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                                         searchImageRecyclerView?.apply {
                                             layoutManager = GridLayoutManager(mActivity, 3)
                                             adapter = imageAdapter
-                                            list?.let { arrayList -> imageAdapter.setSearchImageList(arrayList) }
+                                            list.let { arrayList -> imageAdapter.setSearchImageList(arrayList) }
                                         }
                                     }
                                 }
@@ -412,12 +552,12 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 }
                 if (searchImageEditText.text.isNotEmpty()) searchImageImageView.callOnClick()
             }
-        }.show()
+        }?.show()
     }
 
     override fun onImageSelectionResultFile(file: File?, mode: String) {
         if (Constants.MODE_CROP == mode) {
-            if (::imagePickBottomSheet.isInitialized) imagePickBottomSheet.dismiss()
+            imagePickBottomSheet?.dismiss()
             showImageCropDialog(file)
             return
         }
@@ -432,8 +572,8 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         val fileRequestBody = MultipartBody.Part.createFormData("media", file.name, RequestBody.create("image/*".toMediaTypeOrNull(), file))
         val imageTypeRequestBody = RequestBody.create("text/plain".toMediaTypeOrNull(), Constants.BASE64_STORE_ITEMS)
         showCancellableProgressDialog(mActivity)
-        mService.generateCDNLink(imageTypeRequestBody, fileRequestBody)
-        if (::imagePickBottomSheet.isInitialized) imagePickBottomSheet.dismiss()
+        mService?.generateCDNLink(imageTypeRequestBody, fileRequestBody)
+        imagePickBottomSheet?.dismiss()
     }
 
     private fun showImageCropDialog(file: File?) {
@@ -464,14 +604,18 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     private fun checkValidation(): Boolean {
         return when {
             nameEditText?.text?.trim()?.isEmpty() == true -> {
-                nameEditText?.error = addProductStaticData?.error_mandatory_field
-                nameEditText?.requestFocus()
+                nameEditText?.apply {
+                    error = addProductStaticData?.error_mandatory_field
+                    requestFocus()
+                }
                 false
             }
-            discountedPriceEditText?.text?.toString()?.isNotEmpty() == true && (priceEditText?.text.toString().toDouble() < discountedPriceEditText?.text.toString().toDouble()) -> {
-                discountedPriceEditText?.text = null
-                discountedPriceEditText?.error = addProductStaticData?.error_discount_price_less_then_original_price
-                discountedPriceEditText?.requestFocus()
+            discountPriceEditText?.text?.toString()?.isNotEmpty() == true && (priceEditText?.text.toString().toDouble() < discountPriceEditText?.text.toString().toDouble()) -> {
+                discountPriceEditText?.apply {
+                    text = null
+                    error = addProductStaticData?.error_discount_price_less_then_original_price
+                    requestFocus()
+                }
                 false
             }
             else -> true
@@ -489,26 +633,29 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     override fun onGetAddProductDataResponse(commonResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
-            val addProductResponse = Gson().fromJson<AddProductResponse>(commonResponse.mCommonDataStr, AddProductResponse::class.java)
-            Log.d(TAG, "onGetAddProductDataResponse: $addProductResponse")
-            addProductStaticData = addProductResponse?.addProductStaticText
-            addProductResponse?.storeItem?.run {
+            mAddProductResponse = Gson().fromJson<AddProductResponse>(commonResponse.mCommonDataStr, AddProductResponse::class.java)
+            Log.d(TAG, "onGetAddProductDataResponse: $mAddProductResponse")
+            addProductStaticData = mAddProductResponse?.addProductStaticText
+            mAddProductResponse?.storeItem?.run {
                 nameEditText?.setText(name)
                 mProductNameStr = name
                 priceEditText?.setText(if (price != 0.0) price.toString() else null)
                 if (discountedPrice == 0.0 || discountedPrice >= price) {
-                    discountedPriceEditText?.text = null
+                    if (price != 0.0) {
+                        addDiscountLabel?.visibility = View.VISIBLE
+                    }
+                    discountPriceEditText?.text = null
                 } else {
                     discountContainer?.visibility = View.VISIBLE
-                    discountedPriceEditText?.setText("$discountedPrice")
+                    discountPriceEditText?.setText("$discountedPrice")
                 }
-                if (addProductResponse.storeItem?.imagesList?.isNotEmpty() == true) {
+                if (mAddProductResponse?.storeItem?.imagesList?.isNotEmpty() == true) {
                     noImagesLayout?.visibility = View.GONE
                     imagesRecyclerView?.apply {
                         layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
                         mImagesStrList.clear()
                         if (mImagesStrList.isEmpty()) mImagesStrList.add(AddProductImagesResponse(0, "", 0))
-                        addProductResponse.storeItem?.imagesList?.forEachIndexed { _, imagesResponse ->
+                        mAddProductResponse?.storeItem?.imagesList?.forEachIndexed { _, imagesResponse ->
                             if (imagesResponse.status != 0) mImagesStrList.add(AddProductImagesResponse(imagesResponse.imageId, imagesResponse.imageUrl, 1))
                         }
                         mImageAddAdapter = AddProductsImagesAdapter(mImagesStrList ,addProductStaticData?.text_upload_or_search_images, this@AddProductFragment)
@@ -524,17 +671,40 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     productDescriptionEditText?.setText(description)
                 }
             }
-            addProductResponse?.addProductStoreCategories?.run {
+            setupVariantContainer()
+            setupCategoryChipRecyclerView()
+            setStaticDataFromResponse()
+            setupOptionsMenu()
+            shareProductContainer?.setOnClickListener {
+                val productNameStr = mAddProductResponse?.storeItem?.name?.trim()
+                val newProductName = replaceTemplateString(productNameStr)
+                val sharingData = "ItemName: ${mAddProductResponse?.storeItem?.name}\nPrice:  ₹${mAddProductResponse?.storeItem?.price} \nDiscounted Price: ₹${mAddProductResponse?.storeItem?.discountedPrice}\n\n\uD83D\uDED2 ORDER NOW, Click on the link below\n\n" + "${mAddProductResponse?.domain}/product/${mAddProductResponse?.storeItem?.id}/$newProductName"
+                if (mAddProductResponse?.storeItem?.imageUrl?.isEmpty() == true) shareOnWhatsApp(sharingData, null) else shareBillWithImage(sharingData, mAddProductResponse?.storeItem?.imageUrl)
+            }
+            shareProductContainer?.visibility = if (mIsAddNewProduct) View.GONE else View.VISIBLE
+            continueTextView?.visibility = if (mIsAddNewProduct) View.VISIBLE else View.GONE
+            handleVisibilityTextWatcher()
+        }
+    }
+
+    private fun setupOptionsMenu() {
+        mOptionsMenuResponse = mAddProductResponse?.addProductStoreOptionsMenu
+        if (mOptionsMenuResponse?.isEmpty() == true) ToolBarManager.getInstance()?.setSideIconVisibility(false)
+    }
+
+    private fun setupCategoryChipRecyclerView() {
+        try {
+            mAddProductResponse?.addProductStoreCategories?.run {
                 chipGroupRecyclerView?.apply {
                     layoutManager = StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL)
-                    mAddProductStoreCategoryList = addProductResponse.addProductStoreCategories?.storeCategoriesList
+                    mAddProductStoreCategoryList = mAddProductResponse?.addProductStoreCategories?.storeCategoriesList
                     if (mAddProductStoreCategoryList?.isNotEmpty() == true) {
                         mTempProductCategoryList.clear()
                         mAddProductStoreCategoryList?.forEachIndexed { _, categoryItem ->
                             if (categoryItem.name?.isNotEmpty() == true) mTempProductCategoryList.add(categoryItem)
                         }
                         mTempProductCategoryList.forEachIndexed { _, categoryItem ->
-                            if (addProductResponse.storeItem?.category?.id == categoryItem.id) {
+                            if (mAddProductResponse?.storeItem?.category?.id == categoryItem.id) {
                                 enterCategoryEditText?.setText(categoryItem.name)
                                 categoryItem.isSelected = true
                             } else categoryItem.isSelected = false
@@ -544,8 +714,23 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     }
                 }
             }
+        } catch (e: Exception) {
+            Log.e(TAG, "setupCategoryChipRecyclerView: ${e.message}", e)
+        }
+    }
+
+    private fun setStaticDataFromResponse() {
+        try {
             addProductStaticData?.run {
                 ToolBarManager.getInstance()?.setHeaderTitle(heading_add_product_page)
+                val addItemTextView: TextView? = mContentView.findViewById(R.id.addItemTextView)
+                val tryNowTextView: TextView? = mContentView.findViewById(R.id.tryNowTextView)
+                val textView2: TextView? = mContentView.findViewById(R.id.textView2)
+                val updateCameraTextView: TextView? = mContentView.findViewById(R.id.updateCameraTextView)
+                val nameInputLayout: TextInputLayout? = mContentView.findViewById(R.id.nameInputLayout)
+                val priceInputLayout: TextInputLayout? = mContentView.findViewById(R.id.priceInputLayout)
+                val discountedPriceInputLayout: TextInputLayout? = mContentView.findViewById(R.id.discountedPriceInputLayout)
+                val enterCategoryInputLayout: TextInputLayout? = mContentView.findViewById(R.id.enterCategoryInputLayout)
                 tryNowTextView?.text = text_try_now
                 addDiscountLabel?.text = text_add_discount_on_this_item
                 textView2?.text = heading_add_product_banner
@@ -555,39 +740,45 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 discountedPriceInputLayout?.hint = hint_discounted_price
                 enterCategoryInputLayout?.hint = hint_enter_category_optional
                 addItemTextView?.text = text_add_item_description
-                continueTextView?.text = if (mIsAddNewProduct)  text_add_item else getString(R.string.save)
+                continueTextView?.text = if (mIsAddNewProduct) text_add_item else getString(R.string.save)
                 val count = mImagesStrList.size
-                imagesLeftTextView?.text = "${if (count == 0) count else count - 1}/4 $text_images_added"
+                val imagesLeftStr = "${if (count == 0) count else count - 1}/4 $text_images_added"
+                imagesLeftTextView?.text = imagesLeftStr
             }
-            mOptionsMenuResponse = addProductResponse?.addProductStoreOptionsMenu
-            if (mOptionsMenuResponse?.isEmpty() == true) ToolBarManager.getInstance().setSideIconVisibility(false)
-            shareProductContainer?.setOnClickListener {
-                val productNameStr = addProductResponse.storeItem?.name?.trim()
-                val newProductName = replaceTemplateString(productNameStr)
-                val sharingData = "ItemName: ${addProductResponse?.storeItem?.name}\nPrice:  ₹${addProductResponse?.storeItem?.price} \nDiscounted Price: ₹${addProductResponse.storeItem?.discountedPrice}\n\n\uD83D\uDED2 ORDER NOW, Click on the link below\n\n" + "${addProductResponse?.domain}/product/${addProductResponse?.storeItem?.id}/$newProductName"
-                if (addProductResponse?.storeItem?.imageUrl?.isEmpty() == true) shareOnWhatsApp(sharingData, null) else shareBillWithImage(sharingData, addProductResponse?.storeItem?.imageUrl)
-            }
-            shareProductContainer?.visibility = if (mIsAddNewProduct) View.GONE else View.VISIBLE
-            continueTextView?.visibility = if (mIsAddNewProduct) View.VISIBLE else View.GONE
-            handleVisibilityTextWatcher()
+        } catch (e: Exception) {
+            Log.e(TAG, "setStaticDataFromResponse: ${e.message}", e)
+            AppEventsManager.pushAppEvents(
+                eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
+                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                data = mapOf(
+                    AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                    "Exception Point" to "setStaticDataFromResponse",
+                    "Exception Message" to e.message,
+                    "Exception Logs" to e.toString()
+                )
+            )
         }
     }
 
     private fun shareBillWithImage(str: String, url: String?) {
-        if (url == null || url.isEmpty()) return
-        Picasso.get().load(url).into(object : com.squareup.picasso.Target {
-            override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
-                bitmap?.let { shareOnWhatsApp(str, bitmap) }
-            }
+        try {
+            if (url == null || url.isEmpty()) return
+            Picasso.get().load(url).into(object : com.squareup.picasso.Target {
+                override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
+                    bitmap?.let { shareOnWhatsApp(str, bitmap) }
+                }
 
-            override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
-                Log.d(TAG, "onPrepareLoad: ")
-            }
+                override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
+                    Log.d(TAG, "onPrepareLoad: ")
+                }
 
-            override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
-                Log.d(TAG, "onBitmapFailed: ")
-            }
-        })
+                override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
+                    Log.d(TAG, "onBitmapFailed: ")
+                }
+            })
+        } catch (e: Exception) {
+            Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+        }
     }
 
     override fun onAddProductDataResponse(commonResponse: CommonApiResponse) {
@@ -618,21 +809,26 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     imageResponse.imageUrl = base64Str
                     mImagesStrList[mImageChangePosition] = imageResponse
                 }
-                noImagesLayout?.visibility = View.GONE
-                imagesRecyclerView?.visibility = View.VISIBLE
-                imagesRecyclerView?.apply {
-                    layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
-                    mImageAddAdapter = AddProductsImagesAdapter(
-                        mImagesStrList,
-                        addProductStaticData?.text_upload_or_search_images,
-                        this@AddProductFragment
-                    )
-                    adapter = mImageAddAdapter
-                    mImageAddAdapter?.setListToAdapter(mImagesStrList)
-                }
-                imagesLeftTextView?.text = "${mImagesStrList?.size -1}/4 ${addProductStaticData?.text_images_added}"
+                setupImagesRecyclerView()
             } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
         }
+    }
+
+    private fun setupImagesRecyclerView() {
+        noImagesLayout?.visibility = View.GONE
+        imagesRecyclerView?.visibility = View.VISIBLE
+        imagesRecyclerView?.apply {
+            layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
+            mImageAddAdapter = AddProductsImagesAdapter(
+                mImagesStrList,
+                addProductStaticData?.text_upload_or_search_images,
+                this@AddProductFragment
+            )
+            adapter = mImageAddAdapter
+            mImageAddAdapter?.setListToAdapter(mImagesStrList)
+        }
+        val imagesLeftStr = "${mImagesStrList?.size - 1}/4 ${addProductStaticData?.text_images_added}"
+        imagesLeftTextView?.text = imagesLeftStr
     }
 
     override fun onDeleteItemResponse(commonResponse: CommonApiResponse) {
@@ -664,7 +860,8 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         mTempProductCategoryList.forEachIndexed { _, categoryItem -> categoryItem.isSelected = false }
         mTempProductCategoryList[position].isSelected = true
         enterCategoryEditText?.setText(mTempProductCategoryList[position].name)
-        addProductChipsAdapter.setAddProductStoreCategoryList(mTempProductCategoryList)
+        enterCategoryEditText?.setSelection(mTempProductCategoryList[position].name?.length ?: 0)
+        addProductChipsAdapter?.setAddProductStoreCategoryList(mTempProductCategoryList)
     }
 
     override fun onToolbarSideIconClicked() {
@@ -706,22 +903,26 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     }
 
     private fun showGoBackDialog() {
-        CoroutineScopeUtils().runTaskOnCoroutineMain {
-            val builder: AlertDialog.Builder? = AlertDialog.Builder(mActivity)
-            builder?.apply {
-                setTitle(addProductStaticData?.text_go_back)
-                setMessage(addProductStaticData?.text_go_back_message)
-                setCancelable(true)
-                setNegativeButton(getString(R.string.text_no)) { dialog, _ ->
-                    dialog.dismiss()
-                }
-                setPositiveButton(getString(R.string.txt_yes)) { dialog, _ ->
-                    nameEditText.hideKeyboard()
-                    mIsOrderEdited = false
-                    fragmentManager?.popBackStack()
-                    dialog.dismiss()
-                }
-            }?.create()?.show()
+        try {
+            CoroutineScopeUtils().runTaskOnCoroutineMain {
+                val builder: AlertDialog.Builder? = AlertDialog.Builder(mActivity)
+                builder?.apply {
+                    setTitle(addProductStaticData?.text_go_back)
+                    setMessage(addProductStaticData?.text_go_back_message)
+                    setCancelable(true)
+                    setNegativeButton(getString(R.string.text_no)) { dialog, _ ->
+                        dialog.dismiss()
+                    }
+                    setPositiveButton(getString(R.string.txt_yes)) { dialog, _ ->
+                        nameEditText?.hideKeyboard()
+                        mIsOrderEdited = false
+                        fragmentManager?.popBackStack()
+                        dialog.dismiss()
+                    }
+                }?.create()?.show()
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "showGoBackDialog: ${e.message}", e)
         }
     }
 
@@ -739,7 +940,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                         return@setPositiveButton
                     }
                     showProgressDialog(mActivity)
-                    mService.deleteItemServerCall(DeleteItemRequest(mItemId))
+                    mService?.deleteItemServerCall(DeleteItemRequest(mItemId))
                 }
                 setNegativeButton(getString(R.string.text_no)) { dialog, _ -> dialog.dismiss() }
             }?.create()?.show()

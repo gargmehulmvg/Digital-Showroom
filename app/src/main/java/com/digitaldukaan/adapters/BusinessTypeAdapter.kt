@@ -1,5 +1,6 @@
 package com.digitaldukaan.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -63,7 +64,13 @@ class BusinessTypeAdapter(
                 businessTypeCheckBox.isChecked = true
             }
             businessTypeTextView.text = itemResponse.businessName
-            if (itemResponse.businessImage.isNotEmpty()) businessTypeImageView?.let { Picasso.get().load(itemResponse.businessImage).into(it) }
+            if (itemResponse.businessImage.isNotEmpty()) businessTypeImageView?.let {
+                try {
+                    Picasso.get().load(itemResponse.businessImage).into(it)
+                } catch (e: Exception) {
+                    Log.e(BusinessTypeAdapter::class.java.simpleName, "picasso image loading issue: ${e.message}", e)
+                }
+            }
         }
     }
 

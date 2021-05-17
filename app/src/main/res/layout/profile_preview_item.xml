@@ -4,98 +4,104 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="@dimen/_5sdp"
-    android:id="@+id/profilePreviewContainer"
-    android:layout_marginEnd="@dimen/_5sdp"
-    android:background="?android:selectableItemBackground"
-    android:onClick="onClick"
-    android:padding="@dimen/_10sdp">
+    android:background="@color/white"
+    android:layout_marginTop="@dimen/_1sdp">
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/settingKeyHeading"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_7sdp"
-        android:clickable="false"
-        android:text="@string/app_name"
-        android:textColor="@color/default_text_light_grey"
-        android:textSize="@dimen/_13sdp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/profilePreviewContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?android:selectableItemBackground"
+        android:onClick="onClick"
+        android:padding="@dimen/_10sdp" >
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/addSettingKeyHeading"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_3sdp"
-        android:clickable="false"
-        android:fontFamily="sans-serif-medium"
-        android:gravity="center_vertical"
-        android:textColor="@color/black"
-        android:textSize="@dimen/_14sdp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/settingKeyHeading"
-        app:layout_constraintTop_toBottomOf="@+id/settingKeyHeading"
-        tools:text="@string/start_now" />
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/settingKeyHeading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_7sdp"
+            android:clickable="false"
+            android:text="@string/app_name"
+            android:textColor="@color/default_text_light_grey"
+            android:textSize="@dimen/_13sdp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/addSettingKeyDataTextView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:clickable="false"
-        android:drawableEnd="@drawable/ic_edit"
-        android:drawablePadding="@dimen/_10sdp"
-        android:ellipsize="end"
-        android:paddingTop="@dimen/_4sdp"
-        android:fontFamily="sans-serif-medium"
-        android:gravity="center_vertical"
-        android:maxLines="@integer/min_lines_three"
-        android:textColor="@color/dark_blackish"
-        android:textSize="@dimen/_14sdp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/settingKeyHeading"
-        app:layout_constraintTop_toBottomOf="@+id/profilePreviewBusinessTypeRecyclerView"
-        tools:text="@string/start_now" />
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/addSettingKeyHeading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_3sdp"
+            android:clickable="false"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center_vertical"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_14sdp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/settingKeyHeading"
+            app:layout_constraintTop_toBottomOf="@+id/settingKeyHeading"
+            tools:text="@string/start_now" />
 
-    <androidx.constraintlayout.widget.Group
-        android:id="@+id/profilePreviewDefaultScreenGroup"
-        android:layout_width="wrap_content"
-        android:visibility="gone"
-        android:layout_height="wrap_content"
-        app:constraint_referenced_ids="imageView2,addSettingKeyHeading" />
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/addSettingKeyDataTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:drawableEnd="@drawable/ic_edit"
+            android:drawablePadding="@dimen/_10sdp"
+            android:ellipsize="end"
+            android:paddingTop="@dimen/_4sdp"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center_vertical"
+            android:maxLines="@integer/min_lines_three"
+            android:textColor="@color/dark_blackish"
+            android:textSize="@dimen/_14sdp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/settingKeyHeading"
+            app:layout_constraintTop_toBottomOf="@+id/profilePreviewBusinessTypeRecyclerView"
+            tools:text="@string/start_now" />
 
-    <androidx.constraintlayout.widget.Group
-        android:id="@+id/profilePreviewDataGroup"
-        android:layout_width="wrap_content"
-        android:visibility="gone"
-        android:layout_height="wrap_content"
-        app:constraint_referenced_ids="addSettingKeyDataTextView" />
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/profilePreviewDefaultScreenGroup"
+            android:layout_width="wrap_content"
+            android:visibility="gone"
+            android:layout_height="wrap_content"
+            app:constraint_referenced_ids="imageView2,addSettingKeyHeading" />
 
-    <ImageView
-        android:id="@+id/imageView2"
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/_12sdp"
-        android:layout_marginStart="@dimen/_2sdp"
-        android:contentDescription="@string/image_view_content_description"
-        android:src="@drawable/round_green_arrow_small"
-        android:clickable="false"
-        app:layout_constraintBottom_toBottomOf="@+id/addSettingKeyHeading"
-        app:layout_constraintStart_toEndOf="@+id/addSettingKeyHeading"
-        app:layout_constraintTop_toTopOf="@+id/addSettingKeyHeading" />
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/profilePreviewDataGroup"
+            android:layout_width="wrap_content"
+            android:visibility="gone"
+            android:layout_height="wrap_content"
+            app:constraint_referenced_ids="addSettingKeyDataTextView" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/profilePreviewBusinessTypeRecyclerView"
-        android:layout_width="0dp"
-        android:visibility="gone"
-        android:layout_marginTop="@dimen/_5sdp"
-        android:layout_height="wrap_content"
-        android:clickable="false"
-        android:orientation="horizontal"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/settingKeyHeading"
-        app:layout_constraintTop_toBottomOf="@+id/settingKeyHeading"
-        tools:listitem="@layout/profile_preview_business_type_item" />
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/_12sdp"
+            android:layout_marginStart="@dimen/_2sdp"
+            android:contentDescription="@string/image_view_content_description"
+            android:src="@drawable/round_green_arrow_small"
+            android:clickable="false"
+            app:layout_constraintBottom_toBottomOf="@+id/addSettingKeyHeading"
+            app:layout_constraintStart_toEndOf="@+id/addSettingKeyHeading"
+            app:layout_constraintTop_toTopOf="@+id/addSettingKeyHeading" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/profilePreviewBusinessTypeRecyclerView"
+            android:layout_width="0dp"
+            android:visibility="gone"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:orientation="horizontal"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/settingKeyHeading"
+            app:layout_constraintTop_toBottomOf="@+id/settingKeyHeading"
+            tools:listitem="@layout/profile_preview_business_type_item" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

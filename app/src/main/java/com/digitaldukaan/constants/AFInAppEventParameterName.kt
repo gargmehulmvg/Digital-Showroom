@@ -46,6 +46,7 @@ interface AFInAppEventParameterName {
         const val DOMAIN = "domain"
         const val NAME = "name"
         const val REASON = "reason"
+        const val VARIANTS_ADDED = "Variants_Added"
         const val SEARCH_BY = "Search by"
         const val REFERENCE_STORE_ID = "reference_store_id"
         //NOTIFICATION_CHANNEL

@@ -12,6 +12,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
+import com.digitaldukaan.constants.isEmpty
 import com.digitaldukaan.interfaces.IOrderDetailListener
 import com.digitaldukaan.models.response.OrderDetailItemResponse
 import com.digitaldukaan.models.response.OrderDetailsStaticTextResponse
@@ -38,6 +39,7 @@ class OrderDetailsAdapter(
         val priceEditText: EditText = itemView.findViewById(R.id.priceEditText)
         val quantityTextView: TextView = itemView.findViewById(R.id.quantityTextView)
         val priceTextView: TextView = itemView.findViewById(R.id.priceTextView)
+        val orderDetailVariantNameTextView: TextView = itemView.findViewById(R.id.orderDetailVariantNameTextView)
         val closeImageView: ImageView = itemView.findViewById(R.id.closeImageView)
         val orderDetailContainer: View = itemView.findViewById(R.id.orderDetailContainer)
     }
@@ -93,6 +95,10 @@ class OrderDetailsAdapter(
                 orderDetailContainer.alpha = 1f
                 if (priceEditText.visibility == View.VISIBLE) priceEditText.isEnabled = true
             }
+            if (!isEmpty(item?.variantName)) {
+                orderDetailVariantNameTextView.visibility = View.VISIBLE
+                orderDetailVariantNameTextView.text = item?.variantName
+            } else orderDetailVariantNameTextView.visibility = View.GONE
             if (priceEditText.visibility == View.VISIBLE) {
                 priceEditText.addTextChangedListener(object : TextWatcher {
                     override fun afterTextChanged(p0: Editable?) {

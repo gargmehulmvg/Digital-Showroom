@@ -2,6 +2,7 @@ package com.digitaldukaan.adapters
 
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -65,7 +66,13 @@ class MasterCatalogItemsConfirmationAdapter(
     ) {
         val item = addMasterCatalogConfirmProductsList[position]
         holder.run {
-            imageView.let { Picasso.get().load(item?.imageUrl).into(it) }
+            imageView.let {
+                try {
+                    Picasso.get().load(item?.imageUrl).into(it)
+                } catch (e: Exception) {
+                    Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+                }
+            }
             titleTextView.text = item?.itemName
             priceLayout.hint = "${mStaticText?.hint_mrp} (${mStaticText?.text_rupees_symbol})"
             titleTextView.setTextColor(ContextCompat.getColor(mActivity, if (item?.isSelected == true) R.color.open_green else R.color.black))

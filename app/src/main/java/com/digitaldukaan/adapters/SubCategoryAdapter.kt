@@ -1,5 +1,6 @@
 package com.digitaldukaan.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +10,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.MainActivity
 import com.digitaldukaan.R
+import com.digitaldukaan.constants.isEmpty
 import com.digitaldukaan.models.response.ExploreCategoryItemResponse
 import com.digitaldukaan.services.serviceinterface.IExploreCategoryServiceInterface
 import com.squareup.picasso.Picasso
@@ -37,6 +39,10 @@ class SubCategoryAdapter(
             LayoutInflater.from(parent.context).inflate(R.layout.sub_category_item, parent, false)
         )
         view.itemContainer.setOnClickListener {
+            val position = view.adapterPosition
+            if (position < 0) return@setOnClickListener
+            if (isEmpty(mCategoryItemList)) return@setOnClickListener
+            if (position >= mCategoryItemList?.size ?: 0) return@setOnClickListener
             mCategoryItemClickListener.onExploreCategoryItemClick(mCategoryItemList?.get(view.adapterPosition))
         }
         return view
@@ -50,7 +56,13 @@ class SubCategoryAdapter(
     ) {
         val item = mCategoryItemList?.get(position)
         holder.run {
-            imageView?.let { Picasso.get().load(item?.imageUrl).into(it) }
+            imageView?.let {
+                try {
+                    Picasso.get().load(item?.imageUrl).into(it)
+                } catch (e: Exception) {
+                    Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+                }
+            }
             titleTextView.text = item?.categoryName
             titleTextView.setTextColor(ContextCompat.getColor(mActivity, if (item?.isSelected == true) R.color.open_green else R.color.black))
             selectedView.visibility = if (item?.isSelected == true) View.VISIBLE else View.INVISIBLE

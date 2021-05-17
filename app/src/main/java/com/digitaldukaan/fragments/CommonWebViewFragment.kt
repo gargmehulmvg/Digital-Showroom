@@ -122,8 +122,11 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
             val base64Str = base64OriginalStr.split("data:image/png;base64,")[1]
             Log.d(mTagName, "image URL :: $base64Str")
             val bitmap = getBitmapFromBase64V2(base64Str)
-            downloadMediaToStorage(bitmap, mActivity)
-            showToast("Image Saved to Gallery")
+            bitmap?.let {
+                downloadMediaToStorage(it, mActivity)
+                val file = downloadBillInGallery(it, "my-qr")
+                file?.run { showDownloadNotification(this, "MyQR") }
+            }
         } else if (jsonData.optBoolean("redirectHomePage")) {
             launchFragment(HomeFragment.newInstance(), true)
         } else if (jsonData.optBoolean("startLoader")) {
@@ -172,6 +175,7 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
 
         var activity: MainActivity? = null
         var commonWebView: WebView? = null
+        private val TAG = WebViewController::class.java.simpleName
 
         override fun onPageFinished(view: WebView?, url: String?) {
             try {
@@ -187,14 +191,27 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
         override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
             return when {
                 url.startsWith("tel:") -> {
-                    val tel = Intent(Intent.ACTION_DIAL, Uri.parse(url))
-                    activity?.startActivity(tel)
+                    try {
+                        activity?.startActivity(Intent(Intent.ACTION_DIAL, Uri.parse(url)))
+                    } catch (e: Exception) {
+                        Log.e(TAG, "shouldOverrideUrlLoading :: tel :: ${e.message}", e)
+                    }
                     true
                 }
-                url.contains("mailto:") -> { view.context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                url.contains("mailto:") -> {
+                    try {
+                        view.context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                    } catch (e: Exception) {
+                        Log.e(TAG, "shouldOverrideUrlLoading :: mailto :: ${e.message}", e)
+                    }
                     true
                 }
-                url.contains("whatsapp:") -> { view.context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                url.contains("whatsapp:") -> {
+                    try {
+                        view.context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                    } catch (e: Exception) {
+                        Log.e(TAG, "shouldOverrideUrlLoading :: whatsapp :: ${e.message}", e)
+                    }
                     true
                 }
                 else -> {
@@ -207,12 +224,13 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
 
     override fun onToolbarSideIconClicked() {
         val sideView:View = mActivity.findViewById(R.id.sideIconToolbar)
-        val optionsMenu = PopupMenu(mActivity, sideView)
-        optionsMenu.inflate(R.menu.menu_product_fragment)
-        optionsMenu.menu?.add(Menu.NONE, 0, Menu .NONE, getString(R.string.term_and_condition))
-        optionsMenu.menu?.add(Menu.NONE, 1, Menu .NONE, getString(R.string.help))
-        optionsMenu.setOnMenuItemClickListener(this)
-        optionsMenu.show()
+        val optionsMenu: PopupMenu? = PopupMenu(mActivity, sideView)
+        optionsMenu?.apply {
+            inflate(R.menu.menu_product_fragment)
+            menu?.add(Menu.NONE, 0, Menu .NONE, getString(R.string.term_and_condition))
+            menu?.add(Menu.NONE, 1, Menu .NONE, getString(R.string.help))
+            setOnMenuItemClickListener(this@CommonWebViewFragment)
+        }?.show()
     }
 
     override fun onMenuItemClick(item: MenuItem?): Boolean {
