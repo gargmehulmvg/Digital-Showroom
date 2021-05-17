@@ -326,9 +326,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
 
     open fun openUrlInBrowser(url:String?) {
         try {
-            url?.let {
-                startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
-            }
+            url?.let { startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(it))) }
         } catch (e: Exception) {
             Log.e(TAG, "openUrlInBrowser: ${e.message}", e)
             AppEventsManager.pushAppEvents(
@@ -382,7 +380,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
             var phoneNumber = it
             if (!it.contains("+91")) phoneNumber = "+91$phoneNumber"
             try {
-                openUrlInBrowser("https://wa.me/$phoneNumber?text=$message")
+                openWhatsAppInBrowser(phoneNumber, message)
             } catch (e: Exception) {
                 showToast(e.message)
                 AppEventsManager.pushAppEvents(
@@ -396,6 +394,14 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                     )
                 )
             }
+        }
+    }
+
+    private fun openWhatsAppInBrowser(mobile: String?, data: String?) {
+        try {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("whatsapp://send?phone=$mobile&text=$data")))
+        } catch (e: Exception) {
+            Log.e(TAG, "openWhatsApp: ", e)
         }
     }
 
