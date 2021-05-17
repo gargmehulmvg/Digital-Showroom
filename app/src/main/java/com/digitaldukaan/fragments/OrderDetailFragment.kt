@@ -122,7 +122,10 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                     mOrderDetailService?.getOrderDetailStatus(orderDetailMainResponse?.orders?.orderId)
                 }
             }
-            sideIconWhatsAppToolbar?.id -> shareDataOnWhatsAppByNumber(mMobileNumber)
+            sideIconWhatsAppToolbar?.id -> {
+                val displayStatus = orderDetailMainResponse?.orders?.displayStatus
+                shareDataOnWhatsAppByNumber(mMobileNumber, if (Constants.DS_SEND_BILL == displayStatus || Constants.DS_NEW == displayStatus) "Hi, we are checking your order." else "")
+            }
             backButtonToolbar?.id -> mActivity.onBackPressed()
             sideIconToolbar?.id -> {
                 val sideView:View = mActivity.findViewById(R.id.sideIconToolbar)
@@ -159,7 +162,8 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
 
     private fun initiateSendBillServerCall() {
         orderDetailMainResponse?.orders?.run {
-            if (!mIsPickUpOrder && orderDetailMainResponse?.storeServices?.mDeliveryChargeType == Constants.FIXED_DELIVERY_CHARGE && orderDetailMainResponse?.storeServices?.mDeliveryPrice != 0.0) {
+            val finalAmount = if (amountEditText.text?.isNotEmpty() == true) amountEditText.text.toString().toDouble() else amount
+            if (!mIsPickUpOrder && orderDetailMainResponse?.storeServices?.mDeliveryChargeType == Constants.FIXED_DELIVERY_CHARGE && orderDetailMainResponse?.storeServices?.mDeliveryPrice != 0.0 && orderDetailMainResponse?.storeServices?.mMinOrderValue?: 0.0 >= finalAmount?:0.0) {
                 val orderDetailItemResponse = OrderDetailItemResponse(
                     0,
                     0,
@@ -225,7 +229,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
             }
             val request = UpdateOrderRequest(
                 orderId,
-                if (amountEditText.text?.isNotEmpty() == true) amountEditText.text.toString().toDouble() else amount,
+                finalAmount,
                 false,
                 deliveryInfo?.deliveryTo,
                 deliveryInfo?.deliveryFrom,
