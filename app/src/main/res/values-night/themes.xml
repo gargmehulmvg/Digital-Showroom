@@ -58,6 +58,6 @@
     </style>
     <style name="CustomAppSwitch" parent="Theme.AppCompat.Light">
         <item name="colorControlActivated">@color/open_green</item>
-        <item name="colorSwitchThumbNormal">@color/red</item>
+        <item name="colorSwitchThumbNormal">@color/red_switch_off</item>
     </style>
 </resources>
