@@ -36,6 +36,8 @@ data class OrderDetailItemResponse(
     @SerializedName("item_status") var item_status: Int?,
     @SerializedName("item_type") var item_type: String?,
     @SerializedName("creator_type") var creator_type: Int?,
+    @SerializedName("variant_id") var variantId: Int,
+    @SerializedName("variant_name") var variantName: String?,
     var isItemEditable: Boolean
 )
 

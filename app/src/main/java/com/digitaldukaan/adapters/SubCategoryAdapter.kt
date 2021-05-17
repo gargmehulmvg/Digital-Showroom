@@ -10,6 +10,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.MainActivity
 import com.digitaldukaan.R
+import com.digitaldukaan.constants.isEmpty
 import com.digitaldukaan.models.response.ExploreCategoryItemResponse
 import com.digitaldukaan.services.serviceinterface.IExploreCategoryServiceInterface
 import com.squareup.picasso.Picasso
@@ -38,6 +39,10 @@ class SubCategoryAdapter(
             LayoutInflater.from(parent.context).inflate(R.layout.sub_category_item, parent, false)
         )
         view.itemContainer.setOnClickListener {
+            val position = view.adapterPosition
+            if (position < 0) return@setOnClickListener
+            if (isEmpty(mCategoryItemList)) return@setOnClickListener
+            if (position >= mCategoryItemList?.size ?: 0) return@setOnClickListener
             mCategoryItemClickListener.onExploreCategoryItemClick(mCategoryItemList?.get(view.adapterPosition))
         }
         return view

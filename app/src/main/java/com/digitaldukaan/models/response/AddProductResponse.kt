@@ -7,8 +7,13 @@ data class AddProductResponse(
     @SerializedName("domain") var domain: String?,
     @SerializedName("categories") var addProductStoreCategories: AddProductStoreCategory?,
     @SerializedName("option_menu") var addProductStoreOptionsMenu: ArrayList<TrendingListResponse>?,
-    @SerializedName("store_item") var storeItem: AddProductItemResponse?
+    @SerializedName("recent_variants") var recentVariantsList: ArrayList<VariantItemResponse>?,
+    @SerializedName("master_variants") var masterVariantsList: ArrayList<VariantItemResponse>?,
+    @SerializedName("store_item") var storeItem: AddProductItemResponse?,
+    var deletedVariants: HashMap<String?, VariantItemResponse?> = HashMap()
 )
+
+//private var mSelectedProductsHashMap: HashMap<Int?, MasterCatalogItemResponse?>? = HashMap()
 
 data class AddProductStoreCategory(
     @SerializedName("store_categories") val storeCategoriesList:ArrayList<AddStoreCategoryItem>?,
@@ -74,5 +79,19 @@ data class AddProductStaticText(
     @SerializedName("text_no") var text_no: String?,
     @SerializedName("text_share_product") var text_share_product: String?,
     @SerializedName("text_go_back_message") var text_go_back_message: String?,
-    @SerializedName("text_go_back") var text_go_back: String?
+    @SerializedName("text_go_back") var text_go_back: String?,
+
+    @SerializedName("text_plus_add") var text_plus_add: String?,
+    @SerializedName("text_suggestions") var text_suggestions: String?,
+    @SerializedName("text_variants") var text_variants: String?,
+    @SerializedName("heading_edit_variant") var heading_edit_variant: String?,
+    @SerializedName("text_save") var text_save: String?,
+    @SerializedName("text_delete") var text_delete: String?,
+    @SerializedName("text_cancel") var text_cancel: String?,
+    @SerializedName("dialog_delete_variant_message") var dialog_delete_variant_message: String?,
+    @SerializedName("text_in_stock") var text_in_stock: String?,
+    @SerializedName("text_recently_created") var text_recently_created: String?,
+    @SerializedName("text_active_variants") var text_active_variants: String?,
+    @SerializedName("hint_variant_name") var hint_variant_name: String?,
+    @SerializedName("text_add_variant") var text_add_variant: String?
 )

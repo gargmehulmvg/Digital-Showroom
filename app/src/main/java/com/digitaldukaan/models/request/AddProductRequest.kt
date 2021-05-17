@@ -1,5 +1,6 @@
 package com.digitaldukaan.models.request
 
+import com.digitaldukaan.models.response.VariantItemResponse
 import com.google.gson.annotations.SerializedName
 
 data class AddProductRequest(
@@ -10,7 +11,8 @@ data class AddProductRequest(
     @SerializedName("description") var description: String,
     @SerializedName("category") var itemCategory: AddProductItemCategory,
     @SerializedName("images") var imageList: ArrayList<AddProductImageItem>,
-    @SerializedName("name") var name: String
+    @SerializedName("name") var name: String,
+    @SerializedName("variants") var variantsList: ArrayList<VariantItemResponse>?
 )
 
 data class AddProductItemCategory(

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/bottomSheetContainer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/upper_curve_white_background"
+    android:orientation="vertical"
+    android:padding="@dimen/_15sdp">
+
+    <TextView
+        android:id="@+id/editVariantHeading"
+        style="@style/common_bold_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="Edit Variant" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/variantNameInputLayout"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_15sdp">
+
+        <EditText
+            android:id="@+id/variantNameEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:hint="Variant Name"
+            android:importantForAutofill="no"
+            android:inputType="text"
+            android:maxLength="@integer/variant_name_length"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_13sdp" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/saveTextView"
+        android:layout_marginTop="@dimen/_15sdp"
+        style="@style/common_text_view_background"
+        android:layout_width="match_parent"
+        android:gravity="center"
+        android:onClick="onClick"
+        tools:text="@string/save" />
+
+</LinearLayout>

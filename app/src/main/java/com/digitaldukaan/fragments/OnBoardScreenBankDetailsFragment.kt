@@ -26,7 +26,7 @@ import kotlinx.android.synthetic.main.layout_bank_account_fragment.*
 class OnBoardScreenBankDetailsFragment : BaseFragment(), IBankDetailsServiceInterface {
 
     private var mService: BankDetailsService? = null
-    private lateinit var mBlankView: View
+    private var mBlankView: View? = null
     private var mProfilePreviewStaticData: BankDetailsPageStaticTextResponse? = null
 
     companion object {
@@ -221,7 +221,7 @@ class OnBoardScreenBankDetailsFragment : BaseFragment(), IBankDetailsServiceInte
                         setSideIconVisibility(false)
                         setSecondSideIconVisibility(false)
                     }
-                    mBlankView.visibility = View.GONE
+                    mBlankView?.visibility = View.GONE
                     bottomSheetDialog.dismiss()
                 }
                 howItWorksTextView.setOnClickListener {

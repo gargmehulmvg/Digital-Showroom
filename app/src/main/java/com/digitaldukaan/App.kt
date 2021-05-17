@@ -1,15 +1,20 @@
 package com.digitaldukaan
 
+import android.app.ActivityManager
 import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.content.Context
 import android.os.Build
+import android.os.Process
 import android.util.Log
+import android.webkit.WebView
 import com.appsflyer.AppsFlyerConversionListener
 import com.appsflyer.AppsFlyerLib
 import com.digitaldukaan.constants.AFInAppEventParameterName
 import com.digitaldukaan.constants.StaticInstances
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+
 
 class App: Application() {
 
@@ -63,5 +68,23 @@ class App: Application() {
             manager.createNotificationChannel(notificationChannel)
         }
         FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(true)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            val processName = getProcessName(this)
+            val packageName = this.packageName
+            if (packageName != processName) {
+                WebView.setDataDirectorySuffix(processName)
+            }
+        }
+    }
+
+    private fun getProcessName(context: Context?): String? {
+        if (context == null) return null
+        val manager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        for (processInfo in manager.runningAppProcesses) {
+            if (processInfo.pid == Process.myPid()) {
+                return processInfo.processName
+            }
+        }
+        return null
     }
 }

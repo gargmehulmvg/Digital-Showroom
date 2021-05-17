@@ -44,7 +44,7 @@ import java.util.*
 
 class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddressServiceInterface {
 
-    private lateinit var mProfilePreviewResponse: ProfilePreviewSettingsKeyResponse
+    private var mProfilePreviewResponse: ProfilePreviewSettingsKeyResponse? = null
     private var mPosition: Int = 0
     private var mGoogleMap: GoogleMap? = null
     private var mIsSingleStep: Boolean = false
@@ -55,9 +55,9 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
     private lateinit var supportMapFragment: SupportMapFragment
     private var lastLocation: Location? = null
     private var mMapStaticData: MapLocationStaticResponseData? = null
-    private lateinit var mapBottomSheetLayout: View
-    private lateinit var setLocationTextView: TextView
-    private lateinit var stateTextView: TextView
+    private var mapBottomSheetLayout: View? = null
+    private var setLocationTextView: TextView? = null
+    private var stateTextView: TextView? = null
     private var mCurrentMarker: Marker? = null
     private var mProfileInfoResponse: ProfileInfoResponse? = null
     private var mGoogleDrivenAddress :String ? = ""
@@ -95,7 +95,7 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
         ToolBarManager.getInstance().apply {
             hideToolBar(mActivity, false)
             val stepStr = if (mIsSingleStep) "" else "Step $mPosition : "
-            setHeaderTitle("$stepStr${mProfilePreviewResponse.mHeadingText}")
+            setHeaderTitle("$stepStr${mProfilePreviewResponse?.mHeadingText}")
             onBackPressed(this@StoreMapLocationFragment)
             hideBackPressFromToolBar(mActivity, false)
         }
@@ -121,14 +121,14 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
         completeAddressLayout.hint = mMapStaticData?.completeAddressHint
         pinCodeLayout.hint = mMapStaticData?.pinCodeTextHint
         cityLayout.hint = mMapStaticData?.cityTextHint
-        setLocationTextView.text = mMapStaticData?.setLocationText
-        stateTextView.text = getString(R.string.select_state)
+        setLocationTextView?.text = mMapStaticData?.setLocationText
+        stateTextView?.text = getString(R.string.select_state)
         saveTextView.text = mMapStaticData?.saveChangesText
-        setLocationTextView.setOnClickListener {
-            mapBottomSheetLayout.visibility = View.VISIBLE
-            setLocationTextView.visibility = View.GONE
+        setLocationTextView?.setOnClickListener {
+            mapBottomSheetLayout?.visibility = View.VISIBLE
+            setLocationTextView?.visibility = View.GONE
         }
-        stateTextView.setOnClickListener {
+        stateTextView?.setOnClickListener {
             showStateSelectionDialog()
         }
         saveTextView.setOnClickListener {
@@ -151,7 +151,7 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
                     mCurrentLongitude,
                     pinCodeEditText.text.toString(),
                     cityEditText.text.toString(),
-                    stateTextView.text.toString()
+                    stateTextView?.text.toString()
                 )
                 showProgressDialog(mActivity)
                 AppEventsManager.pushAppEvents(
@@ -168,7 +168,7 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
             pinCodeEditText.setText(pinCode)
             cityEditText.setText(city)
             completeAddressEditText.setText(address1)
-            stateTextView.text = if (state.isEmpty()) getString(R.string.select_state) else state
+            stateTextView?.text = if (state.isEmpty()) getString(R.string.select_state) else state
         }
         if (mIsSingleStep)  statusRecyclerView?.visibility = View.GONE else {
             statusRecyclerView?.apply {
@@ -189,7 +189,7 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
     }
 
     override fun onAlertDialogItemClicked(selectedStr: String?, id: Int, position: Int) {
-        stateTextView.text = selectedStr
+        stateTextView?.text = selectedStr
     }
 
     private fun getCurrentLocationOfDevice() {
@@ -222,9 +222,9 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
                     mGoogleMap?.setOnCameraMoveListener { Log.d(TAG, "dragging start setOnCameraMoveListener()") }
                     mGoogleMap?.setOnCameraMoveStartedListener {
                         Log.d(TAG,"dragging start setOnCameraMoveStartedListener()")
-                        if (mapBottomSheetLayout.visibility  == View.VISIBLE) {
-                            mapBottomSheetLayout.visibility = View.GONE
-                            setLocationTextView.visibility = View.VISIBLE
+                        if (mapBottomSheetLayout?.visibility  == View.VISIBLE) {
+                            mapBottomSheetLayout?.visibility = View.GONE
+                            setLocationTextView?.visibility = View.VISIBLE
                         }
                     }
                     mGoogleMap?.setOnMarkerDragListener(object :GoogleMap.OnMarkerDragListener {

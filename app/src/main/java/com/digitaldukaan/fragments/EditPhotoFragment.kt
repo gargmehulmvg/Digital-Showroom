@@ -148,14 +148,16 @@ class EditPhotoFragment: BaseFragment() {
                 Constants.EDIT_PHOTO_MODE_MOBILE -> {
                     val croppedImage = cropImageView.croppedImage
                     val croppedImageFile = getImageFileFromBitmap(croppedImage, mActivity)
-                    uploadImageToGetCDNLink(croppedImageFile, Constants.EDIT_PHOTO_MODE_MOBILE)
-                    showMobileImageUploadDialog()
+                    croppedImageFile?.let {
+                        uploadImageToGetCDNLink(it, Constants.EDIT_PHOTO_MODE_MOBILE)
+                        showMobileImageUploadDialog()
+                    }
                 }
                 Constants.EDIT_PHOTO_MODE_DESKTOP -> {
                     val croppedImage = cropImageView.croppedImage
                     val croppedImageFile = getImageFileFromBitmap(croppedImage, mActivity)
                     showProgressDialog(mActivity)
-                    uploadImageToGetCDNLink(croppedImageFile, Constants.EDIT_PHOTO_MODE_DESKTOP)
+                    croppedImageFile?.let { uploadImageToGetCDNLink(it, Constants.EDIT_PHOTO_MODE_DESKTOP) }
                 }
             }
         }

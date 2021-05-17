@@ -64,5 +64,10 @@ interface AFInAppEventType {
         const val EVENT_APPFLYER_EXCEPTION = "Appflyer_Crash_Exception"
         const val EVENT_CLERVERTAP_EXCEPTION = "CleverTap_Crash_Exception"
         const val EVENT_SERVER_EXCEPTION = "Server_Crash_Exception"
+        const val EVENT_ADD_VARIANT = "Add_Variant"
+        const val EVENT_SAVE_VARIANT = "Save_Variant"
+        const val EVENT_EDIT_VARIANT = "Edit_Variant"
+        const val EVENT_DELETE_VARIANT = "Delete_Variant"
+        const val EVENT_PROFILE_PAGE = "ProfilePage"
     }
 }

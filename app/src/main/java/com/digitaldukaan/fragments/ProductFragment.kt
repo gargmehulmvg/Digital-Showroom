@@ -38,10 +38,10 @@ import org.json.JSONObject
 class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIconClick,
     PopupMenu.OnMenuItemClickListener {
 
-    private lateinit var mService: ProductService
+    private var mService: ProductService? = null
     private var mShareStorePDFResponse: ShareStorePDFDataItemResponse? = null
     private var mOptionsMenuResponse: ArrayList<TrendingListResponse>? = null
-    private var mShareDataOverWhatsAppText = ""
+    private var mShareDataOverWhatsAppText: String? = ""
     private var mUserCategoryResponse: AddProductStoreCategory? = null
     private var addProductBannerStaticDataResponse: AddProductBannerTextResponse? = null
     private var addProductChipsAdapter: AddProductsChipsAdapter? = null
@@ -62,13 +62,13 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mService = ProductService()
-        mService.setOrderDetailServiceListener(this)
-        mService.getDeleteCategoryItem()
+        mService?.setOrderDetailServiceListener(this)
+        mService?.getDeleteCategoryItem()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.product_fragment, container, false)
-        if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else mService.getProductPageInfo()
+        if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else mService?.getProductPageInfo()
         ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, false)
             hideBackPressFromToolBar(mActivity, false)
@@ -80,7 +80,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
         hideBottomNavigationView(false)
         WebViewBridge.mWebViewListener = this
         updateNavigationBarState(R.id.menuProducts)
-        mService.getUserCategories()
+        mService?.getUserCategories()
         return mContentView
     }
 
@@ -161,9 +161,24 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
 
     override fun onProductShareStoreWAResponse(commonResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            stopProgress()
-            mShareDataOverWhatsAppText = Gson().fromJson<String>(commonResponse.mCommonDataStr, String::class.java)
-            shareOnWhatsApp(mShareDataOverWhatsAppText)
+            try {
+                if (isEmpty(commonResponse.mCommonDataStr)) return@runTaskOnCoroutineMain
+                stopProgress()
+                mShareDataOverWhatsAppText = Gson().fromJson<String>(commonResponse.mCommonDataStr, String::class.java)
+                shareOnWhatsApp(mShareDataOverWhatsAppText)
+            } catch (e: Exception) {
+                Log.e(TAG, "onProductShareStoreWAResponse: ${e.message}", e)
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(
+                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                        "Exception Point" to "onProductShareStoreWAResponse",
+                        "Exception Message" to e.message,
+                        "Exception Logs" to e.toString()
+                    )
+                )
+            }
         }
     }
 
@@ -187,8 +202,8 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
     override fun onUpdateCategoryResponse(commonResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
-            mService.getProductPageInfo()
-            mService.getUserCategories()
+            mService?.getProductPageInfo()
+            mService?.getUserCategories()
             showShortSnackBar(commonResponse.mMessage, true, if (commonResponse.mIsSuccessStatus) R.drawable.ic_check_circle else R.drawable.ic_close_red)
         }
     }
@@ -196,8 +211,8 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
     override fun onDeleteCategoryResponse(commonResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
-            mService.getProductPageInfo()
-            mService.getUserCategories()
+            mService?.getProductPageInfo()
+            mService?.getUserCategories()
             showShortSnackBar(commonResponse.mMessage, true, if (commonResponse.mIsSuccessStatus) R.drawable.ic_check_circle else R.drawable.ic_close_red)
         }
     }
@@ -205,7 +220,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
     override fun onUpdateStockResponse(commonResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
-            mService.getProductPageInfo()
+            mService?.getProductPageInfo()
             showShortSnackBar(commonResponse.mMessage, true, if (commonResponse.mIsSuccessStatus) R.drawable.ic_check_circle else R.drawable.ic_close_red)
         }
     }
@@ -249,7 +264,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                 verifyTextView.text = response?.subHeading
                 verifyTextView.setOnClickListener{
                     showProgressDialog(mActivity)
-                    mService.generateProductStorePdf()
+                    mService?.generateProductStorePdf()
                     bottomSheetDialog.dismiss()
                 }
                 referAndEarnRecyclerView.apply {
@@ -274,12 +289,12 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                         AFInAppEventParameterName.IS_CATALOG to "true"
                     )
                 )
-                if (mShareDataOverWhatsAppText.isNotEmpty()) shareOnWhatsApp(mShareDataOverWhatsAppText) else if (!isInternetConnectionAvailable(mActivity)) {
+                if (!isEmpty(mShareDataOverWhatsAppText)) shareOnWhatsApp(mShareDataOverWhatsAppText) else if (!isInternetConnectionAvailable(mActivity)) {
                     showNoInternetConnectionDialog()
                     return
                 } else {
                     showProgressDialog(mActivity)
-                    mService.getProductShareStoreData()
+                    mService?.getProductShareStoreData()
                 }
             }
         }
@@ -313,7 +328,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                     )
                 )
                 showProgressDialog(mActivity)
-                mService.getShareStorePdfText()
+                mService?.getShareStorePdfText()
             }
         }
         return true
@@ -329,7 +344,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                     return
                 }
                 showProgressDialog(mActivity)
-                mService.getAddOrderBottomSheetData()
+                mService?.getAddOrderBottomSheetData()
             } else showMasterCatalogBottomSheet(addProductBannerStaticDataResponse, addProductStaticData, Constants.MODE_PRODUCT_LIST)
         }
         else if (jsonData.optBoolean("catalogCategoryEdit")) {
@@ -356,7 +371,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
             if (isAvailable == 1) {
                 if (Constants.TEXT_YES == PrefsManager.getStringDataFromSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN_STOCK)) {
                     val request = UpdateStockRequest(jsonDataObject.optInt("id"), 0)
-                    mService.updateStock(request)
+                    mService?.updateStock(request)
                 } else showOutOfStockDialog(jsonDataObject)
             } else {
                 val request = UpdateStockRequest(jsonDataObject.optInt("id"), if (jsonDataObject.optInt("available") == 0) 1 else 0)
@@ -365,7 +380,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                     return
                 }
                 showProgressDialog(mActivity)
-                mService.updateStock(request)
+                mService?.updateStock(request)
             }
         } else if (jsonData.optBoolean("trackEventData")) {
             val eventName = jsonData.optString("eventName")
@@ -396,7 +411,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                     showNoInternetConnectionDialog()
                 } else {
                     showProgressDialog(mActivity)
-                    mService.updateStock(request)
+                    mService?.updateStock(request)
                 }
             }
             setNegativeButton(getString(R.string.text_no)) { dialogInterface, _ ->
@@ -479,7 +494,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                     }
                     bottomSheetDialog.dismiss()
                     showProgressDialog(mActivity)
-                    mService.updateCategory(request)
+                    mService?.updateCategory(request)
                 }
                 deleteCategoryTextView.setOnClickListener {
                     bottomSheetDialog.dismiss()
@@ -488,6 +503,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
             }
         }.show()
     }
+
     private fun showDeleteCategoryBottomSheet(categoryName: String?, categoryId: Int) {
         val bottomSheetDialog = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
         val view = LayoutInflater.from(mActivity).inflate(
@@ -513,7 +529,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                                 val request = DeleteCategoryRequest(categoryId, mDeleteCategoryItemList?.get(position)?.action == "true")
                                 bottomSheetDialog.dismiss()
                                 showProgressDialog(mActivity)
-                                mService.deleteCategory(request)
+                                mService?.deleteCategory(request)
                             }
                         }
                     })

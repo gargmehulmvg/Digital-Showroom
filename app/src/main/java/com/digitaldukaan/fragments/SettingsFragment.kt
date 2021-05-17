@@ -480,9 +480,11 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
     }
 
     override fun onProfileDataException(e: Exception) {
-        Log.e(SettingsFragment::class.simpleName, "onProfileDataException", e)
-        if (swipeRefreshLayout?.isRefreshing == true) swipeRefreshLayout?.isRefreshing = false
-        exceptionHandlingForAPIResponse(e)
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            Log.e(SettingsFragment::class.simpleName, "onProfileDataException", e)
+            if (swipeRefreshLayout?.isRefreshing == true) swipeRefreshLayout?.isRefreshing = false
+            exceptionHandlingForAPIResponse(e)
+        }
     }
 
     override fun onRefresh() {

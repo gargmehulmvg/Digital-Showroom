@@ -60,6 +60,15 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         private const val TAG = "ProfilePreviewFragment"
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        AppEventsManager.pushAppEvents(
+            eventName = AFInAppEventType.EVENT_PROFILE_PAGE,
+            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+            data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
+        )
+    }
+
     fun newInstance(storeName: String? = ""): ProfilePreviewFragment {
         val fragment = ProfilePreviewFragment()
         fragment.mStoreName = storeName
