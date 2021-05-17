@@ -10,7 +10,8 @@ data class AddProductResponse(
     @SerializedName("recent_variants") var recentVariantsList: ArrayList<VariantItemResponse>?,
     @SerializedName("master_variants") var masterVariantsList: ArrayList<VariantItemResponse>?,
     @SerializedName("store_item") var storeItem: AddProductItemResponse?,
-    var deletedVariants: HashMap<String?, VariantItemResponse?> = HashMap()
+    var deletedVariants: HashMap<String?, VariantItemResponse?> = HashMap(),
+    var isVariantSaved: Boolean
 )
 
 //private var mSelectedProductsHashMap: HashMap<Int?, MasterCatalogItemResponse?>? = HashMap()
