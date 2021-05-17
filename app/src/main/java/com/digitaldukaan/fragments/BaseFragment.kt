@@ -79,19 +79,31 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     protected fun showProgressDialog(context: Context?, message: String? = "Please wait...") {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             context?.run {
-                mProgressDialog = Dialog(this)
-                mProgressDialog?.apply {
-                    val view = LayoutInflater.from(context).inflate(R.layout.progress_dialog, null)
-                    message?.run {
-                        val messageTextView : TextView = view.findViewById(R.id.progressDialogTextView)
-                        messageTextView.text = this
-                    }
-                    setContentView(view)
-                    setCancelable(false)
-                    window!!.setBackgroundDrawable(
-                        ColorDrawable(Color.TRANSPARENT)
+                try {
+                    mProgressDialog = Dialog(this)
+                    mProgressDialog?.apply {
+                        val view = LayoutInflater.from(context).inflate(R.layout.progress_dialog, null)
+                        message?.run {
+                            val messageTextView : TextView = view.findViewById(R.id.progressDialogTextView)
+                            messageTextView.text = this
+                        }
+                        setContentView(view)
+                        setCancelable(false)
+                        window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                    }?.show()
+                } catch (e: Exception) {
+                    Log.e(TAG, "showProgressDialog: ${e.message}", e)
+                    AppEventsManager.pushAppEvents(
+                        eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
+                        isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                        data = mapOf(
+                            AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                            "Exception Point" to "showProgressDialog",
+                            "Exception Message" to e.message,
+                            "Exception Logs" to e.toString()
+                        )
                     )
-                }?.show()
+                }
             }
         }
     }
@@ -121,9 +133,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                         messageTextView.text = this
                     }
                     mProgressDialog?.setCancelable(true)
-                    mProgressDialog?.window!!.setBackgroundDrawable(
-                        ColorDrawable(Color.TRANSPARENT)
-                    )
+                    mProgressDialog?.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
                     mProgressDialog?.show()
                 }
             } catch (e: java.lang.Exception) {
@@ -146,10 +156,8 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         try {
             mActivity.runOnUiThread {
                 if (mProgressDialog != null) {
-                    mProgressDialog?.let {
-                        mProgressDialog?.dismiss()
-                        mProgressDialog = null
-                    }
+                    mProgressDialog?.dismiss()
+                    mProgressDialog = null
                 }
             }
         } catch (e: Exception) {
@@ -278,8 +286,8 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     }
 
     open fun showNoInternetConnectionDialog() {
-        try {
-            CoroutineScopeUtils().runTaskOnCoroutineMain {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            try {
                 val builder: AlertDialog.Builder? = AlertDialog.Builder(mActivity)
                 builder?.apply {
                     setTitle(getString(R.string.no_internet_connection))
@@ -290,19 +298,18 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                         dialog.dismiss()
                     }
                 }?.create()?.show()
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "showNoInternetConnectionDialog: ${e.message}", e)
-            AppEventsManager.pushAppEvents(
-                eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
-                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                data = mapOf(
-                    AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                    "Exception Point" to "showNoInternetConnectionDialog",
-                    "Exception Message" to e.message,
-                    "Exception Logs" to e.toString()
+            } catch (e: Exception) {
+                Log.e(TAG, "showNoInternetConnectionDialog: ${e.message}", e)
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                        "Exception Point" to "showNoInternetConnectionDialog",
+                        "Exception Message" to e.message,
+                        "Exception Logs" to e.toString()
+                    )
                 )
-            )
+            }
         }
     }
 

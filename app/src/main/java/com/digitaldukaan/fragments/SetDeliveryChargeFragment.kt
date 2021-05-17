@@ -18,7 +18,7 @@ import kotlinx.android.synthetic.main.set_delivery_charge_fragment.*
 
 class SetDeliveryChargeFragment : BaseFragment(), IMoreControlsServiceInterface {
 
-    private lateinit var mMoreControlsStaticData: AccountStaticTextResponse
+    private var mMoreControlsStaticData: AccountStaticTextResponse? = null
     private var mAppStoreServicesResponse: StoreServicesResponse? = null
 
     companion object {
@@ -40,7 +40,7 @@ class SetDeliveryChargeFragment : BaseFragment(), IMoreControlsServiceInterface 
         ToolBarManager.getInstance().hideToolBar(mActivity, true)
         ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, false)
-            setHeaderTitle(mMoreControlsStaticData.page_heading_set_delivery_charge)
+            setHeaderTitle(mMoreControlsStaticData?.page_heading_set_delivery_charge)
             onBackPressed(this@SetDeliveryChargeFragment)
             hideBackPressFromToolBar(mActivity, false)
         }
@@ -53,15 +53,15 @@ class SetDeliveryChargeFragment : BaseFragment(), IMoreControlsServiceInterface 
     }
 
     private fun setupTextFromResponse() {
-        freeDeliveryRadioButton?.text = mMoreControlsStaticData.heading_free_delivery
-        freeDeliveryTextView?.text = mMoreControlsStaticData.free_delivery_description
-        fixedDeliveryRadioButton?.text = mMoreControlsStaticData.heading_fixed_delivery_charge
-        fixedDeliveryChargeLayout?.hint = mMoreControlsStaticData.hint_free_delivery_charge
-        freeDeliveryAboveLayout?.hint = mMoreControlsStaticData.hint_free_delivery_above_optional
-        customDeliveryRadioButton?.text = mMoreControlsStaticData.heading_custom_delivery_charge
-        customDeliveryAboveLayout?.hint = mMoreControlsStaticData.hint_custom_delivery_charge
-        customDeliveryTextView?.text = mMoreControlsStaticData.custom_delivery_charge_description
-        continueTextView?.text = mMoreControlsStaticData.bottom_sheet_save_changes
+        freeDeliveryRadioButton?.text = mMoreControlsStaticData?.heading_free_delivery
+        freeDeliveryTextView?.text = mMoreControlsStaticData?.free_delivery_description
+        fixedDeliveryRadioButton?.text = mMoreControlsStaticData?.heading_fixed_delivery_charge
+        fixedDeliveryChargeLayout?.hint = mMoreControlsStaticData?.hint_free_delivery_charge
+        freeDeliveryAboveLayout?.hint = mMoreControlsStaticData?.hint_free_delivery_above_optional
+        customDeliveryRadioButton?.text = mMoreControlsStaticData?.heading_custom_delivery_charge
+        customDeliveryAboveLayout?.hint = mMoreControlsStaticData?.hint_custom_delivery_charge
+        customDeliveryTextView?.text = mMoreControlsStaticData?.custom_delivery_charge_description
+        continueTextView?.text = mMoreControlsStaticData?.bottom_sheet_save_changes
         when (mAppStoreServicesResponse?.mDeliveryChargeType) {
             Constants.UNKNOWN_DELIVERY_CHARGE -> {
                 showFreeDeliveryContainer(false)
@@ -127,17 +127,17 @@ class SetDeliveryChargeFragment : BaseFragment(), IMoreControlsServiceInterface 
                     val freeDeliveryAboveStr = freeDeliveryAboveEditText.text.trim().toString()
                     if (fixedDeliveryChargeStr.isEmpty() || fixedDeliveryChargeStr.toDouble() == 0.0) {
                         fixedDeliveryChargeEditText.requestFocus()
-                        fixedDeliveryChargeEditText.error = mMoreControlsStaticData.error_mandatory_field
+                        fixedDeliveryChargeEditText.error = mMoreControlsStaticData?.error_mandatory_field
                         return
                     }
                     if (freeDeliveryAboveStr.isNotEmpty() && (freeDeliveryAboveStr.toDouble() < (mAppStoreServicesResponse?.mMinOrderValue ?: 0.0))) {
                         freeDeliveryAboveEditText?.requestFocus()
-                        freeDeliveryAboveEditText?.error = mMoreControlsStaticData.error_amount_must_greater_than_min_order_value
+                        freeDeliveryAboveEditText?.error = mMoreControlsStaticData?.error_amount_must_greater_than_min_order_value
                         return
                     }
                     if (freeDeliveryAboveStr.isNotEmpty() && (freeDeliveryAboveStr.toDouble() == 0.0)) {
                         freeDeliveryAboveEditText?.requestFocus()
-                        freeDeliveryAboveEditText?.error = mMoreControlsStaticData.error_mandatory_field
+                        freeDeliveryAboveEditText?.error = mMoreControlsStaticData?.error_mandatory_field
                         return
                     }
                     mMoreControlRequest.deliveryChargeType = Constants.FIXED_DELIVERY_CHARGE
@@ -150,12 +150,12 @@ class SetDeliveryChargeFragment : BaseFragment(), IMoreControlsServiceInterface 
                     val customDeliveryAboveStr = customDeliveryAboveEditText.text.trim().toString()
                     if (customDeliveryAboveStr.isNotEmpty() && (customDeliveryAboveStr.toDouble() == 0.0)) {
                         customDeliveryAboveEditText?.requestFocus()
-                        customDeliveryAboveEditText?.error = mMoreControlsStaticData.error_mandatory_field
+                        customDeliveryAboveEditText?.error = mMoreControlsStaticData?.error_mandatory_field
                         return
                     }
                     if (customDeliveryAboveStr.isNotEmpty() && (customDeliveryAboveStr.toDouble() < (mAppStoreServicesResponse?.mMinOrderValue ?: 0.0))) {
                         customDeliveryAboveEditText?.requestFocus()
-                        customDeliveryAboveEditText?.error = mMoreControlsStaticData.error_amount_must_greater_than_min_order_value
+                        customDeliveryAboveEditText?.error = mMoreControlsStaticData?.error_amount_must_greater_than_min_order_value
                         return
                     }
                     mMoreControlRequest.deliveryChargeType = Constants.CUSTOM_DELIVERY_CHARGE

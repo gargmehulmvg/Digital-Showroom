@@ -175,6 +175,7 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
 
         var activity: MainActivity? = null
         var commonWebView: WebView? = null
+        private val TAG = WebViewController::class.java.simpleName
 
         override fun onPageFinished(view: WebView?, url: String?) {
             try {
@@ -190,14 +191,27 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
         override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
             return when {
                 url.startsWith("tel:") -> {
-                    val tel = Intent(Intent.ACTION_DIAL, Uri.parse(url))
-                    activity?.startActivity(tel)
+                    try {
+                        activity?.startActivity(Intent(Intent.ACTION_DIAL, Uri.parse(url)))
+                    } catch (e: Exception) {
+                        Log.e(TAG, "shouldOverrideUrlLoading :: tel :: ${e.message}", e)
+                    }
                     true
                 }
-                url.contains("mailto:") -> { view.context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                url.contains("mailto:") -> {
+                    try {
+                        view.context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                    } catch (e: Exception) {
+                        Log.e(TAG, "shouldOverrideUrlLoading :: mailto :: ${e.message}", e)
+                    }
                     true
                 }
-                url.contains("whatsapp:") -> { view.context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                url.contains("whatsapp:") -> {
+                    try {
+                        view.context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                    } catch (e: Exception) {
+                        Log.e(TAG, "shouldOverrideUrlLoading :: whatsapp :: ${e.message}", e)
+                    }
                     true
                 }
                 else -> {

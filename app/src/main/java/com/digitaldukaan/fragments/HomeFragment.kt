@@ -367,8 +367,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                 homePageWebViewLayout?.visibility = View.GONE
                 orderLayout?.visibility = View.VISIBLE
                 bannerRecyclerView?.apply {
-                    linearLayoutManager =
-                        LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
+                    linearLayoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
                     layoutManager = linearLayoutManager
                     adapter = OrderPageBannerAdapter(
                         orderPageInfoResponse?.mBannerList,
@@ -388,13 +387,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                             }
                         })
                 }
-                Handler(Looper.getMainLooper()).postDelayed({
-                    fetchLatestOrders(
-                        Constants.MODE_PENDING,
-                        mFetchingOrdersStr,
-                        pendingPageCount
-                    )
-                }, 150)
+                Handler(Looper.getMainLooper()).postDelayed({ fetchLatestOrders(Constants.MODE_PENDING, mFetchingOrdersStr, pendingPageCount) }, 150)
             }
             if (mIsHelpOrder.mIsActive) {
                 helpImageView?.visibility = View.VISIBLE
@@ -458,15 +451,11 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
 
     private fun saveUserDetailsInPref(validateOtpResponse: ValidateOtpResponse) {
         storeStringDataInSharedPref(Constants.USER_AUTH_TOKEN, validateOtpResponse.mUserAuthToken)
-        storeStringDataInSharedPref(
-            Constants.USER_MOBILE_NUMBER,
-            validateOtpResponse.mUserPhoneNumber
-        )
+        storeStringDataInSharedPref(Constants.USER_MOBILE_NUMBER, validateOtpResponse.mUserPhoneNumber)
         validateOtpResponse.mStore?.run {
             storeStringDataInSharedPref(Constants.STORE_ID, storeId.toString())
             storeStringDataInSharedPref(Constants.STORE_NAME, storeInfo.name)
-            if (this.storeInfo.logoImage?.isNotEmpty() == true) StaticInstances.sIsStoreImageUploaded =
-                true
+            if (this.storeInfo.logoImage?.isNotEmpty() == true) StaticInstances.sIsStoreImageUploaded = true
         }
     }
 
@@ -496,9 +485,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
             when {
                 grantResults.isEmpty() -> Log.i(TAG, "User interaction was cancelled.")
                 grantResults[0] == PackageManager.PERMISSION_GRANTED -> {
-                    CoroutineScopeUtils().runTaskOnCoroutineBackground {
-                        getContactsFromStorage2(mActivity)
-                    }
+                    CoroutineScopeUtils().runTaskOnCoroutineBackground { getContactsFromStorage2(mActivity) }
                     if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else {
                         mHomeFragmentService?.getOrderPageInfo()
                         mHomeFragmentService?.getAnalyticsData()
@@ -518,11 +505,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
     ) {
         mOrderIdString = inputOrderId
         mMobileNumberString = inputMobileNumber
-        val request = SearchOrdersRequest(
-            if (mOrderIdString.isNotEmpty()) mOrderIdString.toLong() else 0,
-            mMobileNumberString,
-            1
-        )
+        val request = SearchOrdersRequest(if (mOrderIdString.isNotEmpty()) mOrderIdString.toLong() else 0, mMobileNumberString, 1)
         if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog()
         showProgressDialog(mActivity)
         mHomeFragmentService?.getSearchOrders(request)
@@ -658,5 +641,4 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
             }
         }.show()
     }
-
 }
