@@ -966,47 +966,61 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
 
     protected fun showMasterCatalogBottomSheet(addProductBannerStaticDataResponse: AddProductBannerTextResponse?, addProductStaticText: AddProductStaticText?, mode: String) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            val bottomSheetDialog = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
-            val view = LayoutInflater.from(mActivity).inflate(
-                R.layout.bottom_sheet_add_products_catalog_builder,
-                mActivity.findViewById(R.id.bottomSheetContainer)
-            )
-            bottomSheetDialog.apply {
-                setContentView(view)
-                setBottomSheetCommonProperty()
-                view.run {
-                    val closeImageView: View = findViewById(R.id.closeImageView)
-                    val offerTextView: TextView = findViewById(R.id.offerTextView)
-                    val headerTextView: TextView = findViewById(R.id.headerTextView)
-                    val bodyTextView: TextView = findViewById(R.id.bodyTextView)
-                    val bannerImageView: ImageView = findViewById(R.id.bannerImageView)
-                    val buttonTextView: TextView = findViewById(R.id.buttonTextView)
-                    offerTextView.text = addProductBannerStaticDataResponse?.offer
-                    headerTextView.setHtmlData(addProductBannerStaticDataResponse?.header)
-                    bodyTextView.text = addProductBannerStaticDataResponse?.body
-                    buttonTextView.text = addProductBannerStaticDataResponse?.button_text
-                    bannerImageView?.let {
-                        try {
-                            Picasso.get().load(addProductBannerStaticDataResponse?.image_url).into(it)
-                        } catch (e: Exception) {
-                            Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+            try {
+                val bottomSheetDialog = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
+                val view = LayoutInflater.from(mActivity).inflate(
+                    R.layout.bottom_sheet_add_products_catalog_builder,
+                    mActivity.findViewById(R.id.bottomSheetContainer)
+                )
+                bottomSheetDialog.apply {
+                    setContentView(view)
+                    setBottomSheetCommonProperty()
+                    view.run {
+                        val closeImageView: View = findViewById(R.id.closeImageView)
+                        val offerTextView: TextView = findViewById(R.id.offerTextView)
+                        val headerTextView: TextView = findViewById(R.id.headerTextView)
+                        val bodyTextView: TextView = findViewById(R.id.bodyTextView)
+                        val bannerImageView: ImageView = findViewById(R.id.bannerImageView)
+                        val buttonTextView: TextView = findViewById(R.id.buttonTextView)
+                        offerTextView.text = addProductBannerStaticDataResponse?.offer
+                        headerTextView.setHtmlData(addProductBannerStaticDataResponse?.header)
+                        bodyTextView.text = addProductBannerStaticDataResponse?.body
+                        buttonTextView.text = addProductBannerStaticDataResponse?.button_text
+                        bannerImageView?.let {
+                            try {
+                                Picasso.get().load(addProductBannerStaticDataResponse?.image_url).into(it)
+                            } catch (e: Exception) {
+                                Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+                            }
+                        }
+                        closeImageView.setOnClickListener { bottomSheetDialog.dismiss() }
+                        buttonTextView.setOnClickListener{
+                            bottomSheetDialog.dismiss()
+                            AppEventsManager.pushAppEvents(
+                                eventName = AFInAppEventType.EVENT_CATALOG_BUILDER_TRY_NOW,
+                                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                                data = mapOf(
+                                    AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                                    AFInAppEventParameterName.PATH to if (mode == Constants.MODE_PRODUCT_LIST) Constants.MODE_PRODUCT_LIST else Constants.MODE_ADD_PRODUCT
+                                )
+                            )
+                            launchFragment(ExploreCategoryFragment.newInstance(addProductStaticText), true)
                         }
                     }
-                    closeImageView.setOnClickListener { bottomSheetDialog.dismiss() }
-                    buttonTextView.setOnClickListener{
-                        bottomSheetDialog.dismiss()
-                        AppEventsManager.pushAppEvents(
-                            eventName = AFInAppEventType.EVENT_CATALOG_BUILDER_TRY_NOW,
-                            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                            data = mapOf(
-                                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                                AFInAppEventParameterName.PATH to if (mode == Constants.MODE_PRODUCT_LIST) Constants.MODE_PRODUCT_LIST else Constants.MODE_ADD_PRODUCT
-                            )
-                        )
-                        launchFragment(ExploreCategoryFragment.newInstance(addProductStaticText), true)
-                    }
-                }
-            }.show()
+                }.show()
+            } catch (e: Exception) {
+                Log.e(TAG, "showMasterCatalogBottomSheet: ${e.message}", e)
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(
+                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                        "Exception Point" to "showMasterCatalogBottomSheet",
+                        "Exception Message" to e.message,
+                        "Exception Logs" to e.toString()
+                    )
+                )
+            }
         }
     }
 

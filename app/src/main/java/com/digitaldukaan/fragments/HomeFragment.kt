@@ -594,7 +594,21 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
 
     override fun onImageSelectionResultUri(fileUri: Uri?) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            launchFragment(SendBillFragment.newInstance(fileUri), true)
+            try {
+                launchFragment(SendBillFragment.newInstance(fileUri), true)
+            } catch (e: Exception) {
+                Log.e(TAG, "onImageSelectionResultUri: ${e.message}", e)
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(
+                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                        "Exception Point" to "onImageSelectionResultUri",
+                        "Exception Message" to e.message,
+                        "Exception Logs" to e.toString()
+                    )
+                )
+            }
         }
     }
 

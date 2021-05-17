@@ -153,17 +153,21 @@ fun getBase64FromImageURL(url: String): String? {
     return null
 }
 
-fun getImageFileFromBitmap(bitmap: Bitmap, context: Context): File {
-    val bitmapFile = File(context.cacheDir, "tempFile_${System.currentTimeMillis()}")
-    bitmapFile.createNewFile()
-    val bos = ByteArrayOutputStream()
-    bitmap.compress(Bitmap.CompressFormat.JPEG, 100 , bos)
-    val bitmapData = bos.toByteArray()
-    val fos = FileOutputStream(bitmapFile)
-    fos.write(bitmapData)
-    fos.flush()
-    fos.close()
-    return bitmapFile
+fun getImageFileFromBitmap(bitmap: Bitmap, context: Context): File? {
+    return try {
+        val bitmapFile = File(context.cacheDir, "tempFile_${System.currentTimeMillis()}")
+        bitmapFile.createNewFile()
+        val bos = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100 , bos)
+        val bitmapData = bos.toByteArray()
+        val fos = FileOutputStream(bitmapFile)
+        fos.write(bitmapData)
+        fos.flush()
+        fos.close()
+        bitmapFile
+    } catch (e: Exception) {
+        null
+    }
 }
 
 fun downloadBillInGallery(bitmap: Bitmap, orderId: String?): File? {
