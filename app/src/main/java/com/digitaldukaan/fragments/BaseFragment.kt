@@ -377,7 +377,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         }
     }
 
-    protected fun shareDataOnWhatsAppByNumber(phone: String?, message: String?) {
+    protected fun shareDataOnWhatsAppByNumber(phone: String?, message: String? = "") {
         phone?.let {
             var phoneNumber = it
             if (!it.contains("+91")) phoneNumber = "+91$phoneNumber"

@@ -27,8 +27,6 @@ import com.digitaldukaan.adapters.DeliveryTimeAdapter
 import com.digitaldukaan.adapters.OrderDetailsAdapter
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.IChipItemClickListener
-import com.digitaldukaan.interfaces.IOnToolbarIconClick
-import com.digitaldukaan.interfaces.IOnToolbarSecondIconClick
 import com.digitaldukaan.interfaces.IOrderDetailListener
 import com.digitaldukaan.models.dto.CustomerDeliveryAddressDTO
 import com.digitaldukaan.models.request.CompleteOrderRequest
@@ -49,8 +47,7 @@ import java.io.File
 import java.util.*
 
 
-class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToolbarIconClick,
-    IOnToolbarSecondIconClick, PopupMenu.OnMenuItemClickListener {
+class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupMenu.OnMenuItemClickListener {
 
     private var mOrderId = ""
     private var mMobileNumber = ""
@@ -96,6 +93,13 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
         return mContentView
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        ToolBarManager.getInstance()?.apply { hideToolBar(mActivity, true) }
+        sideIcon2Toolbar?.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.ic_call))
+        sideIconToolbar?.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.ic_options_menu))
+        hideBottomNavigationView(true)
+    }
+
     override fun onClick(view: View?) {
         when(view?.id) {
             addDeliveryChargesLabel?.id -> {
@@ -116,6 +120,25 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                 } else {
                     showProgressDialog(mActivity)
                     mOrderDetailService?.getOrderDetailStatus(orderDetailMainResponse?.orders?.orderId)
+                }
+            }
+            sideIconWhatsAppToolbar?.id -> shareDataOnWhatsAppByNumber(mMobileNumber)
+            backButtonToolbar?.id -> mActivity.onBackPressed()
+            sideIconToolbar?.id -> {
+                val sideView:View = mActivity.findViewById(R.id.sideIconToolbar)
+                val optionsMenu = PopupMenu(mActivity, sideView)
+                optionsMenu.inflate(R.menu.menu_product_fragment)
+                orderDetailMainResponse?.optionMenuList?.forEachIndexed { position, response ->
+                    optionsMenu.menu?.add(Menu.NONE, position, Menu.NONE, response.mText)
+                }
+                optionsMenu.setOnMenuItemClickListener(this)
+                optionsMenu.show()
+            }
+            sideIcon2Toolbar?.id -> {
+                try {
+                    mActivity.startActivity(Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", mMobileNumber, null)))
+                } catch (e: Exception) {
+                    Log.e(TAG, "onClick: ${e.message}", e)
                 }
             }
         }
@@ -229,18 +252,6 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
         }
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        ToolBarManager.getInstance()?.apply {
-            hideToolBar(mActivity, false)
-            onBackPressed(this@OrderDetailFragment)
-            setSecondSideIconVisibility(true)
-            setSideIconVisibility(true)
-            setSecondSideIcon(ContextCompat.getDrawable(mActivity, R.drawable.ic_call), this@OrderDetailFragment)
-            setSideIcon(ContextCompat.getDrawable(mActivity, R.drawable.ic_options_menu), this@OrderDetailFragment)
-        }
-        hideBottomNavigationView(true)
-    }
-
     override fun onOrderDetailResponse(commonResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
@@ -285,7 +296,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
             }
             amountEditText?.setText("$mTotalDisplayAmount")
             setStaticDataToUI(orderDetailResponse)
-            ToolBarManager.getInstance().setHeaderSubTitle(getStringDateTimeFromOrderDate(getCompleteDateFromOrderString(orderDetailMainResponse?.orders?.createdAt)))
+            appSubTitleTextView?.text = getStringDateTimeFromOrderDate(getCompleteDateFromOrderString(orderDetailMainResponse?.orders?.createdAt))
             setupDeliveryChargeUI(orderDetailResponse?.displayStatus, orderDetailMainResponse?.storeServices)
             when (orderDetailResponse?.orderType) {
                 Constants.ORDER_TYPE_SELF_IMAGE -> {
@@ -353,9 +364,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                 instructionsLabel?.visibility = View.VISIBLE
             }
             mMobileNumber = orderDetailResponse?.phone ?: ""
-            if (orderDetailMainResponse?.optionMenuList?.isEmpty() == true) {
-                ToolBarManager.getInstance().setSideIconVisibility(false)
-            }
+            sideIconToolbar?.visibility = if (orderDetailMainResponse?.optionMenuList?.isEmpty() == true) View.GONE else View. VISIBLE
         }
     }
 
@@ -509,7 +518,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
             statusLabel?.text = "$text_status:"
             detailTextView?.text = "$text_details:"
             billAmountValue?.text = "$text_rupees_symbol ${orderDetailResponse?.amount}"
-            ToolBarManager.getInstance()?.setHeaderTitle("$text_order #$mOrderId")
+            appTitleTextView?.text = "$text_order #$mOrderId"
             if (orderDetailResponse?.deliveryInfo?.customDeliveryTime?.isEmpty() == true) estimateDeliveryTextView.visibility = View.GONE else {
                 val estimatedDeliveryStr = "$text_estimate_delivery : ${orderDetailResponse?.deliveryInfo?.customDeliveryTime}"
                 estimateDeliveryTextView.text = estimatedDeliveryStr
@@ -631,17 +640,6 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
 
     override fun onOrderDetailException(e: Exception) {
         exceptionHandlingForAPIResponse(e)
-    }
-
-    override fun onToolbarSideIconClicked() {
-        val sideView:View = mActivity.findViewById(R.id.sideIconToolbar)
-        val optionsMenu = PopupMenu(mActivity, sideView)
-        optionsMenu.inflate(R.menu.menu_product_fragment)
-        orderDetailMainResponse?.optionMenuList?.forEachIndexed { position, response ->
-            optionsMenu.menu?.add(Menu.NONE, position, Menu.NONE, response.mText)
-        }
-        optionsMenu.setOnMenuItemClickListener(this)
-        optionsMenu.show()
     }
 
     private fun showDeliveryTimeBottomSheet(deliveryTimeResponse: DeliveryTimeResponse?, isCallSendBillServerCall: Boolean) {
@@ -809,11 +807,6 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, IOnToo
                 }
             }
         }.show()
-    }
-
-    override fun onToolbarSecondIconClicked() {
-        val intent = Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", mMobileNumber, null))
-        mActivity.startActivity(intent)
     }
 
     override fun onMenuItemClick(menu: MenuItem?): Boolean {
