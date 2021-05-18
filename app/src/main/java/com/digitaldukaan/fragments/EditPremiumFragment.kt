@@ -1,11 +1,14 @@
 package com.digitaldukaan.fragments
 
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.widget.TextView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -38,13 +41,11 @@ class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
     private var mDefaultSelectedColorItem: EditPremiumColorItemResponse? = null
 
     companion object {
+        private const val TAG = "EditPremiumFragment"
         private val mService: EditPremiumService = EditPremiumService()
         private var colorAdapter: EditPremiumColorAdapter? = null
 
-        fun newInstance(
-            staticText: PremiumPageInfoStaticTextResponse?,
-            premiumPageInfoResponse: PremiumPageInfoResponse?
-        ): EditPremiumFragment{
+        fun newInstance(staticText: PremiumPageInfoStaticTextResponse?, premiumPageInfoResponse: PremiumPageInfoResponse?): EditPremiumFragment{
             val fragment = EditPremiumFragment()
             fragment.mStaticText = staticText
             fragment.mPremiumPageInfoResponse = premiumPageInfoResponse
@@ -90,6 +91,45 @@ class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
             addJavascriptInterface(WebViewBridge(), "Android")
             val url = "${BuildConfig.WEB_VIEW_PREVIEW_URL}${mPremiumPageInfoResponse?.domain}"
             Log.d(EditPremiumFragment::class.simpleName, "onViewCreated: $url")
+            webViewClient = object : WebViewClient() {
+                override fun onPageFinished(view: WebView, url: String) {
+                    Log.d(TAG, "onPageFinished: called")
+                    stopProgress()
+                }
+
+                override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
+                    return when {
+                        url.startsWith("tel:") -> {
+                            try {
+                                view.context?.startActivity(Intent(Intent.ACTION_DIAL, Uri.parse(url)))
+                            } catch (e: Exception) {
+                                Log.e(TAG, "shouldOverrideUrlLoading :: tel :: ${e.message}", e)
+                            }
+                            true
+                        }
+                        url.contains("mailto:") -> {
+                            try {
+                                view.context?.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                            } catch (e: Exception) {
+                                Log.e(TAG, "shouldOverrideUrlLoading :: mailto :: ${e.message}", e)
+                            }
+                            true
+                        }
+                        url.contains("whatsapp:") -> {
+                            try {
+                                view.context?.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                            } catch (e: Exception) {
+                                Log.e(TAG, "shouldOverrideUrlLoading :: whatsapp :: ${e.message}", e)
+                            }
+                            true
+                        }
+                        else -> {
+                            view.loadUrl(url)
+                            true
+                        }
+                    }
+                }
+            }
             loadUrl(url)
         }
         appTitleTextView?.text = mStaticText?.heading_edit_theme

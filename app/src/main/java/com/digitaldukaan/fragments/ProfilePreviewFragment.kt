@@ -225,12 +225,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         stopProgress()
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             val storeShareResponse = Gson().fromJson<ValidateUserResponse>(response.mCommonDataStr, ValidateUserResponse::class.java)
-            mStoreLinkErrorResponse = StoreDescriptionResponse(
-                response.mIsSuccessStatus,
-                response.mMessage,
-                storeShareResponse?.store,
-                response.mErrorType
-            )
+            mStoreLinkErrorResponse = StoreDescriptionResponse(response.mIsSuccessStatus, response.mMessage, storeShareResponse?.store, response.mErrorType)
             if (response.mIsSuccessStatus) {
                 resultStr = "Available"
                 mStoreLinkBottomSheet?.dismiss()
