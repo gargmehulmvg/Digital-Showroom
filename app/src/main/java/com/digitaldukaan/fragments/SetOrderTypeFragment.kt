@@ -14,6 +14,9 @@ import com.digitaldukaan.models.response.AccountStaticTextResponse
 class SetOrderTypeFragment: BaseFragment() {
 
     private var mMoreControlsStaticData: AccountStaticTextResponse? = null
+    private var prepaidOrderContainer: View? = null
+    private var payOnPickUpDeliveryContainer: View? = null
+    private var payBothContainer: View? = null
 
     companion object {
         fun newInstance(moreControlsStaticData: AccountStaticTextResponse?): SetOrderTypeFragment{
@@ -41,6 +44,9 @@ class SetOrderTypeFragment: BaseFragment() {
     }
 
     private fun setupUI() {
+        prepaidOrderContainer = mContentView.findViewById(R.id.prepaidOrderContainer)
+        payOnPickUpDeliveryContainer = mContentView.findViewById(R.id.payOnPickUpDeliveryContainer)
+        payBothContainer = mContentView.findViewById(R.id.payBothContainer)
         val prepaidOrderTypeRecyclerView: RecyclerView? = mContentView.findViewById(R.id.prepaidOrderTypeRecyclerView)
         prepaidOrderTypeRecyclerView?.apply {
             layoutManager = LinearLayoutManager(mActivity)
