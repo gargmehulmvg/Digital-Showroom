@@ -64,7 +64,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
             onBackPressed(this@MarketingFragment)
             setSecondSideIconVisibility(false)
             setSideIconVisibility(true)
-            setSideIcon(ContextCompat.getDrawable(mActivity, R.drawable.ic_setting_toolbar), this@MarketingFragment)
+            mActivity?.let { setSideIcon(ContextCompat.getDrawable(it, R.drawable.ic_setting_toolbar), this@MarketingFragment) }
         }
         hideBottomNavigationView(false)
         if (!isInternetConnectionAvailable(mActivity)) {
@@ -197,55 +197,57 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
     }
 
     private fun showPDFShareBottomSheet(response: ShareStorePDFDataItemResponse?) {
-        val bottomSheetDialog = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
-        val view = LayoutInflater.from(mActivity).inflate(
-            R.layout.bottom_sheet_refer_and_earn,
-            mActivity.findViewById(R.id.bottomSheetContainer)
-        )
-        bottomSheetDialog.apply {
-            setContentView(view)
-            setBottomSheetCommonProperty()
-            view.run {
-                val bottomSheetClose: View = findViewById(R.id.bottomSheetClose)
-                val bottomSheetUpperImageView: ImageView = findViewById(R.id.bottomSheetUpperImageView)
-                val bottomSheetHeadingTextView: TextView = findViewById(R.id.bottomSheetHeadingTextView)
-                val verifyTextView: TextView = findViewById(R.id.verifyTextView)
-                val referAndEarnRecyclerView: RecyclerView = findViewById(R.id.referAndEarnRecyclerView)
-                if (response?.imageUrl?.isNotEmpty() == true) bottomSheetUpperImageView?.let {
-                    try {
-                        Picasso.get().load(response.imageUrl).into(it)
-                    } catch (e: Exception) {
-                        Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+        mActivity?.let {
+            val bottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
+            val view = LayoutInflater.from(it).inflate(
+                R.layout.bottom_sheet_refer_and_earn,
+                it.findViewById(R.id.bottomSheetContainer)
+            )
+            bottomSheetDialog.apply {
+                setContentView(view)
+                setBottomSheetCommonProperty()
+                view.run {
+                    val bottomSheetClose: View = findViewById(R.id.bottomSheetClose)
+                    val bottomSheetUpperImageView: ImageView = findViewById(R.id.bottomSheetUpperImageView)
+                    val bottomSheetHeadingTextView: TextView = findViewById(R.id.bottomSheetHeadingTextView)
+                    val verifyTextView: TextView = findViewById(R.id.verifyTextView)
+                    val referAndEarnRecyclerView: RecyclerView = findViewById(R.id.referAndEarnRecyclerView)
+                    if (response?.imageUrl?.isNotEmpty() == true) bottomSheetUpperImageView?.let {
+                        try {
+                            Picasso.get().load(response.imageUrl).into(it)
+                        } catch (e: Exception) {
+                            Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+                        }
+                    }
+                    bottomSheetUpperImageView.setImageDrawable(ContextCompat.getDrawable(it, R.drawable.ic_share_pdf_whatsapp))
+                    bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
+                    bottomSheetHeadingTextView.text = response?.heading
+                    verifyTextView.text = response?.subHeading
+                    verifyTextView.setOnClickListener{
+                        showProgressDialog(mActivity)
+                        AppEventsManager.pushAppEvents(
+                            eventName = AFInAppEventType.EVENT_DOWNLOAD_CATALOG,
+                            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                            data = mapOf(
+                                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                                AFInAppEventParameterName.IS_MARKETING_PAGE to "true"
+                            )
+                        )
+                        service.generateStorePdf()
+                        bottomSheetDialog.dismiss()
+                    }
+                    referAndEarnRecyclerView.apply {
+                        layoutManager = LinearLayoutManager(mActivity)
+                        adapter = SharePDFAdapter(response?.howItWorks)
                     }
                 }
-                bottomSheetUpperImageView.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.ic_share_pdf_whatsapp))
-                bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
-                bottomSheetHeadingTextView.text = response?.heading
-                verifyTextView.text = response?.subHeading
-                verifyTextView.setOnClickListener{
-                    showProgressDialog(mActivity)
-                    AppEventsManager.pushAppEvents(
-                        eventName = AFInAppEventType.EVENT_DOWNLOAD_CATALOG,
-                        isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                        data = mapOf(
-                            AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                            AFInAppEventParameterName.IS_MARKETING_PAGE to "true"
-                        )
-                    )
-                    service.generateStorePdf()
-                    bottomSheetDialog.dismiss()
-                }
-                referAndEarnRecyclerView.apply {
-                    layoutManager = LinearLayoutManager(mActivity)
-                    adapter = SharePDFAdapter(response?.howItWorks)
-                }
-            }
-        }.show()
+            }.show()
+        }
     }
 
     override fun onNativeBackPressed() {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            mActivity.onBackPressed()
+            mActivity?.onBackPressed()
         }
     }
 

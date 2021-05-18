@@ -47,14 +47,16 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val client = SmsRetriever.getClient(mActivity)
-        val task = client.startSmsRetriever()
-        MySMSBroadcastReceiver.mSmsReceiverListener = this
-        task?.addOnSuccessListener {
-            Log.d("OtpVerificationFragment", "onCreate: Auto read SMS retrieval task success")
-        }
-        task?.addOnFailureListener {
-            Log.d("OtpVerificationFragment", "onCreate: Auto read SMS retrieval task failed")
+        mActivity?.run {
+            val client = SmsRetriever.getClient(this)
+            val task = client.startSmsRetriever()
+            MySMSBroadcastReceiver.mSmsReceiverListener = this@OtpVerificationFragment
+            task?.addOnSuccessListener {
+                Log.d("OtpVerificationFragment", "onCreate: Auto read SMS retrieval task success")
+            }
+            task?.addOnFailureListener {
+                Log.d("OtpVerificationFragment", "onCreate: Auto read SMS retrieval task failed")
+            }
         }
         Log.d("OtpVerificationFragment", "App Signature is ${AppSignatureHelper(mActivity).appSignatures[0]}")
         mLoginService = LoginService()

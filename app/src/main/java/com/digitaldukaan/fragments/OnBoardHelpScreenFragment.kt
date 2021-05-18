@@ -35,15 +35,15 @@ class OnBoardHelpScreenFragment : BaseFragment() {
             hideToolBar(mActivity, true)
         }
         val pagerAdapter = CustomPagerAdapter(mActivity)
-        val viewpager: ViewPager = mContentView.findViewById(R.id.viewpager)
-        val indicator: DotsIndicator = mContentView.findViewById(R.id.indicator)
-        viewpager.adapter = pagerAdapter
-        indicator.setViewPager(viewpager)
+        val viewpager: ViewPager? = mContentView?.findViewById(R.id.viewpager)
+        val indicator: DotsIndicator? = mContentView?.findViewById(R.id.indicator)
+        viewpager?.adapter = pagerAdapter
+        viewpager?.let { indicator?.setViewPager(it) }
         return mContentView
     }
 
     override fun onBackPressed(): Boolean {
-        if (mIsDoublePressToExit) mActivity.finish()
+        if (mIsDoublePressToExit) mActivity?.finish()
         showShortSnackBar(getString(R.string.msg_back_press))
         mIsDoublePressToExit = true
         Handler(Looper.getMainLooper()).postDelayed(

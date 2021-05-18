@@ -85,7 +85,7 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.layout_store_map_location_fragment, container, false)
-        locationManager = mActivity.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        locationManager = mActivity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         mMapStaticData = StaticInstances.mStaticData?.mMapStaticData
         return mContentView
     }
@@ -108,22 +108,22 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
 
     private fun setupLocationUI() {
         currentLocationImageView.setOnClickListener { getCurrentLocationOfDevice() }
-        val completeAddressEditText: EditText = mContentView.findViewById(R.id.completeAddressEditText)
-        val pinCodeEditText: EditText = mContentView.findViewById(R.id.pinCodeEditText)
-        val cityEditText: EditText = mContentView.findViewById(R.id.cityEditText)
-        stateTextView = mContentView.findViewById(R.id.stateTextView)
-        val saveTextView: TextView = mContentView.findViewById(R.id.saveTextView)
-        val cityLayout: TextInputLayout = mContentView.findViewById(R.id.cityLayout)
-        val completeAddressLayout: TextInputLayout = mContentView.findViewById(R.id.completeAddressLayout)
-        val pinCodeLayout: TextInputLayout = mContentView.findViewById(R.id.pinCodeLayout)
-        setLocationTextView = mContentView.findViewById(R.id.setLocationTextView)
-        mapBottomSheetLayout = mContentView.findViewById(R.id.mapBottomSheetLayout)
-        completeAddressLayout.hint = mMapStaticData?.completeAddressHint
-        pinCodeLayout.hint = mMapStaticData?.pinCodeTextHint
-        cityLayout.hint = mMapStaticData?.cityTextHint
+        val completeAddressEditText: EditText? = mContentView?.findViewById(R.id.completeAddressEditText)
+        val pinCodeEditText: EditText? = mContentView?.findViewById(R.id.pinCodeEditText)
+        val cityEditText: EditText? = mContentView?.findViewById(R.id.cityEditText)
+        stateTextView = mContentView?.findViewById(R.id.stateTextView)
+        val saveTextView: TextView? = mContentView?.findViewById(R.id.saveTextView)
+        val cityLayout: TextInputLayout? = mContentView?.findViewById(R.id.cityLayout)
+        val completeAddressLayout: TextInputLayout? = mContentView?.findViewById(R.id.completeAddressLayout)
+        val pinCodeLayout: TextInputLayout? = mContentView?.findViewById(R.id.pinCodeLayout)
+        setLocationTextView = mContentView?.findViewById(R.id.setLocationTextView)
+        mapBottomSheetLayout = mContentView?.findViewById(R.id.mapBottomSheetLayout)
+        completeAddressLayout?.hint = mMapStaticData?.completeAddressHint
+        pinCodeLayout?.hint = mMapStaticData?.pinCodeTextHint
+        cityLayout?.hint = mMapStaticData?.cityTextHint
         setLocationTextView?.text = mMapStaticData?.setLocationText
         stateTextView?.text = getString(R.string.select_state)
-        saveTextView.text = mMapStaticData?.saveChangesText
+        saveTextView?.text = mMapStaticData?.saveChangesText
         setLocationTextView?.setOnClickListener {
             mapBottomSheetLayout?.visibility = View.VISIBLE
             setLocationTextView?.visibility = View.GONE
@@ -131,16 +131,16 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
         stateTextView?.setOnClickListener {
             showStateSelectionDialog()
         }
-        saveTextView.setOnClickListener {
+        saveTextView?.setOnClickListener {
             if (!isInternetConnectionAvailable(mActivity)) {
                 showNoInternetConnectionDialog()
             } else {
                 val service = StoreAddressService()
                 service.setServiceInterface(this)
-                val address = completeAddressEditText.text.trim().toString()
+                val address = completeAddressEditText?.text?.trim().toString()
                 if (address.isEmpty()) {
-                    completeAddressEditText.error =  getString(R.string.mandatory_field_message)
-                    completeAddressEditText.requestFocus()
+                    completeAddressEditText?.error =  getString(R.string.mandatory_field_message)
+                    completeAddressEditText?.requestFocus()
                     return@setOnClickListener
                 }
                 val request = StoreAddressRequest(
@@ -149,8 +149,8 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
                     mGoogleDrivenAddress,
                     mCurrentLatitude,
                     mCurrentLongitude,
-                    pinCodeEditText.text.toString(),
-                    cityEditText.text.toString(),
+                    pinCodeEditText?.text.toString(),
+                    cityEditText?.text.toString(),
                     stateTextView?.text.toString()
                 )
                 showProgressDialog(mActivity)
@@ -165,9 +165,9 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
             }
         }
         mProfileInfoResponse?.mStoreItemResponse?.storeAddress?.run {
-            pinCodeEditText.setText(pinCode)
-            cityEditText.setText(city)
-            completeAddressEditText.setText(address1)
+            pinCodeEditText?.setText(pinCode)
+            cityEditText?.setText(city)
+            completeAddressEditText?.setText(address1)
             stateTextView?.text = if (state.isEmpty()) getString(R.string.select_state) else state
         }
         if (mIsSingleStep)  statusRecyclerView?.visibility = View.GONE else {
@@ -180,10 +180,12 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
     }
 
     private fun checkLocationPermission(): Boolean {
-        if (ContextCompat.checkSelfPermission(mActivity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-            ContextCompat.checkSelfPermission(mActivity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(mActivity, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION), Constants.LOCATION_REQUEST_CODE)
-            return true
+        mActivity?.let {
+            if (ContextCompat.checkSelfPermission(it, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(it, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION), Constants.LOCATION_REQUEST_CODE)
+                return true
+            }
         }
         return false
     }
@@ -268,7 +270,7 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
                     setupLocationUI()
                 }
                 else -> {
-                    mActivity.onBackPressed()
+                    mActivity?.onBackPressed()
                     showShortSnackBar("Permission was denied", true, R.drawable.ic_close_red)
                 }
             }
@@ -327,7 +329,7 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
                         switchToInCompleteProfileFragment(mProfileInfoResponse)
                     }
                 } else {
-                    mActivity.onBackPressed()
+                    mActivity?.onBackPressed()
                 }
             } else showToast(response.mMessage)
         }
@@ -338,17 +340,20 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
     }
 
     private fun checkLocationPermissionWithDialog(): Boolean {
-        return if (ContextCompat.checkSelfPermission(mActivity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(mActivity, Manifest.permission.ACCESS_FINE_LOCATION)) {
-                AlertDialog.Builder(mActivity).apply {
-                    setTitle("Location Permission")
-                    setMessage("Please allow Location permission to continue")
-                    setPositiveButton(R.string.ok) { _, _ -> ActivityCompat.requestPermissions(mActivity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), Constants.LOCATION_REQUEST_CODE)
-                    }
-                }.create().show()
-            } else ActivityCompat.requestPermissions(mActivity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), Constants.LOCATION_REQUEST_CODE)
-            true
-        } else false
+        mActivity?.let {
+            return if (ContextCompat.checkSelfPermission(it, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(it, Manifest.permission.ACCESS_FINE_LOCATION)) {
+                    AlertDialog.Builder(it).apply {
+                        setTitle("Location Permission")
+                        setMessage("Please allow Location permission to continue")
+                        setPositiveButton(R.string.ok) { _, _ -> ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), Constants.LOCATION_REQUEST_CODE)
+                        }
+                    }.create().show()
+                } else ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), Constants.LOCATION_REQUEST_CODE)
+                true
+            } else false
+        }
+        return false
     }
 
 }

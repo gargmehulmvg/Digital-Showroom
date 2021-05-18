@@ -75,7 +75,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
             onBackPressed(this@ProductFragment)
             setSecondSideIconVisibility(false)
             setSideIconVisibility(true)
-            setSideIcon(ContextCompat.getDrawable(mActivity, R.drawable.ic_options_menu), this@ProductFragment)
+            mActivity?.let { setSideIcon(ContextCompat.getDrawable(it, R.drawable.ic_options_menu), this@ProductFragment) }
         }
         hideBottomNavigationView(false)
         WebViewBridge.mWebViewListener = this
@@ -237,42 +237,44 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
     }
 
     private fun showPDFShareBottomSheet(response: ShareStorePDFDataItemResponse?) {
-        val bottomSheetDialog = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
-        val view = LayoutInflater.from(mActivity).inflate(
-            R.layout.bottom_sheet_refer_and_earn,
-            mActivity.findViewById(R.id.bottomSheetContainer)
-        )
-        bottomSheetDialog.apply {
-            setContentView(view)
-            setBottomSheetCommonProperty()
-            view.run {
-                val bottomSheetClose: View = findViewById(R.id.bottomSheetClose)
-                val bottomSheetUpperImageView: ImageView = findViewById(R.id.bottomSheetUpperImageView)
-                val bottomSheetHeadingTextView: TextView = findViewById(R.id.bottomSheetHeadingTextView)
-                val verifyTextView: TextView = findViewById(R.id.verifyTextView)
-                val referAndEarnRecyclerView: RecyclerView = findViewById(R.id.referAndEarnRecyclerView)
-                if (response?.imageUrl?.isNotEmpty() == true) bottomSheetUpperImageView?.let {
-                    try {
-                        Picasso.get().load(response.imageUrl).into(it)
-                    } catch (e: Exception) {
-                        Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+        mActivity?.let {
+            val bottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
+            val view = LayoutInflater.from(it).inflate(
+                R.layout.bottom_sheet_refer_and_earn,
+                it.findViewById(R.id.bottomSheetContainer)
+            )
+            bottomSheetDialog.apply {
+                setContentView(view)
+                setBottomSheetCommonProperty()
+                view.run {
+                    val bottomSheetClose: View = findViewById(R.id.bottomSheetClose)
+                    val bottomSheetUpperImageView: ImageView = findViewById(R.id.bottomSheetUpperImageView)
+                    val bottomSheetHeadingTextView: TextView = findViewById(R.id.bottomSheetHeadingTextView)
+                    val verifyTextView: TextView = findViewById(R.id.verifyTextView)
+                    val referAndEarnRecyclerView: RecyclerView = findViewById(R.id.referAndEarnRecyclerView)
+                    if (response?.imageUrl?.isNotEmpty() == true) bottomSheetUpperImageView?.let {
+                        try {
+                            Picasso.get().load(response.imageUrl).into(it)
+                        } catch (e: Exception) {
+                            Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+                        }
+                    }
+                    bottomSheetUpperImageView.setImageDrawable(ContextCompat.getDrawable(it, R.drawable.ic_share_pdf_whatsapp))
+                    bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
+                    bottomSheetHeadingTextView.text = response?.heading
+                    verifyTextView.text = response?.subHeading
+                    verifyTextView.setOnClickListener{
+                        showProgressDialog(mActivity)
+                        mService?.generateProductStorePdf()
+                        bottomSheetDialog.dismiss()
+                    }
+                    referAndEarnRecyclerView.apply {
+                        layoutManager = LinearLayoutManager(mActivity)
+                        adapter = SharePDFAdapter(response?.howItWorks)
                     }
                 }
-                bottomSheetUpperImageView.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.ic_share_pdf_whatsapp))
-                bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
-                bottomSheetHeadingTextView.text = response?.heading
-                verifyTextView.text = response?.subHeading
-                verifyTextView.setOnClickListener{
-                    showProgressDialog(mActivity)
-                    mService?.generateProductStorePdf()
-                    bottomSheetDialog.dismiss()
-                }
-                referAndEarnRecyclerView.apply {
-                    layoutManager = LinearLayoutManager(mActivity)
-                    adapter = SharePDFAdapter(response?.howItWorks)
-                }
-            }
-        }.show()
+            }.show()
+        }
     }
 
     override fun onProductException(e: Exception) = exceptionHandlingForAPIResponse(e)
@@ -301,7 +303,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
     }
 
     override fun onToolbarSideIconClicked() {
-        val sideView:View = mActivity.findViewById(R.id.sideIconToolbar)
+        val sideView:View? = mActivity?.findViewById(R.id.sideIconToolbar)
         val optionsMenu = PopupMenu(mActivity, sideView)
         optionsMenu.inflate(R.menu.menu_product_fragment)
         mOptionsMenuResponse?.forEachIndexed { position, response ->
@@ -397,72 +399,75 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
 
 
     private fun showOutOfStockDialog(jsonDataObject: JSONObject) {
-        val builder = AlertDialog.Builder(mActivity)
-        val view: View = layoutInflater.inflate(R.layout.dont_show_again_dialog, null)
-        var isCheckBoxVisible = "" == PrefsManager.getStringDataFromSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN_STOCK) || Constants.TEXT_NO == PrefsManager.getStringDataFromSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN_STOCK)
-        builder.apply {
-            setMessage(getString(R.string.out_of_stock_message))
-            if (isCheckBoxVisible) setView(view)
-            setPositiveButton(getString(R.string.txt_yes)) { dialogInterface, _ ->
-                dialogInterface.dismiss()
-                storeStringDataInSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN_STOCK, if (isCheckBoxVisible) Constants.TEXT_YES else Constants.TEXT_NO)
-                val request = UpdateStockRequest(jsonDataObject.optInt("id"), 0)
-                if (!isInternetConnectionAvailable(mActivity)) {
-                    showNoInternetConnectionDialog()
-                } else {
-                    showProgressDialog(mActivity)
-                    mService?.updateStock(request)
-                }
-            }
-            setNegativeButton(getString(R.string.text_no)) { dialogInterface, _ ->
-                run {
+        mActivity?.let {
+            val builder = AlertDialog.Builder(it)
+            val view: View = layoutInflater.inflate(R.layout.dont_show_again_dialog, null)
+            var isCheckBoxVisible = "" == PrefsManager.getStringDataFromSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN_STOCK) || Constants.TEXT_NO == PrefsManager.getStringDataFromSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN_STOCK)
+            builder.apply {
+                setMessage(getString(R.string.out_of_stock_message))
+                if (isCheckBoxVisible) setView(view)
+                setPositiveButton(getString(R.string.txt_yes)) { dialogInterface, _ ->
                     dialogInterface.dismiss()
-                    if (isCheckBoxVisible) storeStringDataInSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN, Constants.TEXT_NO)
+                    storeStringDataInSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN_STOCK, if (isCheckBoxVisible) Constants.TEXT_YES else Constants.TEXT_NO)
+                    val request = UpdateStockRequest(jsonDataObject.optInt("id"), 0)
+                    if (!isInternetConnectionAvailable(it)) {
+                        showNoInternetConnectionDialog()
+                    } else {
+                        showProgressDialog(it)
+                        mService?.updateStock(request)
+                    }
                 }
-            }
-            view.run {
-                val checkBox: CheckBox = view.findViewById(R.id.checkBox)
-                checkBox.text = getString(R.string.dont_show_again_message)
-                isCheckBoxVisible = false
-                checkBox.setOnCheckedChangeListener { _, isChecked -> isCheckBoxVisible = isChecked }
-            }
-        }.show()
+                setNegativeButton(getString(R.string.text_no)) { dialogInterface, _ ->
+                    run {
+                        dialogInterface.dismiss()
+                        if (isCheckBoxVisible) storeStringDataInSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN, Constants.TEXT_NO)
+                    }
+                }
+                view.run {
+                    val checkBox: CheckBox = view.findViewById(R.id.checkBox)
+                    checkBox.text = getString(R.string.dont_show_again_message)
+                    isCheckBoxVisible = false
+                    checkBox.setOnCheckedChangeListener { _, isChecked -> isCheckBoxVisible = isChecked }
+                }
+            }.show()
+        }
     }
 
     private fun showUpdateCategoryBottomSheet(categoryName: String?, categoryId: Int) {
-        val bottomSheetDialog = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
-        val view = LayoutInflater.from(mActivity).inflate(
-            R.layout.bottom_sheet_edit_category,
-            mActivity.findViewById(R.id.bottomSheetContainer)
-        )
-        bottomSheetDialog.apply {
-            setContentView(view)
-            setBottomSheetCommonProperty()
-            view.run {
-                val categoryChipRecyclerView: RecyclerView = findViewById(R.id.categoryChipRecyclerView)
-                val deleteCategoryTextView: TextView = findViewById(R.id.deleteCategoryTextView)
-                val editCategoryTextView: TextView = findViewById(R.id.editCategoryTextView)
-                val categoryNameTextView: TextView = findViewById(R.id.categoryNameTextView)
-                val saveTextView: TextView = findViewById(R.id.saveTextView)
-                val categoryNameEditText: EditText = findViewById(R.id.categoryNameEditText)
-                val categoryNameInputLayout: TextInputLayout = findViewById(R.id.categoryNameInputLayout)
-                editCategoryTextView.text = addProductStaticData?.bottom_sheet_heading_edit_category
-                categoryNameTextView.text = addProductStaticData?.bottom_sheet_category_name
-                categoryNameInputLayout.hint = addProductStaticData?.bottom_sheet_hint_category_name
-                deleteCategoryTextView.text = addProductStaticData?.bottom_sheet_delete_category
-                saveTextView.text = addProductStaticData?.bottom_sheet_save
-                categoryNameEditText.setText(categoryName)
-                mUserCategoryResponse?.storeCategoriesList?.run {
-                    categoryChipRecyclerView.apply {
-                        layoutManager = StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL)
-                        mTempProductCategoryList.clear()
-                        val list = mUserCategoryResponse?.storeCategoriesList
-                        list?.forEachIndexed { _, categoryItem ->
-                            if (categoryItem.name?.isNotEmpty() == true) mTempProductCategoryList.add(categoryItem)
-                        }
-                        mTempProductCategoryList.forEachIndexed { _, categoryItem -> categoryItem.isSelected = (categoryItem.id == categoryId) }
-                        if (mTempProductCategoryList.isNotEmpty())
-                            addProductChipsAdapter = AddProductsChipsAdapter(mTempProductCategoryList, object : IChipItemClickListener {
+        mActivity?.let {
+            val bottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
+            val view = LayoutInflater.from(it).inflate(
+                R.layout.bottom_sheet_edit_category,
+                it.findViewById(R.id.bottomSheetContainer)
+            )
+            bottomSheetDialog.apply {
+                setContentView(view)
+                setBottomSheetCommonProperty()
+                view.run {
+                    val categoryChipRecyclerView: RecyclerView = findViewById(R.id.categoryChipRecyclerView)
+                    val deleteCategoryTextView: TextView = findViewById(R.id.deleteCategoryTextView)
+                    val editCategoryTextView: TextView = findViewById(R.id.editCategoryTextView)
+                    val categoryNameTextView: TextView = findViewById(R.id.categoryNameTextView)
+                    val saveTextView: TextView = findViewById(R.id.saveTextView)
+                    val categoryNameEditText: EditText = findViewById(R.id.categoryNameEditText)
+                    val categoryNameInputLayout: TextInputLayout = findViewById(R.id.categoryNameInputLayout)
+                    editCategoryTextView.text = addProductStaticData?.bottom_sheet_heading_edit_category
+                    categoryNameTextView.text = addProductStaticData?.bottom_sheet_category_name
+                    categoryNameInputLayout.hint = addProductStaticData?.bottom_sheet_hint_category_name
+                    deleteCategoryTextView.text = addProductStaticData?.bottom_sheet_delete_category
+                    saveTextView.text = addProductStaticData?.bottom_sheet_save
+                    categoryNameEditText.setText(categoryName)
+                    mUserCategoryResponse?.storeCategoriesList?.run {
+                        categoryChipRecyclerView.apply {
+                            layoutManager = StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL)
+                            mTempProductCategoryList.clear()
+                            val list = mUserCategoryResponse?.storeCategoriesList
+                            list?.forEachIndexed { _, categoryItem ->
+                                if (categoryItem.name?.isNotEmpty() == true) mTempProductCategoryList.add(categoryItem)
+                            }
+                            mTempProductCategoryList.forEachIndexed { _, categoryItem -> categoryItem.isSelected = (categoryItem.id == categoryId) }
+                            if (mTempProductCategoryList.isNotEmpty())
+                                addProductChipsAdapter = AddProductsChipsAdapter(mTempProductCategoryList, object : IChipItemClickListener {
                                     override fun onChipItemClickListener(position: Int) {
                                         mTempProductCategoryList.forEachIndexed { _, categoryItem -> categoryItem.isSelected = false }
                                         mTempProductCategoryList[position].isSelected = true
@@ -471,71 +476,74 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                                         addProductChipsAdapter?.setAddProductStoreCategoryList(mTempProductCategoryList)
                                     }
                                 })
-                        adapter = addProductChipsAdapter
-                    }
-                }
-                saveTextView.setOnClickListener {
-                    val categoryNameInputByUser = categoryNameEditText.text.toString()
-                    if (categoryNameInputByUser.trim().isEmpty()) {
-                        categoryNameEditText.apply {
-                            error = addProductStaticData?.error_mandatory_field
-                            requestFocus()
+                            adapter = addProductChipsAdapter
                         }
-                        return@setOnClickListener
                     }
-                    val request = if (categoryNameInputByUser.equals(mSelectedCategoryItem?.name, true)) {
-                        UpdateCategoryRequest(categoryId, mSelectedCategoryItem?.name)
-                    } else {
-                        UpdateCategoryRequest(categoryId, categoryNameInputByUser)
+                    saveTextView.setOnClickListener {
+                        val categoryNameInputByUser = categoryNameEditText.text.toString()
+                        if (categoryNameInputByUser.trim().isEmpty()) {
+                            categoryNameEditText.apply {
+                                error = addProductStaticData?.error_mandatory_field
+                                requestFocus()
+                            }
+                            return@setOnClickListener
+                        }
+                        val request = if (categoryNameInputByUser.equals(mSelectedCategoryItem?.name, true)) {
+                            UpdateCategoryRequest(categoryId, mSelectedCategoryItem?.name)
+                        } else {
+                            UpdateCategoryRequest(categoryId, categoryNameInputByUser)
+                        }
+                        if (!isInternetConnectionAvailable(mActivity)) {
+                            showNoInternetConnectionDialog()
+                            return@setOnClickListener
+                        }
+                        bottomSheetDialog.dismiss()
+                        showProgressDialog(mActivity)
+                        mService?.updateCategory(request)
                     }
-                    if (!isInternetConnectionAvailable(mActivity)) {
-                        showNoInternetConnectionDialog()
-                        return@setOnClickListener
+                    deleteCategoryTextView.setOnClickListener {
+                        bottomSheetDialog.dismiss()
+                        showDeleteCategoryBottomSheet(categoryName, categoryId)
                     }
-                    bottomSheetDialog.dismiss()
-                    showProgressDialog(mActivity)
-                    mService?.updateCategory(request)
                 }
-                deleteCategoryTextView.setOnClickListener {
-                    bottomSheetDialog.dismiss()
-                    showDeleteCategoryBottomSheet(categoryName, categoryId)
-                }
-            }
-        }.show()
+            }.show()
+        }
     }
 
     private fun showDeleteCategoryBottomSheet(categoryName: String?, categoryId: Int) {
-        val bottomSheetDialog = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
-        val view = LayoutInflater.from(mActivity).inflate(
-            R.layout.bottom_sheet_delete_category,
-            mActivity.findViewById(R.id.bottomSheetContainer)
-        )
-        bottomSheetDialog.apply {
-            setContentView(view)
-            setBottomSheetCommonProperty()
-            view.run {
-                val deleteCategoryRecyclerView: RecyclerView = findViewById(R.id.deleteCategoryRecyclerView)
-                val deleteCategoryTextView: TextView = findViewById(R.id.deleteCategoryTextView)
-                val categoryNameTextView: TextView = findViewById(R.id.categoryNameTextView)
-                deleteCategoryTextView.text = addProductStaticData?.bottom_sheet_delete_category
-                categoryNameTextView.text = categoryName
-                deleteCategoryRecyclerView.apply {
-                    layoutManager = LinearLayoutManager(mActivity)
-                    adapter = DeleteCategoryAdapter(mDeleteCategoryItemList, object : IChipItemClickListener {
-                        override fun onChipItemClickListener(position: Int) {
-                            if (mDeleteCategoryItemList?.get(position)?.action?.isEmpty() == true) {
-                                bottomSheetDialog.dismiss()
-                            } else {
-                                val request = DeleteCategoryRequest(categoryId, mDeleteCategoryItemList?.get(position)?.action == "true")
-                                bottomSheetDialog.dismiss()
-                                showProgressDialog(mActivity)
-                                mService?.deleteCategory(request)
+        mActivity?.let {
+            val bottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
+            val view = LayoutInflater.from(it).inflate(
+                R.layout.bottom_sheet_delete_category,
+                it.findViewById(R.id.bottomSheetContainer)
+            )
+            bottomSheetDialog.apply {
+                setContentView(view)
+                setBottomSheetCommonProperty()
+                view.run {
+                    val deleteCategoryRecyclerView: RecyclerView = findViewById(R.id.deleteCategoryRecyclerView)
+                    val deleteCategoryTextView: TextView = findViewById(R.id.deleteCategoryTextView)
+                    val categoryNameTextView: TextView = findViewById(R.id.categoryNameTextView)
+                    deleteCategoryTextView.text = addProductStaticData?.bottom_sheet_delete_category
+                    categoryNameTextView.text = categoryName
+                    deleteCategoryRecyclerView.apply {
+                        layoutManager = LinearLayoutManager(mActivity)
+                        adapter = DeleteCategoryAdapter(mDeleteCategoryItemList, object : IChipItemClickListener {
+                            override fun onChipItemClickListener(position: Int) {
+                                if (mDeleteCategoryItemList?.get(position)?.action?.isEmpty() == true) {
+                                    bottomSheetDialog.dismiss()
+                                } else {
+                                    val request = DeleteCategoryRequest(categoryId, mDeleteCategoryItemList?.get(position)?.action == "true")
+                                    bottomSheetDialog.dismiss()
+                                    showProgressDialog(mActivity)
+                                    mService?.deleteCategory(request)
+                                }
                             }
-                        }
-                    })
+                        })
+                    }
                 }
-            }
-        }.show()
+            }.show()
+        }
     }
 
     override fun onBackPressed(): Boolean {

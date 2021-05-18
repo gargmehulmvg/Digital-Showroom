@@ -62,14 +62,16 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
 
     private fun fetchContactsIfPermissionGranted() {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            if (ActivityCompat.checkSelfPermission(mActivity, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
-                getContactsFromStorage2(mActivity)
+            mActivity?.let {
+                if (ActivityCompat.checkSelfPermission(it, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
+                    getContactsFromStorage2(mActivity)
+                }
             }
         }
     }
 
     override fun onBackPressed(): Boolean {
-        mActivity.finish()
+        mActivity?.finish()
         return true
     }
 
@@ -114,14 +116,14 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
     }
 
     override fun onNoInternetButtonClick(isNegativeButtonClick: Boolean) {
-        mActivity.finish()
+        mActivity?.finish()
     }
 
     private fun showVersionUpdateDialog() {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (appUpdateDialog?.isShowing == true) return@runTaskOnCoroutineMain
-            mActivity.let {
-                appUpdateDialog = Dialog(mActivity)
+            mActivity?.let {
+                appUpdateDialog = Dialog(it)
                 val view = LayoutInflater.from(mActivity).inflate(R.layout.dialog_app_update, null)
                 appUpdateDialog?.apply {
                     setContentView(view)

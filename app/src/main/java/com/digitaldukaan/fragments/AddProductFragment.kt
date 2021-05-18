@@ -135,31 +135,33 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             onBackPressed(this@AddProductFragment)
             setSideIconVisibility(true)
             setSecondSideIconVisibility(mItemId != 0)
-            setSecondSideIcon(ContextCompat.getDrawable(mActivity, R.drawable.ic_delete), this@AddProductFragment)
-            setSideIcon(ContextCompat.getDrawable(mActivity, R.drawable.ic_options_menu), this@AddProductFragment)
+            mActivity?.run {
+                setSecondSideIcon(ContextCompat.getDrawable(this, R.drawable.ic_delete), this@AddProductFragment)
+                setSideIcon(ContextCompat.getDrawable(this, R.drawable.ic_options_menu), this@AddProductFragment)
+            }
         }
         hideBottomNavigationView(true)
-        addVariantsTextView = mContentView.findViewById(R.id.addVariantsTextView)
-        variantContainer = mContentView.findViewById(R.id.variantContainer)
-        addItemTextView = mContentView.findViewById(R.id.addItemTextView)
-        discountContainer = mContentView.findViewById(R.id.discountContainer)
-        noImagesLayout = mContentView.findViewById(R.id.noImagesLayout)
-        imagesRecyclerView = mContentView.findViewById(R.id.imagesRecyclerView)
-        chipGroupRecyclerView = mContentView.findViewById(R.id.chipGroupRecyclerView)
-        addDiscountLabel = mContentView.findViewById(R.id.addDiscountLabel)
-        productDescriptionInputLayout = mContentView.findViewById(R.id.productDescriptionInputLayout)
-        continueTextView = mContentView.findViewById(R.id.continueTextView)
-        enterCategoryEditText = mContentView.findViewById(R.id.enterCategoryEditText)
-        shareProductContainer = mContentView.findViewById(R.id.shareProductContainer)
-        discountPriceEditText = mContentView.findViewById(R.id.discountedPriceEditText)
-        productDescriptionEditText = mContentView.findViewById(R.id.productDescriptionEditText)
-        priceEditText = mContentView.findViewById(R.id.priceEditText)
-        nameEditText = mContentView.findViewById(R.id.nameEditText)
-        originalPriceTextView = mContentView.findViewById(R.id.originalPriceTextView)
-        discountedPriceTextView = mContentView.findViewById(R.id.discountedPriceTextView)
-        pricePercentageOffTextView = mContentView.findViewById(R.id.pricePercentageOffTextView)
-        variantRecyclerView = mContentView.findViewById(R.id.variantRecyclerView)
-        imagesLeftTextView = mContentView.findViewById(R.id.imagesLeftTextView)
+        addVariantsTextView = mContentView?.findViewById(R.id.addVariantsTextView)
+        variantContainer = mContentView?.findViewById(R.id.variantContainer)
+        addItemTextView = mContentView?.findViewById(R.id.addItemTextView)
+        discountContainer = mContentView?.findViewById(R.id.discountContainer)
+        noImagesLayout = mContentView?.findViewById(R.id.noImagesLayout)
+        imagesRecyclerView = mContentView?.findViewById(R.id.imagesRecyclerView)
+        chipGroupRecyclerView = mContentView?.findViewById(R.id.chipGroupRecyclerView)
+        addDiscountLabel = mContentView?.findViewById(R.id.addDiscountLabel)
+        productDescriptionInputLayout = mContentView?.findViewById(R.id.productDescriptionInputLayout)
+        continueTextView = mContentView?.findViewById(R.id.continueTextView)
+        enterCategoryEditText = mContentView?.findViewById(R.id.enterCategoryEditText)
+        shareProductContainer = mContentView?.findViewById(R.id.shareProductContainer)
+        discountPriceEditText = mContentView?.findViewById(R.id.discountedPriceEditText)
+        productDescriptionEditText = mContentView?.findViewById(R.id.productDescriptionEditText)
+        priceEditText = mContentView?.findViewById(R.id.priceEditText)
+        nameEditText = mContentView?.findViewById(R.id.nameEditText)
+        originalPriceTextView = mContentView?.findViewById(R.id.originalPriceTextView)
+        discountedPriceTextView = mContentView?.findViewById(R.id.discountedPriceTextView)
+        pricePercentageOffTextView = mContentView?.findViewById(R.id.pricePercentageOffTextView)
+        variantRecyclerView = mContentView?.findViewById(R.id.variantRecyclerView)
+        imagesLeftTextView = mContentView?.findViewById(R.id.imagesLeftTextView)
         discountPriceEditText?.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 val str = s?.toString()
@@ -470,89 +472,91 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     private fun showAddProductImagePickerBottomSheet(position: Int) {
         showAddProductContainer()
         mIsOrderEdited = true
-        imagePickBottomSheet = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
-        val view = LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet_image_pick, mActivity.findViewById(R.id.bottomSheetContainer))
-        imagePickBottomSheet?.apply {
-            setContentView(view)
-            view?.run {
-                val bottomSheetUploadImageCloseImageView: ImageView = findViewById(R.id.bottomSheetUploadImageCloseImageView)
-                val bottomSheetUploadImageHeading: TextView = findViewById(R.id.bottomSheetUploadImageHeading)
-                val bottomSheetUploadImageCameraTextView: TextView = findViewById(R.id.bottomSheetUploadImageCameraTextView)
-                val bottomSheetUploadImageCamera: View = findViewById(R.id.bottomSheetUploadImageCamera)
-                val bottomSheetUploadImageGalleryTextView: TextView = findViewById(R.id.bottomSheetUploadImageGalleryTextView)
-                val bottomSheetUploadImageGallery: View = findViewById(R.id.bottomSheetUploadImageGallery)
-                val bottomSheetUploadImageSearchHeading: TextView = findViewById(R.id.bottomSheetUploadImageSearchHeading)
-                val bottomSheetUploadImageRemovePhotoTextView: TextView = findViewById(R.id.bottomSheetUploadImageRemovePhotoTextView)
-                val searchImageEditText: EditText = findViewById(R.id.searchImageEditText)
-                val searchImageImageView: View = findViewById(R.id.searchImageImageView)
-                val bottomSheetUploadImageRemovePhoto: View = findViewById(R.id.bottomSheetUploadImageRemovePhoto)
-                val searchImageRecyclerView: RecyclerView = findViewById(R.id.searchImageRecyclerView)
-                bottomSheetUploadImageGalleryTextView.text = addProductStaticData?.bottom_sheet_add_from_gallery
-                bottomSheetUploadImageSearchHeading.text = addProductStaticData?.bottom_sheet_you_can_add_upto_4_images
-                bottomSheetUploadImageRemovePhotoTextView.text = addProductStaticData?.bottom_sheet_remove_image
-                bottomSheetUploadImageHeading.text = addProductStaticData?.bottom_sheet_add_image
-                bottomSheetUploadImageCameraTextView.text = addProductStaticData?.bottom_sheet_take_a_photo
-                searchImageEditText.hint = addProductStaticData?.bottom_sheet_hint_search_for_images_here
-                mProductNameStr?.run { searchImageEditText.setText(mProductNameStr) }
-                bottomSheetUploadImageCloseImageView.setOnClickListener { if (imagePickBottomSheet?.isShowing == true) imagePickBottomSheet?.dismiss() }
-                bottomSheetUploadImageRemovePhotoTextView.visibility = if (position == 0) View.GONE else View.VISIBLE
-                bottomSheetUploadImageRemovePhoto.visibility = if (position == 0) View.GONE else View.VISIBLE
-                bottomSheetUploadImageCamera.setOnClickListener {
-                    imagePickBottomSheet?.dismiss()
-                    openCamera()
-                }
-                bottomSheetUploadImageCameraTextView.setOnClickListener {
-                    imagePickBottomSheet?.dismiss()
-                    openCamera()
-                }
-                bottomSheetUploadImageGallery.setOnClickListener {
-                    imagePickBottomSheet?.dismiss()
-                    openMobileGalleryWithImage()
-                }
-                bottomSheetUploadImageGalleryTextView.setOnClickListener {
-                    imagePickBottomSheet?.dismiss()
-                    openMobileGalleryWithImage()
-                }
-                bottomSheetUploadImageRemovePhoto.setOnClickListener {
-                    imagePickBottomSheet?.dismiss()
-                    mImagesStrList.removeAt(mImageChangePosition)
-                    mImageAddAdapter?.setListToAdapter(mImagesStrList)
-                }
-                bottomSheetUploadImageRemovePhotoTextView.setOnClickListener {
-                    imagePickBottomSheet?.dismiss()
-                    mImagesStrList.removeAt(mImageChangePosition)
-                    mImageAddAdapter?.setListToAdapter(mImagesStrList)
-                }
-                imageAdapter.setSearchImageListener(this@AddProductFragment)
-                searchImageImageView.setOnClickListener {
-                    if (searchImageEditText.text.trim().toString().isEmpty()) {
-                        searchImageEditText.error = getString(R.string.mandatory_field_message)
-                        searchImageEditText.requestFocus()
-                        return@setOnClickListener
+        mActivity?.let {
+            imagePickBottomSheet = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
+            val view = LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet_image_pick, it.findViewById(R.id.bottomSheetContainer))
+            imagePickBottomSheet?.apply {
+                setContentView(view)
+                view?.run {
+                    val bottomSheetUploadImageCloseImageView: ImageView = findViewById(R.id.bottomSheetUploadImageCloseImageView)
+                    val bottomSheetUploadImageHeading: TextView = findViewById(R.id.bottomSheetUploadImageHeading)
+                    val bottomSheetUploadImageCameraTextView: TextView = findViewById(R.id.bottomSheetUploadImageCameraTextView)
+                    val bottomSheetUploadImageCamera: View = findViewById(R.id.bottomSheetUploadImageCamera)
+                    val bottomSheetUploadImageGalleryTextView: TextView = findViewById(R.id.bottomSheetUploadImageGalleryTextView)
+                    val bottomSheetUploadImageGallery: View = findViewById(R.id.bottomSheetUploadImageGallery)
+                    val bottomSheetUploadImageSearchHeading: TextView = findViewById(R.id.bottomSheetUploadImageSearchHeading)
+                    val bottomSheetUploadImageRemovePhotoTextView: TextView = findViewById(R.id.bottomSheetUploadImageRemovePhotoTextView)
+                    val searchImageEditText: EditText = findViewById(R.id.searchImageEditText)
+                    val searchImageImageView: View = findViewById(R.id.searchImageImageView)
+                    val bottomSheetUploadImageRemovePhoto: View = findViewById(R.id.bottomSheetUploadImageRemovePhoto)
+                    val searchImageRecyclerView: RecyclerView = findViewById(R.id.searchImageRecyclerView)
+                    bottomSheetUploadImageGalleryTextView.text = addProductStaticData?.bottom_sheet_add_from_gallery
+                    bottomSheetUploadImageSearchHeading.text = addProductStaticData?.bottom_sheet_you_can_add_upto_4_images
+                    bottomSheetUploadImageRemovePhotoTextView.text = addProductStaticData?.bottom_sheet_remove_image
+                    bottomSheetUploadImageHeading.text = addProductStaticData?.bottom_sheet_add_image
+                    bottomSheetUploadImageCameraTextView.text = addProductStaticData?.bottom_sheet_take_a_photo
+                    searchImageEditText.hint = addProductStaticData?.bottom_sheet_hint_search_for_images_here
+                    mProductNameStr?.run { searchImageEditText.setText(mProductNameStr) }
+                    bottomSheetUploadImageCloseImageView.setOnClickListener { if (imagePickBottomSheet?.isShowing == true) imagePickBottomSheet?.dismiss() }
+                    bottomSheetUploadImageRemovePhotoTextView.visibility = if (position == 0) View.GONE else View.VISIBLE
+                    bottomSheetUploadImageRemovePhoto.visibility = if (position == 0) View.GONE else View.VISIBLE
+                    bottomSheetUploadImageCamera.setOnClickListener {
+                        imagePickBottomSheet?.dismiss()
+                        openCamera()
                     }
-                    showProgressDialog(mActivity)
-                    CoroutineScopeUtils().runTaskOnCoroutineBackground {
-                        val response = RetrofitApi().getServerCallObject()?.searchImagesFromBing(searchImageEditText.text.trim().toString(), getStringDataFromSharedPref(Constants.STORE_ID))
-                        response?.let {
-                            if (it.isSuccessful) {
-                                it.body()?.let {
-                                    withContext(Dispatchers.Main) {
-                                        stopProgress()
-                                        val list = it.mImagesList
-                                        searchImageRecyclerView?.apply {
-                                            layoutManager = GridLayoutManager(mActivity, 3)
-                                            adapter = imageAdapter
-                                            list.let { arrayList -> imageAdapter.setSearchImageList(arrayList) }
+                    bottomSheetUploadImageCameraTextView.setOnClickListener {
+                        imagePickBottomSheet?.dismiss()
+                        openCamera()
+                    }
+                    bottomSheetUploadImageGallery.setOnClickListener {
+                        imagePickBottomSheet?.dismiss()
+                        openMobileGalleryWithImage()
+                    }
+                    bottomSheetUploadImageGalleryTextView.setOnClickListener {
+                        imagePickBottomSheet?.dismiss()
+                        openMobileGalleryWithImage()
+                    }
+                    bottomSheetUploadImageRemovePhoto.setOnClickListener {
+                        imagePickBottomSheet?.dismiss()
+                        mImagesStrList.removeAt(mImageChangePosition)
+                        mImageAddAdapter?.setListToAdapter(mImagesStrList)
+                    }
+                    bottomSheetUploadImageRemovePhotoTextView.setOnClickListener {
+                        imagePickBottomSheet?.dismiss()
+                        mImagesStrList.removeAt(mImageChangePosition)
+                        mImageAddAdapter?.setListToAdapter(mImagesStrList)
+                    }
+                    imageAdapter.setSearchImageListener(this@AddProductFragment)
+                    searchImageImageView.setOnClickListener {
+                        if (searchImageEditText.text.trim().toString().isEmpty()) {
+                            searchImageEditText.error = getString(R.string.mandatory_field_message)
+                            searchImageEditText.requestFocus()
+                            return@setOnClickListener
+                        }
+                        showProgressDialog(mActivity)
+                        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+                            val response = RetrofitApi().getServerCallObject()?.searchImagesFromBing(searchImageEditText.text.trim().toString(), getStringDataFromSharedPref(Constants.STORE_ID))
+                            response?.let {
+                                if (it.isSuccessful) {
+                                    it.body()?.let {
+                                        withContext(Dispatchers.Main) {
+                                            stopProgress()
+                                            val list = it.mImagesList
+                                            searchImageRecyclerView?.apply {
+                                                layoutManager = GridLayoutManager(mActivity, 3)
+                                                adapter = imageAdapter
+                                                list?.let { arrayList -> imageAdapter.setSearchImageList(arrayList) }
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
                     }
+                    if (searchImageEditText.text.isNotEmpty()) searchImageImageView.callOnClick()
                 }
-                if (searchImageEditText.text.isNotEmpty()) searchImageImageView.callOnClick()
-            }
-        }?.show()
+            }?.show()
+        }
     }
 
     override fun onImageSelectionResultFile(file: File?, mode: String) {
@@ -577,28 +581,30 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     }
 
     private fun showImageCropDialog(file: File?) {
-        val imageCropDialog: Dialog? = Dialog(mActivity, android.R.style.Theme_Black_NoTitleBar_Fullscreen)
-        imageCropDialog?.apply {
-            val view = LayoutInflater.from(mActivity).inflate(R.layout.layout_crop_photo, null)
-            setContentView(view)
-            window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-            val cropImageView: CropImageView = view.findViewById(R.id.cropImageView)
-            val doneImageView: View = view.findViewById(R.id.doneImageView)
-            cropImageView.setAspectRatio(1, 1)
-            cropImageView.setFixedAspectRatio(true)
-            cropImageView.isAutoZoomEnabled = true
-            cropImageView.setMaxCropResultSize(2040, 2040)
-            cropImageView.setImageUriAsync(file?.toUri())
-            doneImageView.setOnClickListener {
-                val croppedImage = cropImageView.croppedImage
-                val croppedImageFile = getImageFileFromBitmap(croppedImage, mActivity)
-                CoroutineScopeUtils().runTaskOnCoroutineMain {
-                    showAddProductContainer()
-                    onImageSelectionResultFile(croppedImageFile, "")
+        mActivity?.run {
+            val imageCropDialog: Dialog? = Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen)
+            imageCropDialog?.apply {
+                val view = LayoutInflater.from(mActivity).inflate(R.layout.layout_crop_photo, null)
+                setContentView(view)
+                window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                val cropImageView: CropImageView = view.findViewById(R.id.cropImageView)
+                val doneImageView: View = view.findViewById(R.id.doneImageView)
+                cropImageView.setAspectRatio(1, 1)
+                cropImageView.setFixedAspectRatio(true)
+                cropImageView.isAutoZoomEnabled = true
+                cropImageView.setMaxCropResultSize(2040, 2040)
+                cropImageView.setImageUriAsync(file?.toUri())
+                doneImageView.setOnClickListener {
+                    val croppedImage = cropImageView.croppedImage
+                    val croppedImageFile = getImageFileFromBitmap(croppedImage, this@run)
+                    CoroutineScopeUtils().runTaskOnCoroutineMain {
+                        showAddProductContainer()
+                        onImageSelectionResultFile(croppedImageFile, "")
+                    }
+                    imageCropDialog.dismiss()
                 }
-                imageCropDialog.dismiss()
-            }
-        }?.show()
+            }?.show()
+        }
     }
 
     private fun checkValidation(): Boolean {
@@ -723,14 +729,14 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         try {
             addProductStaticData?.run {
                 ToolBarManager.getInstance()?.setHeaderTitle(heading_add_product_page)
-                val addItemTextView: TextView? = mContentView.findViewById(R.id.addItemTextView)
-                val tryNowTextView: TextView? = mContentView.findViewById(R.id.tryNowTextView)
-                val textView2: TextView? = mContentView.findViewById(R.id.textView2)
-                val updateCameraTextView: TextView? = mContentView.findViewById(R.id.updateCameraTextView)
-                val nameInputLayout: TextInputLayout? = mContentView.findViewById(R.id.nameInputLayout)
-                val priceInputLayout: TextInputLayout? = mContentView.findViewById(R.id.priceInputLayout)
-                val discountedPriceInputLayout: TextInputLayout? = mContentView.findViewById(R.id.discountedPriceInputLayout)
-                val enterCategoryInputLayout: TextInputLayout? = mContentView.findViewById(R.id.enterCategoryInputLayout)
+                val addItemTextView: TextView? = mContentView?.findViewById(R.id.addItemTextView)
+                val tryNowTextView: TextView? = mContentView?.findViewById(R.id.tryNowTextView)
+                val textView2: TextView? = mContentView?.findViewById(R.id.textView2)
+                val updateCameraTextView: TextView? = mContentView?.findViewById(R.id.updateCameraTextView)
+                val nameInputLayout: TextInputLayout? = mContentView?.findViewById(R.id.nameInputLayout)
+                val priceInputLayout: TextInputLayout? = mContentView?.findViewById(R.id.priceInputLayout)
+                val discountedPriceInputLayout: TextInputLayout? = mContentView?.findViewById(R.id.discountedPriceInputLayout)
+                val enterCategoryInputLayout: TextInputLayout? = mContentView?.findViewById(R.id.enterCategoryInputLayout)
                 tryNowTextView?.text = text_try_now
                 addDiscountLabel?.text = text_add_discount_on_this_item
                 textView2?.text = heading_add_product_banner
@@ -836,7 +842,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             stopProgress()
             if (commonResponse.mIsSuccessStatus) {
                 showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_check_circle)
-                mActivity.onBackPressed()
+                mActivity?.onBackPressed()
             } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
         }
     }
@@ -865,7 +871,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     }
 
     override fun onToolbarSideIconClicked() {
-        val sideView:View = mActivity.findViewById(R.id.sideIconToolbar)
+        val sideView:View? = mActivity?.findViewById(R.id.sideIconToolbar)
         val optionsMenu = PopupMenu(mActivity, sideView)
         optionsMenu.inflate(R.menu.menu_product_fragment)
         mOptionsMenuResponse?.forEachIndexed { position, response ->
@@ -905,21 +911,23 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     private fun showGoBackDialog() {
         try {
             CoroutineScopeUtils().runTaskOnCoroutineMain {
-                val builder: AlertDialog.Builder? = AlertDialog.Builder(mActivity)
-                builder?.apply {
-                    setTitle(addProductStaticData?.text_go_back)
-                    setMessage(addProductStaticData?.text_go_back_message)
-                    setCancelable(true)
-                    setNegativeButton(getString(R.string.text_no)) { dialog, _ ->
-                        dialog.dismiss()
-                    }
-                    setPositiveButton(getString(R.string.txt_yes)) { dialog, _ ->
-                        nameEditText?.hideKeyboard()
-                        mIsOrderEdited = false
-                        fragmentManager?.popBackStack()
-                        dialog.dismiss()
-                    }
-                }?.create()?.show()
+                mActivity?.let {
+                    val builder: AlertDialog.Builder? = AlertDialog.Builder(it)
+                    builder?.apply {
+                        setTitle(addProductStaticData?.text_go_back)
+                        setMessage(addProductStaticData?.text_go_back_message)
+                        setCancelable(true)
+                        setNegativeButton(getString(R.string.text_no)) { dialog, _ ->
+                            dialog.dismiss()
+                        }
+                        setPositiveButton(getString(R.string.txt_yes)) { dialog, _ ->
+                            nameEditText?.hideKeyboard()
+                            mIsOrderEdited = false
+                            fragmentManager?.popBackStack()
+                            dialog.dismiss()
+                        }
+                    }?.create()?.show()
+                }
             }
         } catch (e: Exception) {
             Log.e(TAG, "showGoBackDialog: ${e.message}", e)
@@ -928,22 +936,24 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
 
     private fun showDeleteConfirmationDialog() {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            val builder: AlertDialog.Builder? = AlertDialog.Builder(mActivity)
-            builder?.apply {
-                setTitle(getString(R.string.delete_product))
-                setMessage(getString(R.string.are_you_sure_to_delete))
-                setCancelable(false)
-                setPositiveButton(getString(R.string.txt_yes)) { dialog, _ ->
-                    dialog.dismiss()
-                    if (!isInternetConnectionAvailable(mActivity)) {
-                        showNoInternetConnectionDialog()
-                        return@setPositiveButton
+            mActivity?.let {
+                val builder: AlertDialog.Builder? = AlertDialog.Builder(it)
+                builder?.apply {
+                    setTitle(getString(R.string.delete_product))
+                    setMessage(getString(R.string.are_you_sure_to_delete))
+                    setCancelable(false)
+                    setPositiveButton(getString(R.string.txt_yes)) { dialog, _ ->
+                        dialog.dismiss()
+                        if (!isInternetConnectionAvailable(mActivity)) {
+                            showNoInternetConnectionDialog()
+                            return@setPositiveButton
+                        }
+                        showProgressDialog(mActivity)
+                        mService?.deleteItemServerCall(DeleteItemRequest(mItemId))
                     }
-                    showProgressDialog(mActivity)
-                    mService?.deleteItemServerCall(DeleteItemRequest(mItemId))
-                }
-                setNegativeButton(getString(R.string.text_no)) { dialog, _ -> dialog.dismiss() }
-            }?.create()?.show()
+                    setNegativeButton(getString(R.string.text_no)) { dialog, _ -> dialog.dismiss() }
+                }?.create()?.show()
+            }
         }
     }
 

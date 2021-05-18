@@ -93,6 +93,9 @@ class AppEventsManager {
             profileUpdate["customer"] = 0
             profileUpdate["shopName"] = profile.mShopName
             profileUpdate["address"] = profile.mAddress
+            profileUpdate.forEach { (key, value) ->
+                Log.d(TAG, "pushCleverTapProfile:  $key = $value")
+            }
             CleverTapAPI.getDefaultInstance(mActivityInstance)?.onUserLogin(profileUpdate)
         }
 
