@@ -129,6 +129,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                     mProfileService.getProductShareStoreData()
                 }
             }
+            viewAllHeading?.id -> launchFragment(NewReleaseFragment.newInstance(mAccountInfoResponse?.mTrendingList, mAccountInfoResponse?.mAccountStaticText), true)
         }
     }
 
@@ -155,21 +156,24 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             R.layout.bottom_sheet_trending_offers,
             mActivity.findViewById(R.id.bottomSheetContainer)
         )
-        bottomSheetDialog.setContentView(view)
-        bottomSheetDialog.behavior.state = BottomSheetBehavior.STATE_EXPANDED
-        val bottomSheetBrowserText: TextView = view.findViewById(R.id.bottomSheetBrowserText)
-        val bottomSheetHeadingTextView: TextView = view.findViewById(R.id.bottomSheetHeadingTextView)
-        val bottomSheetUrl: TextView = view.findViewById(R.id.bottomSheetUrl)
-        val bottomSheetClose: View = view.findViewById(R.id.bottomSheetClose)
-        bottomSheetBrowserText.text = mAppSettingsResponseStaticData?.mBestViewedText
-        val txtSpannable = SpannableString(Constants.DOTPE_OFFICIAL_URL)
-        val boldSpan = StyleSpan(Typeface.BOLD)
-        txtSpannable.setSpan(boldSpan, 6, txtSpannable.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-        bottomSheetUrl.text = txtSpannable
-        bottomSheetHeadingTextView.setHtmlData(mAppSettingsResponseStaticData?.mBottomSheetText)
-        bottomSheetUrl.setOnClickListener { copyDataToClipboard(Constants.DOTPE_OFFICIAL_URL_CLIPBOARD) }
-        bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
-        bottomSheetDialog.show()
+        bottomSheetDialog.apply {
+            setContentView(view)
+            behavior.state = BottomSheetBehavior.STATE_EXPANDED
+            view?.run {
+                val bottomSheetBrowserText: TextView = findViewById(R.id.bottomSheetBrowserText)
+                val bottomSheetHeadingTextView: TextView = findViewById(R.id.bottomSheetHeadingTextView)
+                val bottomSheetUrl: TextView = findViewById(R.id.bottomSheetUrl)
+                val bottomSheetClose: View = findViewById(R.id.bottomSheetClose)
+                bottomSheetBrowserText.text = mAppSettingsResponseStaticData?.mBestViewedText
+                val txtSpannable = SpannableString(Constants.DOTPE_OFFICIAL_URL)
+                val boldSpan = StyleSpan(Typeface.BOLD)
+                txtSpannable.setSpan(boldSpan, 6, txtSpannable.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                bottomSheetUrl.text = txtSpannable
+                bottomSheetHeadingTextView.setHtmlData(mAppSettingsResponseStaticData?.mBottomSheetText)
+                bottomSheetUrl.setOnClickListener { copyDataToClipboard(Constants.DOTPE_OFFICIAL_URL_CLIPBOARD) }
+                bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
+            }
+        }.show()
     }
 
     private fun showReferAndEarnBottomSheet(response: ReferAndEarnItemResponse?) {
@@ -417,8 +421,8 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             settingsAdapter.setSettingsList(infoResponse.mStoreOptions)
         }
         newReleaseRecyclerView?.apply {
-            layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
-            adapter = NewReleaseAdapter(infoResponse.mTrendingList, this@SettingsFragment, mActivity)
+            layoutManager = GridLayoutManager(mActivity, 3)
+            adapter = NewReleaseAdapter(infoResponse.mTrendingList, this@SettingsFragment, mActivity, 3)
         }
         val remainingSteps = infoResponse.mTotalSteps.minus(infoResponse.mCompletedSteps)
         stepsLeftTextView?.text = if (remainingSteps == 1) "$remainingSteps ${infoResponse.mAccountStaticText?.mStepLeft}" else "$remainingSteps ${infoResponse.mAccountStaticText?.mStepsLeft}"
