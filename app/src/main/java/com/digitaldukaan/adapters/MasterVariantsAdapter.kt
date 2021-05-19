@@ -12,7 +12,7 @@ import com.digitaldukaan.interfaces.IChipItemClickListener
 import com.digitaldukaan.models.response.VariantItemResponse
 
 class MasterVariantsAdapter(
-    private var mContext: Context,
+    private var mContext: Context?,
     private var mMasterVariantList: ArrayList<VariantItemResponse>?,
     private var mListener: IChipItemClickListener?
 ) : RecyclerView.Adapter<MasterVariantsAdapter.AddProductsChipsViewHolder>() {
@@ -43,12 +43,14 @@ class MasterVariantsAdapter(
         val item = mMasterVariantList?.get(position)
         holder.apply {
             chipTextView.text = item?.variantName
-            if (item?.isSelected == true) {
-                chipTextView.setTextColor(ContextCompat.getColor(mContext, R.color.default_text_light_grey))
-                chipTextView.isEnabled = false
-            } else {
-                chipTextView.setTextColor(ContextCompat.getColor(mContext, R.color.black))
-                chipTextView.isEnabled = true
+            mContext?.let {
+                if (item?.isSelected == true) {
+                    chipTextView.setTextColor(ContextCompat.getColor(it, R.color.default_text_light_grey))
+                    chipTextView.isEnabled = false
+                } else {
+                    chipTextView.setTextColor(ContextCompat.getColor(it, R.color.black))
+                    chipTextView.isEnabled = true
+                }
             }
         }
     }

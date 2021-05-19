@@ -75,19 +75,21 @@ public class ToolBarManager {
         });
     }
 
-    public void hideToolBar(MainActivity mActivity, boolean toHide) {
+    public void hideToolBar(MainActivity activity, boolean toHide) {
+        if (activity == null) return;
         if (toHide) {
-            mActivity.findViewById(R.id.toolbarLayout).setVisibility(View.GONE);
+            activity.findViewById(R.id.toolbarLayout).setVisibility(View.GONE);
         } else {
-            mActivity.findViewById(R.id.toolbarLayout).setVisibility(View.VISIBLE);
+            activity.findViewById(R.id.toolbarLayout).setVisibility(View.VISIBLE);
         }
     }
 
-    public void hideBackPressFromToolBar(MainActivity mActivity, boolean toHide) {
+    public void hideBackPressFromToolBar(MainActivity activity, boolean toHide) {
+        if (activity == null) return;
         if (toHide) {
-            mActivity.findViewById(R.id.backButtonToolbar).setVisibility(View.GONE);
+            activity.findViewById(R.id.backButtonToolbar).setVisibility(View.GONE);
         } else {
-            mActivity.findViewById(R.id.backButtonToolbar).setVisibility(View.VISIBLE);
+            activity.findViewById(R.id.backButtonToolbar).setVisibility(View.VISIBLE);
         }
     }
 }

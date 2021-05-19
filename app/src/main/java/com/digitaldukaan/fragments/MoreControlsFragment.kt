@@ -123,46 +123,48 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
     }
 
     private fun showMinimumDeliveryOrderBottomSheet() {
-        val bottomSheetDialog = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
-        val view = LayoutInflater.from(mActivity).inflate(
-            R.layout.bottom_sheet_min_delivery_order,
-            mActivity.findViewById(R.id.bottomSheetContainer)
-        )
-        bottomSheetDialog.apply {
-            setContentView(view)
-            setBottomSheetCommonProperty()
-            view.run {
-                val verifyTextView: TextView = findViewById(R.id.verifyTextView)
-                val minDeliveryHeadingTextView: TextView = findViewById(R.id.minDeliveryHeadingTextView)
-                val minDeliveryAmountContainer: TextInputLayout = findViewById(R.id.minDeliveryAmountContainer)
-                val minDeliveryAmountEditText: EditText = findViewById(R.id.minDeliveryAmountEditText)
-                minDeliveryAmountContainer.hint = mMoreControlsStaticData?.bottom_sheet_heading
-                minDeliveryAmountEditText.setText(if (mMinOrderValue != 0.0) mMinOrderValue.toString() else "")
-                minDeliveryHeadingTextView.text = mMoreControlsStaticData?.bottom_sheet_hint
-                verifyTextView.text = mMoreControlsStaticData?.save_changes
-                verifyTextView.setOnClickListener {
-                    val amount = minDeliveryAmountEditText.text.trim().toString()
-                    if (amount.isNotEmpty() && 0.0 != mFreeDeliveryAbove && amount.toDouble() > mFreeDeliveryAbove) {
-                        minDeliveryAmountEditText.error = mMoreControlsStaticData?.error_amount_must_greater_than_free_delivery_above
-                        requestFocus()
-                        return@setOnClickListener
+        mActivity?.run {
+            val bottomSheetDialog = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
+            val view = LayoutInflater.from(mActivity).inflate(
+                R.layout.bottom_sheet_min_delivery_order,
+                findViewById(R.id.bottomSheetContainer)
+            )
+            bottomSheetDialog.apply {
+                setContentView(view)
+                setBottomSheetCommonProperty()
+                view.run {
+                    val verifyTextView: TextView = findViewById(R.id.verifyTextView)
+                    val minDeliveryHeadingTextView: TextView = findViewById(R.id.minDeliveryHeadingTextView)
+                    val minDeliveryAmountContainer: TextInputLayout = findViewById(R.id.minDeliveryAmountContainer)
+                    val minDeliveryAmountEditText: EditText = findViewById(R.id.minDeliveryAmountEditText)
+                    minDeliveryAmountContainer.hint = mMoreControlsStaticData?.bottom_sheet_heading
+                    minDeliveryAmountEditText.setText(if (mMinOrderValue != 0.0) mMinOrderValue.toString() else "")
+                    minDeliveryHeadingTextView.text = mMoreControlsStaticData?.bottom_sheet_hint
+                    verifyTextView.text = mMoreControlsStaticData?.save_changes
+                    verifyTextView.setOnClickListener {
+                        val amount = minDeliveryAmountEditText.text.trim().toString()
+                        if (amount.isNotEmpty() && 0.0 != mFreeDeliveryAbove && amount.toDouble() > mFreeDeliveryAbove) {
+                            minDeliveryAmountEditText.error = mMoreControlsStaticData?.error_amount_must_greater_than_free_delivery_above
+                            requestFocus()
+                            return@setOnClickListener
+                        }
+                        if (!isInternetConnectionAvailable(mActivity)) {
+                            showNoInternetConnectionDialog()
+                            return@setOnClickListener
+                        }
+                        val request = MoreControlsRequest(
+                            mDeliveryChargeType,
+                            mFreeDeliveryAbove,
+                            mDeliveryPrice,
+                            if (amount.isEmpty()) 0.0 else amount.toDouble()
+                        )
+                        showProgressDialog(mActivity)
+                        bottomSheetDialog.dismiss()
+                        mMoreControlsService.updateDeliveryInfo(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
                     }
-                    if (!isInternetConnectionAvailable(mActivity)) {
-                        showNoInternetConnectionDialog()
-                        return@setOnClickListener
-                    }
-                    val request = MoreControlsRequest(
-                        mDeliveryChargeType,
-                        mFreeDeliveryAbove,
-                        mDeliveryPrice,
-                        if (amount.isEmpty()) 0.0 else amount.toDouble()
-                    )
-                    showProgressDialog(mActivity)
-                    bottomSheetDialog.dismiss()
-                    mMoreControlsService.updateDeliveryInfo(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
                 }
-            }
-        }.show()
+            }.show()
+        }
     }
 
     override fun onMoreControlsResponse(response: CommonApiResponse) {

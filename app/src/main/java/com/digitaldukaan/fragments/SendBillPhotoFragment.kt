@@ -77,11 +77,13 @@ class SendBillPhotoFragment: BaseFragment(), ISendBillPhotoServiceInterface {
             hideToolBar(mActivity, false)
             setHeaderTitle(mSendPhotoStaticText?.text_send_bill)
             setSideIconVisibility(true)
-            setSideIcon(ContextCompat.getDrawable(mActivity, R.drawable.ic_refresh), object : IOnToolbarIconClick{
-                override fun onToolbarSideIconClicked() {
-                    openFullCamera()
-                }
-            })
+            mActivity?.let {
+                setSideIcon(ContextCompat.getDrawable(it, R.drawable.ic_refresh), object : IOnToolbarIconClick {
+                    override fun onToolbarSideIconClicked() {
+                        openFullCamera()
+                    }
+                })
+            }
             setSecondSideIconVisibility(false)
         }
         sendBillTextView.text = mSendPhotoStaticText?.text_send_bill

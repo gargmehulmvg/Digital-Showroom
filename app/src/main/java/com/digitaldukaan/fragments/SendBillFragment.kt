@@ -75,7 +75,7 @@ class SendBillFragment : BaseFragment() {
     override fun onClick(view: View?) {
         when (view?.id) {
             refreshImageView?.id -> openFullCamera()
-            backButtonToolbar?.id -> mActivity.onBackPressed()
+            backButtonToolbar?.id -> mActivity?.onBackPressed()
             sendBillTextView?.id -> {
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_GENERATE_SELF_BILL,

@@ -77,7 +77,7 @@ class ProfilePhotoFragment : BaseFragment(), View.OnClickListener, IProfilePhoto
     override fun onClick(view: View?) {
         super.onClick(view)
         when (view?.id) {
-            backImageView?.id -> mActivity.onBackPressed()
+            backImageView?.id -> mActivity?.onBackPressed()
             removePhotoTextView?.id -> showImageRemovalApprovalDialog()
             changePhotoTextView?.id -> askCameraPermission()
         }
@@ -100,19 +100,19 @@ class ProfilePhotoFragment : BaseFragment(), View.OnClickListener, IProfilePhoto
 
     private fun showImageRemovalApprovalDialog() {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            val builder: AlertDialog.Builder = AlertDialog.Builder(mActivity)
-            builder.apply {
-                setTitle("Confirmation")
-                setMessage("Are you sure to remove the Store logo?")
-                setCancelable(false)
-                setNegativeButton(getString(R.string.text_no)) { dialog, _ -> dialog.dismiss() }
-                setPositiveButton(getString(R.string.txt_yes)) { dialog, _ ->
-                    dialog.dismiss()
-                    onImageSelectionResultFile(null)
-                }
+            mActivity?.let {
+                val builder: AlertDialog.Builder = AlertDialog.Builder(it)
+                builder.apply {
+                    setTitle("Confirmation")
+                    setMessage("Are you sure to remove the Store logo?")
+                    setCancelable(false)
+                    setNegativeButton(getString(R.string.text_no)) { dialog, _ -> dialog.dismiss() }
+                    setPositiveButton(getString(R.string.txt_yes)) { dialog, _ ->
+                        dialog.dismiss()
+                        onImageSelectionResultFile(null)
+                    }
+                }.create().show()
             }
-            val alertDialog: AlertDialog = builder.create()
-            alertDialog.show()
         }
     }
 
@@ -131,7 +131,7 @@ class ProfilePhotoFragment : BaseFragment(), View.OnClickListener, IProfilePhoto
                 }
             } else {
                 StaticInstances.sIsStoreImageUploaded = false
-                mActivity.onBackPressed()
+                mActivity?.onBackPressed()
             }
         }
     }

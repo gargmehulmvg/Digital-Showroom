@@ -14,6 +14,8 @@ class Constants {
         const val CONTACT_REQUEST_CODE = 1003
         const val CROP_IMAGE_REQUEST_CODE = 1004
         const val EXTERNAL_STORAGE_REQUEST_CODE = 1005
+        const val ERROR_CODE_UN_AUTHORIZED_ACCESS = 401
+        const val ERROR_MESSAGE_UN_AUTHORIZED_ACCESS = "unauthorized access"
         const val SHARED_PREF_NAME = "DigitalDukaanPrefs"
         const val USER_AUTH_TOKEN = "USER_AUTH_TOKEN"
         const val STORE_ID = "STORE_ID"
