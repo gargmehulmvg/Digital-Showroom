@@ -127,6 +127,7 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
             mobileNumberInputLayout?.visibility = View.VISIBLE
             mobileNumberTextView?.visibility = View.GONE
         }
+        hideBottomNavigationView(true)
     }
 
     private fun setupDataFromStaticResponse() {

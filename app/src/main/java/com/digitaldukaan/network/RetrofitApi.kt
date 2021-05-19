@@ -46,7 +46,7 @@ class RetrofitApi {
             writeTimeout(30, TimeUnit.SECONDS)
             addInterceptor { customizeCustomRequest(it) }
             addInterceptor(loggingInterface)
-            protocols(arrayListOf(Protocol.HTTP_1_1, Protocol.HTTP_1_0, Protocol.HTTP_2))
+            protocols(arrayListOf(Protocol.HTTP_1_1, Protocol.HTTP_2))
         }.build()
     }
 

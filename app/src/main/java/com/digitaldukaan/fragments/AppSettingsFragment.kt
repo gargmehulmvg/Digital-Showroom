@@ -1,6 +1,5 @@
 package com.digitaldukaan.fragments
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -68,15 +67,8 @@ class AppSettingsFragment : BaseFragment(), IAppSettingsItemClicked {
                     setMessage(mAppSettingsResponseStaticData?.mLogoutBody)
                     setCancelable(false)
                     setPositiveButton(mAppSettingsResponseStaticData?.text_yes) { dialog, _ ->
-                        mActivity?.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE)?.edit()?.clear()?.apply()
                         dialog.dismiss()
-                        clearFragmentBackStack()
-                        storeStringDataInSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN, "")
-                        storeStringDataInSharedPref(Constants.USER_AUTH_TOKEN, "")
-                        storeStringDataInSharedPref(Constants.STORE_NAME, "")
-                        storeStringDataInSharedPref(Constants.USER_MOBILE_NUMBER, "")
-                        storeStringDataInSharedPref(Constants.STORE_ID, "")
-                        launchFragment(LoginFragment.newInstance(), false)
+                        logoutFromApplication()
                     }
                     setNegativeButton(getString(R.string.text_no)) { dialog, _ -> dialog.dismiss() }
                 }.create().show()

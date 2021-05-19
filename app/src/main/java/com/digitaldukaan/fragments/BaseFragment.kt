@@ -40,6 +40,7 @@ import com.digitaldukaan.MyFcmMessageListenerService
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.ImagesSearchAdapter
 import com.digitaldukaan.constants.*
+import com.digitaldukaan.exceptions.UnAuthorizedAccessException
 import com.digitaldukaan.interfaces.ISearchImageItemClicked
 import com.digitaldukaan.models.response.*
 import com.digitaldukaan.network.RetrofitApi
@@ -186,6 +187,10 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     open fun exceptionHandlingForAPIResponse(e: Exception) {
         stopProgress()
         if (e is UnknownHostException) showToast(e.message)
+        if (e is UnAuthorizedAccessException) {
+            showToast(e.message)
+            logoutFromApplication()
+        }
         else showToast("Something went wrong")
     }
 
@@ -1133,6 +1138,17 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         } catch (e: Exception) {
             showToast(e.message)
         }
+    }
+
+    fun logoutFromApplication() {
+        mActivity?.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE)?.edit()?.clear()?.apply()
+        clearFragmentBackStack()
+        storeStringDataInSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN, "")
+        storeStringDataInSharedPref(Constants.USER_AUTH_TOKEN, "")
+        storeStringDataInSharedPref(Constants.STORE_NAME, "")
+        storeStringDataInSharedPref(Constants.USER_MOBILE_NUMBER, "")
+        storeStringDataInSharedPref(Constants.STORE_ID, "")
+        launchFragment(LoginFragment.newInstance(), false)
     }
 
 }

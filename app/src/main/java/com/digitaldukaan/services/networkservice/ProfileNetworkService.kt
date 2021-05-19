@@ -1,6 +1,8 @@
 package com.digitaldukaan.services.networkservice
 
 import android.util.Log
+import com.digitaldukaan.constants.Constants
+import com.digitaldukaan.exceptions.UnAuthorizedAccessException
 import com.digitaldukaan.models.request.StoreDeliveryStatusChangeRequest
 import com.digitaldukaan.models.request.StoreLogoRequest
 import com.digitaldukaan.models.response.CommonApiResponse
@@ -20,7 +22,12 @@ class ProfileNetworkService {
                     it.body()?.let { staticTextResponse ->
                         serviceInterface.onProfileResponse(staticTextResponse)
                     }
-                } else serviceInterface.onProfileDataException(Exception(response.message()))
+                } else {
+                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) {
+                        throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    }
+                    serviceInterface.onProfileDataException(Exception(response.message()))
+                }
             }
         } catch (e: Exception) {
             Log.e(ProfileNetworkService::class.java.simpleName, "getProfileServerCall: ", e)
