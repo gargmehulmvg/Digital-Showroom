@@ -27,6 +27,7 @@ import com.digitaldukaan.adapters.OrderPageBannerAdapter
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.IAdapterItemClickListener
 import com.digitaldukaan.interfaces.IOrderListItemListener
+import com.digitaldukaan.models.dto.CleverTapProfile
 import com.digitaldukaan.models.request.CompleteOrderRequest
 import com.digitaldukaan.models.request.OrdersRequest
 import com.digitaldukaan.models.request.SearchOrdersRequest
@@ -339,79 +340,127 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
             if (commonResponse.mIsSuccessStatus) {
                 orderPageInfoResponse = Gson().fromJson<OrderPageInfoResponse>(commonResponse.mCommonDataStr, OrderPageInfoResponse::class.java)
                 setupOrderPageInfoUI()
+                pushProfileToCleverTap()
             }
         }
     }
 
+    private fun pushProfileToCleverTap() {
+        try {
+            val storeResponse = orderPageInfoResponse?.mStoreInfo
+            storeResponse?.run {
+                val cleverTapProfile = CleverTapProfile()
+                cleverTapProfile.mShopName = storeInfo?.name
+                var businessTypeStr = ""
+                storeBusiness?.forEachIndexed { _, businessResponse -> businessTypeStr += "$businessResponse ," }
+                cleverTapProfile.mShopCategory = businessTypeStr
+                cleverTapProfile.mPhone = storeOwner?.phone
+                cleverTapProfile.mIdentity = storeOwner?.phone
+                cleverTapProfile.mLat = storeAddress?.latitude
+                cleverTapProfile.mLong = storeAddress?.longitude
+                cleverTapProfile.mAddress = storeAddress?.let {
+                    "${it.address1}, ${it.googleAddress}, ${it.pinCode}"
+                }
+                AppEventsManager.pushCleverTapProfile(cleverTapProfile)
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "pushProfileToCleverTap: ${e.message}", e)
+            AppEventsManager.pushAppEvents(
+                eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
+                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                data = mapOf(
+                    AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                    "Exception Point" to "pushProfileToCleverTap",
+                    "Exception Message" to e.message,
+                    "Exception Logs" to e.toString()
+                )
+            )
+        }
+    }
+
     private fun setupOrderPageInfoUI() {
-        orderPageInfoResponse?.run {
-            mOrderPageInfoStaticData = mOrderPageStaticText?.run {
-                val appTitleTextView: TextView? = mContentView?.findViewById(R.id.appTitleTextView)
-                mFetchingOrdersStr = fetching_orders
-                mDoubleClickToExitStr = msg_double_click_to_exit
-                appTitleTextView?.text = heading_order_page
-                this
-            }
-            StaticInstances.sOrderPageInfoStaticData = mOrderPageInfoStaticData
-            val pendingOrderTextView: TextView? = mContentView?.findViewById(R.id.pendingOrderTextView)
-            val completedOrderTextView: TextView? = mContentView?.findViewById(R.id.completedOrderTextView)
-            val takeOrderTextView: TextView? = mContentView?.findViewById(R.id.takeOrderTextView)
-            val homePageWebViewLayout: View? = mContentView?.findViewById(R.id.homePageWebViewLayout)
-            val orderLayout: View? = mContentView?.findViewById(R.id.orderLayout)
-            val analyticsImageView: View? = mContentView?.findViewById(R.id.analyticsImageView)
-            val searchImageView: View? = mContentView?.findViewById(R.id.searchImageView)
-            val helpImageView: View? = mContentView?.findViewById(R.id.helpImageView)
-            val bannerRecyclerView: RecyclerView? = mContentView?.findViewById(R.id.bannerRecyclerView)
-            pendingOrderTextView?.text = mOrderPageInfoStaticData?.text_pending
-            completedOrderTextView?.text = mOrderPageInfoStaticData?.text_completed
-            if (mIsZeroOrder.mIsActive) {
-                homePageWebViewLayout?.visibility = View.VISIBLE
-                orderLayout?.visibility = View.GONE
-                takeOrderTextView?.visibility = View.GONE
-                setupHomePageWebView(mIsZeroOrder.mUrl)
-                mSwipeRefreshLayout?.isEnabled = false
-            } else {
-                mSwipeRefreshLayout?.isEnabled = true
-                homePageWebViewLayout?.visibility = View.GONE
-                orderLayout?.visibility = View.VISIBLE
-                bannerRecyclerView?.apply {
-                    linearLayoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
-                    layoutManager = linearLayoutManager
-                    adapter = OrderPageBannerAdapter(
-                        orderPageInfoResponse?.mBannerList,
-                        object : IAdapterItemClickListener {
-                            override fun onAdapterItemClickListener(position: Int) {
-                                val item = orderPageInfoResponse?.mBannerList?.get(position)
-                                when (item?.mAction) {
-                                    Constants.ACTION_ADD_BANK -> launchFragment(
-                                        BankAccountFragment.newInstance(
-                                            null,
-                                            0,
-                                            false,
-                                            null
-                                        ), true
-                                    )
+        try {
+            orderPageInfoResponse?.run {
+                mOrderPageInfoStaticData = mOrderPageStaticText?.run {
+                    val appTitleTextView: TextView? = mContentView?.findViewById(R.id.appTitleTextView)
+                    mFetchingOrdersStr = fetching_orders
+                    mDoubleClickToExitStr = msg_double_click_to_exit
+                    appTitleTextView?.text = heading_order_page
+                    this
+                }
+                StaticInstances.sOrderPageInfoStaticData = mOrderPageInfoStaticData
+                val pendingOrderTextView: TextView? = mContentView?.findViewById(R.id.pendingOrderTextView)
+                val completedOrderTextView: TextView? = mContentView?.findViewById(R.id.completedOrderTextView)
+                val takeOrderTextView: TextView? = mContentView?.findViewById(R.id.takeOrderTextView)
+                val homePageWebViewLayout: View? = mContentView?.findViewById(R.id.homePageWebViewLayout)
+                val orderLayout: View? = mContentView?.findViewById(R.id.orderLayout)
+                val analyticsImageView: View? = mContentView?.findViewById(R.id.analyticsImageView)
+                val searchImageView: View? = mContentView?.findViewById(R.id.searchImageView)
+                val helpImageView: View? = mContentView?.findViewById(R.id.helpImageView)
+                val bannerRecyclerView: RecyclerView? = mContentView?.findViewById(R.id.bannerRecyclerView)
+                pendingOrderTextView?.text = mOrderPageInfoStaticData?.text_pending
+                completedOrderTextView?.text = mOrderPageInfoStaticData?.text_completed
+                if (mIsZeroOrder.mIsActive) {
+                    homePageWebViewLayout?.visibility = View.VISIBLE
+                    orderLayout?.visibility = View.GONE
+                    takeOrderTextView?.visibility = View.GONE
+                    setupHomePageWebView(mIsZeroOrder.mUrl)
+                    mSwipeRefreshLayout?.isEnabled = false
+                } else {
+                    mSwipeRefreshLayout?.isEnabled = true
+                    homePageWebViewLayout?.visibility = View.GONE
+                    orderLayout?.visibility = View.VISIBLE
+                    bannerRecyclerView?.apply {
+                        linearLayoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
+                        layoutManager = linearLayoutManager
+                        adapter = OrderPageBannerAdapter(
+                            orderPageInfoResponse?.mBannerList,
+                            object : IAdapterItemClickListener {
+                                override fun onAdapterItemClickListener(position: Int) {
+                                    val item = orderPageInfoResponse?.mBannerList?.get(position)
+                                    when (item?.mAction) {
+                                        Constants.ACTION_ADD_BANK -> launchFragment(
+                                            BankAccountFragment.newInstance(
+                                                null,
+                                                0,
+                                                false,
+                                                null
+                                            ), true
+                                        )
+                                    }
                                 }
-                            }
-                        })
+                            })
+                    }
+                    Handler(Looper.getMainLooper()).postDelayed({ fetchLatestOrders(Constants.MODE_PENDING, mFetchingOrdersStr, pendingPageCount) }, 150)
                 }
-                Handler(Looper.getMainLooper()).postDelayed({ fetchLatestOrders(Constants.MODE_PENDING, mFetchingOrdersStr, pendingPageCount) }, 150)
-            }
-            if (mIsHelpOrder.mIsActive) {
-                helpImageView?.visibility = View.VISIBLE
-                helpImageView?.setOnClickListener {
-                    openWebViewFragmentV2(
-                        this@HomeFragment,
-                        getString(R.string.help),
-                        mIsHelpOrder.mUrl,
-                        Constants.SETTINGS
-                    )
+                if (mIsHelpOrder.mIsActive) {
+                    helpImageView?.visibility = View.VISIBLE
+                    helpImageView?.setOnClickListener {
+                        openWebViewFragmentV2(
+                            this@HomeFragment,
+                            getString(R.string.help),
+                            mIsHelpOrder.mUrl,
+                            Constants.SETTINGS
+                        )
+                    }
                 }
+                takeOrderTextView?.text = mOrderPageInfoStaticData?.text_add_new_order
+                analyticsImageView?.visibility = if (mIsAnalyticsOrder) View.VISIBLE else View.GONE
+                searchImageView?.visibility = if (mIsSearchOrder) View.VISIBLE else View.GONE
+                takeOrderTextView?.visibility = if (mIsTakeOrder) View.VISIBLE else View.GONE
             }
-            takeOrderTextView?.text = mOrderPageInfoStaticData?.text_add_new_order
-            analyticsImageView?.visibility = if (mIsAnalyticsOrder) View.VISIBLE else View.GONE
-            searchImageView?.visibility = if (mIsSearchOrder) View.VISIBLE else View.GONE
-            takeOrderTextView?.visibility = if (mIsTakeOrder) View.VISIBLE else View.GONE
+        } catch (e: Exception) {
+            Log.e(TAG, "setupOrderPageInfoUI: ${e.message}", e)
+            AppEventsManager.pushAppEvents(
+                eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
+                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                data = mapOf(
+                    AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                    "Exception Point" to "setupOrderPageInfoUI",
+                    "Exception Message" to e.message,
+                    "Exception Logs" to e.toString()
+                )
+            )
         }
     }
 
