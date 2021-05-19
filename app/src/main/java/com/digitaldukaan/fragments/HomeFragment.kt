@@ -219,29 +219,29 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             saveUserDetailsInPref(authenticationUserResponse)
-            if (!authenticationUserResponse.mIsSuccessStatus) showShortSnackBar(
-                authenticationUserResponse.mMessage,
-                true,
-                R.drawable.ic_close_red
-            )
+            if (!authenticationUserResponse.mIsSuccessStatus) showShortSnackBar(authenticationUserResponse.mMessage, true, R.drawable.ic_close_red)
         }
     }
 
     private fun setupHomePageWebView(webViewUrl: String) {
-        val homePageWebView: WebView? = mContentView?.findViewById(R.id.homePageWebView)
-        homePageWebView?.apply {
-            val webViewController = CommonWebViewFragment.WebViewController()
-            webViewController.commonWebView = commonWebView
-            webViewController.activity = mActivity
-            webViewClient = webViewController
-            settings.javaScriptEnabled = true
-            settings.domStorageEnabled = true
-            settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
-            setLayerType(View.LAYER_TYPE_HARDWARE, null)
-            addJavascriptInterface(WebViewBridge(), "Android")
-            val url = webViewUrl + "?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&storeName=${getStringDataFromSharedPref(Constants.STORE_NAME)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"
-            Log.d(TAG, "setupHomePageWebView: $url")
-            loadUrl(url)
+        try {
+            val homePageWebView: WebView? = mContentView?.findViewById(R.id.homePageWebView)
+            homePageWebView?.apply {
+                val webViewController = CommonWebViewFragment.WebViewController()
+                webViewController.commonWebView = commonWebView
+                webViewController.activity = mActivity
+                webViewClient = webViewController
+                settings.javaScriptEnabled = true
+                settings.domStorageEnabled = true
+                settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+                setLayerType(View.LAYER_TYPE_HARDWARE, null)
+                addJavascriptInterface(WebViewBridge(), "Android")
+                val url = webViewUrl + "?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&storeName=${getStringDataFromSharedPref(Constants.STORE_NAME)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"
+                Log.d(TAG, "setupHomePageWebView: $url")
+                loadUrl(url)
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "setupHomePageWebView: ${e.message}", e)
         }
     }
 
@@ -312,25 +312,29 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
     }
 
     private fun setupAnalyticsUI() {
-        val todaySaleValue: TextView? = mContentView?.findViewById(R.id.todaySaleValue)
-        val amountValue: TextView? = mContentView?.findViewById(R.id.amountValue)
-        val weekSaleValue: TextView? = mContentView?.findViewById(R.id.weekSaleValue)
-        val weekAmountValue: TextView? = mContentView?.findViewById(R.id.weekAmountValue)
-        val todaySaleHeading: TextView? = mContentView?.findViewById(R.id.todaySaleHeading)
-        val amountHeading: TextView? = mContentView?.findViewById(R.id.amountHeading)
-        val weekSaleHeading: TextView? = mContentView?.findViewById(R.id.weekSaleHeading)
-        val weekAmountHeading: TextView? = mContentView?.findViewById(R.id.weekAmountHeading)
-        todaySaleValue?.text = analyticsResponse?.today?.totalCount.toString()
-        val amountValueStr = "${analyticsResponse?.analyticsStaticData?.textRuppeeSymbol} ${analyticsResponse?.today?.totalAmount}"
-        amountValue?.text = amountValueStr
-        weekSaleValue?.text = analyticsResponse?.thisWeek?.totalCount.toString()
-        val weekValueStr = "${analyticsResponse?.analyticsStaticData?.textRuppeeSymbol} ${analyticsResponse?.thisWeek?.totalAmount}"
-        weekAmountValue?.text = weekValueStr
-        analyticsResponse?.analyticsStaticData?.run {
-            todaySaleHeading?.text = textTodaySale
-            amountHeading?.text = textTodayAmount
-            weekSaleHeading?.text = textWeekSale
-            weekAmountHeading?.text = textWeekAmount
+        try {
+            val todaySaleValue: TextView? = mContentView?.findViewById(R.id.todaySaleValue)
+            val amountValue: TextView? = mContentView?.findViewById(R.id.amountValue)
+            val weekSaleValue: TextView? = mContentView?.findViewById(R.id.weekSaleValue)
+            val weekAmountValue: TextView? = mContentView?.findViewById(R.id.weekAmountValue)
+            val todaySaleHeading: TextView? = mContentView?.findViewById(R.id.todaySaleHeading)
+            val amountHeading: TextView? = mContentView?.findViewById(R.id.amountHeading)
+            val weekSaleHeading: TextView? = mContentView?.findViewById(R.id.weekSaleHeading)
+            val weekAmountHeading: TextView? = mContentView?.findViewById(R.id.weekAmountHeading)
+            todaySaleValue?.text = analyticsResponse?.today?.totalCount.toString()
+            val amountValueStr = "${analyticsResponse?.analyticsStaticData?.textRuppeeSymbol} ${analyticsResponse?.today?.totalAmount}"
+            amountValue?.text = amountValueStr
+            weekSaleValue?.text = analyticsResponse?.thisWeek?.totalCount.toString()
+            val weekValueStr = "${analyticsResponse?.analyticsStaticData?.textRuppeeSymbol} ${analyticsResponse?.thisWeek?.totalAmount}"
+            weekAmountValue?.text = weekValueStr
+            analyticsResponse?.analyticsStaticData?.run {
+                todaySaleHeading?.text = textTodaySale
+                amountHeading?.text = textTodayAmount
+                weekSaleHeading?.text = textWeekSale
+                weekAmountHeading?.text = textWeekAmount
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "setupAnalyticsUI: ${e.message}", e)
         }
     }
 
@@ -570,13 +574,11 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
 
     override fun onOrderCheckBoxChanged(isChecked: Boolean, item: OrderItemResponse?) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            if (PrefsManager.getStringDataFromSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN) != Constants.TEXT_YES) {
+            if (Constants.TEXT_YES != PrefsManager.getStringDataFromSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN)) {
                 if (Constants.DS_PAID_ONLINE == item?.displayStatus) {
                     onDontShowDialogPositiveButtonClicked(item)
                 } else if (isChecked) showDontShowDialog(item, mOrderPageInfoStaticData)
-            } else {
-                onDontShowDialogPositiveButtonClicked(item)
-            }
+            } else onDontShowDialogPositiveButtonClicked(item)
         }
     }
 
@@ -620,31 +622,35 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
 
     override fun sendData(data: String) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            stopProgress()
-            Log.d(TAG, "sendData: $data")
-            val jsonData = JSONObject(data)
-            when {
-                jsonData.optBoolean("takeOrder") -> {
-                    showTakeOrderBottomSheet()
+            try {
+                stopProgress()
+                Log.d(TAG, "sendData: $data")
+                val jsonData = JSONObject(data)
+                when {
+                    jsonData.optBoolean("takeOrder") -> {
+                        showTakeOrderBottomSheet()
+                    }
+                    jsonData.optBoolean("redirectBrowser") -> {
+                        val domain = jsonData.optString("data")
+                        openUrlInBrowser(domain)
+                    }
+                    jsonData.optBoolean("trackEventData") -> {
+                        val eventName = jsonData.optString("eventName")
+                        val additionalData = jsonData.optString("additionalData")
+                        val map = Gson().fromJson<HashMap<String, String>>(additionalData.toString(), HashMap::class.java)
+                        Log.d(TAG, "sendData: working $map")
+                        AppEventsManager.pushAppEvents(
+                            eventName = eventName,
+                            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                            data = map
+                        )
+                    }
+                    else -> {
+                        launchFragment(AddProductFragment.newInstance(0, true), true)
+                    }
                 }
-                jsonData.optBoolean("redirectBrowser") -> {
-                    val domain = jsonData.optString("data")
-                    openUrlInBrowser(domain)
-                }
-                jsonData.optBoolean("trackEventData") -> {
-                    val eventName = jsonData.optString("eventName")
-                    val additionalData = jsonData.optString("additionalData")
-                    val map = Gson().fromJson<HashMap<String, String>>(additionalData.toString(), HashMap::class.java)
-                    Log.d(TAG, "sendData: working $map")
-                    AppEventsManager.pushAppEvents(
-                        eventName = eventName,
-                        isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                        data = map
-                    )
-                }
-                else -> {
-                    launchFragment(AddProductFragment.newInstance(0, true), true)
-                }
+            } catch (e: Exception) {
+                Log.e(TAG, "sendData: ${e.message}", e)
             }
         }
     }

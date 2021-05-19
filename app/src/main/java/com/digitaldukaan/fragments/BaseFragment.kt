@@ -660,7 +660,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                                         withContext(Dispatchers.Main) {
                                             stopProgress()
                                             val list = it.mImagesList
-                                            searchImageRecyclerView.apply {
+                                            searchImageRecyclerView?.apply {
                                                 layoutManager = GridLayoutManager(mActivity, 3)
                                                 adapter = mImageAdapter
                                                 list?.let { arrayList -> mImageAdapter.setSearchImageList(arrayList) }
