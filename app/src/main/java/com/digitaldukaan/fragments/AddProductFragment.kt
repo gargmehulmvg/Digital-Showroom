@@ -560,6 +560,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     }
 
     override fun onImageSelectionResultFile(file: File?, mode: String) {
+        Log.d(TAG, "onImageSelectionResultFile: onImageSelectionResultFile :: mode $mode")
         if (Constants.MODE_CROP == mode) {
             imagePickBottomSheet?.dismiss()
             showImageCropDialog(file)

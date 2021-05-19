@@ -27,6 +27,8 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.TranslateAnimation
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -223,13 +225,17 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     }
 
     fun EditText.showKeyboard() {
-        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.showSoftInput(this, InputMethodManager.SHOW_IMPLICIT)
+        mActivity?.let {
+            val imm = it.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.showSoftInput(this, InputMethodManager.SHOW_IMPLICIT)
+        }
     }
 
     fun EditText.hideKeyboard() {
-        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(this.windowToken, 0)
+        mActivity?.let {
+            val imm = it.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(this.windowToken, 0)
+        }
     }
 
     fun TextView.showStrikeOffText() {
@@ -669,7 +675,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     open fun openMobileGalleryWithImage() {
         mActivity?.run {
             ImagePicker.with(this)
-                .saveDir(File(Environment.getExternalStorageDirectory(), "ImagePicker"))
+                .saveDir(getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!)
                 .galleryMimeTypes(  //Exclude gif images
                     mimeTypes = arrayOf(
                         "image/png",
@@ -678,20 +684,23 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                     )
                 )
                 .galleryOnly()
-                .crop(1f, 1f)            //Crop image(Optional), Check Customization for more option
-                .compress(1024)            //Final image size will be less than 1 MB(Optional)
-                .maxResultSize(
-                    1080,
-                    1080
-                ) //Final image resolution will be less than 1080 x 1080(Optional)
-                .start()
+                .crop(1f, 1f)                   // Crop image(Optional), Check Customization for more option
+                .compress(1024)               // Final image size will be less than 1 MB(Optional)
+                .maxResultSize(1080, 1080) //Final image resolution will be less than 1080 x 1080(Optional)
+                .createIntent { intent ->
+                    try {
+                        startForProfileImageResult.launch(intent)
+                    } catch (e: Exception) {
+                        Log.e(TAG, "openMobileGalleryWithImage: ${e.message}", e)
+                    }
+                }
         }
     }
 
     open fun openGalleryWithoutCrop() {
         mActivity?.run {
             ImagePicker.with(this)
-                .saveDir(File(Environment.getExternalStorageDirectory(), "ImagePicker"))
+                .saveDir(getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!)
                 .galleryMimeTypes(  //Exclude gif images
                     mimeTypes = arrayOf(
                         "image/png",
@@ -701,11 +710,14 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                 )
                 .galleryOnly()
                 .compress(1024)            //Final image size will be less than 1 MB(Optional)
-                .maxResultSize(
-                    1080,
-                    1080
-                ) //Final image resolution will be less than 1080 x 1080(Optional)
-                .start()
+                .maxResultSize(1080, 1080) //Final image resolution will be less than 1080 x 1080(Optional)
+                .createIntent { intent ->
+                    try {
+                        startForProfileImageResult.launch(intent)
+                    } catch (e: Exception) {
+                        Log.e(TAG, "openMobileGalleryWithImage: ${e.message}", e)
+                    }
+                }
         }
     }
 
@@ -713,14 +725,17 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         mActivity?.run {
             ImagePicker.with(this)
                 .cameraOnly()
-                .saveDir(File(Environment.getExternalStorageDirectory(), "ImagePicker"))
+                .saveDir(getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!)
                 .crop(1f, 1f) //Crop image(Optional), Check Customization for more option
                 .compress(1024)            //Final image size will be less than 1 MB(Optional)
-                .maxResultSize(
-                    1080,
-                    1080
-                ) //Final image resolution will be less than 1080 x 1080(Optional)
-                .start()
+                .maxResultSize(1080, 1080) //Final image resolution will be less than 1080 x 1080(Optional)
+                .createIntent { intent ->
+                    try {
+                        startForProfileImageResult.launch(intent)
+                    } catch (e: Exception) {
+                        Log.e(TAG, "openMobileGalleryWithImage: ${e.message}", e)
+                    }
+                }
         }
     }
 
@@ -728,28 +743,45 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         mActivity?.run {
             ImagePicker.with(this)
                 .cameraOnly()
-                .saveDir(File(Environment.getExternalStorageDirectory(), "ImagePicker"))
+                .saveDir(getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!)
                 .compress(1024)            //Final image size will be less than 1 MB(Optional)
-                .maxResultSize(
-                    1080,
-                    1080
-                )
-                .start()
+                .maxResultSize(1080, 1080)
+                .createIntent { intent ->
+                    try {
+                        startForProfileImageResult.launch(intent)
+                    } catch (e: Exception) {
+                        Log.e(TAG, "openMobileGalleryWithImage: ${e.message}", e)
+                    }
+                }
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        when (resultCode) {
-            Activity.RESULT_OK -> {
-                val fileUri = data?.data
-                val file: File? = ImagePicker.getFile(data)
-                onImageSelectionResultUri(fileUri)
-                onImageSelectionResultFile(file)
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) = Unit
+
+    private val startForProfileImageResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            try {
+                val resultCode = result.resultCode
+                val data = result.data
+                when (resultCode) {
+                    Activity.RESULT_OK -> {
+                        try {
+                            val fileUri = data?.data
+                            onImageSelectionResultUri(fileUri)
+                            val file: File? = File(fileUri?.path!!)
+                            onImageSelectionResultFile(file)
+                        } catch (e: Exception) {
+                            Log.e(TAG, "onActivityResult: ${e.message}", e)
+                            showToast(getString(R.string.something_went_wrong))
+                        }
+                    }
+                    ImagePicker.RESULT_ERROR -> showToast(ImagePicker.getError(data))
+                    else -> showToast("Task Cancelled")
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "registerForActivityResult : ${e.message}", e)
             }
-            ImagePicker.RESULT_ERROR -> showToast(ImagePicker.getError(data))
-            else -> showToast("Task Cancelled")
         }
-    }
 
     open fun onImageSelectionResultFile(file: File?, mode: String = "") = Unit
 

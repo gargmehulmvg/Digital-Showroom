@@ -21,7 +21,7 @@ class RetrofitApi {
                 val retrofit = Retrofit.Builder().apply {
                     baseUrl(BuildConfig.BASE_URL)
                     addConverterFactory(GsonConverterFactory.create())
-                    client(if (BuildConfig.DEBUG) getDebugHttpClient() else getProdHttpClient())
+                    client(getHttpClient())
                 }.build()
                 mAppService = retrofit.create(Apis::class.java)
             }
@@ -32,30 +32,32 @@ class RetrofitApi {
         }
     }
 
-    private fun getProdHttpClient(): OkHttpClient {
+    private fun getHttpClient(): OkHttpClient {
+        val loggingInterface = HttpLoggingInterceptor().apply {
+            level = when (BuildConfig.DEBUG) {
+                true  -> HttpLoggingInterceptor.Level.BODY
+                false -> HttpLoggingInterceptor.Level.NONE
+            }
+        }
         return OkHttpClient.Builder().apply {
-            readTimeout(15, TimeUnit.SECONDS)
-            connectTimeout(15, TimeUnit.SECONDS)
-            addInterceptor { customizeCustomRequest(it) }
-            protocols(arrayListOf(Protocol.HTTP_1_1))
-        }.build()
-    }
-
-    private fun getDebugHttpClient(): OkHttpClient {
-        val loggingInterface = HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BODY }
-        return OkHttpClient.Builder().apply {
-            readTimeout(15, TimeUnit.SECONDS)
-            connectTimeout(15, TimeUnit.SECONDS)
+            connectTimeout(1, TimeUnit.MINUTES)
+            callTimeout(1, TimeUnit.MINUTES)
+            readTimeout(30, TimeUnit.SECONDS)
+            writeTimeout(30, TimeUnit.SECONDS)
             addInterceptor { customizeCustomRequest(it) }
             addInterceptor(loggingInterface)
-            protocols(arrayListOf(Protocol.HTTP_1_1))
+            protocols(arrayListOf(Protocol.HTTP_1_1, Protocol.HTTP_1_0, Protocol.HTTP_2))
         }.build()
     }
 
     private fun customizeCustomRequest(it: Interceptor.Chain): Response {
-        val originalRequest = it.request()
-        val newRequest = getNewRequest(originalRequest)
-        return if (newRequest == null) it.proceed(originalRequest) else it.proceed(newRequest)
+        return try {
+            val originalRequest = it.request()
+            val newRequest = getNewRequest(originalRequest)
+            if (newRequest == null) it.proceed(originalRequest) else it.proceed(newRequest)
+        } catch (e: Exception) {
+            Response.Builder().build()
+        }
     }
 
     private fun getNewRequest(originalRequest: Request): Request? {
