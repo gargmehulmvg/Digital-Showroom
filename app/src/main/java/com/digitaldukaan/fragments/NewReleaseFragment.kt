@@ -52,7 +52,7 @@ class NewReleaseFragment: BaseFragment(), IStoreSettingsItemClicked {
             setSideIconVisibility(false)
             setSecondSideIconVisibility(false)
         }
-        val newReleaseRecyclerView: RecyclerView? = mContentView.findViewById(R.id.newReleaseRecyclerView)
+        val newReleaseRecyclerView: RecyclerView? = mContentView?.findViewById(R.id.newReleaseRecyclerView)
         newReleaseRecyclerView?.apply {
             layoutManager = GridLayoutManager(mActivity, 3)
             adapter = NewReleaseAdapter(mNewReleaseList, this@NewReleaseFragment, mActivity, mNewReleaseList?.size ?: 0)
@@ -100,8 +100,7 @@ class NewReleaseFragment: BaseFragment(), IStoreSettingsItemClicked {
                     )
                 )
                 if (responseItem.mType == Constants.NEW_RELEASE_TYPE_CUSTOM_DOMAIN) {
-                    openUrlInBrowser(responseItem.mPage + PrefsManager.getStringDataFromSharedPref(
-                        Constants.STORE_ID))
+                    openUrlInBrowser(responseItem.mPage + PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
                 } else openUrlInBrowser(responseItem.mPage)
 
             }
@@ -110,29 +109,31 @@ class NewReleaseFragment: BaseFragment(), IStoreSettingsItemClicked {
     }
 
     private fun showTrendingOffersBottomSheet() {
-        val bottomSheetDialog = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
-        val view = LayoutInflater.from(mActivity).inflate(
-            R.layout.bottom_sheet_trending_offers,
-            mActivity.findViewById(R.id.bottomSheetContainer)
-        )
-        bottomSheetDialog.apply {
-            setContentView(view)
-            behavior.state = BottomSheetBehavior.STATE_EXPANDED
-            view?.run {
-                val bottomSheetBrowserText: TextView = findViewById(R.id.bottomSheetBrowserText)
-                val bottomSheetHeadingTextView: TextView = findViewById(R.id.bottomSheetHeadingTextView)
-                val bottomSheetUrl: TextView = findViewById(R.id.bottomSheetUrl)
-                val bottomSheetClose: View = findViewById(R.id.bottomSheetClose)
-                bottomSheetBrowserText.text = mSettingsStaticData?.mBestViewedText
-                val txtSpannable = SpannableString(Constants.DOTPE_OFFICIAL_URL)
-                val boldSpan = StyleSpan(Typeface.BOLD)
-                txtSpannable.setSpan(boldSpan, 6, txtSpannable.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-                bottomSheetUrl.text = txtSpannable
-                bottomSheetHeadingTextView.setHtmlData(mSettingsStaticData?.mBottomSheetText)
-                bottomSheetUrl.setOnClickListener { copyDataToClipboard(Constants.DOTPE_OFFICIAL_URL_CLIPBOARD) }
-                bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
-            }
-        }.show()
+        mActivity?.let {
+            val bottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
+            val view = LayoutInflater.from(it).inflate(
+                R.layout.bottom_sheet_trending_offers,
+                it.findViewById(R.id.bottomSheetContainer)
+            )
+            bottomSheetDialog.apply {
+                setContentView(view)
+                behavior.state = BottomSheetBehavior.STATE_EXPANDED
+                view?.run {
+                    val bottomSheetBrowserText: TextView = findViewById(R.id.bottomSheetBrowserText)
+                    val bottomSheetHeadingTextView: TextView = findViewById(R.id.bottomSheetHeadingTextView)
+                    val bottomSheetUrl: TextView = findViewById(R.id.bottomSheetUrl)
+                    val bottomSheetClose: View = findViewById(R.id.bottomSheetClose)
+                    bottomSheetBrowserText.text = mSettingsStaticData?.mBestViewedText
+                    val txtSpannable = SpannableString(Constants.DOTPE_OFFICIAL_URL)
+                    val boldSpan = StyleSpan(Typeface.BOLD)
+                    txtSpannable.setSpan(boldSpan, 6, txtSpannable.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                    bottomSheetUrl.text = txtSpannable
+                    bottomSheetHeadingTextView.setHtmlData(mSettingsStaticData?.mBottomSheetText)
+                    bottomSheetUrl.setOnClickListener { copyDataToClipboard(Constants.DOTPE_OFFICIAL_URL_CLIPBOARD) }
+                    bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
+                }
+            }.show()
+        }
     }
 
 }

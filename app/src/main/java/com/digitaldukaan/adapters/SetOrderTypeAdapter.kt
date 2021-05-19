@@ -11,7 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
 
 class SetOrderTypeAdapter(
-    private val mContext: Context
+    private val mContext: Context?
 ) :
     RecyclerView.Adapter<SetOrderTypeAdapter.ReferAndEarnViewHolder>() {
 
@@ -33,13 +33,15 @@ class SetOrderTypeAdapter(
         position: Int
     ) {
         holder.apply {
-            if (position == 0) {
-                textView.setTextColor(ContextCompat.getColor(mContext, R.color.default_text_light_grey))
-                imageView.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_icon_material_lock))
-            } else {
-                textView.text = "Set Delivery charge to fixed (for delivery orders)"
-                textView.setTextColor(ContextCompat.getColor(mContext, R.color.black))
-                imageView.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_exclamation_small))
+            mContext?.let {
+                if (position == 0) {
+                    textView.setTextColor(ContextCompat.getColor(it, R.color.default_text_light_grey))
+                    imageView.setImageDrawable(ContextCompat.getDrawable(it, R.drawable.ic_icon_material_lock))
+                } else {
+                    textView.text = "Set Delivery charge to fixed (for delivery orders)"
+                    textView.setTextColor(ContextCompat.getColor(it, R.color.black))
+                    imageView.setImageDrawable(ContextCompat.getDrawable(it, R.drawable.ic_exclamation_small))
+                }
             }
         }
     }

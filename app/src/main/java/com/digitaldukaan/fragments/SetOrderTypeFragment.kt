@@ -44,15 +44,15 @@ class SetOrderTypeFragment: BaseFragment() {
     }
 
     private fun setupUI() {
-        prepaidOrderContainer = mContentView.findViewById(R.id.prepaidOrderContainer)
-        payOnPickUpDeliveryContainer = mContentView.findViewById(R.id.payOnPickUpDeliveryContainer)
-        payBothContainer = mContentView.findViewById(R.id.payBothContainer)
-        val prepaidOrderTypeRecyclerView: RecyclerView? = mContentView.findViewById(R.id.prepaidOrderTypeRecyclerView)
+        prepaidOrderContainer = mContentView?.findViewById(R.id.prepaidOrderContainer)
+        payOnPickUpDeliveryContainer = mContentView?.findViewById(R.id.payOnPickUpDeliveryContainer)
+        payBothContainer = mContentView?.findViewById(R.id.payBothContainer)
+        val prepaidOrderTypeRecyclerView: RecyclerView? = mContentView?.findViewById(R.id.prepaidOrderTypeRecyclerView)
         prepaidOrderTypeRecyclerView?.apply {
             layoutManager = LinearLayoutManager(mActivity)
             adapter = SetOrderTypeAdapter(mActivity)
         }
-        val bothOrderTypeRecyclerView: RecyclerView? = mContentView.findViewById(R.id.bothOrderTypeRecyclerView)
+        val bothOrderTypeRecyclerView: RecyclerView? = mContentView?.findViewById(R.id.bothOrderTypeRecyclerView)
         bothOrderTypeRecyclerView?.apply {
             layoutManager = LinearLayoutManager(mActivity)
             adapter = SetOrderTypeAdapter(mActivity)

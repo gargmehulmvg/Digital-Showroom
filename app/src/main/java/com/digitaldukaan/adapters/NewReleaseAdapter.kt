@@ -18,7 +18,7 @@ import com.squareup.picasso.Picasso
 class NewReleaseAdapter(
     private val newReleaseList: ArrayList<TrendingListResponse>?,
     private val listener: IStoreSettingsItemClicked,
-    private val activity: MainActivity?
+    private val activity: MainActivity?,
     private val count: Int
 ) : RecyclerView.Adapter<NewReleaseAdapter.AppSettingsViewHolder>() {
 
