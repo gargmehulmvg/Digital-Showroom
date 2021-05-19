@@ -22,7 +22,7 @@ class BankAccountFragment : BaseFragment(), IBankDetailsServiceInterface {
     private lateinit var mService: BankDetailsService
     private var mPosition: Int = 0
     private var mIsSingleStep: Boolean = false
-    private lateinit var mBlankView: View
+    private var mBlankView: View? = null
     private var mProfilePreviewStaticData: BankDetailsPageStaticTextResponse? = null
 
     companion object {
@@ -53,8 +53,8 @@ class BankAccountFragment : BaseFragment(), IBankDetailsServiceInterface {
             showProgressDialog(mActivity)
             mService.getBankDetailsPageInfo()
         }
-        mBlankView = mContentView.findViewById(R.id.blankView)
-        mBlankView.visibility = View.GONE
+        mBlankView = mContentView?.findViewById(R.id.blankView)
+        mBlankView?.visibility = View.GONE
         return mContentView
     }
 
@@ -187,7 +187,7 @@ class BankAccountFragment : BaseFragment(), IBankDetailsServiceInterface {
                         switchToInCompleteProfileFragment(mProfileInfoResponse)
                     }
                 } else {
-                    mActivity.onBackPressed()
+                    mActivity?.onBackPressed()
                 }
             } else showShortSnackBar(response.mMessage, true, R.drawable.ic_close_red)
         }

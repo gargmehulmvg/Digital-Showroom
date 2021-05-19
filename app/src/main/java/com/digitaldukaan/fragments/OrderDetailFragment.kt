@@ -95,8 +95,10 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         ToolBarManager.getInstance()?.apply { hideToolBar(mActivity, true) }
-        sideIcon2Toolbar?.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.ic_call))
-        sideIconToolbar?.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.ic_options_menu))
+        mActivity?.let {
+            sideIcon2Toolbar?.setImageDrawable(ContextCompat.getDrawable(it, R.drawable.ic_call))
+            sideIconToolbar?.setImageDrawable(ContextCompat.getDrawable(it, R.drawable.ic_options_menu))
+        }
         hideBottomNavigationView(true)
     }
 
@@ -126,9 +128,9 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                 val displayStatus = orderDetailMainResponse?.orders?.displayStatus
                 shareDataOnWhatsAppByNumber(mMobileNumber, if (Constants.DS_SEND_BILL == displayStatus || Constants.DS_NEW == displayStatus) "Hi, we are checking your order." else "")
             }
-            backButtonToolbar?.id -> mActivity.onBackPressed()
+            backButtonToolbar?.id -> mActivity?.onBackPressed()
             sideIconToolbar?.id -> {
-                val sideView:View = mActivity.findViewById(R.id.sideIconToolbar)
+                val sideView:View? = mActivity?.findViewById(R.id.sideIconToolbar)
                 val optionsMenu = PopupMenu(mActivity, sideView)
                 optionsMenu.inflate(R.menu.menu_product_fragment)
                 orderDetailMainResponse?.optionMenuList?.forEachIndexed { position, response ->
@@ -139,7 +141,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
             }
             sideIcon2Toolbar?.id -> {
                 try {
-                    mActivity.startActivity(Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", mMobileNumber, null)))
+                    mActivity?.startActivity(Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", mMobileNumber, null)))
                 } catch (e: Exception) {
                     Log.e(TAG, "onClick: ${e.message}", e)
                 }
@@ -489,8 +491,10 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
         val boldSpan = StyleSpan(Typeface.BOLD)
         txtSpannable.setSpan(boldSpan, 0, txtSpannable.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         deliveryChargeValue?.text = txtSpannable
-        deliveryChargeValue?.setTextColor(ContextCompat.getColor(mActivity, R.color.open_green))
-        deliveryChargeValue?.background = ContextCompat.getDrawable(mActivity, R.drawable.order_adapter_new)
+        mActivity?.run {
+            deliveryChargeValue?.setTextColor(ContextCompat.getColor(this, R.color.open_green))
+            deliveryChargeValue?.background = ContextCompat.getDrawable(this, R.drawable.order_adapter_new)
+        }
         addDeliveryChargesLabel?.text = getString(R.string.add_discount_and_other_charges)
     }
 
@@ -528,14 +532,16 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                 estimateDeliveryTextView.text = estimatedDeliveryStr
             }
             statusValue?.text = orderDetailResponse?.orderPaymentStatus?.value
-            when (orderDetailResponse?.orderPaymentStatus?.key) {
-                Constants.ORDER_STATUS_SUCCESS -> {
-                    statusValue.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_tick_green_hollow, 0)
-                    orderDetailContainer.setBackgroundColor(ContextCompat.getColor(mActivity, R.color.open_green))
+            mActivity?.run {
+                when (orderDetailResponse?.orderPaymentStatus?.key) {
+                    Constants.ORDER_STATUS_SUCCESS -> {
+                        statusValue.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_tick_green_hollow, 0)
+                        orderDetailContainer.setBackgroundColor(ContextCompat.getColor(this, R.color.open_green))
+                    }
+                    Constants.ORDER_STATUS_REJECTED -> orderDetailContainer.setBackgroundColor(ContextCompat.getColor(this, R.color.red))
+                    Constants.ORDER_STATUS_IN_PROGRESS -> orderDetailContainer.setBackgroundColor(ContextCompat.getColor(this, R.color.order_detail_in_progress))
+                    else -> orderDetailContainer.setBackgroundColor(ContextCompat.getColor(this, R.color.black))
                 }
-                Constants.ORDER_STATUS_REJECTED -> orderDetailContainer.setBackgroundColor(ContextCompat.getColor(mActivity, R.color.red))
-                Constants.ORDER_STATUS_IN_PROGRESS -> orderDetailContainer.setBackgroundColor(ContextCompat.getColor(mActivity, R.color.order_detail_in_progress))
-                else -> orderDetailContainer.setBackgroundColor(ContextCompat.getColor(mActivity, R.color.black))
             }
         }
     }
@@ -567,7 +573,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
             stopProgress()
             if (commonResponse.mIsSuccessStatus) {
                 showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_green_check_small)
-                mActivity.onBackPressed()
+                mActivity?.onBackPressed()
             } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
         }
     }
@@ -598,7 +604,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
             stopProgress()
             if (commonResponse.mIsSuccessStatus) {
                 showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_green_check_small)
-                mActivity.onBackPressed()
+                mActivity?.onBackPressed()
             } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
         }
     }
@@ -647,170 +653,177 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
     }
 
     private fun showDeliveryTimeBottomSheet(deliveryTimeResponse: DeliveryTimeResponse?, isCallSendBillServerCall: Boolean) {
-        val bottomSheetDialog = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
-        val view = LayoutInflater.from(mActivity).inflate(
-            R.layout.bottom_sheet_delivery_time,
-            mActivity.findViewById(R.id.bottomSheetContainer)
-        )
-        bottomSheetDialog.apply {
-            setContentView(view)
-            setBottomSheetCommonProperty()
-            view.run {
-                deliveryTimeEditText = findViewById(R.id.deliveryTimeEditText)
-                val bottomSheetHeading: TextView = findViewById(R.id.bottomSheetHeading)
-                val bottomSheetSendBillText: TextView = findViewById(R.id.bottomSheetSendBillText)
-                val deliveryTimeRecyclerView: RecyclerView = findViewById(R.id.deliveryTimeRecyclerView)
-                deliveryTimeResponse?.staticText?.run {
-                    bottomSheetHeading.text = heading_choose_delivery_time
-                    bottomSheetSendBillText.text = text_send_bill
-                    deliveryTimeRecyclerView.apply {
-                        layoutManager = StaggeredGridLayoutManager(3, LinearLayoutManager.VERTICAL)
-                        mDeliveryTimeAdapter = DeliveryTimeAdapter(deliveryTimeResponse.deliveryTimeList, object : IChipItemClickListener {
-                            override fun onChipItemClickListener(position: Int) {
-                                deliveryTimeResponse.deliveryTimeList?.forEachIndexed { _, itemResponse -> itemResponse.isSelected = false }
-                                deliveryTimeResponse.deliveryTimeList?.get(position)?.isSelected = true
-                                deliveryTimeEditText?.visibility = if (CUSTOM == deliveryTimeResponse.deliveryTimeList?.get(position)?.key) View.VISIBLE else View.INVISIBLE
-                                if (deliveryTimeEditText?.visibility == View.VISIBLE) {
-                                    deliveryTimeEditText?.requestFocus()
-                                    deliveryTimeEditText?.showKeyboard()
+        mActivity?.run {
+            val bottomSheetDialog = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
+            val view = LayoutInflater.from(this).inflate(
+                R.layout.bottom_sheet_delivery_time,
+                findViewById(R.id.bottomSheetContainer)
+            )
+            bottomSheetDialog.apply {
+                setContentView(view)
+                setBottomSheetCommonProperty()
+                view.run {
+                    deliveryTimeEditText = findViewById(R.id.deliveryTimeEditText)
+                    val bottomSheetHeading: TextView = findViewById(R.id.bottomSheetHeading)
+                    val bottomSheetSendBillText: TextView = findViewById(R.id.bottomSheetSendBillText)
+                    val deliveryTimeRecyclerView: RecyclerView = findViewById(R.id.deliveryTimeRecyclerView)
+                    deliveryTimeResponse?.staticText?.run {
+                        bottomSheetHeading.text = heading_choose_delivery_time
+                        bottomSheetSendBillText.text = text_send_bill
+                        deliveryTimeRecyclerView.apply {
+                            layoutManager = StaggeredGridLayoutManager(3, LinearLayoutManager.VERTICAL)
+                            mDeliveryTimeAdapter = DeliveryTimeAdapter(deliveryTimeResponse.deliveryTimeList, object : IChipItemClickListener {
+                                override fun onChipItemClickListener(position: Int) {
+                                    deliveryTimeResponse.deliveryTimeList?.forEachIndexed { _, itemResponse -> itemResponse.isSelected = false }
+                                    deliveryTimeResponse.deliveryTimeList?.get(position)?.isSelected = true
+                                    deliveryTimeEditText?.visibility = if (CUSTOM == deliveryTimeResponse.deliveryTimeList?.get(position)?.key) View.VISIBLE else View.INVISIBLE
+                                    if (deliveryTimeEditText?.visibility == View.VISIBLE) {
+                                        deliveryTimeEditText?.requestFocus()
+                                        deliveryTimeEditText?.showKeyboard()
+                                    }
+                                    mDeliveryTimeAdapter?.setDeliveryTimeList(deliveryTimeResponse.deliveryTimeList)
+                                    mDeliveryTimeStr = deliveryTimeResponse.deliveryTimeList?.get(position)?.value
+                                    bottomSheetSendBillText.isEnabled = true
                                 }
-                                mDeliveryTimeAdapter?.setDeliveryTimeList(deliveryTimeResponse.deliveryTimeList)
-                                mDeliveryTimeStr = deliveryTimeResponse.deliveryTimeList?.get(position)?.value
-                                bottomSheetSendBillText.isEnabled = true
-                            }
-                        })
-                        adapter = mDeliveryTimeAdapter
-                    }
-                }
-                bottomSheetSendBillText.setOnClickListener {
-                    if (mDeliveryTimeStr?.equals(CUSTOM, true) == true) {
-                        mDeliveryTimeStr = deliveryTimeEditText?.text.toString()
-                        if (mDeliveryTimeStr?.isEmpty() == true) {
-                            deliveryTimeEditText?.apply {
-                                error = getString(R.string.mandatory_field_message)
-                                requestFocus()
-                            }
-                            return@setOnClickListener
+                            })
+                            adapter = mDeliveryTimeAdapter
                         }
-                    } else if (isCallSendBillServerCall) {
-                        bottomSheetDialog.dismiss()
-                        initiateSendBillServerCall()
-                    } else {
-                        bottomSheetDialog.dismiss()
-                        openFullCamera()
+                    }
+                    bottomSheetSendBillText.setOnClickListener {
+                        if (mDeliveryTimeStr?.equals(CUSTOM, true) == true) {
+                            mDeliveryTimeStr = deliveryTimeEditText?.text.toString()
+                            if (mDeliveryTimeStr?.isEmpty() == true) {
+                                deliveryTimeEditText?.apply {
+                                    error = getString(R.string.mandatory_field_message)
+                                    requestFocus()
+                                }
+                                return@setOnClickListener
+                            }
+                        } else if (isCallSendBillServerCall) {
+                            bottomSheetDialog.dismiss()
+                            initiateSendBillServerCall()
+                        } else {
+                            bottomSheetDialog.dismiss()
+                            openFullCamera()
+                        }
                     }
                 }
-            }
-        }.show()
+            }.show()
+        }
     }
 
     private fun showOrderDetailBottomSheet(txnItemList: ArrayList<OrderDetailTransactionItemResponse?>) {
-        val bottomSheetDialog = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
-        val view = LayoutInflater.from(mActivity).inflate(
-            R.layout.bottom_sheet_order_detail,
-            mActivity.findViewById(R.id.bottomSheetContainer)
-        )
-        bottomSheetDialog.apply {
-            setContentView(view)
-            setBottomSheetCommonProperty()
-            view.run {
-                val bottomSheetHeadingTextView: TextView = findViewById(R.id.bottomSheetHeadingTextView)
-                val billAmountTextView: TextView = findViewById(R.id.billAmountTextView)
-                val orderIdTextView: TextView = findViewById(R.id.orderIdTextView)
-                val textViewTop: TextView = findViewById(R.id.textViewTop)
-                val txnId: TextView = findViewById(R.id.txnId)
-                val textViewBottom: TextView = findViewById(R.id.textViewBottom)
-                val imageViewTop: ImageView = findViewById(R.id.imageViewTop)
-                val imageViewBottom: ImageView = findViewById(R.id.imageViewBottom)
-                orderDetailMainResponse?.let {
-                    mOrderDetailStaticData?.run {
-                        bottomSheetHeadingTextView.text = text_details
-                        val billAmountStr = "$text_bill_amount: ${it.orders?.amount}"
-                        billAmountTextView.text = billAmountStr
-                        val orderIdStr = "$text_order_id: ${it.orders?.orderId}"
-                        orderIdTextView.text = orderIdStr
-                        val firstItem = txnItemList[0]
-                        val lastItem = txnItemList[txnItemList.size -1]
-                        firstItem?.run {
-                            setOrderDetailBottomSheetItem(imageViewTop, textViewTop, this)
-                            val txnIdStr = "Txn ID : ${firstItem.transactionId}"
-                            txnId.text = txnIdStr
+        mActivity?.run {
+            val bottomSheetDialog = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
+            val view = LayoutInflater.from(this).inflate(
+                R.layout.bottom_sheet_order_detail,
+                findViewById(R.id.bottomSheetContainer)
+            )
+            bottomSheetDialog.apply {
+                setContentView(view)
+                setBottomSheetCommonProperty()
+                view.run {
+                    val bottomSheetHeadingTextView: TextView = findViewById(R.id.bottomSheetHeadingTextView)
+                    val billAmountTextView: TextView = findViewById(R.id.billAmountTextView)
+                    val orderIdTextView: TextView = findViewById(R.id.orderIdTextView)
+                    val textViewTop: TextView = findViewById(R.id.textViewTop)
+                    val txnId: TextView = findViewById(R.id.txnId)
+                    val textViewBottom: TextView = findViewById(R.id.textViewBottom)
+                    val imageViewTop: ImageView = findViewById(R.id.imageViewTop)
+                    val imageViewBottom: ImageView = findViewById(R.id.imageViewBottom)
+                    orderDetailMainResponse?.let {
+                        mOrderDetailStaticData?.run {
+                            bottomSheetHeadingTextView.text = text_details
+                            val billAmountStr = "$text_bill_amount: ${it.orders?.amount}"
+                            billAmountTextView.text = billAmountStr
+                            val orderIdStr = "$text_order_id: ${it.orders?.orderId}"
+                            orderIdTextView.text = orderIdStr
+                            val firstItem = txnItemList[0]
+                            val lastItem = txnItemList[txnItemList.size -1]
+                            firstItem?.run {
+                                setOrderDetailBottomSheetItem(imageViewTop, textViewTop, this)
+                                val txnIdStr = "Txn ID : ${firstItem.transactionId}"
+                                txnId.text = txnIdStr
+                            }
+                            lastItem?.run { setOrderDetailBottomSheetItem(imageViewBottom, textViewBottom, this) }
                         }
-                        lastItem?.run { setOrderDetailBottomSheetItem(imageViewBottom, textViewBottom, this) }
                     }
                 }
-            }
-        }.show()
+            }.show()
+        }
     }
 
     private fun setOrderDetailBottomSheetItem(imageView:ImageView, textView: TextView, item: OrderDetailTransactionItemResponse) {
-        textView.setTextColor(ContextCompat.getColor(mActivity, R.color.black))
-        textView.text = item.settlementStatus
-        when(item.transactionStatus?.toLowerCase(Locale.getDefault())) {
-            "" -> imageView.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.ic_order_detail_green_tick))
-            Constants.ORDER_STATUS_PAYOUT_SUCCESS -> imageView.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.ic_order_detail_green_tick))
-            Constants.ORDER_STATUS_IN_PROGRESS -> imageView.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.ic_order_detail_yellow_icon))
-            Constants.ORDER_STATUS_REFUND_SUCCESS -> imageView.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.ic_order_detail_black_tick))
-            Constants.ORDER_STATUS_REJECTED -> imageView.setImageDrawable(ContextCompat.getDrawable(mActivity, R.drawable.ic_close_red))
+        mActivity?.run {
+            textView.setTextColor(ContextCompat.getColor(this, R.color.black))
+            textView.text = item.settlementStatus
+            when(item.transactionStatus?.toLowerCase(Locale.getDefault())) {
+                "" -> imageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_order_detail_green_tick))
+                Constants.ORDER_STATUS_PAYOUT_SUCCESS -> imageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_order_detail_green_tick))
+                Constants.ORDER_STATUS_IN_PROGRESS -> imageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_order_detail_yellow_icon))
+                Constants.ORDER_STATUS_REFUND_SUCCESS -> imageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_order_detail_black_tick))
+                Constants.ORDER_STATUS_REJECTED -> imageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_close_red))
+            }
         }
-
     }
 
     private fun showOrderRejectBottomSheet() {
-        val bottomSheetDialog = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
-        val view = LayoutInflater.from(mActivity).inflate(
-            R.layout.bottom_sheet_order_reject,
-            mActivity.findViewById(R.id.bottomSheetContainer)
-        )
-        bottomSheetDialog.apply {
-            setContentView(view)
-            setBottomSheetCommonProperty()
-            view.run {
-                val rejectOrderRadioGroup: RadioGroup = findViewById(R.id.rejectOrderRadioGroup)
-                val rejectOrderTextView: TextView = findViewById(R.id.startNowTextView)
-                val orderRejectHeadingTextView: TextView = findViewById(R.id.orderRejectHeadingTextView)
-                val itemNotAvailableRadioButton: RadioButton = findViewById(R.id.itemNotAvailableRadioButton)
-                val deliveryGuyNotAvailableRadioButton: RadioButton = findViewById(R.id.deliveryGuyNotAvailableRadioButton)
-                val customerRequestedCancellationRadioButton: RadioButton = findViewById(R.id.customerRequestedCancellationRadioButton)
-                mOrderDetailStaticData?.run {
-                    orderRejectHeadingTextView.text = bottom_sheet_reject_order_heading
-                    itemNotAvailableRadioButton.text = text_items_are_not_available
-                    deliveryGuyNotAvailableRadioButton.text = text_delivery_guy_not_available
-                    customerRequestedCancellationRadioButton.text = text_customer_request_cancellation
-                    rejectOrderTextView.text = text_reject_order
-                }
-                var reason = ""
-                rejectOrderRadioGroup.setOnCheckedChangeListener { _, id ->
-                    when(id) {
-                        itemNotAvailableRadioButton.id -> reason = itemNotAvailableRadioButton.text.toString()
-                        deliveryGuyNotAvailableRadioButton.id -> reason = deliveryGuyNotAvailableRadioButton.text.toString()
+        mActivity?.run {
+            val bottomSheetDialog = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
+            val view = LayoutInflater.from(this).inflate(
+                R.layout.bottom_sheet_order_reject,
+                findViewById(R.id.bottomSheetContainer)
+            )
+            bottomSheetDialog.apply {
+                setContentView(view)
+                setBottomSheetCommonProperty()
+                view.run {
+                    val rejectOrderRadioGroup: RadioGroup = findViewById(R.id.rejectOrderRadioGroup)
+                    val rejectOrderTextView: TextView = findViewById(R.id.startNowTextView)
+                    val orderRejectHeadingTextView: TextView = findViewById(R.id.orderRejectHeadingTextView)
+                    val itemNotAvailableRadioButton: RadioButton = findViewById(R.id.itemNotAvailableRadioButton)
+                    val deliveryGuyNotAvailableRadioButton: RadioButton = findViewById(R.id.deliveryGuyNotAvailableRadioButton)
+                    val customerRequestedCancellationRadioButton: RadioButton = findViewById(R.id.customerRequestedCancellationRadioButton)
+                    mOrderDetailStaticData?.run {
+                        orderRejectHeadingTextView.text = bottom_sheet_reject_order_heading
+                        itemNotAvailableRadioButton.text = text_items_are_not_available
+                        deliveryGuyNotAvailableRadioButton.text = text_delivery_guy_not_available
+                        customerRequestedCancellationRadioButton.text = text_customer_request_cancellation
+                        rejectOrderTextView.text = text_reject_order
                     }
-                }
-                itemNotAvailableRadioButton.isSelected = true
-                itemNotAvailableRadioButton.isChecked = true
-                rejectOrderTextView.setOnClickListener {
-                    if (!isInternetConnectionAvailable(mActivity)) {
-                        showNoInternetConnectionDialog()
-                        return@setOnClickListener
+                    var reason = ""
+                    rejectOrderRadioGroup.setOnCheckedChangeListener { _, id ->
+                        when(id) {
+                            itemNotAvailableRadioButton.id -> reason = itemNotAvailableRadioButton.text.toString()
+                            deliveryGuyNotAvailableRadioButton.id -> reason = deliveryGuyNotAvailableRadioButton.text.toString()
+                        }
                     }
-                    bottomSheetDialog.dismiss()
-                    val request = UpdateOrderStatusRequest(orderDetailMainResponse?.orders?.orderId?.toLong(), Constants.StatusRejected.toLong(), reason)
-                    showProgressDialog(mActivity)
-                    AppEventsManager.pushAppEvents(
-                        eventName = AFInAppEventType.EVENT_ORDER_REJECTED,
-                        isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                        data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                        AFInAppEventParameterName.ORDER_ID to "${orderDetailMainResponse?.orders?.orderId}",
-                            AFInAppEventParameterName.PHONE to PrefsManager.getStringDataFromSharedPref(Constants.USER_MOBILE_NUMBER),
-                            AFInAppEventParameterName.REASON to reason,
-                            AFInAppEventParameterName.ORDER_TYPE to "${orderDetailMainResponse?.orders?.orderType}",
-                            AFInAppEventParameterName.NUMBER_OF_ITEM to "1"
+                    itemNotAvailableRadioButton.isSelected = true
+                    itemNotAvailableRadioButton.isChecked = true
+                    rejectOrderTextView.setOnClickListener {
+                        if (!isInternetConnectionAvailable(mActivity)) {
+                            showNoInternetConnectionDialog()
+                            return@setOnClickListener
+                        }
+                        bottomSheetDialog.dismiss()
+                        val request = UpdateOrderStatusRequest(orderDetailMainResponse?.orders?.orderId?.toLong(), Constants.StatusRejected.toLong(), reason)
+                        showProgressDialog(mActivity)
+                        AppEventsManager.pushAppEvents(
+                            eventName = AFInAppEventType.EVENT_ORDER_REJECTED,
+                            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                            data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                                AFInAppEventParameterName.ORDER_ID to "${orderDetailMainResponse?.orders?.orderId}",
+                                AFInAppEventParameterName.PHONE to PrefsManager.getStringDataFromSharedPref(Constants.USER_MOBILE_NUMBER),
+                                AFInAppEventParameterName.REASON to reason,
+                                AFInAppEventParameterName.ORDER_TYPE to "${orderDetailMainResponse?.orders?.orderType}",
+                                AFInAppEventParameterName.NUMBER_OF_ITEM to "1"
+                            )
                         )
-                    )
-                    mOrderDetailService?.updateOrderStatus(request)
+                        mOrderDetailService?.updateOrderStatus(request)
+                    }
                 }
-            }
-        }.show()
+            }.show()
+        }
     }
 
     override fun onMenuItemClick(menu: MenuItem?): Boolean {
@@ -865,9 +878,11 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
     }
 
     private fun askStoragePermission(): Boolean {
-        if (ActivityCompat.checkSelfPermission(mActivity, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mActivity, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(mActivity, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE), Constants.EXTERNAL_STORAGE_REQUEST_CODE)
-            return true
+        mActivity?.run {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE), Constants.EXTERNAL_STORAGE_REQUEST_CODE)
+                return true
+            }
         }
         return false
     }

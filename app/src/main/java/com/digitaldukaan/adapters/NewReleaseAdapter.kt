@@ -18,7 +18,7 @@ import com.squareup.picasso.Picasso
 class NewReleaseAdapter(
     private val newReleaseList: ArrayList<TrendingListResponse>?,
     private val listener: IStoreSettingsItemClicked,
-    private val activity: MainActivity
+    private val activity: MainActivity?
 ) : RecyclerView.Adapter<NewReleaseAdapter.AppSettingsViewHolder>() {
 
     inner class AppSettingsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -54,10 +54,10 @@ class NewReleaseAdapter(
             }
             when (responseItem?.mType) {
                 Constants.NEW_RELEASE_TYPE_CUSTOM_DOMAIN -> {
-                    itemLayout.background = ContextCompat.getDrawable(activity, R.drawable.curve_premium_selector)
+                    activity?.let { itemLayout.background = ContextCompat.getDrawable(it, R.drawable.curve_premium_selector) }
                     newTextView.visibility = View.VISIBLE
                 }
-                Constants.NEW_RELEASE_TYPE_PREMIUM -> itemLayout.background = ContextCompat.getDrawable(activity, R.drawable.curve_premium_selector)
+                Constants.NEW_RELEASE_TYPE_PREMIUM -> activity?.let { itemLayout.background = ContextCompat.getDrawable(it, R.drawable.curve_premium_selector) }
                 Constants.NEW_RELEASE_TYPE_NEW -> newTextView.visibility = View.VISIBLE
                 Constants.NEW_RELEASE_TYPE_TRENDING -> {
                     newTextView.visibility = View.GONE
@@ -69,6 +69,7 @@ class NewReleaseAdapter(
                         0
                     )
                 }
+                else -> {}
             }
         }
     }

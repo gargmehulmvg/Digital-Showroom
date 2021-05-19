@@ -7,7 +7,7 @@ data class StoreResponse (
     @SerializedName("spotlight_flag") var spotlightFlag: Int,
     @SerializedName("score") var score: Int,
     @SerializedName("store_info") var storeInfo: UserStoreInfoResponse,
-    @SerializedName("address") var storeAddress: UserAddressResponse,
+    @SerializedName("address") var storeAddress: UserAddressResponse?,
     @SerializedName("owner") var storeOwner: StoreOwnerResponse?,
     @SerializedName("bank_details") var bankDetails: BankDetailsResponse?,
     @SerializedName("store_businesses") var storeBusiness: ArrayList<StoreBusinessResponse>?,

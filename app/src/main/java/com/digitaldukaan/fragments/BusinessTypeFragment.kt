@@ -172,7 +172,7 @@ class BusinessTypeFragment : BaseFragment(), IBusinessTypeServiceInterface {
                         switchToInCompleteProfileFragment(mProfileInfoResponse)
                     }
                 } else {
-                    mActivity.onBackPressed()
+                    mActivity?.onBackPressed()
                 }
             } else showShortSnackBar(response.mMessage, true, R.drawable.ic_close_red)
         }

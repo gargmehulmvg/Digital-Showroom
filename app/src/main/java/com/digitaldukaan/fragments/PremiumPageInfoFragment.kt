@@ -66,7 +66,7 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
 
     override fun onNativeBackPressed() {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            mActivity.onBackPressed()
+            mActivity?.onBackPressed()
         }
     }
 
@@ -85,7 +85,6 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
                 hideBottomNavigationView(premiumPageInfoResponse?.premium?.mIsActive != true)
                 val url = BuildConfig.WEB_VIEW_URL + premiumPageInfoResponse?.premium?.mUrl + "?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"
                 Log.d(PremiumPageInfoFragment::class.simpleName, "onViewCreated: $url")
-                loadUrl(url)
                 webViewClient = object : WebViewClient() {
                     override fun onPageFinished(view: WebView, url: String) {
                         Log.d(TAG, "onPageFinished: called")
@@ -96,7 +95,7 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
                         return when {
                             url.startsWith("tel:") -> {
                                 try {
-                                    activity?.startActivity(Intent(Intent.ACTION_DIAL, Uri.parse(url)))
+                                    view.context?.startActivity(Intent(Intent.ACTION_DIAL, Uri.parse(url)))
                                 } catch (e: Exception) {
                                     Log.e(TAG, "shouldOverrideUrlLoading :: tel :: ${e.message}", e)
                                 }
@@ -104,7 +103,7 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
                             }
                             url.contains("mailto:") -> {
                                 try {
-                                    view.context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                                    view.context?.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
                                 } catch (e: Exception) {
                                     Log.e(TAG, "shouldOverrideUrlLoading :: mailto :: ${e.message}", e)
                                 }
@@ -112,7 +111,7 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
                             }
                             url.contains("whatsapp:") -> {
                                 try {
-                                    view.context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                                    view.context?.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
                                 } catch (e: Exception) {
                                     Log.e(TAG, "shouldOverrideUrlLoading :: whatsapp :: ${e.message}", e)
                                 }
@@ -125,6 +124,7 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
                         }
                     }
                 }
+                loadUrl(url)
             }
         }
     }
@@ -133,12 +133,8 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
         Log.d(TAG, "sendData: $data")
         val jsonData = JSONObject(data)
         when {
-            jsonData.optBoolean("redirectNative") -> {
-                launchFragment(EditPremiumFragment.newInstance(mStaticText, premiumPageInfoResponse), true)
-            }
-            jsonData.optBoolean("redirectBrowser") -> {
-                openUrlInBrowser(jsonData.optString("data"))
-            }
+            jsonData.optBoolean("redirectNative") -> launchFragment(EditPremiumFragment.newInstance(mStaticText, premiumPageInfoResponse), true)
+            jsonData.optBoolean("redirectBrowser") -> openUrlInBrowser(jsonData.optString("data"))
             jsonData.optBoolean("trackEventData") -> {
                 val eventName = jsonData.optString("eventName")
                 val additionalData = jsonData.optString("additionalData")

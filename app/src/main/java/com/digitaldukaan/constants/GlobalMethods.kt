@@ -43,8 +43,8 @@ fun getBitmapFromURL(src: String?): Bitmap? {
         null
     }
 }
-fun getBitmapFromUri(uri: Uri?, context: Context): Bitmap? {
-    if (uri == null) return null
+fun getBitmapFromUri(uri: Uri?, context: Context?): Bitmap? {
+    if (uri == null || context == null) return null
     return try {
         val imageStream = context.contentResolver.openInputStream(uri)
         return BitmapFactory.decodeStream(imageStream);
@@ -53,7 +53,8 @@ fun getBitmapFromUri(uri: Uri?, context: Context): Bitmap? {
     }
 }
 
-fun isLocationEnabledInSettings(context: Context): Boolean {
+fun isLocationEnabledInSettings(context: Context?): Boolean {
+    if (context == null) return false
     var locationMode = 0
     val locationProviders: String
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -153,7 +154,8 @@ fun getBase64FromImageURL(url: String): String? {
     return null
 }
 
-fun getImageFileFromBitmap(bitmap: Bitmap, context: Context): File? {
+fun getImageFileFromBitmap(bitmap: Bitmap, context: Context?): File? {
+    if (context == null) return null
     return try {
         val bitmapFile = File(context.cacheDir, "tempFile_${System.currentTimeMillis()}")
         bitmapFile.createNewFile()
@@ -196,10 +198,10 @@ fun getBitmapFromBase64V2(input: String?): Bitmap? {
     return BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.size)
 }
 
-fun Bitmap.getImageUri(inContext: Context): Uri? {
+fun Bitmap.getImageUri(inContext: Context?): Uri? {
     val bytes = ByteArrayOutputStream()
     this.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
-    val path = MediaStore.Images.Media.insertImage(inContext.contentResolver, this, "IMG_${Calendar.getInstance().time}", null)
+    val path = MediaStore.Images.Media.insertImage(inContext?.contentResolver, this, "IMG_${Calendar.getInstance().time}", null)
     return if (path == null || path.isEmpty()) null else Uri.parse(path)
 }
 
@@ -245,14 +247,14 @@ fun getStringDateTimeFromOrderDate(date: Date?): String {
     return dateFormat.format(date)
 }
 
-fun getContactsFromStorage2(ctx: Context) {
+fun getContactsFromStorage2(ctx: Context?) {
     val tag = "CONTACTS"
     try {
         if (StaticInstances.sUserContactList.isNotEmpty()) return
         Log.d(tag, "getContactsFromStorage: started")
         val list: ArrayList<ContactModel> = ArrayList()
         val uniqueMobilePhones = ArrayList<String>()
-        val phoneCursor: Cursor? = ctx.contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null)
+        val phoneCursor: Cursor? = ctx?.contentResolver?.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, null, null, null)
         if (phoneCursor != null && phoneCursor.count > 0) {
             val numberIndex = phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)
             val nameIndex = phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)

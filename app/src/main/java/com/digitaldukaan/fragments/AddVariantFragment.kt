@@ -84,17 +84,17 @@ class AddVariantFragment: BaseFragment(), IChipItemClickListener {
         ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, true)
         }
-        recentVariantHeading = mContentView.findViewById(R.id.recentVariantHeading)
-        activeVariantHeading = mContentView.findViewById(R.id.activeVariantHeading)
-        activeVariantRecyclerView = mContentView.findViewById(R.id.activeVariantRecyclerView)
-        masterVariantRecyclerView = mContentView.findViewById(R.id.masterVariantRecyclerView)
-        recentVariantRecyclerView = mContentView.findViewById(R.id.recentVariantRecyclerView)
-        variantNameEditText = mContentView.findViewById(R.id.variantNameEditText)
-        appSubTitleTextView = mContentView.findViewById(R.id.appSubTitleTextView)
-        val suggestionHeadingTextView: TextView? = mContentView.findViewById(R.id.suggestionHeadingTextView)
-        val saveTextView: TextView? = mContentView.findViewById(R.id.saveTextView)
-        val appTitleTextView: TextView? = mContentView.findViewById(R.id.appTitleTextView)
-        val addTextView: TextView? = mContentView.findViewById(R.id.addTextView)
+        recentVariantHeading = mContentView?.findViewById(R.id.recentVariantHeading)
+        activeVariantHeading = mContentView?.findViewById(R.id.activeVariantHeading)
+        activeVariantRecyclerView = mContentView?.findViewById(R.id.activeVariantRecyclerView)
+        masterVariantRecyclerView = mContentView?.findViewById(R.id.masterVariantRecyclerView)
+        recentVariantRecyclerView = mContentView?.findViewById(R.id.recentVariantRecyclerView)
+        variantNameEditText = mContentView?.findViewById(R.id.variantNameEditText)
+        appSubTitleTextView = mContentView?.findViewById(R.id.appSubTitleTextView)
+        val suggestionHeadingTextView: TextView? = mContentView?.findViewById(R.id.suggestionHeadingTextView)
+        val saveTextView: TextView? = mContentView?.findViewById(R.id.saveTextView)
+        val appTitleTextView: TextView? = mContentView?.findViewById(R.id.appTitleTextView)
+        val addTextView: TextView? = mContentView?.findViewById(R.id.addTextView)
         if (isEmpty(mProductName)) {
             appSubTitleTextView?.visibility = View.GONE
         } else appSubTitleTextView?.text = mProductName
@@ -178,38 +178,40 @@ class AddVariantFragment: BaseFragment(), IChipItemClickListener {
     }
 
     private fun showDeleteVariantConfirmationDialog(position: Int) {
-        val dialog = Dialog(mActivity)
-        dialog.apply {
-            requestWindowFeature(Window.FEATURE_NO_TITLE)
-            setCancelable(true)
-            setContentView(R.layout.dialog_delete_variant_confirmation)
-            val deleteVariantMessageTextView: TextView = dialog.findViewById(R.id.deleteVariantMessageTextView)
-            val deleteVariantTextView: TextView = dialog.findViewById(R.id.deleteVariantTextView)
-            val deleteVariantCancelTextView: TextView = dialog.findViewById(R.id.deleteVariantCancelTextView)
-            deleteVariantMessageTextView.text = mStaticData?.dialog_delete_variant_message
-            deleteVariantTextView.text = mStaticData?.text_delete
-            deleteVariantCancelTextView.text = mStaticData?.text_cancel
-            deleteVariantTextView.setOnClickListener {
-                dialog.dismiss()
-                val deletedVariant = mVariantsList?.get(position)
-                mAddProductResponse?.deletedVariants?.put(deletedVariant?.variantName, deletedVariant)
-                mActiveVariantAdapter?.deleteItemFromActiveVariantList(position)
-                refreshAllVariantsList()
-                mRecentVariantsAdapter?.notifyDataSetChanged()
-                mMasterVariantsAdapter?.notifyDataSetChanged()
-                AppEventsManager.pushAppEvents(
-                    eventName = AFInAppEventType.EVENT_DELETE_VARIANT,
-                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
-                )
-            }
-            deleteVariantCancelTextView.setOnClickListener { dialog.dismiss() }
-        }.show()
+        mActivity?.let {
+            val dialog = Dialog(it)
+            dialog.apply {
+                requestWindowFeature(Window.FEATURE_NO_TITLE)
+                setCancelable(true)
+                setContentView(R.layout.dialog_delete_variant_confirmation)
+                val deleteVariantMessageTextView: TextView = dialog.findViewById(R.id.deleteVariantMessageTextView)
+                val deleteVariantTextView: TextView = dialog.findViewById(R.id.deleteVariantTextView)
+                val deleteVariantCancelTextView: TextView = dialog.findViewById(R.id.deleteVariantCancelTextView)
+                deleteVariantMessageTextView.text = mStaticData?.dialog_delete_variant_message
+                deleteVariantTextView.text = mStaticData?.text_delete
+                deleteVariantCancelTextView.text = mStaticData?.text_cancel
+                deleteVariantTextView.setOnClickListener {
+                    dialog.dismiss()
+                    val deletedVariant = mVariantsList?.get(position)
+                    mAddProductResponse?.deletedVariants?.put(deletedVariant?.variantName, deletedVariant)
+                    mActiveVariantAdapter?.deleteItemFromActiveVariantList(position)
+                    refreshAllVariantsList()
+                    mRecentVariantsAdapter?.notifyDataSetChanged()
+                    mMasterVariantsAdapter?.notifyDataSetChanged()
+                    AppEventsManager.pushAppEvents(
+                        eventName = AFInAppEventType.EVENT_DELETE_VARIANT,
+                        isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                        data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
+                    )
+                }
+                deleteVariantCancelTextView.setOnClickListener { dialog.dismiss() }
+            }.show()
+        }
     }
 
     override fun onClick(view: View?) {
         when (view?.id) {
-            backButtonToolbar?.id -> mActivity.onBackPressed()
+            backButtonToolbar?.id -> mActivity?.onBackPressed()
             addTextView?.id -> addVariantToActiveVariantList()
             saveTextView?.id -> saveVariantList()
         }
@@ -226,7 +228,7 @@ class AddVariantFragment: BaseFragment(), IChipItemClickListener {
         )
         mAddProductResponse?.storeItem?.variantsList = mVariantsList
         mAddProductResponse?.isVariantSaved = true
-        mActivity.onBackPressed()
+        mActivity?.onBackPressed()
     }
 
     private fun addVariantToActiveVariantList() {
@@ -269,42 +271,44 @@ class AddVariantFragment: BaseFragment(), IChipItemClickListener {
     }
 
     private fun showEditVariantNameBottomSheet(variant: VariantItemResponse?, position: Int) {
-        val bottomSheetDialog = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
-        val view = LayoutInflater.from(mActivity).inflate(
-            R.layout.bottom_sheet_edit_variant_name,
-            mActivity.findViewById(R.id.bottomSheetContainer)
-        )
-        bottomSheetDialog.apply {
-            setContentView(view)
-            setBottomSheetCommonProperty()
-            view.run {
-                val editVariantHeading: TextView = findViewById(R.id.editVariantHeading)
-                val variantNameInputLayout: TextInputLayout = findViewById(R.id.variantNameInputLayout)
-                val saveTextView: TextView = findViewById(R.id.saveTextView)
-                val variantNameEditText: EditText = findViewById(R.id.variantNameEditText)
-                editVariantHeading.text = mStaticData?.heading_edit_variant
-                variantNameInputLayout.hint = mStaticData?.hint_variant_name
-                saveTextView.text = mStaticData?.text_save
-                variantNameEditText.setText(variant?.variantName)
-                saveTextView.setOnClickListener {
-                    val variantName = variantNameEditText.text.toString().trim()
-                    if (isVariantNameAlreadyExist(variantName, variantNameEditText)) return@setOnClickListener
-                    mVariantsList?.get(position)?.variantName = variantName
-                    mActiveVariantAdapter?.notifyDataSetChanged()
-                    refreshAllVariantsList()
-                    mRecentVariantsAdapter?.notifyDataSetChanged()
-                    mMasterVariantsAdapter?.notifyDataSetChanged()
-                    bottomSheetDialog.dismiss()
-                    AppEventsManager.pushAppEvents(
-                        eventName = AFInAppEventType.EVENT_EDIT_VARIANT,
-                        isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                        data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
-                    )
+        mActivity?.let {
+            val bottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
+            val view = LayoutInflater.from(mActivity).inflate(
+                R.layout.bottom_sheet_edit_variant_name,
+                it.findViewById(R.id.bottomSheetContainer)
+            )
+            bottomSheetDialog.apply {
+                setContentView(view)
+                setBottomSheetCommonProperty()
+                view.run {
+                    val editVariantHeading: TextView = findViewById(R.id.editVariantHeading)
+                    val variantNameInputLayout: TextInputLayout = findViewById(R.id.variantNameInputLayout)
+                    val saveTextView: TextView = findViewById(R.id.saveTextView)
+                    val variantNameEditText: EditText = findViewById(R.id.variantNameEditText)
+                    editVariantHeading.text = mStaticData?.heading_edit_variant
+                    variantNameInputLayout.hint = mStaticData?.hint_variant_name
+                    saveTextView.text = mStaticData?.text_save
+                    variantNameEditText.setText(variant?.variantName)
+                    saveTextView.setOnClickListener {
+                        val variantName = variantNameEditText.text.toString().trim()
+                        if (isVariantNameAlreadyExist(variantName, variantNameEditText)) return@setOnClickListener
+                        mVariantsList?.get(position)?.variantName = variantName
+                        mActiveVariantAdapter?.notifyDataSetChanged()
+                        refreshAllVariantsList()
+                        mRecentVariantsAdapter?.notifyDataSetChanged()
+                        mMasterVariantsAdapter?.notifyDataSetChanged()
+                        bottomSheetDialog.dismiss()
+                        AppEventsManager.pushAppEvents(
+                            eventName = AFInAppEventType.EVENT_EDIT_VARIANT,
+                            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                            data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
+                        )
+                    }
+                    variantNameEditText.requestFocus()
+                    variantNameEditText.showKeyboard()
                 }
-                variantNameEditText.requestFocus()
-                variantNameEditText.showKeyboard()
-            }
-        }.show()
+            }.show()
+        }
     }
 
     override fun onChipItemClickListener(position: Int) {

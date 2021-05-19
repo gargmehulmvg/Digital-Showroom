@@ -53,7 +53,7 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
                 hideToolBar(mActivity, false)
                 setHeaderTitle(mHeaderText)
                 setSideIconVisibility(true)
-                setSideIcon(ContextCompat.getDrawable(mActivity, R.drawable.ic_options_menu), this@CommonWebViewFragment)
+                mActivity?.let { setSideIcon(ContextCompat.getDrawable(it, R.drawable.ic_options_menu), this@CommonWebViewFragment) }
             }
         } else {
             ToolBarManager.getInstance().apply { hideToolBar(mActivity, true) }
@@ -92,7 +92,7 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
 
     override fun onNativeBackPressed() {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            mActivity.onBackPressed()
+            mActivity?.onBackPressed()
         }
     }
 
@@ -223,7 +223,7 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
     }
 
     override fun onToolbarSideIconClicked() {
-        val sideView:View = mActivity.findViewById(R.id.sideIconToolbar)
+        val sideView:View? = mActivity?.findViewById(R.id.sideIconToolbar)
         val optionsMenu: PopupMenu? = PopupMenu(mActivity, sideView)
         optionsMenu?.apply {
             inflate(R.menu.menu_product_fragment)

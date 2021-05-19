@@ -52,27 +52,33 @@ class OnBoardScreenDukaanLocationFragment : BaseFragment(), IStoreAddressService
     }
 
     private fun getLastLocation() {
-        if (ActivityCompat.checkSelfPermission(mActivity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-            ActivityCompat.checkSelfPermission(mActivity, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions()
-            return
+        mActivity?.let {
+            if (ActivityCompat.checkSelfPermission(it, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(it, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                requestPermissions()
+                return
+            }
         }
         val lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
         lastKnownLocation?.run {
             Log.d(TAG, "getLocation() Latitude: $latitude , Longitude: $longitude")
         }
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 1f, this)
-        fusedLocationClient?.lastLocation?.addOnCompleteListener(mActivity) { task ->
-            if (task.isSuccessful && task.result != null) {
-                lastLocation = task.result
-                mCurrentLatitude = lastLocation?.latitude ?: 0.0
-                mCurrentLongitude = lastLocation?.longitude ?: 0.0
+        mActivity?.let {
+            fusedLocationClient?.lastLocation?.addOnCompleteListener(it) { task ->
+                if (task.isSuccessful && task.result != null) {
+                    lastLocation = task.result
+                    mCurrentLatitude = lastLocation?.latitude ?: 0.0
+                    mCurrentLongitude = lastLocation?.longitude ?: 0.0
+                }
             }
         }
     }
 
     private fun requestPermissions() {
-        ActivityCompat.requestPermissions(mActivity, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION), Constants.LOCATION_REQUEST_CODE)
+        mActivity?.let {
+            ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION), Constants.LOCATION_REQUEST_CODE)
+        }
     }
 
     override fun onRequestPermissionsResult(
@@ -100,7 +106,7 @@ class OnBoardScreenDukaanLocationFragment : BaseFragment(), IStoreAddressService
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        locationManager = mActivity.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        locationManager = mActivity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
     }
 
@@ -121,16 +127,19 @@ class OnBoardScreenDukaanLocationFragment : BaseFragment(), IStoreAddressService
     }
 
     private fun checkLocationPermissionWithDialog(): Boolean {
-        return if (ContextCompat.checkSelfPermission(mActivity, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(mActivity, Manifest.permission.ACCESS_FINE_LOCATION)) {
-                AlertDialog.Builder(mActivity).apply {
-                    setTitle("Location Permission")
-                    setMessage("Please allow Location permission to continue")
-                    setPositiveButton(R.string.ok) { _, _ -> ActivityCompat.requestPermissions(mActivity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), Constants.LOCATION_REQUEST_CODE) }
-                }.create().show()
-            } else ActivityCompat.requestPermissions(mActivity, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), Constants.LOCATION_REQUEST_CODE)
-            true
-        } else false
+        mActivity?.let {
+            return if (ContextCompat.checkSelfPermission(it, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(it, Manifest.permission.ACCESS_FINE_LOCATION)) {
+                    AlertDialog.Builder(mActivity).apply {
+                        setTitle("Location Permission")
+                        setMessage("Please allow Location permission to continue")
+                        setPositiveButton(R.string.ok) { _, _ -> ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), Constants.LOCATION_REQUEST_CODE) }
+                    }.create().show()
+                } else ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), Constants.LOCATION_REQUEST_CODE)
+                true
+            } else false
+        }
+        return false
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -177,9 +186,7 @@ class OnBoardScreenDukaanLocationFragment : BaseFragment(), IStoreAddressService
 
     override fun onClick(view: View?) {
         when (view?.id) {
-            backImageView.id -> {
-                mActivity.onBackPressed()
-            }
+            backImageView.id -> mActivity?.onBackPressed()
             nextTextView.id -> {
                 val storeLocation = dukaanLocationEditText?.text?.trim().toString()
                 if (storeLocation.isEmpty()) {

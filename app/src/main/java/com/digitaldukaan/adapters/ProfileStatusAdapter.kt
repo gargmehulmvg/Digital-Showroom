@@ -9,7 +9,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
 
-class ProfileStatusAdapter(private val mTotalSteps: Int?, private val mCompletedSteps: Int?, private val mContext: Context) :
+class ProfileStatusAdapter(private val mTotalSteps: Int?, private val mCompletedSteps: Int?, private val mContext: Context?) :
     RecyclerView.Adapter<ProfileStatusAdapter.ProfileStatusViewHolder>() {
 
     inner class ProfileStatusViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -28,11 +28,13 @@ class ProfileStatusAdapter(private val mTotalSteps: Int?, private val mCompleted
         holder: ProfileStatusAdapter.ProfileStatusViewHolder,
         position: Int
     ) {
-        mCompletedSteps?.let {
-            if (mTotalSteps?.minus(mCompletedSteps) == 1) {
-                holder.mProfileStatusItemView.background = ContextCompat.getDrawable(mContext, R.drawable.profile_status_selector_green)
-            } else holder.mProfileStatusItemView.background = ContextCompat.getDrawable(mContext, R.drawable.profile_status_selector_yellow)
-            holder.mProfileStatusItemView.isEnabled = ((position + 1) <= mCompletedSteps)
+        mCompletedSteps?.run {
+            mContext?.let {
+                if (mTotalSteps?.minus(this) == 1) {
+                    holder.mProfileStatusItemView.background = ContextCompat.getDrawable(it, R.drawable.profile_status_selector_green)
+                } else holder.mProfileStatusItemView.background = ContextCompat.getDrawable(it, R.drawable.profile_status_selector_yellow)
+                holder.mProfileStatusItemView.isEnabled = ((position + 1) <= this)
+            }
         }
     }
 

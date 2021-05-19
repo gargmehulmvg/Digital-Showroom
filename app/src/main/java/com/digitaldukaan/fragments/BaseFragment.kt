@@ -27,6 +27,8 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.TranslateAnimation
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -38,6 +40,7 @@ import com.digitaldukaan.MyFcmMessageListenerService
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.ImagesSearchAdapter
 import com.digitaldukaan.constants.*
+import com.digitaldukaan.exceptions.UnAuthorizedAccessException
 import com.digitaldukaan.interfaces.ISearchImageItemClicked
 import com.digitaldukaan.models.response.*
 import com.digitaldukaan.network.RetrofitApi
@@ -60,11 +63,11 @@ import java.util.concurrent.TimeUnit
 
 open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
 
-    protected lateinit var mContentView: View
+    protected var mContentView: View? = null
     private var mProgressDialog: Dialog? = null
-    protected lateinit var mActivity: MainActivity
+    protected var mActivity: MainActivity? = null
     private var mImageAdapter = ImagesSearchAdapter()
-    private lateinit var mImagePickBottomSheet: BottomSheetDialog
+    private var mImagePickBottomSheet: BottomSheetDialog? = null
 
     companion object {
         private const val TAG = "BaseFragment"
@@ -110,10 +113,12 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
 
     open fun hideBottomNavigationView(isHidden: Boolean) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            mActivity.bottomNavigationView.visibility = if (isHidden) View.GONE else View.VISIBLE
-            mActivity.premiumImageView.visibility = if (isHidden) View.GONE else View.VISIBLE
-            mActivity.premiumTextView.visibility = if (isHidden) View.GONE else View.VISIBLE
-            mActivity.view7.visibility = if (isHidden) View.GONE else View.VISIBLE
+            mActivity?.run {
+                bottomNavigationView.visibility = if (isHidden) View.GONE else View.VISIBLE
+                premiumImageView.visibility = if (isHidden) View.GONE else View.VISIBLE
+                premiumTextView.visibility = if (isHidden) View.GONE else View.VISIBLE
+                view7.visibility = if (isHidden) View.GONE else View.VISIBLE
+            }
         }
     }
 
@@ -154,7 +159,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
 
     fun stopProgress() {
         try {
-            mActivity.runOnUiThread {
+            mActivity?.runOnUiThread {
                 if (mProgressDialog != null) {
                     mProgressDialog?.dismiss()
                     mProgressDialog = null
@@ -176,54 +181,66 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     }
 
     fun showToast(message: String? = "sample testing") {
-        mActivity.showToast(message)
+        mActivity?.showToast(message)
     }
 
     open fun exceptionHandlingForAPIResponse(e: Exception) {
         stopProgress()
         if (e is UnknownHostException) showToast(e.message)
+        if (e is UnAuthorizedAccessException) {
+            showToast(e.message)
+            logoutFromApplication()
+        }
         else showToast("Something went wrong")
     }
 
     protected fun showShortSnackBar(message: String? = "sample testing", showDrawable: Boolean = false, drawableID : Int = 0) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             message?.let {
-                try {
-                    Snackbar.make(mContentView, message, Snackbar.LENGTH_SHORT).apply {
-                        if (showDrawable) {
-                            val snackBarView = view
-                            val snackBarTextView: TextView = snackBarView.findViewById(com.google.android.material.R.id.snackbar_text)
-                            snackBarTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, drawableID, 0)
-                            snackBarTextView.compoundDrawablePadding = resources.getDimensionPixelOffset(R.dimen._5sdp)
-                        }
-                        setBackgroundTint(ContextCompat.getColor(mActivity, R.color.snack_bar_background))
-                        setTextColor(ContextCompat.getColor(mActivity, R.color.white))
-                    }.show()
-                } catch (e : Exception) {
-                    Log.e(TAG, "showShortSnackBar: ${e.message}", e)
-                    AppEventsManager.pushAppEvents(
-                        eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
-                        isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                        data = mapOf(
-                            AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                            "Exception Point" to "showShortSnackBar",
-                            "Exception Message" to e.message,
-                            "Exception Logs" to e.toString()
+                mContentView?.run {
+                    try {
+                        Snackbar.make(this, message, Snackbar.LENGTH_SHORT).apply {
+                            if (showDrawable) {
+                                val snackBarView = view
+                                val snackBarTextView: TextView = snackBarView.findViewById(com.google.android.material.R.id.snackbar_text)
+                                snackBarTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, drawableID, 0)
+                                snackBarTextView.compoundDrawablePadding = resources.getDimensionPixelOffset(R.dimen._5sdp)
+                            }
+                            mActivity?.let {
+                                setBackgroundTint(ContextCompat.getColor(it, R.color.snack_bar_background))
+                                setTextColor(ContextCompat.getColor(it, R.color.white))
+                            }
+                        }.show()
+                    } catch (e : Exception) {
+                        Log.e(TAG, "showShortSnackBar: ${e.message}", e)
+                        AppEventsManager.pushAppEvents(
+                            eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
+                            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                            data = mapOf(
+                                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                                "Exception Point" to "showShortSnackBar",
+                                "Exception Message" to e.message,
+                                "Exception Logs" to e.toString()
+                            )
                         )
-                    )
+                    }
                 }
             }
         }
     }
 
     fun EditText.showKeyboard() {
-        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.showSoftInput(this, InputMethodManager.SHOW_IMPLICIT)
+        mActivity?.let {
+            val imm = it.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.showSoftInput(this, InputMethodManager.SHOW_IMPLICIT)
+        }
     }
 
     fun EditText.hideKeyboard() {
-        val imm = context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(this.windowToken, 0)
+        mActivity?.let {
+            val imm = it.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.hideSoftInputFromWindow(this.windowToken, 0)
+        }
     }
 
     fun TextView.showStrikeOffText() {
@@ -231,8 +248,8 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     }
 
     open fun hideSoftKeyboard() {
-        val imm = mActivity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(mContentView.windowToken, 0)
+        val imm = mActivity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(mContentView?.windowToken, 0)
     }
 
     fun TextView.setHtmlData(string: String?) {
@@ -247,21 +264,23 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
 
     open fun launchFragment(fragment: Fragment?, addBackStack: Boolean) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            mActivity.launchFragment(fragment, addBackStack)
+            mActivity?.launchFragment(fragment, addBackStack)
         }
     }
 
     open fun launchFragment(fragment: Fragment?, addBackStack: Boolean, animationView: View) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            mActivity.launchFragmentWithAnimation(fragment, addBackStack, animationView)
+            mActivity?.launchFragmentWithAnimation(fragment, addBackStack, animationView)
         }
     }
 
     open fun clearFragmentBackStack() {
         try {
-            val fm = mActivity.supportFragmentManager
-            for (i in 0 until fm.backStackEntryCount) {
-                fm.popBackStack()
+            val fm = mActivity?.supportFragmentManager
+            fm?.run {
+                for (i in 0 until backStackEntryCount) {
+                    popBackStack()
+                }
             }
         } catch (e: Exception) {
             Log.e(TAG, "clearFragmentBackStack: ${e.message}", e)
@@ -279,7 +298,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     }
 
     open fun copyDataToClipboard(string:String?) {
-        val clipboard: ClipboardManager = mActivity.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clipboard: ClipboardManager = mActivity?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
         val clip: ClipData = ClipData.newPlainText(Constants.CLIPBOARD_LABEL, string)
         clipboard.setPrimaryClip(clip)
         showToast(getString(R.string.link_copied))
@@ -288,16 +307,18 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     open fun showNoInternetConnectionDialog() {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             try {
-                val builder: AlertDialog.Builder? = AlertDialog.Builder(mActivity)
-                builder?.apply {
-                    setTitle(getString(R.string.no_internet_connection))
-                    setMessage(getString(R.string.turn_on_internet_message))
-                    setCancelable(false)
-                    setNegativeButton(getString(R.string.close)) { dialog, _ ->
-                        onNoInternetButtonClick(true)
-                        dialog.dismiss()
-                    }
-                }?.create()?.show()
+                mActivity?.let {
+                    val builder: AlertDialog.Builder? = AlertDialog.Builder(it)
+                    builder?.apply {
+                        setTitle(getString(R.string.no_internet_connection))
+                        setMessage(getString(R.string.turn_on_internet_message))
+                        setCancelable(false)
+                        setNegativeButton(getString(R.string.close)) { dialog, _ ->
+                            onNoInternetButtonClick(true)
+                            dialog.dismiss()
+                        }
+                    }?.create()?.show()
+                }
             } catch (e: Exception) {
                 Log.e(TAG, "showNoInternetConnectionDialog: ${e.message}", e)
                 AppEventsManager.pushAppEvents(
@@ -314,14 +335,16 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     }
 
     open fun storeStringDataInSharedPref(keyName: String, value: String?) {
-        val editor = mActivity.getSharedPreferences(Constants.SHARED_PREF_NAME, MODE_PRIVATE).edit()
-        editor.putString(keyName, value)
-        editor.apply()
+        mActivity?.run {
+            val editor = getSharedPreferences(Constants.SHARED_PREF_NAME, MODE_PRIVATE).edit()
+            editor.putString(keyName, value)
+            editor.apply()
+        }
     }
 
     open fun getStringDataFromSharedPref(keyName: String?): String {
-        val prefs = mActivity.getSharedPreferences(Constants.SHARED_PREF_NAME, MODE_PRIVATE)
-        return prefs.getString(keyName, "").toString()
+        val prefs = mActivity?.getSharedPreferences(Constants.SHARED_PREF_NAME, MODE_PRIVATE)
+        return prefs?.getString(keyName, "").toString()
     }
 
     open fun openUrlInBrowser(url:String?) {
@@ -411,7 +434,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         image?.let { whatsAppIntent.putExtra(Intent.EXTRA_STREAM, image.getImageUri(mActivity)) }
         whatsAppIntent.putExtra(Intent.EXTRA_TEXT, sharingData)
         try {
-            mActivity.startActivity(whatsAppIntent)
+            mActivity?.startActivity(whatsAppIntent)
         } catch (ex: ActivityNotFoundException) {
             showToast(ex.message)
             AppEventsManager.pushAppEvents(
@@ -444,7 +467,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                                         putExtra(Intent.EXTRA_STREAM, imgUri)
                                         type = "image/*"
                                         addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                                        mActivity.startActivity(whatsAppIntent)
+                                        mActivity?.startActivity(whatsAppIntent)
                                     } catch (ex: ActivityNotFoundException) {
                                         showToast("WhatsApp have not been installed. ${ex.message}")
                                     }
@@ -494,7 +517,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     }
 
     open fun openPlayStore() {
-        val appPackageName: String = mActivity.packageName
+        val appPackageName: String? = mActivity?.packageName
         try {
             startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$appPackageName")))
         } catch (ignore: ActivityNotFoundException) {
@@ -515,15 +538,17 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     }
 
     protected open fun showStateSelectionDialog() {
-        AlertDialog.Builder(mActivity).apply {
-            setTitle("Select State")
-            setItems(R.array.state_array) { dialogInterface: DialogInterface, i: Int ->
-                val stateList = resources.getStringArray(R.array.state_array).toList()
-                onAlertDialogItemClicked(stateList[i], id, i)
-                dialogInterface.dismiss()
-            }
-            setCancelable(false)
-        }.create().show()
+        mActivity?.let {
+            AlertDialog.Builder(it).apply {
+                setTitle("Select State")
+                setItems(R.array.state_array) { dialogInterface: DialogInterface, i: Int ->
+                    val stateList = resources.getStringArray(R.array.state_array).toList()
+                    onAlertDialogItemClicked(stateList[i], id, i)
+                    dialogInterface.dismiss()
+                }
+                setCancelable(false)
+            }.create().show()
+        }
     }
 
     open fun onAlertDialogItemClicked(selectedStr: String?, id: Int, position: Int) = Unit
@@ -531,27 +556,31 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     open fun onImageSelectionResult(base64Str : String?) = Unit
 
     open fun askCameraPermission() {
-        if (ActivityCompat.checkSelfPermission(mActivity, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED &&
-            ActivityCompat.checkSelfPermission(mActivity, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED &&
-            ActivityCompat.checkSelfPermission(mActivity, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(
-                mActivity,
-                arrayOf(
-                    Manifest.permission.READ_EXTERNAL_STORAGE,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                    Manifest.permission.CAMERA
-                ),
-                Constants.IMAGE_PICK_REQUEST_CODE
-            )
-            return
+        mActivity?.let {
+            if (ActivityCompat.checkSelfPermission(it, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(it, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(it, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(
+                    it,
+                    arrayOf(
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.CAMERA
+                    ),
+                    Constants.IMAGE_PICK_REQUEST_CODE
+                )
+                return
+            }
         }
         showImagePickerBottomSheet()
     }
 
     open fun askContactPermission(): Boolean {
-        if (ActivityCompat.checkSelfPermission(mActivity, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(mActivity, arrayOf(Manifest.permission.READ_CONTACTS), Constants.CONTACT_REQUEST_CODE)
-            return true
+        mActivity?.let {
+            if (ActivityCompat.checkSelfPermission(it, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.READ_CONTACTS), Constants.CONTACT_REQUEST_CODE)
+                return true
+            }
         }
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
             getContactsFromStorage2(mActivity)
@@ -560,168 +589,204 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     }
 
     open fun showImagePickerBottomSheet() {
-        val imageUploadStaticData = StaticInstances.mStaticData?.mCatalogStaticData
-        mImagePickBottomSheet = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
-        val view = LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet_image_pick, mActivity.findViewById(R.id.bottomSheetContainer))
-        mImagePickBottomSheet.apply {
-            setContentView(view)
-            view?.run {
-                val bottomSheetUploadImageCloseImageView: ImageView = findViewById(R.id.bottomSheetUploadImageCloseImageView)
-                val bottomSheetUploadImageHeading: TextView = findViewById(R.id.bottomSheetUploadImageHeading)
-                val bottomSheetUploadImageCamera: View = findViewById(R.id.bottomSheetUploadImageCamera)
-                val bottomSheetUploadImageGallery: View = findViewById(R.id.bottomSheetUploadImageGallery)
-                val bottomSheetUploadImageCameraTextView: TextView = findViewById(R.id.bottomSheetUploadImageCameraTextView)
-                val bottomSheetUploadImageGalleryTextView: TextView = findViewById(R.id.bottomSheetUploadImageGalleryTextView)
-                val bottomSheetUploadImageSearchHeading: TextView = findViewById(R.id.bottomSheetUploadImageSearchHeading)
-                val bottomSheetUploadImageRemovePhotoTextView: TextView = findViewById(R.id.bottomSheetUploadImageRemovePhotoTextView)
-                val searchImageEditText: EditText = findViewById(R.id.searchImageEditText)
-                val searchImageImageView: View = findViewById(R.id.searchImageImageView)
-                val bottomSheetUploadImageRemovePhoto: View = findViewById(R.id.bottomSheetUploadImageRemovePhoto)
-                val searchImageRecyclerView: RecyclerView = findViewById(R.id.searchImageRecyclerView)
-                bottomSheetUploadImageGalleryTextView.text = imageUploadStaticData?.addGallery
-                bottomSheetUploadImageSearchHeading.text = imageUploadStaticData?.searchImageSubTitle
-                bottomSheetUploadImageRemovePhotoTextView.text = imageUploadStaticData?.removeImageText
-                bottomSheetUploadImageHeading.text = imageUploadStaticData?.uploadImageHeading
-                bottomSheetUploadImageCameraTextView.text = imageUploadStaticData?.takePhoto
-                searchImageEditText.hint = imageUploadStaticData?.searchImageHint
-                bottomSheetUploadImageCloseImageView.setOnClickListener { if (mImagePickBottomSheet.isShowing) mImagePickBottomSheet.dismiss() }
-                if (!StaticInstances.sIsStoreImageUploaded) {
-                    bottomSheetUploadImageRemovePhotoTextView.visibility = View.GONE
-                    bottomSheetUploadImageRemovePhoto.visibility = View.GONE
-                }
-                bottomSheetUploadImageCamera.setOnClickListener {
-                    mImagePickBottomSheet.dismiss()
-                    openCamera()
-                }
-                bottomSheetUploadImageCameraTextView.setOnClickListener {
-                    mImagePickBottomSheet.dismiss()
-                    openCamera()
-                }
-                bottomSheetUploadImageGallery.setOnClickListener {
-                    mImagePickBottomSheet.dismiss()
-                    openMobileGalleryWithImage()
-                }
-                bottomSheetUploadImageGalleryTextView.setOnClickListener {
-                    mImagePickBottomSheet.dismiss()
-                    openMobileGalleryWithImage()
-                }
-                bottomSheetUploadImageRemovePhoto.setOnClickListener {
-                    mImagePickBottomSheet.dismiss()
-                    onImageSelectionResultFile(null)
-                }
-                bottomSheetUploadImageRemovePhotoTextView.setOnClickListener {
-                    mImagePickBottomSheet.dismiss()
-                    onImageSelectionResultFile(null)
-                }
-                mImageAdapter.setSearchImageListener(this@BaseFragment)
-                searchImageImageView.setOnClickListener {
-                    searchImageEditText.hideKeyboard()
-                    if (searchImageEditText.text.trim().toString().isEmpty()) {
-                        searchImageEditText.error = getString(R.string.mandatory_field_message)
-                        searchImageEditText.requestFocus()
-                        return@setOnClickListener
+        mActivity?.let {
+            val imageUploadStaticData = StaticInstances.mStaticData?.mCatalogStaticData
+            mImagePickBottomSheet = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
+            val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_image_pick, it.findViewById(R.id.bottomSheetContainer))
+            mImagePickBottomSheet?.apply {
+                setContentView(view)
+                view?.run {
+                    val bottomSheetUploadImageCloseImageView: ImageView = findViewById(R.id.bottomSheetUploadImageCloseImageView)
+                    val bottomSheetUploadImageHeading: TextView = findViewById(R.id.bottomSheetUploadImageHeading)
+                    val bottomSheetUploadImageCamera: View = findViewById(R.id.bottomSheetUploadImageCamera)
+                    val bottomSheetUploadImageGallery: View = findViewById(R.id.bottomSheetUploadImageGallery)
+                    val bottomSheetUploadImageCameraTextView: TextView = findViewById(R.id.bottomSheetUploadImageCameraTextView)
+                    val bottomSheetUploadImageGalleryTextView: TextView = findViewById(R.id.bottomSheetUploadImageGalleryTextView)
+                    val bottomSheetUploadImageSearchHeading: TextView = findViewById(R.id.bottomSheetUploadImageSearchHeading)
+                    val bottomSheetUploadImageRemovePhotoTextView: TextView = findViewById(R.id.bottomSheetUploadImageRemovePhotoTextView)
+                    val searchImageEditText: EditText = findViewById(R.id.searchImageEditText)
+                    val searchImageImageView: View = findViewById(R.id.searchImageImageView)
+                    val bottomSheetUploadImageRemovePhoto: View = findViewById(R.id.bottomSheetUploadImageRemovePhoto)
+                    val searchImageRecyclerView: RecyclerView = findViewById(R.id.searchImageRecyclerView)
+                    bottomSheetUploadImageGalleryTextView.text = imageUploadStaticData?.addGallery
+                    bottomSheetUploadImageSearchHeading.text = imageUploadStaticData?.searchImageSubTitle
+                    bottomSheetUploadImageRemovePhotoTextView.text = imageUploadStaticData?.removeImageText
+                    bottomSheetUploadImageHeading.text = imageUploadStaticData?.uploadImageHeading
+                    bottomSheetUploadImageCameraTextView.text = imageUploadStaticData?.takePhoto
+                    searchImageEditText.hint = imageUploadStaticData?.searchImageHint
+                    bottomSheetUploadImageCloseImageView.setOnClickListener { if (mImagePickBottomSheet?.isShowing == true) mImagePickBottomSheet?.dismiss() }
+                    if (!StaticInstances.sIsStoreImageUploaded) {
+                        bottomSheetUploadImageRemovePhotoTextView.visibility = View.GONE
+                        bottomSheetUploadImageRemovePhoto.visibility = View.GONE
                     }
-                    showProgressDialog(mActivity)
-                    CoroutineScopeUtils().runTaskOnCoroutineBackground {
-                        val response = RetrofitApi().getServerCallObject()?.searchImagesFromBing(searchImageEditText.text.trim().toString(), getStringDataFromSharedPref(Constants.STORE_ID))
-                        response?.let {
-                            if (it.isSuccessful) {
-                                it.body()?.let {
-                                    withContext(Dispatchers.Main) {
-                                        stopProgress()
-                                        val list = it.mImagesList
-                                        searchImageRecyclerView.apply {
-                                            layoutManager = GridLayoutManager(mActivity, 3)
-                                            adapter = mImageAdapter
-                                            list?.let { arrayList -> mImageAdapter.setSearchImageList(arrayList) }
+                    bottomSheetUploadImageCamera.setOnClickListener {
+                        mImagePickBottomSheet?.dismiss()
+                        openCamera()
+                    }
+                    bottomSheetUploadImageCameraTextView.setOnClickListener {
+                        mImagePickBottomSheet?.dismiss()
+                        openCamera()
+                    }
+                    bottomSheetUploadImageGallery.setOnClickListener {
+                        mImagePickBottomSheet?.dismiss()
+                        openMobileGalleryWithImage()
+                    }
+                    bottomSheetUploadImageGalleryTextView.setOnClickListener {
+                        mImagePickBottomSheet?.dismiss()
+                        openMobileGalleryWithImage()
+                    }
+                    bottomSheetUploadImageRemovePhoto.setOnClickListener {
+                        mImagePickBottomSheet?.dismiss()
+                        onImageSelectionResultFile(null)
+                    }
+                    bottomSheetUploadImageRemovePhotoTextView.setOnClickListener {
+                        mImagePickBottomSheet?.dismiss()
+                        onImageSelectionResultFile(null)
+                    }
+                    mImageAdapter.setSearchImageListener(this@BaseFragment)
+                    searchImageImageView.setOnClickListener {
+                        searchImageEditText.hideKeyboard()
+                        if (searchImageEditText.text.trim().toString().isEmpty()) {
+                            searchImageEditText.error = getString(R.string.mandatory_field_message)
+                            searchImageEditText.requestFocus()
+                            return@setOnClickListener
+                        }
+                        showProgressDialog(mActivity)
+                        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+                            val response = RetrofitApi().getServerCallObject()?.searchImagesFromBing(searchImageEditText.text.trim().toString(), getStringDataFromSharedPref(Constants.STORE_ID))
+                            response?.let {
+                                if (it.isSuccessful) {
+                                    it.body()?.let {
+                                        withContext(Dispatchers.Main) {
+                                            stopProgress()
+                                            val list = it.mImagesList
+                                            searchImageRecyclerView?.apply {
+                                                layoutManager = GridLayoutManager(mActivity, 3)
+                                                adapter = mImageAdapter
+                                                list?.let { arrayList -> mImageAdapter.setSearchImageList(arrayList) }
+                                            }
                                         }
                                     }
-                                }
 
+                                }
                             }
                         }
                     }
                 }
-            }
-        }.show()
+            }?.show()
+        }
     }
 
     open fun openMobileGalleryWithImage() {
-        ImagePicker.with(mActivity)
-            .saveDir(File(Environment.getExternalStorageDirectory(), "ImagePicker"))
-            .galleryMimeTypes(  //Exclude gif images
-                mimeTypes = arrayOf(
-                    "image/png",
-                    "image/jpg",
-                    "image/jpeg"
+        mActivity?.run {
+            ImagePicker.with(this)
+                .saveDir(getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!)
+                .galleryMimeTypes(  //Exclude gif images
+                    mimeTypes = arrayOf(
+                        "image/png",
+                        "image/jpg",
+                        "image/jpeg"
+                    )
                 )
-            )
-            .galleryOnly()
-            .crop(1f, 1f)            //Crop image(Optional), Check Customization for more option
-            .compress(1024)            //Final image size will be less than 1 MB(Optional)
-            .maxResultSize(
-                1080,
-                1080
-            ) //Final image resolution will be less than 1080 x 1080(Optional)
-            .start()
+                .galleryOnly()
+                .crop(1f, 1f)                   // Crop image(Optional), Check Customization for more option
+                .compress(1024)               // Final image size will be less than 1 MB(Optional)
+                .maxResultSize(1080, 1080) //Final image resolution will be less than 1080 x 1080(Optional)
+                .createIntent { intent ->
+                    try {
+                        startForProfileImageResult.launch(intent)
+                    } catch (e: Exception) {
+                        Log.e(TAG, "openMobileGalleryWithImage: ${e.message}", e)
+                    }
+                }
+        }
     }
 
     open fun openGalleryWithoutCrop() {
-        ImagePicker.with(mActivity)
-            .saveDir(File(Environment.getExternalStorageDirectory(), "ImagePicker"))
-            .galleryMimeTypes(  //Exclude gif images
-                mimeTypes = arrayOf(
-                    "image/png",
-                    "image/jpg",
-                    "image/jpeg"
+        mActivity?.run {
+            ImagePicker.with(this)
+                .saveDir(getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!)
+                .galleryMimeTypes(  //Exclude gif images
+                    mimeTypes = arrayOf(
+                        "image/png",
+                        "image/jpg",
+                        "image/jpeg"
+                    )
                 )
-            )
-            .galleryOnly()
-            .compress(1024)            //Final image size will be less than 1 MB(Optional)
-            .maxResultSize(
-                1080,
-                1080
-            ) //Final image resolution will be less than 1080 x 1080(Optional)
-            .start()
+                .galleryOnly()
+                .compress(1024)            //Final image size will be less than 1 MB(Optional)
+                .maxResultSize(1080, 1080) //Final image resolution will be less than 1080 x 1080(Optional)
+                .createIntent { intent ->
+                    try {
+                        startForProfileImageResult.launch(intent)
+                    } catch (e: Exception) {
+                        Log.e(TAG, "openMobileGalleryWithImage: ${e.message}", e)
+                    }
+                }
+        }
     }
 
     open fun openCamera() {
-        ImagePicker.with(mActivity)
-            .cameraOnly()
-            .saveDir(File(Environment.getExternalStorageDirectory(), "ImagePicker"))
-            .crop(1f, 1f) //Crop image(Optional), Check Customization for more option
-            .compress(1024)            //Final image size will be less than 1 MB(Optional)
-            .maxResultSize(
-                1080,
-                1080
-            ) //Final image resolution will be less than 1080 x 1080(Optional)
-            .start()
+        mActivity?.run {
+            ImagePicker.with(this)
+                .cameraOnly()
+                .saveDir(getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!)
+                .crop(1f, 1f) //Crop image(Optional), Check Customization for more option
+                .compress(1024)            //Final image size will be less than 1 MB(Optional)
+                .maxResultSize(1080, 1080) //Final image resolution will be less than 1080 x 1080(Optional)
+                .createIntent { intent ->
+                    try {
+                        startForProfileImageResult.launch(intent)
+                    } catch (e: Exception) {
+                        Log.e(TAG, "openMobileGalleryWithImage: ${e.message}", e)
+                    }
+                }
+        }
     }
 
     open fun openFullCamera() {
-        ImagePicker.with(mActivity)
-            .cameraOnly()
-            .saveDir(File(Environment.getExternalStorageDirectory(), "ImagePicker"))
-            .compress(1024)            //Final image size will be less than 1 MB(Optional)
-            .maxResultSize(
-                1080,
-                1080
-            )
-            .start()
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        when (resultCode) {
-            Activity.RESULT_OK -> {
-                val fileUri = data?.data
-                val file: File? = ImagePicker.getFile(data)
-                onImageSelectionResultUri(fileUri)
-                onImageSelectionResultFile(file)
-            }
-            ImagePicker.RESULT_ERROR -> Toast.makeText(context, ImagePicker.getError(data), Toast.LENGTH_SHORT).show()
-            else -> Toast.makeText(context, "Task Cancelled", Toast.LENGTH_SHORT).show()
+        mActivity?.run {
+            ImagePicker.with(this)
+                .cameraOnly()
+                .saveDir(getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!)
+                .compress(1024)            //Final image size will be less than 1 MB(Optional)
+                .maxResultSize(1080, 1080)
+                .createIntent { intent ->
+                    try {
+                        startForProfileImageResult.launch(intent)
+                    } catch (e: Exception) {
+                        Log.e(TAG, "openMobileGalleryWithImage: ${e.message}", e)
+                    }
+                }
         }
     }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) = Unit
+
+    private val startForProfileImageResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+            try {
+                val resultCode = result.resultCode
+                val data = result.data
+                when (resultCode) {
+                    Activity.RESULT_OK -> {
+                        try {
+                            val fileUri = data?.data
+                            onImageSelectionResultUri(fileUri)
+                            val file: File? = File(fileUri?.path!!)
+                            onImageSelectionResultFile(file)
+                        } catch (e: Exception) {
+                            Log.e(TAG, "onActivityResult: ${e.message}", e)
+                            showToast(getString(R.string.something_went_wrong))
+                        }
+                    }
+                    ImagePicker.RESULT_ERROR -> showToast(ImagePicker.getError(data))
+                    else -> showToast("Task Cancelled")
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "registerForActivityResult : ${e.message}", e)
+            }
+        }
 
     open fun onImageSelectionResultFile(file: File?, mode: String = "") = Unit
 
@@ -737,7 +802,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                     bitmap?.let {
                         val file = getImageFileFromBitmap(it, mActivity)
                         stopProgress()
-                        if (::mImagePickBottomSheet.isInitialized) mImagePickBottomSheet.dismiss()
+                        mImagePickBottomSheet?.dismiss()
                         onImageSelectionResultFile(file, Constants.MODE_CROP)
                     }
                 }
@@ -766,15 +831,17 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     }
 
     protected fun updateNavigationBarState(actionId: Int) {
-        if (actionId == R.id.menuPremium) {
-            mActivity.bottomNavigationView.background = ContextCompat.getDrawable(mActivity, R.drawable.bottom_nav_premium_gradient_background)
-            mActivity.premiumTextView.setTextColor(ContextCompat.getColor(mActivity, R.color.premium_text_color))
-        } else {
-            mActivity.bottomNavigationView.background = null
-            mActivity.premiumTextView.setTextColor(ContextCompat.getColor(mActivity, R.color.default_text_light_grey))
+        mActivity?.let {
+            if (actionId == R.id.menuPremium) {
+                it.bottomNavigationView.background = ContextCompat.getDrawable(it, R.drawable.bottom_nav_premium_gradient_background)
+                it.premiumTextView.setTextColor(ContextCompat.getColor(it, R.color.premium_text_color))
+            } else {
+                it.bottomNavigationView.background = null
+                it.premiumTextView.setTextColor(ContextCompat.getColor(it, R.color.default_text_light_grey))
+            }
+            val menu: Menu = it.bottomNavigationView.menu
+            menu.findItem(actionId).isChecked = true
         }
-        val menu: Menu = mActivity.bottomNavigationView.menu
-        menu.findItem(actionId).isChecked = true
     }
 
     protected fun switchToInCompleteProfileFragment(profilePreviewResponse: ProfileInfoResponse?) {
@@ -789,7 +856,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                     break
                 }
             }
-            val currentFragment = mActivity.getCurrentFragment() ?: return
+            val currentFragment = mActivity?.getCurrentFragment() ?: return
             when (incompleteProfilePageAction) {
                 Constants.ACTION_LOGO -> askCameraPermission()
                 Constants.ACTION_DESCRIPTION -> {
@@ -810,9 +877,9 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
 
     protected fun showSearchDialog(staticData: OrderPageStaticTextResponse?, mobileNumberString: String, orderIdStr: String, isError: Boolean = false) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            mActivity.let {
+            mActivity?.let {
                 val view = LayoutInflater.from(mActivity).inflate(R.layout.search_dialog, null)
-                val dialog = Dialog(mActivity)
+                val dialog = Dialog(it)
                 dialog.apply {
                     setContentView(view)
                     window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -911,109 +978,115 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     }
 
     open fun showDontShowDialog(item: OrderItemResponse?, staticData: OrderPageStaticTextResponse?) {
-        val builder = AlertDialog.Builder(mActivity)
-        val view: View = layoutInflater.inflate(R.layout.dont_show_again_dialog, null)
-        var isCheckBoxVisible = "" == PrefsManager.getStringDataFromSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN)
-        builder.apply {
-            setTitle(staticData?.dialog_text_alert)
-            setMessage(staticData?.dialog_message)
-            if (isCheckBoxVisible) setView(view)
-            setPositiveButton(staticData?.dialog_text_yes) { dialogInterface, _ ->
-                run {
-                    dialogInterface.dismiss()
-                    storeStringDataInSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN, if (isCheckBoxVisible) Constants.TEXT_YES else Constants.TEXT_NO)
-                    onDontShowDialogPositiveButtonClicked(item)
+        mActivity?.let {
+            val builder = AlertDialog.Builder(it)
+            val view: View = layoutInflater.inflate(R.layout.dont_show_again_dialog, null)
+            var isCheckBoxVisible = "" == PrefsManager.getStringDataFromSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN)
+            builder.apply {
+                setTitle(staticData?.dialog_text_alert)
+                setMessage(staticData?.dialog_message)
+                if (isCheckBoxVisible) setView(view)
+                setPositiveButton(staticData?.dialog_text_yes) { dialogInterface, _ ->
+                    run {
+                        dialogInterface.dismiss()
+                        storeStringDataInSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN, if (isCheckBoxVisible) Constants.TEXT_YES else Constants.TEXT_NO)
+                        onDontShowDialogPositiveButtonClicked(item)
+                    }
                 }
-            }
-            setNegativeButton(staticData?.dialog_text_no) { dialogInterface, _ ->
-                run {
-                    dialogInterface.dismiss()
-                    if (isCheckBoxVisible) storeStringDataInSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN, Constants.TEXT_NO)
+                setNegativeButton(staticData?.dialog_text_no) { dialogInterface, _ ->
+                    run {
+                        dialogInterface.dismiss()
+                        if (isCheckBoxVisible) storeStringDataInSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN, Constants.TEXT_NO)
+                    }
                 }
-            }
-            view.run {
-                val checkBox: CheckBox = view.findViewById(R.id.checkBox)
-                checkBox.text = staticData?.dialog_check_box_text
-                isCheckBoxVisible = false
-                checkBox.setOnCheckedChangeListener { _, isChecked ->
-                    isCheckBoxVisible = isChecked
+                view.run {
+                    val checkBox: CheckBox = view.findViewById(R.id.checkBox)
+                    checkBox.text = staticData?.dialog_check_box_text
+                    isCheckBoxVisible = false
+                    checkBox.setOnCheckedChangeListener { _, isChecked ->
+                        isCheckBoxVisible = isChecked
+                    }
                 }
-            }
-        }.show()
+            }.show()
+        }
     }
 
     open fun onDontShowDialogPositiveButtonClicked(item: OrderItemResponse?) = Unit
 
     protected fun showImageDialog(imageStr: String?) {
-        Dialog(mActivity).apply {
-            requestWindowFeature(Window.FEATURE_NO_TITLE)
-            setCancelable(true)
-            setContentView(R.layout.image_dialog)
-            val imageView: ImageView = findViewById(R.id.imageView)
-            imageStr?.let {
-                try {
-                    Picasso.get().load(it).into(imageView)
-                } catch (e: Exception) {
-                    Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
-                    AppEventsManager.pushAppEvents(
-                        eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
-                        isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                        data = mapOf(
-                            AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                            "Exception Point" to "showImageDialog",
-                            "Exception Message" to e.message,
-                            "Exception Logs" to e.toString()
+        mActivity?.run {
+            Dialog(this).apply {
+                requestWindowFeature(Window.FEATURE_NO_TITLE)
+                setCancelable(true)
+                setContentView(R.layout.image_dialog)
+                val imageView: ImageView = findViewById(R.id.imageView)
+                imageStr?.let {
+                    try {
+                        Picasso.get().load(it).into(imageView)
+                    } catch (e: Exception) {
+                        Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+                        AppEventsManager.pushAppEvents(
+                            eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
+                            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                            data = mapOf(
+                                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                                "Exception Point" to "showImageDialog",
+                                "Exception Message" to e.message,
+                                "Exception Logs" to e.toString()
+                            )
                         )
-                    )
+                    }
                 }
-            }
-        }.show()
+            }.show()
+        }
     }
 
     protected fun showMasterCatalogBottomSheet(addProductBannerStaticDataResponse: AddProductBannerTextResponse?, addProductStaticText: AddProductStaticText?, mode: String) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             try {
-                val bottomSheetDialog = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
-                val view = LayoutInflater.from(mActivity).inflate(
-                    R.layout.bottom_sheet_add_products_catalog_builder,
-                    mActivity.findViewById(R.id.bottomSheetContainer)
-                )
-                bottomSheetDialog.apply {
-                    setContentView(view)
-                    setBottomSheetCommonProperty()
-                    view.run {
-                        val closeImageView: View = findViewById(R.id.closeImageView)
-                        val offerTextView: TextView = findViewById(R.id.offerTextView)
-                        val headerTextView: TextView = findViewById(R.id.headerTextView)
-                        val bodyTextView: TextView = findViewById(R.id.bodyTextView)
-                        val bannerImageView: ImageView = findViewById(R.id.bannerImageView)
-                        val buttonTextView: TextView = findViewById(R.id.buttonTextView)
-                        offerTextView.text = addProductBannerStaticDataResponse?.offer
-                        headerTextView.setHtmlData(addProductBannerStaticDataResponse?.header)
-                        bodyTextView.text = addProductBannerStaticDataResponse?.body
-                        buttonTextView.text = addProductBannerStaticDataResponse?.button_text
-                        bannerImageView?.let {
-                            try {
-                                Picasso.get().load(addProductBannerStaticDataResponse?.image_url).into(it)
-                            } catch (e: Exception) {
-                                Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+                mActivity?.run {
+                    val bottomSheetDialog = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
+                    val view = LayoutInflater.from(mActivity).inflate(
+                        R.layout.bottom_sheet_add_products_catalog_builder,
+                        findViewById(R.id.bottomSheetContainer)
+                    )
+                    bottomSheetDialog.apply {
+                        setContentView(view)
+                        setBottomSheetCommonProperty()
+                        view.run {
+                            val closeImageView: View = findViewById(R.id.closeImageView)
+                            val offerTextView: TextView = findViewById(R.id.offerTextView)
+                            val headerTextView: TextView = findViewById(R.id.headerTextView)
+                            val bodyTextView: TextView = findViewById(R.id.bodyTextView)
+                            val bannerImageView: ImageView = findViewById(R.id.bannerImageView)
+                            val buttonTextView: TextView = findViewById(R.id.buttonTextView)
+                            offerTextView.text = addProductBannerStaticDataResponse?.offer
+                            headerTextView.setHtmlData(addProductBannerStaticDataResponse?.header)
+                            bodyTextView.text = addProductBannerStaticDataResponse?.body
+                            buttonTextView.text = addProductBannerStaticDataResponse?.button_text
+                            bannerImageView?.let {
+                                try {
+                                    Picasso.get().load(addProductBannerStaticDataResponse?.image_url).into(it)
+                                } catch (e: Exception) {
+                                    Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+                                }
+                            }
+                            closeImageView.setOnClickListener { bottomSheetDialog.dismiss() }
+                            buttonTextView.setOnClickListener{
+                                bottomSheetDialog.dismiss()
+                                AppEventsManager.pushAppEvents(
+                                    eventName = AFInAppEventType.EVENT_CATALOG_BUILDER_TRY_NOW,
+                                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                                    data = mapOf(
+                                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                                        AFInAppEventParameterName.PATH to if (mode == Constants.MODE_PRODUCT_LIST) Constants.MODE_PRODUCT_LIST else Constants.MODE_ADD_PRODUCT
+                                    )
+                                )
+                                launchFragment(ExploreCategoryFragment.newInstance(addProductStaticText), true)
                             }
                         }
-                        closeImageView.setOnClickListener { bottomSheetDialog.dismiss() }
-                        buttonTextView.setOnClickListener{
-                            bottomSheetDialog.dismiss()
-                            AppEventsManager.pushAppEvents(
-                                eventName = AFInAppEventType.EVENT_CATALOG_BUILDER_TRY_NOW,
-                                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                                data = mapOf(
-                                    AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                                    AFInAppEventParameterName.PATH to if (mode == Constants.MODE_PRODUCT_LIST) Constants.MODE_PRODUCT_LIST else Constants.MODE_ADD_PRODUCT
-                                )
-                            )
-                            launchFragment(ExploreCategoryFragment.newInstance(addProductStaticText), true)
-                        }
-                    }
-                }.show()
+                    }.show()
+                }
             } catch (e: Exception) {
                 Log.e(TAG, "showMasterCatalogBottomSheet: ${e.message}", e)
                 AppEventsManager.pushAppEvents(
@@ -1031,16 +1104,18 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     }
 
     protected fun openLocationSettings(isBackRequired: Boolean) {
-        AlertDialog.Builder(mActivity).apply {
-            setTitle("Permission")
-            setMessage("Please allow Location permission")
-            setPositiveButton(getString(R.string.txt_yes)) { dialogInterface, _ ->
-                dialogInterface?.dismiss()
-                if (isBackRequired) mActivity.onBackPressed()
-                mActivity.startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
-            }
-            setNegativeButton(getString(R.string.text_no)) { dialogInterface, _ -> dialogInterface?.dismiss() }
-        }.create().show()
+        mActivity?.let {
+            AlertDialog.Builder(it).apply {
+                setTitle("Permission")
+                setMessage("Please allow Location permission")
+                setPositiveButton(getString(R.string.txt_yes)) { dialogInterface, _ ->
+                    dialogInterface?.dismiss()
+                    if (isBackRequired) it.onBackPressed()
+                    it.startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+                }
+                setNegativeButton(getString(R.string.text_no)) { dialogInterface, _ -> dialogInterface?.dismiss() }
+            }.create().show()
+        }
     }
 
     protected fun openMobileGalleryWithImage(file: File) {
@@ -1056,11 +1131,24 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
             val intent = Intent(Intent.ACTION_VIEW)
             intent.setDataAndType(Uri.fromFile(file), "image/*")
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            val pendingIntent: PendingIntent = PendingIntent.getActivity(mActivity, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT)
-            MyFcmMessageListenerService.createNotification(titleStr, "Download completed.", pendingIntent, mActivity)
+            mActivity?.let {
+                val pendingIntent: PendingIntent = PendingIntent.getActivity(it, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT)
+                MyFcmMessageListenerService.createNotification(titleStr, "Download completed.", pendingIntent, it)
+            }
         } catch (e: Exception) {
             showToast(e.message)
         }
+    }
+
+    fun logoutFromApplication() {
+        mActivity?.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE)?.edit()?.clear()?.apply()
+        clearFragmentBackStack()
+        storeStringDataInSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN, "")
+        storeStringDataInSharedPref(Constants.USER_AUTH_TOKEN, "")
+        storeStringDataInSharedPref(Constants.STORE_NAME, "")
+        storeStringDataInSharedPref(Constants.USER_MOBILE_NUMBER, "")
+        storeStringDataInSharedPref(Constants.STORE_ID, "")
+        launchFragment(LoginFragment.newInstance(), false)
     }
 
 }

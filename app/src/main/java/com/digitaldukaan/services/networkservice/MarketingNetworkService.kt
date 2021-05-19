@@ -1,6 +1,8 @@
 package com.digitaldukaan.services.networkservice
 
 import android.util.Log
+import com.digitaldukaan.constants.Constants
+import com.digitaldukaan.exceptions.UnAuthorizedAccessException
 import com.digitaldukaan.network.RetrofitApi
 import com.digitaldukaan.services.serviceinterface.IMarketingServiceInterface
 
@@ -14,7 +16,12 @@ class MarketingNetworkService {
             response?.let {
                 if (it.isSuccessful) {
                     it.body()?.let { generateOtpResponse -> serviceInterface.onMarketingResponse(generateOtpResponse) }
-                } else serviceInterface.onMarketingErrorResponse(Exception(response.message()))
+                } else {
+                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) {
+                        throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    }
+                    serviceInterface.onMarketingErrorResponse(Exception(response.message()))
+                }
             }
         } catch (e : Exception) {
             Log.e(MarketingNetworkService::class.java.simpleName, "getMarketingCardsDataServerCall: ", e)
