@@ -186,6 +186,14 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                 service.getShareStoreData()
             }
             Constants.ACTION_CATALOG_WHATSAPP -> {
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_SHARE_PDF_CATALOG,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(
+                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                        AFInAppEventParameterName.PATH to AFInAppEventParameterName.MARKETING
+                    )
+                )
                 if (mShareStorePDFResponse == null) {
                     showProgressDialog(mActivity)
                     service.getShareStorePdfText()
@@ -226,11 +234,11 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                     verifyTextView.setOnClickListener{
                         showProgressDialog(mActivity)
                         AppEventsManager.pushAppEvents(
-                            eventName = AFInAppEventType.EVENT_DOWNLOAD_CATALOG,
+                            eventName = AFInAppEventType.EVENT_GET_PDF_CATALOG,
                             isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                             data = mapOf(
                                 AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                                AFInAppEventParameterName.IS_MARKETING_PAGE to "true"
+                                AFInAppEventParameterName.PATH to AFInAppEventParameterName.MARKETING
                             )
                         )
                         service.generateStorePdf()

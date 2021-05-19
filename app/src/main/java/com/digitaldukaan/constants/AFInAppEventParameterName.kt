@@ -45,6 +45,8 @@ interface AFInAppEventParameterName {
         const val NUMBER_OF_ITEM = "noOfItems"
         const val DOMAIN = "domain"
         const val NAME = "name"
+        const val MARKETING = "marketing"
+        const val CATALOG = "catalog"
         const val REASON = "reason"
         const val VARIANTS_ADDED = "Variants_Added"
         const val SEARCH_BY = "Search by"

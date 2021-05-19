@@ -265,6 +265,14 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                     verifyTextView.text = response?.subHeading
                     verifyTextView.setOnClickListener{
                         showProgressDialog(mActivity)
+                        AppEventsManager.pushAppEvents(
+                            eventName = AFInAppEventType.EVENT_GET_PDF_CATALOG,
+                            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                            data = mapOf(
+                                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                                AFInAppEventParameterName.PATH to AFInAppEventParameterName.CATALOG
+                            )
+                        )
                         mService?.generateProductStorePdf()
                         bottomSheetDialog.dismiss()
                     }
@@ -322,11 +330,11 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                 showNoInternetConnectionDialog()
             } else {
                 AppEventsManager.pushAppEvents(
-                    eventName = AFInAppEventType.EVENT_STORE_SHARE,
+                    eventName = AFInAppEventType.EVENT_SHARE_PDF_CATALOG,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                     data = mapOf(
                         AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                        AFInAppEventParameterName.IS_CATALOG to "true"
+                        AFInAppEventParameterName.PATH to AFInAppEventParameterName.CATALOG
                     )
                 )
                 showProgressDialog(mActivity)

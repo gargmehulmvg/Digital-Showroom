@@ -39,7 +39,7 @@ interface AFInAppEventType {
         const val EVENT_GENERATE_SELF_BILL = "Generate Self Bill"
         const val EVENT_TAKE_ORDER = "TakeOrder"
         const val EVENT_VIEW_AS_CUSTOMER = "View_As_Customer"
-        const val EVENT_DOWNLOAD_CATALOG = "Download Catalog"
+        const val EVENT_GET_PDF_CATALOG = "Get PDF Catalog"
         const val EVENT_QR_DOWNLOAD = "Qr Download"
         const val EVENT_ADD_ITEM = "AddItem"
         const val EVENT_EDIT_STORE_LINK = "Edit_Store_Link"
@@ -69,5 +69,6 @@ interface AFInAppEventType {
         const val EVENT_EDIT_VARIANT = "Edit_Variant"
         const val EVENT_DELETE_VARIANT = "Delete_Variant"
         const val EVENT_PROFILE_PAGE = "ProfilePage"
+        const val EVENT_SHARE_PDF_CATALOG = "Share PDF Catalog"
     }
 }
