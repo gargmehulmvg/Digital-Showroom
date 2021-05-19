@@ -12,6 +12,7 @@ data class OrderPageInfoResponse(
     @SerializedName("is_analytics")                     var mIsAnalyticsOrder: Boolean,
     @SerializedName("completed_order_count")            var mCompletedOrderCount: Int,
     @SerializedName("pending_order_count")              var mPendingOrderCount: Int,
+    @SerializedName("store")                            var mStoreInfo: StoreResponse?,
     @SerializedName("static_text")                      var mOrderPageStaticText: OrderPageStaticTextResponse?
 )
 
@@ -33,11 +34,11 @@ data class HomePageBannerResponse(
 
 data class OrderPageStaticTextResponse(
     @SerializedName("new")                              var newText: String?,
-    @SerializedName("text_send_bill")                   var sendBillText: String?, //send_bill_text
+    @SerializedName("text_send_bill")                   var sendBillText: String?,
     @SerializedName("text_sent_bill")                   var sentBillText: String?,
     @SerializedName("text_payment_pending")             var paymentPending: String?,
-    @SerializedName("text_self_billed")                 var selfBilled: String?, // self_billed_text
-    @SerializedName("text_pickup_order")                var pickUpOrder: String?, // pickup_order_text
+    @SerializedName("text_self_billed")                 var selfBilled: String?,
+    @SerializedName("text_pickup_order")                var pickUpOrder: String?,
     @SerializedName("heading_search_dialog")            var heading_search_dialog: String,
     @SerializedName("search_dialog_selection_one")      var search_dialog_selection_one: String,
     @SerializedName("search_dialog_selection_two")      var search_dialog_selection_two: String,

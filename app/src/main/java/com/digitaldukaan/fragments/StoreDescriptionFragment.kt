@@ -134,7 +134,7 @@ class StoreDescriptionFragment : BaseFragment(), IStoreDescriptionServiceInterfa
                         switchToInCompleteProfileFragment(mProfileInfoResponse)
                     }
                 } else {
-                    mActivity.onBackPressed()
+                    mActivity?.onBackPressed()
                 }
             } else showToast(response.mMessage)
         }

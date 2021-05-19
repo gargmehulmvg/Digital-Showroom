@@ -68,7 +68,7 @@ class OnBoardScreenDukaanNameFragment : BaseFragment(),
     override fun onClick(view: View?) {
         when(view?.id) {
             backImageView.id -> {
-                mActivity.onBackPressed()
+                mActivity?.onBackPressed()
             }
             nextTextView.id -> {
                 val dukanName = dukaanNameEditText?.text?.trim().toString()

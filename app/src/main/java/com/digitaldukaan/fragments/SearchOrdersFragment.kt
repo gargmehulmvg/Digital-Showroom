@@ -72,11 +72,11 @@ class SearchOrdersFragment: BaseFragment(), IOnToolbarIconClick, ISearchOrderSer
             setSideIconVisibility(true)
             setSecondSideIconVisibility(false)
             onBackPressed(this@SearchOrdersFragment)
-            setSideIcon(ContextCompat.getDrawable(mActivity, R.drawable.ic_search), this@SearchOrdersFragment)
+            mActivity?.let { setSideIcon(ContextCompat.getDrawable(it, R.drawable.ic_search), this@SearchOrdersFragment) }
         }
         ordersRecyclerView?.apply {
             convertDateStringOfOrders(mOrderList)
-            orderAdapter = OrderAdapterV2(mActivity, mOrderList)
+            mActivity?.let { orderAdapter = OrderAdapterV2(it, mOrderList) }
             linearLayoutManager = LinearLayoutManager(mActivity)
             layoutManager = linearLayoutManager
             adapter = orderAdapter

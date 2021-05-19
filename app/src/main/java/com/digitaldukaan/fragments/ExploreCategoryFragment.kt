@@ -63,7 +63,7 @@ class ExploreCategoryFragment: BaseFragment(), IExploreCategoryServiceInterface 
 
     override fun onClick(view: View?) {
         when(view?.id) {
-            backButton?.id -> mActivity.onBackPressed()
+            backButton?.id -> mActivity?.onBackPressed()
         }
     }
 

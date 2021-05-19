@@ -238,7 +238,7 @@ class SetDeliveryChargeFragment : BaseFragment(), IMoreControlsServiceInterface 
                 showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
                 val servicesObj = Gson().fromJson<StoreServicesResponse>(response.mCommonDataStr, StoreServicesResponse::class.java)
                 StaticInstances.sAppStoreServicesResponse = servicesObj
-                mActivity.onBackPressed()
+                mActivity?.onBackPressed()
             } else showShortSnackBar(response.mMessage, true, R.drawable.ic_close_red)
         }
     }

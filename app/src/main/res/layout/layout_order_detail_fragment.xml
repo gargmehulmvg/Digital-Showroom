@@ -441,7 +441,7 @@
             <View
                 android:id="@+id/blankSpace"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_100sdp" />
+                android:layout_height="@dimen/_200sdp" />
 
         </LinearLayout>
 

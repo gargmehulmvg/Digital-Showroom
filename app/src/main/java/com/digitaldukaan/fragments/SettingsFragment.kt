@@ -73,7 +73,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         super.onStart()
         ToolBarManager.getInstance().apply {
             setSideIconVisibility(true)
-            setSideIcon(ContextCompat.getDrawable(mActivity, R.drawable.ic_setting_toolbar), this@SettingsFragment)
+            mActivity?.let { setSideIcon(ContextCompat.getDrawable(it, R.drawable.ic_setting_toolbar), this@SettingsFragment) }
         }
     }
 
@@ -84,7 +84,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             onBackPressed(this@SettingsFragment)
             setSideIconVisibility(true)
             hideBackPressFromToolBar(mActivity, false)
-            setSideIcon(ContextCompat.getDrawable(mActivity, R.drawable.ic_setting_toolbar), this@SettingsFragment)
+            mActivity?.let { setSideIcon(ContextCompat.getDrawable(it, R.drawable.ic_setting_toolbar), this@SettingsFragment) }
             setSecondSideIcon(null, null)
             setSecondSideIconVisibility(false)
         }
@@ -151,19 +151,19 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
     }
 
     private fun showTrendingOffersBottomSheet() {
-        val bottomSheetDialog = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
-        val view = LayoutInflater.from(mActivity).inflate(
-            R.layout.bottom_sheet_trending_offers,
-            mActivity.findViewById(R.id.bottomSheetContainer)
-        )
-        bottomSheetDialog.apply {
-            setContentView(view)
-            behavior.state = BottomSheetBehavior.STATE_EXPANDED
-            view?.run {
-                val bottomSheetBrowserText: TextView = findViewById(R.id.bottomSheetBrowserText)
-                val bottomSheetHeadingTextView: TextView = findViewById(R.id.bottomSheetHeadingTextView)
-                val bottomSheetUrl: TextView = findViewById(R.id.bottomSheetUrl)
-                val bottomSheetClose: View = findViewById(R.id.bottomSheetClose)
+        mActivity?.let {
+            val bottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
+            val view = LayoutInflater.from(it).inflate(
+                R.layout.bottom_sheet_trending_offers,
+                it.findViewById(R.id.bottomSheetContainer)
+            )
+            bottomSheetDialog.apply {
+                setContentView(view)
+                behavior.state = BottomSheetBehavior.STATE_EXPANDED
+                val bottomSheetBrowserText: TextView = view.findViewById(R.id.bottomSheetBrowserText)
+                val bottomSheetHeadingTextView: TextView = view.findViewById(R.id.bottomSheetHeadingTextView)
+                val bottomSheetUrl: TextView = view.findViewById(R.id.bottomSheetUrl)
+                val bottomSheetClose: View = view.findViewById(R.id.bottomSheetClose)
                 bottomSheetBrowserText.text = mAppSettingsResponseStaticData?.mBestViewedText
                 val txtSpannable = SpannableString(Constants.DOTPE_OFFICIAL_URL)
                 val boldSpan = StyleSpan(Typeface.BOLD)
@@ -172,47 +172,49 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                 bottomSheetHeadingTextView.setHtmlData(mAppSettingsResponseStaticData?.mBottomSheetText)
                 bottomSheetUrl.setOnClickListener { copyDataToClipboard(Constants.DOTPE_OFFICIAL_URL_CLIPBOARD) }
                 bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
-            }
-        }.show()
+            }.show()
+        }
     }
 
     private fun showReferAndEarnBottomSheet(response: ReferAndEarnItemResponse?) {
-        val bottomSheetDialog = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
-        val view = LayoutInflater.from(mActivity).inflate(
-            R.layout.bottom_sheet_refer_and_earn,
-            mActivity.findViewById(R.id.bottomSheetContainer)
-        )
-        bottomSheetDialog.apply {
-            setContentView(view)
-            setBottomSheetCommonProperty()
-            view.run {
-                val bottomSheetClose: View = findViewById(R.id.bottomSheetClose)
-                val bottomSheetUpperImageView: ImageView = findViewById(R.id.bottomSheetUpperImageView)
-                val bottomSheetHeadingTextView: TextView = findViewById(R.id.bottomSheetHeadingTextView)
-                val verifyTextView: TextView = findViewById(R.id.verifyTextView)
-                val referAndEarnRecyclerView: RecyclerView = findViewById(R.id.referAndEarnRecyclerView)
-                bottomSheetUpperImageView?.let {
-                    try {
-                        Picasso.get().load(response?.imageUrl).into(it)
-                    } catch (e: Exception) {
-                        Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+        mActivity?.let {
+            val bottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
+            val view = LayoutInflater.from(it).inflate(
+                R.layout.bottom_sheet_refer_and_earn,
+                it.findViewById(R.id.bottomSheetContainer)
+            )
+            bottomSheetDialog.apply {
+                setContentView(view)
+                setBottomSheetCommonProperty()
+                view.run {
+                    val bottomSheetClose: View = findViewById(R.id.bottomSheetClose)
+                    val bottomSheetUpperImageView: ImageView = findViewById(R.id.bottomSheetUpperImageView)
+                    val bottomSheetHeadingTextView: TextView = findViewById(R.id.bottomSheetHeadingTextView)
+                    val verifyTextView: TextView = findViewById(R.id.verifyTextView)
+                    val referAndEarnRecyclerView: RecyclerView = findViewById(R.id.referAndEarnRecyclerView)
+                    bottomSheetUpperImageView?.let {
+                        try {
+                            Picasso.get().load(response?.imageUrl).into(it)
+                        } catch (e: Exception) {
+                            Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+                        }
+                    }
+                    bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
+                    bottomSheetHeadingTextView.text = "${response?.heading1}\n${response?.heading2}"
+                    verifyTextView.text = response?.settingsTxt
+                    verifyTextView.setOnClickListener{
+                        mReferEarnOverWhatsAppResponse?.run {
+                            shareReferAndEarnWithDeepLink(this)
+                            bottomSheetDialog.dismiss()
+                        }
+                    }
+                    referAndEarnRecyclerView.apply {
+                        layoutManager = LinearLayoutManager(mActivity)
+                        adapter = ReferAndEarnAdapter(response?.workJourneyList)
                     }
                 }
-                bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
-                bottomSheetHeadingTextView.text = "${response?.heading1}\n${response?.heading2}"
-                verifyTextView.text = response?.settingsTxt
-                verifyTextView.setOnClickListener{
-                    mReferEarnOverWhatsAppResponse?.run {
-                        shareReferAndEarnWithDeepLink(this)
-                        bottomSheetDialog.dismiss()
-                    }
-                }
-                referAndEarnRecyclerView.apply {
-                    layoutManager = LinearLayoutManager(mActivity)
-                    adapter = ReferAndEarnAdapter(response?.workJourneyList)
-                }
-            }
-        }.show()
+            }.show()
+        }
     }
 
     private fun shareReferAndEarnWithDeepLink(referEarnOverWhatsAppResponse: ReferEarnOverWhatsAppResponse) {

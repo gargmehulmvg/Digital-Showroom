@@ -140,7 +140,7 @@ class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
 
     override fun onClick(view: View?) {
         when (view?.id) {
-            backButtonToolbar?.id -> mActivity.onBackPressed()
+            backButtonToolbar?.id -> mActivity?.onBackPressed()
             editColorContainer?.id -> {
                 if (mEditPremiumColorList == null || mEditPremiumColorList?.isEmpty() == true) {
                     if (!isInternetConnectionAvailable(mActivity)) {
@@ -209,60 +209,62 @@ class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
                 AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)
             )
         )
-        val bottomSheetDialog = BottomSheetDialog(mActivity, R.style.BottomSheetDialogTheme)
-        val view = LayoutInflater.from(mActivity).inflate(
-            R.layout.bottom_sheet_edit_premium_color,
-            mActivity.findViewById(R.id.bottomSheetContainer)
-        )
-        bottomSheetDialog.apply {
-            setContentView(view)
-            setBottomSheetCommonProperty()
-            view.run {
-                val colorRecyclerView: RecyclerView = findViewById(R.id.colorRecyclerView)
-                val saveTextView: TextView = findViewById(R.id.saveTextView)
-                saveTextView.text = mStaticText?.text_save_changes
-                colorRecyclerView.apply {
-                    layoutManager = GridLayoutManager(mActivity, 5)
-                    mEditPremiumColorList?.forEachIndexed { _, colorItemResponse -> colorItemResponse?.isSelected = false }
-                    mEditPremiumColorList?.set(0, mDefaultSelectedColorItem)
-                    colorAdapter = EditPremiumColorAdapter(mEditPremiumColorList, object : IAdapterItemClickListener{
-                        override fun onAdapterItemClickListener(position: Int) {
-                            if (position == 0) return
-                            mEditPremiumColorList?.forEachIndexed { _, colorItemResponse -> colorItemResponse?.isSelected = false }
-                            mEditPremiumColorList?.get(position)?.apply {
-                                isSelected = true
-                                mSelectedColorId = id
+        mActivity?.run {
+            val bottomSheetDialog = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
+            val view = LayoutInflater.from(mActivity).inflate(
+                R.layout.bottom_sheet_edit_premium_color,
+                this.findViewById(R.id.bottomSheetContainer)
+            )
+            bottomSheetDialog.apply {
+                setContentView(view)
+                setBottomSheetCommonProperty()
+                view.run {
+                    val colorRecyclerView: RecyclerView = findViewById(R.id.colorRecyclerView)
+                    val saveTextView: TextView = findViewById(R.id.saveTextView)
+                    saveTextView.text = mStaticText?.text_save_changes
+                    colorRecyclerView.apply {
+                        layoutManager = GridLayoutManager(mActivity, 5)
+                        mEditPremiumColorList?.forEachIndexed { _, colorItemResponse -> colorItemResponse?.isSelected = false }
+                        mEditPremiumColorList?.set(0, mDefaultSelectedColorItem)
+                        colorAdapter = EditPremiumColorAdapter(mEditPremiumColorList, object : IAdapterItemClickListener{
+                            override fun onAdapterItemClickListener(position: Int) {
+                                if (position == 0) return
+                                mEditPremiumColorList?.forEachIndexed { _, colorItemResponse -> colorItemResponse?.isSelected = false }
+                                mEditPremiumColorList?.get(position)?.apply {
+                                    isSelected = true
+                                    mSelectedColorId = id
+                                }
+                                colorAdapter?.setEditPremiumColorList(mEditPremiumColorList)
                             }
-                            colorAdapter?.setEditPremiumColorList(mEditPremiumColorList)
-                        }
 
-                    }, mStaticText?.text_theme_color)
-                    adapter = colorAdapter
-                }
-                saveTextView.setOnClickListener {
-                    bottomSheetDialog.dismiss()
-                    if (!isInternetConnectionAvailable(mActivity)) {
-                        showNoInternetConnectionDialog()
-                        return@setOnClickListener
+                        }, mStaticText?.text_theme_color)
+                        adapter = colorAdapter
                     }
-                    showProgressDialog(mActivity)
-                    mEditPremiumColorList?.forEachIndexed { _, itemResponse ->
-                        if (itemResponse?.id == mSelectedColorId) {
-                            mDefaultSelectedColorItem = itemResponse
-                            return@forEachIndexed
+                    saveTextView.setOnClickListener {
+                        bottomSheetDialog.dismiss()
+                        if (!isInternetConnectionAvailable(mActivity)) {
+                            showNoInternetConnectionDialog()
+                            return@setOnClickListener
                         }
-                    }
-                    AppEventsManager.pushAppEvents(
-                        eventName = AFInAppEventType.EVENT_SAVE_THEME_COLOR,
-                        isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                        data = mapOf(
-                            AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)
+                        showProgressDialog(mActivity)
+                        mEditPremiumColorList?.forEachIndexed { _, itemResponse ->
+                            if (itemResponse?.id == mSelectedColorId) {
+                                mDefaultSelectedColorItem = itemResponse
+                                return@forEachIndexed
+                            }
+                        }
+                        AppEventsManager.pushAppEvents(
+                            eventName = AFInAppEventType.EVENT_SAVE_THEME_COLOR,
+                            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                            data = mapOf(
+                                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)
+                            )
                         )
-                    )
-                    mService.setStoreThemeColorPalette(mPremiumPageInfoResponse?.theme?.storeThemeId, mSelectedColorId)
+                        mService.setStoreThemeColorPalette(mPremiumPageInfoResponse?.theme?.storeThemeId, mSelectedColorId)
+                    }
                 }
-            }
-        }.show()
+            }.show()
+        }
     }
 
     override fun onPremiumColorsResponse(response: CommonApiResponse) {

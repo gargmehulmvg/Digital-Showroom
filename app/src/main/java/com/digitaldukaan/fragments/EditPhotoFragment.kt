@@ -143,7 +143,7 @@ class EditPhotoFragment: BaseFragment() {
 
     override fun onClick(view: View?) {
         when (view?.id) {
-            backButtonToolbar.id -> mActivity.onBackPressed()
+            backButtonToolbar.id -> mActivity?.onBackPressed()
             viewWebsiteImageView.id -> when(mMode) {
                 Constants.EDIT_PHOTO_MODE_MOBILE -> {
                     val croppedImage = cropImageView.croppedImage
@@ -164,29 +164,31 @@ class EditPhotoFragment: BaseFragment() {
     }
 
     private fun showMobileImageUploadDialog() {
-        val view = LayoutInflater.from(mActivity).inflate(R.layout.dialog_mobile_view_image_upload, null)
-        val dialog = Dialog(mActivity, android.R.style.Theme_Black_NoTitleBar_Fullscreen)
-        dialog.apply {
-            setContentView(view)
-            setCancelable(false)
-            view?.run {
-                val cropTextView: TextView = findViewById(R.id.cropTextView)
-                val fadedMobileTextView: TextView = findViewById(R.id.fadedMobileTextView)
-                val desktopTextView: TextView = findViewById(R.id.desktopTextView)
-                val backButtonToolbar: View = findViewById(R.id.backButtonToolbar)
-                fadedMobileTextView.text = mStaticText?.text_cropped_for_mobile_website
-                desktopTextView.text = mStaticText?.text_lets_crop_for_desktop_website
-                cropTextView.text = mStaticText?.text_crop_for_desktop
-                cropTextView.setOnClickListener {
-                    dialog.dismiss()
-                    mMode = Constants.EDIT_PHOTO_MODE_DESKTOP
-                    setupUI()
+        mActivity?.let {
+            val view = LayoutInflater.from(it).inflate(R.layout.dialog_mobile_view_image_upload, null)
+            val dialog = Dialog(it, android.R.style.Theme_Black_NoTitleBar_Fullscreen)
+            dialog.apply {
+                setContentView(view)
+                setCancelable(false)
+                view?.run {
+                    val cropTextView: TextView = findViewById(R.id.cropTextView)
+                    val fadedMobileTextView: TextView = findViewById(R.id.fadedMobileTextView)
+                    val desktopTextView: TextView = findViewById(R.id.desktopTextView)
+                    val backButtonToolbar: View = findViewById(R.id.backButtonToolbar)
+                    fadedMobileTextView.text = mStaticText?.text_cropped_for_mobile_website
+                    desktopTextView.text = mStaticText?.text_lets_crop_for_desktop_website
+                    cropTextView.text = mStaticText?.text_crop_for_desktop
+                    cropTextView.setOnClickListener {
+                        dialog.dismiss()
+                        mMode = Constants.EDIT_PHOTO_MODE_DESKTOP
+                        setupUI()
+                    }
+                    backButtonToolbar.setOnClickListener {
+                        dialog.dismiss()
+                        mActivity?.onBackPressed()
+                    }
                 }
-                backButtonToolbar.setOnClickListener {
-                    dialog.dismiss()
-                    mActivity.onBackPressed()
-                }
-            }
-        }.show()
+            }.show()
+        }
     }
 }
