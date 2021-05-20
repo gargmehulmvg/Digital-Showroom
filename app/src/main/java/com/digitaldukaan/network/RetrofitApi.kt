@@ -1,19 +1,21 @@
 package com.digitaldukaan.network
 
-import android.util.Log
 import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.PrefsManager
 import com.digitaldukaan.constants.StaticInstances
+import io.sentry.Sentry
 import okhttp3.*
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.io.IOException
 import java.util.concurrent.TimeUnit
 
 class RetrofitApi {
 
     private var mAppService: Apis? = null
+    private val mTag = "RetrofitApi"
 
     fun getServerCallObject(): Apis? {
         return try {
@@ -27,8 +29,8 @@ class RetrofitApi {
             }
             mAppService
         } catch (e: Exception) {
-            Log.e("RetrofitApi", "getServerCallObject: ${e.message}", e)
-            null
+            Sentry.captureException(e, "$mTag getServerCallObject")
+            throw IOException(e.message)
         }
     }
 
@@ -44,19 +46,27 @@ class RetrofitApi {
             callTimeout(1, TimeUnit.MINUTES)
             readTimeout(30, TimeUnit.SECONDS)
             writeTimeout(30, TimeUnit.SECONDS)
-            addInterceptor { customizeCustomRequest(it) }
+            addInterceptor {
+                try {
+                    customizeCustomRequest(it)
+                } catch (e: Exception) {
+                    Sentry.captureException(e, "Exception in getHttpClient Request :: ${it.request()} Message :: ${e.message}")
+                    throw IOException()
+                }
+            }
             addInterceptor(loggingInterface)
             protocols(arrayListOf(Protocol.HTTP_1_1, Protocol.HTTP_2))
         }.build()
     }
 
     private fun customizeCustomRequest(it: Interceptor.Chain): Response {
-        return try {
+        try {
             val originalRequest = it.request()
             val newRequest = getNewRequest(originalRequest)
-            if (newRequest == null) it.proceed(originalRequest) else it.proceed(newRequest)
+            return if (newRequest == null) it.proceed(originalRequest) else it.proceed(newRequest)
         } catch (e: Exception) {
-            Response.Builder().build()
+            Sentry.captureException(e, "Exception in customizeCustomRequest Request :: ${it.request()} Message :: ${e.message}")
+            throw IOException()
         }
     }
 
