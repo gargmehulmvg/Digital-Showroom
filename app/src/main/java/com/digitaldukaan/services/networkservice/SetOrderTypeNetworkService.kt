@@ -26,7 +26,7 @@ class SetOrderTypeNetworkService {
                     }
                     val responseBody = it.errorBody()
                     responseBody?.let {
-                        val errorResponse = Gson().fromJson(responseBody.string(), CommonApiResponse::class.java)
+                        val errorResponse = Gson().fromJson(it.string(), CommonApiResponse::class.java)
                         serviceInterface.onSetOrderTypeResponse(errorResponse)
                     }
                 }

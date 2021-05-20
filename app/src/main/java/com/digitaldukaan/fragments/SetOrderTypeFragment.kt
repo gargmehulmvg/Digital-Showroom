@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
+import com.digitaldukaan.adapters.PrepaidOrderWorkFlowAdapter
 import com.digitaldukaan.adapters.SetOrderTypeAdapter
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.ToolBarManager
@@ -18,7 +19,9 @@ import com.digitaldukaan.models.response.SetOrderTypePageInfoResponse
 import com.digitaldukaan.models.response.SetOrderTypePageStaticTextResponse
 import com.digitaldukaan.services.SetOrderTypeService
 import com.digitaldukaan.services.serviceinterface.ISetOrderTypeServiceInterface
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
+import kotlinx.android.synthetic.main.layout_set_order_type_fragment.*
 
 class SetOrderTypeFragment: BaseFragment(), ISetOrderTypeServiceInterface {
 
@@ -100,6 +103,41 @@ class SetOrderTypeFragment: BaseFragment(), ISetOrderTypeServiceInterface {
 
     override fun onSetOrderTypeException(e: Exception) {
         exceptionHandlingForAPIResponse(e)
+    }
+
+    override fun onClick(view: View?) {
+        when(view?.id) {
+            howDoesPrepaidWorkTextView?.id -> {
+                showPrepaidOrderWorkFlowBottomSheet()
+            }
+        }
+    }
+
+    private fun showPrepaidOrderWorkFlowBottomSheet() {
+        mActivity?.let {
+            val bottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
+            val view = LayoutInflater.from(it).inflate(
+                R.layout.bottom_sheet_prepaid_work_flow,
+                it.findViewById(R.id.bottomSheetContainer)
+            )
+            bottomSheetDialog.apply {
+                setContentView(view)
+                setBottomSheetCommonProperty()
+                view.run {
+                    val bottomSheetClose: View = findViewById(R.id.bottomSheetClose)
+                    val bottomSheetHeadingTextView: TextView = findViewById(R.id.bottomSheetHeadingTextView)
+                    val prepaidOrderWorkFlowRecyclerView: RecyclerView = findViewById(R.id.prepaidOrderWorkFlowRecyclerView)
+                    bottomSheetHeadingTextView.text = mStaticText?.heading_how_does_prepaid_orders_works
+                    bottomSheetClose.setOnClickListener {
+                        bottomSheetDialog.dismiss()
+                    }
+                    prepaidOrderWorkFlowRecyclerView.apply {
+                        layoutManager = LinearLayoutManager(mActivity)
+                        adapter = PrepaidOrderWorkFlowAdapter(mSetOrderTypePageInfoResponse?.mHowItWorkList)
+                    }
+                }
+            }.show()
+        }
     }
 
 }
