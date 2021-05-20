@@ -127,6 +127,8 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
                 val file = downloadBillInGallery(it, "my-qr")
                 file?.run { showDownloadNotification(this, "MyQR") }
             }
+        } else if (jsonData.optBoolean("redirectBrowser")) {
+            openUrlInBrowser(jsonData.optString("data"))
         } else if (jsonData.optBoolean("redirectHomePage")) {
             launchFragment(HomeFragment.newInstance(), true)
         } else if (jsonData.optBoolean("startLoader")) {

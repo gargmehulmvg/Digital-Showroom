@@ -534,9 +534,10 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                         AFInAppEventParameterName.CHANNEL to "Settings Page"
                     )
                 )
-                if (responseItem.mType == Constants.NEW_RELEASE_TYPE_CUSTOM_DOMAIN) {
-                    openUrlInBrowser(responseItem.mPage + PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
-                } else openUrlInBrowser(responseItem.mPage)
+                when (responseItem.mType) {
+                    Constants.NEW_RELEASE_TYPE_CUSTOM_DOMAIN -> openUrlInBrowser(responseItem.mPage + PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
+                    else -> openUrlInBrowser(responseItem.mPage)
+                }
 
             }
             else -> showTrendingOffersBottomSheet()
