@@ -25,7 +25,7 @@
         android:contentDescription="@string/image_view_content_description"
         android:padding="@dimen/_5sdp"
         android:layout_marginStart="@dimen/_10sdp"
-        android:src="@drawable/ic_auto_data_backup"
+        tools:src="@drawable/ic_auto_data_backup"
         app:layout_constraintStart_toEndOf="@+id/countTextView"
         app:layout_constraintTop_toTopOf="parent" />
 

@@ -99,9 +99,13 @@ class NewReleaseFragment: BaseFragment(), IStoreSettingsItemClicked {
                         AFInAppEventParameterName.CHANNEL to "Settings Page"
                     )
                 )
-                if (responseItem.mType == Constants.NEW_RELEASE_TYPE_CUSTOM_DOMAIN) {
-                    openUrlInBrowser(responseItem.mPage + PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
-                } else openUrlInBrowser(responseItem.mPage)
+                when (responseItem.mType) {
+                    Constants.NEW_RELEASE_TYPE_CUSTOM_DOMAIN -> {
+                        openUrlInBrowser(responseItem.mPage + PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
+                    }
+                    Constants.NEW_RELEASE_TYPE_PREPAID_ORDER -> launchFragment(SetOrderTypeFragment.newInstance(), true)
+                    else -> openUrlInBrowser(responseItem.mPage)
+                }
 
             }
             else -> showTrendingOffersBottomSheet()

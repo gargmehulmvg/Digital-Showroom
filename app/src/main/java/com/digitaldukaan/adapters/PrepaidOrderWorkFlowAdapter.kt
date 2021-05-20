@@ -41,7 +41,7 @@ class PrepaidOrderWorkFlowAdapter(
             textView.text = item?.text
             val countStr = "0${position + 1}"
             countTextView.text = countStr
-            if (isEmpty(item?.url)) {
+            if (!isEmpty(item?.url)) {
                 try {
                     Picasso.get().load(item?.url).into(imageView)
                 } catch (e: Exception) {

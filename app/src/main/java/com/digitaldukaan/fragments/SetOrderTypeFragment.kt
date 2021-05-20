@@ -13,7 +13,6 @@ import com.digitaldukaan.adapters.PrepaidOrderWorkFlowAdapter
 import com.digitaldukaan.adapters.SetOrderTypeAdapter
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.ToolBarManager
-import com.digitaldukaan.models.response.AccountStaticTextResponse
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.SetOrderTypePageInfoResponse
 import com.digitaldukaan.models.response.SetOrderTypePageStaticTextResponse
@@ -25,7 +24,6 @@ import kotlinx.android.synthetic.main.layout_set_order_type_fragment.*
 
 class SetOrderTypeFragment: BaseFragment(), ISetOrderTypeServiceInterface {
 
-    private var mMoreControlsStaticData: AccountStaticTextResponse? = null
     private var prepaidOrderContainer: View? = null
     private var payOnPickUpDeliveryContainer: View? = null
     private var payBothContainer: View? = null
@@ -35,10 +33,8 @@ class SetOrderTypeFragment: BaseFragment(), ISetOrderTypeServiceInterface {
 
     companion object {
         private const val TAG = "SetOrderTypeFragment"
-        fun newInstance(moreControlsStaticData: AccountStaticTextResponse?): SetOrderTypeFragment{
-            val fragment = SetOrderTypeFragment()
-            fragment.mMoreControlsStaticData = moreControlsStaticData
-            return fragment
+        fun newInstance(): SetOrderTypeFragment{
+            return SetOrderTypeFragment()
         }
     }
 
