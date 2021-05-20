@@ -41,7 +41,8 @@ data class StoreServicesResponse(
     @SerializedName("delivery_charge_max") var mDeliveryChargeMax: Double?,
     @SerializedName("delivery_time_approx") var mDeliveryTimeApprox: String?,
     @SerializedName("free_delivery_above") var mFreeDeliveryAbove: Double,
-    @SerializedName("payment_method") var mPaymentPaymentMethod: Int
+    @SerializedName("payment_method") var mPaymentPaymentMethod: Int,
+    var mPaymentPaymentMethodStr: String?
 )
 
 data class AccountStaticTextResponse(

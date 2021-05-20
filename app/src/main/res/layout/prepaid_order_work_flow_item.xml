@@ -12,6 +12,7 @@
         android:layout_height="wrap_content"
         android:background="@drawable/green_ring"
         tools:text="01"
+        android:layout_marginTop="@dimen/_5sdp"
         android:textSize="@dimen/_8sdp"
         android:gravity="center"
         android:textColor="@color/dark_blackish"

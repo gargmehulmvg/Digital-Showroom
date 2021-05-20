@@ -122,9 +122,7 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                     data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
                 )
-                mMoreControlsStaticData?.let {
-                    launchFragment(SetDeliveryChargeFragment.newInstance(it), true)
-                }
+                mMoreControlsStaticData?.let { launchFragment(SetDeliveryChargeFragment.newInstance(it), true) }
             }
             onlinePaymentsContainer?.id -> launchFragment(SetOrderTypeFragment.newInstance(), true)
         }

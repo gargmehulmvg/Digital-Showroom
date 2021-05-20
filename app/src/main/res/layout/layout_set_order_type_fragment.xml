@@ -33,7 +33,7 @@
                 android:layout_margin="@dimen/_5sdp"
                 android:padding="@dimen/_5sdp"
                 android:clickable="false"
-                android:drawableEnd="@drawable/ic_pending_small_black"
+                android:drawableEnd="@drawable/ic_info_black_small"
                 tools:text="Prepaid Orders" />
 
             <View
@@ -72,7 +72,7 @@
             app:layout_constraintTop_toBottomOf="@+id/prepaidOrderContainer">
 
             <RadioButton
-                android:id="@+id/payOnPickUpDeliveryRadioButton"
+                android:id="@+id/postpaidRadioButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/_5sdp"
@@ -103,7 +103,7 @@
                 android:clickable="false"
                 android:padding="@dimen/_5sdp"
                 android:drawablePadding="@dimen/_3sdp"
-                android:drawableEnd="@drawable/ic_pending_small_black"
+                android:drawableEnd="@drawable/ic_info_black_small"
                 tools:text="Both (Prepaid And Pay on Delivery / Pickup)" />
 
             <View

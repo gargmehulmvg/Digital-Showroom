@@ -7,7 +7,9 @@ data class SetOrderTypePageInfoResponse(
     @SerializedName("post_paid")                        var mPostPaidResponse: PostpaidResponse?,
     @SerializedName("pre_paid")                         var mPrePaidResponse: PostpaidResponse?,
     @SerializedName("both_paid")                        var mBothPaidResponse: PostpaidResponse?,
-    @SerializedName("how_it_works_list")                var mHowItWorkList: ArrayList<HelpScreenItemResponse>?
+    @SerializedName("payment_method")                   var mPaymentMethod: Int,
+    @SerializedName("how_it_works_list")                var mHowItWorkList: ArrayList<HelpScreenItemResponse>?,
+    @SerializedName("unlock_options_list")              var mUnlockOptionList: ArrayList<UnlockOptionItemList>?
 )
 
 data class SetOrderTypePageStaticTextResponse(
@@ -26,6 +28,14 @@ data class SetOrderTypePageStaticTextResponse(
     @SerializedName("text_change_delivery_charge")              var text_change_delivery_charge: String?,
     @SerializedName("dialog_text_alert")                        var dialog_text_alert: String
 )
+
+data class UnlockOptionItemList(
+    @SerializedName("heading")                  var heading: String?,
+    @SerializedName("sub_heading")              var subHeading: String?,
+    @SerializedName("is_editable")              var isEditable: Boolean,
+    @SerializedName("action")                   var action: String?
+)
+
 data class PostpaidResponse(
     @SerializedName("id")               var id: Int,
     @SerializedName("text")             var text: String?,
