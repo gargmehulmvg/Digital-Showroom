@@ -50,10 +50,12 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import com.squareup.picasso.Picasso
+import io.sentry.Sentry
 import kotlinx.android.synthetic.main.activity_main2.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.io.IOException
 import java.net.UnknownHostException
 import java.util.*
 import java.util.concurrent.Executors
@@ -186,12 +188,17 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
 
     open fun exceptionHandlingForAPIResponse(e: Exception) {
         stopProgress()
-        if (e is UnknownHostException) showToast(e.message)
-        if (e is UnAuthorizedAccessException) {
-            showToast(e.message)
-            logoutFromApplication()
+        Sentry.captureException(e, "$TAG exceptionHandlingForAPIResponse: ${e.message}")
+        when (e) {
+            is IllegalStateException -> showToast("System Error :: IllegalStateException :: Unable to reach Server")
+            is IOException -> showToast("System Error :: IOException :: Unable to reach Server")
+            is UnknownHostException -> showToast(e.message)
+            is UnAuthorizedAccessException -> {
+                showToast(e.message)
+                logoutFromApplication()
+            }
+            else -> showToast("Something went wrong")
         }
-        else showToast("Something went wrong")
     }
 
     protected fun showShortSnackBar(message: String? = "sample testing", showDrawable: Boolean = false, drawableID : Int = 0) {
@@ -277,9 +284,9 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     open fun clearFragmentBackStack() {
         try {
             val fm = mActivity?.supportFragmentManager
-            fm?.run {
-                for (i in 0 until backStackEntryCount) {
-                    popBackStack()
+            fm?.let {
+                for (i in 0 until it.backStackEntryCount) {
+                    it.popBackStack()
                 }
             }
         } catch (e: Exception) {
@@ -653,22 +660,27 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                         }
                         showProgressDialog(mActivity)
                         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-                            val response = RetrofitApi().getServerCallObject()?.searchImagesFromBing(searchImageEditText.text.trim().toString(), getStringDataFromSharedPref(Constants.STORE_ID))
-                            response?.let {
-                                if (it.isSuccessful) {
-                                    it.body()?.let {
-                                        withContext(Dispatchers.Main) {
-                                            stopProgress()
-                                            val list = it.mImagesList
-                                            searchImageRecyclerView?.apply {
-                                                layoutManager = GridLayoutManager(mActivity, 3)
-                                                adapter = mImageAdapter
-                                                list?.let { arrayList -> mImageAdapter.setSearchImageList(arrayList) }
+                            try {
+                                val response = RetrofitApi().getServerCallObject()?.searchImagesFromBing(searchImageEditText.text.trim().toString(), getStringDataFromSharedPref(Constants.STORE_ID))
+                                response?.let {
+                                    if (it.isSuccessful) {
+                                        it.body()?.let {
+                                            withContext(Dispatchers.Main) {
+                                                stopProgress()
+                                                val list = it.mImagesList
+                                                searchImageRecyclerView?.apply {
+                                                    layoutManager = GridLayoutManager(mActivity, 3)
+                                                    adapter = mImageAdapter
+                                                    list?.let { arrayList -> mImageAdapter.setSearchImageList(arrayList) }
+                                                }
                                             }
                                         }
-                                    }
 
+                                    }
                                 }
+                            } catch (e: Exception) {
+                                Sentry.captureException(e, "showImagePickerBottomSheet: exception")
+                                exceptionHandlingForAPIResponse(e)
                             }
                         }
                     }

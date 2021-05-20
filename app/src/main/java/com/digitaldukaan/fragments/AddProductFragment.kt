@@ -45,6 +45,7 @@ import com.google.android.material.textfield.TextInputLayout
 import com.google.gson.Gson
 import com.squareup.picasso.Picasso
 import com.theartofdev.edmodo.cropper.CropImageView
+import io.sentry.Sentry
 import kotlinx.android.synthetic.main.layout_add_product_fragment.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -543,21 +544,26 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                         }
                         showProgressDialog(mActivity)
                         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-                            val response = RetrofitApi().getServerCallObject()?.searchImagesFromBing(searchImageEditText.text.trim().toString(), getStringDataFromSharedPref(Constants.STORE_ID))
-                            response?.let {
-                                if (it.isSuccessful) {
-                                    it.body()?.let {
-                                        withContext(Dispatchers.Main) {
-                                            stopProgress()
-                                            val list = it.mImagesList
-                                            searchImageRecyclerView?.apply {
-                                                layoutManager = GridLayoutManager(mActivity, 3)
-                                                adapter = imageAdapter
-                                                list?.let { arrayList -> imageAdapter.setSearchImageList(arrayList) }
+                            try {
+                                val response = RetrofitApi().getServerCallObject()?.searchImagesFromBing(searchImageEditText.text.trim().toString(), getStringDataFromSharedPref(Constants.STORE_ID))
+                                response?.let {
+                                    if (it.isSuccessful) {
+                                        it.body()?.let {
+                                            withContext(Dispatchers.Main) {
+                                                stopProgress()
+                                                val list = it.mImagesList
+                                                searchImageRecyclerView?.apply {
+                                                    layoutManager = GridLayoutManager(mActivity, 3)
+                                                    adapter = imageAdapter
+                                                    list?.let { arrayList -> imageAdapter.setSearchImageList(arrayList) }
+                                                }
                                             }
                                         }
                                     }
                                 }
+                            } catch (e: Exception) {
+                                Sentry.captureException(e, "showAddProductImagePickerBottomSheet: exception")
+                                exceptionHandlingForAPIResponse(e)
                             }
                         }
                     }
