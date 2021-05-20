@@ -100,8 +100,8 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         when (view?.id) {
             storeSwitch?.id -> changeStoreDeliveryStatus()
             deliverySwitch?.id -> changeStoreDeliveryStatus()
-            moreControlsTextView?.id -> launchFragment(MoreControlsFragment.newInstance(mAppSettingsResponseStaticData), true)
-            moreControlsImageView?.id -> launchFragment(MoreControlsFragment.newInstance(mAppSettingsResponseStaticData), true)
+            moreControlsTextView?.id -> launchFragment(MoreControlsFragment.newInstance(mAppSettingsResponseStaticData, mProfileResponse?.mOnlinePaymentType), true)
+            moreControlsImageView?.id -> launchFragment(MoreControlsFragment.newInstance(mAppSettingsResponseStaticData, mProfileResponse?.mOnlinePaymentType), true)
             dukaanNameTextView?.id -> launchFragment(ProfilePreviewFragment().newInstance(mProfileResponse?.mStoreInfo?.storeInfo?.name), true)
             profileStatusRecyclerView?.id -> launchFragment(ProfilePreviewFragment().newInstance(mProfileResponse?.mStoreInfo?.storeInfo?.name), true)
             stepsLeftTextView?.id -> launchFragment(ProfilePreviewFragment().newInstance(mProfileResponse?.mStoreInfo?.storeInfo?.name), true)
@@ -451,6 +451,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         shareShowRoomWithCustomerTextView?.text = infoResponse.mAccountStaticText?.mShareMessageText
         materialTextView?.text = infoResponse.mAccountStaticText?.mStoreControlsText
         newReleaseHeading?.text = infoResponse.mAccountStaticText?.mNewReleaseText
+        viewAllHeading?.text = infoResponse.mAccountStaticText?.mViewAllText
         ToolBarManager.getInstance()?.setHeaderTitle(infoResponse.mAccountStaticText?.page_heading)
     }
 

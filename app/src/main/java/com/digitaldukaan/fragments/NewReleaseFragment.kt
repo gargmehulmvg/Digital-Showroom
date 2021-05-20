@@ -35,7 +35,7 @@ class NewReleaseFragment: BaseFragment(), IStoreSettingsItemClicked {
             val fragment = NewReleaseFragment()
             fragment.mNewReleaseList = trendingList
             fragment.mSettingsStaticData = staticTextResponse
-            fragment.mHeadingStr = staticTextResponse?.mNewReleaseText
+            fragment.mHeadingStr = staticTextResponse?.heading_new_releases
             return fragment
         }
     }

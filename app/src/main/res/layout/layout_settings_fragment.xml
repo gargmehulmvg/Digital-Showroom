@@ -345,7 +345,7 @@
                     android:textSize="@dimen/_12sdp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    android:text="View All" />
+                    tools:text="View All" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/newReleaseRecyclerView"

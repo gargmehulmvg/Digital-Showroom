@@ -28,11 +28,13 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
     private var mDeliveryPrice = 0.0
     private var mFreeDeliveryAbove = 0.0
     private var mDeliveryChargeType = 0
+    private var mPaymentPaymentMethod: String? = ""
 
     companion object {
-        fun newInstance(appSettingsResponseStaticData: AccountStaticTextResponse?): MoreControlsFragment {
+        fun newInstance(appSettingsResponseStaticData: AccountStaticTextResponse?, onlinePaymentType: String?): MoreControlsFragment {
             val fragment = MoreControlsFragment()
             fragment.mMoreControlsStaticData = appSettingsResponseStaticData
+            fragment.mPaymentPaymentMethod = onlinePaymentType
             return fragment
         }
     }
@@ -77,9 +79,14 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
     private fun setUIDataFromResponse() {
         minOrderValueHeadingTextView?.text = if (0.0 == mMinOrderValue) mMoreControlsStaticData?.heading_set_min_order_value_for_delivery else mMoreControlsStaticData?.heading_edit_min_order_value
         minOrderValueOptionalTextView?.text = if (0.0 == mMinOrderValue) mMoreControlsStaticData?.text_optional else "${mMoreControlsStaticData?.sub_heading_success_set_min_order_value_for_delivery} "
-        minOrderValueAmountTextView?.text = if (0.0 != mMinOrderValue) "${mMoreControlsStaticData?.text_ruppee_symbol}$mMinOrderValue" else ""
+        minOrderValueAmountTextView?.text = if (0.0 != mMinOrderValue) "${mMoreControlsStaticData?.text_ruppee_symbol} $mMinOrderValue" else ""
         deliveryChargeHeadingTextView?.text = mMoreControlsStaticData?.heading_set_delivery_charge
         deliveryChargeTypeTextView?.text = mMoreControlsStaticData?.sub_heading_set_delivery_charge
+        onlinePaymentsTextView?.text = mMoreControlsStaticData?.text_online_payments
+        deliveryHeadingTextView?.text = mMoreControlsStaticData?.mDeliveryText
+        onlinePaymentsHeadingTextView?.text = mMoreControlsStaticData?.heading_set_orders_to_online_payments
+        onlinePaymentsOptionalTextView?.text = mMoreControlsStaticData?.text_type_colon
+        onlinePaymentsValueAmountTextView?.text = mPaymentPaymentMethod
         if (mDeliveryChargeType != 0) {
             deliveryChargeTypeTextView?.text = mMoreControlsStaticData?.sub_heading_success_set_delivery_charge
             if (mDeliveryChargeType == 1) {

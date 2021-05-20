@@ -12,7 +12,8 @@ data class AccountInfoResponse(
     @SerializedName("total_steps") var mTotalSteps: Int,
     @SerializedName("completed_steps") var mCompletedSteps: Int,
     @SerializedName("static_text") var mAccountStaticText: AccountStaticTextResponse?,
-    @SerializedName("footer_images") var mFooterImages: ArrayList<String>?
+    @SerializedName("footer_images") var mFooterImages: ArrayList<String>?,
+    @SerializedName("online_payment_type") var mOnlinePaymentType: String?
 )
 
 data class StoreInfoResponse(
@@ -40,7 +41,7 @@ data class StoreServicesResponse(
     @SerializedName("delivery_charge_max") var mDeliveryChargeMax: Double?,
     @SerializedName("delivery_time_approx") var mDeliveryTimeApprox: String?,
     @SerializedName("free_delivery_above") var mFreeDeliveryAbove: Double,
-    @SerializedName("payment_method") var mPaymentPaymentMethod: Double
+    @SerializedName("payment_method") var mPaymentPaymentMethod: Int
 )
 
 data class AccountStaticTextResponse(
@@ -109,7 +110,7 @@ data class AccountStaticTextResponse(
     @SerializedName("text_view_all") var mViewAllText: String?,
     @SerializedName("text_type_colon") var text_type_colon: String?,
     @SerializedName("text_online_payments") var text_online_payments: String?,
-    @SerializedName("heading_set_orders_to_online_payments") var heading_set_orders_to_online_payments: String?,
+    @SerializedName("heading_set_orders_for_online_payments") var heading_set_orders_to_online_payments: String?,
     @SerializedName("heading_new_releases") var heading_new_releases: String?
 )
 
