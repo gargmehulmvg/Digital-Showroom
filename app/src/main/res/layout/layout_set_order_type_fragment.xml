@@ -19,8 +19,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:animateLayoutChanges="true"
-            android:background="@drawable/curve_white_background"
+            android:background="@drawable/ripple_grey_white_background"
             android:orientation="vertical"
+            android:onClick="onClick"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -31,13 +32,14 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/_5sdp"
                 android:padding="@dimen/_5sdp"
-                android:drawableEnd="@drawable/ic_exclamation_with_circle_black"
-                android:onClick="onClick"
-                android:text="Prepaid Orders" />
+                android:clickable="false"
+                android:drawableEnd="@drawable/ic_pending_small_black"
+                tools:text="Prepaid Orders" />
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_1sdp"
+                android:clickable="false"
                 android:background="@color/light_grey_background" />
 
             <androidx.recyclerview.widget.RecyclerView
@@ -48,6 +50,8 @@
                 android:layout_marginTop="@dimen/_5sdp"
                 android:layout_marginBottom="@dimen/_5sdp"
                 android:overScrollMode="never"
+                android:focusable="false"
+                android:clickable="false"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:itemCount="3"
                 tools:listitem="@layout/set_order_type_item" />
@@ -60,7 +64,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_15sdp"
             android:animateLayoutChanges="true"
-            android:background="@drawable/curve_white_background"
+            android:onClick="onClick"
+            android:background="@drawable/ripple_grey_white_background"
             android:orientation="vertical"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -71,9 +76,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/_5sdp"
-                android:onClick="onClick"
+                android:clickable="false"
                 android:padding="@dimen/_5sdp"
-                android:text="Pay on Delivery / Pickup" />
+                tools:text="Pay on Delivery / Pickup" />
 
         </LinearLayout>
 
@@ -83,7 +88,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_15sdp"
             android:animateLayoutChanges="true"
-            android:background="@drawable/curve_white_background"
+            android:onClick="onClick"
+            android:background="@drawable/ripple_grey_white_background"
             android:orientation="vertical"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -94,15 +100,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/_5sdp"
-                android:onClick="onClick"
+                android:clickable="false"
                 android:padding="@dimen/_5sdp"
                 android:drawablePadding="@dimen/_3sdp"
-                android:drawableEnd="@drawable/ic_exclamation_with_circle_black"
-                android:text="Both (Prepaid And Pay on Delivery / Pickup)" />
+                android:drawableEnd="@drawable/ic_pending_small_black"
+                tools:text="Both (Prepaid And Pay on Delivery / Pickup)" />
 
             <View
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_1sdp"
+                android:clickable="false"
                 android:background="@color/light_grey_background" />
 
 
@@ -113,6 +120,7 @@
                 android:layout_marginStart="@dimen/_20sdp"
                 android:layout_marginTop="@dimen/_5sdp"
                 android:layout_marginBottom="@dimen/_5sdp"
+                android:clickable="false"
                 android:overScrollMode="never"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:itemCount="3"

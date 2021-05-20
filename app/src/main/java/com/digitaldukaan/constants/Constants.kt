@@ -123,6 +123,7 @@ class Constants {
         const val ORDER_STATUS_IN_PROGRESS = "In-Progress"
         const val ORDER_STATUS_REFUND_SUCCESS  = "refund-success"
         const val ORDER_STATUS_PAYOUT_SUCCESS  = "payout-success"
+        const val ORDER_STATUS_LOCKED = "Locked"
         //MODE DELIVERY CHARGE
         const val UNKNOWN_DELIVERY_CHARGE = 0
         const val FREE_DELIVERY = 1

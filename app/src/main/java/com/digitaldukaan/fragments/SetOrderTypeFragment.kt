@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RadioButton
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -27,6 +28,9 @@ class SetOrderTypeFragment: BaseFragment(), ISetOrderTypeServiceInterface {
     private var prepaidOrderContainer: View? = null
     private var payOnPickUpDeliveryContainer: View? = null
     private var payBothContainer: View? = null
+    private var prepaidOrderRadioButton: RadioButton? = null
+    private var payOnPickUpDeliveryRadioButton: RadioButton? = null
+    private var payBothRadioButton: RadioButton? = null
     private var mService: SetOrderTypeService? = null
     private var mSetOrderTypePageInfoResponse: SetOrderTypePageInfoResponse? = null
     private var mStaticText: SetOrderTypePageStaticTextResponse? = null
@@ -59,25 +63,40 @@ class SetOrderTypeFragment: BaseFragment(), ISetOrderTypeServiceInterface {
     }
 
     private fun setupUI() {
+        payBothRadioButton = mContentView?.findViewById(R.id.payBothRadioButton)
+        payOnPickUpDeliveryRadioButton = mContentView?.findViewById(R.id.payOnPickUpDeliveryRadioButton)
+        prepaidOrderRadioButton = mContentView?.findViewById(R.id.prepaidOrderRadioButton)
         prepaidOrderContainer = mContentView?.findViewById(R.id.prepaidOrderContainer)
         payOnPickUpDeliveryContainer = mContentView?.findViewById(R.id.payOnPickUpDeliveryContainer)
         payBothContainer = mContentView?.findViewById(R.id.payBothContainer)
-        val prepaidOrderTypeRecyclerView: RecyclerView? = mContentView?.findViewById(R.id.prepaidOrderTypeRecyclerView)
-        prepaidOrderTypeRecyclerView?.apply {
-            layoutManager = LinearLayoutManager(mActivity)
-            adapter = SetOrderTypeAdapter(mActivity)
-        }
-        val bothOrderTypeRecyclerView: RecyclerView? = mContentView?.findViewById(R.id.bothOrderTypeRecyclerView)
-        bothOrderTypeRecyclerView?.apply {
-            layoutManager = LinearLayoutManager(mActivity)
-            adapter = SetOrderTypeAdapter(mActivity)
-        }
     }
 
     private fun setupUIWithStaticData() {
         val howDoesPrepaidWorkTextView: TextView? = mContentView?.findViewById(R.id.howDoesPrepaidWorkTextView)
         howDoesPrepaidWorkTextView?.text = mStaticText?.heading_how_does_prepaid_orders_works
         ToolBarManager.getInstance()?.setHeaderTitle(mStaticText?.heading_set_orders_type)
+        mSetOrderTypePageInfoResponse?.mPostPaidResponse?.let {
+            payOnPickUpDeliveryRadioButton?.text = it.text
+            payOnPickUpDeliveryRadioButton?.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, if (it.isCompleted) 0 else R.drawable.ic_pending_small_black, 0)
+        }
+        mSetOrderTypePageInfoResponse?.mPrePaidResponse?.let {
+            prepaidOrderRadioButton?.text = it.text
+            prepaidOrderRadioButton?.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, if (it.isCompleted) 0 else R.drawable.ic_pending_small_black, 0)
+            val prepaidOrderTypeRecyclerView: RecyclerView? = mContentView?.findViewById(R.id.prepaidOrderTypeRecyclerView)
+            prepaidOrderTypeRecyclerView?.apply {
+                layoutManager = LinearLayoutManager(mActivity)
+                adapter = SetOrderTypeAdapter(mActivity, it.setOrderTypeItemList)
+            }
+        }
+        mSetOrderTypePageInfoResponse?.mBothPaidResponse?.let {
+            payBothRadioButton?.text = it.text
+            payBothRadioButton?.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, if (it.isCompleted) 0 else R.drawable.ic_pending_small_black, 0)
+            val bothOrderTypeRecyclerView: RecyclerView? = mContentView?.findViewById(R.id.bothOrderTypeRecyclerView)
+            bothOrderTypeRecyclerView?.apply {
+                layoutManager = LinearLayoutManager(mActivity)
+                adapter = SetOrderTypeAdapter(mActivity, it.setOrderTypeItemList)
+            }
+        }
     }
 
     override fun onSetOrderTypeResponse(response: CommonApiResponse) {

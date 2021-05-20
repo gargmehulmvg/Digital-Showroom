@@ -9,9 +9,12 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
+import com.digitaldukaan.constants.Constants
+import com.digitaldukaan.models.response.SetOrderTypeItemResponse
 
 class SetOrderTypeAdapter(
-    private val mContext: Context?
+    private val mContext: Context?,
+    private var setOrderTypeItemList: ArrayList<SetOrderTypeItemResponse>?
 ) :
     RecyclerView.Adapter<SetOrderTypeAdapter.ReferAndEarnViewHolder>() {
 
@@ -26,7 +29,7 @@ class SetOrderTypeAdapter(
         )
     }
 
-    override fun getItemCount(): Int = 3
+    override fun getItemCount(): Int = setOrderTypeItemList?.size ?: 0
 
     override fun onBindViewHolder(
         holder: ReferAndEarnViewHolder,
@@ -34,13 +37,23 @@ class SetOrderTypeAdapter(
     ) {
         holder.apply {
             mContext?.let {
-                if (position == 0) {
-                    textView.setTextColor(ContextCompat.getColor(it, R.color.default_text_light_grey))
-                    imageView.setImageDrawable(ContextCompat.getDrawable(it, R.drawable.ic_icon_material_lock))
-                } else {
-                    textView.text = "Set Delivery charge to fixed (for delivery orders)"
-                    textView.setTextColor(ContextCompat.getColor(it, R.color.black))
-                    imageView.setImageDrawable(ContextCompat.getDrawable(it, R.drawable.ic_exclamation_small))
+                val item = setOrderTypeItemList?.get(position)
+                when (item?.status) {
+                    Constants.ORDER_STATUS_LOCKED -> {
+                        textView.text = item.text
+                        textView.setTextColor(ContextCompat.getColor(it, R.color.default_text_light_grey))
+                        imageView.setImageDrawable(ContextCompat.getDrawable(it, R.drawable.ic_icon_material_lock))
+                    }
+                    Constants.ORDER_STATUS_IN_PROGRESS -> {
+                        textView.text = item.text
+                        textView.setTextColor(ContextCompat.getColor(it, R.color.black))
+                        imageView.setImageDrawable(ContextCompat.getDrawable(it, R.drawable.ic_exclamation_small))
+                    }
+                    else -> {
+                        textView.text = item?.text
+                        textView.setTextColor(ContextCompat.getColor(it, R.color.open_green))
+                        imageView.setImageDrawable(ContextCompat.getDrawable(it, R.drawable.ic_green_check_small))
+                    }
                 }
             }
         }

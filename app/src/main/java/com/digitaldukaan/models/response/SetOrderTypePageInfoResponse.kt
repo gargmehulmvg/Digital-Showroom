@@ -4,6 +4,9 @@ import com.google.gson.annotations.SerializedName
 
 data class SetOrderTypePageInfoResponse(
     @SerializedName("static_text")                      var mStaticText: SetOrderTypePageStaticTextResponse?,
+    @SerializedName("post_paid")                        var mPostPaidResponse: PostpaidResponse?,
+    @SerializedName("pre_paid")                         var mPrePaidResponse: PostpaidResponse?,
+    @SerializedName("both_paid")                        var mBothPaidResponse: PostpaidResponse?,
     @SerializedName("how_it_works_list")                var mHowItWorkList: ArrayList<HelpScreenItemResponse>?
 )
 
@@ -22,4 +25,15 @@ data class SetOrderTypePageStaticTextResponse(
     @SerializedName("text_complete_kyc")                        var text_complete_kyc: String?,
     @SerializedName("text_change_delivery_charge")              var text_change_delivery_charge: String?,
     @SerializedName("dialog_text_alert")                        var dialog_text_alert: String
+)
+data class PostpaidResponse(
+    @SerializedName("id")               var id: Int,
+    @SerializedName("text")             var text: String?,
+    @SerializedName("is_completed")     var isCompleted: Boolean,
+    @SerializedName("text_and_status")  var setOrderTypeItemList: ArrayList<SetOrderTypeItemResponse>?
+)
+
+data class SetOrderTypeItemResponse(
+    @SerializedName("text")             var text: String?,
+    @SerializedName("status")           var status: String?
 )
