@@ -8,6 +8,7 @@ import com.clevertap.android.sdk.CleverTapAPI
 import com.digitaldukaan.models.dto.CleverTapProfile
 import com.digitaldukaan.models.request.AndroidEventLogRequest
 import com.digitaldukaan.network.RetrofitApi
+import io.sentry.Sentry
 
 class AppEventsManager {
 
@@ -50,8 +51,7 @@ class AppEventsManager {
                     val response = RetrofitApi().getServerCallObject()?.androidEventLog(request)
                     Log.d(TAG, "pushServerCallEvent: $response")
                 } catch (e: Exception) {
-                    Log.e(TAG, "pushServerCallEvent: exception", e)
-                    pushServerCallEvent(AFInAppEventType.EVENT_SERVER_EXCEPTION, mapOf("exception" to e.toString()))
+                    Sentry.captureException(e, "pushServerCallEvent: exception")
                 }
             }
         }
@@ -62,7 +62,7 @@ class AppEventsManager {
                 mCleverTapAPI?.pushEvent(eventName, data)
                 Log.d(TAG, "pushCleverTapEvent: DONE")
             } catch (e: Exception) {
-                Log.e(TAG, "pushCleverTapEvent: exception", e)
+                Sentry.captureException(e, "pushCleverTapEvent: exception")
                 pushServerCallEvent(AFInAppEventType.EVENT_CLERVERTAP_EXCEPTION, mapOf("exception" to e.toString()))
             }
         }
@@ -74,7 +74,7 @@ class AppEventsManager {
                 appFlyerInstance?.logEvent(mActivityInstance,  eventName, data)
                 Log.d(TAG, "pushAppFlyerEvent: DONE")
             } catch (e: Exception) {
-                Log.e(TAG, "pushAppFlyerEvent: exception", e)
+                Sentry.captureException(e, "pushAppFlyerEvent: exception")
                 pushServerCallEvent(AFInAppEventType.EVENT_APPFLYER_EXCEPTION, mapOf("exception" to e.toString()))
             }
         }

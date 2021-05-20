@@ -107,6 +107,7 @@ class Constants {
         const val NEW_RELEASE_TYPE_PREMIUM = "premium"
         const val NEW_RELEASE_TYPE_NEW = "new"
         const val NEW_RELEASE_TYPE_CUSTOM_DOMAIN = "custom-domain"
+        const val NEW_RELEASE_TYPE_PREPAID_ORDER = "prepaid-order"
         const val NEW_RELEASE_TYPE_TRENDING = "trending"
         const val NEW_RELEASE_TYPE_EXTERNAL = "external"
         //EDIT PHOTO MODES
