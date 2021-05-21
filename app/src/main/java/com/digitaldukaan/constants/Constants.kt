@@ -51,6 +51,8 @@ class Constants {
         const val ACTION_SHARE_BILL = "share-bill"
         const val ACTION_DOWNLOAD_BILL = "download-bill"
         const val ACTION_CASH_COLLECTED = "cash-collected"
+        const val ACTION_KYC = "kyc"
+        const val ACTION_DELIVERY_CHARGES = "delivery-charges"
         //Incomplete profile actions
         const val ACTION_LOGO = "logo"
         const val ACTION_DESCRIPTION = "description"

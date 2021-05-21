@@ -22,7 +22,7 @@ class SetDeliveryChargeFragment : BaseFragment(), IMoreControlsServiceInterface 
     private var mAppStoreServicesResponse: StoreServicesResponse? = null
 
     companion object {
-        fun newInstance(appSettingsResponseStaticData: AccountStaticTextResponse): SetDeliveryChargeFragment {
+        fun newInstance(appSettingsResponseStaticData: AccountStaticTextResponse?): SetDeliveryChargeFragment {
             val fragment = SetDeliveryChargeFragment()
             fragment.mMoreControlsStaticData = appSettingsResponseStaticData
             fragment.mAppStoreServicesResponse = StaticInstances.sAppStoreServicesResponse

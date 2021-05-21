@@ -3,13 +3,13 @@ package com.digitaldukaan.models.response
 import com.google.gson.annotations.SerializedName
 
 data class SetOrderTypePageInfoResponse(
-    @SerializedName("static_text")                      var mStaticText: SetOrderTypePageStaticTextResponse?,
-    @SerializedName("post_paid")                        var mPostPaidResponse: PostpaidResponse?,
-    @SerializedName("pre_paid")                         var mPrePaidResponse: PostpaidResponse?,
-    @SerializedName("both_paid")                        var mBothPaidResponse: PostpaidResponse?,
-    @SerializedName("payment_method")                   var mPaymentMethod: Int,
-    @SerializedName("how_it_works_list")                var mHowItWorkList: ArrayList<HelpScreenItemResponse>?,
-    @SerializedName("unlock_options_list")              var mUnlockOptionList: ArrayList<UnlockOptionItemList>?
+    @SerializedName("static_text")                              var mStaticText: SetOrderTypePageStaticTextResponse?,
+    @SerializedName("post_paid")                                var mPostPaidResponse: PostpaidResponse?,
+    @SerializedName("pre_paid")                                 var mPrePaidResponse: PostpaidResponse?,
+    @SerializedName("both_paid")                                var mBothPaidResponse: PostpaidResponse?,
+    @SerializedName("payment_method")                           var mPaymentMethod: Int,
+    @SerializedName("how_it_works_list")                        var mHowItWorkList: ArrayList<HelpScreenItemResponse>?,
+    @SerializedName("unlock_options_list")                      var mUnlockOptionList: ArrayList<UnlockOptionItemList>?
 )
 
 data class SetOrderTypePageStaticTextResponse(
@@ -30,20 +30,20 @@ data class SetOrderTypePageStaticTextResponse(
 )
 
 data class UnlockOptionItemList(
-    @SerializedName("heading")                  var heading: String?,
-    @SerializedName("sub_heading")              var subHeading: String?,
-    @SerializedName("is_editable")              var isEditable: Boolean,
-    @SerializedName("action")                   var action: String?
+    @SerializedName("heading")                                  var heading: String?,
+    @SerializedName("sub_heading")                              var subHeading: String?,
+    @SerializedName("is_editable")                              var isEditable: Boolean,
+    @SerializedName("action")                                   var action: String?
 )
 
 data class PostpaidResponse(
-    @SerializedName("id")               var id: Int,
-    @SerializedName("text")             var text: String?,
-    @SerializedName("is_completed")     var isCompleted: Boolean,
-    @SerializedName("text_and_status")  var setOrderTypeItemList: ArrayList<SetOrderTypeItemResponse>?
+    @SerializedName("id")                                       var id: Int,
+    @SerializedName("text")                                     var text: String?,
+    @SerializedName("is_completed")                             var isCompleted: Boolean,
+    @SerializedName("text_and_status")                          var setOrderTypeItemList: ArrayList<SetOrderTypeItemResponse>?
 )
 
 data class SetOrderTypeItemResponse(
-    @SerializedName("text")             var text: String?,
-    @SerializedName("status")           var status: String?
+    @SerializedName("text")                                     var text: String?,
+    @SerializedName("status")                                   var status: String?
 )

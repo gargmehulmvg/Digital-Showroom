@@ -31,10 +31,9 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
     private var mPaymentPaymentMethod: String? = ""
 
     companion object {
-        fun newInstance(appSettingsResponseStaticData: AccountStaticTextResponse?, onlinePaymentType: String?): MoreControlsFragment {
+        fun newInstance(appSettingsResponseStaticData: AccountStaticTextResponse?): MoreControlsFragment {
             val fragment = MoreControlsFragment()
             fragment.mMoreControlsStaticData = appSettingsResponseStaticData
-            fragment.mPaymentPaymentMethod = onlinePaymentType
             return fragment
         }
     }
@@ -73,6 +72,7 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
             this@MoreControlsFragment.mDeliveryPrice = mDeliveryPrice ?: 0.0
             this@MoreControlsFragment.mFreeDeliveryAbove = mFreeDeliveryAbove
             this@MoreControlsFragment.mDeliveryChargeType = mDeliveryChargeType ?: 0
+            this@MoreControlsFragment.mPaymentPaymentMethod = StaticInstances.sPaymentMethodStr ?: ""
         }
     }
 

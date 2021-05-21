@@ -96,12 +96,14 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
 
     override fun onClick(view: View?) {
         super.onClick(view)
+        StaticInstances.sAccountPageSettingsStaticData = mAppSettingsResponseStaticData
         StaticInstances.sAppStoreServicesResponse = mAppStoreServicesResponse
+        StaticInstances.sPaymentMethodStr = mProfileResponse?.mOnlinePaymentType
         when (view?.id) {
             storeSwitch?.id -> changeStoreDeliveryStatus()
             deliverySwitch?.id -> changeStoreDeliveryStatus()
-            moreControlsTextView?.id -> launchFragment(MoreControlsFragment.newInstance(mAppSettingsResponseStaticData, mProfileResponse?.mOnlinePaymentType), true)
-            moreControlsImageView?.id -> launchFragment(MoreControlsFragment.newInstance(mAppSettingsResponseStaticData, mProfileResponse?.mOnlinePaymentType), true)
+            moreControlsTextView?.id -> launchFragment(MoreControlsFragment.newInstance(mAppSettingsResponseStaticData), true)
+            moreControlsImageView?.id -> launchFragment(MoreControlsFragment.newInstance(mAppSettingsResponseStaticData), true)
             dukaanNameTextView?.id -> launchFragment(ProfilePreviewFragment().newInstance(mProfileResponse?.mStoreInfo?.storeInfo?.name), true)
             profileStatusRecyclerView?.id -> launchFragment(ProfilePreviewFragment().newInstance(mProfileResponse?.mStoreInfo?.storeInfo?.name), true)
             stepsLeftTextView?.id -> launchFragment(ProfilePreviewFragment().newInstance(mProfileResponse?.mStoreInfo?.storeInfo?.name), true)

@@ -17,8 +17,12 @@ import com.digitaldukaan.R
 import com.digitaldukaan.adapters.PrepaidOrderUnlockOptionsAdapter
 import com.digitaldukaan.adapters.PrepaidOrderWorkFlowAdapter
 import com.digitaldukaan.adapters.SetOrderTypeAdapter
+import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
+import com.digitaldukaan.constants.StaticInstances
 import com.digitaldukaan.constants.ToolBarManager
+import com.digitaldukaan.interfaces.IAdapterItemClickListener
+import com.digitaldukaan.models.request.UpdatePaymentMethodRequest
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.SetOrderTypePageInfoResponse
 import com.digitaldukaan.models.response.SetOrderTypePageStaticTextResponse
@@ -40,6 +44,7 @@ class SetOrderTypeFragment: BaseFragment(), ISetOrderTypeServiceInterface {
     private var mSetOrderTypePageInfoResponse: SetOrderTypePageInfoResponse? = null
     private var mStaticText: SetOrderTypePageStaticTextResponse? = null
     private var mPaymentMethod = 0
+    private var mPaymentMethodStr = ""
     private var mIsPrepaidCompleted = false
     private var mIsBothCompleted = false
 
@@ -85,12 +90,18 @@ class SetOrderTypeFragment: BaseFragment(), ISetOrderTypeServiceInterface {
         howDoesPrepaidWorkTextView?.text = mStaticText?.heading_how_does_prepaid_orders_works
         ToolBarManager.getInstance()?.setHeaderTitle(mStaticText?.heading_set_orders_type)
         mSetOrderTypePageInfoResponse?.mPostPaidResponse?.let {
-            if (it.id == mPaymentMethod) postpaidRadioButton?.isChecked = true
+            if (it.id == mPaymentMethod) {
+                postpaidRadioButton?.isChecked = true
+                mPaymentMethodStr = postpaidRadioButton?.text?.toString() ?: ""
+            }
             postpaidRadioButton?.text = it.text
             postpaidRadioButton?.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, if (it.isCompleted) 0 else R.drawable.ic_info_black_small, 0)
         }
         mSetOrderTypePageInfoResponse?.mPrePaidResponse?.let {
-            if (it.id == mPaymentMethod) prepaidOrderRadioButton?.isChecked = true
+            if (it.id == mPaymentMethod) {
+                prepaidOrderRadioButton?.isChecked = true
+                mPaymentMethodStr = prepaidOrderRadioButton?.text?.toString() ?: ""
+            }
             prepaidOrderRadioButton?.text = it.text
             mIsPrepaidCompleted = it.isCompleted
             prepaidOrderRadioButton?.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, if (it.isCompleted) 0 else R.drawable.ic_info_black_small, 0)
@@ -101,7 +112,10 @@ class SetOrderTypeFragment: BaseFragment(), ISetOrderTypeServiceInterface {
             }
         }
         mSetOrderTypePageInfoResponse?.mBothPaidResponse?.let {
-            if (it.id == mPaymentMethod) payBothRadioButton?.isChecked = true
+            if (it.id == mPaymentMethod) {
+                payBothRadioButton?.isChecked = true
+                mPaymentMethodStr = payBothRadioButton?.text?.toString() ?: ""
+            }
             payBothRadioButton?.text = it.text
             mIsBothCompleted = it.isCompleted
             payBothRadioButton?.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, if (it.isCompleted) 0 else R.drawable.ic_pending_small_black, 0)
@@ -131,6 +145,22 @@ class SetOrderTypeFragment: BaseFragment(), ISetOrderTypeServiceInterface {
         }
     }
 
+    override fun onUpdatePaymentMethodResponse(response: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            try {
+                stopProgress()
+                response.let {
+                    if (it.mIsSuccessStatus) {
+                        StaticInstances.sPaymentMethodStr = mPaymentMethodStr
+                        showShortSnackBar(it.mMessage, true, R.drawable.ic_check_circle)
+                    } else showShortSnackBar(it.mMessage, true, R.drawable.ic_close_red_small)
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "onSetOrderTypeResponse: ${e.message}", e)
+            }
+        }
+    }
+
     override fun onSetOrderTypeException(e: Exception) {
         exceptionHandlingForAPIResponse(e)
     }
@@ -139,18 +169,27 @@ class SetOrderTypeFragment: BaseFragment(), ISetOrderTypeServiceInterface {
         when(view?.id) {
             howDoesPrepaidWorkTextView?.id -> showPrepaidOrderWorkFlowBottomSheet()
             prepaidOrderContainer?.id -> {
+                mPaymentMethod = mSetOrderTypePageInfoResponse?.mPrePaidResponse?.id ?: 0
                 clearRadioButtonSelection()
                 prepaidOrderRadioButton?.isChecked = true
                 if (mIsPrepaidCompleted) showConfirmationDialog() else showUnlockOptionBottomSheet()
+                mPaymentMethodStr = prepaidOrderRadioButton?.text?.toString() ?: ""
             }
             payBothContainer?.id -> {
+                mPaymentMethod = mSetOrderTypePageInfoResponse?.mBothPaidResponse?.id ?: 0
                 clearRadioButtonSelection()
                 payBothRadioButton?.isChecked = true
                 if (mIsBothCompleted) showConfirmationDialog() else showUnlockOptionBottomSheet()
+                mPaymentMethodStr = payBothRadioButton?.text?.toString() ?: ""
             }
             postpaidContainer?.id -> {
+                mPaymentMethod = mSetOrderTypePageInfoResponse?.mPostPaidResponse?.id ?: 0
+                if (postpaidRadioButton?.isChecked == true) return
                 clearRadioButtonSelection()
                 postpaidRadioButton?.isChecked = true
+                mPaymentMethodStr = postpaidRadioButton?.text?.toString() ?: ""
+                showProgressDialog(mActivity)
+                mService?.updatePaymentMethod(UpdatePaymentMethodRequest(mPaymentMethod))
             }
         }
     }
@@ -204,7 +243,16 @@ class SetOrderTypeFragment: BaseFragment(), ISetOrderTypeServiceInterface {
                     bottomSheetHeadingTextView.setHtmlData(mStaticText?.heading_complete_below_steps)
                     optionsRecyclerView.apply {
                         layoutManager = LinearLayoutManager(mActivity)
-                        adapter = PrepaidOrderUnlockOptionsAdapter(mSetOrderTypePageInfoResponse?.mUnlockOptionList, mActivity)
+                        adapter = PrepaidOrderUnlockOptionsAdapter(mSetOrderTypePageInfoResponse?.mUnlockOptionList, mActivity, object : IAdapterItemClickListener {
+                            override fun onAdapterItemClickListener(position: Int) {
+                                val item = mSetOrderTypePageInfoResponse?.mUnlockOptionList?.get(position)
+                                bottomSheetDialog.dismiss()
+                                when(item?.action) {
+                                    Constants.ACTION_KYC -> launchFragment(ProfilePreviewFragment().newInstance(""), true)
+                                    Constants.ACTION_DELIVERY_CHARGES -> launchFragment(SetDeliveryChargeFragment.newInstance(StaticInstances.sAccountPageSettingsStaticData), true)
+                                }
+                            }
+                        })
                     }
                 }
             }.show()
@@ -233,7 +281,11 @@ class SetOrderTypeFragment: BaseFragment(), ISetOrderTypeServiceInterface {
                         iAcceptCheckBox.text = mStaticText?.text_i_accept
                         activateTextView.text = mStaticText?.text_activate
                         bottomSheetClose.setOnClickListener { cancelWarningDialog.dismiss() }
-                        activateTextView.setOnClickListener { cancelWarningDialog.dismiss() }
+                        activateTextView.setOnClickListener {
+                            showProgressDialog(mActivity)
+                            mService?.updatePaymentMethod(UpdatePaymentMethodRequest(mPaymentMethod))
+                            cancelWarningDialog.dismiss()
+                        }
                         iAcceptCheckBox.setOnCheckedChangeListener { _, isChecked -> activateTextView.isEnabled = isChecked }
                     }
                 }.show()

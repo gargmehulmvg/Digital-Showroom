@@ -9,40 +9,49 @@ import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
+import com.digitaldukaan.interfaces.IAdapterItemClickListener
 import com.digitaldukaan.models.response.UnlockOptionItemList
 
 class PrepaidOrderUnlockOptionsAdapter(
     private var mHowItGoesList: ArrayList<UnlockOptionItemList>?,
-    private var mContext: Context?
+    private var mContext: Context?,
+    private var mListener: IAdapterItemClickListener?
 ) :
-    RecyclerView.Adapter<PrepaidOrderUnlockOptionsAdapter.ReferAndEarnViewHolder>() {
+    RecyclerView.Adapter<PrepaidOrderUnlockOptionsAdapter.PrepaidOrderUnlockOptionsViewHolder>() {
 
-    inner class ReferAndEarnViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class PrepaidOrderUnlockOptionsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val completeImageView: TextView = itemView.findViewById(R.id.completeImageView)
         val headingTextView: TextView = itemView.findViewById(R.id.headingTextView)
         val subHeadingTextView: TextView = itemView.findViewById(R.id.subHeadingTextView)
         val imageView: TextView = itemView.findViewById(R.id.completeImageView)
         val forwardImageView: View = itemView.findViewById(R.id.forwardImageView)
+        val container: View = itemView.findViewById(R.id.container)
         val bottomSheetContainer: CardView = itemView.findViewById(R.id.bottomSheetContainer)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReferAndEarnViewHolder {
-        return ReferAndEarnViewHolder(
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PrepaidOrderUnlockOptionsViewHolder {
+        val view = PrepaidOrderUnlockOptionsViewHolder(
             LayoutInflater.from(parent.context).inflate(R.layout.prepaid_order_unlock_options_item, parent, false)
         )
+        view.container.setOnClickListener {
+            val position = view.adapterPosition
+            val item = mHowItGoesList?.get(position)
+            if (item?.isEditable == true) mListener?.onAdapterItemClickListener(position)
+        }
+        return view
     }
 
     override fun getItemCount(): Int = mHowItGoesList?.size ?: 0
 
     override fun onBindViewHolder(
-        holder: ReferAndEarnViewHolder,
+        holder: PrepaidOrderUnlockOptionsViewHolder,
         position: Int
     ) {
         holder.apply {
             val item = mHowItGoesList?.get(position)
             headingTextView.text = item?.heading
             subHeadingTextView.text = item?.subHeading
-            if (item?.isEditable == false) {
+            if (item?.isEditable == true) {
                 bottomSheetContainer.cardElevation = 10f
                 val countStr = "${position + 1}"
                 completeImageView.text = countStr
