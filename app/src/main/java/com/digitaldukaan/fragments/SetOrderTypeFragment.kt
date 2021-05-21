@@ -61,13 +61,7 @@ class SetOrderTypeFragment: BaseFragment(), ISetOrderTypeServiceInterface {
         savedInstanceState: Bundle?
     ): View? {
         mContentView = inflater.inflate(R.layout.layout_set_order_type_fragment, container, false)
-        ToolBarManager.getInstance()?.apply {
-            hideToolBar(mActivity, false)
-            setSideIconVisibility(false)
-            setSecondSideIconVisibility(false)
-        }
-        hideBottomNavigationView(true)
-        setupUI()
+        initializeUI()
         mService = SetOrderTypeService()
         mService?.setServiceInterface(this)
         showProgressDialog(mActivity)
@@ -75,7 +69,13 @@ class SetOrderTypeFragment: BaseFragment(), ISetOrderTypeServiceInterface {
         return mContentView
     }
 
-    private fun setupUI() {
+    private fun initializeUI() {
+        ToolBarManager.getInstance()?.apply {
+            hideToolBar(mActivity, false)
+            setSideIconVisibility(false)
+            setSecondSideIconVisibility(false)
+        }
+        hideBottomNavigationView(true)
         payBothRadioButton = mContentView?.findViewById(R.id.payBothRadioButton)
         postpaidRadioButton = mContentView?.findViewById(R.id.postpaidRadioButton)
         prepaidOrderRadioButton = mContentView?.findViewById(R.id.prepaidOrderRadioButton)
@@ -201,61 +201,74 @@ class SetOrderTypeFragment: BaseFragment(), ISetOrderTypeServiceInterface {
     }
 
     private fun showPrepaidOrderWorkFlowBottomSheet() {
-        mActivity?.let {
-            val bottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
-            val view = LayoutInflater.from(it).inflate(
-                R.layout.bottom_sheet_prepaid_work_flow,
-                it.findViewById(R.id.bottomSheetContainer)
-            )
-            bottomSheetDialog.apply {
-                setContentView(view)
-                setBottomSheetCommonProperty()
-                view.run {
-                    val bottomSheetClose: View = findViewById(R.id.bottomSheetClose)
-                    val bottomSheetHeadingTextView: TextView = findViewById(R.id.bottomSheetHeadingTextView)
-                    val prepaidOrderWorkFlowRecyclerView: RecyclerView = findViewById(R.id.prepaidOrderWorkFlowRecyclerView)
-                    bottomSheetHeadingTextView.text = mStaticText?.heading_how_does_prepaid_orders_works
-                    bottomSheetClose.setOnClickListener {
-                        bottomSheetDialog.dismiss()
-                    }
-                    prepaidOrderWorkFlowRecyclerView.apply {
-                        layoutManager = LinearLayoutManager(mActivity)
-                        adapter = PrepaidOrderWorkFlowAdapter(mSetOrderTypePageInfoResponse?.mHowItWorkList)
-                    }
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            try {
+                mActivity?.let {
+                    val bottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
+                    val view = LayoutInflater.from(it).inflate(
+                        R.layout.bottom_sheet_prepaid_work_flow,
+                        it.findViewById(R.id.bottomSheetContainer)
+                    )
+                    bottomSheetDialog.apply {
+                        setContentView(view)
+                        setBottomSheetCommonProperty()
+                        view.run {
+                            val bottomSheetClose: View = findViewById(R.id.bottomSheetClose)
+                            val bottomSheetHeadingTextView: TextView = findViewById(R.id.bottomSheetHeadingTextView)
+                            val prepaidOrderWorkFlowRecyclerView: RecyclerView = findViewById(R.id.prepaidOrderWorkFlowRecyclerView)
+                            bottomSheetHeadingTextView.text = mStaticText?.heading_how_does_prepaid_orders_works
+                            bottomSheetClose.setOnClickListener {
+                                bottomSheetDialog.dismiss()
+                            }
+                            prepaidOrderWorkFlowRecyclerView.apply {
+                                layoutManager = LinearLayoutManager(mActivity)
+                                adapter =
+                                    PrepaidOrderWorkFlowAdapter(mSetOrderTypePageInfoResponse?.mHowItWorkList)
+                            }
+                        }
+                    }.show()
                 }
-            }.show()
+            } catch (e: Exception) {
+                Log.e(TAG, "showPrepaidOrderWorkFlowBottomSheet: ${e.message}", e)
+            }
         }
     }
 
     private fun showUnlockOptionBottomSheet() {
-        mActivity?.let {
-            val bottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
-            val view = LayoutInflater.from(it).inflate(
-                R.layout.bottom_sheet_unlock_options,
-                it.findViewById(R.id.bottomSheetContainer)
-            )
-            bottomSheetDialog.apply {
-                setContentView(view)
-                setBottomSheetCommonProperty()
-                view.run {
-                    val bottomSheetHeadingTextView: TextView = findViewById(R.id.bottomSheetHeadingTextView)
-                    val optionsRecyclerView: RecyclerView = findViewById(R.id.optionsRecyclerView)
-                    bottomSheetHeadingTextView.setHtmlData(mStaticText?.heading_complete_below_steps)
-                    optionsRecyclerView.apply {
-                        layoutManager = LinearLayoutManager(mActivity)
-                        adapter = PrepaidOrderUnlockOptionsAdapter(mSetOrderTypePageInfoResponse?.mUnlockOptionList, mActivity, object : IAdapterItemClickListener {
-                            override fun onAdapterItemClickListener(position: Int) {
-                                val item = mSetOrderTypePageInfoResponse?.mUnlockOptionList?.get(position)
-                                bottomSheetDialog.dismiss()
-                                when(item?.action) {
-                                    Constants.ACTION_KYC -> launchFragment(ProfilePreviewFragment().newInstance(""), true)
-                                    Constants.ACTION_DELIVERY_CHARGES -> launchFragment(SetDeliveryChargeFragment.newInstance(StaticInstances.sAccountPageSettingsStaticData), true)
-                                }
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            try {
+                mActivity?.let {
+                    val bottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
+                    val view = LayoutInflater.from(it).inflate(
+                        R.layout.bottom_sheet_unlock_options,
+                        it.findViewById(R.id.bottomSheetContainer)
+                    )
+                    bottomSheetDialog.apply {
+                        setContentView(view)
+                        setBottomSheetCommonProperty()
+                        view.run {
+                            val bottomSheetHeadingTextView: TextView = findViewById(R.id.bottomSheetHeadingTextView)
+                            val optionsRecyclerView: RecyclerView = findViewById(R.id.optionsRecyclerView)
+                            bottomSheetHeadingTextView.setHtmlData(mStaticText?.heading_complete_below_steps)
+                            optionsRecyclerView.apply {
+                                layoutManager = LinearLayoutManager(mActivity)
+                                adapter = PrepaidOrderUnlockOptionsAdapter(mSetOrderTypePageInfoResponse?.mUnlockOptionList, mActivity, object : IAdapterItemClickListener {
+                                    override fun onAdapterItemClickListener(position: Int) {
+                                        val item = mSetOrderTypePageInfoResponse?.mUnlockOptionList?.get(position)
+                                        bottomSheetDialog.dismiss()
+                                        when(item?.action) {
+                                            Constants.ACTION_KYC -> launchFragment(ProfilePreviewFragment().newInstance(""), true)
+                                            Constants.ACTION_DELIVERY_CHARGES -> launchFragment(SetDeliveryChargeFragment.newInstance(StaticInstances.sAccountPageSettingsStaticData), true)
+                                        }
+                                    }
+                                })
                             }
-                        })
-                    }
+                        }
+                    }.show()
                 }
-            }.show()
+            } catch (e: Exception) {
+                Log.e(TAG, "showUnlockOptionBottomSheet: ${e.message}", e)
+            }
         }
     }
 

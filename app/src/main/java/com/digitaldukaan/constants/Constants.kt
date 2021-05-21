@@ -8,7 +8,7 @@ class Constants {
         const val SHINE_ANIMATION_INTERVAL = 2_000L
         const val STORE_CREATION_PROGRESS_ANIMATION_INTERVAL = 3_000L
         const val RESEND_OTP_TIMER = 30_000L
-        const val TIMER_INTERVAL = 1_000L
+        const val TIMER_INTERVAL = 500L
         const val CREDENTIAL_PICKER_REQUEST = 1001
         const val IMAGE_PICK_REQUEST_CODE = 1002
         const val CONTACT_REQUEST_CODE = 1003
