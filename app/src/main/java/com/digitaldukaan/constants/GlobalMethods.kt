@@ -26,6 +26,7 @@ import com.digitaldukaan.fragments.CommonWebViewFragment
 import com.digitaldukaan.models.dto.ContactModel
 import com.digitaldukaan.models.response.ProfileInfoResponse
 import com.digitaldukaan.models.response.ProfilePreviewSettingsKeyResponse
+import io.sentry.Sentry
 import org.shadow.apache.commons.lang3.StringUtils
 import java.io.*
 import java.net.URL
@@ -206,15 +207,27 @@ fun Bitmap.getImageUri(inContext: Context?): Uri? {
 }
 
 fun openWebViewFragment(fragment: BaseFragment, title: String, webViewType: String?, redirectFromStr: String) {
-    fragment.launchFragment(CommonWebViewFragment().newInstance(title, BuildConfig.WEB_VIEW_URL + webViewType + "?storeid=${fragment.getStringDataFromSharedPref(Constants.STORE_ID)}&redirectFrom=$redirectFromStr&token=${fragment.getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"), true)
+    try {
+        fragment.launchFragment(CommonWebViewFragment().newInstance(title, BuildConfig.WEB_VIEW_URL + webViewType + "?storeid=${fragment.getStringDataFromSharedPref(Constants.STORE_ID)}&redirectFrom=$redirectFromStr&token=${fragment.getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"), true)
+    } catch (e: Exception) {
+        Sentry.captureException(e, "openWebViewFragment :: fragment: BaseFragment, title: String, webViewType: String?, redirectFromStr: String")
+    }
 }
 
 fun openWebViewFragmentV2(fragment: BaseFragment, title: String, webViewType: String, redirectFromStr: String) {
-    fragment.launchFragment(CommonWebViewFragment().newInstance(title, webViewType + "?storeid=${fragment.getStringDataFromSharedPref(Constants.STORE_ID)}&redirectFrom=$redirectFromStr&token=${fragment.getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"), true)
+    try {
+        fragment.launchFragment(CommonWebViewFragment().newInstance(title, webViewType + "?storeid=${fragment.getStringDataFromSharedPref(Constants.STORE_ID)}&redirectFrom=$redirectFromStr&token=${fragment.getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"), true)
+    } catch (e: Exception) {
+        Sentry.captureException(e, "openWebViewFragment :: fragment: BaseFragment, title: String, webViewType: String, redirectFromStr: String")
+    }
 }
 
 fun openWebViewFragment(fragment: BaseFragment, title: String, webViewType: String?) {
-    fragment.launchFragment(CommonWebViewFragment().newInstance(title, webViewType + "?storeid=${fragment.getStringDataFromSharedPref(Constants.STORE_ID)}&token=${fragment.getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"), true)
+    try {
+        fragment.launchFragment(CommonWebViewFragment().newInstance(title, webViewType + "?storeid=${fragment.getStringDataFromSharedPref(Constants.STORE_ID)}&token=${fragment.getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"), true)
+    } catch (e: Exception) {
+        Sentry.captureException(e, "openWebViewFragment :: fragment: BaseFragment, title: String, webViewType: String?")
+    }
 }
 
 fun getDateFromOrderString(dateStr: String): Date? {

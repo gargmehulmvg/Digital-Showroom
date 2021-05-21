@@ -63,21 +63,11 @@ class ProfilePreviewAdapter(
                 }
                 settingKeyItem.mIsEditable.run {
                     holder.profilePreviewContainer.isEnabled = this
-                    addSettingKeyDataTextView.setCompoundDrawablesWithIntrinsicBounds(
-                        0,
-                        0,
-                        R.drawable.ic_edit,
-                        0
-                    )
+                    addSettingKeyDataTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, if (mIsEditable) R.drawable.ic_edit else 0, 0)
                 }
                 when (settingKeyItem.mAction) {
                     Constants.ACTION_STORE_LOCATION -> {
-                        addSettingKeyDataTextView.setCompoundDrawablesWithIntrinsicBounds(
-                            R.drawable.ic_location_color,
-                            0,
-                            R.drawable.ic_edit,
-                            0
-                        )
+                        addSettingKeyDataTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_location_color, 0, R.drawable.ic_edit, 0)
                     }
                     Constants.ACTION_BUSINESS_TYPE -> {
                         profilePreviewBusinessTypeRecyclerView.visibility = View.VISIBLE

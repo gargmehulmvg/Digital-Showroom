@@ -95,6 +95,18 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/bannerRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_90sdp"
+                android:orientation="horizontal"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:layout_marginStart="@dimen/_15sdp"
+                android:layout_marginEnd="@dimen/_15sdp"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:listitem="@layout/order_page_banner_item" />
+
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/constraintLayout3"
                 android:layout_width="match_parent"
@@ -106,9 +118,9 @@
                 android:paddingStart="@dimen/_5sdp"
                 android:paddingEnd="@dimen/_5sdp"
                 android:paddingBottom="@dimen/_15sdp"
-                app:layout_constraintEnd_toEndOf="@id/constraintLayoutBanner"
-                app:layout_constraintStart_toStartOf="@id/constraintLayoutBanner"
-                app:layout_constraintTop_toBottomOf="@id/constraintLayoutBanner">
+                app:layout_constraintEnd_toEndOf="@id/bannerRecyclerView"
+                app:layout_constraintStart_toStartOf="@id/bannerRecyclerView"
+                app:layout_constraintTop_toBottomOf="@id/bannerRecyclerView">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/storePhotoLayout"
