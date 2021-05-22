@@ -52,9 +52,13 @@ public class OtpEditText extends androidx.appcompat.widget.AppCompatEditText {
 
         super.setOnClickListener(v -> {
             // When tapped, move cursor to end of text.
-            setSelection(getText().length());
-            if (mClickListener != null) {
-                mClickListener.onClick(v);
+            try {
+                setSelection(getText().length());
+                if (mClickListener != null) {
+                    mClickListener.onClick(v);
+                }
+            } catch (Exception e) {
+                Log.e("OtpEditText", "init: " + e.getMessage(), e);
             }
         });
     }

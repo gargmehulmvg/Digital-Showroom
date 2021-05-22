@@ -50,10 +50,12 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import com.squareup.picasso.Picasso
+import io.sentry.Sentry
 import kotlinx.android.synthetic.main.activity_main2.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.io.IOException
 import java.net.UnknownHostException
 import java.util.*
 import java.util.concurrent.Executors
@@ -158,25 +160,25 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     }
 
     fun stopProgress() {
-        try {
-            mActivity?.runOnUiThread {
+        mActivity?.runOnUiThread {
+            try {
                 if (mProgressDialog != null) {
                     mProgressDialog?.dismiss()
                     mProgressDialog = null
                 }
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "stopProgress: ${e.message}", e)
-            AppEventsManager.pushAppEvents(
-                eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
-                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                data = mapOf(
-                    AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                    "Exception Point" to "stopProgress",
-                    "Exception Message" to e.message,
-                    "Exception Logs" to e.toString()
+            } catch (e: Exception) {
+                Log.e(TAG, "stopProgress: ${e.message}", e)
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(
+                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                        "Exception Point" to "stopProgress",
+                        "Exception Message" to e.message,
+                        "Exception Logs" to e.toString()
+                    )
                 )
-            )
+            }
         }
     }
 
@@ -186,12 +188,17 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
 
     open fun exceptionHandlingForAPIResponse(e: Exception) {
         stopProgress()
-        if (e is UnknownHostException) showToast(e.message)
-        if (e is UnAuthorizedAccessException) {
-            showToast(e.message)
-            logoutFromApplication()
+        Sentry.captureException(e, "$TAG exceptionHandlingForAPIResponse: ${e.message}")
+        when (e) {
+            is IllegalStateException -> showToast("System Error :: IllegalStateException :: Unable to reach Server")
+            is IOException -> showToast("System Error :: IOException :: Unable to reach Server")
+            is UnknownHostException -> showToast(e.message)
+            is UnAuthorizedAccessException -> {
+                showToast(e.message)
+                logoutFromApplication()
+            }
+            else -> showToast("Something went wrong")
         }
-        else showToast("Something went wrong")
     }
 
     protected fun showShortSnackBar(message: String? = "sample testing", showDrawable: Boolean = false, drawableID : Int = 0) {
@@ -277,9 +284,9 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     open fun clearFragmentBackStack() {
         try {
             val fm = mActivity?.supportFragmentManager
-            fm?.run {
-                for (i in 0 until backStackEntryCount) {
-                    popBackStack()
+            fm?.let {
+                for (i in 0 until it.backStackEntryCount) {
+                    it.popBackStack()
                 }
             }
         } catch (e: Exception) {
@@ -298,10 +305,14 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     }
 
     open fun copyDataToClipboard(string:String?) {
-        val clipboard: ClipboardManager = mActivity?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        val clip: ClipData = ClipData.newPlainText(Constants.CLIPBOARD_LABEL, string)
-        clipboard.setPrimaryClip(clip)
-        showToast(getString(R.string.link_copied))
+        try {
+            val clipboard: ClipboardManager = mActivity?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+            val clip: ClipData = ClipData.newPlainText(Constants.CLIPBOARD_LABEL, string)
+            clipboard.setPrimaryClip(clip)
+            showToast(getString(R.string.link_copied))
+        } catch (e: Exception) {
+            Log.e(TAG, "copyDataToClipboard: ${e.message}", e)
+        }
     }
 
     open fun showNoInternetConnectionDialog() {
@@ -451,53 +462,38 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     }
 
     open fun shareDataOnWhatsAppWithImage(sharingData: String?, photoStr: String?) {
-        try {
-            CoroutineScopeUtils().runTaskOnCoroutineMain {
-                Picasso.get().load(photoStr).into(object : com.squareup.picasso.Target {
-                    override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
-                        bitmap?.let {
-                            val imgUri = it.getImageUri(mActivity)
-                            Log.d(TAG, "onBitmapLoaded: $imgUri")
-                            imgUri?.let {
-                                val whatsAppIntent = Intent(Intent.ACTION_SEND)
-                                whatsAppIntent.apply {
-                                    try {
-                                        setPackage("com.whatsapp")
-                                        putExtra(Intent.EXTRA_TEXT, sharingData)
-                                        putExtra(Intent.EXTRA_STREAM, imgUri)
-                                        type = "image/*"
-                                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                                        mActivity?.startActivity(whatsAppIntent)
-                                    } catch (ex: ActivityNotFoundException) {
-                                        showToast("WhatsApp have not been installed. ${ex.message}")
-                                    }
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            Picasso.get().load(photoStr).into(object : com.squareup.picasso.Target {
+                override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
+                    bitmap?.let {
+                        val imgUri = it.getImageUri(mActivity)
+                        Log.d(TAG, "onBitmapLoaded: $imgUri")
+                        imgUri?.let {
+                            val whatsAppIntent = Intent(Intent.ACTION_SEND)
+                            whatsAppIntent.apply {
+                                try {
+                                    setPackage("com.whatsapp")
+                                    putExtra(Intent.EXTRA_TEXT, sharingData)
+                                    putExtra(Intent.EXTRA_STREAM, it)
+                                    type = "image/*"
+                                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                    mActivity?.startActivity(this)
+                                } catch (ex: ActivityNotFoundException) {
+                                    showToast("WhatsApp have not been installed. ${ex.message}")
                                 }
                             }
                         }
                     }
+                }
 
-                    override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
-                        Log.d(TAG, "onPrepareLoad: ")
-                    }
+                override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
+                    Log.d(TAG, "onPrepareLoad: ")
+                }
 
-                    override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
-                        Log.d(TAG, "onBitmapFailed: ")
-                    }
-                })
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "shareDataOnWhatsAppWithImage: ${e.message}", e)
-            showToast(getString(R.string.something_went_wrong))
-            AppEventsManager.pushAppEvents(
-                eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
-                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                data = mapOf(
-                    AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                    "Exception Point" to "shareDataOnWhatsAppWithImage",
-                    "Exception Message" to e.message,
-                    "Exception Logs" to e.toString()
-                )
-            )
+                override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
+                    Log.d(TAG, "onBitmapFailed: ")
+                }
+            })
         }
     }
 
@@ -653,22 +649,27 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                         }
                         showProgressDialog(mActivity)
                         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-                            val response = RetrofitApi().getServerCallObject()?.searchImagesFromBing(searchImageEditText.text.trim().toString(), getStringDataFromSharedPref(Constants.STORE_ID))
-                            response?.let {
-                                if (it.isSuccessful) {
-                                    it.body()?.let {
-                                        withContext(Dispatchers.Main) {
-                                            stopProgress()
-                                            val list = it.mImagesList
-                                            searchImageRecyclerView?.apply {
-                                                layoutManager = GridLayoutManager(mActivity, 3)
-                                                adapter = mImageAdapter
-                                                list?.let { arrayList -> mImageAdapter.setSearchImageList(arrayList) }
+                            try {
+                                val response = RetrofitApi().getServerCallObject()?.searchImagesFromBing(searchImageEditText.text.trim().toString(), getStringDataFromSharedPref(Constants.STORE_ID))
+                                response?.let {
+                                    if (it.isSuccessful) {
+                                        it.body()?.let {
+                                            withContext(Dispatchers.Main) {
+                                                stopProgress()
+                                                val list = it.mImagesList
+                                                searchImageRecyclerView?.apply {
+                                                    layoutManager = GridLayoutManager(mActivity, 3)
+                                                    adapter = mImageAdapter
+                                                    list?.let { arrayList -> mImageAdapter.setSearchImageList(arrayList) }
+                                                }
                                             }
                                         }
-                                    }
 
+                                    }
                                 }
+                            } catch (e: Exception) {
+                                Sentry.captureException(e, "showImagePickerBottomSheet: exception")
+                                exceptionHandlingForAPIResponse(e)
                             }
                         }
                     }
@@ -796,7 +797,6 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
 
     override fun onSearchImageItemClicked(photoStr: String) {
         try {
-            showCancellableProgressDialog(mActivity)
             Picasso.get().load(photoStr).into(object : com.squareup.picasso.Target {
                 override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
                     bitmap?.let {

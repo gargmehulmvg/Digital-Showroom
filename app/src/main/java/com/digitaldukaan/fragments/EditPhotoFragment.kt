@@ -15,6 +15,7 @@ import com.digitaldukaan.models.response.PremiumPageInfoResponse
 import com.digitaldukaan.models.response.PremiumPageInfoStaticTextResponse
 import com.digitaldukaan.network.RetrofitApi
 import com.google.gson.Gson
+import io.sentry.Sentry
 import kotlinx.android.synthetic.main.layout_edit_photo_fragment.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -31,6 +32,7 @@ class EditPhotoFragment: BaseFragment() {
     private var mPremiumPageInfoResponse: PremiumPageInfoResponse? = null
 
     companion object {
+        private const val TAG = "EditPhotoFragment"
         fun newInstance(uri: Uri?, mode: String, staticText: PremiumPageInfoStaticTextResponse?, premiumPageInfoResponse: PremiumPageInfoResponse?): EditPhotoFragment {
             val fragment = EditPhotoFragment()
             fragment.mFileUri = uri
@@ -82,24 +84,29 @@ class EditPhotoFragment: BaseFragment() {
 
     private fun uploadImageToGetCDNLink(file: File, mode: String) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            val fileRequestBody = MultipartBody.Part.createFormData("media", file.name, RequestBody.create("image/*".toMediaTypeOrNull(), file))
-            val imageTypeRequestBody = RequestBody.create("text/plain".toMediaTypeOrNull(), Constants.BASE64_THEMES)
-            val response = RetrofitApi().getServerCallObject()?.getImageUploadCdnLink(imageTypeRequestBody, fileRequestBody)
-            response?.let {
-                if (response.isSuccessful) {
-                    val base64Str = Gson().fromJson<String>(response.body()?.mCommonDataStr, String::class.java)
-                    if (mode == Constants.EDIT_PHOTO_MODE_MOBILE) mMobileCdnLink = base64Str else mDesktopCdnLink = base64Str
-                    if (mode == Constants.EDIT_PHOTO_MODE_DESKTOP) {
-                        AppEventsManager.pushAppEvents(
-                            eventName = AFInAppEventType.EVENT_DESKTOP_BANNER_CROPPED,
-                            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                            data = mapOf(
-                                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)
+            try {
+                val fileRequestBody = MultipartBody.Part.createFormData("media", file.name, RequestBody.create("image/*".toMediaTypeOrNull(), file))
+                val imageTypeRequestBody = RequestBody.create("text/plain".toMediaTypeOrNull(), Constants.BASE64_THEMES)
+                val response = RetrofitApi().getServerCallObject()?.getImageUploadCdnLink(imageTypeRequestBody, fileRequestBody)
+                response?.let {
+                    if (response.isSuccessful) {
+                        val base64Str = Gson().fromJson<String>(response.body()?.mCommonDataStr, String::class.java)
+                        if (mode == Constants.EDIT_PHOTO_MODE_MOBILE) mMobileCdnLink = base64Str else mDesktopCdnLink = base64Str
+                        if (mode == Constants.EDIT_PHOTO_MODE_DESKTOP) {
+                            AppEventsManager.pushAppEvents(
+                                eventName = AFInAppEventType.EVENT_DESKTOP_BANNER_CROPPED,
+                                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                                data = mapOf(
+                                    AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)
+                                )
                             )
-                        )
-                        onDesktopCDNLinkGenerated()
+                            onDesktopCDNLinkGenerated()
+                        }
                     }
                 }
+            } catch (e: Exception) {
+                Sentry.captureException(e, "$TAG uploadImageToGetCDNLink: exception")
+                exceptionHandlingForAPIResponse(e)
             }
         }
     }
@@ -123,20 +130,25 @@ class EditPhotoFragment: BaseFragment() {
                     imageUrlItems?.add(request)
                 }
             }
-            val request = StoreThemeBannerRequest(mPremiumPageInfoResponse?.theme?.storeThemeId, imageUrlItems)
-            val response = RetrofitApi().getServerCallObject()?.setStoreThemeBanner(request)
-            response?.let {
-                CoroutineScopeUtils().runTaskOnCoroutineMain {
-                    stopProgress()
-                    if (response.isSuccessful) {
-                        if (response.body()?.mIsSuccessStatus == true) {
-                            showShortSnackBar(response.body()?.mMessage, true, R.drawable.ic_green_check_small)
-                            launchFragment(HomeFragment.newInstance(), true)
+            try {
+                val request = StoreThemeBannerRequest(mPremiumPageInfoResponse?.theme?.storeThemeId, imageUrlItems)
+                val response = RetrofitApi().getServerCallObject()?.setStoreThemeBanner(request)
+                response?.let {
+                    CoroutineScopeUtils().runTaskOnCoroutineMain {
+                        stopProgress()
+                        if (response.isSuccessful) {
+                            if (response.body()?.mIsSuccessStatus == true) {
+                                showShortSnackBar(response.body()?.mMessage, true, R.drawable.ic_green_check_small)
+                                launchFragment(HomeFragment.newInstance(), true)
+                            }
+                            else
+                                showShortSnackBar(response.body()?.mMessage, true, R.drawable.ic_close_red)
                         }
-                        else
-                            showShortSnackBar(response.body()?.mMessage, true, R.drawable.ic_close_red)
                     }
                 }
+            } catch (e: Exception) {
+                Sentry.captureException(e, "$TAG onDesktopCDNLinkGenerated: exception")
+                exceptionHandlingForAPIResponse(e)
             }
         }
     }

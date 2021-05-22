@@ -29,6 +29,7 @@ import com.digitaldukaan.webviews.WebViewBridge
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import io.sentry.Sentry
 import kotlinx.android.synthetic.main.layout_edit_premium_fragment.*
 
 class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
@@ -182,12 +183,17 @@ class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
                 } else {
                     showProgressDialog(mActivity)
                     CoroutineScopeUtils().runTaskOnCoroutineBackground {
-                        val response = RetrofitApi().getServerCallObject()?.getProductShareStoreData()
-                        CoroutineScopeUtils().runTaskOnCoroutineMain {
-                            val commonResponse = response?.body()
-                            stopProgress()
-                            mShareDataOverWhatsAppText = Gson().fromJson<String>(commonResponse?.mCommonDataStr, String::class.java)
-                            shareOnWhatsApp(mShareDataOverWhatsAppText)
+                        try {
+                            val response = RetrofitApi().getServerCallObject()?.getProductShareStoreData()
+                            CoroutineScopeUtils().runTaskOnCoroutineMain {
+                                val commonResponse = response?.body()
+                                stopProgress()
+                                mShareDataOverWhatsAppText = Gson().fromJson<String>(commonResponse?.mCommonDataStr, String::class.java)
+                                shareOnWhatsApp(mShareDataOverWhatsAppText)
+                            }
+                        } catch (e: Exception) {
+                            Sentry.captureException(e, "$TAG onClick: exception")
+                            exceptionHandlingForAPIResponse(e)
                         }
                     }
                 }

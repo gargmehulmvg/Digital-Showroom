@@ -51,6 +51,7 @@ class Constants {
         const val ACTION_SHARE_BILL = "share-bill"
         const val ACTION_DOWNLOAD_BILL = "download-bill"
         const val ACTION_CASH_COLLECTED = "cash-collected"
+        const val ACTION_DOMAIN_SUCCESS = "domain-success"
         //Incomplete profile actions
         const val ACTION_LOGO = "logo"
         const val ACTION_DESCRIPTION = "description"
@@ -107,6 +108,7 @@ class Constants {
         const val NEW_RELEASE_TYPE_PREMIUM = "premium"
         const val NEW_RELEASE_TYPE_NEW = "new"
         const val NEW_RELEASE_TYPE_CUSTOM_DOMAIN = "custom-domain"
+        const val NEW_RELEASE_TYPE_PREPAID_ORDER = "prepaid-order"
         const val NEW_RELEASE_TYPE_TRENDING = "trending"
         const val NEW_RELEASE_TYPE_EXTERNAL = "external"
         //EDIT PHOTO MODES

@@ -21,11 +21,11 @@ class ProfilePreviewAdapter(
     private var mSettingsKeysList: ArrayList<ProfilePreviewSettingsKeyResponse>,
     private val mProfilePreviewListener: IProfilePreviewItemClicked,
     private val mBusinessList: ArrayList<StoreBusinessResponse>?
-) :
-    RecyclerView.Adapter<ProfilePreviewAdapter.ProfilePreviewViewHolder>() {
+) : RecyclerView.Adapter<ProfilePreviewAdapter.ProfilePreviewViewHolder>() {
 
     inner class ProfilePreviewViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val settingKeyHeading: TextView = itemView.findViewById(R.id.settingKeyHeading)
+        val forwardArrowImageView: View = itemView.findViewById(R.id.imageView2)
         val addSettingKeyHeading: TextView = itemView.findViewById(R.id.addSettingKeyHeading)
         val profilePreviewContainer: View = itemView.findViewById(R.id.profilePreviewContainer)
         val profilePreviewDefaultScreenGroup: View = itemView.findViewById(R.id.profilePreviewDefaultScreenGroup)
@@ -63,22 +63,11 @@ class ProfilePreviewAdapter(
                 }
                 settingKeyItem.mIsEditable.run {
                     holder.profilePreviewContainer.isEnabled = this
-                    addSettingKeyDataTextView.setCompoundDrawablesWithIntrinsicBounds(
-                        0,
-                        0,
-                        R.drawable.ic_edit,
-                        0
-                    )
+                    addSettingKeyDataTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, if (mIsEditable) R.drawable.ic_edit else 0, 0)
                 }
                 when (settingKeyItem.mAction) {
-                    Constants.ACTION_STORE_LOCATION -> {
-                        addSettingKeyDataTextView.setCompoundDrawablesWithIntrinsicBounds(
-                            R.drawable.ic_location_color,
-                            0,
-                            R.drawable.ic_edit,
-                            0
-                        )
-                    }
+                    Constants.ACTION_STORE_LOCATION -> addSettingKeyDataTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_location_color, 0, R.drawable.ic_edit, 0)
+                    Constants.ACTION_DOMAIN_SUCCESS -> addSettingKeyDataTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_round_green_arrow_small, 0)
                     Constants.ACTION_BUSINESS_TYPE -> {
                         profilePreviewBusinessTypeRecyclerView.visibility = View.VISIBLE
                         val layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false).apply {

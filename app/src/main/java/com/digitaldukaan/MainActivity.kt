@@ -184,20 +184,22 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     }
 
     fun showToast(message: String?) {
-        try {
-            runOnUiThread { Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show() }
-        } catch (e: Exception) {
-            Log.e(TAG, "showToast: ${e.message}", e)
-            AppEventsManager.pushAppEvents(
-                eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
-                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                data = mapOf(
-                    AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                    "Exception Point" to "showToast",
-                    "Exception Message" to e.message,
-                    "Exception Logs" to e.toString()
+        runOnUiThread {
+            try {
+                Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show()
+            } catch (e: Exception) {
+                Log.e(TAG, "showToast: ${e.message}", e)
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(
+                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                        "Exception Point" to "showToast",
+                        "Exception Message" to e.message,
+                        "Exception Logs" to e.toString()
+                    )
                 )
-            )
+            }
         }
     }
 
