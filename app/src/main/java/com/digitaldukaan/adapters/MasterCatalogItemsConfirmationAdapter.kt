@@ -44,7 +44,7 @@ class MasterCatalogItemsConfirmationAdapter(
 
             override fun afterTextChanged(editable: Editable) {
                 val str = editable.toString()
-                addMasterCatalogConfirmProductsList[view.adapterPosition]?.price = if (str.isNotEmpty()) str.toDouble() else 0.0
+                if ("." != str) addMasterCatalogConfirmProductsList[view.adapterPosition]?.price = if (str.isNotEmpty()) str.toDouble() else 0.0
             }
         })
         return view

@@ -145,11 +145,12 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                 openWebViewFragment(this, "", WebViewUrls.WEB_VIEW_CREATIVE_LIST, Constants.SETTINGS)
             }
             Constants.NEW_RELEASE_TYPE_CUSTOM_DOMAIN -> {
-                /*AppEventsManager.pushAppEvents(
-                    eventName = AFInAppEventType.EVENT_MARKET_VIEW_NOW,
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_DOMAIN_EXPLORE,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), "type" to AFInAppEventParameterName.SOCIAL)
-                )*/
+                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                        AFInAppEventParameterName.CHANNEL to AFInAppEventParameterName.IS_MARKETING_PAGE)
+                )
                 openWebViewFragment(this, "", BuildConfig.WEB_VIEW_URL + response.pageUrl)
             }
             Constants.ACTION_SOCIAL_CREATIVE -> {

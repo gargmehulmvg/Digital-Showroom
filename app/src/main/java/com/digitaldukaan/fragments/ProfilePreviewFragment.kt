@@ -163,17 +163,31 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
             }
             ToolBarManager.getInstance()?.setHeaderTitle(mProfilePreviewResponse?.mProfileStaticText?.pageHeading)
             val bannerRecyclerView: RecyclerView? = mContentView?.findViewById(R.id.bannerRecyclerView)
-            bannerRecyclerView?.apply {
-                layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
-                adapter = ProfilePageBannerAdapter(mProfilePreviewResponse?.mBannerList,
-                    object : IAdapterItemClickListener {
-                        override fun onAdapterItemClickListener(position: Int) {
-                            val item = mProfilePreviewResponse?.mBannerList?.get(position)
-                            when(item?.mAction) {
-                                Constants.NEW_RELEASE_TYPE_CUSTOM_DOMAIN -> openWebViewFragment(this@ProfilePreviewFragment, "", BuildConfig.WEB_VIEW_URL + item.mDeepLinkUrl)
+            val profileBannerList = mProfilePreviewResponse?.mBannerList
+            if (isEmpty(profileBannerList)) {
+                bannerRecyclerView?.visibility = View.GONE
+            } else {
+                bannerRecyclerView?.visibility = View.VISIBLE
+                bannerRecyclerView?.apply {
+                    layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
+                    adapter = ProfilePageBannerAdapter(mProfilePreviewResponse?.mBannerList,
+                        object : IAdapterItemClickListener {
+                            override fun onAdapterItemClickListener(position: Int) {
+                                val item = mProfilePreviewResponse?.mBannerList?.get(position)
+                                when(item?.mAction) {
+                                    Constants.NEW_RELEASE_TYPE_CUSTOM_DOMAIN -> {
+                                        AppEventsManager.pushAppEvents(
+                                            eventName = AFInAppEventType.EVENT_DOMAIN_EXPLORE,
+                                            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                                            data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                                                AFInAppEventParameterName.CHANNEL to AFInAppEventParameterName.IS_PROFILE_PAGE)
+                                        )
+                                        openWebViewFragment(this@ProfilePreviewFragment, "", BuildConfig.WEB_VIEW_URL + item.mDeepLinkUrl)
+                                    }
+                                }
                             }
-                        }
-                    })
+                        })
+                }
             }
             mProfilePreviewResponse?.mStoreItemResponse?.run {
                 profilePreviewStoreNameTextView?.text = storeInfo.name
@@ -289,10 +303,19 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
     }
 
     override fun onProfilePreviewItemClicked(profilePreviewResponse: ProfilePreviewSettingsKeyResponse, position: Int) {
+        Log.d(TAG, "onProfilePreviewItemClicked: $profilePreviewResponse")
         mProfileInfoSettingKeyResponse = profilePreviewResponse
         when (profilePreviewResponse.mAction) {
             Constants.ACTION_STORE_DESCRIPTION -> launchFragment(StoreDescriptionFragment.newInstance(profilePreviewResponse, position, true, mProfilePreviewResponse), true)
             Constants.ACTION_STORE_LOCATION -> launchFragment(StoreMapLocationFragment.newInstance(profilePreviewResponse, position, true, mProfilePreviewResponse), true)
+            Constants.ACTION_DOMAIN_SUCCESS -> {
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_DOMAIN_DETAIL,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.CHANNEL to AFInAppEventParameterName.IS_PROFILE_PAGE)
+                )
+                openWebViewFragment(this@ProfilePreviewFragment, "", BuildConfig.WEB_VIEW_URL + profilePreviewResponse.mAction)
+            }
             Constants.ACTION_BANK_ACCOUNT -> launchFragment(BankAccountFragment.newInstance(profilePreviewResponse, position, true, mProfilePreviewResponse), true)
             Constants.ACTION_BUSINESS_TYPE -> launchFragment(BusinessTypeFragment.newInstance(profilePreviewResponse, position, true, mProfilePreviewResponse), true)
             Constants.ACTION_EDIT_STORE_LINK -> showEditStoreWarningDialog(profilePreviewResponse)

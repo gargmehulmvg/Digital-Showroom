@@ -6,6 +6,7 @@ data class PremiumPageInfoResponse(
     @SerializedName("theme") var theme: ThemeResponse?,
     @SerializedName("static_text") var staticText: PremiumPageInfoStaticTextResponse?,
     @SerializedName("domain") var domain: String?,
+    @SerializedName("is_bottom_nav_bar_active") var mIsBottomNavBarActive: Boolean,
     @SerializedName("premium") var premium: PremiumPageActiveResponse?
 )
 
