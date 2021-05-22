@@ -529,18 +529,18 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
             appTitleTextView?.text = "$text_order #$mOrderId"
             if (orderDetailResponse?.deliveryInfo?.customDeliveryTime?.isEmpty() == true) estimateDeliveryTextView.visibility = View.GONE else {
                 val estimatedDeliveryStr = "$text_estimate_delivery : ${orderDetailResponse?.deliveryInfo?.customDeliveryTime}"
-                estimateDeliveryTextView.text = estimatedDeliveryStr
+                estimateDeliveryTextView?.text = estimatedDeliveryStr
             }
             statusValue?.text = orderDetailResponse?.orderPaymentStatus?.value
             mActivity?.run {
                 when (orderDetailResponse?.orderPaymentStatus?.key) {
                     Constants.ORDER_STATUS_SUCCESS -> {
-                        statusValue.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_tick_green_hollow, 0)
-                        orderDetailContainer.setBackgroundColor(ContextCompat.getColor(this, R.color.open_green))
+                        statusValue?.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_tick_green_hollow, 0)
+                        orderDetailContainer?.setBackgroundColor(ContextCompat.getColor(this, R.color.open_green))
                     }
-                    Constants.ORDER_STATUS_REJECTED -> orderDetailContainer.setBackgroundColor(ContextCompat.getColor(this, R.color.red))
-                    Constants.ORDER_STATUS_IN_PROGRESS -> orderDetailContainer.setBackgroundColor(ContextCompat.getColor(this, R.color.order_detail_in_progress))
-                    else -> orderDetailContainer.setBackgroundColor(ContextCompat.getColor(this, R.color.black))
+                    Constants.ORDER_STATUS_REJECTED -> orderDetailContainer?.setBackgroundColor(ContextCompat.getColor(this, R.color.red))
+                    Constants.ORDER_STATUS_IN_PROGRESS -> orderDetailContainer?.setBackgroundColor(ContextCompat.getColor(this, R.color.order_detail_in_progress))
+                    else -> orderDetailContainer?.setBackgroundColor(ContextCompat.getColor(this, R.color.black))
                 }
             }
         }
@@ -643,7 +643,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                 )
                 orderDetailsItemsList?.add(orderDetailItemResponse)
             }
-            amount = (if (amountEditText.text?.isNotEmpty() == true) amountEditText.text.toString().toDouble() else amount)
+            amount = (if (true == amountEditText.text?.isNotEmpty()) amountEditText.text.toString().toDouble() else amount)
         }
         launchFragment(SendBillPhotoFragment.newInstance(orderDetailMainResponse, file, mDeliveryTimeStr), true)
     }
