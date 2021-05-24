@@ -87,11 +87,7 @@ fun convertImageFileToBase64(imageFile: File?): String {
     }
 }
 
-fun downloadImageNew(
-    filename: String,
-    downloadUrlOfImage: String,
-    context: Context
-) {
+fun downloadImageNew(filename: String, downloadUrlOfImage: String, context: Context) {
     try {
         val dm = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager?
         val downloadUri = Uri.parse(downloadUrlOfImage)

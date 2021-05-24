@@ -686,50 +686,19 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
 
     open fun openMobileGalleryWithImage() {
         mActivity?.run {
-            ImagePicker.with(this)
-                .saveDir(getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!)
-                .galleryMimeTypes(  //Exclude gif images
-                    mimeTypes = arrayOf(
-                        "image/png",
-                        "image/jpg",
-                        "image/jpeg"
-                    )
-                )
-                .galleryOnly()
-                .crop(1f, 1f)                   // Crop image(Optional), Check Customization for more option
-                .compress(1024)               // Final image size will be less than 1 MB(Optional)
-                .maxResultSize(1080, 1080) //Final image resolution will be less than 1080 x 1080(Optional)
-                .createIntent { intent ->
-                    try {
-                        startForProfileImageResult.launch(intent)
-                    } catch (e: Exception) {
-                        Log.e(TAG, "openMobileGalleryWithImage: ${e.message}", e)
-                    }
-                }
-        }
-    }
-
-    open fun openGalleryWithoutCrop() {
-        mActivity?.run {
-            ImagePicker.with(this)
-                .saveDir(getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!)
-                .galleryMimeTypes(  //Exclude gif images
-                    mimeTypes = arrayOf(
-                        "image/png",
-                        "image/jpg",
-                        "image/jpeg"
-                    )
-                )
-                .galleryOnly()
-                .compress(1024)            //Final image size will be less than 1 MB(Optional)
-                .maxResultSize(1080, 1080) //Final image resolution will be less than 1080 x 1080(Optional)
-                .createIntent { intent ->
-                    try {
-                        startForProfileImageResult.launch(intent)
-                    } catch (e: Exception) {
-                        Log.e(TAG, "openMobileGalleryWithImage: ${e.message}", e)
-                    }
-                }
+            val fileName = "tempFile_${System.currentTimeMillis()}"
+            val storageDirectory = this.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+            try {
+                val imageFile = File.createTempFile(fileName, ".jpg", storageDirectory)
+                mCurrentPhotoPath = imageFile.absolutePath
+                val cameraIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
+                val imageUri = FileProvider.getUriForFile(this, "com.digitaldukaan.fileprovider", imageFile)
+                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
+                cameraGalleryWithCropIntentResult.launch(cameraIntent)
+            } catch (e: Exception) {
+                showToast(e.message)
+                Log.e(TAG, "openCamera: ${e.message}", e)
+            }
         }
     }
 
@@ -743,7 +712,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                 val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                 val imageUri = FileProvider.getUriForFile(this, "com.digitaldukaan.fileprovider", imageFile)
                 cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
-                resultLauncherForCamera.launch(cameraIntent)
+                cameraGalleryWithCropIntentResult.launch(cameraIntent)
             } catch (e: Exception) {
                 showToast(e.message)
                 Log.e(TAG, "openCamera: ${e.message}", e)
@@ -751,28 +720,31 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         }
     }
 
-    private var resultLauncherForCamera = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+    private var cameraGalleryWithCropIntentResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             Log.d(TAG, "onActivityResult: ")
             if (result.resultCode == Activity.RESULT_OK) {
                 CoroutineScopeUtils().runTaskOnCoroutineMain {
                     try {
                         Log.d(TAG, "onActivityResult: OK")
                         val bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath)
-                        bitmap?.let {
-                            var file = File(mCurrentPhotoPath)
-                            mActivity?.run {
-                                Log.d(TAG, "ORIGINAL :: ${file.length() / (1024)} KB")
-                                file = Compressor.compress(this, file)
-                                Log.d(TAG, "COMPRESSED :: ${file.length() / (1024)} KB")
-                            }
-                            showToast("${file.length() / (1024 * 1024)} MB")
-                            if (file.length() / (1024 * 1024) >= mActivity?.resources?.getInteger(R.integer.image_mb_size) ?: 0) {
-                                showToast("Images more than ${mActivity?.resources?.getInteger(R.integer.image_mb_size)} are not allowed")
-                                return@let
-                            }
-                            val fileUri = it.getImageUri(mActivity)
-                            fileUri?.let { uri ->  startCropping(uri) }
-                        }
+                        Log.d(TAG, "onActivityResult: bitmap :: $bitmap")
+                        if (null == bitmap) handleGalleryResult(result, true) else handleCameraResult(bitmap, true)
+                    } catch (e: Exception) {
+                        Log.e(TAG, "resultLauncherForCamera: ${e.message}", e)
+                    }
+                }
+            }
+        }
+    
+    private var cameraGalleryWithoutCropIntentResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            Log.d(TAG, "onActivityResult: ")
+            if (result.resultCode == Activity.RESULT_OK) {
+                CoroutineScopeUtils().runTaskOnCoroutineMain {
+                    try {
+                        Log.d(TAG, "onActivityResult: OK")
+                        val bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath)
+                        Log.d(TAG, "onActivityResult: bitmap :: $bitmap")
+                        if (null == bitmap) handleGalleryResult(result, false) else handleCameraResult(bitmap, false)
                     } catch (e: Exception) {
                         Log.e(TAG, "resultLauncherForCamera: ${e.message}", e)
                     }
@@ -780,20 +752,68 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
             }
         }
 
+    private suspend fun handleCameraResult(it: Bitmap?, isCropAllowed: Boolean) {
+        var file = File(mCurrentPhotoPath)
+        mActivity?.run {
+            Log.d(TAG, "ORIGINAL :: ${file.length() / (1024)} KB")
+            file = Compressor.compress(this, file)
+            Log.d(TAG, "COMPRESSED :: ${file.length() / (1024)} KB")
+        }
+        showToast("${file.length() / (1024 * 1024)} MB")
+        if (file.length() / (1024 * 1024) >= mActivity?.resources?.getInteger(R.integer.image_mb_size) ?: 0) {
+            showToast("Images more than ${mActivity?.resources?.getInteger(R.integer.image_mb_size)} are not allowed")
+            return
+        }
+        val fileUri = it?.getImageUri(mActivity)
+        if (isCropAllowed) {
+            fileUri?.let { uri -> startCropping(uri) }
+        } else {
+            onImageSelectionResultUri(fileUri)
+            onImageSelectionResultFile(file)
+        }
+    }
+
+    private suspend fun handleGalleryResult(result: ActivityResult, isCropAllowed: Boolean) {
+        val bitmap: Bitmap?
+        Log.d(TAG, "onActivityResult: bitmap is null")
+        val galleryUri = result.data?.data
+        bitmap = getBitmapFromUri(galleryUri, mActivity)
+        Log.d(TAG, "onActivityResult: bitmap :: $bitmap")
+        var file = getImageFileFromBitmap(bitmap, mActivity)
+        file?.let {
+            Log.d(TAG, "ORIGINAL :: ${it.length() / (1024)} KB")
+            mActivity?.run { file = Compressor.compress(this, it) }
+            Log.d(TAG, "COMPRESSED :: ${it.length() / (1024)} KB")
+            showToast("${it.length() / (1024 * 1024)} MB")
+            if (it.length() / (1024 * 1024) >= mActivity?.resources?.getInteger(R.integer.image_mb_size) ?: 0) {
+                showToast("Images more than ${mActivity?.resources?.getInteger(R.integer.image_mb_size)} are not allowed")
+                return@let
+            }
+            val fileUri = bitmap?.getImageUri(mActivity)
+            if (isCropAllowed) {
+                fileUri?.let { uri -> startCropping(uri) }
+            } else {
+                onImageSelectionResultUri(fileUri)
+                onImageSelectionResultFile(file)
+            }
+        }
+    }
+
     open fun openFullCamera() {
         mActivity?.run {
-            ImagePicker.with(this)
-                .cameraOnly()
-                .saveDir(getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!)
-                .compress(1024)            //Final image size will be less than 1 MB(Optional)
-                .maxResultSize(1080, 1080)
-                .createIntent { intent ->
-                    try {
-                        startForProfileImageResult.launch(intent)
-                    } catch (e: Exception) {
-                        Log.e(TAG, "openMobileGalleryWithImage: ${e.message}", e)
-                    }
-                }
+            val fileName = "tempFile_${System.currentTimeMillis()}"
+            val storageDirectory = this.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+            try {
+                val imageFile = File.createTempFile(fileName, ".jpg", storageDirectory)
+                mCurrentPhotoPath = imageFile.absolutePath
+                val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                val imageUri = FileProvider.getUriForFile(this, "com.digitaldukaan.fileprovider", imageFile)
+                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
+                cameraGalleryWithoutCropIntentResult.launch(cameraIntent)
+            } catch (e: Exception) {
+                showToast(e.message)
+                Log.e(TAG, "openCamera: ${e.message}", e)
+            }
         }
     }
 
