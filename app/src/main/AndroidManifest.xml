@@ -49,6 +49,8 @@
                 <data android:scheme="digitaldukaan" />
             </intent-filter>
         </activity>
+        <activity android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
+            android:theme="@style/Base.Theme.AppCompat"/>
         <provider
             android:authorities="com.digitaldukaan.fileprovider"
             android:name="androidx.core.content.FileProvider"

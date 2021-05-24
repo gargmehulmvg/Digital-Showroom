@@ -53,6 +53,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import com.squareup.picasso.Picasso
+import com.theartofdev.edmodo.cropper.CropImage
 import id.zelory.compressor.Compressor
 import io.sentry.Sentry
 import kotlinx.android.synthetic.main.activity_main2.*
@@ -750,8 +751,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         }
     }
 
-    private var resultLauncherForCamera =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+    private var resultLauncherForCamera = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             Log.d(TAG, "onActivityResult: ")
             if (result.resultCode == Activity.RESULT_OK) {
                 CoroutineScopeUtils().runTaskOnCoroutineMain {
@@ -770,12 +770,8 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                                 showToast("Images more than ${mActivity?.resources?.getInteger(R.integer.image_mb_size)} are not allowed")
                                 return@let
                             }
-                            Log.d(TAG, "onActivityResult: bitmap :: $bitmap")
                             val fileUri = it.getImageUri(mActivity)
-                            Log.d(TAG, "onActivityResult: fileUri : $fileUri")
-                            onImageSelectionResultUri(fileUri)
-                            Log.d(TAG, "onActivityResult: file: $file")
-                            onImageSelectionResultFile(file)
+                            fileUri?.let { uri ->  startCropping(uri) }
                         }
                     } catch (e: Exception) {
                         Log.e(TAG, "resultLauncherForCamera: ${e.message}", e)
@@ -801,22 +797,33 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         }
     }
 
+    private fun startCropping(sourceUri: Uri) {
+        mActivity?.let {
+            CropImage.activity(sourceUri)
+                .setAspectRatio(1, 1)
+                .setMaxCropResultSize(2048, 2048)
+                .setAllowFlipping(false)
+                .setActivityTitle("Crop Image")
+                .setAutoZoomEnabled(true)
+                .setMaxZoom(10)
+                .start(it)
+        }
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         Log.d(TAG, "onActivityResult: ")
         if (resultCode == Activity.RESULT_OK) {
             Log.d(TAG, "onActivityResult: OK")
-            if (requestCode == Constants.CAMERA_REQUEST_CODE) {
-                Log.d(TAG, "onActivityResult: request code camera")
-                val bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath)
-                bitmap?.let {
-                    Log.d(TAG, "onActivityResult: bitmap :: $bitmap")
-                    val fileUri = it.getImageUri(mActivity)
-                    Log.d(TAG, "onActivityResult: fileUri : $fileUri")
-                    onImageSelectionResultUri(fileUri)
-                    val file = File(mCurrentPhotoPath)
-                    Log.d(TAG, "onActivityResult: file: $file")
-                    onImageSelectionResultFile(file)
-                }
+            if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+                Log.d(TAG, "onActivityResult: CROP_IMAGE_ACTIVITY_REQUEST_CODE ")
+                val result = CropImage.getActivityResult(data)
+                Log.d(TAG, "onActivityResult: CROP_IMAGE_ACTIVITY_REQUEST_CODE result :: $result")
+                val resultUri = result.uri
+                Log.d(TAG, "onActivityResult: CROP_IMAGE_ACTIVITY_REQUEST_CODE :: result uri :: $resultUri")
+                onImageSelectionResultUri(resultUri)
+                val croppedBitmap = getBitmapFromUri(resultUri, mActivity)
+                val croppedFile = getImageFileFromBitmap(croppedBitmap, mActivity)
+                onImageSelectionResultFile(croppedFile)
             }
         }
     }
