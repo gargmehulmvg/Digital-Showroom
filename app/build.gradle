@@ -142,4 +142,6 @@ dependencies {
     implementation 'com.tbuonomo:dotsindicator:4.2'
     //Add Sentry's SDK as a dependency
     implementation 'io.sentry:sentry-android:4.3.0'
+    //image compression
+    implementation 'id.zelory:compressor:3.0.1'
 }

@@ -53,6 +53,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import com.squareup.picasso.Picasso
+import id.zelory.compressor.Compressor
 import io.sentry.Sentry
 import kotlinx.android.synthetic.main.activity_main2.*
 import kotlinx.coroutines.Dispatchers
@@ -753,21 +754,32 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             Log.d(TAG, "onActivityResult: ")
             if (result.resultCode == Activity.RESULT_OK) {
-                Log.d(TAG, "onActivityResult: OK")
-                val bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath)
-                bitmap?.let {
-                    val file = File(mCurrentPhotoPath)
-                    showToast("${file.length() / (1024 * 1024)} MB")
-                    if (file.length() / (1024 * 1024) >= mActivity?.resources?.getInteger(R.integer.image_mb_size) ?: 0) {
-                        showToast("Images more than ${mActivity?.resources?.getInteger(R.integer.image_mb_size)} are not allowed")
-                        return@let
+                CoroutineScopeUtils().runTaskOnCoroutineMain {
+                    try {
+                        Log.d(TAG, "onActivityResult: OK")
+                        val bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath)
+                        bitmap?.let {
+                            var file = File(mCurrentPhotoPath)
+                            mActivity?.run {
+                                Log.d(TAG, "ORIGINAL :: ${file.length() / (1024)} KB")
+                                file = Compressor.compress(this, file)
+                                Log.d(TAG, "COMPRESSED :: ${file.length() / (1024)} KB")
+                            }
+                            showToast("${file.length() / (1024 * 1024)} MB")
+                            if (file.length() / (1024 * 1024) >= mActivity?.resources?.getInteger(R.integer.image_mb_size) ?: 0) {
+                                showToast("Images more than ${mActivity?.resources?.getInteger(R.integer.image_mb_size)} are not allowed")
+                                return@let
+                            }
+                            Log.d(TAG, "onActivityResult: bitmap :: $bitmap")
+                            val fileUri = it.getImageUri(mActivity)
+                            Log.d(TAG, "onActivityResult: fileUri : $fileUri")
+                            onImageSelectionResultUri(fileUri)
+                            Log.d(TAG, "onActivityResult: file: $file")
+                            onImageSelectionResultFile(file)
+                        }
+                    } catch (e: Exception) {
+                        Log.e(TAG, "resultLauncherForCamera: ${e.message}", e)
                     }
-                    Log.d(TAG, "onActivityResult: bitmap :: $bitmap")
-                    val fileUri = it.getImageUri(mActivity)
-                    Log.d(TAG, "onActivityResult: fileUri : $fileUri")
-                    onImageSelectionResultUri(fileUri)
-                    Log.d(TAG, "onActivityResult: file: $file")
-                    onImageSelectionResultFile(file)
                 }
             }
         }
