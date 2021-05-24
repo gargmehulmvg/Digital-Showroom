@@ -8,6 +8,7 @@ import android.content.*
 import android.content.Context.MODE_PRIVATE
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.drawable.ColorDrawable
@@ -17,6 +18,7 @@ import android.os.Build
 import android.os.Environment
 import android.os.Handler
 import android.os.Looper
+import android.provider.MediaStore
 import android.provider.Settings
 import android.text.Editable
 import android.text.Html
@@ -32,6 +34,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -73,6 +76,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
 
     companion object {
         private const val TAG = "BaseFragment"
+        private var mCurrentPhotoPath = ""
     }
 
     override fun onAttach(context: Context) {
@@ -729,21 +733,44 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
 
     open fun openCamera() {
         mActivity?.run {
-            ImagePicker.with(this)
-                .cameraOnly()
-                .saveDir(getExternalFilesDir(Environment.DIRECTORY_PICTURES)!!)
-                .crop(1f, 1f) //Crop image(Optional), Check Customization for more option
-                .compress(1024)            //Final image size will be less than 1 MB(Optional)
-                .maxResultSize(1080, 1080) //Final image resolution will be less than 1080 x 1080(Optional)
-                .createIntent { intent ->
-                    try {
-                        startForProfileImageResult.launch(intent)
-                    } catch (e: Exception) {
-                        Log.e(TAG, "openMobileGalleryWithImage: ${e.message}", e)
-                    }
-                }
+            val fileName = "tempFile_${System.currentTimeMillis()}"
+            val storageDirectory = this.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+            try {
+                val imageFile = File.createTempFile(fileName, ".jpg", storageDirectory)
+                mCurrentPhotoPath = imageFile.absolutePath
+                val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                val imageUri = FileProvider.getUriForFile(this, "com.digitaldukaan.fileprovider", imageFile)
+                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
+                resultLauncherForCamera.launch(cameraIntent)
+            } catch (e: Exception) {
+                showToast(e.message)
+                Log.e(TAG, "openCamera: ${e.message}", e)
+            }
         }
     }
+
+    private var resultLauncherForCamera =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            Log.d(TAG, "onActivityResult: ")
+            if (result.resultCode == Activity.RESULT_OK) {
+                Log.d(TAG, "onActivityResult: OK")
+                val bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath)
+                bitmap?.let {
+                    val file = File(mCurrentPhotoPath)
+                    showToast("${file.length() / (1024 * 1024)} MB")
+                    if (file.length() / (1024 * 1024) >= mActivity?.resources?.getInteger(R.integer.image_mb_size) ?: 0) {
+                        showToast("Images more than ${mActivity?.resources?.getInteger(R.integer.image_mb_size)} are not allowed")
+                        return@let
+                    }
+                    Log.d(TAG, "onActivityResult: bitmap :: $bitmap")
+                    val fileUri = it.getImageUri(mActivity)
+                    Log.d(TAG, "onActivityResult: fileUri : $fileUri")
+                    onImageSelectionResultUri(fileUri)
+                    Log.d(TAG, "onActivityResult: file: $file")
+                    onImageSelectionResultFile(file)
+                }
+            }
+        }
 
     open fun openFullCamera() {
         mActivity?.run {
@@ -762,7 +789,25 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) = Unit
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        Log.d(TAG, "onActivityResult: ")
+        if (resultCode == Activity.RESULT_OK) {
+            Log.d(TAG, "onActivityResult: OK")
+            if (requestCode == Constants.CAMERA_REQUEST_CODE) {
+                Log.d(TAG, "onActivityResult: request code camera")
+                val bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath)
+                bitmap?.let {
+                    Log.d(TAG, "onActivityResult: bitmap :: $bitmap")
+                    val fileUri = it.getImageUri(mActivity)
+                    Log.d(TAG, "onActivityResult: fileUri : $fileUri")
+                    onImageSelectionResultUri(fileUri)
+                    val file = File(mCurrentPhotoPath)
+                    Log.d(TAG, "onActivityResult: file: $file")
+                    onImageSelectionResultFile(file)
+                }
+            }
+        }
+    }
 
     private val startForProfileImageResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
