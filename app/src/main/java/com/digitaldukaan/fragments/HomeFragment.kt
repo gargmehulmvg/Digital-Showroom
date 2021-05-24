@@ -414,26 +414,25 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                     mSwipeRefreshLayout?.isEnabled = true
                     homePageWebViewLayout?.visibility = View.GONE
                     orderLayout?.visibility = View.VISIBLE
-                    bannerRecyclerView?.apply {
-                        linearLayoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
-                        layoutManager = linearLayoutManager
-                        adapter = OrderPageBannerAdapter(
-                            orderPageInfoResponse?.mBannerList,
-                            object : IAdapterItemClickListener {
-                                override fun onAdapterItemClickListener(position: Int) {
-                                    val item = orderPageInfoResponse?.mBannerList?.get(position)
-                                    when (item?.mAction) {
-                                        Constants.ACTION_ADD_BANK -> launchFragment(
-                                            BankAccountFragment.newInstance(
-                                                null,
-                                                0,
-                                                false,
-                                                null
-                                            ), true
-                                        )
+                    val homePageBannerList = orderPageInfoResponse?.mBannerList
+                    if (isEmpty(homePageBannerList)) {
+                        bannerRecyclerView?.visibility = View.GONE
+                    } else {
+                        bannerRecyclerView?.visibility = View.VISIBLE
+                        bannerRecyclerView?.apply {
+                            linearLayoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
+                            layoutManager = linearLayoutManager
+                            adapter = OrderPageBannerAdapter(
+                                homePageBannerList,
+                                object : IAdapterItemClickListener {
+                                    override fun onAdapterItemClickListener(position: Int) {
+                                        val item = homePageBannerList?.get(position)
+                                        when (item?.mAction) {
+                                            Constants.ACTION_ADD_BANK -> launchFragment(BankAccountFragment.newInstance(null, 0, false, null), true)
+                                        }
                                     }
-                                }
-                            })
+                                })
+                        }
                     }
                     Handler(Looper.getMainLooper()).postDelayed({ fetchLatestOrders(Constants.MODE_PENDING, mFetchingOrdersStr, pendingPageCount) }, 150)
                 }

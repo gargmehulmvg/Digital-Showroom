@@ -432,16 +432,12 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         stepsLeftTextView?.text = if (remainingSteps == 1) "$remainingSteps ${infoResponse.mAccountStaticText?.mStepLeft}" else "$remainingSteps ${infoResponse.mAccountStaticText?.mStepsLeft}"
         completeProfileTextView?.text = infoResponse.mAccountStaticText?.mCompleteProfile
         storeSwitch?.setOnCheckedChangeListener { _, isChecked ->
-            run {
-                Log.d(TAG, "storeSwitch.setOnCheckedChangeListener $isChecked")
-                storeStatusTextView?.text = "${infoResponse.mAccountStaticText?.mStoreText} : ${if (isChecked) infoResponse.mAccountStaticText?.mOpenText else infoResponse.mAccountStaticText?.mClosedText}"
-            }
+            Log.d(TAG, "storeSwitch.setOnCheckedChangeListener $isChecked")
+            storeStatusTextView?.text = "${infoResponse.mAccountStaticText?.mStoreText} : ${if (isChecked) infoResponse.mAccountStaticText?.mOpenText else infoResponse.mAccountStaticText?.mClosedText}"
         }
         deliverySwitch?.setOnCheckedChangeListener { _, isChecked ->
-            run {
-                Log.d(TAG, "deliverySwitch.setOnCheckedChangeListener $isChecked")
-                deliveryStatusTextView?.text = "${infoResponse.mAccountStaticText?.mDeliveryText} : ${if (isChecked) infoResponse.mAccountStaticText?.mOnText else infoResponse.mAccountStaticText?.mOffText}"
-            }
+            Log.d(TAG, "deliverySwitch.setOnCheckedChangeListener $isChecked")
+            deliveryStatusTextView?.text = "${infoResponse.mAccountStaticText?.mDeliveryText} : ${if (isChecked) infoResponse.mAccountStaticText?.mOnText else infoResponse.mAccountStaticText?.mOffText}"
         }
         deliverySwitch?.isChecked = infoResponse.mStoreInfo.storeServices.mDeliveryFlag == 1
         deliveryStatusTextView?.text = "${infoResponse.mAccountStaticText?.mDeliveryText} : ${if (deliverySwitch?.isChecked == true) infoResponse.mAccountStaticText?.mOnText else infoResponse.mAccountStaticText?.mOffText}"
@@ -508,7 +504,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         when (responseItem?.mAction) {
             Constants.NEW_RELEASE_TYPE_WEBVIEW -> {
                 val eventName = when (responseItem.mType) {
-                    Constants.NEW_RELEASE_TYPE_CUSTOM_DOMAIN -> AFInAppEventType.EVENT_GET_CUSTOM_DOMAIN
+                    Constants.NEW_RELEASE_TYPE_CUSTOM_DOMAIN -> AFInAppEventType.EVENT_DOMAIN_EXPLORE
                     Constants.NEW_RELEASE_TYPE_PREMIUM -> AFInAppEventType.EVENT_PREMIUM_PAGE
                     else -> AFInAppEventType.EVENT_VIEW_TOP_STORES
                 }
@@ -517,7 +513,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                     data = mapOf(
                         AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                        AFInAppEventParameterName.CHANNEL to "Settings Page"
+                        AFInAppEventParameterName.CHANNEL to AFInAppEventParameterName.IS_SETTINGS_PAGE
                     )
                 )
                 openWebViewFragment(this, "", BuildConfig.WEB_VIEW_URL + responseItem.mPage)

@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
+import com.digitaldukaan.constants.isEmpty
 import com.digitaldukaan.interfaces.ISearchImageItemClicked
 import com.squareup.picasso.Picasso
 
@@ -33,6 +34,10 @@ class ImagesSearchAdapter : RecyclerView.Adapter<ImagesSearchAdapter.ImagesSearc
             LayoutInflater.from(parent.context).inflate(R.layout.search_images_item, parent, false)
         )
         view.searchImageView.setOnClickListener {
+            val position = view.adapterPosition
+            if (position < 0) return@setOnClickListener
+            if (isEmpty(mSearchImagesList)) return@setOnClickListener
+            if (position > mSearchImagesList?.size ?: 0) return@setOnClickListener
             mSearchImagesList?.let { mListener.onSearchImageItemClicked(it[view.adapterPosition]) }
         }
         return view

@@ -228,13 +228,17 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
                 val credentials: Credential? = data?.getParcelableExtra(Credential.EXTRA_KEY)
                 credentials?.let {
                     CoroutineScopeUtils().runTaskOnCoroutineMain {
-                        mobileNumberEditText?.apply {
-                            text = null
-                            mMobileNumber = it.id.substring(3)
-                            setText(mMobileNumber)
-                            setSelection(mobileNumberEditText?.text?.trim()?.length ?: 0)
+                        try {
+                            mobileNumberEditText?.apply {
+                                text = null
+                                mMobileNumber = it.id.substring(3)
+                                setText(mMobileNumber)
+                                setSelection(mobileNumberEditText?.text?.trim()?.length ?: 0)
+                            }
+                            getOtpTextView?.callOnClick()
+                        } catch (e: Exception) {
+                            Log.e(TAG, "onActivityResult: ${e.message}", e)
                         }
-                        getOtpTextView?.callOnClick()
                     }
                 }
             } else if (requestCode == CREDENTIAL_PICKER_REQUEST && resultCode == CredentialsApi.ACTIVITY_RESULT_NO_HINTS_AVAILABLE) {

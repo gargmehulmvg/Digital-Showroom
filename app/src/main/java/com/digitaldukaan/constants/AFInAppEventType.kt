@@ -70,5 +70,7 @@ interface AFInAppEventType {
         const val EVENT_DELETE_VARIANT = "Delete_Variant"
         const val EVENT_PROFILE_PAGE = "ProfilePage"
         const val EVENT_SHARE_PDF_CATALOG = "Share PDF Catalog"
+        const val EVENT_DOMAIN_EXPLORE = "Domain_Explore"
+        const val EVENT_DOMAIN_DETAIL = "Domain Details"
     }
 }

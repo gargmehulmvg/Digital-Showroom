@@ -10,5 +10,6 @@ data class ProfileInfoResponse(
     @SerializedName("total_steps") var mTotalSteps: String?,
     @SerializedName("steps") var mStepsList: ArrayList<StepCompletedItem>?,
     @SerializedName("completed_steps") var mCompletedSteps: String?,
+    @SerializedName("profile_banner") var mBannerList: ArrayList<HomePageBannerResponse>,
     @SerializedName("static_text") var mProfileStaticText: ProfileStaticTextResponse
 )
