@@ -68,7 +68,10 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.product_fragment, container, false)
-        if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else mService?.getProductPageInfo()
+        if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else {
+            showCancellableProgressDialog(mActivity)
+            mService?.getProductPageInfo()
+        }
         ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, false)
             hideBackPressFromToolBar(mActivity, false)
@@ -92,7 +95,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
         }
     }
 
-    override fun onProductResponse(commonResponse: CommonApiResponse) {
+    override fun onProductPageInfoResponse(commonResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             val productResponse = Gson().fromJson(commonResponse.mCommonDataStr, ProductPageResponse::class.java)
             bottomContainer?.visibility = if (productResponse?.isZeroProduct == true) View.GONE else View.VISIBLE

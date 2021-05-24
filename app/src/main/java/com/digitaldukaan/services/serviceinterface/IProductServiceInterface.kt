@@ -6,7 +6,7 @@ interface IProductServiceInterface {
 
     fun onAddProductBannerStaticDataResponse(commonResponse: CommonApiResponse)
 
-    fun onProductResponse(commonResponse: CommonApiResponse)
+    fun onProductPageInfoResponse(commonResponse: CommonApiResponse)
 
     fun onShareStorePdfDataResponse(commonResponse: CommonApiResponse)
 
