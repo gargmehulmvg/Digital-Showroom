@@ -704,7 +704,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                             initiateSendBillServerCall()
                         } else {
                             bottomSheetDialog.dismiss()
-                            openFullCamera()
+                            openCameraWithoutCrop()
                         }
                     }
                 }

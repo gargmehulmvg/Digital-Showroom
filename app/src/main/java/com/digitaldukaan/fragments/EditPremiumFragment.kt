@@ -160,7 +160,7 @@ class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
                         AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)
                     )
                 )
-                openMobileGalleryWithImage()
+                openMobileGalleryWithoutCrop()
             }
             viewWebsiteImageView?.id -> {
                 AppEventsManager.pushAppEvents(

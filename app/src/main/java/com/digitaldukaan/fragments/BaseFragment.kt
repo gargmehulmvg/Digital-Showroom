@@ -47,7 +47,6 @@ import com.digitaldukaan.exceptions.UnAuthorizedAccessException
 import com.digitaldukaan.interfaces.ISearchImageItemClicked
 import com.digitaldukaan.models.response.*
 import com.digitaldukaan.network.RetrofitApi
-import com.github.dhaval2404.imagepicker.ImagePicker
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
@@ -623,19 +622,19 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                     }
                     bottomSheetUploadImageCamera.setOnClickListener {
                         mImagePickBottomSheet?.dismiss()
-                        openCamera()
+                        openCameraWithCrop()
                     }
                     bottomSheetUploadImageCameraTextView.setOnClickListener {
                         mImagePickBottomSheet?.dismiss()
-                        openCamera()
+                        openCameraWithCrop()
                     }
                     bottomSheetUploadImageGallery.setOnClickListener {
                         mImagePickBottomSheet?.dismiss()
-                        openMobileGalleryWithImage()
+                        openMobileGalleryWithCrop()
                     }
                     bottomSheetUploadImageGalleryTextView.setOnClickListener {
                         mImagePickBottomSheet?.dismiss()
-                        openMobileGalleryWithImage()
+                        openMobileGalleryWithCrop()
                     }
                     bottomSheetUploadImageRemovePhoto.setOnClickListener {
                         mImagePickBottomSheet?.dismiss()
@@ -684,7 +683,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         }
     }
 
-    open fun openMobileGalleryWithImage() {
+    open fun openMobileGalleryWithCrop() {
         mActivity?.run {
             val fileName = "tempFile_${System.currentTimeMillis()}"
             val storageDirectory = this.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
@@ -702,7 +701,43 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         }
     }
 
-    open fun openCamera() {
+    open fun openMobileGalleryWithoutCrop() {
+        mActivity?.run {
+            val fileName = "tempFile_${System.currentTimeMillis()}"
+            val storageDirectory = this.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+            try {
+                val imageFile = File.createTempFile(fileName, ".jpg", storageDirectory)
+                mCurrentPhotoPath = imageFile.absolutePath
+                val cameraIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
+                val imageUri = FileProvider.getUriForFile(this, "com.digitaldukaan.fileprovider", imageFile)
+                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
+                cameraGalleryWithoutCropIntentResult.launch(cameraIntent)
+            } catch (e: Exception) {
+                showToast(e.message)
+                Log.e(TAG, "openCamera: ${e.message}", e)
+            }
+        }
+    }
+
+    open fun openCameraWithoutCrop() {
+        mActivity?.run {
+            val fileName = "tempFile_${System.currentTimeMillis()}"
+            val storageDirectory = this.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+            try {
+                val imageFile = File.createTempFile(fileName, ".jpg", storageDirectory)
+                mCurrentPhotoPath = imageFile.absolutePath
+                val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                val imageUri = FileProvider.getUriForFile(this, "com.digitaldukaan.fileprovider", imageFile)
+                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
+                cameraGalleryWithoutCropIntentResult.launch(cameraIntent)
+            } catch (e: Exception) {
+                showToast(e.message)
+                Log.e(TAG, "openCamera: ${e.message}", e)
+            }
+        }
+    }
+
+    open fun openCameraWithCrop() {
         mActivity?.run {
             val fileName = "tempFile_${System.currentTimeMillis()}"
             val storageDirectory = this.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
@@ -799,24 +834,6 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         }
     }
 
-    open fun openFullCamera() {
-        mActivity?.run {
-            val fileName = "tempFile_${System.currentTimeMillis()}"
-            val storageDirectory = this.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-            try {
-                val imageFile = File.createTempFile(fileName, ".jpg", storageDirectory)
-                mCurrentPhotoPath = imageFile.absolutePath
-                val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                val imageUri = FileProvider.getUriForFile(this, "com.digitaldukaan.fileprovider", imageFile)
-                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
-                cameraGalleryWithoutCropIntentResult.launch(cameraIntent)
-            } catch (e: Exception) {
-                showToast(e.message)
-                Log.e(TAG, "openCamera: ${e.message}", e)
-            }
-        }
-    }
-
     private fun startCropping(sourceUri: Uri) {
         mActivity?.let {
             CropImage.activity(sourceUri)
@@ -847,31 +864,6 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
             }
         }
     }
-
-    private val startForProfileImageResult =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-            try {
-                val resultCode = result.resultCode
-                val data = result.data
-                when (resultCode) {
-                    Activity.RESULT_OK -> {
-                        try {
-                            val fileUri = data?.data
-                            onImageSelectionResultUri(fileUri)
-                            val file: File? = File(fileUri?.path!!)
-                            onImageSelectionResultFile(file)
-                        } catch (e: Exception) {
-                            Log.e(TAG, "onActivityResult: ${e.message}", e)
-                            showToast(getString(R.string.something_went_wrong))
-                        }
-                    }
-                    ImagePicker.RESULT_ERROR -> showToast(ImagePicker.getError(data))
-                    else -> showToast("Task Cancelled")
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, "registerForActivityResult : ${e.message}", e)
-            }
-        }
 
     open fun onImageSelectionResultFile(file: File?, mode: String = "") = Unit
 
@@ -1202,7 +1194,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         }
     }
 
-    protected fun openMobileGalleryWithImage(file: File) {
+    protected fun openMobileGalleryWithCrop(file: File) {
         Log.d(TAG, "openMobileGalleryWithImage: ${file.name}")
         val galleryIntent = Intent()
         galleryIntent.action = Intent.ACTION_VIEW

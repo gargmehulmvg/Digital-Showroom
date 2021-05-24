@@ -517,19 +517,19 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     bottomSheetUploadImageRemovePhoto.visibility = if (0 == position) View.GONE else View.VISIBLE
                     bottomSheetUploadImageCamera.setOnClickListener {
                         imagePickBottomSheet?.dismiss()
-                        openCamera()
+                        openCameraWithCrop()
                     }
                     bottomSheetUploadImageCameraTextView.setOnClickListener {
                         imagePickBottomSheet?.dismiss()
-                        openCamera()
+                        openCameraWithCrop()
                     }
                     bottomSheetUploadImageGallery.setOnClickListener {
                         imagePickBottomSheet?.dismiss()
-                        openMobileGalleryWithImage()
+                        openMobileGalleryWithCrop()
                     }
                     bottomSheetUploadImageGalleryTextView.setOnClickListener {
                         imagePickBottomSheet?.dismiss()
-                        openMobileGalleryWithImage()
+                        openMobileGalleryWithCrop()
                     }
                     bottomSheetUploadImageRemovePhoto.setOnClickListener {
                         imagePickBottomSheet?.dismiss()
