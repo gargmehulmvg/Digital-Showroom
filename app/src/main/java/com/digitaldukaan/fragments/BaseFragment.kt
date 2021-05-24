@@ -652,6 +652,11 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                             searchImageEditText.requestFocus()
                             return@setOnClickListener
                         }
+                        AppEventsManager.pushAppEvents(
+                            eventName = AFInAppEventType.EVENT_BING_SEARCH,
+                            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                            data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.BING_TEXT to searchImageEditText.text.trim().toString())
+                        )
                         showProgressDialog(mActivity)
                         CoroutineScopeUtils().runTaskOnCoroutineBackground {
                             try {
@@ -872,27 +877,40 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     open fun onNoInternetButtonClick(isNegativeButtonClick: Boolean) = Unit
 
     override fun onSearchImageItemClicked(photoStr: String) {
+        Log.d(TAG, "onSearchImageItemClicked :: $photoStr")
         try {
             Picasso.get().load(photoStr).into(object : com.squareup.picasso.Target {
                 override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
-                    bitmap?.let {
-                        val file = getImageFileFromBitmap(it, mActivity)
-                        stopProgress()
-                        mImagePickBottomSheet?.dismiss()
-                        onImageSelectionResultFile(file, Constants.MODE_CROP)
+                    CoroutineScopeUtils().runTaskOnCoroutineMain {
+                        bitmap?.let {
+                            var file = getImageFileFromBitmap(it, mActivity)
+                            file?.let {f ->
+                                Log.d(TAG, "ORIGINAL :: ${f.length() / (1024)} KB")
+                                mActivity?.run { file = Compressor.compress(this, f) }
+                                Log.d(TAG, "COMPRESSED :: ${f.length() / (1024)} KB")
+                                if (f.length() / (1024 * 1024) >= mActivity?.resources?.getInteger(R.integer.image_mb_size) ?: 0) {
+                                    showToast("Images more than ${mActivity?.resources?.getInteger(R.integer.image_mb_size)} are not allowed")
+                                    return@runTaskOnCoroutineMain
+                                }
+                            }
+                            stopProgress()
+                            mImagePickBottomSheet?.dismiss()
+                            val imageUri = it.getImageUri(mActivity)
+                            imageUri?.let {uri -> startCropping(uri) }
+                        }
                     }
                 }
 
                 override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
-                    Log.d("TAG", "onPrepareLoad: ")
+                    Log.d(TAG, "onPrepareLoad: ")
                 }
 
                 override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
-                    Log.d("TAG", "onBitmapFailed: ")
+                    Log.d(TAG, "onBitmapFailed: ")
                 }
             })
         } catch (e: Exception) {
-            Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+            Log.e(TAG, "picasso image loading issue: ${e.message}", e)
             AppEventsManager.pushAppEvents(
                 eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
                 isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
