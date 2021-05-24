@@ -52,13 +52,15 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import com.squareup.picasso.Picasso
-import com.theartofdev.edmodo.cropper.CropImage
+import com.yalantis.ucrop.UCrop
 import id.zelory.compressor.Compressor
 import io.sentry.Sentry
 import kotlinx.android.synthetic.main.activity_main2.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.FileOutputStream
 import java.io.IOException
 import java.net.UnknownHostException
 import java.util.*
@@ -806,7 +808,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         }
         val fileUri = it?.getImageUri(mActivity)
         if (isCropAllowed) {
-            fileUri?.let { uri -> startCropping(uri) }
+            it?.let { uri -> startCropping(uri) }
         } else {
             onImageSelectionResultUri(fileUri)
             onImageSelectionResultFile(file)
@@ -831,7 +833,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
             }
             val fileUri = bitmap?.getImageUri(mActivity)
             if (isCropAllowed) {
-                fileUri?.let { uri -> startCropping(uri) }
+                bitmap?.let { b -> startCropping(b) }
             } else {
                 onImageSelectionResultUri(fileUri)
                 onImageSelectionResultFile(file)
@@ -839,8 +841,16 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         }
     }
 
-    private fun startCropping(sourceUri: Uri) {
+    private fun startCropping(bitmap: Bitmap?) {
         mActivity?.let {
+            val originalImgFile = File(it.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "${System.currentTimeMillis()}_originalImgFile.jpg")
+            bitmap?.let { b ->convertBitmaptoFile(originalImgFile, b) }
+            val croppedImgFile = File(it.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "${System.currentTimeMillis()}_croppedImgFile.jpg")
+            UCrop.of(Uri.fromFile(originalImgFile), Uri.fromFile(croppedImgFile))
+                .withAspectRatio(1f, 1f)
+                .start(it)
+        }
+        /*mActivity?.let {
             CropImage.activity(sourceUri)
                 .setAspectRatio(1, 1)
                 .setMaxCropResultSize(2048, 2048)
@@ -849,23 +859,37 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                 .setAutoZoomEnabled(true)
                 .setMaxZoom(10)
                 .start(it)
-        }
+        }*/
+    }
+
+    private fun convertBitmaptoFile(destinationFile: File, bitmap: Bitmap) {
+        //create a file to write bitmap data
+        destinationFile.createNewFile()
+        //Convert bitmap to byte array
+        val bos = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 50, bos)
+        val bitmapData = bos.toByteArray()
+        //write the bytes in file
+        val fos = FileOutputStream(destinationFile)
+        fos.write(bitmapData)
+        fos.flush()
+        fos.close()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         Log.d(TAG, "onActivityResult: ")
         if (resultCode == Activity.RESULT_OK) {
             Log.d(TAG, "onActivityResult: OK")
-            if (requestCode == CropImage.CROP_IMAGE_ACTIVITY_REQUEST_CODE) {
+            if (requestCode == UCrop.REQUEST_CROP) {
                 Log.d(TAG, "onActivityResult: CROP_IMAGE_ACTIVITY_REQUEST_CODE ")
-                val result = CropImage.getActivityResult(data)
-                Log.d(TAG, "onActivityResult: CROP_IMAGE_ACTIVITY_REQUEST_CODE result :: $result")
-                val resultUri = result.uri
-                Log.d(TAG, "onActivityResult: CROP_IMAGE_ACTIVITY_REQUEST_CODE :: result uri :: $resultUri")
-                onImageSelectionResultUri(resultUri)
-                val croppedBitmap = getBitmapFromUri(resultUri, mActivity)
-                val croppedFile = getImageFileFromBitmap(croppedBitmap, mActivity)
-                onImageSelectionResultFile(croppedFile)
+                data?.let {
+                    val resultUri = UCrop.getOutput(data)
+                    Log.d(TAG, "onActivityResult: CROP_IMAGE_ACTIVITY_REQUEST_CODE :: result uri :: $resultUri")
+                    onImageSelectionResultUri(resultUri)
+                    val croppedBitmap = getBitmapFromUri(resultUri, mActivity)
+                    val croppedFile = getImageFileFromBitmap(croppedBitmap, mActivity)
+                    onImageSelectionResultFile(croppedFile)
+                }
             }
         }
     }
@@ -896,7 +920,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                             stopProgress()
                             mImagePickBottomSheet?.dismiss()
                             val imageUri = it.getImageUri(mActivity)
-                            imageUri?.let {uri -> startCropping(uri) }
+                            imageUri?.let {uri -> startCropping(bitmap) }
                         }
                     }
                 }
