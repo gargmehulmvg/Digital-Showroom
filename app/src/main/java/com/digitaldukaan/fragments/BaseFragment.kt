@@ -379,7 +379,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     open fun shareOnWhatsApp(sharingData: String?, image: Bitmap? = null) {
         val shareIntent = Intent()
         shareIntent.action = Intent.ACTION_SEND
-        shareIntent.type = "text/plain"
+        shareIntent.type = "*/*"
         val resInfoList = activity?.packageManager?.queryIntentActivities(shareIntent, 0)
         val shareIntentList = arrayListOf<Intent>()
         if (resInfoList?.isNotEmpty() == true) {
@@ -475,7 +475,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                                     setPackage("com.whatsapp")
                                     putExtra(Intent.EXTRA_TEXT, sharingData)
                                     putExtra(Intent.EXTRA_STREAM, it)
-                                    type = "image/*"
+                                    type = "*/*"
                                     addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                                     mActivity?.startActivity(this)
                                 } catch (ex: ActivityNotFoundException) {
