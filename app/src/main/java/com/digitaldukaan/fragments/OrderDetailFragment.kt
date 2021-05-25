@@ -165,6 +165,13 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
     private fun initiateSendBillServerCall() {
         orderDetailMainResponse?.orders?.run {
             val finalAmount = if (amountEditText.text?.isNotEmpty() == true) amountEditText.text.toString().toDouble() else amount
+            if (finalAmount ?: 0.0 <= 0.0) {
+                amountEditText.apply {
+                    error = mActivity?.getString(R.string.bill_value_must_be_greater_than_zero)
+                    requestFocus()
+                }
+                return
+            }
             if (!mIsPickUpOrder && orderDetailMainResponse?.storeServices?.mDeliveryChargeType == Constants.FIXED_DELIVERY_CHARGE && orderDetailMainResponse?.storeServices?.mDeliveryPrice != 0.0 && orderDetailMainResponse?.storeServices?.mMinOrderValue?: 0.0 >= finalAmount?:0.0) {
                 val orderDetailItemResponse = OrderDetailItemResponse(
                     0,
