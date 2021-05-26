@@ -89,7 +89,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
         } else {
             showProgressDialog(mActivity)
             mOrderDetailService?.getDeliveryTime()
-            mOrderDetailService?.getOrderDetail(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), mOrderId)
+            mOrderDetailService?.getOrderDetail(mOrderId)
         }
         mShareBillResponseStr = ""
         return mContentView
@@ -286,21 +286,17 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                 when (displayStatus) {
                     Constants.DS_MARK_READY -> {
                         markOutForDeliveryTextView?.visibility = View.VISIBLE
+                        markOutForDeliveryValueTextView?.visibility = View.GONE
                         markOutForDeliveryTextView?.text = mOrderDetailStaticData?.readyForPickupText
                     }
                     Constants.DS_OUT_FOR_DELIVERY -> {
                         markOutForDeliveryTextView?.visibility = View.VISIBLE
+                        markOutForDeliveryValueTextView?.visibility = View.GONE
                         markOutForDeliveryTextView?.text = mOrderDetailStaticData?.markOutForDeliveryText
                     }
                     Constants.DS_PREPAID_PICKUP_READY -> {
                         markOutForDeliveryValueTextView?.visibility = View.VISIBLE
-                        val txtSpannable = SpannableString(mOrderDetailStaticData?.pickUpOrderSuccess)
-                        val boldSpan = StyleSpan(Typeface.BOLD)
-                        txtSpannable.setSpan(boldSpan, 0, txtSpannable.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-                        markOutForDeliveryValueTextView?.text = txtSpannable
-                    }
-                    Constants.DS_PREPAID_PICKUP_COMPLETED -> {
-                        markOutForDeliveryValueTextView?.visibility = View.VISIBLE
+                        markOutForDeliveryTextView?.visibility = View.GONE
                         val txtSpannable = SpannableString(mOrderDetailStaticData?.pickUpOrderSuccess)
                         val boldSpan = StyleSpan(Typeface.BOLD)
                         txtSpannable.setSpan(boldSpan, 0, txtSpannable.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
@@ -308,22 +304,17 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                     }
                     Constants.DS_PREPAID_DELIVERY_READY -> {
                         markOutForDeliveryValueTextView?.visibility = View.VISIBLE
+                        markOutForDeliveryTextView?.visibility = View.GONE
                         val txtSpannable = SpannableString("${mOrderDetailStaticData?.deliveryTimeIsSetAsText}\n${orderDetailResponse.deliveryInfo?.customDeliveryTime}")
                         val boldSpan = StyleSpan(Typeface.BOLD)
                         txtSpannable.setSpan(boldSpan, mOrderDetailStaticData?.deliveryTimeIsSetAsText?.length ?: 0, txtSpannable.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
                         markOutForDeliveryValueTextView?.text = txtSpannable
                     }
+                    Constants.DS_PREPAID_PICKUP_COMPLETED -> {
+                        prepaidOrderLayout?.visibility = View.GONE
+                    }
                     Constants.DS_PREPAID_DELIVERY_COMPLETED -> {
-                        if (isEmpty(orderDetailResponse.deliveryInfo?.customDeliveryTime)) {
-                            prepaidOrderLayout?.visibility = View.GONE
-                        }
-                        else {
-                            markOutForDeliveryValueTextView?.visibility = View.VISIBLE
-                            val txtSpannable = SpannableString("${mOrderDetailStaticData?.deliveryTimeIsSetAsText}\n${orderDetailResponse.deliveryInfo?.customDeliveryTime}")
-                            val boldSpan = StyleSpan(Typeface.BOLD)
-                            txtSpannable.setSpan(boldSpan, mOrderDetailStaticData?.deliveryTimeIsSetAsText?.length ?: 0, txtSpannable.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-                            markOutForDeliveryValueTextView?.text = txtSpannable
-                        }
+                        prepaidOrderLayout?.visibility = View.GONE
                     }
                 }
             } else prepaidOrderLayout?.visibility = View.GONE
@@ -665,6 +656,15 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
             if (commonResponse.mIsSuccessStatus) {
                 showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_green_check_small)
                 mActivity?.onBackPressed()
+            } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
+        }
+    }
+
+    override fun onPrepaidOrderUpdateStatusResponse(commonResponse: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            if (commonResponse.mIsSuccessStatus) {
+                mOrderDetailService?.getOrderDetail(mOrderId)
             } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
         }
     }

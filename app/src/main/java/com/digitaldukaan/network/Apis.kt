@@ -173,7 +173,7 @@ interface Apis {
     suspend fun updateOrderStatus(@Body statusRequest: UpdateOrderStatusRequest): Response<CommonApiResponse>
 
     @GET("api/dotk/vm1/orders/getOrderDetails/{orderId}")
-    suspend fun getOrderDetails(@Header("auth_token") authToken: String, @Path("orderId") orderId: String): Response<CommonApiResponse>
+    suspend fun getOrderDetails(@Path("orderId") orderId: String): Response<CommonApiResponse>
 
     @POST("api/dotk/vm1/orders/completeOrder")
     suspend fun completeOrder(@Body request: CompleteOrderRequest): Response<CommonApiResponse>

@@ -13,12 +13,11 @@ import com.google.gson.Gson
 class OrderDetailNetworkService {
 
     suspend fun getOrderDetailServerCall(
-        authToken: String,
         orderId: String,
         serviceInterface: IOrderDetailServiceInterface
     ) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.getOrderDetails(authToken, orderId)
+            val response = RetrofitApi().getServerCallObject()?.getOrderDetails(orderId)
             response?.let {
                 if (it.isSuccessful) {
                     it.body()?.let { commonApiResponse -> serviceInterface.onOrderDetailResponse(commonApiResponse)
@@ -110,13 +109,12 @@ class OrderDetailNetworkService {
             val response = RetrofitApi().getServerCallObject()?.updatePrepaidOrder(orderId, newRequest)
             response?.let {
                 if (it.isSuccessful) {
-                    it.body()?.let { commonApiResponse -> serviceInterface.onUpdateStatusResponse(commonApiResponse)
-                    }
+                    it.body()?.let { commonApiResponse -> serviceInterface.onPrepaidOrderUpdateStatusResponse(commonApiResponse) }
                 } else {
                     val responseBody = it.errorBody()
                     responseBody?.let {
                         val errorResponse = Gson().fromJson(responseBody.string(), CommonApiResponse::class.java)
-                        serviceInterface.onUpdateStatusResponse(errorResponse)
+                        serviceInterface.onPrepaidOrderUpdateStatusResponse(errorResponse)
                     }
                 }
             }

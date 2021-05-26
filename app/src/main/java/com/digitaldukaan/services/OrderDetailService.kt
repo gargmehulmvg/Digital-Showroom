@@ -18,9 +18,9 @@ class OrderDetailService {
         mServiceInterface = listener
     }
 
-    fun getOrderDetail(authToken: String, orderId: String) {
+    fun getOrderDetail(orderId: String) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.getOrderDetailServerCall(authToken , orderId, mServiceInterface)
+            mNetworkService.getOrderDetailServerCall(orderId, mServiceInterface)
         }
     }
 

@@ -50,8 +50,6 @@
                 android:layout_marginTop="@dimen/_5sdp"
                 android:layout_marginBottom="@dimen/_5sdp"
                 android:overScrollMode="never"
-                android:focusable="false"
-                android:clickable="false"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:itemCount="3"
                 tools:listitem="@layout/set_order_type_item" />

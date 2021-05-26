@@ -3,6 +3,10 @@ package com.digitaldukaan.constants
 interface AFInAppEventParameterName {
 
     companion object {
+        const val STEP = "Step"
+        const val TYPE = "Type"
+        const val KYC = "KYC"
+        const val DELIVERY_CHARGE = "Delivery_charge"
         const val IMAGES = "images"
         const val STORE_ID = "Store ID"
         const val SOCIAL = "Social"

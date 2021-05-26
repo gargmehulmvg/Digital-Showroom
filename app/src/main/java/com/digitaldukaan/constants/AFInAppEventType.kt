@@ -74,5 +74,7 @@ interface AFInAppEventType {
         const val EVENT_DOMAIN_DETAIL = "Domain Details"
         const val EVENT_SET_PREPAID_ORDER = "Set_prepaid_orders"
         const val EVENT_HOW_PREPAID_ORDER_WORK = "How_prepaid_orders_work"
+        const val EVENT_ACTIVATE_PREPAID_ORDER = "Activate_prepaid_orders"
+        const val EVENT_COMPLETE_PREPAID_STEPS = "Complete_prepaid_steps"
     }
 }

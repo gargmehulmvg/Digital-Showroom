@@ -94,6 +94,8 @@ class SetOrderTypeFragment: BaseFragment(), ISetOrderTypeServiceInterface {
             postpaidRadioButton?.text = it.text
             postpaidRadioButton?.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, if (it.isCompleted) 0 else R.drawable.ic_info_black_small, 0)
         }
+        mIsPrepaidCompleted = false
+        mIsBothCompleted = false
         mSetOrderTypePageInfoResponse?.mPrePaidResponse?.let {
             if (it.id == mPaymentMethod) {
                 prepaidOrderRadioButton?.isChecked = true
@@ -168,11 +170,13 @@ class SetOrderTypeFragment: BaseFragment(), ISetOrderTypeServiceInterface {
             howDoesPrepaidWorkTextView?.id -> showPrepaidOrderWorkFlowBottomSheet()
             prepaidOrderContainer?.id -> {
                 mPaymentMethod = mSetOrderTypePageInfoResponse?.mPrePaidResponse?.id ?: 0
+                if (prepaidOrderRadioButton?.isChecked == true) return
                 if (mIsPrepaidCompleted) showConfirmationDialog() else showUnlockOptionBottomSheet()
                 mPaymentMethodStr = prepaidOrderRadioButton?.text?.toString() ?: ""
             }
             payBothContainer?.id -> {
                 mPaymentMethod = mSetOrderTypePageInfoResponse?.mBothPaidResponse?.id ?: 0
+                if (payBothRadioButton?.isChecked == true) return
                 if (mIsBothCompleted) showConfirmationDialog() else showUnlockOptionBottomSheet()
                 mPaymentMethodStr = payBothRadioButton?.text?.toString() ?: ""
             }
@@ -254,8 +258,24 @@ class SetOrderTypeFragment: BaseFragment(), ISetOrderTypeServiceInterface {
                                         val item = mSetOrderTypePageInfoResponse?.mUnlockOptionList?.get(position)
                                         bottomSheetDialog.dismiss()
                                         when(item?.action) {
-                                            Constants.ACTION_KYC -> launchFragment(ProfilePreviewFragment().newInstance(""), true)
-                                            Constants.ACTION_DELIVERY_CHARGES -> launchFragment(SetDeliveryChargeFragment.newInstance(StaticInstances.sAccountPageSettingsStaticData), true)
+                                            Constants.ACTION_KYC -> {
+                                                AppEventsManager.pushAppEvents(
+                                                    eventName = AFInAppEventType.EVENT_COMPLETE_PREPAID_STEPS,
+                                                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                                                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                                                        AFInAppEventParameterName.STEP to AFInAppEventParameterName.KYC)
+                                                )
+                                                launchFragment(ProfilePreviewFragment().newInstance(""), true)
+                                            }
+                                            Constants.ACTION_DELIVERY_CHARGES -> {
+                                                AppEventsManager.pushAppEvents(
+                                                    eventName = AFInAppEventType.EVENT_COMPLETE_PREPAID_STEPS,
+                                                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                                                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                                                        AFInAppEventParameterName.STEP to AFInAppEventParameterName.DELIVERY_CHARGE)
+                                                )
+                                                launchFragment(SetDeliveryChargeFragment.newInstance(StaticInstances.sAccountPageSettingsStaticData), true)
+                                            }
                                         }
                                     }
                                 })
@@ -292,6 +312,12 @@ class SetOrderTypeFragment: BaseFragment(), ISetOrderTypeServiceInterface {
                         activateTextView.text = mStaticText?.text_activate
                         bottomSheetClose.setOnClickListener { cancelWarningDialog.dismiss() }
                         activateTextView.setOnClickListener {
+                            AppEventsManager.pushAppEvents(
+                                eventName = AFInAppEventType.EVENT_ACTIVATE_PREPAID_ORDER,
+                                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                                data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                                    AFInAppEventParameterName.TYPE to if (mPaymentMethod == 1) "Prepaid" else "both")
+                            )
                             showProgressDialog(mActivity)
                             mService?.updatePaymentMethod(UpdatePaymentMethodRequest(mPaymentMethod))
                             cancelWarningDialog.dismiss()
