@@ -363,6 +363,9 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
             setupDeliveryChargeUI(displayStatus, orderDetailMainResponse?.storeServices)
             when (orderDetailResponse?.orderType) {
                 Constants.ORDER_TYPE_SELF_IMAGE -> {
+                    blankSpace?.visibility = View.GONE
+                    deliveryLabelLayout?.visibility = View.GONE
+                    deliveryLabelLayout?.visibility = View.GONE
                     customerDetailsLabel?.visibility = View.GONE
                     billPhotoImageView?.visibility = View.VISIBLE
                     billPhotoImageView?.let {
@@ -382,6 +385,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                         viewBillTextView?.setOnClickListener { showImageDialog(orderDetailResponse.imageLink) }
                     }
                     mIsPickUpOrder = true
+                    estimateDeliveryTextView?.visibility = View.GONE
                     deliveryChargeLabel?.visibility = View.GONE
                     deliveryChargeValue?.visibility = View.GONE
                     customerDetailsLabel?.visibility = View.GONE
@@ -542,17 +546,21 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
     }
 
     private fun setFreeDelivery() {
-        deliveryChargeLabel?.visibility = View.VISIBLE
-        deliveryChargeValue?.visibility = View.VISIBLE
-        val txtSpannable = SpannableString(getString(R.string.free).toUpperCase(Locale.getDefault()))
-        val boldSpan = StyleSpan(Typeface.BOLD)
-        txtSpannable.setSpan(boldSpan, 0, txtSpannable.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-        deliveryChargeValue?.text = txtSpannable
-        mActivity?.run {
-            deliveryChargeValue?.setTextColor(ContextCompat.getColor(this, R.color.open_green))
-            deliveryChargeValue?.background = ContextCompat.getDrawable(this, R.drawable.order_adapter_new)
+        try {
+            deliveryChargeLabel?.visibility = View.VISIBLE
+            deliveryChargeValue?.visibility = View.VISIBLE
+            val txtSpannable = SpannableString(getString(R.string.free).toUpperCase(Locale.getDefault()))
+            val boldSpan = StyleSpan(Typeface.BOLD)
+            txtSpannable.setSpan(boldSpan, 0, txtSpannable.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            deliveryChargeValue?.text = txtSpannable
+            mActivity?.run {
+                deliveryChargeValue?.setTextColor(ContextCompat.getColor(this, R.color.open_green))
+                deliveryChargeValue?.background = ContextCompat.getDrawable(this, R.drawable.order_adapter_new)
+            }
+            addDeliveryChargesLabel?.text = getString(R.string.add_discount_and_other_charges)
+        } catch (e: Exception) {
+            Log.e(TAG, "setFreeDelivery: ${e.message}", e)
         }
-        addDeliveryChargesLabel?.text = getString(R.string.add_discount_and_other_charges)
     }
 
     private fun setAmountToEditText() {

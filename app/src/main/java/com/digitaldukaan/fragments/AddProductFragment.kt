@@ -590,6 +590,11 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        stopProgress()
+    }
+
     override fun onImageSelectionResultFile(file: File?, mode: String) {
         try {
             Log.d(TAG, "onImageSelectionResultFile: onImageSelectionResultFile :: mode $mode")

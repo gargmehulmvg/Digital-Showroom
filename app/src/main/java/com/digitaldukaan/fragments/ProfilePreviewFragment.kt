@@ -125,6 +125,11 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        stopProgress()
+    }
+
     private fun fetchProfilePreviewCall() {
         if (!isInternetConnectionAvailable(mActivity)) {
             showNoInternetConnectionDialog()

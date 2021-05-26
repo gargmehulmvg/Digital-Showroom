@@ -105,8 +105,8 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         return mContentView
     }
 
-    override fun onResume() {
-        super.onResume()
+    override fun onPause() {
+        super.onPause()
         stopProgress()
     }
 

@@ -83,6 +83,11 @@ class ProfilePhotoFragment : BaseFragment(), View.OnClickListener, IProfilePhoto
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        stopProgress()
+    }
+
     override fun onRequestPermissionsResult(
         requestCode: Int, permissions: Array<String>,
         grantResults: IntArray

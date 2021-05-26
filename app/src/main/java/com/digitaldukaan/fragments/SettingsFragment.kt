@@ -308,6 +308,11 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         mReferEarnOverWhatsAppResponse = response
     }
 
+    override fun onResume() {
+        super.onResume()
+        stopProgress()
+    }
+
     override fun onChangeStoreAndDeliveryStatusResponse(response: CommonApiResponse) {
         stopProgress()
         CoroutineScopeUtils().runTaskOnCoroutineMain {
