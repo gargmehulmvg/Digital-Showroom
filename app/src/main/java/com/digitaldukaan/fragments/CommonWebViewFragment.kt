@@ -177,7 +177,7 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
 
         var activity: MainActivity? = null
         var commonWebView: WebView? = null
-        private val TAG = WebViewController::class.java.simpleName
+        private val mTagName = WebViewController::class.java.simpleName
 
         override fun onPageFinished(view: WebView?, url: String?) {
             try {
@@ -196,7 +196,7 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
                     try {
                         activity?.startActivity(Intent(Intent.ACTION_DIAL, Uri.parse(url)))
                     } catch (e: Exception) {
-                        Log.e(TAG, "shouldOverrideUrlLoading :: tel :: ${e.message}", e)
+                        Log.e(mTagName, "shouldOverrideUrlLoading :: tel :: ${e.message}", e)
                     }
                     true
                 }
@@ -204,7 +204,7 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
                     try {
                         view.context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
                     } catch (e: Exception) {
-                        Log.e(TAG, "shouldOverrideUrlLoading :: mailto :: ${e.message}", e)
+                        Log.e(mTagName, "shouldOverrideUrlLoading :: mailto :: ${e.message}", e)
                     }
                     true
                 }
@@ -212,7 +212,7 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
                     try {
                         view.context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
                     } catch (e: Exception) {
-                        Log.e(TAG, "shouldOverrideUrlLoading :: whatsapp :: ${e.message}", e)
+                        Log.e(mTagName, "shouldOverrideUrlLoading :: whatsapp :: ${e.message}", e)
                     }
                     true
                 }
@@ -225,14 +225,18 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
     }
 
     override fun onToolbarSideIconClicked() {
-        val sideView:View? = mActivity?.findViewById(R.id.sideIconToolbar)
-        val optionsMenu: PopupMenu? = PopupMenu(mActivity, sideView)
-        optionsMenu?.apply {
-            inflate(R.menu.menu_product_fragment)
-            menu?.add(Menu.NONE, 0, Menu .NONE, getString(R.string.term_and_condition))
-            menu?.add(Menu.NONE, 1, Menu .NONE, getString(R.string.help))
-            setOnMenuItemClickListener(this@CommonWebViewFragment)
-        }?.show()
+        try {
+            val sideView:View? = mActivity?.findViewById(R.id.sideIconToolbar)
+            val optionsMenu: PopupMenu? = PopupMenu(mActivity, sideView)
+            optionsMenu?.apply {
+                inflate(R.menu.menu_product_fragment)
+                menu?.add(Menu.NONE, 0, Menu .NONE, getString(R.string.term_and_condition))
+                menu?.add(Menu.NONE, 1, Menu .NONE, getString(R.string.help))
+                setOnMenuItemClickListener(this@CommonWebViewFragment)
+            }?.show()
+        } catch (e: Exception) {
+            Log.e(mTagName, "onToolbarSideIconClicked: ${e.message}", e)
+        }
     }
 
     override fun onMenuItemClick(item: MenuItem?): Boolean {
@@ -250,11 +254,15 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
     }
 
     override fun onBackPressed(): Boolean {
-        Log.d(mTagName, "onBackPressed: called")
-        if(fragmentManager != null && fragmentManager?.backStackEntryCount == 1) {
-            clearFragmentBackStack()
-            launchFragment(HomeFragment.newInstance(), true)
-            return true
+        try {
+            Log.d(mTagName, "onBackPressed: called")
+            if(fragmentManager != null && fragmentManager?.backStackEntryCount == 1) {
+                clearFragmentBackStack()
+                launchFragment(HomeFragment.newInstance(), true)
+                return true
+            }
+        } catch (e: Exception) {
+            return false
         }
         return false
     }

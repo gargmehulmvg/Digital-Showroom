@@ -155,8 +155,8 @@ fun getBase64FromImageURL(url: String): String? {
     return null
 }
 
-fun getImageFileFromBitmap(bitmap: Bitmap, context: Context?): File? {
-    if (context == null) return null
+fun getImageFileFromBitmap(bitmap: Bitmap?, context: Context?): File? {
+    if (null == context || null == bitmap) return null
     return try {
         val bitmapFile = File(context.cacheDir, "tempFile_${System.currentTimeMillis()}")
         bitmapFile.createNewFile()

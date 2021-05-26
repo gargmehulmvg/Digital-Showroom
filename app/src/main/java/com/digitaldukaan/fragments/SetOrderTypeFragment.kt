@@ -17,10 +17,7 @@ import com.digitaldukaan.R
 import com.digitaldukaan.adapters.PrepaidOrderUnlockOptionsAdapter
 import com.digitaldukaan.adapters.PrepaidOrderWorkFlowAdapter
 import com.digitaldukaan.adapters.SetOrderTypeAdapter
-import com.digitaldukaan.constants.Constants
-import com.digitaldukaan.constants.CoroutineScopeUtils
-import com.digitaldukaan.constants.StaticInstances
-import com.digitaldukaan.constants.ToolBarManager
+import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.IAdapterItemClickListener
 import com.digitaldukaan.models.request.UpdatePaymentMethodRequest
 import com.digitaldukaan.models.response.CommonApiResponse
@@ -118,7 +115,7 @@ class SetOrderTypeFragment: BaseFragment(), ISetOrderTypeServiceInterface {
             }
             payBothRadioButton?.text = it.text
             mIsBothCompleted = it.isCompleted
-            payBothRadioButton?.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, if (it.isCompleted) 0 else R.drawable.ic_pending_small_black, 0)
+            payBothRadioButton?.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, if (it.isCompleted) 0 else R.drawable.ic_info_black_small, 0)
             val bothOrderTypeRecyclerView: RecyclerView? = mContentView?.findViewById(R.id.bothOrderTypeRecyclerView)
             bothOrderTypeRecyclerView?.apply {
                 layoutManager = LinearLayoutManager(mActivity)
@@ -153,6 +150,7 @@ class SetOrderTypeFragment: BaseFragment(), ISetOrderTypeServiceInterface {
                     if (it.mIsSuccessStatus) {
                         StaticInstances.sPaymentMethodStr = mPaymentMethodStr
                         showShortSnackBar(it.mMessage, true, R.drawable.ic_check_circle)
+                        mService?.getOrderTypePageInfo()
                     } else showShortSnackBar(it.mMessage, true, R.drawable.ic_close_red_small)
                 }
             } catch (e: Exception) {
@@ -170,23 +168,17 @@ class SetOrderTypeFragment: BaseFragment(), ISetOrderTypeServiceInterface {
             howDoesPrepaidWorkTextView?.id -> showPrepaidOrderWorkFlowBottomSheet()
             prepaidOrderContainer?.id -> {
                 mPaymentMethod = mSetOrderTypePageInfoResponse?.mPrePaidResponse?.id ?: 0
-                clearRadioButtonSelection()
-                prepaidOrderRadioButton?.isChecked = true
                 if (mIsPrepaidCompleted) showConfirmationDialog() else showUnlockOptionBottomSheet()
                 mPaymentMethodStr = prepaidOrderRadioButton?.text?.toString() ?: ""
             }
             payBothContainer?.id -> {
                 mPaymentMethod = mSetOrderTypePageInfoResponse?.mBothPaidResponse?.id ?: 0
-                clearRadioButtonSelection()
-                payBothRadioButton?.isChecked = true
                 if (mIsBothCompleted) showConfirmationDialog() else showUnlockOptionBottomSheet()
                 mPaymentMethodStr = payBothRadioButton?.text?.toString() ?: ""
             }
             postpaidContainer?.id -> {
                 mPaymentMethod = mSetOrderTypePageInfoResponse?.mPostPaidResponse?.id ?: 0
                 if (postpaidRadioButton?.isChecked == true) return
-                clearRadioButtonSelection()
-                postpaidRadioButton?.isChecked = true
                 mPaymentMethodStr = postpaidRadioButton?.text?.toString() ?: ""
                 showProgressDialog(mActivity)
                 mService?.updatePaymentMethod(UpdatePaymentMethodRequest(mPaymentMethod))
@@ -201,6 +193,11 @@ class SetOrderTypeFragment: BaseFragment(), ISetOrderTypeServiceInterface {
     }
 
     private fun showPrepaidOrderWorkFlowBottomSheet() {
+        AppEventsManager.pushAppEvents(
+            eventName = AFInAppEventType.EVENT_HOW_PREPAID_ORDER_WORK,
+            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+            data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
+        )
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             try {
                 mActivity?.let {

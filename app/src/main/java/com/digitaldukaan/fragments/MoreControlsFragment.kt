@@ -124,7 +124,14 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
                 )
                 mMoreControlsStaticData?.let { launchFragment(SetDeliveryChargeFragment.newInstance(it), true) }
             }
-            onlinePaymentsContainer?.id -> launchFragment(SetOrderTypeFragment.newInstance(), true)
+            onlinePaymentsContainer?.id -> {
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_SET_PREPAID_ORDER,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
+                )
+                launchFragment(SetOrderTypeFragment.newInstance(), true)
+            }
         }
     }
 
@@ -162,7 +169,7 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
                             mDeliveryChargeType,
                             mFreeDeliveryAbove,
                             mDeliveryPrice,
-                            if (amount.isEmpty()) 0.0 else amount.toDouble()
+                            if (amount.isEmpty()) 0.0 else if (amount.startsWith(".")) "0$amount".toDouble() else 0.0
                         )
                         showProgressDialog(mActivity)
                         bottomSheetDialog.dismiss()

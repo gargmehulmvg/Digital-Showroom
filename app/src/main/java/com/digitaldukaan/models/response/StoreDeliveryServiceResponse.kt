@@ -8,8 +8,8 @@ data class StoreDeliveryServiceResponse(
     @SerializedName("delivery_flag") var mDeliveryFlag: Int,
     @SerializedName("pickup_flag") var mPickupFlag: Int,
     @SerializedName("listing_flag") var mListingFlag: Int,
-    @SerializedName("min_order_value") var mMinOrderValue: Int,
+    @SerializedName("min_order_value") var mMinOrderValue: Double,
     @SerializedName("delivery_charge_type") var mDeliveryChargeType: Int,
-    @SerializedName("free_delivery_above") var mFreeDeliveryAbove: Int,
-    @SerializedName("delivery_price") var mDeliveryPrice: Int
+    @SerializedName("free_delivery_above") var mFreeDeliveryAbove: Double,
+    @SerializedName("delivery_price") var mDeliveryPrice: Double
 )

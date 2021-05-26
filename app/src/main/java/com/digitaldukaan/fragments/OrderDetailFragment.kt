@@ -587,7 +587,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
             billAmountValue?.text = "$text_rupees_symbol ${orderDetailResponse?.amount}"
             appTitleTextView?.text = "$text_order #$mOrderId"
             if (Constants.ORDER_TYPE_PREPAID == orderDetailResponse?.prepaidFlag || orderDetailResponse?.deliveryInfo?.customDeliveryTime?.isEmpty() == true) {
-                estimateDeliveryTextView.visibility = View.GONE
+                estimateDeliveryTextView?.visibility = View.GONE
             } else {
                 val estimatedDeliveryStr = "$text_estimate_delivery : ${orderDetailResponse?.deliveryInfo?.customDeliveryTime}"
                 estimateDeliveryTextView?.text = estimatedDeliveryStr
