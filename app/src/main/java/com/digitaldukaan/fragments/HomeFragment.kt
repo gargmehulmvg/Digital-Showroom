@@ -574,7 +574,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
     override fun onOrderCheckBoxChanged(isChecked: Boolean, item: OrderItemResponse?) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (Constants.TEXT_YES != PrefsManager.getStringDataFromSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN)) {
-                if (Constants.DS_PAID_ONLINE == item?.displayStatus) {
+                if (Constants.DS_PAID_ONLINE == item?.displayStatus || Constants.DS_PREPAID_PICKUP_READY == item?.displayStatus || Constants.DS_PREPAID_DELIVERY_READY == item?.displayStatus) {
                     onDontShowDialogPositiveButtonClicked(item)
                 } else if (isChecked) showDontShowDialog(item, mOrderPageInfoStaticData)
             } else onDontShowDialogPositiveButtonClicked(item)

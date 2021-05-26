@@ -55,86 +55,94 @@ class Constants {
         const val ACTION_KYC = "kyc"
         const val ACTION_DELIVERY_CHARGES = "delivery-charges"
         //Incomplete profile actions
-        const val ACTION_LOGO = "logo"
-        const val ACTION_DESCRIPTION = "description"
-        const val ACTION_LOCATION = "address"
-        const val ACTION_BUSINESS = "business"
-        const val ACTION_BANK = "bank"
+        const val ACTION_LOGO =         "logo"
+        const val ACTION_DESCRIPTION =  "description"
+        const val ACTION_LOCATION =     "address"
+        const val ACTION_BUSINESS =     "business"
+        const val ACTION_BANK =         "bank"
         //PAGES
-        const val PAGE_REFER = "refer"
-        const val PAGE_HELP = "help"
-        const val PAGE_FEEDBACK = "Feedback"
-        const val PAGE_APP_SETTINGS = "Sitemap"
-        const val PAGE_REWARDS = "RewardsPage"
+        const val PAGE_REFER =          "refer"
+        const val PAGE_HELP =           "help"
+        const val PAGE_FEEDBACK =       "Feedback"
+        const val PAGE_APP_SETTINGS =   "Sitemap"
+        const val PAGE_REWARDS =        "RewardsPage"
         //ERROR_CODES
         const val ERROR_DOMAIN_ALREADY_EXISTS = "domain_already_exists"
         //GRID_LAYOUT_SPAN_TYPE
-        const val SPAN_TYPE_FULL_WIDTH = "fullWidth"
+        const val SPAN_TYPE_FULL_WIDTH =    "fullWidth"
         //ORDER_TYPE
-        const val ORDER_TYPE_ADDRESS = 1
-        const val ORDER_TYPE_PICK_UP = 2
-        const val ORDER_TYPE_SELF = 3
-        const val ORDER_TYPE_SELF_IMAGE = 4
+        const val ORDER_TYPE_ADDRESS =      1
+        const val ORDER_TYPE_PICK_UP =      2
+        const val ORDER_TYPE_SELF =         3
+        const val ORDER_TYPE_SELF_IMAGE =   4
+        const val ORDER_TYPE_POSTPAID =     0
+        const val ORDER_TYPE_PREPAID =      1
         //DISPLAY_STATUS
-        const val DS_NEW = "new"                                // When order comes but not opened by merchant
-        const val DS_SEND_BILL = "sendBill"                     // When order comes opened the order but didn't send bill and exit
-        const val DS_BILL_SENT = "billSent"                     // When order comes and send bill but payment is due
-        const val DS_CASH_MARKED = "cashMarked"                 // When order comes & marked as cash
-        const val DS_PAID_ONLINE = "paidOnline"                 // When order comes & order is paid online by customer
-        const val DS_REJECTED = "rejected"                      // Order rejected byt customer
-        const val DS_COMPLETED_CASH = "completedCash"           // When order comes & marked as cash
-        const val DS_COMPLETED_ONLINE= "completedOnline"        // Order self checklist by merchant :: Paid Online
+        const val DS_NEW                                =   "new"                   // When order comes but not opened by merchant
+        const val DS_SEND_BILL                          =   "sendBill"              // When order comes opened the order but didn't send bill and exit
+        const val DS_BILL_SENT                          =   "billSent"              // When order comes and send bill but payment is due
+        const val DS_CASH_MARKED                        =   "cashMarked"            // When order comes & marked as cash
+        const val DS_PAID_ONLINE                        =   "paidOnline"            // When order comes & order is paid online by customer
+        const val DS_REJECTED                           =   "rejected"              // Order rejected byt customer
+        const val DS_COMPLETED_CASH                     =   "completedCash"         // When order comes & marked as cash
+        const val DS_COMPLETED_ONLINE                   =   "completedOnline"       // Order self checklist by merchant :: Paid Online
+        const val DS_MARK_READY                         =   "markReady"             // Merchant seen & start making the order for customer
+        const val DS_PREPAID_PICKUP_READY               =   "prepaidPickupReady"
+        const val DS_PREPAID_DELIVERY_READY             =   "prepaidDeliveryReady"
+        const val DS_PREPAID_PICKUP_COMPLETED           =   "prepaidPickupCompleted"
+        const val DS_PREPAID_DELIVERY_COMPLETED         =   "prepaidDeliveryCompleted"
+        const val DS_OUT_FOR_DELIVERY                   =   "outForDelivery"        // Order out for delivery
         //ORDER_PAGE
-        const val MODE_PENDING = "mode_pending"
-        const val MODE_COMPLETED = "mode_completed"
+        const val MODE_PENDING              =   "mode_pending"
+        const val MODE_COMPLETED            =   "mode_completed"
         //ORDER_STATUS
-        const val StatusCustomerUpdated = 1
-        const val StatusMerchantUpdated = 2
-        const val StatusRejected = 3 //(Status_message : Merchant/Customer Rejected)
-        const val StatusActive = 4 //(Accepted Tab in merchant)
-        const val StatusReady = 5 //(For delivery / pickup)
-        const val StatusOutForDelivery = 6
-        const val StatusCompleted = 7
-        const val StatusCancelled = 8
-        const val StatusSeenByMerchant = 9
+        const val StatusCustomerUpdated =   1
+        const val StatusMerchantUpdated =   2
+        const val StatusRejected =          3   //(Status_message : Merchant/Customer Rejected)
+        const val StatusActive =            4   //(Accepted Tab in merchant)
+        const val StatusReady =             5   //(For delivery / pickup)
+        const val StatusOutForDelivery =    6
+        const val StatusCompleted =         7
+        const val StatusCancelled =         8
+        const val StatusSeenByMerchant =    9
         //BASE64 APIs END POINT
-        const val BASE64_STORE_LOGO = "store_logo"
-        const val BASE64_STORE_ITEMS = "store_items"
-        const val BASE64_ORDER_BILL = "order_bill"
-        const val BASE64_THEMES = "themes"
+        const val BASE64_STORE_LOGO =       "store_logo"
+        const val BASE64_STORE_ITEMS =      "store_items"
+        const val BASE64_ORDER_BILL =       "order_bill"
+        const val BASE64_THEMES =           "themes"
         //CREATOR_TYPE
-        const val CREATOR_TYPE_MERCHANT = 1
-        const val CREATOR_TYPE_CUSTOMER = 2
+        const val CREATOR_TYPE_MERCHANT =   1
+        const val CREATOR_TYPE_CUSTOMER =   2
         //NEW RELEASE TYPES
-        const val NEW_RELEASE_TYPE_WEBVIEW = "webview"
-        const val NEW_RELEASE_TYPE_PREMIUM = "premium"
-        const val NEW_RELEASE_TYPE_NEW = "new"
-        const val NEW_RELEASE_TYPE_CUSTOM_DOMAIN = "custom-domain"
-        const val NEW_RELEASE_TYPE_PREPAID_ORDER = "prepaid-order"
-        const val NEW_RELEASE_TYPE_TRENDING = "trending"
-        const val NEW_RELEASE_TYPE_EXTERNAL = "external"
+        const val NEW_RELEASE_TYPE_WEBVIEW =        "webview"
+        const val NEW_RELEASE_TYPE_PREMIUM =        "premium"
+        const val NEW_RELEASE_TYPE_NEW =            "new"
+        const val NEW_RELEASE_TYPE_CUSTOM_DOMAIN =  "custom-domain"
+        const val NEW_RELEASE_TYPE_PREPAID_ORDER =  "prepaid-order"
+        const val NEW_RELEASE_TYPE_TRENDING =       "trending"
+        const val NEW_RELEASE_TYPE_EXTERNAL =       "external"
         //EDIT PHOTO MODES
-        const val EDIT_PHOTO_MODE_MOBILE = "mobile"
+        const val EDIT_PHOTO_MODE_MOBILE =  "mobile"
         const val EDIT_PHOTO_MODE_DESKTOP = "desktop"
         //MODES
-        const val MODE_CROP = "crop"
-        const val MODE_ADD_PRODUCT = "add_product"
-        const val MODE_PRODUCT_LIST = "product_list"
+        const val MODE_CROP =           "crop"
+        const val MODE_ADD_PRODUCT =    "add_product"
+        const val MODE_PRODUCT_LIST =   "product_list"
         //MODE ORDER STATUS
-        const val ORDER_STATUS_SUCCESS = "Success"
-        const val ORDER_STATUS_REJECTED = "Rejected"
-        const val ORDER_STATUS_IN_PROGRESS = "In-Progress"
-        const val ORDER_STATUS_REFUND_SUCCESS  = "refund-success"
-        const val ORDER_STATUS_PAYOUT_SUCCESS  = "payout-success"
-        const val ORDER_STATUS_LOCKED = "Locked"
+        const val ORDER_STATUS_SUCCESS =            "Success"
+        const val ORDER_STATUS_REJECTED =           "Rejected"
+        const val ORDER_STATUS_IN_PROGRESS =        "In-Progress"
+        const val ORDER_STATUS_REFUND_SUCCESS  =    "refund-success"
+        const val ORDER_STATUS_PAYOUT_SUCCESS  =    "payout-success"
+        const val ORDER_STATUS_LOCKED =             "Locked"
         //MODE DELIVERY CHARGE
         const val UNKNOWN_DELIVERY_CHARGE = 0
-        const val FREE_DELIVERY = 1
-        const val FIXED_DELIVERY_CHARGE = 2
-        const val CUSTOM_DELIVERY_CHARGE = 3
+        const val FREE_DELIVERY =           1
+        const val FIXED_DELIVERY_CHARGE =   2
+        const val CUSTOM_DELIVERY_CHARGE =  3
         //ITEM_TYPE_CHARGE
-        const val ITEM_TYPE_DELIVERY_CHARGE = "delivery_charge"
-        const val ITEM_TYPE_CHARGE = "charge"
-        const val ITEM_TYPE_DISCOUNT = "discount"
+        const val ITEM_TYPE_DELIVERY_CHARGE =   "delivery_charge"
+        const val ITEM_TYPE_CHARGE =            "charge"
+        const val ITEM_TYPE_DISCOUNT =          "discount"
     }
 }

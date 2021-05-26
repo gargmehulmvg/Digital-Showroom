@@ -984,7 +984,12 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
             var isCheckBoxVisible = "" == PrefsManager.getStringDataFromSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN)
             builder.apply {
                 setTitle(staticData?.dialog_text_alert)
-                setMessage(staticData?.dialog_message)
+                val message : String? = when(item?.displayStatus) {
+                    Constants.DS_MARK_READY -> staticData?.dialog_message_prepaid_pickup
+                    Constants.DS_OUT_FOR_DELIVERY -> staticData?.dialog_message_prepaid_delivery
+                    else -> staticData?.dialog_message
+                }
+                setMessage(message)
                 if (isCheckBoxVisible) setView(view)
                 setPositiveButton(staticData?.dialog_text_yes) { dialogInterface, _ ->
                     run {

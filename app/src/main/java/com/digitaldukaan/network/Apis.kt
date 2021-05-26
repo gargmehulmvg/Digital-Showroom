@@ -184,6 +184,9 @@ interface Apis {
     @POST("api/dotk/vm1/orders/updateOrder")
     suspend fun updateOrder(@Header("auth_token") authToken: String, @Body statusRequest: UpdateOrderRequest): Response<CommonApiResponse>
 
+    @POST("api/dotk/vm1/orders/updatePrepaidOrder/{orderId}")
+    suspend fun updatePrepaidOrder(@Path("orderId") orderId: String?, @Body statusRequest: UpdatePrepaidOrderRequest?): Response<CommonApiResponse>
+
     @POST("api/dotk/vm1/orders/shareBill/{order_id}")
     suspend fun shareBill(@Path("order_id") orderId: String): Response<CommonApiResponse>
 
