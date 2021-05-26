@@ -80,7 +80,7 @@ class SendBillPhotoFragment: BaseFragment(), ISendBillPhotoServiceInterface {
             mActivity?.let {
                 setSideIcon(ContextCompat.getDrawable(it, R.drawable.ic_refresh), object : IOnToolbarIconClick {
                     override fun onToolbarSideIconClicked() {
-                        openFullCamera()
+                        openCameraWithoutCrop()
                     }
                 })
             }

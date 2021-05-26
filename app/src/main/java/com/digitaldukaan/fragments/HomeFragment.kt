@@ -693,7 +693,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                     clickBillPhotoContainer.setOnClickListener {
                         clickBillPhotoContainer.isEnabled = false
                         bottomSheetDialog.dismiss()
-                        openFullCamera()
+                        openCameraWithoutCrop()
                     }
                     shareButtonTextView.text = mOrderPageInfoStaticData?.bottom_sheet_click_bill_photo
                     takeOrderMessageTextView.text = mOrderPageInfoStaticData?.bottom_sheet_take_order_message
