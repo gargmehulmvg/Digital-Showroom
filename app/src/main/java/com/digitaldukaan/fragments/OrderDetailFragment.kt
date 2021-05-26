@@ -664,6 +664,8 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             if (commonResponse.mIsSuccessStatus) {
+                val response = Gson().fromJson<UpdateOrderResponse>(commonResponse.mCommonDataStr, UpdateOrderResponse::class.java)
+                shareDataOnWhatsAppByNumber(mMobileNumber, response?.whatsAppText)
                 mOrderDetailService?.getOrderDetail(mOrderId)
             } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
         }

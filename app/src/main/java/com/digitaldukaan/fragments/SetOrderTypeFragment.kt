@@ -173,12 +173,24 @@ class SetOrderTypeFragment: BaseFragment(), ISetOrderTypeServiceInterface {
                 if (prepaidOrderRadioButton?.isChecked == true) return
                 if (mIsPrepaidCompleted) showConfirmationDialog() else showUnlockOptionBottomSheet()
                 mPaymentMethodStr = prepaidOrderRadioButton?.text?.toString() ?: ""
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_CHECK_PREPAID_ORDERS,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                        AFInAppEventParameterName.TYPE to AFInAppEventParameterName.PREPAID)
+                )
             }
             payBothContainer?.id -> {
                 mPaymentMethod = mSetOrderTypePageInfoResponse?.mBothPaidResponse?.id ?: 0
                 if (payBothRadioButton?.isChecked == true) return
                 if (mIsBothCompleted) showConfirmationDialog() else showUnlockOptionBottomSheet()
                 mPaymentMethodStr = payBothRadioButton?.text?.toString() ?: ""
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_CHECK_PREPAID_ORDERS,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                        AFInAppEventParameterName.TYPE to AFInAppEventParameterName.BOTH)
+                )
             }
             postpaidContainer?.id -> {
                 mPaymentMethod = mSetOrderTypePageInfoResponse?.mPostPaidResponse?.id ?: 0
@@ -186,6 +198,12 @@ class SetOrderTypeFragment: BaseFragment(), ISetOrderTypeServiceInterface {
                 mPaymentMethodStr = postpaidRadioButton?.text?.toString() ?: ""
                 showProgressDialog(mActivity)
                 mService?.updatePaymentMethod(UpdatePaymentMethodRequest(mPaymentMethod))
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_CHECK_PREPAID_ORDERS,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                        AFInAppEventParameterName.TYPE to AFInAppEventParameterName.POSTPAID)
+                )
             }
         }
     }
