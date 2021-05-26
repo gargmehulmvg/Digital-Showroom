@@ -23,13 +23,15 @@ import java.io.File
 class SendBillFragment : BaseFragment() {
 
     private var mImageUri: Uri? = null
+    private var mImageFile: File? = null
     private var mAmountStr: String? = ""
 
     companion object {
         private const val TAG = "SendBillFragment"
-        fun newInstance(uri: Uri?): SendBillFragment {
+        fun newInstance(uri: Uri?, file: File?): SendBillFragment {
             val fragment = SendBillFragment()
             fragment.mImageUri = uri
+            fragment.mImageFile = file
             return fragment
         }
     }
@@ -78,16 +80,9 @@ class SendBillFragment : BaseFragment() {
             refreshImageView?.id -> openCameraWithoutCrop()
             backButtonToolbar?.id -> mActivity?.onBackPressed()
             sendBillTextView?.id -> {
-                AppEventsManager.pushAppEvents(
-                    eventName = AFInAppEventType.EVENT_GENERATE_SELF_BILL,
-                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                    data = mapOf(
-                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)
-                    )
-                )
+                AppEventsManager.pushAppEvents(eventName = AFInAppEventType.EVENT_GENERATE_SELF_BILL, isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true, data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)))
                 try {
-                    val imageFile = File(mImageUri?.path)
-                    imageFile.run {
+                    mImageFile?.run {
                         val fileRequestBody = MultipartBody.Part.createFormData("media", name, RequestBody.create("image/*".toMediaTypeOrNull(), this))
                         val imageTypeRequestBody = RequestBody.create("text/plain".toMediaTypeOrNull(), Constants.BASE64_ORDER_BILL)
                         showProgressDialog(mActivity)
@@ -134,6 +129,11 @@ class SendBillFragment : BaseFragment() {
 
     override fun onImageSelectionResultUri(fileUri: Uri?) {
         mImageUri = fileUri
+        loadImageFromUri()
+    }
+
+    override fun onImageSelectionResultFile(file: File?, mode: String) {
+        mImageFile = file
         loadImageFromUri()
     }
 

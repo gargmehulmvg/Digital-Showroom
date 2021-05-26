@@ -1,5 +1,6 @@
 package com.digitaldukaan.network
 
+import android.util.Log
 import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.PrefsManager
@@ -29,6 +30,7 @@ class RetrofitApi {
             }
             mAppService
         } catch (e: Exception) {
+            Log.e(mTag, "getServerCallObject: ${e.message}", e)
             Sentry.captureException(e, "$mTag getServerCallObject")
             throw IOException(e.message)
         }
@@ -50,6 +52,7 @@ class RetrofitApi {
                 try {
                     customizeCustomRequest(it)
                 } catch (e: Exception) {
+                    Log.e(mTag, "getHttpClient: ${e.message}", e)
                     Sentry.captureException(e, "Exception in getHttpClient Request :: ${it.request()} Message :: ${e.message}")
                     throw IOException()
                 }
@@ -65,6 +68,7 @@ class RetrofitApi {
             val newRequest = getNewRequest(originalRequest)
             return if (newRequest == null) it.proceed(originalRequest) else it.proceed(newRequest)
         } catch (e: Exception) {
+            Log.e(mTag, "customizeCustomRequest: ${e.message}", e)
             Sentry.captureException(e, "Exception in customizeCustomRequest Request :: ${it.request()} Message :: ${e.message}")
             throw IOException()
         }
@@ -80,6 +84,7 @@ class RetrofitApi {
                 addHeader("app_version", BuildConfig.VERSION_NAME)
             }.build()
         } catch (e: Exception) {
+            Log.e(mTag, "getNewRequest: ${e.message}", e)
             null
         }
     }

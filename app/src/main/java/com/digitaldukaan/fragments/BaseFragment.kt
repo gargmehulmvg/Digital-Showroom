@@ -691,6 +691,14 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     }
 
     open fun openMobileGalleryWithCrop() {
+        mActivity?.let {
+            if (ActivityCompat.checkSelfPermission(it, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(it, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(it, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA), Constants.IMAGE_PICK_REQUEST_CODE)
+                return
+            }
+        }
         mActivity?.run {
             val fileName = "tempFile_${System.currentTimeMillis()}"
             val storageDirectory = this.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
@@ -709,6 +717,14 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     }
 
     open fun openMobileGalleryWithoutCrop() {
+        mActivity?.let {
+            if (ActivityCompat.checkSelfPermission(it, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(it, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(it, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA), Constants.IMAGE_PICK_REQUEST_CODE)
+                return
+            }
+        }
         mActivity?.run {
             val fileName = "tempFile_${System.currentTimeMillis()}"
             val storageDirectory = this.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
@@ -727,7 +743,16 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     }
 
     open fun openCameraWithoutCrop() {
+        mActivity?.let {
+            if (ActivityCompat.checkSelfPermission(it, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(it, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(it, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA), Constants.IMAGE_PICK_REQUEST_CODE)
+                return
+            }
+        }
         mActivity?.run {
+            showCancellableProgressDialog(this)
             val fileName = "tempFile_${System.currentTimeMillis()}"
             val storageDirectory = this.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
             try {
@@ -745,7 +770,16 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     }
 
     open fun openCameraWithCrop() {
+        mActivity?.let {
+            if (ActivityCompat.checkSelfPermission(it, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(it, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(it, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA), Constants.IMAGE_PICK_REQUEST_CODE)
+                return
+            }
+        }
         mActivity?.run {
+            showCancellableProgressDialog(this)
             val fileName = "tempFile_${System.currentTimeMillis()}"
             val storageDirectory = this.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
             try {
@@ -801,7 +835,6 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
             file = Compressor.compress(this, file)
             Log.d(TAG, "COMPRESSED :: ${file.length() / (1024)} KB")
         }
-        showToast("${file.length() / (1024 * 1024)} MB")
         if (file.length() / (1024 * 1024) >= mActivity?.resources?.getInteger(R.integer.image_mb_size) ?: 0) {
             showToast("Images more than ${mActivity?.resources?.getInteger(R.integer.image_mb_size)} are not allowed")
             return
@@ -810,8 +843,10 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         if (isCropAllowed) {
             it?.let { uri -> startCropping(uri) }
         } else {
+            stopProgress()
             onImageSelectionResultUri(fileUri)
             onImageSelectionResultFile(file)
+            onImageSelectionResultFileAndUri(fileUri, file)
         }
     }
 
@@ -826,7 +861,6 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
             Log.d(TAG, "ORIGINAL :: ${it.length() / (1024)} KB")
             mActivity?.run { file = Compressor.compress(this, it) }
             Log.d(TAG, "COMPRESSED :: ${it.length() / (1024)} KB")
-            showToast("${it.length() / (1024 * 1024)} MB")
             if (it.length() / (1024 * 1024) >= mActivity?.resources?.getInteger(R.integer.image_mb_size) ?: 0) {
                 showToast("Images more than ${mActivity?.resources?.getInteger(R.integer.image_mb_size)} are not allowed")
                 return@let
@@ -835,6 +869,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
             if (isCropAllowed) {
                 bitmap?.let { b -> startCropping(b) }
             } else {
+                stopProgress()
                 onImageSelectionResultUri(fileUri)
                 onImageSelectionResultFile(file)
             }
@@ -844,25 +879,16 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     private fun startCropping(bitmap: Bitmap?) {
         mActivity?.let {
             val originalImgFile = File(it.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "${System.currentTimeMillis()}_originalImgFile.jpg")
-            bitmap?.let { b ->convertBitmaptoFile(originalImgFile, b) }
+            bitmap?.let { b ->convertBitmapToFile(originalImgFile, b) }
             val croppedImgFile = File(it.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "${System.currentTimeMillis()}_croppedImgFile.jpg")
             UCrop.of(Uri.fromFile(originalImgFile), Uri.fromFile(croppedImgFile))
                 .withAspectRatio(1f, 1f)
                 .start(it)
+            stopProgress()
         }
-        /*mActivity?.let {
-            CropImage.activity(sourceUri)
-                .setAspectRatio(1, 1)
-                .setMaxCropResultSize(2048, 2048)
-                .setAllowFlipping(false)
-                .setActivityTitle("Crop Image")
-                .setAutoZoomEnabled(true)
-                .setMaxZoom(10)
-                .start(it)
-        }*/
     }
 
-    private fun convertBitmaptoFile(destinationFile: File, bitmap: Bitmap) {
+    private fun convertBitmapToFile(destinationFile: File, bitmap: Bitmap) {
         //create a file to write bitmap data
         destinationFile.createNewFile()
         //Convert bitmap to byte array
@@ -897,6 +923,8 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     open fun onImageSelectionResultFile(file: File?, mode: String = "") = Unit
 
     open fun onImageSelectionResultUri(fileUri: Uri?) = Unit
+
+    open fun onImageSelectionResultFileAndUri(fileUri: Uri?, file: File?) = Unit
 
     open fun onNoInternetButtonClick(isNegativeButtonClick: Boolean) = Unit
 
