@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/light_grey_background"
     android:animateLayoutChanges="true">
 
     <ImageView
@@ -19,6 +20,7 @@
         android:id="@+id/toolBarContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/white"
         android:minHeight="?attr/actionBarSize"
         android:elevation="@dimen/_10sdp"
         app:layout_constraintTop_toTopOf="parent">
@@ -115,10 +117,19 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <View
+        android:id="@+id/shadowToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_1sdp"
+        android:alpha="0.1"
+        app:layout_constraintTop_toBottomOf="@+id/toolBarContainer"
+        android:background="@color/cardview_dark_background" />
+
     <androidx.core.widget.NestedScrollView
         android:id="@+id/nestedScrollView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginTop="@dimen/_1sdp"
         app:layout_constraintTop_toBottomOf="@+id/toolBarContainer">
 
         <LinearLayout
@@ -440,6 +451,7 @@
 
             <View
                 android:id="@+id/blankSpace"
+                android:background="@color/light_grey_background"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_200sdp" />
 
@@ -448,10 +460,53 @@
     </androidx.core.widget.NestedScrollView>
 
     <LinearLayout
+        android:id="@+id/prepaidOrderLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:elevation="@dimen/_5sdp"
+        android:animateLayoutChanges="true"
+        android:orientation="vertical"
+        android:padding="@dimen/_15sdp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:id="@+id/markOutForDeliveryTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ripple_curve_grey_black_background"
+            android:gravity="center"
+            android:onClick="onClick"
+            android:paddingTop="@dimen/_10sdp"
+            android:paddingBottom="@dimen/_10sdp"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_14sdp"
+            android:visibility="gone"
+            tools:text="Mark out for Delivery" />
+
+        <TextView
+            android:id="@+id/markOutForDeliveryValueTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:textColor="@color/open_green"
+            android:textSize="@dimen/_13sdp"
+            android:lineSpacingMultiplier="1.2"
+            android:visibility="gone"
+            app:drawableEndCompat="@drawable/ic_success_zigzag_border"
+            tools:text="Delivery time is set as:\nJan 26, 2021- Jan 29, 2021" />
+
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/sendBillLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:elevation="@dimen/_5sdp"
+        android:visibility="gone"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/bottomSheetContainer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/upper_curve_white_background"
+    android:orientation="vertical"
+    android:padding="@dimen/_12sdp">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/bottomSheetHeadingTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:lineSpacingMultiplier="1.2"
+        android:textColor="@color/dark_blackish"
+        android:textSize="@dimen/_22sdp"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="16dp"
+        tools:text="Complete below steps to Unlock this option" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/optionsRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>

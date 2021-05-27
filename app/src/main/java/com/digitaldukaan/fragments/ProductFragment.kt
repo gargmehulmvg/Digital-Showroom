@@ -68,7 +68,10 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.product_fragment, container, false)
-        if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else mService?.getProductPageInfo()
+        if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else {
+            showCancellableProgressDialog(mActivity)
+            mService?.getProductPageInfo()
+        }
         ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, false)
             hideBackPressFromToolBar(mActivity, false)
@@ -92,7 +95,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
         }
     }
 
-    override fun onProductResponse(commonResponse: CommonApiResponse) {
+    override fun onProductPageInfoResponse(commonResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             val productResponse = Gson().fromJson(commonResponse.mCommonDataStr, ProductPageResponse::class.java)
             bottomContainer?.visibility = if (productResponse?.isZeroProduct == true) View.GONE else View.VISIBLE
@@ -507,6 +510,11 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                         }
                         bottomSheetDialog.dismiss()
                         showProgressDialog(mActivity)
+                        AppEventsManager.pushAppEvents(
+                            eventName = AFInAppEventType.EVENT_EDIT_CATEGORY,
+                            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                            data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
+                        )
                         mService?.updateCategory(request)
                     }
                     deleteCategoryTextView.setOnClickListener {
@@ -544,6 +552,11 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                                     val request = DeleteCategoryRequest(categoryId, mDeleteCategoryItemList?.get(position)?.action == "true")
                                     bottomSheetDialog.dismiss()
                                     showProgressDialog(mActivity)
+                                    AppEventsManager.pushAppEvents(
+                                        eventName = AFInAppEventType.EVENT_DELETE_CATEGORY,
+                                        isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                                        data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
+                                    )
                                     mService?.deleteCategory(request)
                                 }
                             }

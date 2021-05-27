@@ -61,5 +61,13 @@ data class OrderPageStaticTextResponse(
     @SerializedName("dialog_check_box_text")            var dialog_check_box_text: String,
     @SerializedName("dialog_text_no")                   var dialog_text_no: String,
     @SerializedName("dialog_text_yes")                  var dialog_text_yes: String,
-    @SerializedName("dialog_text_alert")                var dialog_text_alert: String
+    @SerializedName("dialog_text_alert")                var dialog_text_alert: String,
+    @SerializedName("text_mark_ready")                  var markReadyText: String?,
+    @SerializedName("text_out_for_delivery")            var outForDeliveryText: String?,
+    @SerializedName("text_ready_for_pickup")            var readyForPickupText: String?,
+    @SerializedName("text_mark_out_for_delivery")       var markOutForDeliveryText: String?,
+    @SerializedName("text_delivery_time_is_set_as")     var deliveryTimeIsSetAsText: String?,
+    @SerializedName("text_pickup_order_success")        var pickUpOrderSuccess: String?,
+    @SerializedName("dialog_message_prepaid_delivery")  var dialog_message_prepaid_delivery: String,
+    @SerializedName("dialog_message_prepaid_pickup")    var dialog_message_prepaid_pickup: String
 )

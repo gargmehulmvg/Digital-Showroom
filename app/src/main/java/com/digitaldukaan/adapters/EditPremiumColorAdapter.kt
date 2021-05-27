@@ -48,10 +48,8 @@ class EditPremiumColorAdapter(
     ) {
         val item = mColorList?.get(position)
         holder.run {
-            imageView.setBackgroundColor(Color.parseColor(item?.primaryColor))
-            if (position == 0) {
-                currentSelectionTextView.text = mCurrentThemeText
-            }
+            item?.primaryColor?.let { color -> imageView.setBackgroundColor(Color.parseColor(color)) }
+            if (position == 0) currentSelectionTextView.text = mCurrentThemeText
             tickImageView.visibility = if (item?.isSelected == true) View.VISIBLE else View.GONE
         }
     }

@@ -182,7 +182,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                     data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
                 )
-                if (validateOtpResponse.mStore == null || mIsNewUser) launchFragment(OnBoardScreenDukaanNameFragment(), true) else launchFragment(HomeFragment(), true)
+                if (null == validateOtpResponse.mStore && mIsNewUser) launchFragment(OnBoardScreenDukaanNameFragment(), true) else launchFragment(HomeFragment(), true)
             }
         }
     }

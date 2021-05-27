@@ -3,6 +3,10 @@ package com.digitaldukaan.constants
 interface AFInAppEventParameterName {
 
     companion object {
+        const val STEP = "Step"
+        const val TYPE = "Type"
+        const val KYC = "KYC"
+        const val DELIVERY_CHARGE = "Delivery_charge"
         const val IMAGES = "images"
         const val STORE_ID = "Store ID"
         const val SOCIAL = "Social"
@@ -35,6 +39,7 @@ interface AFInAppEventParameterName {
         const val AMOUNT = "Amount"
         const val SELECTION = "Selection"
         const val CHANNEL = "Channel"
+        const val BING_TEXT = "Bing_Text"
         const val RESULT = "Result"
         const val PATH = "Path"
         const val IS_MARKETING_PAGE = "isMarketingPage"
@@ -50,6 +55,9 @@ interface AFInAppEventParameterName {
         const val MARKETING = "marketing"
         const val CATALOG = "catalog"
         const val REASON = "reason"
+        const val PREPAID = "Prepaid"
+        const val BOTH = "Both"
+        const val POSTPAID = "Pay_on_delivery"
         const val VARIANTS_ADDED = "Variants_Added"
         const val SEARCH_BY = "Search by"
         const val REFERENCE_STORE_ID = "reference_store_id"

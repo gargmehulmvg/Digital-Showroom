@@ -35,6 +35,12 @@ interface Apis {
     suspend fun updateStoreAddress(@Body request: StoreAddressRequest) : Response<CommonApiResponse>
 
     /* ----------------------       Settings         ---------------------- */
+    @GET("api/dotk/vm1/settings/getOrderTypePageInfo")
+    suspend fun getOrderTypePageInfo() : Response<CommonApiResponse>
+
+    @POST("api/dotk/vm1/settings/updatePaymentMethod")
+    suspend fun updatePaymentMethod(@Body request: UpdatePaymentMethodRequest) : Response<CommonApiResponse>
+
     @POST("api/dotk/vm1/settings/updateStoreDomain")
     suspend fun updateStoreDomain(@Body request: StoreLinkRequest) : Response<CommonApiResponse>
 
@@ -167,7 +173,7 @@ interface Apis {
     suspend fun updateOrderStatus(@Body statusRequest: UpdateOrderStatusRequest): Response<CommonApiResponse>
 
     @GET("api/dotk/vm1/orders/getOrderDetails/{orderId}")
-    suspend fun getOrderDetails(@Header("auth_token") authToken: String, @Path("orderId") orderId: String): Response<CommonApiResponse>
+    suspend fun getOrderDetails(@Path("orderId") orderId: String): Response<CommonApiResponse>
 
     @POST("api/dotk/vm1/orders/completeOrder")
     suspend fun completeOrder(@Body request: CompleteOrderRequest): Response<CommonApiResponse>
@@ -177,6 +183,9 @@ interface Apis {
 
     @POST("api/dotk/vm1/orders/updateOrder")
     suspend fun updateOrder(@Header("auth_token") authToken: String, @Body statusRequest: UpdateOrderRequest): Response<CommonApiResponse>
+
+    @POST("api/dotk/vm1/orders/updatePrepaidOrder/{orderId}")
+    suspend fun updatePrepaidOrder(@Path("orderId") orderId: String?, @Body statusRequest: UpdatePrepaidOrderRequest?): Response<CommonApiResponse>
 
     @POST("api/dotk/vm1/orders/shareBill/{order_id}")
     suspend fun shareBill(@Path("order_id") orderId: String): Response<CommonApiResponse>

@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
+    android:background="@color/default_bg"
+    android:fillViewport="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:animateLayoutChanges="true">
+
+        <LinearLayout
+            android:id="@+id/prepaidOrderContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:animateLayoutChanges="true"
+            android:elevation="@dimen/_2sdp"
+            android:layout_margin="@dimen/_15sdp"
+            android:background="@drawable/ripple_slight_curve_grey_white_background"
+            android:orientation="vertical"
+            android:onClick="onClick"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <RadioButton
+                android:id="@+id/prepaidOrderRadioButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/_5sdp"
+                android:padding="@dimen/_5sdp"
+                android:clickable="false"
+                android:drawableEnd="@drawable/ic_info_black_small"
+                tools:text="Prepaid Orders" />
+
+            <View
+                android:id="@+id/prepaidSeparator"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_1sdp"
+                android:clickable="false"
+                android:background="@color/light_grey_background" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/prepaidOrderTypeRecyclerView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_20sdp"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:layout_marginBottom="@dimen/_5sdp"
+                android:overScrollMode="never"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:itemCount="3"
+                tools:listitem="@layout/set_order_type_item" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/payOnPickUpDeliveryContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_15sdp"
+            android:animateLayoutChanges="true"
+            android:elevation="@dimen/_2sdp"
+            android:layout_margin="@dimen/_15sdp"
+            android:onClick="onClick"
+            android:background="@drawable/ripple_slight_curve_grey_white_background"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/prepaidOrderContainer">
+
+            <RadioButton
+                android:id="@+id/postpaidRadioButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/_5sdp"
+                android:clickable="false"
+                android:padding="@dimen/_5sdp"
+                tools:text="Pay on Delivery / Pickup" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/payBothContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_15sdp"
+            android:elevation="@dimen/_2sdp"
+            android:layout_margin="@dimen/_15sdp"
+            android:animateLayoutChanges="true"
+            android:onClick="onClick"
+            android:background="@drawable/ripple_slight_curve_grey_white_background"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/payOnPickUpDeliveryContainer">
+
+            <RadioButton
+                android:id="@+id/payBothRadioButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/_5sdp"
+                android:clickable="false"
+                android:padding="@dimen/_5sdp"
+                android:drawablePadding="@dimen/_3sdp"
+                android:drawableEnd="@drawable/ic_info_black_small"
+                tools:text="Both (Prepaid And Pay on Delivery / Pickup)" />
+
+            <View
+                android:id="@+id/postpaidSeparator"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_1sdp"
+                android:clickable="false"
+                android:background="@color/light_grey_background" />
+
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/bothOrderTypeRecyclerView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_20sdp"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:layout_marginBottom="@dimen/_5sdp"
+                android:clickable="false"
+                android:overScrollMode="never"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:itemCount="3"
+                tools:listitem="@layout/set_order_type_item" />
+
+        </LinearLayout>
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/howDoesPrepaidWorkTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:onClick="onClick"
+            android:paddingStart="@dimen/_10sdp"
+            android:paddingEnd="@dimen/_10sdp"
+            android:background="?selectableItemBackground"
+            android:textColor="@color/open_green"
+            android:fontFamily="@font/roboto_medium"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="@+id/payBothContainer"
+            app:layout_constraintTop_toBottomOf="@+id/payBothContainer"
+            app:layout_constraintVertical_bias="0.05"
+            tools:text="How does Prepaid Orders work?" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="10dp"
+            android:layout_marginStart="@dimen/_12sdp"
+            android:layout_marginEnd="@dimen/_12sdp"
+            android:background="@drawable/dotted_line_view_green"
+            app:layout_constraintEnd_toEndOf="@+id/howDoesPrepaidWorkTextView"
+            app:layout_constraintStart_toStartOf="@+id/howDoesPrepaidWorkTextView"
+            app:layout_constraintTop_toBottomOf="@+id/howDoesPrepaidWorkTextView" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>

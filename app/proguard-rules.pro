@@ -27,3 +27,7 @@
 -keep public class * extends java.lang.Exception  # Optional: Keep custom exceptions.
 
 -dontwarn com.appsflyer.**
+
+-dontwarn com.yalantis.ucrop**
+-keep class com.yalantis.ucrop** { *; }
+-keep interface com.yalantis.ucrop** { *; }

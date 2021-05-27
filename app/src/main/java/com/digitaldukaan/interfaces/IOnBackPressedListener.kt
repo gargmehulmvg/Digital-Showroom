@@ -1,7 +1,7 @@
 package com.digitaldukaan.interfaces
 
-interface IOnBackPressedListener {
+interface IRecyclerViewClickListener {
 
-    fun onBackPressedToExit()
+    fun onRecyclerViewClickListener(mode: String)
 
 }

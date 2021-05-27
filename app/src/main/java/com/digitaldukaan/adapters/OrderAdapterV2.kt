@@ -123,6 +123,10 @@ class OrderAdapterV2(
                 orderCheckBox.alpha = 0.2f
                 orderStatusTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
                 orderStatusImageView.visibility = View.GONE
+                if (Constants.ORDER_TYPE_PREPAID == item.prepaidFlag) {
+                    orderStatusImageView.visibility = View.VISIBLE
+                    orderStatusImageView.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_prepaid))
+                }
             }
             Constants.DS_SEND_BILL -> {
                 orderStatusTextView.setTextColor(mContext.getColor(R.color.orange))
@@ -131,6 +135,34 @@ class OrderAdapterV2(
                 orderStatusTextView.text = if (mOrderPageInfoStaticData?.sendBillText?.isEmpty() == true) mOrderPageInfoStaticData?.sendBillText else "Send Bill"
                 orderCheckBox.isEnabled = true
                 orderStatusImageView.visibility = View.GONE
+                if (Constants.ORDER_TYPE_PREPAID == item.prepaidFlag) {
+                    orderStatusImageView.visibility = View.VISIBLE
+                    orderStatusImageView.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_prepaid))
+                }
+            }
+            Constants.DS_MARK_READY -> {
+                orderStatusTextView.setTextColor(mContext.getColor(R.color.orange))
+                orderStatusTextView.background = ContextCompat.getDrawable(mContext, R.drawable.order_adapter_send_bill)
+                Log.d(mTag, "getOrderStatus: ${mOrderPageInfoStaticData?.markReadyText}")
+                orderStatusTextView.text = if (mOrderPageInfoStaticData?.markReadyText?.isEmpty() == true) mOrderPageInfoStaticData?.markReadyText else "Mark Ready"
+                orderCheckBox.isEnabled = true
+                orderStatusImageView.visibility = View.GONE
+                if (Constants.ORDER_TYPE_PREPAID == item.prepaidFlag) {
+                    orderStatusImageView.visibility = View.VISIBLE
+                    orderStatusImageView.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_prepaid))
+                }
+            }
+            Constants.DS_OUT_FOR_DELIVERY -> {
+                orderStatusTextView.setTextColor(mContext.getColor(R.color.orange))
+                orderStatusTextView.background = ContextCompat.getDrawable(mContext, R.drawable.order_adapter_send_bill)
+                Log.d(mTag, "getOrderStatus: ${mOrderPageInfoStaticData?.outForDeliveryText}")
+                orderStatusTextView.text = if (mOrderPageInfoStaticData?.outForDeliveryText?.isEmpty() == true) mOrderPageInfoStaticData?.outForDeliveryText else "Out For Delivery?"
+                orderCheckBox.isEnabled = true
+                orderStatusImageView.visibility = View.GONE
+                if (Constants.ORDER_TYPE_PREPAID == item.prepaidFlag) {
+                    orderStatusImageView.visibility = View.VISIBLE
+                    orderStatusImageView.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_prepaid))
+                }
             }
             Constants.DS_BILL_SENT -> {
                 orderStatusTextView.setTextColor(mContext.getColor(R.color.snack_bar_background))
@@ -139,6 +171,10 @@ class OrderAdapterV2(
                 orderStatusTextView.text = if (mOrderPageInfoStaticData?.sentBillText?.isEmpty() == true) mOrderPageInfoStaticData?.sentBillText else "Bill Sent"
                 orderCheckBox.isEnabled = true
                 orderStatusImageView.visibility = View.GONE
+                if (Constants.ORDER_TYPE_PREPAID == item.prepaidFlag) {
+                    orderStatusImageView.visibility = View.VISIBLE
+                    orderStatusImageView.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_prepaid))
+                }
             }
             Constants.DS_PAID_ONLINE -> {
                 orderStatusImageView.visibility = View.VISIBLE
@@ -146,6 +182,10 @@ class OrderAdapterV2(
                 orderStatusTextView.text = null
                 orderStatusTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
                 orderStatusTextView.visibility = View.INVISIBLE
+                if (Constants.ORDER_TYPE_PREPAID == item.prepaidFlag) {
+                    orderStatusImageView.visibility = View.VISIBLE
+                    orderStatusImageView.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_prepaid))
+                }
             }
             Constants.DS_REJECTED -> {
                 orderStatusTextView.setTextColor(mContext.getColor(R.color.red))
@@ -156,6 +196,10 @@ class OrderAdapterV2(
                 orderCheckBox.alpha = 0.2f
                 orderItemContainer.alpha = 0.2f
                 orderStatusImageView.visibility = View.GONE
+                if (Constants.ORDER_TYPE_PREPAID == item.prepaidFlag) {
+                    orderStatusImageView.visibility = View.VISIBLE
+                    orderStatusImageView.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_prepaid))
+                }
             }
             Constants.DS_COMPLETED_CASH -> {
                 orderCheckBox.alpha = 0.2f
@@ -167,6 +211,28 @@ class OrderAdapterV2(
                 orderStatusTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
                 orderStatusImageView.visibility = View.VISIBLE
                 orderStatusImageView.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_order_status_cash))
+            }
+            Constants.DS_PREPAID_PICKUP_COMPLETED -> {
+                orderCheckBox.alpha = 0.2f
+                orderItemContainer.alpha = 0.2f
+                orderCheckBox.isSelected = true
+                orderCheckBox.isChecked = true
+                orderCheckBox.isEnabled = false
+                orderStatusTextView.text = null
+                orderStatusTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
+                orderStatusImageView.visibility = View.VISIBLE
+                orderStatusImageView.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_prepaid))
+            }
+            Constants.DS_PREPAID_DELIVERY_COMPLETED -> {
+                orderCheckBox.alpha = 0.2f
+                orderItemContainer.alpha = 0.2f
+                orderCheckBox.isSelected = true
+                orderCheckBox.isChecked = true
+                orderCheckBox.isEnabled = false
+                orderStatusTextView.text = null
+                orderStatusTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
+                orderStatusImageView.visibility = View.VISIBLE
+                orderStatusImageView.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_prepaid))
             }
             Constants.DS_COMPLETED_ONLINE -> {
                 orderCheckBox.alpha = 0.2f
@@ -180,9 +246,14 @@ class OrderAdapterV2(
                 orderStatusImageView.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_order_status_paid))
             }
             else -> {
-                orderCheckBox.alpha = 0.2f
-                orderCheckBox.isEnabled = false
-                orderStatusImageView.visibility = View.GONE
+                if (Constants.ORDER_TYPE_PREPAID == item?.prepaidFlag) {
+                    orderStatusImageView.visibility = View.VISIBLE
+                    orderStatusImageView.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_prepaid))
+                } else {
+                    orderCheckBox.alpha = 0.2f
+                    orderCheckBox.isEnabled = false
+                    orderStatusImageView.visibility = View.GONE
+                }
             }
         }
     }

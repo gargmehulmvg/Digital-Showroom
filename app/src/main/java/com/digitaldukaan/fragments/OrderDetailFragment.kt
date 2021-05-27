@@ -32,6 +32,7 @@ import com.digitaldukaan.models.dto.CustomerDeliveryAddressDTO
 import com.digitaldukaan.models.request.CompleteOrderRequest
 import com.digitaldukaan.models.request.UpdateOrderRequest
 import com.digitaldukaan.models.request.UpdateOrderStatusRequest
+import com.digitaldukaan.models.request.UpdatePrepaidOrderRequest
 import com.digitaldukaan.models.response.*
 import com.digitaldukaan.services.OrderDetailService
 import com.digitaldukaan.services.isInternetConnectionAvailable
@@ -87,7 +88,8 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
             showNoInternetConnectionDialog()
         } else {
             showProgressDialog(mActivity)
-            mOrderDetailService?.getOrderDetail(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), mOrderId)
+            mOrderDetailService?.getDeliveryTime()
+            mOrderDetailService?.getOrderDetail(mOrderId)
         }
         mShareBillResponseStr = ""
         return mContentView
@@ -111,10 +113,18 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
             }
             billCameraImageView?.id -> {
                 mBillSentCameraClicked = true
-                handleDeliveryTimeBottomSheet(false)
+                handleDeliveryTimeBottomSheet(isCallSendBillServerCall = false, isPrepaidOrder = false)
             }
             sendBillTextView?.id -> {
-                if (mIsPickUpOrder) initiateSendBillServerCall() else handleDeliveryTimeBottomSheet(true)
+                if (mIsPickUpOrder) initiateSendBillServerCall() else handleDeliveryTimeBottomSheet(isCallSendBillServerCall = true, isPrepaidOrder = false)
+            }
+            markOutForDeliveryTextView?.id -> {
+                val displayStatus = orderDetailMainResponse?.orders?.displayStatus
+                if (Constants.DS_MARK_READY == displayStatus) {
+                    val orderId = orderDetailMainResponse?.orders?.orderId
+                    showCancellableProgressDialog(mActivity)
+                    mOrderDetailService?.updatePrepaidOrder("$orderId", null)
+                } else handleDeliveryTimeBottomSheet(isCallSendBillServerCall = false, isPrepaidOrder = true)
             }
             detailTextView?.id -> {
                 if (!isInternetConnectionAvailable(mActivity)) {
@@ -149,9 +159,9 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
         }
     }
 
-    private fun handleDeliveryTimeBottomSheet(isCallSendBillServerCall: Boolean) {
+    private fun handleDeliveryTimeBottomSheet(isCallSendBillServerCall: Boolean, isPrepaidOrder: Boolean) {
         if (deliveryTimeResponse != null) {
-            showDeliveryTimeBottomSheet(deliveryTimeResponse, isCallSendBillServerCall)
+            showDeliveryTimeBottomSheet(deliveryTimeResponse, isCallSendBillServerCall, isPrepaidOrder)
         } else {
             if (!isInternetConnectionAvailable(mActivity)) {
                 showNoInternetConnectionDialog()
@@ -165,6 +175,13 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
     private fun initiateSendBillServerCall() {
         orderDetailMainResponse?.orders?.run {
             val finalAmount = if (amountEditText.text?.isNotEmpty() == true) amountEditText.text.toString().toDouble() else amount
+            if (finalAmount ?: 0.0 <= 0.0) {
+                amountEditText.apply {
+                    error = mActivity?.getString(R.string.bill_value_must_be_greater_than_zero)
+                    requestFocus()
+                }
+                return
+            }
             if (!mIsPickUpOrder && orderDetailMainResponse?.storeServices?.mDeliveryChargeType == Constants.FIXED_DELIVERY_CHARGE && orderDetailMainResponse?.storeServices?.mDeliveryPrice != 0.0 && orderDetailMainResponse?.storeServices?.mMinOrderValue?: 0.0 >= finalAmount?:0.0) {
                 val orderDetailItemResponse = OrderDetailItemResponse(
                     0,
@@ -265,9 +282,49 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
             val orderDetailResponse = orderDetailMainResponse?.orders
             mOrderDetailStaticData = orderDetailMainResponse?.staticText
             newOrderTextView?.visibility = if (mIsNewOrder) View.VISIBLE else View.GONE
-            sendBillLayout?.visibility = if (orderDetailResponse?.displayStatus == Constants.DS_SEND_BILL || orderDetailResponse?.displayStatus == Constants.DS_NEW) View.VISIBLE else View.GONE
-            orderDetailContainer?.visibility = if (orderDetailResponse?.displayStatus == Constants.DS_SEND_BILL || orderDetailResponse?.displayStatus == Constants.DS_NEW) View.GONE else View.VISIBLE
-            addDeliveryChargesLabel?.visibility = if (orderDetailResponse?.displayStatus == Constants.DS_SEND_BILL) View.VISIBLE else View.GONE
+            val displayStatus = orderDetailResponse?.displayStatus
+            Log.d(TAG, "onOrderDetailResponse: display status :: $displayStatus")
+            sendBillLayout?.visibility = if (displayStatus == Constants.DS_SEND_BILL || displayStatus == Constants.DS_NEW) View.VISIBLE else View.GONE
+            orderDetailContainer?.visibility = if (displayStatus == Constants.DS_SEND_BILL || displayStatus == Constants.DS_NEW) View.GONE else View.VISIBLE
+            addDeliveryChargesLabel?.visibility = if (displayStatus == Constants.DS_SEND_BILL) View.VISIBLE else View.GONE
+            if (orderDetailMainResponse?.orders?.prepaidFlag == Constants.ORDER_TYPE_PREPAID) {
+                prepaidOrderLayout?.visibility = View.VISIBLE
+                sendBillLayout?.visibility = View.GONE
+                when (displayStatus) {
+                    Constants.DS_MARK_READY -> {
+                        markOutForDeliveryTextView?.visibility = View.VISIBLE
+                        markOutForDeliveryValueTextView?.visibility = View.GONE
+                        markOutForDeliveryTextView?.text = mOrderDetailStaticData?.readyForPickupText
+                    }
+                    Constants.DS_OUT_FOR_DELIVERY -> {
+                        markOutForDeliveryTextView?.visibility = View.VISIBLE
+                        markOutForDeliveryValueTextView?.visibility = View.GONE
+                        markOutForDeliveryTextView?.text = mOrderDetailStaticData?.markOutForDeliveryText
+                    }
+                    Constants.DS_PREPAID_PICKUP_READY -> {
+                        markOutForDeliveryValueTextView?.visibility = View.VISIBLE
+                        markOutForDeliveryTextView?.visibility = View.GONE
+                        val txtSpannable = SpannableString(mOrderDetailStaticData?.pickUpOrderSuccess)
+                        val boldSpan = StyleSpan(Typeface.BOLD)
+                        txtSpannable.setSpan(boldSpan, 0, txtSpannable.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                        markOutForDeliveryValueTextView?.text = txtSpannable
+                    }
+                    Constants.DS_PREPAID_DELIVERY_READY -> {
+                        markOutForDeliveryValueTextView?.visibility = View.VISIBLE
+                        markOutForDeliveryTextView?.visibility = View.GONE
+                        val txtSpannable = SpannableString("${mOrderDetailStaticData?.deliveryTimeIsSetAsText}\n${orderDetailResponse.deliveryInfo?.customDeliveryTime}")
+                        val boldSpan = StyleSpan(Typeface.BOLD)
+                        txtSpannable.setSpan(boldSpan, mOrderDetailStaticData?.deliveryTimeIsSetAsText?.length ?: 0, txtSpannable.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                        markOutForDeliveryValueTextView?.text = txtSpannable
+                    }
+                    Constants.DS_PREPAID_PICKUP_COMPLETED -> {
+                        prepaidOrderLayout?.visibility = View.GONE
+                    }
+                    Constants.DS_PREPAID_DELIVERY_COMPLETED -> {
+                        prepaidOrderLayout?.visibility = View.GONE
+                    }
+                }
+            } else prepaidOrderLayout?.visibility = View.GONE
             orderDetailItemRecyclerView?.apply {
                 layoutManager = LinearLayoutManager(mActivity)
                 val list = orderDetailResponse?.orderDetailsItemsList
@@ -277,7 +334,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                     mTotalDisplayAmount += itemResponse.item_price ?: 0.0
                 }
                 var orderDetailAdapter: OrderDetailsAdapter? = null
-                orderDetailAdapter = OrderDetailsAdapter(list, orderDetailResponse?.displayStatus, mOrderDetailStaticData, object : IOrderDetailListener {
+                orderDetailAdapter = OrderDetailsAdapter(list, displayStatus, mOrderDetailStaticData, object : IOrderDetailListener {
 
                     override fun onOrderDetailItemClickListener(position: Int) {
                         val item = list?.get(position)
@@ -303,9 +360,12 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
             amountEditText?.setText("$mTotalDisplayAmount")
             setStaticDataToUI(orderDetailResponse)
             appSubTitleTextView?.text = getStringDateTimeFromOrderDate(getCompleteDateFromOrderString(orderDetailMainResponse?.orders?.createdAt))
-            setupDeliveryChargeUI(orderDetailResponse?.displayStatus, orderDetailMainResponse?.storeServices)
+            setupDeliveryChargeUI(displayStatus, orderDetailMainResponse?.storeServices)
             when (orderDetailResponse?.orderType) {
                 Constants.ORDER_TYPE_SELF_IMAGE -> {
+                    blankSpace?.visibility = View.GONE
+                    deliveryLabelLayout?.visibility = View.GONE
+                    deliveryLabelLayout?.visibility = View.GONE
                     customerDetailsLabel?.visibility = View.GONE
                     billPhotoImageView?.visibility = View.VISIBLE
                     billPhotoImageView?.let {
@@ -325,6 +385,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                         viewBillTextView?.setOnClickListener { showImageDialog(orderDetailResponse.imageLink) }
                     }
                     mIsPickUpOrder = true
+                    estimateDeliveryTextView?.visibility = View.GONE
                     deliveryChargeLabel?.visibility = View.GONE
                     deliveryChargeValue?.visibility = View.GONE
                     customerDetailsLabel?.visibility = View.GONE
@@ -485,17 +546,21 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
     }
 
     private fun setFreeDelivery() {
-        deliveryChargeLabel?.visibility = View.VISIBLE
-        deliveryChargeValue?.visibility = View.VISIBLE
-        val txtSpannable = SpannableString(getString(R.string.free).toUpperCase(Locale.getDefault()))
-        val boldSpan = StyleSpan(Typeface.BOLD)
-        txtSpannable.setSpan(boldSpan, 0, txtSpannable.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-        deliveryChargeValue?.text = txtSpannable
-        mActivity?.run {
-            deliveryChargeValue?.setTextColor(ContextCompat.getColor(this, R.color.open_green))
-            deliveryChargeValue?.background = ContextCompat.getDrawable(this, R.drawable.order_adapter_new)
+        try {
+            deliveryChargeLabel?.visibility = View.VISIBLE
+            deliveryChargeValue?.visibility = View.VISIBLE
+            val txtSpannable = SpannableString(getString(R.string.free).toUpperCase(Locale.getDefault()))
+            val boldSpan = StyleSpan(Typeface.BOLD)
+            txtSpannable.setSpan(boldSpan, 0, txtSpannable.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            deliveryChargeValue?.text = txtSpannable
+            mActivity?.run {
+                deliveryChargeValue?.setTextColor(ContextCompat.getColor(this, R.color.open_green))
+                deliveryChargeValue?.background = ContextCompat.getDrawable(this, R.drawable.order_adapter_new)
+            }
+            addDeliveryChargesLabel?.text = getString(R.string.add_discount_and_other_charges)
+        } catch (e: Exception) {
+            Log.e(TAG, "setFreeDelivery: ${e.message}", e)
         }
-        addDeliveryChargesLabel?.text = getString(R.string.add_discount_and_other_charges)
     }
 
     private fun setAmountToEditText() {
@@ -527,12 +592,15 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
             detailTextView?.text = "$text_details:"
             billAmountValue?.text = "$text_rupees_symbol ${orderDetailResponse?.amount}"
             appTitleTextView?.text = "$text_order #$mOrderId"
-            if (orderDetailResponse?.deliveryInfo?.customDeliveryTime?.isEmpty() == true) estimateDeliveryTextView.visibility = View.GONE else {
+            if (Constants.ORDER_TYPE_PREPAID == orderDetailResponse?.prepaidFlag || orderDetailResponse?.deliveryInfo?.customDeliveryTime?.isEmpty() == true) {
+                estimateDeliveryTextView?.visibility = View.GONE
+            } else {
                 val estimatedDeliveryStr = "$text_estimate_delivery : ${orderDetailResponse?.deliveryInfo?.customDeliveryTime}"
                 estimateDeliveryTextView?.text = estimatedDeliveryStr
             }
             statusValue?.text = orderDetailResponse?.orderPaymentStatus?.value
             mActivity?.run {
+                Log.d(TAG, "setStaticDataToUI: orderDetailResponse?.orderPaymentStatus?.key ${orderDetailResponse?.orderPaymentStatus?.key}")
                 when (orderDetailResponse?.orderPaymentStatus?.key) {
                     Constants.ORDER_STATUS_SUCCESS -> {
                         statusValue?.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_tick_green_hollow, 0)
@@ -551,7 +619,6 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
             stopProgress()
             if (commonResponse.mIsSuccessStatus) {
                 deliveryTimeResponse = Gson().fromJson<DeliveryTimeResponse>(commonResponse.mCommonDataStr, DeliveryTimeResponse::class.java)
-                showDeliveryTimeBottomSheet(deliveryTimeResponse, !mBillSentCameraClicked)
             } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
         }
     }
@@ -609,6 +676,17 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
         }
     }
 
+    override fun onPrepaidOrderUpdateStatusResponse(commonResponse: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            if (commonResponse.mIsSuccessStatus) {
+                val response = Gson().fromJson<UpdateOrderResponse>(commonResponse.mCommonDataStr, UpdateOrderResponse::class.java)
+                shareDataOnWhatsAppByNumber(mMobileNumber, response?.whatsAppText)
+                mOrderDetailService?.getOrderDetail(mOrderId)
+            } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
+        }
+    }
+
     override fun onImageSelectionResultFile(file: File?, mode: String) {
         orderDetailMainResponse?.orders?.run {
             if (otherChargesValueEditText.text?.isNotEmpty() == true) {
@@ -652,7 +730,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
         exceptionHandlingForAPIResponse(e)
     }
 
-    private fun showDeliveryTimeBottomSheet(deliveryTimeResponse: DeliveryTimeResponse?, isCallSendBillServerCall: Boolean) {
+    private fun showDeliveryTimeBottomSheet(deliveryTimeResponse: DeliveryTimeResponse?, isCallSendBillServerCall: Boolean, isPrepaidOrder: Boolean) {
         mActivity?.run {
             val bottomSheetDialog = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
             val view = LayoutInflater.from(this).inflate(
@@ -699,12 +777,23 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                                 }
                                 return@setOnClickListener
                             }
+                        } else if (isPrepaidOrder) {
+                            bottomSheetDialog.dismiss()
+                            orderDetailMainResponse?.orders?.run {
+                                showCancellableProgressDialog(mActivity)
+                                val request = UpdatePrepaidOrderRequest(
+                                    deliveryInfo?.deliveryTo,
+                                    deliveryInfo?.deliveryFrom,
+                                    mDeliveryTimeStr
+                                )
+                                mOrderDetailService?.updatePrepaidOrder("$orderId", request)
+                            }
                         } else if (isCallSendBillServerCall) {
                             bottomSheetDialog.dismiss()
                             initiateSendBillServerCall()
                         } else {
                             bottomSheetDialog.dismiss()
-                            openFullCamera()
+                            openCameraWithoutCrop()
                         }
                     }
                 }

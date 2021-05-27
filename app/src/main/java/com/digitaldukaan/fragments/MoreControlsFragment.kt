@@ -28,6 +28,7 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
     private var mDeliveryPrice = 0.0
     private var mFreeDeliveryAbove = 0.0
     private var mDeliveryChargeType = 0
+    private var mPaymentPaymentMethod: String? = ""
 
     companion object {
         fun newInstance(appSettingsResponseStaticData: AccountStaticTextResponse?): MoreControlsFragment {
@@ -71,15 +72,21 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
             this@MoreControlsFragment.mDeliveryPrice = mDeliveryPrice ?: 0.0
             this@MoreControlsFragment.mFreeDeliveryAbove = mFreeDeliveryAbove
             this@MoreControlsFragment.mDeliveryChargeType = mDeliveryChargeType ?: 0
+            this@MoreControlsFragment.mPaymentPaymentMethod = StaticInstances.sPaymentMethodStr ?: ""
         }
     }
 
     private fun setUIDataFromResponse() {
         minOrderValueHeadingTextView?.text = if (0.0 == mMinOrderValue) mMoreControlsStaticData?.heading_set_min_order_value_for_delivery else mMoreControlsStaticData?.heading_edit_min_order_value
         minOrderValueOptionalTextView?.text = if (0.0 == mMinOrderValue) mMoreControlsStaticData?.text_optional else "${mMoreControlsStaticData?.sub_heading_success_set_min_order_value_for_delivery} "
-        minOrderValueAmountTextView?.text = if (0.0 != mMinOrderValue) "${mMoreControlsStaticData?.text_ruppee_symbol}$mMinOrderValue" else ""
+        minOrderValueAmountTextView?.text = if (0.0 != mMinOrderValue) "${mMoreControlsStaticData?.text_ruppee_symbol} $mMinOrderValue" else ""
         deliveryChargeHeadingTextView?.text = mMoreControlsStaticData?.heading_set_delivery_charge
         deliveryChargeTypeTextView?.text = mMoreControlsStaticData?.sub_heading_set_delivery_charge
+        onlinePaymentsTextView?.text = mMoreControlsStaticData?.text_online_payments
+        deliveryHeadingTextView?.text = mMoreControlsStaticData?.mDeliveryText
+        onlinePaymentsHeadingTextView?.text = mMoreControlsStaticData?.heading_set_orders_to_online_payments
+        onlinePaymentsOptionalTextView?.text = mMoreControlsStaticData?.text_type_colon
+        onlinePaymentsValueAmountTextView?.text = mPaymentPaymentMethod
         if (mDeliveryChargeType != 0) {
             deliveryChargeTypeTextView?.text = mMoreControlsStaticData?.sub_heading_success_set_delivery_charge
             if (mDeliveryChargeType == 1) {
@@ -115,9 +122,15 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                     data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
                 )
-                mMoreControlsStaticData?.let {
-                    launchFragment(SetDeliveryChargeFragment.newInstance(it), true)
-                }
+                mMoreControlsStaticData?.let { launchFragment(SetDeliveryChargeFragment.newInstance(it), true) }
+            }
+            onlinePaymentsContainer?.id -> {
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_SET_PREPAID_ORDER,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
+                )
+                launchFragment(SetOrderTypeFragment.newInstance(), true)
             }
         }
     }
@@ -156,7 +169,7 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
                             mDeliveryChargeType,
                             mFreeDeliveryAbove,
                             mDeliveryPrice,
-                            if (amount.isEmpty()) 0.0 else amount.toDouble()
+                            if (amount.isEmpty()) 0.0 else if (amount.startsWith(".")) "0$amount".toDouble() else amount.toDouble()
                         )
                         showProgressDialog(mActivity)
                         bottomSheetDialog.dismiss()
