@@ -169,7 +169,7 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
                             mDeliveryChargeType,
                             mFreeDeliveryAbove,
                             mDeliveryPrice,
-                            if (amount.isEmpty()) 0.0 else if (amount.startsWith(".")) "0$amount".toDouble() else 0.0
+                            if (amount.isEmpty()) 0.0 else if (amount.startsWith(".")) "0$amount".toDouble() else amount.toDouble()
                         )
                         showProgressDialog(mActivity)
                         bottomSheetDialog.dismiss()

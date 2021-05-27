@@ -49,6 +49,7 @@ class NewReleaseFragment: BaseFragment(), IStoreSettingsItemClicked {
         ToolBarManager.getInstance().apply {
             hideToolBar(mActivity, false)
             setHeaderTitle(mHeadingStr)
+            onBackPressed(this@NewReleaseFragment)
             setSideIconVisibility(false)
             setSecondSideIconVisibility(false)
         }

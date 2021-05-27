@@ -110,6 +110,11 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         stopProgress()
     }
 
+    override fun onResume() {
+        super.onResume()
+        stopProgress()
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         updateNavigationBarState(R.id.menuHome)
         ToolBarManager.getInstance()?.hideToolBar(mActivity, true)
