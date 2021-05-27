@@ -600,6 +600,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
             }
             statusValue?.text = orderDetailResponse?.orderPaymentStatus?.value
             mActivity?.run {
+                Log.d(TAG, "setStaticDataToUI: orderDetailResponse?.orderPaymentStatus?.key ${orderDetailResponse?.orderPaymentStatus?.key}")
                 when (orderDetailResponse?.orderPaymentStatus?.key) {
                     Constants.ORDER_STATUS_SUCCESS -> {
                         statusValue?.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_tick_green_hollow, 0)
