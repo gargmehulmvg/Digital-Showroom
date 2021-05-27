@@ -12,7 +12,7 @@
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/ripple_curve_grey_white_background"
+        android:background="@drawable/ripple_slight_curve_grey_white_background"
         android:onClick="onClick"
         android:padding="@dimen/_12sdp">
 
