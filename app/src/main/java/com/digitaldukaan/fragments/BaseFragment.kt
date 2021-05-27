@@ -452,7 +452,6 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                 }
             }
         }
-        showToast("shareData :: $sharingData")
         val whatsAppIntent = Intent(Intent.ACTION_SEND)
         whatsAppIntent.type = "text/plain"
         whatsAppIntent.putExtra(Intent.EXTRA_TEXT, sharingData)
@@ -465,7 +464,6 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
             mActivity?.startActivity(whatsAppIntent)
         } catch (ex: ActivityNotFoundException) {
             showToast(ex.message)
-            showToast("shareData :: exception :: $ex")
             AppEventsManager.pushAppEvents(
                 eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
                 isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,

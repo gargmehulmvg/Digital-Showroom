@@ -498,6 +498,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
             stopProgress()
             if (mSwipeRefreshLayout?.isRefreshing == true) mSwipeRefreshLayout?.isRefreshing = false
             if (commonResponse.mIsSuccessStatus) {
+                showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_check_circle)
                 orderLayout?.fullScroll(ScrollView.FOCUS_UP)
                 completedPageCount = 1
                 pendingPageCount = 1

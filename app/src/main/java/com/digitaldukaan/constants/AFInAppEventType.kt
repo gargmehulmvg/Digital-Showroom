@@ -78,5 +78,9 @@ interface AFInAppEventType {
         const val EVENT_ACTIVATE_PREPAID_ORDER = "Activate_prepaid_orders"
         const val EVENT_COMPLETE_PREPAID_STEPS = "Complete_prepaid_steps"
         const val EVENT_CHECK_PREPAID_ORDERS = "Check_prepaid_orders"
+        const val EVENT_QR_SHARED = "QRShared"
+        const val EVENT_DELETE_ITEM = "DeleteItem"
+        const val EVENT_DELETE_CATEGORY = "DeleteCategory"
+        const val EVENT_EDIT_CATEGORY = "EditCategory"
     }
 }

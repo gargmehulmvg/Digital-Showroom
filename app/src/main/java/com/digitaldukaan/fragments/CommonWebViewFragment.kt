@@ -129,6 +129,17 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
             }
         } else if (jsonData.optBoolean("redirectBrowser")) {
             openUrlInBrowser(jsonData.optString("data"))
+        } else if (jsonData.optBoolean("shareQRCode")) {
+            AppEventsManager.pushAppEvents(
+                eventName = AFInAppEventType.EVENT_QR_SHARED,
+                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
+            )
+            val imageBase64 = jsonData.optString("data")
+            Log.d(mTagName, "image URL :: $imageBase64")
+            val domain = jsonData.optString("domain")
+            val bitmap = getBitmapFromBase64(imageBase64)
+            shareData("Order From - ${if (domain.isEmpty()) mDomainName else domain}", bitmap)
         } else if (jsonData.optBoolean("redirectHomePage")) {
             launchFragment(HomeFragment.newInstance(), true)
         } else if (jsonData.optBoolean("startLoader")) {

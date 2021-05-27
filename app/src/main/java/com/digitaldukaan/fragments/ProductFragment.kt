@@ -510,6 +510,11 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                         }
                         bottomSheetDialog.dismiss()
                         showProgressDialog(mActivity)
+                        AppEventsManager.pushAppEvents(
+                            eventName = AFInAppEventType.EVENT_EDIT_CATEGORY,
+                            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                            data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
+                        )
                         mService?.updateCategory(request)
                     }
                     deleteCategoryTextView.setOnClickListener {
@@ -547,6 +552,11 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                                     val request = DeleteCategoryRequest(categoryId, mDeleteCategoryItemList?.get(position)?.action == "true")
                                     bottomSheetDialog.dismiss()
                                     showProgressDialog(mActivity)
+                                    AppEventsManager.pushAppEvents(
+                                        eventName = AFInAppEventType.EVENT_DELETE_CATEGORY,
+                                        isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                                        data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
+                                    )
                                     mService?.deleteCategory(request)
                                 }
                             }

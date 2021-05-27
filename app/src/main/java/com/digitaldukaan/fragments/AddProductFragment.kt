@@ -1036,6 +1036,11 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                             return@setPositiveButton
                         }
                         showProgressDialog(mActivity)
+                        AppEventsManager.pushAppEvents(
+                            eventName = AFInAppEventType.EVENT_DELETE_ITEM,
+                            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                            data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
+                        )
                         mService?.deleteItemServerCall(DeleteItemRequest(mItemId))
                     }
                     setNegativeButton(getString(R.string.text_no)) { dialog, _ -> dialog.dismiss() }
