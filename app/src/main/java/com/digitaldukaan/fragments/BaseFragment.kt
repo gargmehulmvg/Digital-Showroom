@@ -186,10 +186,9 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
 
     open fun exceptionHandlingForAPIResponse(e: Exception) {
         stopProgress()
-        Sentry.captureException(e, "$TAG exceptionHandlingForAPIResponse: ${e.message}")
         when (e) {
             is IllegalStateException -> showToast("System Error :: IllegalStateException :: Unable to reach Server")
-            is IOException -> showToast("System Error :: IOException :: Unable to reach Server")
+            is IOException -> Sentry.captureException(e, "$TAG exceptionHandlingForAPIResponse: ${e.message}")
             is UnknownHostException -> showToast(e.message)
             is UnAuthorizedAccessException -> {
                 showToast(e.message)
@@ -372,6 +371,15 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     }
 
     open fun shareOnWhatsApp(sharingData: String?, image: Bitmap? = null) {
+        if (null == image) {
+            mActivity?.let {
+                if (ActivityCompat.checkSelfPermission(it, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED &&
+                    ActivityCompat.checkSelfPermission(it, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE), Constants.STORAGE_REQUEST_CODE)
+                    return
+                }
+            }
+        }
         val shareIntent = Intent()
         shareIntent.action = Intent.ACTION_SEND
         shareIntent.type = "*/*"
@@ -386,7 +394,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                     intent.action = Intent.ACTION_SEND
                     intent.type = "text/plain"
                     image?.let {
-                        intent.type = "image/jpeg"
+                        intent.type = "*/*"
                         intent.putExtra(Intent.EXTRA_STREAM, it.getImageUri(mActivity))
                     }
                     intent.`package` = packageName
@@ -435,14 +443,29 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     }
 
     open fun shareData(sharingData: String?, image: Bitmap?) {
+        if (null == image) {
+            mActivity?.let {
+                if (ActivityCompat.checkSelfPermission(it, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED &&
+                    ActivityCompat.checkSelfPermission(it, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE), Constants.STORAGE_REQUEST_CODE)
+                    return
+                }
+            }
+        }
+        showToast("shareData :: $sharingData")
         val whatsAppIntent = Intent(Intent.ACTION_SEND)
         whatsAppIntent.type = "text/plain"
-        image?.let { whatsAppIntent.putExtra(Intent.EXTRA_STREAM, image.getImageUri(mActivity)) }
         whatsAppIntent.putExtra(Intent.EXTRA_TEXT, sharingData)
+        image?.let {
+            whatsAppIntent.type = "*/*"
+            whatsAppIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            whatsAppIntent.putExtra(Intent.EXTRA_STREAM, image.getImageUri(mActivity))
+        }
         try {
             mActivity?.startActivity(whatsAppIntent)
         } catch (ex: ActivityNotFoundException) {
             showToast(ex.message)
+            showToast("shareData :: exception :: $ex")
             AppEventsManager.pushAppEvents(
                 eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
                 isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,

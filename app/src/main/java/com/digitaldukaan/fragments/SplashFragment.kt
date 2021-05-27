@@ -7,6 +7,8 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -51,13 +53,13 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         ToolBarManager.getInstance().hideToolBar(mActivity, true)
-        if (!isInternetConnectionAvailable(mActivity)) {
-            showNoInternetConnectionDialog()
-            return
-        }
+        Handler(Looper.getMainLooper()).postDelayed({
+            if (!isInternetConnectionAvailable(mActivity)) {
+                showNoInternetConnectionDialog()
+            } else splashService.getStaticData("1")
+        }, Constants.TIMER_INTERVAL)
         fetchContactsIfPermissionGranted()
         splashService.setSplashServiceInterface(this)
-        splashService.getStaticData("1")
     }
 
     private fun fetchContactsIfPermissionGranted() {
