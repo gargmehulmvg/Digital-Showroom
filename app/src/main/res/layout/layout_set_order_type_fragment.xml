@@ -38,6 +38,7 @@
                 tools:text="Prepaid Orders" />
 
             <View
+                android:id="@+id/prepaidSeparator"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_1sdp"
                 android:clickable="false"
@@ -110,6 +111,7 @@
                 tools:text="Both (Prepaid And Pay on Delivery / Pickup)" />
 
             <View
+                android:id="@+id/postpaidSeparator"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_1sdp"
                 android:clickable="false"

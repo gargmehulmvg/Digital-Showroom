@@ -107,9 +107,14 @@ class SetOrderTypeFragment: BaseFragment(), ISetOrderTypeServiceInterface, IRecy
             mIsPrepaidCompleted = it.isCompleted
             prepaidOrderRadioButton?.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, if (it.isCompleted) 0 else R.drawable.ic_info_black_small, 0)
             val prepaidOrderTypeRecyclerView: RecyclerView? = mContentView?.findViewById(R.id.prepaidOrderTypeRecyclerView)
-            prepaidOrderTypeRecyclerView?.apply {
-                layoutManager = LinearLayoutManager(mActivity)
-                adapter = SetOrderTypeAdapter(mActivity, it.setOrderTypeItemList, Constants.MODE_PREPAID, this@SetOrderTypeFragment)
+            if (isEmpty(it.setOrderTypeItemList)) {
+                postpaidSeparator?.visibility = View.GONE
+                prepaidOrderTypeRecyclerView?.visibility = View.GONE
+            } else {
+                prepaidOrderTypeRecyclerView?.apply {
+                    layoutManager = LinearLayoutManager(mActivity)
+                    adapter = SetOrderTypeAdapter(mActivity, it.setOrderTypeItemList, Constants.MODE_PREPAID, this@SetOrderTypeFragment)
+                }
             }
         }
         mSetOrderTypePageInfoResponse?.mBothPaidResponse?.let {
@@ -121,10 +126,16 @@ class SetOrderTypeFragment: BaseFragment(), ISetOrderTypeServiceInterface, IRecy
             mIsBothCompleted = it.isCompleted
             payBothRadioButton?.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, if (it.isCompleted) 0 else R.drawable.ic_info_black_small, 0)
             val bothOrderTypeRecyclerView: RecyclerView? = mContentView?.findViewById(R.id.bothOrderTypeRecyclerView)
-            bothOrderTypeRecyclerView?.apply {
-                layoutManager = LinearLayoutManager(mActivity)
-                adapter = SetOrderTypeAdapter(mActivity, it.setOrderTypeItemList, Constants.MODE_POSTPAID, this@SetOrderTypeFragment)
+            if (isEmpty(it.setOrderTypeItemList)) {
+                prepaidSeparator?.visibility = View.GONE
+                bothOrderTypeRecyclerView?.visibility = View.GONE
+            } else {
+                bothOrderTypeRecyclerView?.apply {
+                    layoutManager = LinearLayoutManager(mActivity)
+                    adapter = SetOrderTypeAdapter(mActivity, it.setOrderTypeItemList, Constants.MODE_POSTPAID, this@SetOrderTypeFragment)
+                }
             }
+
         }
     }
 
