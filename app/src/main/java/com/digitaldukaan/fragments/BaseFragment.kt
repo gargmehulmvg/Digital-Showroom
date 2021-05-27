@@ -90,14 +90,14 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
 
     protected fun showProgressDialog(context: Context?, message: String? = "Please wait...") {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            context?.run {
+            context?.let {
                 try {
-                    mProgressDialog = Dialog(this)
+                    mProgressDialog = Dialog(it)
                     mProgressDialog?.apply {
                         val view = LayoutInflater.from(context).inflate(R.layout.progress_dialog, null)
-                        message?.run {
+                        message?.let {
                             val messageTextView : TextView = view.findViewById(R.id.progressDialogTextView)
-                            messageTextView.text = this
+                            messageTextView.text = it
                         }
                         setContentView(view)
                         setCancelable(false)
@@ -137,10 +137,10 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
 
     protected fun showCancellableProgressDialog(context: Context?, message: String? = "Please wait...") {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            try {
-                context?.run {
-                    mProgressDialog = Dialog(this)
-                    val inflate = LayoutInflater.from(this).inflate(R.layout.progress_dialog, null)
+            context?.let {
+                try {
+                    mProgressDialog = Dialog(it)
+                    val inflate = LayoutInflater.from(it).inflate(R.layout.progress_dialog, null)
                     mProgressDialog?.setContentView(inflate)
                     message?.run {
                         val messageTextView : TextView = inflate.findViewById(R.id.progressDialogTextView)
@@ -149,19 +149,10 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                     mProgressDialog?.setCancelable(true)
                     mProgressDialog?.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
                     mProgressDialog?.show()
+                } catch (e: Exception) {
+                    Log.e(TAG, "showCancellableProgressDialog: ${e.message}", e)
+                    Sentry.captureException(e, "$TAG showCancellableProgressDialog")
                 }
-            } catch (e: java.lang.Exception) {
-                Log.e(TAG, "showCancellableProgressDialog: ${e.message}", e)
-                AppEventsManager.pushAppEvents(
-                    eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
-                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                    data = mapOf(
-                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                        "Exception Point" to "showCancellableProgressDialog",
-                        "Exception Message" to e.message,
-                        "Exception Logs" to e.toString()
-                    )
-                )
             }
         }
     }
@@ -210,34 +201,31 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
 
     protected fun showShortSnackBar(message: String? = "sample testing", showDrawable: Boolean = false, drawableID : Int = 0) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            message?.let {
-                mContentView?.run {
-                    try {
-                        Snackbar.make(this, message, Snackbar.LENGTH_SHORT).apply {
-                            if (showDrawable) {
-                                val snackBarView = view
-                                val snackBarTextView: TextView = snackBarView.findViewById(com.google.android.material.R.id.snackbar_text)
-                                snackBarTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, drawableID, 0)
-                                snackBarTextView.compoundDrawablePadding = resources.getDimensionPixelOffset(R.dimen._5sdp)
-                            }
-                            mActivity?.let {
-                                setBackgroundTint(ContextCompat.getColor(it, R.color.snack_bar_background))
-                                setTextColor(ContextCompat.getColor(it, R.color.white))
-                            }
-                        }.show()
-                    } catch (e : Exception) {
-                        Log.e(TAG, "showShortSnackBar: ${e.message}", e)
-                        AppEventsManager.pushAppEvents(
-                            eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
-                            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                            data = mapOf(
-                                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                                "Exception Point" to "showShortSnackBar",
-                                "Exception Message" to e.message,
-                                "Exception Logs" to e.toString()
-                            )
+            mContentView?.run {
+                try {
+                    var msg = ""
+                    message?.let { msg = it }
+                    Snackbar.make(this, msg, Snackbar.LENGTH_SHORT).apply {
+                        if (showDrawable) {
+                            val snackBarView = view
+                            val snackBarTextView: TextView = snackBarView.findViewById(com.google.android.material.R.id.snackbar_text)
+                            snackBarTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, drawableID, 0)
+                            snackBarTextView.compoundDrawablePadding =
+                                resources.getDimensionPixelOffset(R.dimen._5sdp)
+                        }
+                        mActivity?.let {
+                            setBackgroundTint(ContextCompat.getColor(it, R.color.snack_bar_background))
+                            setTextColor(ContextCompat.getColor(it, R.color.white))
+                        }
+                    }.show()
+                } catch (e: Exception) {
+                    Log.e(TAG, "showShortSnackBar: ${e.message}", e)
+                    AppEventsManager.pushAppEvents(
+                        eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
+                        isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                        data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), "Exception Point" to "showShortSnackBar", "Exception Message" to e.message, "Exception Logs" to e.toString()
                         )
-                    }
+                    )
                 }
             }
         }
@@ -938,7 +926,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                             var file = getImageFileFromBitmap(it, mActivity)
                             file?.let {f ->
                                 Log.d(TAG, "ORIGINAL :: ${f.length() / (1024)} KB")
-                                mActivity?.run { file = Compressor.compress(this, f) }
+                                mActivity?.let { file = Compressor.compress(it, f) }
                                 Log.d(TAG, "COMPRESSED :: ${f.length() / (1024)} KB")
                                 if (f.length() / (1024 * 1024) >= mActivity?.resources?.getInteger(R.integer.image_mb_size) ?: 0) {
                                     showToast("Images more than ${mActivity?.resources?.getInteger(R.integer.image_mb_size)} are not allowed")
@@ -992,10 +980,10 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
 
     protected fun switchToInCompleteProfileFragment(profilePreviewResponse: ProfileInfoResponse?) {
         Log.d(TAG, "switchToInCompleteProfileFragment: called")
-        StaticInstances.sStepsCompletedList?.run {
+        StaticInstances.sStepsCompletedList?.let {
             var incompleteProfilePageAction = ""
             var incompleteProfilePageNumber = 0
-            for (completedItem in this) {
+            for (completedItem in it) {
                 ++incompleteProfilePageNumber
                 if (!completedItem.isCompleted) {
                     incompleteProfilePageAction = completedItem.action ?: ""
@@ -1165,8 +1153,8 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     open fun onDontShowDialogPositiveButtonClicked(item: OrderItemResponse?) = Unit
 
     protected fun showImageDialog(imageStr: String?) {
-        mActivity?.run {
-            Dialog(this).apply {
+        mActivity?.let {
+            Dialog(it).apply {
                 requestWindowFeature(Window.FEATURE_NO_TITLE)
                 setCancelable(true)
                 setContentView(R.layout.image_dialog)

@@ -93,9 +93,11 @@ class Constants {
         const val DS_PREPAID_PICKUP_COMPLETED           =   "prepaidPickupCompleted"
         const val DS_PREPAID_DELIVERY_COMPLETED         =   "prepaidDeliveryCompleted"
         const val DS_OUT_FOR_DELIVERY                   =   "outForDelivery"        // Order out for delivery
-        //ORDER_PAGE
+        //MODES
         const val MODE_PENDING              =   "mode_pending"
         const val MODE_COMPLETED            =   "mode_completed"
+        const val MODE_PREPAID              =   "mode_prepaid"
+        const val MODE_POSTPAID             =   "mode_postpaid"
         //ORDER_STATUS
         const val StatusCustomerUpdated =   1
         const val StatusMerchantUpdated =   2

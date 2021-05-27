@@ -19,6 +19,7 @@ import com.digitaldukaan.adapters.PrepaidOrderWorkFlowAdapter
 import com.digitaldukaan.adapters.SetOrderTypeAdapter
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.IAdapterItemClickListener
+import com.digitaldukaan.interfaces.IRecyclerViewClickListener
 import com.digitaldukaan.models.request.UpdatePaymentMethodRequest
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.SetOrderTypePageInfoResponse
@@ -29,7 +30,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.layout_set_order_type_fragment.*
 
-class SetOrderTypeFragment: BaseFragment(), ISetOrderTypeServiceInterface {
+class SetOrderTypeFragment: BaseFragment(), ISetOrderTypeServiceInterface, IRecyclerViewClickListener {
 
     private var prepaidOrderContainer: View? = null
     private var postpaidContainer: View? = null
@@ -69,6 +70,7 @@ class SetOrderTypeFragment: BaseFragment(), ISetOrderTypeServiceInterface {
     private fun initializeUI() {
         ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, false)
+            onBackPressed(this@SetOrderTypeFragment)
             setSideIconVisibility(false)
             setSecondSideIconVisibility(false)
         }
@@ -107,7 +109,7 @@ class SetOrderTypeFragment: BaseFragment(), ISetOrderTypeServiceInterface {
             val prepaidOrderTypeRecyclerView: RecyclerView? = mContentView?.findViewById(R.id.prepaidOrderTypeRecyclerView)
             prepaidOrderTypeRecyclerView?.apply {
                 layoutManager = LinearLayoutManager(mActivity)
-                adapter = SetOrderTypeAdapter(mActivity, it.setOrderTypeItemList)
+                adapter = SetOrderTypeAdapter(mActivity, it.setOrderTypeItemList, Constants.MODE_PREPAID, this@SetOrderTypeFragment)
             }
         }
         mSetOrderTypePageInfoResponse?.mBothPaidResponse?.let {
@@ -121,7 +123,7 @@ class SetOrderTypeFragment: BaseFragment(), ISetOrderTypeServiceInterface {
             val bothOrderTypeRecyclerView: RecyclerView? = mContentView?.findViewById(R.id.bothOrderTypeRecyclerView)
             bothOrderTypeRecyclerView?.apply {
                 layoutManager = LinearLayoutManager(mActivity)
-                adapter = SetOrderTypeAdapter(mActivity, it.setOrderTypeItemList)
+                adapter = SetOrderTypeAdapter(mActivity, it.setOrderTypeItemList, Constants.MODE_POSTPAID, this@SetOrderTypeFragment)
             }
         }
     }
@@ -168,44 +170,47 @@ class SetOrderTypeFragment: BaseFragment(), ISetOrderTypeServiceInterface {
     override fun onClick(view: View?) {
         when(view?.id) {
             howDoesPrepaidWorkTextView?.id -> showPrepaidOrderWorkFlowBottomSheet()
-            prepaidOrderContainer?.id -> {
-                mPaymentMethod = mSetOrderTypePageInfoResponse?.mPrePaidResponse?.id ?: 0
-                if (prepaidOrderRadioButton?.isChecked == true) return
-                if (mIsPrepaidCompleted) showConfirmationDialog() else showUnlockOptionBottomSheet()
-                mPaymentMethodStr = prepaidOrderRadioButton?.text?.toString() ?: ""
-                AppEventsManager.pushAppEvents(
-                    eventName = AFInAppEventType.EVENT_CHECK_PREPAID_ORDERS,
-                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                        AFInAppEventParameterName.TYPE to AFInAppEventParameterName.PREPAID)
-                )
-            }
-            payBothContainer?.id -> {
-                mPaymentMethod = mSetOrderTypePageInfoResponse?.mBothPaidResponse?.id ?: 0
-                if (payBothRadioButton?.isChecked == true) return
-                if (mIsBothCompleted) showConfirmationDialog() else showUnlockOptionBottomSheet()
-                mPaymentMethodStr = payBothRadioButton?.text?.toString() ?: ""
-                AppEventsManager.pushAppEvents(
-                    eventName = AFInAppEventType.EVENT_CHECK_PREPAID_ORDERS,
-                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                        AFInAppEventParameterName.TYPE to AFInAppEventParameterName.BOTH)
-                )
-            }
-            postpaidContainer?.id -> {
-                mPaymentMethod = mSetOrderTypePageInfoResponse?.mPostPaidResponse?.id ?: 0
-                if (postpaidRadioButton?.isChecked == true) return
-                mPaymentMethodStr = postpaidRadioButton?.text?.toString() ?: ""
-                showProgressDialog(mActivity)
-                mService?.updatePaymentMethod(UpdatePaymentMethodRequest(mPaymentMethod))
-                AppEventsManager.pushAppEvents(
-                    eventName = AFInAppEventType.EVENT_CHECK_PREPAID_ORDERS,
-                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                        AFInAppEventParameterName.TYPE to AFInAppEventParameterName.POSTPAID)
-                )
-            }
+            prepaidOrderContainer?.id -> prepaidContainerClicked()
+            payBothContainer?.id -> payBothContainerClicked()
+            postpaidContainer?.id -> postpaidContainerClicked()
         }
+    }
+
+    private fun payBothContainerClicked() {
+        mPaymentMethod = mSetOrderTypePageInfoResponse?.mBothPaidResponse?.id ?: 0
+        if (payBothRadioButton?.isChecked == true) return
+        if (mIsBothCompleted) showConfirmationDialog() else showUnlockOptionBottomSheet()
+        mPaymentMethodStr = payBothRadioButton?.text?.toString() ?: ""
+        AppEventsManager.pushAppEvents(
+            eventName = AFInAppEventType.EVENT_CHECK_PREPAID_ORDERS,
+            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+            data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.TYPE to AFInAppEventParameterName.BOTH)
+        )
+    }
+
+    private fun postpaidContainerClicked() {
+        mPaymentMethod = mSetOrderTypePageInfoResponse?.mPostPaidResponse?.id ?: 0
+        if (postpaidRadioButton?.isChecked == true) return
+        mPaymentMethodStr = postpaidRadioButton?.text?.toString() ?: ""
+        showProgressDialog(mActivity)
+        mService?.updatePaymentMethod(UpdatePaymentMethodRequest(mPaymentMethod))
+        AppEventsManager.pushAppEvents(
+            eventName = AFInAppEventType.EVENT_CHECK_PREPAID_ORDERS,
+            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+            data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.TYPE to AFInAppEventParameterName.POSTPAID)
+        )
+    }
+
+    private fun prepaidContainerClicked() {
+        mPaymentMethod = mSetOrderTypePageInfoResponse?.mPrePaidResponse?.id ?: 0
+        if (prepaidOrderRadioButton?.isChecked == true) return
+        if (mIsPrepaidCompleted) showConfirmationDialog() else showUnlockOptionBottomSheet()
+        mPaymentMethodStr = prepaidOrderRadioButton?.text?.toString() ?: ""
+        AppEventsManager.pushAppEvents(
+            eventName = AFInAppEventType.EVENT_CHECK_PREPAID_ORDERS,
+            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+            data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.TYPE to AFInAppEventParameterName.PREPAID)
+        )
     }
 
     private fun clearRadioButtonSelection() {
@@ -344,6 +349,13 @@ class SetOrderTypeFragment: BaseFragment(), ISetOrderTypeServiceInterface {
                     }
                 }.show()
             }
+        }
+    }
+
+    override fun onRecyclerViewClickListener(mode: String) {
+        when(mode) {
+            Constants.MODE_PREPAID -> prepaidOrderContainer?.callOnClick()
+            Constants.MODE_POSTPAID -> payBothContainer?.callOnClick()
         }
     }
 
