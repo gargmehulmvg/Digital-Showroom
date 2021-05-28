@@ -77,6 +77,7 @@ class SendBillPhotoFragment: BaseFragment(), ISendBillPhotoServiceInterface {
             hideToolBar(mActivity, false)
             setHeaderTitle(mSendPhotoStaticText?.text_send_bill)
             setSideIconVisibility(true)
+            onBackPressed(this@SendBillPhotoFragment)
             mActivity?.let {
                 setSideIcon(ContextCompat.getDrawable(it, R.drawable.ic_refresh), object : IOnToolbarIconClick {
                     override fun onToolbarSideIconClicked() {

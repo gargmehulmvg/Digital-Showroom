@@ -182,6 +182,11 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        stopProgress()
+    }
+
     private fun initiateSendBillServerCall() {
         orderDetailMainResponse?.orders?.run {
             val finalAmount = if (amountEditText.text?.isNotEmpty() == true) amountEditText.text.toString().toDouble() else amount
