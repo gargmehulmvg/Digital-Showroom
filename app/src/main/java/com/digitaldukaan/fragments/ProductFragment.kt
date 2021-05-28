@@ -63,7 +63,6 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
         super.onCreate(savedInstanceState)
         mService = ProductService()
         mService?.setOrderDetailServiceListener(this)
-        mService?.getDeleteCategoryItem()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -83,6 +82,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
         hideBottomNavigationView(false)
         WebViewBridge.mWebViewListener = this
         updateNavigationBarState(R.id.menuProducts)
+        mService?.getDeleteCategoryItem()
         mService?.getUserCategories()
         return mContentView
     }
