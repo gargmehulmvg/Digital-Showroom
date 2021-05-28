@@ -15,6 +15,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.MasterCatalogItemsAdapter
 import com.digitaldukaan.adapters.MasterCatalogItemsConfirmationAdapter
@@ -29,7 +30,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.textfield.TextInputLayout
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.layout_master_catelog_fragment.*
 
 class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, IOnToolbarIconClick {
@@ -233,7 +233,7 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
                     bottomSheetHeadingTextView.text = addProductStaticData?.bottom_sheet_set_price_below
                     imageView?.let {
                         try {
-                            Picasso.get().load(response?.imageUrl).into(it)
+                            Glide.with(this@MasterCatalogFragment).load(response?.imageUrl).into(it)
                         } catch (e: Exception) {
                             Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
                         }

@@ -18,6 +18,8 @@ interface IOrderDetailServiceInterface {
 
     fun onUpdateStatusResponse(commonResponse: CommonApiResponse)
 
+    fun onPrepaidOrderUpdateStatusResponse(commonResponse: CommonApiResponse)
+
     fun onOrderDetailException(e: Exception)
 
 }

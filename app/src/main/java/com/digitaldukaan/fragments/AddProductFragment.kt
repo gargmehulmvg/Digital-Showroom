@@ -1,6 +1,8 @@
 package com.digitaldukaan.fragments
 
+import android.Manifest
 import android.app.Dialog
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -15,6 +17,7 @@ import android.widget.ImageView
 import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.recyclerview.widget.GridLayoutManager
@@ -485,6 +488,14 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     }
 
     private fun showAddProductImagePickerBottomSheet(position: Int) {
+        mActivity?.let {
+            if (ActivityCompat.checkSelfPermission(it, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(it, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(it, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA), Constants.IMAGE_PICK_REQUEST_CODE)
+                return
+            }
+        }
         showAddProductContainer()
         mIsOrderEdited = true
         mActivity?.let {
@@ -517,19 +528,19 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     bottomSheetUploadImageRemovePhoto.visibility = if (0 == position) View.GONE else View.VISIBLE
                     bottomSheetUploadImageCamera.setOnClickListener {
                         imagePickBottomSheet?.dismiss()
-                        openCamera()
+                        openCameraWithCrop()
                     }
                     bottomSheetUploadImageCameraTextView.setOnClickListener {
                         imagePickBottomSheet?.dismiss()
-                        openCamera()
+                        openCameraWithCrop()
                     }
                     bottomSheetUploadImageGallery.setOnClickListener {
                         imagePickBottomSheet?.dismiss()
-                        openMobileGalleryWithImage()
+                        openMobileGalleryWithCrop()
                     }
                     bottomSheetUploadImageGalleryTextView.setOnClickListener {
                         imagePickBottomSheet?.dismiss()
-                        openMobileGalleryWithImage()
+                        openMobileGalleryWithCrop()
                     }
                     bottomSheetUploadImageRemovePhoto.setOnClickListener {
                         imagePickBottomSheet?.dismiss()
@@ -542,6 +553,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                         mImageAddAdapter?.setListToAdapter(mImagesStrList)
                     }
                     imageAdapter.setSearchImageListener(this@AddProductFragment)
+                    imageAdapter.setContext(mActivity)
                     searchImageImageView.setOnClickListener {
                         if (searchImageEditText.text.trim().toString().isEmpty()) {
                             searchImageEditText.error = getString(R.string.mandatory_field_message)
@@ -577,6 +589,11 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 }
             }?.show()
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        stopProgress()
     }
 
     override fun onImageSelectionResultFile(file: File?, mode: String) {
@@ -716,7 +733,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                             mAddProductResponse?.storeItem?.imagesList?.forEachIndexed { _, imagesResponse ->
                                 if (imagesResponse.status != 0) mImagesStrList.add(AddProductImagesResponse(imagesResponse.imageId, imagesResponse.imageUrl, 1))
                             }
-                            mImageAddAdapter = AddProductsImagesAdapter(mImagesStrList ,addProductStaticData?.text_upload_or_search_images, this@AddProductFragment)
+                            mImageAddAdapter = AddProductsImagesAdapter(this@AddProductFragment, mImagesStrList ,addProductStaticData?.text_upload_or_search_images, this@AddProductFragment)
                             adapter = mImageAddAdapter
                         }
                     } else {
@@ -886,6 +903,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             imagesRecyclerView?.apply {
                 layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
                 mImageAddAdapter = AddProductsImagesAdapter(
+                    this@AddProductFragment,
                     mImagesStrList,
                     addProductStaticData?.text_upload_or_search_images,
                     this@AddProductFragment
@@ -1020,6 +1038,11 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                             return@setPositiveButton
                         }
                         showProgressDialog(mActivity)
+                        AppEventsManager.pushAppEvents(
+                            eventName = AFInAppEventType.EVENT_DELETE_ITEM,
+                            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                            data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
+                        )
                         mService?.deleteItemServerCall(DeleteItemRequest(mItemId))
                     }
                     setNegativeButton(getString(R.string.text_no)) { dialog, _ -> dialog.dismiss() }

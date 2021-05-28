@@ -4,6 +4,7 @@ import android.util.Log
 import com.digitaldukaan.models.request.CompleteOrderRequest
 import com.digitaldukaan.models.request.UpdateOrderRequest
 import com.digitaldukaan.models.request.UpdateOrderStatusRequest
+import com.digitaldukaan.models.request.UpdatePrepaidOrderRequest
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.network.RetrofitApi
 import com.digitaldukaan.services.serviceinterface.IOrderDetailServiceInterface
@@ -12,12 +13,11 @@ import com.google.gson.Gson
 class OrderDetailNetworkService {
 
     suspend fun getOrderDetailServerCall(
-        authToken: String,
         orderId: String,
         serviceInterface: IOrderDetailServiceInterface
     ) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.getOrderDetails(authToken, orderId)
+            val response = RetrofitApi().getServerCallObject()?.getOrderDetails(orderId)
             response?.let {
                 if (it.isSuccessful) {
                     it.body()?.let { commonApiResponse -> serviceInterface.onOrderDetailResponse(commonApiResponse)
@@ -95,6 +95,31 @@ class OrderDetailNetworkService {
             }
         } catch (e: Exception) {
             Log.e(SendBillPhotoNetworkService::class.java.simpleName, "updateOrderServerCall: ", e)
+            serviceInterface.onOrderDetailException(e)
+        }
+    }
+
+    suspend fun updatePrepaidOrderServerCall(
+        orderId: String?,
+        request: UpdatePrepaidOrderRequest?,
+        serviceInterface: IOrderDetailServiceInterface
+    ) {
+        try {
+            val newRequest: UpdatePrepaidOrderRequest? = request ?: UpdatePrepaidOrderRequest(null, null, null)
+            val response = RetrofitApi().getServerCallObject()?.updatePrepaidOrder(orderId, newRequest)
+            response?.let {
+                if (it.isSuccessful) {
+                    it.body()?.let { commonApiResponse -> serviceInterface.onPrepaidOrderUpdateStatusResponse(commonApiResponse) }
+                } else {
+                    val responseBody = it.errorBody()
+                    responseBody?.let {
+                        val errorResponse = Gson().fromJson(responseBody.string(), CommonApiResponse::class.java)
+                        serviceInterface.onPrepaidOrderUpdateStatusResponse(errorResponse)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(SendBillPhotoNetworkService::class.java.simpleName, "updatePrepaidOrderServerCall: ", e)
             serviceInterface.onOrderDetailException(e)
         }
     }

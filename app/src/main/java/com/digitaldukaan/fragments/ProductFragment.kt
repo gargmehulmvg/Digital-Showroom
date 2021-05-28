@@ -11,6 +11,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.bumptech.glide.Glide
 import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.AddProductsChipsAdapter
@@ -31,7 +32,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.textfield.TextInputLayout
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.product_fragment.*
 import org.json.JSONObject
 
@@ -68,7 +68,10 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.product_fragment, container, false)
-        if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else mService?.getProductPageInfo()
+        if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else {
+            showCancellableProgressDialog(mActivity)
+            mService?.getProductPageInfo()
+        }
         ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, false)
             hideBackPressFromToolBar(mActivity, false)
@@ -92,7 +95,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
         }
     }
 
-    override fun onProductResponse(commonResponse: CommonApiResponse) {
+    override fun onProductPageInfoResponse(commonResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             val productResponse = Gson().fromJson(commonResponse.mCommonDataStr, ProductPageResponse::class.java)
             bottomContainer?.visibility = if (productResponse?.isZeroProduct == true) View.GONE else View.VISIBLE
@@ -116,7 +119,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                 shareButtonTextView?.text = this.mText
                 if (mCDN != null && mCDN.isNotEmpty() && shareButtonImageView != null) {
                     try {
-                        Picasso.get().load(mCDN).into(shareButtonImageView)
+                        Glide.with(this@ProductFragment).load(mCDN).into(shareButtonImageView)
                     } catch (e: Exception) {
                         Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
                     }
@@ -126,7 +129,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                 addProductTextView?.text = this.mText
                 if (mCDN != null && mCDN.isNotEmpty() && addProductImageView != null) {
                     try {
-                        Picasso.get().load(mCDN).into(addProductImageView)
+                        Glide.with(this@ProductFragment).load(mCDN).into(addProductImageView)
                     } catch (e: Exception) {
                         Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
                     }
@@ -254,7 +257,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                     val referAndEarnRecyclerView: RecyclerView = findViewById(R.id.referAndEarnRecyclerView)
                     if (response?.imageUrl?.isNotEmpty() == true) bottomSheetUpperImageView?.let {
                         try {
-                            Picasso.get().load(response.imageUrl).into(it)
+                            Glide.with(this@ProductFragment).load(response.imageUrl).into(it)
                         } catch (e: Exception) {
                             Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
                         }
@@ -507,6 +510,11 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                         }
                         bottomSheetDialog.dismiss()
                         showProgressDialog(mActivity)
+                        AppEventsManager.pushAppEvents(
+                            eventName = AFInAppEventType.EVENT_EDIT_CATEGORY,
+                            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                            data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
+                        )
                         mService?.updateCategory(request)
                     }
                     deleteCategoryTextView.setOnClickListener {
@@ -544,6 +552,11 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                                     val request = DeleteCategoryRequest(categoryId, mDeleteCategoryItemList?.get(position)?.action == "true")
                                     bottomSheetDialog.dismiss()
                                     showProgressDialog(mActivity)
+                                    AppEventsManager.pushAppEvents(
+                                        eventName = AFInAppEventType.EVENT_DELETE_CATEGORY,
+                                        isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                                        data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
+                                    )
                                     mService?.deleteCategory(request)
                                 }
                             }

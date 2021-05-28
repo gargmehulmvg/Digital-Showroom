@@ -41,9 +41,7 @@ public class ToolBarManager {
     public void setSideIcon(Drawable drawable, IOnToolbarIconClick listener) {
         ImageView imageView = mToolbar.findViewById(R.id.sideIconToolbar);
         imageView.setImageDrawable(drawable);
-        if (null != listener) {
-            imageView.setOnClickListener(v -> listener.onToolbarSideIconClicked());
-        }
+        if (null != listener) { imageView.setOnClickListener(v -> listener.onToolbarSideIconClicked()); }
     }
 
     public void setSecondSideIcon(Drawable drawable, IOnToolbarSecondIconClick listener) {

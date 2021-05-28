@@ -12,11 +12,13 @@ object StaticInstances {
     var sStepsCompletedList: ArrayList<StepCompletedItem>? = null
     var sHelpScreenList: ArrayList<HelpScreenItemResponse> = ArrayList()
     var sOrderPageInfoStaticData: OrderPageStaticTextResponse? = null
+    var sAccountPageSettingsStaticData: AccountStaticTextResponse? = null
     var sAppSessionId: String? = ""
     var sCleverTapId: String? = ""
     var sFireBaseMessagingToken: String? = ""
     var sStoreId: Int = 0
     var sAppStoreServicesResponse: StoreServicesResponse? = null
+    var sPaymentMethodStr: String? = null
     var sAppFlyerRefMobileNumber: String? = ""
     var mStaticData: StaticData? = null
 }

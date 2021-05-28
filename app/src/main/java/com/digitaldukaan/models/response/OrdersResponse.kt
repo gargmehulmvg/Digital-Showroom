@@ -29,6 +29,7 @@ class OrderItemResponse {
     @SerializedName("delivery_info") lateinit var deliveryInfo: DeliveryInfoItemResponse
     @SerializedName("updated_at") var updatedAt: String = ""
     @SerializedName("created_at") var createdAt: String = ""
+    @SerializedName("prepaid_flag") var prepaidFlag: Int = 0
     var updatedDate: Date? = Date()
     var updatedCompleteDate: Date? = Date()
     var viewType: Int = 0

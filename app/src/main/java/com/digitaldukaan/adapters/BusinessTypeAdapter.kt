@@ -8,11 +8,11 @@ import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.BusinessTypeAdapter.BusinessTypeViewHolder
 import com.digitaldukaan.fragments.BaseFragment
 import com.digitaldukaan.models.response.BusinessTypeItemResponse
-import com.squareup.picasso.Picasso
 
 class BusinessTypeAdapter(
     private val mContext: BaseFragment,
@@ -66,7 +66,7 @@ class BusinessTypeAdapter(
             businessTypeTextView.text = itemResponse.businessName
             if (itemResponse.businessImage.isNotEmpty()) businessTypeImageView?.let {
                 try {
-                    Picasso.get().load(itemResponse.businessImage).into(it)
+                    mContext?.let { context -> Glide.with(context).load(itemResponse.businessImage).into(it) }
                 } catch (e: Exception) {
                     Log.e(BusinessTypeAdapter::class.java.simpleName, "picasso image loading issue: ${e.message}", e)
                 }

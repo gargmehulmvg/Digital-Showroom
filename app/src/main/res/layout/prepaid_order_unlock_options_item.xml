@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/bottomSheetContainer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/_8sdp"
+    app:cardCornerRadius="@dimen/_10sdp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/ripple_slight_curve_grey_white_background"
+        android:onClick="onClick"
+        android:padding="@dimen/_12sdp">
+
+        <TextView
+            android:id="@+id/completeImageView"
+            android:layout_width="@dimen/_25sdp"
+            android:layout_height="@dimen/_25sdp"
+            android:background="@drawable/blue_ring"
+            android:clickable="false"
+            android:textColor="@color/light_blue"
+            tools:text="2"
+            android:fontFamily="@font/roboto_medium"
+            android:textSize="@dimen/_14sdp"
+            android:gravity="center"
+            android:contentDescription="@string/image_view_content_description"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/headingTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:fontFamily="@font/roboto_medium"
+            android:paddingStart="@dimen/_10sdp"
+            android:paddingEnd="@dimen/_10sdp"
+            android:textSize="@dimen/_13sdp"
+            app:layout_constraintEnd_toStartOf="@+id/forwardImageView"
+            app:layout_constraintStart_toEndOf="@+id/completeImageView"
+            app:layout_constraintTop_toTopOf="@+id/completeImageView"
+            tools:text="Complete KYC" />
+
+        <TextView
+            android:id="@+id/subHeadingTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:paddingStart="@dimen/_10sdp"
+            android:paddingTop="@dimen/_5sdp"
+            android:paddingEnd="@dimen/_10sdp"
+            android:paddingBottom="@dimen/_5sdp"
+            android:textSize="@dimen/_10sdp"
+            app:layout_constraintEnd_toEndOf="@+id/headingTextView"
+            app:layout_constraintStart_toEndOf="@+id/completeImageView"
+            app:layout_constraintTop_toBottomOf="@+id/headingTextView"
+            tools:text="To activate Prepaid Orders, please complete your KYC" />
+
+        <ImageView
+            android:id="@+id/forwardImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:contentDescription="@string/image_view_content_description"
+            android:src="@drawable/ic_half_arrow_forward"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>

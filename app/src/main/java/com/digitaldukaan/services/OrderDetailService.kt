@@ -4,6 +4,7 @@ import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.models.request.CompleteOrderRequest
 import com.digitaldukaan.models.request.UpdateOrderRequest
 import com.digitaldukaan.models.request.UpdateOrderStatusRequest
+import com.digitaldukaan.models.request.UpdatePrepaidOrderRequest
 import com.digitaldukaan.services.networkservice.OrderDetailNetworkService
 import com.digitaldukaan.services.serviceinterface.IOrderDetailServiceInterface
 
@@ -17,9 +18,9 @@ class OrderDetailService {
         mServiceInterface = listener
     }
 
-    fun getOrderDetail(authToken: String, orderId: String) {
+    fun getOrderDetail(orderId: String) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.getOrderDetailServerCall(authToken , orderId, mServiceInterface)
+            mNetworkService.getOrderDetailServerCall(orderId, mServiceInterface)
         }
     }
 
@@ -32,6 +33,12 @@ class OrderDetailService {
     fun updateOrder(authToken: String, request: UpdateOrderRequest) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
             mNetworkService.updateOrderServerCall(authToken, request, mServiceInterface)
+        }
+    }
+
+    fun updatePrepaidOrder(orderId: String?, request: UpdatePrepaidOrderRequest?) {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.updatePrepaidOrderServerCall(orderId, request, mServiceInterface)
         }
     }
 

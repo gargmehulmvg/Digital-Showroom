@@ -21,6 +21,7 @@ data class OrderDetailsResponse (
     @SerializedName("image_link") var imageLink: String?,
     @SerializedName("created_at") var createdAt: String?,
     @SerializedName("updated_at") var updatedAt: String?,
+    @SerializedName("prepaid_flag") var prepaidFlag: Int,
     @SerializedName("order_payment_status") var orderPaymentStatus: OrderPaymentStatusResponse?,
     @SerializedName("digital_receipt") var digitalReceipt: String?,
     @SerializedName("items") var orderDetailsItemsList: ArrayList<OrderDetailItemResponse>?,
@@ -91,6 +92,14 @@ data class OrderDetailsStaticTextResponse(
     @SerializedName("text_reject_order") var text_reject_order: String,
     @SerializedName("text_delivery_guy_not_available") var text_delivery_guy_not_available: String,
     @SerializedName("text_items_are_not_available") var text_items_are_not_available: String,
-
-    @SerializedName("text_customer_request_cancellation") var text_customer_request_cancellation: String
+    @SerializedName("text_customer_request_cancellation") var text_customer_request_cancellation: String,
+    @SerializedName("dialog_text_alert")                var dialog_text_alert: String,
+    @SerializedName("text_mark_ready")                  var markReadyText: String?,
+    @SerializedName("text_out_for_delivery")            var outForDeliveryText: String?,
+    @SerializedName("text_ready_for_pickup")            var readyForPickupText: String?,
+    @SerializedName("text_mark_out_for_delivery")       var markOutForDeliveryText: String?,
+    @SerializedName("text_delivery_time_is_set_as")     var deliveryTimeIsSetAsText: String?,
+    @SerializedName("text_pickup_order_success")        var pickUpOrderSuccess: String?,
+    @SerializedName("dialog_message_prepaid_delivery")  var dialog_message_prepaid_delivery: String,
+    @SerializedName("dialog_message_prepaid_pickup")    var dialog_message_prepaid_pickup: String
 )

@@ -6,12 +6,17 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.digitaldukaan.R
+import com.digitaldukaan.fragments.BaseFragment
 import com.digitaldukaan.interfaces.IAdapterItemClickListener
 import com.digitaldukaan.models.response.HomePageBannerResponse
-import com.squareup.picasso.Picasso
 
-class ProfilePageBannerAdapter(private val bannerList: ArrayList<HomePageBannerResponse>?, private val listener: IAdapterItemClickListener) : RecyclerView.Adapter<ProfilePageBannerAdapter.MarketingCardViewHolder>() {
+class ProfilePageBannerAdapter(
+    private val mContext: BaseFragment?,
+    private val bannerList: ArrayList<HomePageBannerResponse>?,
+    private val listener: IAdapterItemClickListener
+) : RecyclerView.Adapter<ProfilePageBannerAdapter.MarketingCardViewHolder>() {
 
     inner class MarketingCardViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val doubleSpanImageView: ImageView = itemView.findViewById(R.id.doubleSpanImageView)
@@ -32,7 +37,7 @@ class ProfilePageBannerAdapter(private val bannerList: ArrayList<HomePageBannerR
        holder.run {
            doubleSpanImageView?.let {
                try {
-                   Picasso.get().load(bannerList?.get(position)?.mBannerUrl).into(it)
+                   mContext?.let { context -> Glide.with(context).load(bannerList?.get(position)?.mBannerUrl).into(it) }
                } catch (e: Exception) {
                    Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
                }

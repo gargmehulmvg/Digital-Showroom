@@ -46,6 +46,7 @@ import kotlinx.android.synthetic.main.home_fragment.*
 import kotlinx.android.synthetic.main.layout_analytics.*
 import kotlinx.android.synthetic.main.layout_common_webview_fragment.*
 import org.json.JSONObject
+import java.io.File
 
 
 class HomeFragment : BaseFragment(), IHomeServiceInterface,
@@ -102,6 +103,16 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         }
         mSwipeRefreshLayout = mContentView?.findViewById(R.id.swipeRefreshLayout)
         return mContentView
+    }
+
+    override fun onPause() {
+        super.onPause()
+        stopProgress()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        stopProgress()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -423,6 +434,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                             linearLayoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
                             layoutManager = linearLayoutManager
                             adapter = OrderPageBannerAdapter(
+                                this@HomeFragment,
                                 homePageBannerList,
                                 object : IAdapterItemClickListener {
                                     override fun onAdapterItemClickListener(position: Int) {
@@ -492,6 +504,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
             stopProgress()
             if (mSwipeRefreshLayout?.isRefreshing == true) mSwipeRefreshLayout?.isRefreshing = false
             if (commonResponse.mIsSuccessStatus) {
+                showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_check_circle)
                 orderLayout?.fullScroll(ScrollView.FOCUS_UP)
                 completedPageCount = 1
                 pendingPageCount = 1
@@ -556,6 +569,11 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                     mHomeFragmentService?.getAnalyticsData()
                 }
             }
+        } else if (requestCode == Constants.IMAGE_PICK_REQUEST_CODE) {
+            when {
+                grantResults.isEmpty() -> Log.i(TAG, "User interaction was cancelled.")
+                grantResults[0] == PackageManager.PERMISSION_GRANTED -> openCameraWithoutCrop()
+            }
         }
     }
 
@@ -574,7 +592,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
     override fun onOrderCheckBoxChanged(isChecked: Boolean, item: OrderItemResponse?) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (Constants.TEXT_YES != PrefsManager.getStringDataFromSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN)) {
-                if (Constants.DS_PAID_ONLINE == item?.displayStatus) {
+                if (Constants.DS_PAID_ONLINE == item?.displayStatus || Constants.DS_PREPAID_PICKUP_READY == item?.displayStatus || Constants.DS_PREPAID_DELIVERY_READY == item?.displayStatus) {
                     onDontShowDialogPositiveButtonClicked(item)
                 } else if (isChecked) showDontShowDialog(item, mOrderPageInfoStaticData)
             } else onDontShowDialogPositiveButtonClicked(item)
@@ -654,10 +672,10 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         }
     }
 
-    override fun onImageSelectionResultUri(fileUri: Uri?) {
+    override fun onImageSelectionResultFileAndUri(fileUri: Uri?, file: File?) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             try {
-                launchFragment(SendBillFragment.newInstance(fileUri), true)
+                launchFragment(SendBillFragment.newInstance(fileUri, file), true)
             } catch (e: Exception) {
                 Log.e(TAG, "onImageSelectionResultUri: ${e.message}", e)
                 AppEventsManager.pushAppEvents(
@@ -693,7 +711,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                     clickBillPhotoContainer.setOnClickListener {
                         clickBillPhotoContainer.isEnabled = false
                         bottomSheetDialog.dismiss()
-                        openFullCamera()
+                        openCameraWithoutCrop()
                     }
                     shareButtonTextView.text = mOrderPageInfoStaticData?.bottom_sheet_click_bill_photo
                     takeOrderMessageTextView.text = mOrderPageInfoStaticData?.bottom_sheet_take_order_message

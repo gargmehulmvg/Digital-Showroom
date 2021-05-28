@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
+import com.digitaldukaan.constants.isEmpty
 import com.digitaldukaan.interfaces.IChipItemClickListener
 import com.digitaldukaan.models.response.AddStoreCategoryItem
 
@@ -28,7 +29,13 @@ class AddProductsChipsAdapter(
         val holder = AddProductsChipsViewHolder(
             LayoutInflater.from(parent.context).inflate(R.layout.chip_item_layout2, parent, false)
         )
-        holder.chipTextView.setOnClickListener { mListener.onChipItemClickListener(holder.adapterPosition) }
+        holder.chipTextView.setOnClickListener {
+            val position = holder.adapterPosition
+            if (position < 0) return@setOnClickListener
+            if (isEmpty(mAddProductStoreCategoryList)) return@setOnClickListener
+            if (position > mAddProductStoreCategoryList?.size ?: 0) return@setOnClickListener
+            mListener.onChipItemClickListener(position)
+        }
         return holder
     }
 
