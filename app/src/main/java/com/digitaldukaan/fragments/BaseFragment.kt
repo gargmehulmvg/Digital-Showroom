@@ -939,6 +939,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     open fun onNoInternetButtonClick(isNegativeButtonClick: Boolean) = Unit
 
     override fun onSearchImageItemClicked(photoStr: String) {
+        showCancellableProgressDialog(mActivity)
         Log.d(TAG, "onSearchImageItemClicked :: $photoStr")
         try {
             Picasso.get().load(photoStr).into(object : com.squareup.picasso.Target {
@@ -965,13 +966,16 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
 
                 override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
                     Log.d(TAG, "onPrepareLoad: ")
+                    stopProgress()
                 }
 
                 override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
                     Log.d(TAG, "onBitmapFailed: ")
+                    stopProgress()
                 }
             })
         } catch (e: Exception) {
+            stopProgress()
             Log.e(TAG, "picasso image loading issue: ${e.message}", e)
             AppEventsManager.pushAppEvents(
                 eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
