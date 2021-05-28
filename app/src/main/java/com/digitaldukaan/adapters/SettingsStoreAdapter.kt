@@ -7,13 +7,18 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.CoroutineScopeUtils
+import com.digitaldukaan.fragments.BaseFragment
 import com.digitaldukaan.interfaces.IStoreSettingsItemClicked
 import com.digitaldukaan.models.response.StoreOptionsResponse
-import com.squareup.picasso.Picasso
 
-class SettingsStoreAdapter(private val listener: IStoreSettingsItemClicked) : RecyclerView.Adapter<SettingsStoreAdapter.AppSettingsViewHolder>() {
+class SettingsStoreAdapter(
+    private val mContext: BaseFragment?,
+    private val listener: IStoreSettingsItemClicked
+) :
+    RecyclerView.Adapter<SettingsStoreAdapter.AppSettingsViewHolder>() {
 
     private var mStoreOptionsList: ArrayList<StoreOptionsResponse> = ArrayList()
 
@@ -49,7 +54,7 @@ class SettingsStoreAdapter(private val listener: IStoreSettingsItemClicked) : Re
             settingTitleTextView.text = response.mText
             settingImageView.let {
                 try {
-                    Picasso.get().load(response.mLogo).into(it)
+                    mContext?.let { context -> Glide.with(context).load(response.mLogo).into(it) }
                 } catch (e: Exception) {
                     Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
                 }

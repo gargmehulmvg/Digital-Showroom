@@ -21,6 +21,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.bumptech.glide.Glide
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.CustomerDeliveryAddressAdapter
 import com.digitaldukaan.adapters.DeliveryTimeAdapter
@@ -370,7 +371,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                     billPhotoImageView?.visibility = View.VISIBLE
                     billPhotoImageView?.let {
                         try {
-                            Picasso.get().load(orderDetailResponse.imageLink).into(it)
+                            Glide.with(this).load(orderDetailResponse.imageLink).into(it)
                         } catch (e: Exception) {
                             Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
                         }

@@ -11,15 +11,17 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
 
+import com.bumptech.glide.Glide;
 import com.digitaldukaan.R;
 import com.digitaldukaan.constants.StaticInstances;
-import com.squareup.picasso.Picasso;
 
 public class CustomPagerAdapter extends PagerAdapter {
 
     private final LayoutInflater inflater;
+    private Context mContext = null;
 
     public CustomPagerAdapter(Context context) {
+        mContext = context;
         inflater = LayoutInflater.from(context);
     }
 
@@ -40,7 +42,8 @@ public class CustomPagerAdapter extends PagerAdapter {
         final ImageView imageView = imageLayout.findViewById(R.id.image);
         if (imageView != null) {
             try {
-                Picasso.get().load(StaticInstances.INSTANCE.getSHelpScreenList().get(position).getUrl()).into(imageView);
+                if (mContext != null)
+                    Glide.with(mContext).load(StaticInstances.INSTANCE.getSHelpScreenList().get(position).getUrl()).into(imageView);
             } catch (Exception e) {
                 Log.e(CustomPagerAdapter.class.getSimpleName(), "picasso image loading issue: ${e.message}", e);
             }

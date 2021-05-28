@@ -434,6 +434,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                             linearLayoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
                             layoutManager = linearLayoutManager
                             adapter = OrderPageBannerAdapter(
+                                this@HomeFragment,
                                 homePageBannerList,
                                 object : IAdapterItemClickListener {
                                     override fun onAdapterItemClickListener(position: Int) {

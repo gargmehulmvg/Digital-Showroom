@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.appcompat.app.AlertDialog
 import androidx.core.net.toUri
 import androidx.transition.TransitionInflater
+import com.bumptech.glide.Glide
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
@@ -22,7 +23,6 @@ import com.digitaldukaan.services.ProfilePhotoService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IProfilePhotoServiceInterface
 import com.google.gson.Gson
-import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.layout_profile_photo_fragment.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -65,7 +65,7 @@ class ProfilePhotoFragment : BaseFragment(), View.OnClickListener, IProfilePhoto
         profilePhotoImageView?.let {
             if (mStoreLogoLinkStr?.isEmpty() == false) {
                 try {
-                    Picasso.get().load(mStoreLogoLinkStr).into(it)
+                    Glide.with(this).load(mStoreLogoLinkStr).into(it)
                 } catch (e: Exception) {
                     Log.e(TAG, "picasso image loading issue: ${e.message}", e)
                 }
@@ -129,7 +129,7 @@ class ProfilePhotoFragment : BaseFragment(), View.OnClickListener, IProfilePhoto
             if (mStoreLogoLinkStr?.isNotEmpty() == true) {
                 profilePhotoImageView?.let {
                     try {
-                        Picasso.get().load(mStoreLogoLinkStr).into(it)
+                        Glide.with(this).load(mStoreLogoLinkStr).into(it)
                     } catch (e: Exception) {
                         Log.e(TAG, "picasso image loading issue: ${e.message}", e)
                     }

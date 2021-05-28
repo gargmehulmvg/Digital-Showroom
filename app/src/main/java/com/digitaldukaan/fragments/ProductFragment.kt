@@ -11,6 +11,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.bumptech.glide.Glide
 import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.AddProductsChipsAdapter
@@ -31,7 +32,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.textfield.TextInputLayout
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.product_fragment.*
 import org.json.JSONObject
 
@@ -119,7 +119,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                 shareButtonTextView?.text = this.mText
                 if (mCDN != null && mCDN.isNotEmpty() && shareButtonImageView != null) {
                     try {
-                        Picasso.get().load(mCDN).into(shareButtonImageView)
+                        Glide.with(this@ProductFragment).load(mCDN).into(shareButtonImageView)
                     } catch (e: Exception) {
                         Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
                     }
@@ -129,7 +129,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                 addProductTextView?.text = this.mText
                 if (mCDN != null && mCDN.isNotEmpty() && addProductImageView != null) {
                     try {
-                        Picasso.get().load(mCDN).into(addProductImageView)
+                        Glide.with(this@ProductFragment).load(mCDN).into(addProductImageView)
                     } catch (e: Exception) {
                         Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
                     }
@@ -257,7 +257,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                     val referAndEarnRecyclerView: RecyclerView = findViewById(R.id.referAndEarnRecyclerView)
                     if (response?.imageUrl?.isNotEmpty() == true) bottomSheetUpperImageView?.let {
                         try {
-                            Picasso.get().load(response.imageUrl).into(it)
+                            Glide.with(this@ProductFragment).load(response.imageUrl).into(it)
                         } catch (e: Exception) {
                             Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
                         }

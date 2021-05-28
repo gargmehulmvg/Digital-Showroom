@@ -19,6 +19,7 @@ import androidx.core.net.toUri
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.bumptech.glide.Glide
 import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.ProfilePageBannerAdapter
@@ -36,7 +37,6 @@ import com.digitaldukaan.services.serviceinterface.IProfilePreviewServiceInterfa
 import com.digitaldukaan.views.allowOnlyAlphaNumericCharacters
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
-import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.layout_profile_preview_fragment.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -159,7 +159,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                 profilePreviewBannerStartNow?.text = mStartNow
                 profilePreviewBannerImageView?.let {
                     try {
-                        Picasso.get().load(mCDN).into(it)
+                        Glide.with(this@ProfilePreviewFragment).load(mCDN).into(it)
                     } catch (e: Exception) {
                         Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
                     }
@@ -175,7 +175,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                 bannerRecyclerView?.visibility = View.VISIBLE
                 bannerRecyclerView?.apply {
                     layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
-                    adapter = ProfilePageBannerAdapter(mProfilePreviewResponse?.mBannerList,
+                    adapter = ProfilePageBannerAdapter(this@ProfilePreviewFragment, mProfilePreviewResponse?.mBannerList,
                         object : IAdapterItemClickListener {
                             override fun onAdapterItemClickListener(position: Int) {
                                 val item = mProfilePreviewResponse?.mBannerList?.get(position)
@@ -204,7 +204,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                     storePhotoImageView?.visibility = View.VISIBLE
                     storePhotoImageView?.let {
                         try {
-                            Picasso.get().load(mStoreLogo).into(it)
+                            Glide.with(this@ProfilePreviewFragment).load(mStoreLogo).into(it)
                         } catch (e: Exception) {
                             Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
                         }
@@ -613,7 +613,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                     hiddenTextView?.visibility = View.INVISIBLE
                     storePhotoImageView?.let {
                         try {
-                            Picasso.get().load(mStoreLogo).into(it)
+                            Glide.with(this).load(mStoreLogo).into(it)
                         } catch (e: Exception) {
                             Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
                         }

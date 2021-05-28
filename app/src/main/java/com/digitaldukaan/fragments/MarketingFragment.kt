@@ -11,6 +11,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.MarketingCardAdapter
@@ -27,7 +28,6 @@ import com.digitaldukaan.webviews.WebViewBridge
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import com.squareup.picasso.Picasso
 import io.sentry.Sentry
 import kotlinx.android.synthetic.main.layout_marketing_fragment.*
 
@@ -97,7 +97,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                             return if (list[position].type == Constants.SPAN_TYPE_FULL_WIDTH) 2 else 1
                         }
                     }
-                    adapter = MarketingCardAdapter(list, this@MarketingFragment)
+                    adapter = MarketingCardAdapter(this@MarketingFragment, list, this@MarketingFragment)
                 }
             }
 
@@ -233,7 +233,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                         val referAndEarnRecyclerView: RecyclerView = findViewById(R.id.referAndEarnRecyclerView)
                         if (response?.imageUrl?.isNotEmpty() == true) bottomSheetUpperImageView?.let {
                             try {
-                                Picasso.get().load(response.imageUrl).into(it)
+                                Glide.with(this@MarketingFragment).load(response.imageUrl).into(it)
                             } catch (e: Exception) {
                                 Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
                             }

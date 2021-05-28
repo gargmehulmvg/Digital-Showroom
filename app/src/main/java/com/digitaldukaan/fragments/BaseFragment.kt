@@ -656,6 +656,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                         onImageSelectionResultFile(null)
                     }
                     mImageAdapter.setSearchImageListener(this@BaseFragment)
+                    mImageAdapter.setContext(mActivity)
                     searchImageImageView.setOnClickListener {
                         searchImageEditText.hideKeyboard()
                         if (searchImageEditText.text.trim().toString().isEmpty()) {
