@@ -8,13 +8,15 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
+import com.digitaldukaan.fragments.BaseFragment
 import com.digitaldukaan.models.response.MarketingCardsItemResponse
 import com.digitaldukaan.services.serviceinterface.IMarketingServiceInterface
-import com.squareup.picasso.Picasso
 
 class MarketingCardAdapter(
+    private var mContext: BaseFragment?,
     private var mMarketingItemList: ArrayList<MarketingCardsItemResponse>?,
     private var mMarketItemClickListener: IMarketingServiceInterface
 ) :
@@ -51,7 +53,7 @@ class MarketingCardAdapter(
                 doubleSpanContainer.visibility = View.VISIBLE
                 doubleSpanImageView?.let {
                     try {
-                        Picasso.get().load(item.logo).into(it)
+                        mContext?.let { context -> Glide.with(context).load(item.logo).into(it) }
                     } catch (e: Exception) {
                         Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
                     }
@@ -66,7 +68,7 @@ class MarketingCardAdapter(
                 singleSpanContainer.visibility = View.VISIBLE
                 singleSpanImageView?.let {
                     try {
-                        Picasso.get().load(item?.logo).into(it)
+                        mContext?.let { context -> Glide.with(context).load(item?.logo).into(it) }
                     } catch (e: Exception) {
                         Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
                     }

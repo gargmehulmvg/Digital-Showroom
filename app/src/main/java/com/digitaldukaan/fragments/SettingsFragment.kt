@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.appsflyer.CreateOneLinkHttpTask
 import com.appsflyer.share.ShareInviteHelper
+import com.bumptech.glide.Glide
 import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.NewReleaseAdapter
@@ -38,7 +39,6 @@ import com.digitaldukaan.services.serviceinterface.IProfileServiceInterface
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
-import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.layout_settings_fragment.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -196,7 +196,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                     val referAndEarnRecyclerView: RecyclerView = findViewById(R.id.referAndEarnRecyclerView)
                     bottomSheetUpperImageView?.let {
                         try {
-                            Picasso.get().load(response?.imageUrl).into(it)
+                            Glide.with(this).load(response?.imageUrl).into(it)
                         } catch (e: Exception) {
                             Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
                         }
@@ -348,7 +348,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                     hiddenTextView?.visibility = View.INVISIBLE
                     storePhotoImageView?.let {
                         try {
-                            Picasso.get().load(mStoreLogo).into(it)
+                            Glide.with(this).load(mStoreLogo).into(it)
                         } catch (e: Exception) {
                             Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
                         }
@@ -380,7 +380,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         if (infoResponse.mStoreInfo.storeInfo.logoImage?.isNotEmpty() == true) {
             storePhotoImageView?.let {
                 try {
-                    Picasso.get().load(infoResponse.mStoreInfo.storeInfo.logoImage).into(it)
+                    Glide.with(this).load(infoResponse.mStoreInfo.storeInfo.logoImage).into(it)
                 } catch (e: Exception) {
                     Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
                 }
@@ -392,7 +392,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             if (index == 0) {
                 autoDataBackupImageView?.let {
                     try {
-                        Picasso.get().load(imageUrl).into(it)
+                        Glide.with(this).load(imageUrl).into(it)
                     } catch (e: Exception) {
                         Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
                     }
@@ -400,7 +400,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             } else {
                 safeSecureImageView?.let {
                     try {
-                        Picasso.get().load(imageUrl).into(it)
+                        Glide.with(this).load(imageUrl).into(it)
                     } catch (e: Exception) {
                         Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
                     }
@@ -423,7 +423,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             }
         }
         settingStoreOptionRecyclerView?.apply {
-            val settingsAdapter = SettingsStoreAdapter(this@SettingsFragment)
+            val settingsAdapter = SettingsStoreAdapter(this@SettingsFragment, this@SettingsFragment)
             val linearLayoutManager = LinearLayoutManager(mActivity)
             layoutManager = linearLayoutManager
             adapter = settingsAdapter

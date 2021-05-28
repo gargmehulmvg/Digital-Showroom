@@ -8,12 +8,12 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.digitaldukaan.MainActivity
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.interfaces.IStoreSettingsItemClicked
 import com.digitaldukaan.models.response.TrendingListResponse
-import com.squareup.picasso.Picasso
 
 class NewReleaseAdapter(
     private val newReleaseList: ArrayList<TrendingListResponse>?,
@@ -47,7 +47,7 @@ class NewReleaseAdapter(
             textView.text = responseItem?.mText
             imageView?.let {
                 try {
-                    Picasso.get().load(responseItem?.mCDN).into(it)
+                    activity?.let { context -> Glide.with(context).load(responseItem?.mCDN).into(it) }
                 } catch (e: Exception) {
                     Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
                 }

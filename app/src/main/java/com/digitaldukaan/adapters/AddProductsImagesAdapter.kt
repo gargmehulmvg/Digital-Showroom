@@ -7,12 +7,14 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.digitaldukaan.R
+import com.digitaldukaan.fragments.BaseFragment
 import com.digitaldukaan.interfaces.IAdapterItemClickListener
 import com.digitaldukaan.models.response.AddProductImagesResponse
-import com.squareup.picasso.Picasso
 
 class AddProductsImagesAdapter(
+    private var mFragment: BaseFragment?,
     private var mImagesList: ArrayList<AddProductImagesResponse>?,
     private var mNoImagesText: String?,
     private var mAdapterItemClick: IAdapterItemClickListener
@@ -62,7 +64,7 @@ class AddProductsImagesAdapter(
                 image.visibility = View.VISIBLE
                 image?.let {
                     try {
-                        Picasso.get().load(imageStr?.imageUrl).into(it)
+                        mFragment?.let { fragment -> Glide.with(fragment).load(imageStr?.imageUrl).into(it) }
                     } catch (e: Exception) {
                         Log.e(AddProductsImagesAdapter::class.java.simpleName, "picasso image loading issue: ${e.message}", e)
                     }

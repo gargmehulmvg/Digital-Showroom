@@ -553,6 +553,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                         mImageAddAdapter?.setListToAdapter(mImagesStrList)
                     }
                     imageAdapter.setSearchImageListener(this@AddProductFragment)
+                    imageAdapter.setContext(mActivity)
                     searchImageImageView.setOnClickListener {
                         if (searchImageEditText.text.trim().toString().isEmpty()) {
                             searchImageEditText.error = getString(R.string.mandatory_field_message)
@@ -732,7 +733,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                             mAddProductResponse?.storeItem?.imagesList?.forEachIndexed { _, imagesResponse ->
                                 if (imagesResponse.status != 0) mImagesStrList.add(AddProductImagesResponse(imagesResponse.imageId, imagesResponse.imageUrl, 1))
                             }
-                            mImageAddAdapter = AddProductsImagesAdapter(mImagesStrList ,addProductStaticData?.text_upload_or_search_images, this@AddProductFragment)
+                            mImageAddAdapter = AddProductsImagesAdapter(this@AddProductFragment, mImagesStrList ,addProductStaticData?.text_upload_or_search_images, this@AddProductFragment)
                             adapter = mImageAddAdapter
                         }
                     } else {
@@ -902,6 +903,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             imagesRecyclerView?.apply {
                 layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
                 mImageAddAdapter = AddProductsImagesAdapter(
+                    this@AddProductFragment,
                     mImagesStrList,
                     addProductStaticData?.text_upload_or_search_images,
                     this@AddProductFragment
