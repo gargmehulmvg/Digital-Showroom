@@ -773,8 +773,8 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                 cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
                 cameraGalleryWithoutCropIntentResult.launch(cameraIntent)
             } catch (e: Exception) {
-                showToast(e.message)
                 Log.e(TAG, "openCamera: ${e.message}", e)
+                mActivity?.let { ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA), Constants.IMAGE_PICK_REQUEST_CODE) }
             }
         }
     }
@@ -800,8 +800,8 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                 cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
                 cameraGalleryWithCropIntentResult.launch(cameraIntent)
             } catch (e: Exception) {
-                showToast(e.message)
                 Log.e(TAG, "openCamera: ${e.message}", e)
+                mActivity?.let { ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA), Constants.IMAGE_PICK_REQUEST_CODE) }
             }
         }
     }

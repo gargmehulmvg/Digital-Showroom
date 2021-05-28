@@ -82,11 +82,6 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
         minOrderValueAmountTextView?.text = if (0.0 != mMinOrderValue) "${mMoreControlsStaticData?.text_ruppee_symbol} $mMinOrderValue" else ""
         deliveryChargeHeadingTextView?.text = mMoreControlsStaticData?.heading_set_delivery_charge
         deliveryChargeTypeTextView?.text = mMoreControlsStaticData?.sub_heading_set_delivery_charge
-        onlinePaymentsTextView?.text = mMoreControlsStaticData?.text_online_payments
-        deliveryHeadingTextView?.text = mMoreControlsStaticData?.mDeliveryText
-        onlinePaymentsHeadingTextView?.text = mMoreControlsStaticData?.heading_set_orders_to_online_payments
-        onlinePaymentsOptionalTextView?.text = mMoreControlsStaticData?.text_type_colon
-        onlinePaymentsValueAmountTextView?.text = mPaymentPaymentMethod
         if (mDeliveryChargeType != 0) {
             deliveryChargeTypeTextView?.text = mMoreControlsStaticData?.sub_heading_success_set_delivery_charge
             if (mDeliveryChargeType == 1) {
@@ -123,14 +118,6 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
                     data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
                 )
                 mMoreControlsStaticData?.let { launchFragment(SetDeliveryChargeFragment.newInstance(it), true) }
-            }
-            onlinePaymentsContainer?.id -> {
-                AppEventsManager.pushAppEvents(
-                    eventName = AFInAppEventType.EVENT_SET_PREPAID_ORDER,
-                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
-                )
-                launchFragment(SetOrderTypeFragment.newInstance(), true)
             }
         }
     }
