@@ -117,6 +117,15 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                 handleDeliveryTimeBottomSheet(isCallSendBillServerCall = false, isPrepaidOrder = false)
             }
             sendBillTextView?.id -> {
+                val finalAmount = if (amountEditText.text?.isNotEmpty() == true) amountEditText.text.toString().toDouble() else 0.0
+                if (finalAmount <= 0.0) {
+                    amountEditText.apply {
+                        error = mActivity?.getString(R.string.bill_value_must_be_greater_than_zero)
+                        requestFocus()
+                        setSelection(text?.length ?: 0)
+                    }
+                    return
+                }
                 if (mIsPickUpOrder) initiateSendBillServerCall() else handleDeliveryTimeBottomSheet(isCallSendBillServerCall = true, isPrepaidOrder = false)
             }
             markOutForDeliveryTextView?.id -> {
@@ -173,6 +182,11 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        stopProgress()
+    }
+
     private fun initiateSendBillServerCall() {
         orderDetailMainResponse?.orders?.run {
             val finalAmount = if (amountEditText.text?.isNotEmpty() == true) amountEditText.text.toString().toDouble() else amount
@@ -180,6 +194,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                 amountEditText.apply {
                     error = mActivity?.getString(R.string.bill_value_must_be_greater_than_zero)
                     requestFocus()
+                    setSelection(text?.length ?: 0)
                 }
                 return
             }
