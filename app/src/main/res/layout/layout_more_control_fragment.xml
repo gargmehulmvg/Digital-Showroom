@@ -6,27 +6,12 @@
     android:layout_height="match_parent"
     android:background="@color/default_bg">
 
-    <TextView
-        android:id="@+id/deliveryHeadingTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:drawablePadding="@dimen/_4sdp"
-        android:textColor="@color/default_text_light_grey"
-        android:fontFamily="@font/roboto_medium"
-        android:padding="@dimen/_8sdp"
-        android:layout_marginStart="@dimen/_18sdp"
-        android:layout_marginTop="@dimen/_10sdp"
-        tools:text="Delivery"
-        android:textSize="@dimen/_9sdp"
-        app:drawableStartCompat="@drawable/ic_truck"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/minOrderValueContainer"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@drawable/ripple_rect_grey_white_background"
+        android:layout_marginTop="@dimen/_15sdp"
+        android:background="@drawable/curve_white_selector"
         android:elevation="@dimen/_1sdp"
         android:onClick="onClick"
         android:paddingStart="@dimen/_20sdp"
@@ -35,7 +20,7 @@
         android:paddingBottom="@dimen/_15sdp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/deliveryHeadingTextView"
+        app:layout_constraintTop_toTopOf="parent"
         tools:targetApi="lollipop">
 
         <ImageView
@@ -54,19 +39,18 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:clickable="false"
+            tools:text="Set minimum order value for delivery"
             android:textColor="@color/black"
             android:textSize="@dimen/_12sdp"
             app:layout_constraintEnd_toStartOf="@+id/minOrderValueImageView"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="Set minimum order value for delivery" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/minOrderValueOptionalTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:clickable="false"
-            android:layout_marginTop="@dimen/_2sdp"
             android:paddingTop="@dimen/_2sdp"
             android:textColor="@color/default_text_light_grey"
             android:textSize="@dimen/_9sdp"
@@ -81,15 +65,13 @@
             android:layout_height="wrap_content"
             android:clickable="false"
             android:paddingTop="@dimen/_2sdp"
-            android:paddingStart="@dimen/_2sdp"
-            android:paddingEnd="@dimen/_2sdp"
             android:textColor="@color/open_green"
-            android:textSize="@dimen/_9sdp"
             android:textStyle="bold"
+            android:textSize="@dimen/_9sdp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/minOrderValueImageView"
             app:layout_constraintStart_toEndOf="@+id/minOrderValueOptionalTextView"
-            app:layout_constraintTop_toTopOf="@+id/minOrderValueOptionalTextView"
+            app:layout_constraintTop_toBottomOf="@+id/minOrderValueHeadingTextView"
             tools:text="(optional)" />
 
 
@@ -99,8 +81,8 @@
         android:id="@+id/deliveryChargeContainer"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_marginTop="0.5dp"
-        android:background="@drawable/ripple_rect_grey_white_background"
+        android:layout_marginTop="@dimen/_15sdp"
+        android:background="@drawable/curve_white_selector"
         android:elevation="@dimen/_1sdp"
         android:onClick="onClick"
         android:paddingStart="@dimen/_20sdp"
@@ -128,12 +110,12 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:clickable="false"
+            tools:text="Set minimum order value for delivery"
             android:textColor="@color/black"
             android:textSize="@dimen/_12sdp"
             app:layout_constraintEnd_toStartOf="@+id/deliveryChargeImageView"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="Set minimum order value for delivery" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/deliveryChargeTypeTextView"
@@ -141,7 +123,6 @@
             android:layout_height="wrap_content"
             android:clickable="false"
             android:paddingTop="@dimen/_2sdp"
-            android:layout_marginTop="@dimen/_2sdp"
             android:textColor="@color/default_text_light_grey"
             android:textSize="@dimen/_9sdp"
             app:layout_constraintStart_toStartOf="@+id/deliveryChargeHeadingTextView"
@@ -153,15 +134,13 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:clickable="false"
-            android:paddingStart="@dimen/_2sdp"
-            android:paddingEnd="@dimen/_2sdp"
             android:paddingTop="@dimen/_2sdp"
             android:textColor="@color/open_green"
-            android:textSize="@dimen/_9sdp"
             android:textStyle="bold"
+            android:textSize="@dimen/_9sdp"
             app:layout_constraintEnd_toStartOf="@+id/deliveryChargeImageView"
             app:layout_constraintStart_toEndOf="@+id/deliveryChargeTypeTextView"
-            app:layout_constraintTop_toTopOf="@+id/deliveryChargeTypeTextView"
+            app:layout_constraintTop_toBottomOf="@+id/deliveryChargeHeadingTextView"
             tools:text="Current: Fixed Delivery Charge" />
 
         <com.google.android.material.textview.MaterialTextView
@@ -184,103 +163,13 @@
             android:clickable="false"
             android:paddingTop="@dimen/_2sdp"
             android:textColor="@color/open_green"
-            android:textSize="@dimen/_9sdp"
-            android:paddingStart="@dimen/_2sdp"
-            android:paddingEnd="@dimen/_2sdp"
             android:textStyle="bold"
+            android:textSize="@dimen/_9sdp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/deliveryChargeImageView"
             app:layout_constraintStart_toEndOf="@+id/deliveryChargeRateTextView"
             app:layout_constraintTop_toBottomOf="@+id/deliveryChargeTypeTextView"
             tools:text="Free delivery above: ₹ 350" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <TextView
-        android:id="@+id/onlinePaymentsTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_20sdp"
-        android:drawablePadding="@dimen/_4sdp"
-        android:fontFamily="@font/roboto_medium"
-        android:padding="@dimen/_8sdp"
-        tools:text="Online Payments"
-        android:textColor="@color/default_text_light_grey"
-        android:textSize="@dimen/_9sdp"
-        app:drawableStartCompat="@drawable/ic_online_payment"
-        app:layout_constraintStart_toStartOf="@+id/deliveryHeadingTextView"
-        app:layout_constraintTop_toBottomOf="@+id/deliveryChargeContainer" />
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/onlinePaymentsContainer"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:background="@drawable/ripple_rect_grey_white_background"
-        android:elevation="@dimen/_1sdp"
-        android:onClick="onClick"
-        android:paddingStart="@dimen/_20sdp"
-        android:paddingTop="@dimen/_15sdp"
-        android:paddingEnd="@dimen/_20sdp"
-        android:paddingBottom="@dimen/_15sdp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/onlinePaymentsTextView"
-        tools:targetApi="lollipop">
-
-        <ImageView
-            android:id="@+id/onlinePaymentsImageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:clickable="false"
-            android:contentDescription="@string/image_view_content_description"
-            android:src="@drawable/ic_half_arrow_forward"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/onlinePaymentsHeadingTextView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:clickable="false"
-            android:textColor="@color/black"
-            android:textSize="@dimen/_12sdp"
-            app:layout_constraintEnd_toStartOf="@+id/onlinePaymentsImageView"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="Set Orders to Prepaid, Pay on Delivery/Pickup" />
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/onlinePaymentsOptionalTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:clickable="false"
-            android:layout_marginTop="@dimen/_2sdp"
-            android:paddingTop="@dimen/_2sdp"
-            android:textColor="@color/default_text_light_grey"
-            android:textSize="@dimen/_9sdp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/onlinePaymentsHeadingTextView"
-            app:layout_constraintTop_toBottomOf="@+id/onlinePaymentsHeadingTextView"
-            tools:text="Type:" />
-
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/onlinePaymentsValueAmountTextView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:clickable="false"
-            android:paddingTop="@dimen/_2sdp"
-            android:paddingStart="@dimen/_2sdp"
-            android:paddingEnd="@dimen/_2sdp"
-            android:textColor="@color/open_green"
-            android:textSize="@dimen/_9sdp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/onlinePaymentsImageView"
-            app:layout_constraintStart_toEndOf="@+id/onlinePaymentsOptionalTextView"
-            app:layout_constraintTop_toTopOf="@+id/onlinePaymentsOptionalTextView"
-            tools:text=" Pay on delivery/pickup" />
-
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

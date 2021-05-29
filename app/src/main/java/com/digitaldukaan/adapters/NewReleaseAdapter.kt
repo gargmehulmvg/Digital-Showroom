@@ -18,8 +18,7 @@ import com.digitaldukaan.models.response.TrendingListResponse
 class NewReleaseAdapter(
     private val newReleaseList: ArrayList<TrendingListResponse>?,
     private val listener: IStoreSettingsItemClicked,
-    private val activity: MainActivity?,
-    private val count: Int
+    private val activity: MainActivity?
 ) : RecyclerView.Adapter<NewReleaseAdapter.AppSettingsViewHolder>() {
 
     inner class AppSettingsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -39,7 +38,7 @@ class NewReleaseAdapter(
         return view
     }
 
-    override fun getItemCount(): Int = count
+    override fun getItemCount(): Int = newReleaseList?.size ?: 0
 
     override fun onBindViewHolder(holder: NewReleaseAdapter.AppSettingsViewHolder, position: Int) {
         val responseItem = newReleaseList?.get(position)
