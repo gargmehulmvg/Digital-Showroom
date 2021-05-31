@@ -53,15 +53,17 @@ class SetDeliveryChargeFragment : BaseFragment(), IMoreControlsServiceInterface 
     }
 
     private fun setupTextFromResponse() {
-        freeDeliveryRadioButton?.text = mMoreControlsStaticData?.heading_free_delivery
-        freeDeliveryTextView?.text = mMoreControlsStaticData?.free_delivery_description
-        fixedDeliveryRadioButton?.text = mMoreControlsStaticData?.heading_fixed_delivery_charge
-        fixedDeliveryChargeLayout?.hint = mMoreControlsStaticData?.hint_free_delivery_charge
-        freeDeliveryAboveLayout?.hint = mMoreControlsStaticData?.hint_free_delivery_above_optional
-        customDeliveryRadioButton?.text = mMoreControlsStaticData?.heading_custom_delivery_charge
-        customDeliveryAboveLayout?.hint = mMoreControlsStaticData?.hint_custom_delivery_charge
-        customDeliveryTextView?.text = mMoreControlsStaticData?.custom_delivery_charge_description
-        continueTextView?.text = mMoreControlsStaticData?.bottom_sheet_save_changes
+        mMoreControlsStaticData?.let {
+            freeDeliveryRadioButton?.text = it.heading_free_delivery
+            freeDeliveryTextView?.text = it.free_delivery_description
+            fixedDeliveryRadioButton?.text = it.heading_fixed_delivery_charge
+            fixedDeliveryChargeLayout?.hint = it.hint_free_delivery_charge
+            freeDeliveryAboveLayout?.hint = it.hint_free_delivery_above_optional
+            customDeliveryRadioButton?.text = it.heading_custom_delivery_charge
+            customDeliveryAboveLayout?.hint = it.hint_custom_delivery_charge
+            customDeliveryTextView?.text = it.custom_delivery_charge_description
+            continueTextView?.text = it.bottom_sheet_save_changes
+        }
         when (mAppStoreServicesResponse?.mDeliveryChargeType) {
             Constants.UNKNOWN_DELIVERY_CHARGE -> {
                 showFreeDeliveryContainer(false)
@@ -116,52 +118,68 @@ class SetDeliveryChargeFragment : BaseFragment(), IMoreControlsServiceInterface 
                 val mMoreControlRequest = MoreControlsRequest(0, 0.0, 0.0, 0.0)
                 if (freeDeliveryRadioButton.isChecked) {
                     selectionStr = "Free_delivery"
-                    mMoreControlRequest.deliveryChargeType = Constants.FREE_DELIVERY
-                    mMoreControlRequest.deliveryPrice = 0.0
-                    mMoreControlRequest.freeDeliveryAbove = 0.0
-                    mMoreControlRequest.minOrderValue = mAppStoreServicesResponse?.mMinOrderValue ?: 0.0
+                    mMoreControlRequest.apply {
+                        deliveryChargeType = Constants.FREE_DELIVERY
+                        deliveryPrice = 0.0
+                        freeDeliveryAbove = 0.0
+                        minOrderValue = mAppStoreServicesResponse?.mMinOrderValue ?: 0.0
+                    }
                 }
                 if (fixedDeliveryRadioButton.isChecked) {
                     selectionStr = "Fixed_delivery"
                     val fixedDeliveryChargeStr = fixedDeliveryChargeEditText.text.trim().toString()
                     val freeDeliveryAboveStr = freeDeliveryAboveEditText.text.trim().toString()
                     if (fixedDeliveryChargeStr.isEmpty() || fixedDeliveryChargeStr.toDouble() == 0.0) {
-                        fixedDeliveryChargeEditText.requestFocus()
-                        fixedDeliveryChargeEditText.error = mMoreControlsStaticData?.error_mandatory_field
+                        fixedDeliveryChargeEditText?.apply {
+                            requestFocus()
+                            error = mMoreControlsStaticData?.error_mandatory_field
+                        }
                         return
                     }
                     if (freeDeliveryAboveStr.isNotEmpty() && (freeDeliveryAboveStr.toDouble() < (mAppStoreServicesResponse?.mMinOrderValue ?: 0.0))) {
-                        freeDeliveryAboveEditText?.requestFocus()
-                        freeDeliveryAboveEditText?.error = mMoreControlsStaticData?.error_amount_must_greater_than_min_order_value
+                        freeDeliveryAboveEditText?.apply {
+                            requestFocus()
+                            error = mMoreControlsStaticData?.error_amount_must_greater_than_min_order_value
+                        }
                         return
                     }
                     if (freeDeliveryAboveStr.isNotEmpty() && (freeDeliveryAboveStr.toDouble() == 0.0)) {
-                        freeDeliveryAboveEditText?.requestFocus()
-                        freeDeliveryAboveEditText?.error = mMoreControlsStaticData?.error_mandatory_field
+                        freeDeliveryAboveEditText?.apply {
+                            requestFocus()
+                            error = mMoreControlsStaticData?.error_mandatory_field
+                        }
                         return
                     }
-                    mMoreControlRequest.deliveryChargeType = Constants.FIXED_DELIVERY_CHARGE
-                    mMoreControlRequest.deliveryPrice = fixedDeliveryChargeStr.toDouble()
-                    mMoreControlRequest.freeDeliveryAbove = if (freeDeliveryAboveStr.isEmpty()) 0.0 else freeDeliveryAboveStr.toDouble()
-                    mMoreControlRequest.minOrderValue = mAppStoreServicesResponse?.mMinOrderValue ?: 0.0
+                    mMoreControlRequest.apply {
+                        deliveryChargeType = Constants.FIXED_DELIVERY_CHARGE
+                        deliveryPrice = fixedDeliveryChargeStr.toDouble()
+                        freeDeliveryAbove = if (freeDeliveryAboveStr.isEmpty()) 0.0 else freeDeliveryAboveStr.toDouble()
+                        minOrderValue = mAppStoreServicesResponse?.mMinOrderValue ?: 0.0
+                    }
                 }
                 if (customDeliveryRadioButton.isChecked) {
                     selectionStr = "Custom_delivery"
                     val customDeliveryAboveStr = customDeliveryAboveEditText.text.trim().toString()
                     if (customDeliveryAboveStr.isNotEmpty() && (customDeliveryAboveStr.toDouble() == 0.0)) {
-                        customDeliveryAboveEditText?.requestFocus()
-                        customDeliveryAboveEditText?.error = mMoreControlsStaticData?.error_mandatory_field
+                        customDeliveryAboveEditText?.apply {
+                            requestFocus()
+                            error = mMoreControlsStaticData?.error_mandatory_field
+                        }
                         return
                     }
                     if (customDeliveryAboveStr.isNotEmpty() && (customDeliveryAboveStr.toDouble() < (mAppStoreServicesResponse?.mMinOrderValue ?: 0.0))) {
-                        customDeliveryAboveEditText?.requestFocus()
-                        customDeliveryAboveEditText?.error = mMoreControlsStaticData?.error_amount_must_greater_than_min_order_value
+                        customDeliveryAboveEditText?.apply {
+                            requestFocus()
+                            error = mMoreControlsStaticData?.error_amount_must_greater_than_min_order_value
+                        }
                         return
                     }
-                    mMoreControlRequest.deliveryChargeType = Constants.CUSTOM_DELIVERY_CHARGE
-                    mMoreControlRequest.deliveryPrice = mAppStoreServicesResponse?.mDeliveryPrice ?: 0.0
-                    mMoreControlRequest.freeDeliveryAbove = if (customDeliveryAboveStr.isEmpty()) 0.0 else customDeliveryAboveStr.toDouble()
-                    mMoreControlRequest.minOrderValue = mAppStoreServicesResponse?.mMinOrderValue ?: 0.0
+                    mMoreControlRequest.apply {
+                        deliveryChargeType = Constants.CUSTOM_DELIVERY_CHARGE
+                        deliveryPrice = mAppStoreServicesResponse?.mDeliveryPrice ?: 0.0
+                        freeDeliveryAbove = if (customDeliveryAboveStr.isEmpty()) 0.0 else customDeliveryAboveStr.toDouble()
+                        minOrderValue = mAppStoreServicesResponse?.mMinOrderValue ?: 0.0
+                    }
                 }
                 if (!isInternetConnectionAvailable(mActivity)) {
                     showNoInternetConnectionDialog()
@@ -243,8 +261,6 @@ class SetDeliveryChargeFragment : BaseFragment(), IMoreControlsServiceInterface 
         }
     }
 
-    override fun onMoreControlsServerException(e: Exception) {
-        exceptionHandlingForAPIResponse(e)
-    }
+    override fun onMoreControlsServerException(e: Exception) = exceptionHandlingForAPIResponse(e)
 
 }

@@ -79,9 +79,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
 
     override fun onToolbarSideIconClicked() = openWebViewFragment(this, getString(R.string.help), WebViewUrls.WEB_VIEW_HELP, Constants.SETTINGS)
 
-    override fun onMarketingErrorResponse(e: Exception) {
-        exceptionHandlingForAPIResponse(e)
-    }
+    override fun onMarketingErrorResponse(e: Exception) = exceptionHandlingForAPIResponse(e)
 
     override fun onMarketingResponse(response: CommonApiResponse) {
         stopProgress()
@@ -178,7 +176,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                     data = mapOf(
                         AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                        AFInAppEventParameterName.IS_MARKETING_PAGE to "true"
+                        AFInAppEventParameterName.IS_MARKETING_PAGE to AFInAppEventParameterName.TRUE
                     )
                 )
                 openWebViewFragment(this, "", WebViewUrls.WEB_VIEW_QR_DOWNLOAD, Constants.SETTINGS)
@@ -189,7 +187,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                     data = mapOf(
                         AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                        AFInAppEventParameterName.IS_MARKETING_PAGE to "true"
+                        AFInAppEventParameterName.IS_MARKETING_PAGE to AFInAppEventParameterName.TRUE
                     )
                 )
                 showProgressDialog(mActivity)
@@ -269,8 +267,10 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
     }
 
     override fun onNativeBackPressed() {
-        CoroutineScopeUtils().runTaskOnCoroutineMain {
-            mActivity?.onBackPressed()
+        mActivity?.let {
+            it.runOnUiThread {
+                it.onBackPressed()
+            }
         }
     }
 

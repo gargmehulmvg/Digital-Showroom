@@ -118,10 +118,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_STORE_SHARE,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                    data = mapOf(
-                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                        AFInAppEventParameterName.IS_SETTINGS to "true"
-                    )
+                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.IS_SETTINGS to AFInAppEventParameterName.TRUE)
                 )
                 if (mShareDataOverWhatsAppText.isNotEmpty()) shareOnWhatsApp(mShareDataOverWhatsAppText) else if (!isInternetConnectionAvailable(mActivity)) {
                     showNoInternetConnectionDialog()
@@ -194,15 +191,16 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                     val bottomSheetHeadingTextView: TextView = findViewById(R.id.bottomSheetHeadingTextView)
                     val verifyTextView: TextView = findViewById(R.id.verifyTextView)
                     val referAndEarnRecyclerView: RecyclerView = findViewById(R.id.referAndEarnRecyclerView)
-                    bottomSheetUpperImageView?.let {
+                    bottomSheetUpperImageView.let {view ->
                         try {
-                            Glide.with(this).load(response?.imageUrl).into(it)
+                            Glide.with(this).load(response?.imageUrl).into(view)
                         } catch (e: Exception) {
                             Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
                         }
                     }
                     bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
-                    bottomSheetHeadingTextView.text = "${response?.heading1}\n${response?.heading2}"
+                    val headingStr = "${response?.heading1}\n${response?.heading2}"
+                    bottomSheetHeadingTextView.text = headingStr
                     verifyTextView.text = response?.settingsTxt
                     verifyTextView.setOnClickListener{
                         mReferEarnOverWhatsAppResponse?.run {
@@ -231,10 +229,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                         AppEventsManager.pushAppEvents(
                             eventName = AFInAppEventType.EVENT_SETTINGS_REFERRAL,
                             isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                            data = mapOf(
-                                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                                AFInAppEventParameterName.LINK to p0
-                            )
+                            data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.LINK to p0)
                         )
                         shareDataOnWhatsAppWithImage("${referEarnOverWhatsAppResponse.mReferAndEarnData.whatsAppText} $p0", referEarnOverWhatsAppResponse.mReferAndEarnData.imageUrl)
                     } else {
@@ -270,13 +265,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         mProfileService.changeStoreAndDeliveryStatus(request)
     }
 
-    override fun onToolbarSideIconClicked() = launchFragment(
-        CommonWebViewFragment().newInstance(
-            getString(R.string.help),
-            BuildConfig.WEB_VIEW_URL + WebViewUrls.WEB_VIEW_HELP + "?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&" +
-                    "redirectFrom=settings&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"
-        ), true
-    )
+    override fun onToolbarSideIconClicked() = launchFragment(CommonWebViewFragment().newInstance(getString(R.string.help), "${BuildConfig.WEB_VIEW_URL}${WebViewUrls.WEB_VIEW_HELP}?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&redirectFrom=settings&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"), true)
 
     override fun onStop() {
         super.onStop()
@@ -438,16 +427,20 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         completeProfileTextView?.text = infoResponse.mAccountStaticText?.mCompleteProfile
         storeSwitch?.setOnCheckedChangeListener { _, isChecked ->
             Log.d(TAG, "storeSwitch.setOnCheckedChangeListener $isChecked")
-            storeStatusTextView?.text = "${infoResponse.mAccountStaticText?.mStoreText} : ${if (isChecked) infoResponse.mAccountStaticText?.mOpenText else infoResponse.mAccountStaticText?.mClosedText}"
+            val storeStatus = "${infoResponse.mAccountStaticText?.mStoreText} : ${if (isChecked) infoResponse.mAccountStaticText?.mOpenText else infoResponse.mAccountStaticText?.mClosedText}"
+            storeStatusTextView?.text = storeStatus
         }
         deliverySwitch?.setOnCheckedChangeListener { _, isChecked ->
             Log.d(TAG, "deliverySwitch.setOnCheckedChangeListener $isChecked")
-            deliveryStatusTextView?.text = "${infoResponse.mAccountStaticText?.mDeliveryText} : ${if (isChecked) infoResponse.mAccountStaticText?.mOnText else infoResponse.mAccountStaticText?.mOffText}"
+            val deliveryStatus = "${infoResponse.mAccountStaticText?.mDeliveryText} : ${if (isChecked) infoResponse.mAccountStaticText?.mOnText else infoResponse.mAccountStaticText?.mOffText}"
+            deliveryStatusTextView?.text = deliveryStatus
         }
         deliverySwitch?.isChecked = infoResponse.mStoreInfo.storeServices.mDeliveryFlag == 1
-        deliveryStatusTextView?.text = "${infoResponse.mAccountStaticText?.mDeliveryText} : ${if (deliverySwitch?.isChecked == true) infoResponse.mAccountStaticText?.mOnText else infoResponse.mAccountStaticText?.mOffText}"
+        val deliveryStatus = "${infoResponse.mAccountStaticText?.mDeliveryText} : ${if (deliverySwitch?.isChecked == true) infoResponse.mAccountStaticText?.mOnText else infoResponse.mAccountStaticText?.mOffText}"
+        deliveryStatusTextView?.text = deliveryStatus
         storeSwitch?.isChecked = infoResponse.mStoreInfo.storeServices.mStoreFlag == 1
-        storeStatusTextView?.text = "${infoResponse.mAccountStaticText?.mStoreText} : ${if (storeSwitch?.isChecked == true) infoResponse.mAccountStaticText?.mOpenText else infoResponse.mAccountStaticText?.mClosedText}"
+        val storeStatus = "${infoResponse.mAccountStaticText?.mStoreText} : ${if (storeSwitch?.isChecked == true) infoResponse.mAccountStaticText?.mOpenText else infoResponse.mAccountStaticText?.mClosedText}"
+        storeStatusTextView?.text = storeStatus
         hiddenTextView?.text = infoResponse.mAccountStaticText?.mTextAddPhoto
         moreControlsTextView?.text = infoResponse.mAccountStaticText?.page_heading_more_controls
         whatsAppShareTextView?.text = infoResponse.mAccountStaticText?.mShareText
@@ -476,16 +469,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             Constants.PAGE_HELP -> onToolbarSideIconClicked()
             Constants.PAGE_FEEDBACK -> openPlayStore()
             Constants.PAGE_APP_SETTINGS -> launchFragment(AppSettingsFragment().newInstance(mProfileResponse?.mSubPages, response.mText, mAppSettingsResponseStaticData), true)
-            Constants.PAGE_REWARDS -> launchFragment(
-                CommonWebViewFragment().newInstance(
-                    getString(R.string.my_rewards),
-                    BuildConfig.WEB_VIEW_URL + WebViewUrls.WEB_VIEW_REWARDS + "?storeid=${getStringDataFromSharedPref(
-                        Constants.STORE_ID
-                    )}&" + "redirectFrom=settings&token=${getStringDataFromSharedPref(
-                        Constants.USER_AUTH_TOKEN
-                    )}"
-                ), true
-            )
+            Constants.PAGE_REWARDS -> launchFragment(CommonWebViewFragment().newInstance(getString(R.string.my_rewards), "${BuildConfig.WEB_VIEW_URL}${WebViewUrls.WEB_VIEW_REWARDS}?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&redirectFrom=settings&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"), true)
         }
     }
 
@@ -501,9 +485,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         fetchUserProfile()
     }
 
-    override fun onStoreSettingItemClicked(storeResponse: StoreOptionsResponse) {
-        checkStoreOptionClick(storeResponse)
-    }
+    override fun onStoreSettingItemClicked(storeResponse: StoreOptionsResponse) = checkStoreOptionClick(storeResponse)
 
     override fun onNewReleaseItemClicked(responseItem: TrendingListResponse?) {
         when (responseItem?.mAction) {
@@ -516,10 +498,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                 AppEventsManager.pushAppEvents(
                     eventName = eventName,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                    data = mapOf(
-                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                        AFInAppEventParameterName.CHANNEL to AFInAppEventParameterName.IS_SETTINGS_PAGE
-                    )
+                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.CHANNEL to AFInAppEventParameterName.IS_SETTINGS_PAGE)
                 )
                 openWebViewFragment(this, "", BuildConfig.WEB_VIEW_URL + responseItem.mPage)
             }
@@ -532,10 +511,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                 AppEventsManager.pushAppEvents(
                     eventName = eventName,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                    data = mapOf(
-                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                        AFInAppEventParameterName.CHANNEL to "Settings Page"
-                    )
+                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.CHANNEL to "Settings Page")
                 )
                 when (responseItem.mType) {
                     Constants.NEW_RELEASE_TYPE_CUSTOM_DOMAIN -> openUrlInBrowser(responseItem.mPage + PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
@@ -558,8 +534,8 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == Constants.CROP_IMAGE_REQUEST_CODE) {
-            val file = data?.getSerializableExtra(Constants.MODE_CROP) as File
             CoroutineScopeUtils().runTaskOnCoroutineMain {
+                val file = data?.getSerializableExtra(Constants.MODE_CROP) as File
                 onImageSelectionResultFile(file, "")
             }
         } else super.onActivityResult(requestCode, resultCode, data)

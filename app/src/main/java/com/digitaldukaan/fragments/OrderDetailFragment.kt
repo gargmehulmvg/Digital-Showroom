@@ -481,10 +481,10 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                     deliveryChargeValue?.visibility = View.GONE
                     deliveryChargeValueEditText?.visibility = View.GONE
                 }
-                addDeliveryChargesLabel.text = getString(R.string.add_discount_and_other_charges)
+                addDeliveryChargesLabel?.text = getString(R.string.add_discount_and_other_charges)
             }
             Constants.UNKNOWN_DELIVERY_CHARGE -> {
-                addDeliveryChargesLabel.text = getString(R.string.add_discount_and_other_charges)
+                addDeliveryChargesLabel?.text = getString(R.string.add_discount_and_other_charges)
                 if (Constants.DS_SEND_BILL == displayStatus || Constants.DS_NEW == displayStatus) {
                     deliveryChargeLabel?.visibility = View.VISIBLE
                     deliveryChargeValue?.visibility = View.VISIBLE

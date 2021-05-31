@@ -57,9 +57,11 @@ interface AFInAppEventParameterName {
         const val REASON = "reason"
         const val PREPAID = "Prepaid"
         const val BOTH = "Both"
+        const val TRUE = "True"
         const val POSTPAID = "Pay_on_delivery"
         const val VARIANTS_ADDED = "Variants_Added"
         const val SEARCH_BY = "Search by"
+        const val SELECT = "SELECT"
         const val REFERENCE_STORE_ID = "reference_store_id"
         //NOTIFICATION_CHANNEL
         const val NOTIFICATION_GROUP_ID = "DIGITAL_DUKAAN_G_ID"
