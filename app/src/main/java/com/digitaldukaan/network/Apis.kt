@@ -181,7 +181,7 @@ interface Apis {
     @GET("api/dotk/vm1/orders/getDeliveryTime")
     suspend fun getDeliveryTime(): Response<CommonApiResponse>
 
-    @POST("api/dotk/vm1/orders/updateOrder")
+    @POST("api/dotk/vm1/orders/updateOrderV2")
     suspend fun updateOrder(@Header("auth_token") authToken: String, @Body statusRequest: UpdateOrderRequest): Response<CommonApiResponse>
 
     @POST("api/dotk/vm1/orders/updatePrepaidOrder/{orderId}")

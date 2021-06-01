@@ -62,7 +62,8 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
     private var mBillSentCameraClicked = false
     private var mIsNewOrder = false
     private var deliveryTimeEditText: EditText? = null
-    private var mTotalDisplayAmount = 0.0
+    private var mTotalPayAmount = 0.0
+    private var mTotalActualAmount = 0.0
     private var mDeliveryChargeAmount = 0.0
     private var mOtherChargeAmount = 0.0
     private var mDiscountAmount = 0.0
@@ -175,87 +176,38 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
 
     private fun initiateSendBillServerCall() {
         orderDetailMainResponse?.orders?.run {
-            val finalAmount = if (amountEditText.text?.isNotEmpty() == true) amountEditText.text.toString().toDouble() else amount
-            if (finalAmount ?: 0.0 <= 0.0) {
+            val payAmount = if (amountEditText.text?.isNotEmpty() == true) amountEditText.text.toString().toDouble() else amount
+            if (payAmount ?: 0.0 <= 0.0) {
                 amountEditText.apply {
                     error = mActivity?.getString(R.string.bill_value_must_be_greater_than_zero)
                     requestFocus()
                 }
                 return
             }
-            if (!mIsPickUpOrder && orderDetailMainResponse?.storeServices?.mDeliveryChargeType == Constants.FIXED_DELIVERY_CHARGE && orderDetailMainResponse?.storeServices?.mDeliveryPrice != 0.0 && orderDetailMainResponse?.storeServices?.mMinOrderValue?: 0.0 >= finalAmount?:0.0) {
-                val orderDetailItemResponse = OrderDetailItemResponse(
-                    0,
-                    0,
-                    "Delivery Charges",
-                    "1",
-                    orderDetailMainResponse?.storeServices?.mDeliveryPrice,
-                    1,
-                    Constants.ITEM_TYPE_DELIVERY_CHARGE,
-                    Constants.CREATOR_TYPE_MERCHANT,
-                    0,
-                    "",
-                    false
-                )
-                orderDetailsItemsList?.add(orderDetailItemResponse)
+            var deliveryChargesAmount = 0.0
+            if (!mIsPickUpOrder && orderDetailMainResponse?.storeServices?.mDeliveryChargeType == Constants.FIXED_DELIVERY_CHARGE && orderDetailMainResponse?.storeServices?.mDeliveryPrice != 0.0 && orderDetailMainResponse?.storeServices?.mMinOrderValue ?: 0.0 >= payAmount ?: 0.0) {
+                deliveryChargesAmount = orderDetailMainResponse?.storeServices?.mDeliveryPrice ?: 0.0
             }
-            if (deliveryChargeValueEditText.text?.isNotEmpty() == true) {
-                val orderDetailItemResponse = OrderDetailItemResponse(
-                    0,
-                    0,
-                    "Delivery Charges",
-                    "1",
-                    if (deliveryChargeValueEditText.text?.isNotEmpty() == true) deliveryChargeValueEditText.text.toString().toDouble() else 0.0,
-                    1,
-                    Constants.ITEM_TYPE_DELIVERY_CHARGE,
-                    Constants.CREATOR_TYPE_MERCHANT,
-                    0,
-                    "",
-                    false
-                )
-                orderDetailsItemsList?.add(orderDetailItemResponse)
-            }
-            if (otherChargesValueEditText.text?.isNotEmpty() == true) {
-                val orderDetailItemResponse = OrderDetailItemResponse(
-                    0,
-                    0,
-                    if (otherChargesEditText.text?.isNotEmpty() == true) otherChargesEditText.text.toString() else "Charges",
-                    "1",
-                    if (otherChargesValueEditText.text?.isNotEmpty() == true) otherChargesValueEditText.text.toString().toDouble() else 0.0,
-                    1,
-                    Constants.ITEM_TYPE_CHARGE,
-                    Constants.CREATOR_TYPE_MERCHANT,
-                    0,
-                    "",
-                    false
-                )
-                orderDetailsItemsList?.add(orderDetailItemResponse)
-            }
-            if (discountsValueEditText.text?.isNotEmpty() == true) {
-                val orderDetailItemResponse = OrderDetailItemResponse(
-                    0,
-                    0,
-                    if (discountsEditText.text?.isNotEmpty() == true) discountsEditText.text.toString() else "Discount",
-                    "1",
-                    if (discountsValueEditText.text?.isNotEmpty() == true) discountsValueEditText.text.toString().toDouble() else 0.0,
-                    1,
-                    Constants.ITEM_TYPE_DISCOUNT,
-                    Constants.CREATOR_TYPE_MERCHANT,
-                    0,
-                    "",
-                    false
-                )
-                orderDetailsItemsList?.add(orderDetailItemResponse)
+            val orderDetailList = orderDetailsItemsList?.toMutableList()
+            if (!isEmpty(orderDetailList)) {
+                orderDetailList?.forEachIndexed { _, itemResponse ->
+                    if (Constants.ITEM_TYPE_DELIVERY_CHARGE == itemResponse.item_type || Constants.ITEM_TYPE_CHARGE == itemResponse.item_type) orderDetailsItemsList?.remove(itemResponse)
+                }
             }
             val request = UpdateOrderRequest(
                 orderId,
-                finalAmount,
+                getActualAmountOfOrder(),
                 false,
                 deliveryInfo?.deliveryTo,
                 deliveryInfo?.deliveryFrom,
                 mDeliveryTimeStr,
                 orderDetailsItemsList,
-                ""
+                "",
+                if (otherChargesEditText.text?.isNotEmpty() == true) otherChargesEditText.text.toString() else "" ,
+                if (otherChargesValueEditText.text?.isNotEmpty() == true) otherChargesValueEditText.text.toString().toDouble() else 0.0,
+                if (discountsValueEditText.text?.isNotEmpty() == true) discountsValueEditText.text.toString().toDouble() else 0.0,
+                payAmount,
+                deliveryChargesAmount
             )
             Log.d(OrderDetailFragment::class.java.simpleName, "initiateSendBillServerCall: $request")
             showProgressDialog(mActivity)
@@ -330,9 +282,16 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                 layoutManager = LinearLayoutManager(mActivity)
                 val list = orderDetailResponse?.orderDetailsItemsList
                 val deliveryStatus = orderDetailResponse?.displayStatus
+                if (orderDetailResponse?.deliveryCharge != 0.0) {
+                    list?.add(OrderDetailItemResponse(0,0,getString(R.string.delivery_charge),1, "1", orderDetailResponse.deliveryCharge, orderDetailResponse.deliveryCharge, orderDetailResponse.deliveryCharge, 1, Constants.ITEM_TYPE_DELIVERY_CHARGE, null,0, null, false))
+                }
+                if (orderDetailResponse?.extraCharges != 0.0) {
+                    list?.add(OrderDetailItemResponse(0,0, orderDetailResponse.extraChargesName,1, "1", orderDetailResponse.extraCharges, orderDetailResponse.extraCharges, orderDetailResponse.extraCharges, 1, Constants.ITEM_TYPE_CHARGE, null,0, null, false))
+                }
                 list?.forEachIndexed { _, itemResponse ->
                     itemResponse.isItemEditable = (((deliveryStatus == Constants.DS_NEW || deliveryStatus == Constants.DS_SEND_BILL)) && itemResponse.item_price == 0.0)
-                    mTotalDisplayAmount += itemResponse.item_price ?: 0.0
+                    mTotalPayAmount += itemResponse.amount ?: 0.0
+                    mTotalActualAmount += ((itemResponse.actualAmount ?: 0.0) * itemResponse.quantity)
                 }
                 var orderDetailAdapter: OrderDetailsAdapter? = null
                 orderDetailAdapter = OrderDetailsAdapter(list, displayStatus, mOrderDetailStaticData, object : IOrderDetailListener {
@@ -340,7 +299,8 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                     override fun onOrderDetailItemClickListener(position: Int) {
                         val item = list?.get(position)
                         item?.item_status = if (list?.get(position)?.item_status == 2) 1 else 2
-                        if (item?.item_status == 2) mTotalDisplayAmount -= item.item_price ?: 0.0 else mTotalDisplayAmount += item?.item_price ?: 0.0
+                        if (item?.item_status == 2) mTotalPayAmount -= item.amount ?: 0.0 else mTotalPayAmount += item?.amount ?: 0.0
+                        if (item?.item_status == 2) mTotalActualAmount -= ((item.actualAmount ?: 0.0) * item.quantity) else mTotalActualAmount += ((item?.actualAmount ?: 0.0) * item?.quantity!!)
                         orderDetailAdapter?.setOrderDetailList(list)
                         setAmountToEditText()
                         var isValidOrderAvailable = false
@@ -349,16 +309,19 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                     }
 
                     override fun onOrderDetailListUpdateListener() {
-                        mTotalDisplayAmount = 0.0
+                        Log.d(TAG, "onOrderDetailListUpdateListener: called")
+                        mTotalPayAmount = 0.0
+                        mTotalActualAmount = 0.0
                         list?.forEachIndexed { _, itemResponse ->
-                            mTotalDisplayAmount += itemResponse.item_price ?: 0.0
+                            mTotalPayAmount += itemResponse.amount ?: 0.0
+                            mTotalActualAmount += ((itemResponse.actualAmount ?: 0.0) * itemResponse.quantity)
                         }
                         setAmountToEditText()
                     }
                 })
                 adapter = orderDetailAdapter
             }
-            amountEditText?.setText("$mTotalDisplayAmount")
+            amountEditText?.setText("$mTotalPayAmount")
             setStaticDataToUI(orderDetailResponse)
             appSubTitleTextView?.text = getStringDateTimeFromOrderDate(getCompleteDateFromOrderString(orderDetailMainResponse?.orders?.createdAt))
             setupDeliveryChargeUI(displayStatus, orderDetailMainResponse?.storeServices)
@@ -436,65 +399,12 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
         }
     }
 
-    private fun setupDeliveryChargeUI(
-        displayStatus: String?,
-        storeServices: StoreServicesResponse?
-    ) {
+    private fun setupDeliveryChargeUI(displayStatus: String?, storeServices: StoreServicesResponse?) {
         when(storeServices?.mDeliveryChargeType) {
-            Constants.FREE_DELIVERY -> {
-                setFreeDelivery()
-            }
-            Constants.FIXED_DELIVERY_CHARGE -> {
-                if (Constants.DS_SEND_BILL == displayStatus || Constants.DS_NEW == displayStatus) {
-                    val amount = getAmountFromEditText()
-                    if (storeServices.mFreeDeliveryAbove != 0.0 && storeServices.mFreeDeliveryAbove <= amount) {
-                        mDeliveryChargeAmount = 0.0
-                        setFreeDelivery()
-                        setAmountToEditText()
-                    } else {
-                        mDeliveryChargeAmount = storeServices.mDeliveryPrice ?: 0.0
-                        deliveryChargeLabel?.visibility = View.VISIBLE
-                        deliveryChargeValue?.visibility = View.VISIBLE
-                        addDeliveryChargesLabel?.text = getString(R.string.add_discount_and_other_charges)
-                        deliveryChargeValue?.text = "${storeServices.mDeliveryPrice}"
-                        setAmountToEditText()
-                    }
-                } else {
-                    deliveryChargeLabel?.visibility = View.GONE
-                    deliveryChargeValue?.visibility = View.GONE
-                }
-            }
-            Constants.CUSTOM_DELIVERY_CHARGE -> {
-                if (Constants.DS_SEND_BILL == displayStatus || Constants.DS_NEW == displayStatus) {
-                    val amount = getAmountFromEditText()
-                    if (storeServices.mFreeDeliveryAbove != 0.0 && storeServices.mFreeDeliveryAbove <= amount) {
-                        mDeliveryChargeAmount = 0.0
-                        setFreeDelivery()
-                        setAmountToEditText()
-                    } else {
-                        deliveryChargeLabel?.visibility = View.VISIBLE
-                        deliveryChargeValue?.visibility = View.VISIBLE
-                        deliveryChargeValueEditText?.visibility = View.VISIBLE
-                    }
-                } else {
-                    deliveryChargeLabel?.visibility = View.GONE
-                    deliveryChargeValue?.visibility = View.GONE
-                    deliveryChargeValueEditText?.visibility = View.GONE
-                }
-                addDeliveryChargesLabel?.text = getString(R.string.add_discount_and_other_charges)
-            }
-            Constants.UNKNOWN_DELIVERY_CHARGE -> {
-                addDeliveryChargesLabel?.text = getString(R.string.add_discount_and_other_charges)
-                if (Constants.DS_SEND_BILL == displayStatus || Constants.DS_NEW == displayStatus) {
-                    deliveryChargeLabel?.visibility = View.VISIBLE
-                    deliveryChargeValue?.visibility = View.VISIBLE
-                    deliveryChargeValueEditText?.visibility = View.VISIBLE
-                } else {
-                    deliveryChargeLabel?.visibility = View.GONE
-                    deliveryChargeValue?.visibility = View.GONE
-                    deliveryChargeValueEditText?.visibility = View.GONE
-                }
-            }
+            Constants.FREE_DELIVERY -> setFreeDelivery()
+            Constants.FIXED_DELIVERY_CHARGE -> setFixedDeliveryChargeUI(displayStatus, storeServices)
+            Constants.CUSTOM_DELIVERY_CHARGE -> setCustomDeliveryChargeUI(displayStatus, storeServices)
+            Constants.UNKNOWN_DELIVERY_CHARGE -> setUnknownDeliveryChargeUI(displayStatus)
         }
         deliveryChargeValueEditText?.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(editable: Editable?) {
@@ -546,6 +456,60 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
         })
     }
 
+    private fun setUnknownDeliveryChargeUI(displayStatus: String?) {
+        addDeliveryChargesLabel?.text = getString(R.string.add_discount_and_other_charges)
+        if (Constants.DS_SEND_BILL == displayStatus || Constants.DS_NEW == displayStatus) {
+            deliveryChargeLabel?.visibility = View.VISIBLE
+            deliveryChargeValue?.visibility = View.VISIBLE
+            deliveryChargeValueEditText?.visibility = View.VISIBLE
+        } else {
+            deliveryChargeLabel?.visibility = View.GONE
+            deliveryChargeValue?.visibility = View.GONE
+            deliveryChargeValueEditText?.visibility = View.GONE
+        }
+    }
+
+    private fun setCustomDeliveryChargeUI(displayStatus: String?, storeServices: StoreServicesResponse) {
+        if (Constants.DS_SEND_BILL == displayStatus || Constants.DS_NEW == displayStatus) {
+            val amount = getAmountFromEditText()
+            if (storeServices.mFreeDeliveryAbove != 0.0 && storeServices.mFreeDeliveryAbove <= amount) {
+                mDeliveryChargeAmount = 0.0
+                setFreeDelivery()
+                setAmountToEditText()
+            } else {
+                deliveryChargeLabel?.visibility = View.VISIBLE
+                deliveryChargeValue?.visibility = View.VISIBLE
+                deliveryChargeValueEditText?.visibility = View.VISIBLE
+            }
+        } else {
+            deliveryChargeLabel?.visibility = View.GONE
+            deliveryChargeValue?.visibility = View.GONE
+            deliveryChargeValueEditText?.visibility = View.GONE
+        }
+        addDeliveryChargesLabel?.text = getString(R.string.add_discount_and_other_charges)
+    }
+
+    private fun setFixedDeliveryChargeUI(displayStatus: String?, storeServices: StoreServicesResponse) {
+        if (Constants.DS_SEND_BILL == displayStatus || Constants.DS_NEW == displayStatus) {
+            val amount = getAmountFromEditText()
+            if (storeServices.mFreeDeliveryAbove != 0.0 && storeServices.mFreeDeliveryAbove <= amount) {
+                mDeliveryChargeAmount = 0.0
+                setFreeDelivery()
+                setAmountToEditText()
+            } else {
+                mDeliveryChargeAmount = storeServices.mDeliveryPrice ?: 0.0
+                deliveryChargeLabel?.visibility = View.VISIBLE
+                deliveryChargeValue?.visibility = View.VISIBLE
+                addDeliveryChargesLabel?.text = getString(R.string.add_discount_and_other_charges)
+                deliveryChargeValue?.text = "${storeServices.mDeliveryPrice}"
+                setAmountToEditText()
+            }
+        } else {
+            deliveryChargeLabel?.visibility = View.GONE
+            deliveryChargeValue?.visibility = View.GONE
+        }
+    }
+
     private fun setFreeDelivery() {
         try {
             deliveryChargeLabel?.visibility = View.VISIBLE
@@ -565,12 +529,16 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
     }
 
     private fun setAmountToEditText() {
-        val amount = mTotalDisplayAmount + mDeliveryChargeAmount + mOtherChargeAmount - mDiscountAmount
+        val amount = mTotalPayAmount + mDeliveryChargeAmount + mOtherChargeAmount - mDiscountAmount
         amountEditText?.setText("$amount")
     }
 
-    private fun getAmountFromEditText() : Double{
-        return mTotalDisplayAmount + mDeliveryChargeAmount + mOtherChargeAmount - mDiscountAmount
+    private fun getAmountFromEditText() : Double {
+        return mTotalPayAmount + mDeliveryChargeAmount + mOtherChargeAmount - mDiscountAmount
+    }
+
+    private fun getActualAmountOfOrder() : Double {
+        return mTotalActualAmount + mDeliveryChargeAmount + mOtherChargeAmount
     }
 
     private fun setStaticDataToUI(orderDetailResponse: OrderDetailsResponse?) {
@@ -579,7 +547,6 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
             sendBillTextView?.text = text_send_bill
             amountEditText?.hint = text_rupees_symbol
             otherChargesEditText?.hint = hint_other_charges
-            discountsEditText?.hint = hint_discount
             discountsValueEditText?.hint = text_rupees_symbol
             otherChargesValueEditText?.hint = text_rupees_symbol
             customerCanPayUsingTextView?.text = text_customer_can_pay_via
@@ -689,41 +656,6 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
     }
 
     override fun onImageSelectionResultFile(file: File?, mode: String) {
-        orderDetailMainResponse?.orders?.run {
-            if (otherChargesValueEditText.text?.isNotEmpty() == true) {
-                val orderDetailItemResponse = OrderDetailItemResponse(
-                    0,
-                    0,
-                    if (otherChargesEditText.text?.isNotEmpty() == true) otherChargesEditText.text.toString() else "charge",
-                    "1",
-                    if (otherChargesValueEditText.text?.isNotEmpty() == true) otherChargesValueEditText.text.toString().toDouble() else 0.0,
-                    1,
-                    "charge",
-                    Constants.CREATOR_TYPE_MERCHANT,
-                    0,
-                    "",
-                    false
-                )
-                orderDetailsItemsList?.add(orderDetailItemResponse)
-            }
-            if (discountsValueEditText.text?.isNotEmpty() == true) {
-                val orderDetailItemResponse = OrderDetailItemResponse(
-                    0,
-                    0,
-                    if (discountsEditText.text?.isNotEmpty() == true) discountsEditText.text.toString() else "discount",
-                    "1",
-                    if (discountsValueEditText.text?.isNotEmpty() == true) discountsValueEditText.text.toString().toDouble() else 0.0,
-                    1,
-                    "charge",
-                    Constants.CREATOR_TYPE_MERCHANT,
-                    0,
-                    "",
-                    false
-                )
-                orderDetailsItemsList?.add(orderDetailItemResponse)
-            }
-            amount = (if (true == amountEditText.text?.isNotEmpty()) amountEditText.text.toString().toDouble() else amount)
-        }
         launchFragment(SendBillPhotoFragment.newInstance(orderDetailMainResponse, file, mDeliveryTimeStr), true)
     }
 
@@ -752,19 +684,12 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                         deliveryTimeRecyclerView.apply {
                             layoutManager = StaggeredGridLayoutManager(3, LinearLayoutManager.VERTICAL)
                             mDeliveryTimeAdapter = DeliveryTimeAdapter(deliveryTimeResponse.deliveryTimeList, object : IChipItemClickListener {
+
                                 override fun onChipItemClickListener(position: Int) {
-                                    deliveryTimeResponse.deliveryTimeList?.forEachIndexed { _, itemResponse -> itemResponse.isSelected = false }
-                                    deliveryTimeResponse.deliveryTimeList?.get(position)?.isSelected = true
-                                    deliveryTimeEditText?.visibility = if (CUSTOM == deliveryTimeResponse.deliveryTimeList?.get(position)?.key) View.VISIBLE else View.INVISIBLE
-                                    if (deliveryTimeEditText?.visibility == View.VISIBLE) {
-                                        deliveryTimeEditText?.requestFocus()
-                                        deliveryTimeEditText?.showKeyboard()
-                                    }
-                                    mDeliveryTimeAdapter?.setDeliveryTimeList(deliveryTimeResponse.deliveryTimeList)
-                                    mDeliveryTimeStr = deliveryTimeResponse.deliveryTimeList?.get(position)?.value
-                                    bottomSheetSendBillText.isEnabled = true
+                                    onDeliveryTimeItemClickListener(deliveryTimeResponse, position, bottomSheetSendBillText)
                                 }
                             })
+
                             adapter = mDeliveryTimeAdapter
                         }
                     }
@@ -800,6 +725,21 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                 }
             }.show()
         }
+    }
+
+    private fun onDeliveryTimeItemClickListener(deliveryTimeResponse: DeliveryTimeResponse, position: Int, bottomSheetSendBillText: TextView) {
+        deliveryTimeResponse.deliveryTimeList?.forEachIndexed { _, itemResponse ->
+            itemResponse.isSelected = false
+        }
+        deliveryTimeResponse.deliveryTimeList?.get(position)?.isSelected = true
+        deliveryTimeEditText?.visibility = if (CUSTOM == deliveryTimeResponse.deliveryTimeList?.get(position)?.key) View.VISIBLE else View.INVISIBLE
+        if (deliveryTimeEditText?.visibility == View.VISIBLE) {
+            deliveryTimeEditText?.requestFocus()
+            deliveryTimeEditText?.showKeyboard()
+        }
+        mDeliveryTimeAdapter?.setDeliveryTimeList(deliveryTimeResponse.deliveryTimeList)
+        mDeliveryTimeStr = deliveryTimeResponse.deliveryTimeList?.get(position)?.value
+        bottomSheetSendBillText.isEnabled = true
     }
 
     private fun showOrderDetailBottomSheet(txnItemList: ArrayList<OrderDetailTransactionItemResponse?>) {

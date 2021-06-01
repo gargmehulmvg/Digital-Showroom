@@ -99,20 +99,20 @@ class Constants {
         const val MODE_PREPAID              =   "mode_prepaid"
         const val MODE_POSTPAID             =   "mode_postpaid"
         //ORDER_STATUS
-        const val StatusCustomerUpdated =   1
-        const val StatusMerchantUpdated =   2
-        const val StatusRejected =          3   //(Status_message : Merchant/Customer Rejected)
-        const val StatusActive =            4   //(Accepted Tab in merchant)
-        const val StatusReady =             5   //(For delivery / pickup)
-        const val StatusOutForDelivery =    6
-        const val StatusCompleted =         7
-        const val StatusCancelled =         8
-        const val StatusSeenByMerchant =    9
+        const val StatusCustomerUpdated     =   1
+        const val StatusMerchantUpdated     =   2
+        const val StatusRejected            =   3   //(Status_message : Merchant/Customer Rejected)
+        const val StatusActive              =   4   //(Accepted Tab in merchant)
+        const val StatusReady               =   5   //(For delivery / pickup)
+        const val StatusOutForDelivery      =   6
+        const val StatusCompleted           =   7
+        const val StatusCancelled           =   8
+        const val StatusSeenByMerchant      =   9
         //BASE64 APIs END POINT
-        const val BASE64_STORE_LOGO =       "store_logo"
-        const val BASE64_STORE_ITEMS =      "store_items"
-        const val BASE64_ORDER_BILL =       "order_bill"
-        const val BASE64_THEMES =           "themes"
+        const val BASE64_STORE_LOGO     =   "store_logo"
+        const val BASE64_STORE_ITEMS    =   "store_items"
+        const val BASE64_ORDER_BILL     =   "order_bill"
+        const val BASE64_THEMES         =   "themes"
         //CREATOR_TYPE
         const val CREATOR_TYPE_MERCHANT =   1
         const val CREATOR_TYPE_CUSTOMER =   2
@@ -125,27 +125,27 @@ class Constants {
         const val NEW_RELEASE_TYPE_TRENDING =       "trending"
         const val NEW_RELEASE_TYPE_EXTERNAL =       "external"
         //EDIT PHOTO MODES
-        const val EDIT_PHOTO_MODE_MOBILE =  "mobile"
-        const val EDIT_PHOTO_MODE_DESKTOP = "desktop"
+        const val EDIT_PHOTO_MODE_MOBILE    =   "mobile"
+        const val EDIT_PHOTO_MODE_DESKTOP   =   "desktop"
         //MODES
-        const val MODE_CROP =           "crop"
-        const val MODE_ADD_PRODUCT =    "add_product"
-        const val MODE_PRODUCT_LIST =   "product_list"
+        const val MODE_CROP             =   "crop"
+        const val MODE_ADD_PRODUCT      =   "add_product"
+        const val MODE_PRODUCT_LIST     =   "product_list"
         //MODE ORDER STATUS
-        const val ORDER_STATUS_SUCCESS =            "Success"
-        const val ORDER_STATUS_REJECTED =           "Rejected"
-        const val ORDER_STATUS_IN_PROGRESS =        "In-Progress"
-        const val ORDER_STATUS_REFUND_SUCCESS  =    "refund-success"
-        const val ORDER_STATUS_PAYOUT_SUCCESS  =    "payout-success"
-        const val ORDER_STATUS_LOCKED =             "Locked"
+        const val ORDER_STATUS_SUCCESS          =   "Success"
+        const val ORDER_STATUS_REJECTED         =   "Rejected"
+        const val ORDER_STATUS_IN_PROGRESS      =   "In-Progress"
+        const val ORDER_STATUS_REFUND_SUCCESS   =   "refund-success"
+        const val ORDER_STATUS_PAYOUT_SUCCESS   =   "payout-success"
+        const val ORDER_STATUS_LOCKED           =   "Locked"
         //MODE DELIVERY CHARGE
-        const val UNKNOWN_DELIVERY_CHARGE = 0
-        const val FREE_DELIVERY =           1
-        const val FIXED_DELIVERY_CHARGE =   2
-        const val CUSTOM_DELIVERY_CHARGE =  3
+        const val UNKNOWN_DELIVERY_CHARGE   =   0
+        const val FREE_DELIVERY             =   1
+        const val FIXED_DELIVERY_CHARGE     =   2
+        const val CUSTOM_DELIVERY_CHARGE    =   3
         //ITEM_TYPE_CHARGE
         const val ITEM_TYPE_DELIVERY_CHARGE =   "delivery_charge"
-        const val ITEM_TYPE_CHARGE =            "charge"
-        const val ITEM_TYPE_DISCOUNT =          "discount"
+        const val ITEM_TYPE_CHARGE          =   "charge"
+        const val ITEM_TYPE_DISCOUNT        =   "discount"
     }
 }

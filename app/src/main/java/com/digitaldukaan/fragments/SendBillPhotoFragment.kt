@@ -111,7 +111,12 @@ class SendBillPhotoFragment: BaseFragment(), ISendBillPhotoServiceInterface {
                         deliveryInfo?.deliveryFrom,
                         mDeliveryTimeStr,
                         orderDetailsItemsList,
-                        cdnLink
+                        cdnLink,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null
                     )
                     mService.updateOrder(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
                 }
