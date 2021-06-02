@@ -604,7 +604,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
             mHomeFragmentService?.updateOrderStatus(request)
             isNewOrder = true
         }
-        launchFragment(OrderDetailFragment.newInstance(item?.orderId.toString(), isNewOrder), true)
+        launchFragment(OrderDetailFragment.newInstance(item?.orderHash.toString(), isNewOrder), true)
     }
 
     override fun onDontShowDialogPositiveButtonClicked(item: OrderItemResponse?) {

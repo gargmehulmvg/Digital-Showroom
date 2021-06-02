@@ -77,6 +77,10 @@ class App: Application() {
                 WebView.setDataDirectorySuffix(processName)
             }
         }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            val process = getProcessName()
+            if (packageName != process) WebView.setDataDirectorySuffix(process)
+        }
     }
 
     private fun getProcessName(context: Context?): String? {

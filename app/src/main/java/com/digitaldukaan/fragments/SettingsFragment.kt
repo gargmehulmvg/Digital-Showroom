@@ -177,43 +177,44 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
 
     private fun showReferAndEarnBottomSheet(response: ReferAndEarnItemResponse?) {
         mActivity?.let {
-            val bottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
-            val view = LayoutInflater.from(it).inflate(
-                R.layout.bottom_sheet_refer_and_earn,
-                it.findViewById(R.id.bottomSheetContainer)
-            )
-            bottomSheetDialog.apply {
-                setContentView(view)
-                setBottomSheetCommonProperty()
-                view.run {
-                    val bottomSheetClose: View = findViewById(R.id.bottomSheetClose)
-                    val bottomSheetUpperImageView: ImageView = findViewById(R.id.bottomSheetUpperImageView)
-                    val bottomSheetHeadingTextView: TextView = findViewById(R.id.bottomSheetHeadingTextView)
-                    val verifyTextView: TextView = findViewById(R.id.verifyTextView)
-                    val referAndEarnRecyclerView: RecyclerView = findViewById(R.id.referAndEarnRecyclerView)
-                    bottomSheetUpperImageView.let {view ->
-                        try {
-                            Glide.with(this).load(response?.imageUrl).into(view)
-                        } catch (e: Exception) {
-                            Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+            try {
+                val bottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
+                val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_refer_and_earn, it.findViewById(R.id.bottomSheetContainer))
+                bottomSheetDialog.apply {
+                    setContentView(view)
+                    setBottomSheetCommonProperty()
+                    view.run {
+                        val bottomSheetClose: View = findViewById(R.id.bottomSheetClose)
+                        val bottomSheetUpperImageView: ImageView = findViewById(R.id.bottomSheetUpperImageView)
+                        val bottomSheetHeadingTextView: TextView = findViewById(R.id.bottomSheetHeadingTextView)
+                        val verifyTextView: TextView = findViewById(R.id.verifyTextView)
+                        val referAndEarnRecyclerView: RecyclerView = findViewById(R.id.referAndEarnRecyclerView)
+                        bottomSheetUpperImageView.let {view ->
+                            try {
+                                Glide.with(this).load(response?.imageUrl).into(view)
+                            } catch (e: Exception) {
+                                Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+                            }
+                        }
+                        bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
+                        val headingStr = "${response?.heading1}\n${response?.heading2}"
+                        bottomSheetHeadingTextView.text = headingStr
+                        verifyTextView.text = response?.settingsTxt
+                        verifyTextView.setOnClickListener{
+                            mReferEarnOverWhatsAppResponse?.run {
+                                shareReferAndEarnWithDeepLink(this)
+                                bottomSheetDialog.dismiss()
+                            }
+                        }
+                        referAndEarnRecyclerView.apply {
+                            layoutManager = LinearLayoutManager(mActivity)
+                            adapter = ReferAndEarnAdapter(response?.workJourneyList)
                         }
                     }
-                    bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
-                    val headingStr = "${response?.heading1}\n${response?.heading2}"
-                    bottomSheetHeadingTextView.text = headingStr
-                    verifyTextView.text = response?.settingsTxt
-                    verifyTextView.setOnClickListener{
-                        mReferEarnOverWhatsAppResponse?.run {
-                            shareReferAndEarnWithDeepLink(this)
-                            bottomSheetDialog.dismiss()
-                        }
-                    }
-                    referAndEarnRecyclerView.apply {
-                        layoutManager = LinearLayoutManager(mActivity)
-                        adapter = ReferAndEarnAdapter(response?.workJourneyList)
-                    }
-                }
-            }.show()
+                }.show()
+            } catch (e: Exception) {
+                Log.e(TAG, "showReferAndEarnBottomSheet: ${e.message}", e)
+            }
         }
     }
 
