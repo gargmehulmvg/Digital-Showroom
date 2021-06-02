@@ -40,6 +40,7 @@ data class OrderDetailItemResponse(
     @SerializedName("item_price") var item_price: Double?,                                  //  remove
     @SerializedName("amount") var amount: Double?,                                          //  item price replace with this as this is my net amount
     @SerializedName("actual_amount") var actualAmount: Double?,                             //  item price replace with this as this is my net amount
+    @SerializedName("discounted_price") var discountedPrice: Double?,
     @SerializedName("item_status") var item_status: Int?,
     @SerializedName("item_type") var item_type: String?,
     @SerializedName("creator_type") var creator_type: Int?,

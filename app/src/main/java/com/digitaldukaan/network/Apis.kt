@@ -182,7 +182,7 @@ interface Apis {
     suspend fun getDeliveryTime(): Response<CommonApiResponse>
 
     @POST("api/dotk/vm1/orders/updateOrderV2")
-    suspend fun updateOrder(@Header("auth_token") authToken: String, @Body statusRequest: UpdateOrderRequest): Response<CommonApiResponse>
+    suspend fun updateOrder(@Body statusRequest: UpdateOrderRequest): Response<CommonApiResponse>
 
     @POST("api/dotk/vm1/orders/updatePrepaidOrder/{orderId}")
     suspend fun updatePrepaidOrder(@Path("orderId") orderId: String?, @Body statusRequest: UpdatePrepaidOrderRequest?): Response<CommonApiResponse>

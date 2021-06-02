@@ -69,12 +69,11 @@ class OrderDetailNetworkService {
     }
 
     suspend fun updateOrderServerCall(
-        authToken: String,
         request: UpdateOrderRequest,
         serviceInterface: IOrderDetailServiceInterface
     ) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.updateOrder(authToken, request)
+            val response = RetrofitApi().getServerCallObject()?.updateOrder(request)
             response?.let {
                 if (it.isSuccessful) {
                     it.body()?.let { commonApiResponse -> serviceInterface.onUpdateOrderResponse(commonApiResponse)

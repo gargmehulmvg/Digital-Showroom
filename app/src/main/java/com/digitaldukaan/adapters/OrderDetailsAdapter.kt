@@ -69,8 +69,8 @@ class OrderDetailsAdapter(
         val item = mOrderDetailList?.get(position)
         holder.apply {
             orderDetailNameTextView.text = item?.item_name
-            if (!(Constants.ITEM_TYPE_CHARGE == item?.item_type || Constants.ITEM_TYPE_DELIVERY_CHARGE == item?.item_type || Constants.ITEM_TYPE_DISCOUNT == item?.item_type)) {
-                val quantityStr = "${mOrderDetailStaticData?.text_quantity}: ${item?.item_quantity}"
+            if (Constants.ITEM_TYPE_LIST == item?.item_type || Constants.ITEM_TYPE_CATALOG == item?.item_type) {
+                val quantityStr = "${mOrderDetailStaticData?.text_quantity}: ${item.item_quantity}"
                 quantityTextView.text = quantityStr
             }
             val priceStr = "${if (Constants.ITEM_TYPE_DISCOUNT == item?.item_type) "- " else ""}${mOrderDetailStaticData?.text_rupees_symbol} ${item?.amount}"
@@ -103,10 +103,20 @@ class OrderDetailsAdapter(
             } else orderDetailVariantNameTextView.visibility = View.GONE
             if (View.VISIBLE == priceEditText.visibility) {
                 priceEditText.addTextChangedListener(object : TextWatcher {
-                    override fun afterTextChanged(p0: Editable?) {
+                    override fun afterTextChanged(editable: Editable?) {
                         Log.d(mTag, "afterTextChanged: ")
-                        val str = p0?.toString()?.trim()
-                        if (!isEmpty(str)) item?.amount = str?.toDouble() else item?.amount = 0.0
+                        val str = editable?.toString()?.trim()
+                        if (isEmpty(str)) {
+                            item?.item_price = 0.0
+                            item?.amount = 0.0
+                            item?.actualAmount = 0.0
+                            item?.discountedPrice = 0.0
+                        } else {
+                            item?.item_price = str?.toDouble()
+                            item?.amount = str?.toDouble()
+                            item?.actualAmount = str?.toDouble()
+                            item?.discountedPrice = str?.toDouble() ?: 0.0
+                        }
                         mListener?.onOrderDetailListUpdateListener()
                     }
 

@@ -118,7 +118,7 @@ class SendBillPhotoFragment: BaseFragment(), ISendBillPhotoServiceInterface {
                         null,
                         null
                     )
-                    mService.updateOrder(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
+                    mService.updateOrder(request)
                 }
             } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
         }
