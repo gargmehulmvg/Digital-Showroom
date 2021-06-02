@@ -118,7 +118,18 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                 handleDeliveryTimeBottomSheet(isCallSendBillServerCall = false, isPrepaidOrder = false)
             }
             sendBillTextView?.id -> {
-                if (mIsPickUpOrder) initiateSendBillServerCall() else handleDeliveryTimeBottomSheet(isCallSendBillServerCall = true, isPrepaidOrder = false)
+                orderDetailMainResponse?.orders?.run {
+                    var isAllProductsAmountSet = true
+                    orderDetailsItemsList?.forEachIndexed { _, itemResponse ->
+                        if ((itemResponse.amount ?: 0.0) <= 0.0) {
+                            showToast(getString(R.string.please_fill_price_for_each_product))
+                            isAllProductsAmountSet = false
+                            return@forEachIndexed
+                        }
+                    }
+                    if (!isAllProductsAmountSet) return@run
+                    if (mIsPickUpOrder) initiateSendBillServerCall() else handleDeliveryTimeBottomSheet(isCallSendBillServerCall = true, isPrepaidOrder = false)
+                }
             }
             markOutForDeliveryTextView?.id -> {
                 val displayStatus = orderDetailMainResponse?.orders?.displayStatus
@@ -188,6 +199,15 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
             if (!mIsPickUpOrder && orderDetailMainResponse?.storeServices?.mDeliveryChargeType == Constants.FIXED_DELIVERY_CHARGE && orderDetailMainResponse?.storeServices?.mDeliveryPrice != 0.0 && orderDetailMainResponse?.storeServices?.mMinOrderValue ?: 0.0 >= payAmount ?: 0.0) {
                 deliveryChargesAmount = orderDetailMainResponse?.storeServices?.mDeliveryPrice ?: 0.0
             }
+            var isAllProductsAmountSet = true
+            orderDetailsItemsList?.forEachIndexed { _, itemResponse ->
+                if ((itemResponse.amount ?: 0.0) <= 0.0) {
+                    showToast(getString(R.string.please_fill_price_for_each_product))
+                    isAllProductsAmountSet = false
+                    return@forEachIndexed
+                }
+            }
+            if (!isAllProductsAmountSet) return@run
             val orderDetailList = orderDetailsItemsList?.toMutableList()
             if (!isEmpty(orderDetailList)) {
                 orderDetailList?.forEachIndexed { _, itemResponse ->
@@ -278,6 +298,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                     }
                 }
             } else prepaidOrderLayout?.visibility = View.GONE
+            var isCreateListItemAdded = false
             orderDetailItemRecyclerView?.apply {
                 layoutManager = LinearLayoutManager(mActivity)
                 val list = orderDetailResponse?.orderDetailsItemsList
@@ -290,6 +311,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                 }
                 list?.forEachIndexed { _, itemResponse ->
                     itemResponse.isItemEditable = (((deliveryStatus == Constants.DS_NEW || deliveryStatus == Constants.DS_SEND_BILL)) && itemResponse.item_price == 0.0)
+                    if (itemResponse.isItemEditable) isCreateListItemAdded = true
                     mTotalPayAmount += itemResponse.amount ?: 0.0
                     mTotalActualAmount += ((itemResponse.actualAmount ?: 0.0) * itemResponse.quantity)
                 }
@@ -324,6 +346,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
             amountEditText?.setText("$mTotalPayAmount")
             setStaticDataToUI(orderDetailResponse)
             appSubTitleTextView?.text = getStringDateTimeFromOrderDate(getCompleteDateFromOrderString(orderDetailMainResponse?.orders?.createdAt))
+            if (isCreateListItemAdded) orderDetailMainResponse?.storeServices?.mDeliveryChargeType = Constants.CUSTOM_DELIVERY_CHARGE
             setupDeliveryChargeUI(displayStatus, orderDetailMainResponse?.storeServices)
             when (orderDetailResponse?.orderType) {
                 Constants.ORDER_TYPE_SELF_IMAGE -> {

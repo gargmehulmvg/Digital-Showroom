@@ -36,10 +36,10 @@ data class OrderDetailItemResponse(
     @SerializedName("item_id") var item_id: Int?,
     @SerializedName("item_name") var item_name: String?,
     @SerializedName("quantity") var quantity: Int,
-    @SerializedName("item_quantity") var item_quantity: String?,
-    @SerializedName("item_price") var item_price: Double?,
-    @SerializedName("amount") var amount: Double?,                                          // item price replace with this as this is my net amount
-    @SerializedName("actual_amount") var actualAmount: Double?,                             // item price replace with this as this is my net amount
+    @SerializedName("item_quantity") var item_quantity: String?,                            //  remove
+    @SerializedName("item_price") var item_price: Double?,                                  //  remove
+    @SerializedName("amount") var amount: Double?,                                          //  item price replace with this as this is my net amount
+    @SerializedName("actual_amount") var actualAmount: Double?,                             //  item price replace with this as this is my net amount
     @SerializedName("item_status") var item_status: Int?,
     @SerializedName("item_type") var item_type: String?,
     @SerializedName("creator_type") var creator_type: Int?,
