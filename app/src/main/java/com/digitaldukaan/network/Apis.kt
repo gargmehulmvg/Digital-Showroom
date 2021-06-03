@@ -172,7 +172,7 @@ interface Apis {
     @POST("api/dotk/vm1/orders/updateOrderStatus")
     suspend fun updateOrderStatus(@Body statusRequest: UpdateOrderStatusRequest): Response<CommonApiResponse>
 
-    @GET("api/dotk/vm1/orders/getOrderDetails/{orderId}")
+    @GET("api/dotk/vm1/orders/getOrderDetailsV2/{orderId}")
     suspend fun getOrderDetails(@Path("orderId") orderId: String): Response<CommonApiResponse>
 
     @POST("api/dotk/vm1/orders/completeOrder")

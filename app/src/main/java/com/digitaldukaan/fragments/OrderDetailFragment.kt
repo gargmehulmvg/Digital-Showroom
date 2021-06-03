@@ -134,9 +134,8 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
             markOutForDeliveryTextView?.id -> {
                 val displayStatus = orderDetailMainResponse?.orders?.displayStatus
                 if (Constants.DS_MARK_READY == displayStatus) {
-                    val orderId = orderDetailMainResponse?.orders?.orderHash
                     showCancellableProgressDialog(mActivity)
-                    mOrderDetailService?.updatePrepaidOrder("$orderId", null)
+                    mOrderDetailService?.updatePrepaidOrder(orderDetailMainResponse?.orders?.orderHash, null)
                 } else handleDeliveryTimeBottomSheet(isCallSendBillServerCall = false, isPrepaidOrder = true)
             }
             detailTextView?.id -> {
