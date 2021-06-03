@@ -138,7 +138,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_MARKET_VIEW_NOW,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), "type" to AFInAppEventParameterName.SOCIAL)
+                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.TYPE to AFInAppEventParameterName.SOCIAL)
                 )
                 openWebViewFragment(this, "", WebViewUrls.WEB_VIEW_CREATIVE_LIST, Constants.SETTINGS)
             }
@@ -155,17 +155,17 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_MARKET_VIEW_NOW,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), "type" to AFInAppEventParameterName.SOCIAL)
+                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.TYPE to AFInAppEventParameterName.SOCIAL)
                 )
                 openWebViewFragment(this, "", WebViewUrls.WEB_VIEW_SOCIAL_CREATIVE_LIST, Constants.SETTINGS)
             }
             Constants.ACTION_CATALOG_PREMIUM -> {
                 AppEventsManager.pushAppEvents(
-                    eventName = AFInAppEventType.EVENT_PREMIUM_PAGE,
+                    eventName = AFInAppEventType.EVENT_GET_PREMIUM_WEBSITE,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                     data = mapOf(
                         AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                        AFInAppEventParameterName.CHANNEL to "isMarketing"
+                        AFInAppEventParameterName.CHANNEL to AFInAppEventParameterName.IS_MARKETING
                     )
                 )
                 openWebViewFragment(this, "", BuildConfig.WEB_VIEW_URL + response.action)

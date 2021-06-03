@@ -31,6 +31,7 @@ class NewReleaseFragment: BaseFragment(), IStoreSettingsItemClicked {
 
     companion object {
         private const val TAG = "NewReleaseFragment"
+
         fun newInstance(trendingList: ArrayList<TrendingListResponse>?, staticTextResponse: AccountStaticTextResponse?): NewReleaseFragment {
             val fragment = NewReleaseFragment()
             fragment.mNewReleaseList = trendingList
@@ -40,11 +41,7 @@ class NewReleaseFragment: BaseFragment(), IStoreSettingsItemClicked {
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.layout_new_release_fragment, container, false)
         ToolBarManager.getInstance().apply {
             hideToolBar(mActivity, false)
@@ -71,7 +68,7 @@ class NewReleaseFragment: BaseFragment(), IStoreSettingsItemClicked {
             Constants.NEW_RELEASE_TYPE_WEBVIEW -> {
                 val eventName = when (responseItem.mType) {
                     Constants.NEW_RELEASE_TYPE_CUSTOM_DOMAIN -> AFInAppEventType.EVENT_GET_CUSTOM_DOMAIN
-                    Constants.NEW_RELEASE_TYPE_PREMIUM -> AFInAppEventType.EVENT_PREMIUM_PAGE
+                    Constants.NEW_RELEASE_TYPE_PREMIUM -> AFInAppEventType.EVENT_GET_PREMIUM_WEBSITE
                     else -> AFInAppEventType.EVENT_VIEW_TOP_STORES
                 }
                 AppEventsManager.pushAppEvents(
@@ -80,7 +77,7 @@ class NewReleaseFragment: BaseFragment(), IStoreSettingsItemClicked {
                     data = mapOf(
                         AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(
                             Constants.STORE_ID),
-                        AFInAppEventParameterName.CHANNEL to "Settings Page"
+                        AFInAppEventParameterName.CHANNEL to AFInAppEventParameterName.SETTINGS_PAGE
                     )
                 )
                 openWebViewFragment(this, "", BuildConfig.WEB_VIEW_URL + responseItem.mPage)
@@ -88,23 +85,32 @@ class NewReleaseFragment: BaseFragment(), IStoreSettingsItemClicked {
             Constants.NEW_RELEASE_TYPE_EXTERNAL -> {
                 val eventName = when (responseItem.mType) {
                     Constants.NEW_RELEASE_TYPE_CUSTOM_DOMAIN -> AFInAppEventType.EVENT_GET_CUSTOM_DOMAIN
-                    Constants.NEW_RELEASE_TYPE_PREMIUM -> AFInAppEventType.EVENT_PREMIUM_PAGE
+                    Constants.NEW_RELEASE_TYPE_PREMIUM -> AFInAppEventType.EVENT_GET_PREMIUM_WEBSITE
                     else -> AFInAppEventType.EVENT_VIEW_TOP_STORES
                 }
                 AppEventsManager.pushAppEvents(
                     eventName = eventName,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                     data = mapOf(
-                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(
-                            Constants.STORE_ID),
-                        AFInAppEventParameterName.CHANNEL to "Settings Page"
+                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                        AFInAppEventParameterName.CHANNEL to AFInAppEventParameterName.SETTINGS_PAGE
                     )
                 )
                 when (responseItem.mType) {
                     Constants.NEW_RELEASE_TYPE_CUSTOM_DOMAIN -> {
                         openUrlInBrowser(responseItem.mPage + PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
                     }
-                    Constants.NEW_RELEASE_TYPE_PREPAID_ORDER -> launchFragment(SetOrderTypeFragment.newInstance(), true)
+                    Constants.NEW_RELEASE_TYPE_PREPAID_ORDER -> {
+                        AppEventsManager.pushAppEvents(
+                            eventName = AFInAppEventType.EVENT_SET_PREPAID_ORDER,
+                            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                            data = mapOf(
+                                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                                AFInAppEventParameterName.PATH to AFInAppEventParameterName.NEW_RELEASES
+                            )
+                        )
+                        launchFragment(SetOrderTypeFragment.newInstance(), true)
+                    }
                     else -> openUrlInBrowser(responseItem.mPage)
                 }
 

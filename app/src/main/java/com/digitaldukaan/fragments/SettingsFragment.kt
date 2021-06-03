@@ -493,7 +493,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             Constants.NEW_RELEASE_TYPE_WEBVIEW -> {
                 val eventName = when (responseItem.mType) {
                     Constants.NEW_RELEASE_TYPE_CUSTOM_DOMAIN -> AFInAppEventType.EVENT_DOMAIN_EXPLORE
-                    Constants.NEW_RELEASE_TYPE_PREMIUM -> AFInAppEventType.EVENT_PREMIUM_PAGE
+                    Constants.NEW_RELEASE_TYPE_PREMIUM -> AFInAppEventType.EVENT_GET_PREMIUM_WEBSITE
                     else -> AFInAppEventType.EVENT_VIEW_TOP_STORES
                 }
                 AppEventsManager.pushAppEvents(
@@ -506,13 +506,13 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             Constants.NEW_RELEASE_TYPE_EXTERNAL -> {
                 val eventName = when (responseItem.mType) {
                     Constants.NEW_RELEASE_TYPE_CUSTOM_DOMAIN -> AFInAppEventType.EVENT_GET_CUSTOM_DOMAIN
-                    Constants.NEW_RELEASE_TYPE_PREMIUM -> AFInAppEventType.EVENT_PREMIUM_PAGE
+                    Constants.NEW_RELEASE_TYPE_PREMIUM -> AFInAppEventType.EVENT_GET_PREMIUM_WEBSITE
                     else -> AFInAppEventType.EVENT_VIEW_TOP_STORES
                 }
                 AppEventsManager.pushAppEvents(
                     eventName = eventName,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.CHANNEL to "Settings Page")
+                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.CHANNEL to AFInAppEventParameterName.SETTINGS_PAGE)
                 )
                 when (responseItem.mType) {
                     Constants.NEW_RELEASE_TYPE_CUSTOM_DOMAIN -> openUrlInBrowser(responseItem.mPage + PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))

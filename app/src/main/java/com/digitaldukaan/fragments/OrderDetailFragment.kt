@@ -134,7 +134,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
             markOutForDeliveryTextView?.id -> {
                 val displayStatus = orderDetailMainResponse?.orders?.displayStatus
                 if (Constants.DS_MARK_READY == displayStatus) {
-                    val orderId = orderDetailMainResponse?.orders?.orderId
+                    val orderId = orderDetailMainResponse?.orders?.orderHash
                     showCancellableProgressDialog(mActivity)
                     mOrderDetailService?.updatePrepaidOrder("$orderId", null)
                 } else handleDeliveryTimeBottomSheet(isCallSendBillServerCall = false, isPrepaidOrder = true)
@@ -156,9 +156,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                 val sideView:View? = mActivity?.findViewById(R.id.sideIconToolbar)
                 val optionsMenu = PopupMenu(mActivity, sideView)
                 optionsMenu.inflate(R.menu.menu_product_fragment)
-                orderDetailMainResponse?.optionMenuList?.forEachIndexed { position, response ->
-                    optionsMenu.menu?.add(Menu.NONE, position, Menu.NONE, response.mText)
-                }
+                orderDetailMainResponse?.optionMenuList?.forEachIndexed { position, response -> optionsMenu.menu?.add(Menu.NONE, position, Menu.NONE, response.mText) }
                 optionsMenu.setOnMenuItemClickListener(this)
                 optionsMenu.show()
             }
@@ -212,9 +210,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
             if (!isAllProductsAmountSet) return@run
             val orderDetailList = orderDetailsItemsList?.toMutableList()
             if (!isEmpty(orderDetailList)) {
-                orderDetailList?.forEachIndexed { _, itemResponse ->
-                    if (Constants.ITEM_TYPE_DELIVERY_CHARGE == itemResponse.item_type || Constants.ITEM_TYPE_CHARGE == itemResponse.item_type) orderDetailsItemsList?.remove(itemResponse)
-                }
+                orderDetailList?.forEachIndexed { _, itemResponse -> if (Constants.ITEM_TYPE_DELIVERY_CHARGE == itemResponse.item_type || Constants.ITEM_TYPE_CHARGE == itemResponse.item_type) orderDetailsItemsList?.remove(itemResponse) }
             }
             val request = UpdateOrderRequest(
                 orderId,
@@ -317,11 +313,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                             customerDetailsList.add(CustomerDeliveryAddressDTO("${mOrderDetailStaticData?.text_address}:", "$address1,$address2"))
                             customerDetailsList.add(CustomerDeliveryAddressDTO("${mOrderDetailStaticData?.text_city_and_pincode}:",
                                 if (city == null) {
-                                    if (pincode == null) {
-                                        ""
-                                    } else {
-                                        "$pincode"
-                                    }
+                                    if (pincode == null) "" else "$pincode"
                                 } else if (pincode == null) {
                                     "$city"
                                 } else {
@@ -750,12 +742,8 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                             bottomSheetDialog.dismiss()
                             orderDetailMainResponse?.orders?.run {
                                 showCancellableProgressDialog(mActivity)
-                                val request = UpdatePrepaidOrderRequest(
-                                    deliveryInfo?.deliveryTo,
-                                    deliveryInfo?.deliveryFrom,
-                                    mDeliveryTimeStr
-                                )
-                                mOrderDetailService?.updatePrepaidOrder("$orderId", request)
+                                val request = UpdatePrepaidOrderRequest(deliveryInfo?.deliveryTo, deliveryInfo?.deliveryFrom, mDeliveryTimeStr)
+                                mOrderDetailService?.updatePrepaidOrder(orderHash, request)
                             }
                         } else if (isCallSendBillServerCall) {
                             bottomSheetDialog.dismiss()
