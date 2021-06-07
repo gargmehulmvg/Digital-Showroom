@@ -34,6 +34,7 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
         private val mService: PremiumPageInfoService = PremiumPageInfoService()
         private var mStaticText: PremiumPageInfoStaticTextResponse? = null
         private var premiumPageInfoResponse: PremiumPageInfoResponse? = null
+
         fun newInstance(): PremiumPageInfoFragment {
             return PremiumPageInfoFragment()
         }
@@ -65,8 +66,10 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
     }
 
     override fun onNativeBackPressed() {
-        CoroutineScopeUtils().runTaskOnCoroutineMain {
-            mActivity?.onBackPressed()
+        mActivity?.let {
+            it.runOnUiThread {
+                it.onBackPressed()
+            }
         }
     }
 
@@ -77,10 +80,12 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
             commonWebView?.apply {
                 clearHistory()
                 clearCache(true)
-                settings.allowFileAccess = true
-                settings.javaScriptEnabled = true
-                settings.domStorageEnabled = true
-                settings.javaScriptCanOpenWindowsAutomatically = true
+                settings?.run {
+                    allowFileAccess = true
+                    javaScriptEnabled = true
+                    domStorageEnabled = true
+                    javaScriptCanOpenWindowsAutomatically = true
+                }
                 addJavascriptInterface(WebViewBridge(), "Android")
                 val isBottomNavBarActive = premiumPageInfoResponse?.mIsBottomNavBarActive ?: false
                 hideBottomNavigationView(!isBottomNavBarActive)
@@ -141,22 +146,14 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
                 val additionalData = jsonData.optString("additionalData")
                 val map = Gson().fromJson<HashMap<String, String>>(additionalData.toString(), HashMap::class.java)
                 Log.d(TAG, "sendData: working $map")
-                AppEventsManager.pushAppEvents(
-                    eventName = eventName,
-                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                    data = map
-                )
+                AppEventsManager.pushAppEvents(eventName = eventName, isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true, data = map)
             }
         }
     }
 
-    override fun onPremiumPageInfoServerException(e: Exception) {
-        exceptionHandlingForAPIResponse(e)
-    }
+    override fun onPremiumPageInfoServerException(e: Exception) = exceptionHandlingForAPIResponse(e)
 
-    override fun showAndroidToast(data: String) {
-        showToast(data)
-    }
+    override fun showAndroidToast(data: String) = showToast(data)
 
     override fun showAndroidLog(data: String) {
         Log.d(TAG, "showAndroidLog :: $data")

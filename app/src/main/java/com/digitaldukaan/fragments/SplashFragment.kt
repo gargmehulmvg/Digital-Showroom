@@ -113,9 +113,7 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
         }
     }
 
-    override fun onStaticDataException(e: Exception) {
-        exceptionHandlingForAPIResponse(e)
-    }
+    override fun onStaticDataException(e: Exception) = exceptionHandlingForAPIResponse(e)
 
     override fun onNoInternetButtonClick(isNegativeButtonClick: Boolean) {
         mActivity?.finish()
@@ -146,18 +144,19 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
     private fun switchToFragmentByDeepLink() {
         val intentUriStr = mIntentUri.toString()
         Log.d(TAG, "switchToFragmentByDeepLink:: $intentUriStr")
+        val deepLinkStr = "digitaldukaan://"
         clearFragmentBackStack()
         when {
-            intentUriStr.contains("digitaldukaan://Settings") -> launchFragment(SettingsFragment.newInstance(), true)
-            intentUriStr.contains("digitaldukaan://ProfilePage") -> launchFragment(ProfilePreviewFragment().newInstance(), true)
-            intentUriStr.contains("digitaldukaan://ProductList") -> launchFragment(HomeFragment.newInstance(), true)
-            intentUriStr.contains("digitaldukaan://OrderList") -> launchFragment(HomeFragment.newInstance(), true)
-            intentUriStr.contains("digitaldukaan://ProductAdd") -> launchFragment(ProductFragment.newInstance(), true)
-            intentUriStr.contains("digitaldukaan://MarketingBroadCast") -> launchFragment(MarketingFragment.newInstance(), true)
-            intentUriStr.contains("digitaldukaan://OTP") -> launchFragment(LoginFragment.newInstance(), true)
-            intentUriStr.contains("digitaldukaan://Webview") -> {
+            intentUriStr.contains("${deepLinkStr}Settings") -> launchFragment(SettingsFragment.newInstance(), true)
+            intentUriStr.contains("${deepLinkStr}ProfilePage") -> launchFragment(ProfilePreviewFragment().newInstance(), true)
+            intentUriStr.contains("${deepLinkStr}ProductList") -> launchFragment(HomeFragment.newInstance(), true)
+            intentUriStr.contains("${deepLinkStr}OrderList") -> launchFragment(HomeFragment.newInstance(), true)
+            intentUriStr.contains("${deepLinkStr}ProductAdd") -> launchFragment(ProductFragment.newInstance(), true)
+            intentUriStr.contains("${deepLinkStr}MarketingBroadCast") -> launchFragment(MarketingFragment.newInstance(), true)
+            intentUriStr.contains("${deepLinkStr}OTP") -> launchFragment(LoginFragment.newInstance(), true)
+            intentUriStr.contains("${deepLinkStr}Webview") -> {
                 try {
-                    var webViewUrl = intentUriStr.split("digitaldukaan://Webview?webURL=")[1]
+                    var webViewUrl = intentUriStr.split("${deepLinkStr}Webview?webURL=")[1]
                     if (webViewUrl.contains("&")) webViewUrl = webViewUrl.split("&")[0]
                     openWebViewFragment(this, "", "${BuildConfig.WEB_VIEW_URL}$webViewUrl")
                 } catch (e: Exception) {

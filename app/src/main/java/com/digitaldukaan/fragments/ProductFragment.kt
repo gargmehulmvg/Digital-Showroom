@@ -63,7 +63,6 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
         super.onCreate(savedInstanceState)
         mService = ProductService()
         mService?.setOrderDetailServiceListener(this)
-        mService?.getDeleteCategoryItem()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -83,6 +82,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
         hideBottomNavigationView(false)
         WebViewBridge.mWebViewListener = this
         updateNavigationBarState(R.id.menuProducts)
+        mService?.getDeleteCategoryItem()
         mService?.getUserCategories()
         return mContentView
     }
@@ -299,7 +299,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                     data = mapOf(
                         AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                        AFInAppEventParameterName.IS_CATALOG to "true"
+                        AFInAppEventParameterName.IS_CATALOG to AFInAppEventParameterName.TRUE
                     )
                 )
                 if (!isEmpty(mShareDataOverWhatsAppText)) shareOnWhatsApp(mShareDataOverWhatsAppText) else if (!isInternetConnectionAvailable(mActivity)) {

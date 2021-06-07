@@ -9,9 +9,12 @@ data class OrderDetailsResponse (
     @SerializedName("payment_status") var paymentStatus: Int?,
     @SerializedName("status") var status: Int?,
     @SerializedName("order_type") var orderType: Int?,
-    @SerializedName("amount") var amount: Double?,
+    @SerializedName("amount") var amount: Double?,                      // Original Amount
+    @SerializedName("pay_amount") var payAmount: Double?,               // Amount to be paid to server (Discounted Price)
     @SerializedName("discount") var discount: Double?,
-    @SerializedName("pay_amount") var payAmount: Double?,
+    @SerializedName("delivery_charge") var deliveryCharge: Double?,
+    @SerializedName("extra_charges") var extraCharges: Double?,
+    @SerializedName("extra_charge_name") var extraChargesName: String?,
     @SerializedName("instruction") var instruction: String?,
     @SerializedName("phone") var phone: String?,
     @SerializedName("display_status") var displayStatus: String?,
@@ -32,8 +35,12 @@ data class OrderDetailItemResponse(
     @SerializedName("order_item_id") var order_item_id: Int?,
     @SerializedName("item_id") var item_id: Int?,
     @SerializedName("item_name") var item_name: String?,
-    @SerializedName("item_quantity") var item_quantity: String?,
-    @SerializedName("item_price") var item_price: Double?,
+    @SerializedName("quantity") var quantity: Int,
+    @SerializedName("item_quantity") var item_quantity: String?,                            //  remove
+    @SerializedName("item_price") var item_price: Double?,                                  //  remove
+    @SerializedName("amount") var amount: Double?,                                          //  item price replace with this as this is my net amount
+    @SerializedName("actual_amount") var actualAmount: Double?,                             //  item price replace with this as this is my net amount
+    @SerializedName("discounted_price") var discountedPrice: Double?,
     @SerializedName("item_status") var item_status: Int?,
     @SerializedName("item_type") var item_type: String?,
     @SerializedName("creator_type") var creator_type: Int?,

@@ -23,7 +23,7 @@ import kotlinx.android.synthetic.main.layout_more_control_fragment.*
 class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
 
     private var mMoreControlsStaticData: AccountStaticTextResponse? = null
-    private lateinit var mMoreControlsService: MoreControlsService
+    private var mMoreControlsService: MoreControlsService? = null
     private var mMinOrderValue = 0.0
     private var mDeliveryPrice = 0.0
     private var mFreeDeliveryAbove = 0.0
@@ -38,14 +38,10 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
         }
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        mMoreControlsService = MoreControlsService()
-        mMoreControlsService.setServiceInterface(this)
-    }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.layout_more_control_fragment, container, false)
+        mMoreControlsService = MoreControlsService()
+        mMoreControlsService?.setServiceInterface(this)
         return mContentView
     }
 
@@ -82,14 +78,20 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
         minOrderValueAmountTextView?.text = if (0.0 != mMinOrderValue) "${mMoreControlsStaticData?.text_ruppee_symbol} $mMinOrderValue" else ""
         deliveryChargeHeadingTextView?.text = mMoreControlsStaticData?.heading_set_delivery_charge
         deliveryChargeTypeTextView?.text = mMoreControlsStaticData?.sub_heading_set_delivery_charge
-        if (mDeliveryChargeType != 0) {
+        onlinePaymentsTextView?.text = mMoreControlsStaticData?.text_online_payments
+        deliveryHeadingTextView?.text = mMoreControlsStaticData?.mDeliveryText
+        onlinePaymentsHeadingTextView?.text = mMoreControlsStaticData?.heading_set_orders_to_online_payments
+        onlinePaymentsOptionalTextView?.text = mMoreControlsStaticData?.text_type_colon
+        onlinePaymentsValueAmountTextView?.text = mPaymentPaymentMethod
+        if (0 != mDeliveryChargeType) {
             deliveryChargeTypeTextView?.text = mMoreControlsStaticData?.sub_heading_success_set_delivery_charge
-            if (mDeliveryChargeType == 1) {
+            if (1 == mDeliveryChargeType) {
                 deliveryChargeRateTextView?.visibility = View.GONE
                 deliveryChargeRateValueTextView?.visibility = View.GONE
             } else{
                 deliveryChargeRateTextView?.text = mMoreControlsStaticData?.sub_heading_success_set_delivery_charge_amount
-                deliveryChargeRateValueTextView?.text = " ${mMoreControlsStaticData?.text_ruppee_symbol} $mFreeDeliveryAbove"
+                val deliveryChargeStr = " ${mMoreControlsStaticData?.text_ruppee_symbol} $mFreeDeliveryAbove"
+                deliveryChargeRateValueTextView?.text = deliveryChargeStr
             }
             deliveryChargeTypeValueTextView?.text = when (mDeliveryChargeType) {
                 Constants.FREE_DELIVERY -> mMoreControlsStaticData?.heading_free_delivery
@@ -118,6 +120,17 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
                     data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
                 )
                 mMoreControlsStaticData?.let { launchFragment(SetDeliveryChargeFragment.newInstance(it), true) }
+            }
+            onlinePaymentsContainer?.id -> {
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_SET_PREPAID_ORDER,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(
+                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                        AFInAppEventParameterName.PATH to AFInAppEventParameterName.MORE_CONTROLS
+                    )
+                )
+                launchFragment(SetOrderTypeFragment.newInstance(), true)
             }
         }
     }
@@ -160,7 +173,7 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
                         )
                         showProgressDialog(mActivity)
                         bottomSheetDialog.dismiss()
-                        mMoreControlsService.updateDeliveryInfo(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
+                        mMoreControlsService?.updateDeliveryInfo(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
                     }
                 }
             }.show()
