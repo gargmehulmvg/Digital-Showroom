@@ -32,14 +32,24 @@ class SendBillPhotoFragment: BaseFragment(), ISendBillPhotoServiceInterface {
     private var mMainOrderDetailResponse: OrderDetailMainResponse? = null
     private var mImageFile: File? = null
     private var mDeliveryTimeStr: String? = ""
+    private var mExtraChargeName: String? = ""
+    private var mExtraCharge: Double = 0.0
+    private var mDeliveryCharge: Double = 0.0
+    private var mDiscount: Double = 0.0
+    private var mPayAmount: Double? = 0.0
     private val mService = SendBillPhotoService()
 
     companion object {
-        fun newInstance(mainOrderDetailResponse: OrderDetailMainResponse?, file: File?, deliveryTimeStr: String?): SendBillPhotoFragment{
+        fun newInstance(mainOrderDetailResponse: OrderDetailMainResponse?, file: File?, deliveryTimeStr: String?, extraChargeName: String?, extraCharge: Double, discount: Double, payAmount: Double?, deliveryChargesAmount: Double): SendBillPhotoFragment {
             val fragment = SendBillPhotoFragment()
             fragment.mSendPhotoStaticText = mainOrderDetailResponse?.staticText
             fragment.mImageFile = file
             fragment.mDeliveryTimeStr = deliveryTimeStr
+            fragment.mExtraChargeName = extraChargeName
+            fragment.mExtraCharge = extraCharge
+            fragment.mDiscount = discount
+            fragment.mPayAmount = payAmount
+            fragment.mDeliveryCharge = deliveryChargesAmount
             fragment.mMainOrderDetailResponse = mainOrderDetailResponse
             return fragment
         }
@@ -77,6 +87,7 @@ class SendBillPhotoFragment: BaseFragment(), ISendBillPhotoServiceInterface {
             hideToolBar(mActivity, false)
             setHeaderTitle(mSendPhotoStaticText?.text_send_bill)
             setSideIconVisibility(true)
+            onBackPressed(this@SendBillPhotoFragment)
             mActivity?.let {
                 setSideIcon(ContextCompat.getDrawable(it, R.drawable.ic_refresh), object : IOnToolbarIconClick {
                     override fun onToolbarSideIconClicked() {
@@ -89,7 +100,7 @@ class SendBillPhotoFragment: BaseFragment(), ISendBillPhotoServiceInterface {
         sendBillTextView.text = mSendPhotoStaticText?.text_send_bill
         val image = BitmapFactory.decodeFile(mImageFile?.absolutePath)
         imageView?.setImageBitmap(image)
-        amountEditText?.text = "${mSendPhotoStaticText?.text_rupees_symbol} ${mMainOrderDetailResponse?.orders?.amount}"
+        amountEditText?.text = "${mSendPhotoStaticText?.text_rupees_symbol} $mPayAmount"
     }
 
     override fun onImageSelectionResultFile(file: File?, mode: String) {
@@ -112,11 +123,11 @@ class SendBillPhotoFragment: BaseFragment(), ISendBillPhotoServiceInterface {
                         mDeliveryTimeStr,
                         orderDetailsItemsList,
                         cdnLink,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null
+                        mExtraChargeName,
+                        mExtraCharge,
+                        mDiscount,
+                        mPayAmount,
+                        mDeliveryCharge
                     )
                     mService.updateOrder(request)
                 }

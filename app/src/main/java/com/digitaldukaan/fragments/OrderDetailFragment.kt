@@ -192,15 +192,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                 }
                 return
             }
-            var deliveryChargesAmount = 0.0
-            val storeServices = orderDetailMainResponse?.storeServices
-            if (!mIsPickUpOrder) {
-                if ((Constants.CUSTOM_DELIVERY_CHARGE == storeServices?.mDeliveryChargeType && payAmount ?: 0.0 <= storeServices.mFreeDeliveryAbove) || (Constants.UNKNOWN_DELIVERY_CHARGE == storeServices?.mDeliveryChargeType)) {
-                    deliveryChargesAmount = mDeliveryChargeAmount
-                } else if (Constants.FIXED_DELIVERY_CHARGE == storeServices?.mDeliveryChargeType && storeServices.mDeliveryPrice != 0.0 && payAmount ?: 0.0 <= storeServices.mFreeDeliveryAbove) {
-                    deliveryChargesAmount = storeServices.mDeliveryPrice ?: 0.0
-                }
-            }
+            var deliveryChargesAmount = calculateDeliveryCharge(payAmount)
             var isAllProductsAmountSet = true
             orderDetailsItemsList?.forEachIndexed { _, itemResponse ->
                 if ((itemResponse.amount ?: 0.0) <= 0.0) {
@@ -246,6 +238,19 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
             )
             mOrderDetailService?.updateOrder(request)
         }
+    }
+
+    private fun calculateDeliveryCharge(payAmount: Double?): Double {
+        var deliveryChargesAmount = 0.0
+        val storeServices = orderDetailMainResponse?.storeServices
+        if (!mIsPickUpOrder) {
+            if ((Constants.CUSTOM_DELIVERY_CHARGE == storeServices?.mDeliveryChargeType && payAmount ?: 0.0 <= storeServices.mFreeDeliveryAbove) || (Constants.UNKNOWN_DELIVERY_CHARGE == storeServices?.mDeliveryChargeType)) {
+                deliveryChargesAmount = mDeliveryChargeAmount
+            } else if (Constants.FIXED_DELIVERY_CHARGE == storeServices?.mDeliveryChargeType && storeServices.mDeliveryPrice != 0.0 && payAmount ?: 0.0 <= storeServices.mFreeDeliveryAbove) {
+                deliveryChargesAmount = storeServices.mDeliveryPrice ?: 0.0
+            }
+        }
+        return deliveryChargesAmount
     }
 
     override fun onOrderDetailResponse(commonResponse: CommonApiResponse) {
@@ -693,7 +698,12 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
     }
 
     override fun onImageSelectionResultFile(file: File?, mode: String) {
-        launchFragment(SendBillPhotoFragment.newInstance(orderDetailMainResponse, file, mDeliveryTimeStr), true)
+        val extraChargeName = if (true == otherChargesEditText.text?.isNotEmpty()) otherChargesEditText.text.toString() else ""
+        val extraCharge = if (true == otherChargesValueEditText.text?.isNotEmpty()) otherChargesValueEditText.text.toString().toDouble() else 0.0
+        val discount = if (true == discountsValueEditText.text?.isNotEmpty()) discountsValueEditText.text.toString().toDouble() else 0.0
+        val payAmount = if (true == amountEditText.text?.isNotEmpty()) amountEditText.text.toString().toDouble() else orderDetailMainResponse?.orders?.amount
+        val deliveryChargesAmount = calculateDeliveryCharge(payAmount)
+        launchFragment(SendBillPhotoFragment.newInstance(orderDetailMainResponse, file, mDeliveryTimeStr, extraChargeName, extraCharge, discount, payAmount, deliveryChargesAmount), true)
     }
 
     override fun onOrderDetailException(e: Exception) {
