@@ -176,7 +176,7 @@ class SetDeliveryChargeFragment : BaseFragment(), IMoreControlsServiceInterface 
                     }
                     mMoreControlRequest.apply {
                         deliveryChargeType = Constants.CUSTOM_DELIVERY_CHARGE
-                        deliveryPrice = mAppStoreServicesResponse?.mDeliveryPrice ?: 0.0
+                        deliveryPrice = 0.0
                         freeDeliveryAbove = if (customDeliveryAboveStr.isEmpty()) 0.0 else customDeliveryAboveStr.toDouble()
                         minOrderValue = mAppStoreServicesResponse?.mMinOrderValue ?: 0.0
                     }
