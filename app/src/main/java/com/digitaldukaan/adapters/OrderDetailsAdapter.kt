@@ -76,7 +76,7 @@ class OrderDetailsAdapter(
             val priceStr = "${if (Constants.ITEM_TYPE_DISCOUNT == item?.item_type) "- " else ""}${mOrderDetailStaticData?.text_rupees_symbol} ${item?.amount}"
             priceTextView.text = priceStr
             closeImageView.visibility = if (Constants.DS_SEND_BILL == mDeliveryStatus || Constants.DS_NEW == mDeliveryStatus) View.VISIBLE else View.GONE
-            if (0.0 == item?.item_price && (Constants.DS_NEW == mDeliveryStatus || Constants.DS_SEND_BILL == mDeliveryStatus)) {
+            if (0.0 == item?.amount && (Constants.DS_NEW == mDeliveryStatus || Constants.DS_SEND_BILL == mDeliveryStatus)) {
                 priceEditText.visibility = View.VISIBLE
                 priceTextView.visibility = View.GONE
             } else {

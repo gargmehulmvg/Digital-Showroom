@@ -193,10 +193,13 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                 return
             }
             var deliveryChargesAmount = 0.0
-            if (!mIsPickUpOrder && orderDetailMainResponse?.storeServices?.mDeliveryChargeType == Constants.CUSTOM_DELIVERY_CHARGE) {
-                deliveryChargesAmount = mDeliveryChargeAmount
-            } else if (!mIsPickUpOrder && orderDetailMainResponse?.storeServices?.mDeliveryChargeType == Constants.FIXED_DELIVERY_CHARGE && orderDetailMainResponse?.storeServices?.mDeliveryPrice != 0.0 && orderDetailMainResponse?.storeServices?.mMinOrderValue ?: 0.0 >= payAmount ?: 0.0) {
-                deliveryChargesAmount = orderDetailMainResponse?.storeServices?.mDeliveryPrice ?: 0.0
+            val storeServices = orderDetailMainResponse?.storeServices
+            if (!mIsPickUpOrder) {
+                if ((Constants.CUSTOM_DELIVERY_CHARGE == storeServices?.mDeliveryChargeType && payAmount ?: 0.0 <= storeServices.mFreeDeliveryAbove) || (Constants.UNKNOWN_DELIVERY_CHARGE == storeServices?.mDeliveryChargeType)) {
+                    deliveryChargesAmount = mDeliveryChargeAmount
+                } else if (Constants.FIXED_DELIVERY_CHARGE == storeServices?.mDeliveryChargeType && storeServices.mDeliveryPrice != 0.0 && payAmount ?: 0.0 <= storeServices.mFreeDeliveryAbove) {
+                    deliveryChargesAmount = storeServices.mDeliveryPrice ?: 0.0
+                }
             }
             var isAllProductsAmountSet = true
             orderDetailsItemsList?.forEachIndexed { _, itemResponse ->
@@ -347,17 +350,17 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                     list.remove(itemResponse)
                 }
             }
-            if (orderDetailResponse?.deliveryCharge != 0.0) {
+            if (orderDetailResponse?.deliveryCharge != 0.0 && !(deliveryStatus == Constants.DS_NEW || deliveryStatus == Constants.DS_SEND_BILL)) {
                 list?.add(OrderDetailItemResponse(0, 0, getString(R.string.delivery_charge), 1, "1", orderDetailResponse.deliveryCharge, orderDetailResponse.deliveryCharge, orderDetailResponse.deliveryCharge, orderDetailResponse.deliveryCharge, 1, Constants.ITEM_TYPE_DELIVERY_CHARGE, null, 0, null, false))
             }
-            if (orderDetailResponse?.extraCharges != 0.0) {
+            if (orderDetailResponse?.extraCharges != 0.0 && !(deliveryStatus == Constants.DS_NEW || deliveryStatus == Constants.DS_SEND_BILL)) {
                 list?.add(OrderDetailItemResponse(0, 0, orderDetailResponse.extraChargesName, 1, "1", orderDetailResponse.extraCharges, orderDetailResponse.extraCharges, orderDetailResponse.extraCharges, orderDetailResponse.extraCharges, 1, Constants.ITEM_TYPE_CHARGE, null, 0, null, false))
             }
-            if (orderDetailResponse?.discount != 0.0) {
+            if (orderDetailResponse?.discount != 0.0 && !(deliveryStatus == Constants.DS_NEW || deliveryStatus == Constants.DS_SEND_BILL)) {
                 list?.add(OrderDetailItemResponse(0, 0, getString(R.string.discount), 1, "1", orderDetailResponse.discount, orderDetailResponse.discount, orderDetailResponse.discount, orderDetailResponse.discount, 1, Constants.ITEM_TYPE_DISCOUNT, null, 0, null, false))
             }
             list?.forEachIndexed { _, itemResponse ->
-                itemResponse.isItemEditable = (((deliveryStatus == Constants.DS_NEW || deliveryStatus == Constants.DS_SEND_BILL)) && itemResponse.item_price == 0.0)
+                itemResponse.isItemEditable = (((deliveryStatus == Constants.DS_NEW || deliveryStatus == Constants.DS_SEND_BILL)) && itemResponse.amount == 0.0)
                 if (itemResponse.isItemEditable) isCreateListItemAdded1 = true
                 mTotalPayAmount += itemResponse.amount ?: 0.0
                 mTotalActualAmount += ((itemResponse.actualAmount ?: 0.0) * itemResponse.quantity)
@@ -593,7 +596,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
             statusLabel?.text = "$text_status:"
             detailTextView?.text = "$text_details:"
             billAmountValue?.text = "$text_rupees_symbol ${orderDetailResponse?.payAmount}"
-            appTitleTextView?.text = "$text_order #$mOrderId"
+            appTitleTextView?.text = "$text_order #${orderDetailResponse?.orderId}"
             if (Constants.ORDER_TYPE_PREPAID == orderDetailResponse?.prepaidFlag || orderDetailResponse?.deliveryInfo?.customDeliveryTime?.isEmpty() == true) {
                 estimateDeliveryTextView?.visibility = View.GONE
             } else {
