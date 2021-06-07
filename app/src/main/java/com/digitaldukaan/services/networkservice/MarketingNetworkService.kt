@@ -17,9 +17,7 @@ class MarketingNetworkService {
                 if (it.isSuccessful) {
                     it.body()?.let { generateOtpResponse -> serviceInterface.onMarketingResponse(generateOtpResponse) }
                 } else {
-                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) {
-                        throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
-                    }
+                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
                     serviceInterface.onMarketingErrorResponse(Exception(response.message()))
                 }
             }
@@ -37,7 +35,10 @@ class MarketingNetworkService {
             response?.let {
                 if (it.isSuccessful) {
                     it.body()?.let { responseBody -> serviceInterface.onAppShareDataResponse(responseBody) }
-                } else serviceInterface.onMarketingErrorResponse(Exception(response.message()))
+                } else {
+                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    serviceInterface.onMarketingErrorResponse(Exception(response.message()))
+                }
             }
         } catch (e : Exception) {
             Log.e(MarketingNetworkService::class.java.simpleName, "getShareStoreDataServerCall: ", e)
@@ -53,7 +54,10 @@ class MarketingNetworkService {
             response?.let {
                 if (it.isSuccessful) {
                     it.body()?.let { responseBody -> serviceInterface.onGenerateStorePdfResponse(responseBody) }
-                } else serviceInterface.onMarketingErrorResponse(Exception(response.message()))
+                } else {
+                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    serviceInterface.onMarketingErrorResponse(Exception(response.message()))
+                }
             }
         } catch (e : Exception) {
             Log.e(MarketingNetworkService::class.java.simpleName, "getShareStoreDataServerCall: ", e)
@@ -69,7 +73,10 @@ class MarketingNetworkService {
             response?.let {
                 if (it.isSuccessful) {
                     it.body()?.let { responseBody -> serviceInterface.onShareStorePdfDataResponse(responseBody) }
-                } else serviceInterface.onMarketingErrorResponse(Exception(response.message()))
+                } else {
+                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    serviceInterface.onMarketingErrorResponse(Exception(response.message()))
+                }
             }
         } catch (e : Exception) {
             Log.e(MarketingNetworkService::class.java.simpleName, "getShareStoreDataServerCall: ", e)

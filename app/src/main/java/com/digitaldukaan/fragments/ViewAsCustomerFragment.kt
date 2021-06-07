@@ -9,8 +9,7 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
-import com.digitaldukaan.constants.Constants
-import com.digitaldukaan.constants.ToolBarManager
+import com.digitaldukaan.constants.*
 import com.digitaldukaan.models.response.AddProductStaticText
 import com.digitaldukaan.webviews.WebViewBridge
 import kotlinx.android.synthetic.main.layout_view_as_customer.*
@@ -76,6 +75,14 @@ class ViewAsCustomerFragment: BaseFragment() {
     override fun onClick(view: View?) {
         when(view?.id) {
             getStartedTextView?.id -> {
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_GET_PREMIUM_WEBSITE,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(
+                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                        AFInAppEventParameterName.CHANNEL to AFInAppEventParameterName.IS_CATALOG
+                    )
+                )
                 val url = "${BuildConfig.WEB_VIEW_URL}theme-discover?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"
                 launchFragment(CommonWebViewFragment().newInstance("", url), true)
             }

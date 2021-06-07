@@ -91,8 +91,10 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
     }
 
     override fun onNativeBackPressed() {
-        CoroutineScopeUtils().runTaskOnCoroutineMain {
-            mActivity?.onBackPressed()
+        mActivity?.let {
+            it.runOnUiThread {
+                it.onBackPressed()
+            }
         }
     }
 

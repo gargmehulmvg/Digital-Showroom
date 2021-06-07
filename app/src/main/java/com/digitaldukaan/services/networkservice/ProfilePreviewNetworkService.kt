@@ -1,6 +1,8 @@
 package com.digitaldukaan.services.networkservice
 
 import android.util.Log
+import com.digitaldukaan.constants.Constants
+import com.digitaldukaan.exceptions.UnAuthorizedAccessException
 import com.digitaldukaan.models.request.StoreLinkRequest
 import com.digitaldukaan.models.request.StoreLogoRequest
 import com.digitaldukaan.models.request.StoreNameRequest
@@ -23,7 +25,10 @@ class ProfilePreviewNetworkService {
                     it.body()?.let { profilePreviewResponse ->
                         serviceInterface.onProfilePreviewResponse(profilePreviewResponse)
                     }
-                } else serviceInterface.onProfilePreviewServerException(Exception(response.message()))
+                } else {
+                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    serviceInterface.onProfilePreviewServerException(Exception(response.message()))
+                }
             }
         } catch (e: Exception) {
             Log.e(ProfilePreviewNetworkService::class.java.simpleName, "getProfilePreviewServerCall: ", e)
@@ -43,6 +48,7 @@ class ProfilePreviewNetworkService {
                         serviceInterface.onStoreNameResponse(storeNameResponse)
                     }
                 } else {
+                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
                     val errorResponseBody = it.errorBody()
                     errorResponseBody?.let {
                         val validateOtpErrorResponse = Gson().fromJson(errorResponseBody.string(), CommonApiResponse::class.java)
@@ -68,6 +74,7 @@ class ProfilePreviewNetworkService {
                         serviceInterface.onStoreLinkResponse(storeLinkResponse)
                     }
                 } else {
+                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
                     val errorResponseBody = it.errorBody()
                     errorResponseBody?.let {
                         val errorResponse = Gson().fromJson(errorResponseBody.string(), CommonApiResponse::class.java)
@@ -94,7 +101,10 @@ class ProfilePreviewNetworkService {
                     it.body()?.let { storeLinkResponse ->
                         serviceInterface.onStoreLogoResponse(storeLinkResponse)
                     }
-                } else throw Exception(response.message())
+                } else {
+                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    throw Exception(response.message())
+                }
             }
         } catch (e: Exception) {
             Log.e(ProfilePreviewNetworkService::class.java.simpleName, "updateStoreLogoServerCall: ", e)
@@ -114,7 +124,10 @@ class ProfilePreviewNetworkService {
                     it.body()?.let { storeLinkResponse ->
                         serviceInterface.onImageCDNLinkGenerateResponse(storeLinkResponse)
                     }
-                } else throw Exception(response.message())
+                } else {
+                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    throw Exception(response.message())
+                }
             }
         } catch (e: Exception) {
             Log.e(ProfilePhotoNetworkService::class.java.simpleName, "getImageUploadCdnLinkServerCall: ", e)
@@ -134,6 +147,7 @@ class ProfilePreviewNetworkService {
                         serviceInterface.onInitiateKycResponse(storeLinkResponse)
                     }
                 } else {
+                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
                     val errorResponseBody = it.errorBody()
                     errorResponseBody?.let {
                         val validateOtpErrorResponse = Gson().fromJson(errorResponseBody.string(), CommonApiResponse::class.java)
@@ -156,6 +170,7 @@ class ProfilePreviewNetworkService {
                 if (it.isSuccessful) {
                     it.body()?.let { responseBody -> serviceInterface.onAppShareDataResponse(responseBody) }
                 }  else {
+                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
                     val errorResponseBody = it.errorBody()
                     errorResponseBody?.let {
                         val validateOtpErrorResponse = Gson().fromJson(errorResponseBody.string(), CommonApiResponse::class.java)

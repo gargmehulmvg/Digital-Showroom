@@ -1,6 +1,8 @@
 package com.digitaldukaan.services.networkservice
 
 import android.util.Log
+import com.digitaldukaan.constants.Constants
+import com.digitaldukaan.exceptions.UnAuthorizedAccessException
 import com.digitaldukaan.models.request.StoreAddressRequest
 import com.digitaldukaan.network.RetrofitApi
 import com.digitaldukaan.services.serviceinterface.IStoreAddressServiceInterface
@@ -18,7 +20,11 @@ class StoreAddressNetworkService {
                     it.body()?.let { storeNameResponse ->
                         serviceInterface.onStoreAddressResponse(storeNameResponse)
                     }
-                } else throw Exception(response.message())
+                } else {
+                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) throw UnAuthorizedAccessException(
+                        Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    throw Exception(response.message())
+                }
             }
         } catch (e: Exception) {
             Log.e(StoreAddressNetworkService::class.java.simpleName, "updateStoreAddressServerCall: ", e)

@@ -134,7 +134,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                     }
                 mIsMoreCompletedOrderAvailable -> {
                     ++completedPageCount
-                    fetchLatestOrders(Constants.MODE_COMPLETED, "", pendingPageCount)
+                    fetchLatestOrders(Constants.MODE_COMPLETED, "", completedPageCount)
                 }
                 !mIsMoreCompletedOrderAvailable -> {
                     if (mCompletedOrderList.isEmpty()) {
@@ -293,10 +293,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
             stopProgress()
             if (mSwipeRefreshLayout?.isRefreshing == true) mSwipeRefreshLayout?.isRefreshing = false
             if (getOrderResponse.mIsSuccessStatus) {
-                val ordersResponse = Gson().fromJson<OrdersResponse>(
-                    getOrderResponse.mCommonDataStr,
-                    OrdersResponse::class.java
-                )
+                val ordersResponse = Gson().fromJson<OrdersResponse>(getOrderResponse.mCommonDataStr, OrdersResponse::class.java)
                 mIsMoreCompletedOrderAvailable = ordersResponse.mIsNextDataAvailable
                 if (completedPageCount == 1) mCompletedOrderList.clear()
                 if (ordersResponse.mOrdersList != null) {
@@ -450,14 +447,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                 }
                 if (mIsHelpOrder.mIsActive) {
                     helpImageView?.visibility = View.VISIBLE
-                    helpImageView?.setOnClickListener {
-                        openWebViewFragmentV2(
-                            this@HomeFragment,
-                            getString(R.string.help),
-                            mIsHelpOrder.mUrl,
-                            Constants.SETTINGS
-                        )
-                    }
+                    helpImageView?.setOnClickListener { openWebViewFragmentV2(this@HomeFragment, getString(R.string.help), mIsHelpOrder.mUrl, Constants.SETTINGS) }
                 }
                 takeOrderTextView?.text = mOrderPageInfoStaticData?.text_add_new_order
                 analyticsImageView?.visibility = if (mIsAnalyticsOrder) View.VISIBLE else View.GONE
@@ -549,10 +539,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         mHomeFragmentService?.getAnalyticsData()
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int, permissions: Array<String>,
-        grantResults: IntArray
-    ) {
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         Log.i(TAG, "$TAG onRequestPermissionResult")
         if (requestCode == Constants.CONTACT_REQUEST_CODE) {
             when {
@@ -577,10 +564,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         }
     }
 
-    override fun onSearchDialogContinueButtonClicked(
-        inputOrderId: String,
-        inputMobileNumber: String
-    ) {
+    override fun onSearchDialogContinueButtonClicked(inputOrderId: String, inputMobileNumber: String) {
         mOrderIdString = inputOrderId
         mMobileNumberString = inputMobileNumber
         val request = SearchOrdersRequest(if (mOrderIdString.isNotEmpty()) mOrderIdString.toLong() else 0, mMobileNumberString, 1)
@@ -620,7 +604,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
             mHomeFragmentService?.updateOrderStatus(request)
             isNewOrder = true
         }
-        launchFragment(OrderDetailFragment.newInstance(item?.orderId.toString(), isNewOrder), true)
+        launchFragment(OrderDetailFragment.newInstance(item?.orderHash.toString(), isNewOrder), true)
     }
 
     override fun onDontShowDialogPositiveButtonClicked(item: OrderItemResponse?) {
@@ -632,8 +616,10 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
     }
 
     override fun onNativeBackPressed() {
-        CoroutineScopeUtils().runTaskOnCoroutineMain {
-            mActivity?.onBackPressed()
+        mActivity?.let {
+            it.runOnUiThread {
+                it.onBackPressed()
+            }
         }
     }
 
