@@ -23,9 +23,9 @@ class SendBillPhotoService {
         }
     }
 
-    fun updateOrder(authToken: String, request: UpdateOrderRequest) {
+    fun updateOrder(request: UpdateOrderRequest) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.updateOrderServerCall(authToken, request, mServiceInterface)
+            mNetworkService.updateOrderServerCall(request, mServiceInterface)
         }
     }
 

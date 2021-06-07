@@ -175,7 +175,7 @@ class SearchOrdersFragment: BaseFragment(), IOnToolbarIconClick, ISearchOrderSer
             mService.updateOrderStatus(request)
             isNewOrder = true
         }
-        launchFragment(OrderDetailFragment.newInstance(item?.orderId.toString(), isNewOrder), true)
+        launchFragment(OrderDetailFragment.newInstance(item?.orderHash.toString(), isNewOrder), true)
     }
 
 }

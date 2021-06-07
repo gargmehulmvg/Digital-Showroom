@@ -172,7 +172,7 @@ interface Apis {
     @POST("api/dotk/vm1/orders/updateOrderStatus")
     suspend fun updateOrderStatus(@Body statusRequest: UpdateOrderStatusRequest): Response<CommonApiResponse>
 
-    @GET("api/dotk/vm1/orders/getOrderDetails/{orderId}")
+    @GET("api/dotk/vm1/orders/getOrderDetailsV2/{orderId}")
     suspend fun getOrderDetails(@Path("orderId") orderId: String): Response<CommonApiResponse>
 
     @POST("api/dotk/vm1/orders/completeOrder")
@@ -181,8 +181,8 @@ interface Apis {
     @GET("api/dotk/vm1/orders/getDeliveryTime")
     suspend fun getDeliveryTime(): Response<CommonApiResponse>
 
-    @POST("api/dotk/vm1/orders/updateOrder")
-    suspend fun updateOrder(@Header("auth_token") authToken: String, @Body statusRequest: UpdateOrderRequest): Response<CommonApiResponse>
+    @POST("api/dotk/vm1/orders/updateOrderV2")
+    suspend fun updateOrder(@Body statusRequest: UpdateOrderRequest): Response<CommonApiResponse>
 
     @POST("api/dotk/vm1/orders/updatePrepaidOrder/{orderId}")
     suspend fun updatePrepaidOrder(@Path("orderId") orderId: String?, @Body statusRequest: UpdatePrepaidOrderRequest?): Response<CommonApiResponse>

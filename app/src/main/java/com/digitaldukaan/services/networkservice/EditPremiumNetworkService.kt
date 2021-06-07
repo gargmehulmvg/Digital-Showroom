@@ -1,6 +1,8 @@
 package com.digitaldukaan.services.networkservice
 
 import android.util.Log
+import com.digitaldukaan.constants.Constants
+import com.digitaldukaan.exceptions.UnAuthorizedAccessException
 import com.digitaldukaan.models.request.EditPremiumColorRequest
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.network.RetrofitApi
@@ -20,6 +22,8 @@ class EditPremiumNetworkService {
                         serviceInterface.onPremiumColorsResponse(apiResponse)
                     }
                 } else {
+                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) throw UnAuthorizedAccessException(
+                        Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
                     val errorResponseBody = it.errorBody()
                     errorResponseBody?.let {
                         val errorResponse = Gson().fromJson(errorResponseBody.string(), CommonApiResponse::class.java)
@@ -45,6 +49,7 @@ class EditPremiumNetworkService {
                         serviceInterface.onSetPremiumColorsResponse(apiResponse)
                     }
                 } else {
+                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
                     val errorResponseBody = it.errorBody()
                     errorResponseBody?.let {
                         val errorResponse = Gson().fromJson(errorResponseBody.string(), CommonApiResponse::class.java)

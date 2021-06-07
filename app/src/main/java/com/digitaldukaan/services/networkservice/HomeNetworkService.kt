@@ -28,9 +28,7 @@ class HomeNetworkService {
                         else serviceInterface.onCompletedOrdersResponse(commonApiResponse)
                     }
                 } else {
-                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) {
-                        throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
-                    }
+                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
                     val validateOtpError = it.errorBody()
                     validateOtpError?.let {
                         val validateOtpErrorResponse = Gson().fromJson(
@@ -57,9 +55,7 @@ class HomeNetworkService {
             response?.let {
                 if (it.isSuccessful) it.body()?.let { validateUserResponse -> serviceInterface.onAnalyticsDataResponse(validateUserResponse) }
                 else {
-                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) {
-                        throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
-                    }
+                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
                     val validateOtpError = it.errorBody()
                     validateOtpError?.let {
                         val errorResponse = Gson().fromJson(validateOtpError.string(), CommonApiResponse::class.java)
@@ -81,9 +77,7 @@ class HomeNetworkService {
             response?.let {
                 if (it.isSuccessful) it.body()?.let { validateUserResponse -> serviceInterface.onOrderPageInfoResponse(validateUserResponse) }
                 else {
-                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) {
-                        throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
-                    }
+                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
                     val validateOtpError = it.errorBody()
                     validateOtpError?.let {
                         val errorResponse = Gson().fromJson(validateOtpError.string(), CommonApiResponse::class.java)
@@ -106,9 +100,7 @@ class HomeNetworkService {
             response?.let {
                 if (it.isSuccessful) it.body()?.let { validateUserResponse -> serviceInterface.onSearchOrdersResponse(validateUserResponse) }
                 else {
-                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) {
-                        throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
-                    }
+                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
                     val validateOtpError = it.errorBody()
                     validateOtpError?.let {
                         val errorResponse = Gson().fromJson(validateOtpError.string(), CommonApiResponse::class.java)
@@ -131,9 +123,7 @@ class HomeNetworkService {
             response?.let {
                 if (it.isSuccessful) it.body()?.let { commonApiResponse -> serviceInterface.onOrdersUpdatedStatusResponse(commonApiResponse) }
                 else {
-                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) {
-                        throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
-                    }
+                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
                     val responseBody = it.errorBody()
                     responseBody?.let {
                         val errorResponse = Gson().fromJson(responseBody.string(), CommonApiResponse::class.java)
@@ -156,9 +146,7 @@ class HomeNetworkService {
             response?.let {
                 if (it.isSuccessful) it.body()?.let { commonApiResponse -> serviceInterface.onCompleteOrderStatusResponse(commonApiResponse) }
                 else {
-                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) {
-                        throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
-                    }
+                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
                     val responseBody = it.errorBody()
                     responseBody?.let {
                         val errorResponse = Gson().fromJson(responseBody.string(), CommonApiResponse::class.java)

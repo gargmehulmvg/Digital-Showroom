@@ -75,12 +75,14 @@ class SetOrderTypeFragment: BaseFragment(), ISetOrderTypeServiceInterface, IRecy
             setSecondSideIconVisibility(false)
         }
         hideBottomNavigationView(true)
-        payBothRadioButton = mContentView?.findViewById(R.id.payBothRadioButton)
-        postpaidRadioButton = mContentView?.findViewById(R.id.postpaidRadioButton)
-        prepaidOrderRadioButton = mContentView?.findViewById(R.id.prepaidOrderRadioButton)
-        prepaidOrderContainer = mContentView?.findViewById(R.id.prepaidOrderContainer)
-        postpaidContainer = mContentView?.findViewById(R.id.payOnPickUpDeliveryContainer)
-        payBothContainer = mContentView?.findViewById(R.id.payBothContainer)
+        mContentView?.let { view ->
+            payBothRadioButton = view.findViewById(R.id.payBothRadioButton)
+            postpaidRadioButton = view.findViewById(R.id.postpaidRadioButton)
+            prepaidOrderRadioButton = view.findViewById(R.id.prepaidOrderRadioButton)
+            prepaidOrderContainer = view.findViewById(R.id.prepaidOrderContainer)
+            postpaidContainer = view.findViewById(R.id.payOnPickUpDeliveryContainer)
+            payBothContainer = view.findViewById(R.id.payBothContainer)
+        }
     }
 
     private fun setupUIWithStaticData() {
@@ -174,9 +176,7 @@ class SetOrderTypeFragment: BaseFragment(), ISetOrderTypeServiceInterface, IRecy
         }
     }
 
-    override fun onSetOrderTypeException(e: Exception) {
-        exceptionHandlingForAPIResponse(e)
-    }
+    override fun onSetOrderTypeException(e: Exception) = exceptionHandlingForAPIResponse(e)
 
     override fun onClick(view: View?) {
         when(view?.id) {
@@ -240,10 +240,7 @@ class SetOrderTypeFragment: BaseFragment(), ISetOrderTypeServiceInterface, IRecy
             try {
                 mActivity?.let {
                     val bottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
-                    val view = LayoutInflater.from(it).inflate(
-                        R.layout.bottom_sheet_prepaid_work_flow,
-                        it.findViewById(R.id.bottomSheetContainer)
-                    )
+                    val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_prepaid_work_flow, it.findViewById(R.id.bottomSheetContainer))
                     bottomSheetDialog.apply {
                         setContentView(view)
                         setBottomSheetCommonProperty()
@@ -252,13 +249,10 @@ class SetOrderTypeFragment: BaseFragment(), ISetOrderTypeServiceInterface, IRecy
                             val bottomSheetHeadingTextView: TextView = findViewById(R.id.bottomSheetHeadingTextView)
                             val prepaidOrderWorkFlowRecyclerView: RecyclerView = findViewById(R.id.prepaidOrderWorkFlowRecyclerView)
                             bottomSheetHeadingTextView.text = mStaticText?.heading_how_does_prepaid_orders_works
-                            bottomSheetClose.setOnClickListener {
-                                bottomSheetDialog.dismiss()
-                            }
+                            bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
                             prepaidOrderWorkFlowRecyclerView.apply {
                                 layoutManager = LinearLayoutManager(mActivity)
-                                adapter =
-                                    PrepaidOrderWorkFlowAdapter(mSetOrderTypePageInfoResponse?.mHowItWorkList)
+                                adapter = PrepaidOrderWorkFlowAdapter(mSetOrderTypePageInfoResponse?.mHowItWorkList)
                             }
                         }
                     }.show()
@@ -274,10 +268,7 @@ class SetOrderTypeFragment: BaseFragment(), ISetOrderTypeServiceInterface, IRecy
             try {
                 mActivity?.let {
                     val bottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
-                    val view = LayoutInflater.from(it).inflate(
-                        R.layout.bottom_sheet_unlock_options,
-                        it.findViewById(R.id.bottomSheetContainer)
-                    )
+                    val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_unlock_options, it.findViewById(R.id.bottomSheetContainer))
                     bottomSheetDialog.apply {
                         setContentView(view)
                         setBottomSheetCommonProperty()
@@ -288,29 +279,9 @@ class SetOrderTypeFragment: BaseFragment(), ISetOrderTypeServiceInterface, IRecy
                             optionsRecyclerView.apply {
                                 layoutManager = LinearLayoutManager(mActivity)
                                 adapter = PrepaidOrderUnlockOptionsAdapter(mSetOrderTypePageInfoResponse?.mUnlockOptionList, mActivity, object : IAdapterItemClickListener {
+
                                     override fun onAdapterItemClickListener(position: Int) {
-                                        val item = mSetOrderTypePageInfoResponse?.mUnlockOptionList?.get(position)
-                                        bottomSheetDialog.dismiss()
-                                        when(item?.action) {
-                                            Constants.ACTION_KYC -> {
-                                                AppEventsManager.pushAppEvents(
-                                                    eventName = AFInAppEventType.EVENT_COMPLETE_PREPAID_STEPS,
-                                                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                                                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                                                        AFInAppEventParameterName.STEP to AFInAppEventParameterName.KYC)
-                                                )
-                                                launchFragment(ProfilePreviewFragment().newInstance(""), true)
-                                            }
-                                            Constants.ACTION_DELIVERY_CHARGES -> {
-                                                AppEventsManager.pushAppEvents(
-                                                    eventName = AFInAppEventType.EVENT_COMPLETE_PREPAID_STEPS,
-                                                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                                                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                                                        AFInAppEventParameterName.STEP to AFInAppEventParameterName.DELIVERY_CHARGE)
-                                                )
-                                                launchFragment(SetDeliveryChargeFragment.newInstance(StaticInstances.sAccountPageSettingsStaticData), true)
-                                            }
-                                        }
+                                        handlePrepaidOrderBottomSheetClick(position, bottomSheetDialog)
                                     }
                                 })
                             }
@@ -319,6 +290,29 @@ class SetOrderTypeFragment: BaseFragment(), ISetOrderTypeServiceInterface, IRecy
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "showUnlockOptionBottomSheet: ${e.message}", e)
+            }
+        }
+    }
+
+    private fun handlePrepaidOrderBottomSheetClick(position: Int, bottomSheetDialog: BottomSheetDialog) {
+        val item = mSetOrderTypePageInfoResponse?.mUnlockOptionList?.get(position)
+        bottomSheetDialog.dismiss()
+        when (item?.action) {
+            Constants.ACTION_KYC -> {
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_COMPLETE_PREPAID_STEPS,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.STEP to AFInAppEventParameterName.KYC)
+                )
+                launchFragment(ProfilePreviewFragment().newInstance(""), true)
+            }
+            Constants.ACTION_DELIVERY_CHARGES -> {
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_COMPLETE_PREPAID_STEPS,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.STEP to AFInAppEventParameterName.DELIVERY_CHARGE)
+                )
+                launchFragment(SetDeliveryChargeFragment.newInstance(StaticInstances.sAccountPageSettingsStaticData), true)
             }
         }
     }
@@ -349,8 +343,7 @@ class SetOrderTypeFragment: BaseFragment(), ISetOrderTypeServiceInterface, IRecy
                             AppEventsManager.pushAppEvents(
                                 eventName = AFInAppEventType.EVENT_ACTIVATE_PREPAID_ORDER,
                                 isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                                data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                                    AFInAppEventParameterName.TYPE to if (mPaymentMethod == 1) "Prepaid" else "both")
+                                data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.TYPE to if (mPaymentMethod == 1) AFInAppEventParameterName.PREPAID else AFInAppEventParameterName.BOTH)
                             )
                             showProgressDialog(mActivity)
                             mService?.updatePaymentMethod(UpdatePaymentMethodRequest(mPaymentMethod))

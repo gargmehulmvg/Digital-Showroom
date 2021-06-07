@@ -22,6 +22,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomnavigation.LabelVisibilityMode.LABEL_VISIBILITY_LABELED
 import com.google.firebase.messaging.FirebaseMessaging
 import com.truecaller.android.sdk.TruecallerSDK
+import io.sentry.Sentry
 import kotlinx.android.synthetic.main.activity_main2.*
 import java.util.*
 
@@ -141,10 +142,15 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     }
 
     override fun onBackPressed() {
-        val current: BaseFragment? = getCurrentFragment()
-        if (current?.onBackPressed() == true) return
-        val manager = supportFragmentManager
-        if (manager.backStackEntryCount > 0) super.onBackPressed()
+        try {
+            val current: BaseFragment? = getCurrentFragment()
+            if (current?.onBackPressed() == true) return
+            val manager = supportFragmentManager
+            if (manager.backStackEntryCount > 0) super.onBackPressed()
+        } catch (e: Exception) {
+            Sentry.captureException(e, "$TAG :: onBackPressed")
+            Log.e(TAG, "onBackPressed: ${e.message}", e)
+        }
     }
 
     fun onClick(v: View?) {
