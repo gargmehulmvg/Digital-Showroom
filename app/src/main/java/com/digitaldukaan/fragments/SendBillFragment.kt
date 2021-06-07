@@ -66,6 +66,11 @@ class SendBillFragment : BaseFragment() {
         })
     }
 
+    override fun onResume() {
+        super.onResume()
+        stopProgress()
+    }
+
     private fun loadImageFromUri() {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             mImageUri?.let {

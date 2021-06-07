@@ -96,9 +96,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
 
     override fun onClick(view: View?) {
         super.onClick(view)
-        StaticInstances.sAccountPageSettingsStaticData = mAppSettingsResponseStaticData
         StaticInstances.sAppStoreServicesResponse = mAppStoreServicesResponse
-        StaticInstances.sPaymentMethodStr = mProfileResponse?.mOnlinePaymentType
         when (view?.id) {
             storeSwitch?.id -> changeStoreDeliveryStatus()
             deliverySwitch?.id -> changeStoreDeliveryStatus()
@@ -128,7 +126,6 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                     mProfileService.getProductShareStoreData()
                 }
             }
-            viewAllHeading?.id -> launchFragment(NewReleaseFragment.newInstance(mAccountInfoResponse?.mTrendingList, mAccountInfoResponse?.mAccountStaticText), true)
         }
     }
 
@@ -420,8 +417,8 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             settingsAdapter.setSettingsList(infoResponse.mStoreOptions)
         }
         newReleaseRecyclerView?.apply {
-            layoutManager = GridLayoutManager(mActivity, 3)
-            adapter = NewReleaseAdapter(infoResponse.mTrendingList, this@SettingsFragment, mActivity, 3)
+            layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
+            adapter = NewReleaseAdapter(infoResponse.mTrendingList, this@SettingsFragment, mActivity)
         }
         val remainingSteps = infoResponse.mTotalSteps.minus(infoResponse.mCompletedSteps)
         stepsLeftTextView?.text = if (remainingSteps == 1) "$remainingSteps ${infoResponse.mAccountStaticText?.mStepLeft}" else "$remainingSteps ${infoResponse.mAccountStaticText?.mStepsLeft}"
@@ -448,7 +445,6 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         shareShowRoomWithCustomerTextView?.text = infoResponse.mAccountStaticText?.mShareMessageText
         materialTextView?.text = infoResponse.mAccountStaticText?.mStoreControlsText
         newReleaseHeading?.text = infoResponse.mAccountStaticText?.mNewReleaseText
-        viewAllHeading?.text = infoResponse.mAccountStaticText?.mViewAllText
         ToolBarManager.getInstance()?.setHeaderTitle(infoResponse.mAccountStaticText?.page_heading)
     }
 
