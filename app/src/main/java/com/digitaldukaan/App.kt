@@ -11,6 +11,7 @@ import android.util.Log
 import android.webkit.WebView
 import com.appsflyer.AppsFlyerConversionListener
 import com.appsflyer.AppsFlyerLib
+import com.clevertap.android.sdk.ActivityLifecycleCallback
 import com.digitaldukaan.constants.AFInAppEventParameterName
 import com.digitaldukaan.constants.StaticInstances
 import com.google.firebase.crashlytics.FirebaseCrashlytics
@@ -24,6 +25,7 @@ class App: Application() {
     }
 
     override fun onCreate() {
+        ActivityLifecycleCallback.register(this)
         super.onCreate()
         val conversionDataListener  = object : AppsFlyerConversionListener {
             override fun onConversionDataSuccess(data: MutableMap<String, Any>?) {
@@ -74,6 +76,10 @@ class App: Application() {
             if (packageName != processName) {
                 WebView.setDataDirectorySuffix(processName)
             }
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            val process = getProcessName()
+            if (packageName != process) WebView.setDataDirectorySuffix(process)
         }
     }
 

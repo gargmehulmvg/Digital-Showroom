@@ -59,9 +59,7 @@ class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
         AppEventsManager.pushAppEvents(
             eventName = AFInAppEventType.EVENT_EDIT_THEME,
             isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-            data = mapOf(
-                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)
-            )
+            data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
         )
     }
 
@@ -133,10 +131,12 @@ class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
             }
             loadUrl(url)
         }
-        appTitleTextView?.text = mStaticText?.heading_edit_theme
-        textView3?.text = mStaticText?.text_customer_will_see
-        editColorTextView?.text = mStaticText?.text_edit_colors
-        changeImageTextView?.text = mStaticText?.text_edit_image
+        mStaticText?.let { text ->
+            appTitleTextView?.text = text.heading_edit_theme
+            textView3?.text = text.text_customer_will_see
+            editColorTextView?.text = text.text_edit_colors
+            changeImageTextView?.text = text.text_edit_image
+        }
     }
 
     override fun onClick(view: View?) {
@@ -156,9 +156,7 @@ class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_EDIT_THEME_IMAGE,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                    data = mapOf(
-                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)
-                    )
+                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
                 )
                 openMobileGalleryWithoutCrop()
             }
@@ -166,10 +164,7 @@ class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_VIEW_AS_CUSTOMER,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                    data = mapOf(
-                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                        AFInAppEventParameterName.CHANNEL to "isEditor"
-                    )
+                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.CHANNEL to "isEditor")
                 )
                 val url = "${BuildConfig.WEB_VIEW_PREVIEW_URL}${mPremiumPageInfoResponse?.domain}"
                 openUrlInBrowser(url)
@@ -211,16 +206,11 @@ class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
         AppEventsManager.pushAppEvents(
             eventName = AFInAppEventType.EVENT_EDIT_COLOR,
             isCleverTapEvent = true, isAppFlyerEvent = false, isServerCallEvent = true,
-            data = mapOf(
-                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)
-            )
+            data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
         )
         mActivity?.run {
             val bottomSheetDialog = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
-            val view = LayoutInflater.from(mActivity).inflate(
-                R.layout.bottom_sheet_edit_premium_color,
-                this.findViewById(R.id.bottomSheetContainer)
-            )
+            val view = LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet_edit_premium_color, this.findViewById(R.id.bottomSheetContainer))
             bottomSheetDialog.apply {
                 setContentView(view)
                 setBottomSheetCommonProperty()
@@ -232,7 +222,8 @@ class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
                         layoutManager = GridLayoutManager(mActivity, 5)
                         mEditPremiumColorList?.forEachIndexed { _, colorItemResponse -> colorItemResponse?.isSelected = false }
                         mEditPremiumColorList?.set(0, mDefaultSelectedColorItem)
-                        colorAdapter = EditPremiumColorAdapter(mEditPremiumColorList, object : IAdapterItemClickListener{
+                        colorAdapter = EditPremiumColorAdapter(mEditPremiumColorList, object : IAdapterItemClickListener {
+
                             override fun onAdapterItemClickListener(position: Int) {
                                 if (position == 0) return
                                 mEditPremiumColorList?.forEachIndexed { _, colorItemResponse -> colorItemResponse?.isSelected = false }
@@ -262,9 +253,7 @@ class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
                         AppEventsManager.pushAppEvents(
                             eventName = AFInAppEventType.EVENT_SAVE_THEME_COLOR,
                             isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                            data = mapOf(
-                                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)
-                            )
+                            data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
                         )
                         mService.setStoreThemeColorPalette(mPremiumPageInfoResponse?.theme?.storeThemeId, mSelectedColorId)
                     }

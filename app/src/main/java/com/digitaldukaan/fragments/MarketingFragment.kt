@@ -79,9 +79,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
 
     override fun onToolbarSideIconClicked() = openWebViewFragment(this, getString(R.string.help), WebViewUrls.WEB_VIEW_HELP, Constants.SETTINGS)
 
-    override fun onMarketingErrorResponse(e: Exception) {
-        exceptionHandlingForAPIResponse(e)
-    }
+    override fun onMarketingErrorResponse(e: Exception) = exceptionHandlingForAPIResponse(e)
 
     override fun onMarketingResponse(response: CommonApiResponse) {
         stopProgress()
@@ -140,7 +138,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_MARKET_VIEW_NOW,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), "type" to AFInAppEventParameterName.SOCIAL)
+                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.TYPE to AFInAppEventParameterName.SOCIAL)
                 )
                 openWebViewFragment(this, "", WebViewUrls.WEB_VIEW_CREATIVE_LIST, Constants.SETTINGS)
             }
@@ -157,17 +155,17 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_MARKET_VIEW_NOW,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), "type" to AFInAppEventParameterName.SOCIAL)
+                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.TYPE to AFInAppEventParameterName.SOCIAL)
                 )
                 openWebViewFragment(this, "", WebViewUrls.WEB_VIEW_SOCIAL_CREATIVE_LIST, Constants.SETTINGS)
             }
             Constants.ACTION_CATALOG_PREMIUM -> {
                 AppEventsManager.pushAppEvents(
-                    eventName = AFInAppEventType.EVENT_PREMIUM_PAGE,
+                    eventName = AFInAppEventType.EVENT_GET_PREMIUM_WEBSITE,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                     data = mapOf(
                         AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                        AFInAppEventParameterName.CHANNEL to "isMarketing"
+                        AFInAppEventParameterName.CHANNEL to AFInAppEventParameterName.IS_MARKETING
                     )
                 )
                 openWebViewFragment(this, "", BuildConfig.WEB_VIEW_URL + response.action)
@@ -178,7 +176,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                     data = mapOf(
                         AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                        AFInAppEventParameterName.IS_MARKETING_PAGE to "true"
+                        AFInAppEventParameterName.IS_MARKETING_PAGE to AFInAppEventParameterName.TRUE
                     )
                 )
                 openWebViewFragment(this, "", WebViewUrls.WEB_VIEW_QR_DOWNLOAD, Constants.SETTINGS)
@@ -189,7 +187,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                     data = mapOf(
                         AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                        AFInAppEventParameterName.IS_MARKETING_PAGE to "true"
+                        AFInAppEventParameterName.IS_MARKETING_PAGE to AFInAppEventParameterName.TRUE
                     )
                 )
                 showProgressDialog(mActivity)
@@ -269,8 +267,10 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
     }
 
     override fun onNativeBackPressed() {
-        CoroutineScopeUtils().runTaskOnCoroutineMain {
-            mActivity?.onBackPressed()
+        mActivity?.let {
+            it.runOnUiThread {
+                it.onBackPressed()
+            }
         }
     }
 

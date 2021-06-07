@@ -49,11 +49,11 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
 
     private var mStoreName: String? = ""
     private var mProfilePreviewStaticData: ProfileStaticTextResponse? = null
-    private val service = ProfilePreviewService()
+    private val mService = ProfilePreviewService()
     private var mStoreLinkBottomSheet: BottomSheetDialog? = null
     private var mStoreNameEditBottomSheet: BottomSheetDialog? = null
     private var mProfilePreviewResponse: ProfileInfoResponse? = null
-    private lateinit var mStoreLinkErrorResponse: StoreDescriptionResponse
+    private var mStoreLinkErrorResponse: StoreDescriptionResponse? = null
     private lateinit var mProfileInfoSettingKeyResponse: ProfilePreviewSettingsKeyResponse
     private var cancelWarningDialog: Dialog? = null
     private var mStoreLogo: String? = ""
@@ -81,7 +81,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.layout_profile_preview_fragment, container, false)
-        service.setServiceInterface(this)
+        mService.setServiceInterface(this)
         mActivity?.let { cancelWarningDialog = Dialog(it) }
         return mContentView
     }
@@ -96,9 +96,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         fetchProfilePreviewCall()
         hideBottomNavigationView(true)
         StaticInstances.sIsStoreImageUploaded = false
-        profilePreviewStoreNameTextView?.setOnClickListener {
-            showEditStoreNameBottomSheet(mProfilePreviewResponse?.mStoreItemResponse?.storeInfo?.name)
-        }
+        profilePreviewStoreNameTextView?.setOnClickListener { showEditStoreNameBottomSheet(mProfilePreviewResponse?.mStoreItemResponse?.storeInfo?.name) }
         storePhotoLayout?.setOnClickListener {
             var storeLogo = mProfilePreviewResponse?.mStoreItemResponse?.storeInfo?.logoImage
             if (mStoreLogo?.isNotEmpty() == true) storeLogo = mStoreLogo
@@ -110,11 +108,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         }
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         Log.d(ProfilePreviewFragment::class.simpleName, "onRequestPermissionResult")
         if (requestCode == Constants.IMAGE_PICK_REQUEST_CODE) {
             when {
@@ -136,7 +130,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
             return
         }
         showProgressDialog(mActivity)
-        service.getProfilePreviewData()
+        mService.getProfilePreviewData()
         swipeRefreshLayout?.setOnRefreshListener(this)
     }
 
@@ -184,8 +178,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                                         AppEventsManager.pushAppEvents(
                                             eventName = AFInAppEventType.EVENT_DOMAIN_EXPLORE,
                                             isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                                            data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                                                AFInAppEventParameterName.CHANNEL to AFInAppEventParameterName.IS_PROFILE_PAGE)
+                                            data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.CHANNEL to AFInAppEventParameterName.IS_PROFILE_PAGE)
                                         )
                                         openWebViewFragment(this@ProfilePreviewFragment, "", BuildConfig.WEB_VIEW_URL + item.mDeepLinkUrl)
                                     }
@@ -245,9 +238,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                         AFInAppEventParameterName.REFERENCE_STORE_ID to "${storeNameResponse?.storeInfo?.referenceStoreId}"
                     )
                 )
-                mStoreNameEditBottomSheet?.run {
-                    if (isShowing) dismiss()
-                }
+                mStoreNameEditBottomSheet?.run { if (isShowing) dismiss() }
                 mStoreName = storeNameResponse.storeInfo.name
                 showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
                 onRefresh()
@@ -278,10 +269,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         AppEventsManager.pushAppEvents(
             eventName = AFInAppEventType.EVENT_EDIT_STORE_LINK_SAVE,
             isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-            data = mapOf(
-                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                AFInAppEventParameterName.RESULT to resultStr
-            )
+            data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.RESULT to resultStr)
         )
     }
 
@@ -296,10 +284,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         AppEventsManager.pushAppEvents(
             eventName = AFInAppEventType.EVENT_STORE_SHARE,
             isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-            data = mapOf(
-                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                AFInAppEventParameterName.IS_EDIT_STORE_LINK to "yes"
-            )
+            data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.IS_EDIT_STORE_LINK to "yes")
         )
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
@@ -334,12 +319,9 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_KYC_COMPLETE_NOW,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                    data = mapOf(
-                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                        AFInAppEventParameterName.STATE to mProfileInfoSettingKeyResponse.mDefaultText
-                    )
+                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.STATE to mProfileInfoSettingKeyResponse.mDefaultText)
                 )
-                service.initiateKyc(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
+                mService.initiateKyc(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
             }
         }
     }
@@ -368,10 +350,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                             AppEventsManager.pushAppEvents(
                                 eventName = AFInAppEventType.EVENT_EDIT_STORE_LINK_WARNING,
                                 isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                                data = mapOf(
-                                    AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                                    "SELECT" to "yes"
-                                )
+                                data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.SELECT to "yes")
                             )
                             if (warningDialog.isShowing) warningDialog.dismiss()
                             showEditStoreLinkBottomSheet(profilePreviewResponse)
@@ -380,10 +359,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                             AppEventsManager.pushAppEvents(
                                 eventName = AFInAppEventType.EVENT_EDIT_STORE_LINK_WARNING,
                                 isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                                data = mapOf(
-                                    AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                                    "SELECT" to "no"
-                                )
+                                data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.SELECT to "no")
                             )
                             if (warningDialog.isShowing) warningDialog.dismiss()
                         }
@@ -471,7 +447,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                             val request = StoreLinkRequest(getStringDataFromSharedPref(Constants.STORE_ID).toInt(), newStoreLink)
                             showProgressDialog(mActivity)
                             mStoreLinkLastEntered = newStoreLink
-                            service.updateStoreLink(request)
+                            mService.updateStoreLink(request)
                         }
                     }
                     bottomSheetEditStoreHeading.text = if (bottomSheetEditStoreLinkEditText.text.isEmpty()) mProfilePreviewStaticData?.storeLinkTitle else mProfilePreviewStaticData?.editStoreLink
@@ -519,7 +495,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                         bottomSheetEditStoreLinkConditionOne.visibility = View.GONE
                         bottomSheetEditStoreLinkConditionTwo.visibility = View.GONE
                         bottomSheetEditStoreLinkServerError.visibility = View.VISIBLE
-                        bottomSheetEditStoreLinkServerError.text = when (mStoreLinkErrorResponse.mErrorString) {
+                        bottomSheetEditStoreLinkServerError.text = when (mStoreLinkErrorResponse?.mErrorString) {
                             Constants.ERROR_DOMAIN_ALREADY_EXISTS -> mProfilePreviewStaticData?.mDomainAlreadyExistError
                             else -> mProfilePreviewStaticData?.mDomainUnAvailableError
                         }
@@ -558,7 +534,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                     val request = StoreNameRequest(newStoreName)
                     showProgressDialog(mActivity)
                     bottomSheetEditStoreSaveTextView.isEnabled = false
-                    service.updateStoreName(request)
+                    mService.updateStoreName(request)
                 }
             }
             bottomSheetEditStoreHeading.text = mProfilePreviewStaticData?.mBottomSheetStoreNameHeading
@@ -597,7 +573,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         file?.run {
             val fileRequestBody = MultipartBody.Part.createFormData("media", file.name, RequestBody.create("image/*".toMediaTypeOrNull(), file))
             val imageTypeRequestBody = RequestBody.create("text/plain".toMediaTypeOrNull(), Constants.BASE64_STORE_LOGO)
-            service.generateCDNLink(imageTypeRequestBody, fileRequestBody)
+            mService.generateCDNLink(imageTypeRequestBody, fileRequestBody)
         }
     }
 
@@ -644,7 +620,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
             val photoResponse = Gson().fromJson<String>(response.mCommonDataStr, String::class.java)
             stopProgress()
-            service.updateStoreLogo(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), StoreLogoRequest(photoResponse))
+            mService.updateStoreLogo(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), StoreLogoRequest(photoResponse))
         }
     }
 
@@ -684,7 +660,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                         return@setOnClickListener
                     }
                     showProgressDialog(mActivity)
-                    service.getShareStoreData()
+                    mService.getShareStoreData()
                     shareStoreBottomSheet.dismiss()
                 }
             }.show()

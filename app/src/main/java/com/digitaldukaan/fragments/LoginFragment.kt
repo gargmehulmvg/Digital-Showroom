@@ -91,6 +91,11 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
 
         override fun onSuccessProfileShared(response: TrueProfile) {
             Log.d(TAG, "onSuccessProfileShared: $response")
+            AppEventsManager.pushAppEvents(
+                eventName = AFInAppEventType.EVENT_TRUE_CALLER_VERIFIED,
+                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
+            )
             val request = ValidateUserRequest(
                 response.payload,
                 response.signature,

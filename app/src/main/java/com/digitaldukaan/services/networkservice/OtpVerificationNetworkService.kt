@@ -1,7 +1,9 @@
 package com.digitaldukaan.services.networkservice
 
 import android.util.Log
+import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.StaticInstances
+import com.digitaldukaan.exceptions.UnAuthorizedAccessException
 import com.digitaldukaan.models.request.ValidateOtpRequest
 import com.digitaldukaan.models.response.ValidateOtpErrorResponse
 import com.digitaldukaan.network.RetrofitApi
@@ -21,6 +23,8 @@ class OtpVerificationNetworkService {
                 if (it.isSuccessful) {
                     it.body()?.let { validateOtpSuccessResponse -> otpVerificationServiceInterface.onOTPVerificationSuccessResponse(validateOtpSuccessResponse) }
                 } else {
+                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) throw UnAuthorizedAccessException(
+                        Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
                     val validateOtpError = it.errorBody()
                     validateOtpError?.let {
                         val validateOtpErrorResponse = Gson().fromJson(

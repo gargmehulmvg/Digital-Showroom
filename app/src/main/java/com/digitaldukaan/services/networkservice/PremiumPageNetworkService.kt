@@ -21,9 +21,7 @@ class PremiumPageNetworkService {
                         serviceInterface.onPremiumPageInfoResponse(apiResponse)
                     }
                 } else {
-                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) {
-                        throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
-                    }
+                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
                     val errorResponseBody = it.errorBody()
                     errorResponseBody?.let {
                         val errorResponse = Gson().fromJson(errorResponseBody.string(), CommonApiResponse::class.java)

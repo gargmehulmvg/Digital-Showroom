@@ -25,8 +25,8 @@ class OrderDetailsAdapter(
 ) :
     RecyclerView.Adapter<OrderDetailsAdapter.OrderDetailViewHolder>() {
 
-    private val itemStatusActive = 1
     private val mTag = "OrderDetailsAdapter"
+    private val itemStatusActive = 1
     private val itemStatusRejected = 2
 
     fun setOrderDetailList(list: ArrayList<OrderDetailItemResponse>?) {
@@ -69,16 +69,18 @@ class OrderDetailsAdapter(
         val item = mOrderDetailList?.get(position)
         holder.apply {
             orderDetailNameTextView.text = item?.item_name
-            if (!(item?.item_type == Constants.ITEM_TYPE_CHARGE || item?.item_type == Constants.ITEM_TYPE_DELIVERY_CHARGE || item?.item_type == Constants.ITEM_TYPE_DISCOUNT)) {
-                quantityTextView.text = "${mOrderDetailStaticData?.text_quantity}: ${item?.item_quantity}"
+            if (Constants.ITEM_TYPE_LIST == item?.item_type || Constants.ITEM_TYPE_CATALOG == item?.item_type) {
+                val quantityStr = "${mOrderDetailStaticData?.text_quantity}: ${item.item_quantity}"
+                quantityTextView.text = quantityStr
             }
-            priceTextView.text = "${if (item?.item_type == Constants.ITEM_TYPE_DISCOUNT) "- " else ""}${mOrderDetailStaticData?.text_rupees_symbol} ${item?.item_price}"
+            val priceStr = "${if (Constants.ITEM_TYPE_DISCOUNT == item?.item_type) "- " else ""}${mOrderDetailStaticData?.text_rupees_symbol} ${item?.amount}"
+            priceTextView.text = priceStr
             closeImageView.visibility = if (Constants.DS_SEND_BILL == mDeliveryStatus || Constants.DS_NEW == mDeliveryStatus) View.VISIBLE else View.GONE
-            if (item?.item_price == 0.0 && (mDeliveryStatus == Constants.DS_NEW || mDeliveryStatus == Constants.DS_SEND_BILL)) {
+            if (0.0 == item?.amount && (Constants.DS_NEW == mDeliveryStatus || Constants.DS_SEND_BILL == mDeliveryStatus)) {
                 priceEditText.visibility = View.VISIBLE
                 priceTextView.visibility = View.GONE
             } else {
-                if (item?.isItemEditable == true) {
+                if (true == item?.isItemEditable) {
                     priceEditText.visibility = View.VISIBLE
                     priceTextView.visibility = View.GONE
                 } else {
@@ -86,27 +88,35 @@ class OrderDetailsAdapter(
                     priceEditText.visibility = View.GONE
                 }
             }
-            if (item?.item_status == itemStatusRejected) {
+            if (itemStatusRejected == item?.item_status) {
                 closeImageView.setImageResource(R.drawable.ic_undo)
                 orderDetailContainer.alpha = 0.5f
-                if (priceEditText.visibility == View.VISIBLE) priceEditText.isEnabled = false
+                if (View.VISIBLE == priceEditText.visibility) priceEditText.isEnabled = false
             } else {
                 closeImageView.setImageResource(R.drawable.ic_close_red)
                 orderDetailContainer.alpha = 1f
-                if (priceEditText.visibility == View.VISIBLE) priceEditText.isEnabled = true
+                if (View.VISIBLE == priceEditText.visibility) priceEditText.isEnabled = true
             }
             if (!isEmpty(item?.variantName)) {
                 orderDetailVariantNameTextView.visibility = View.VISIBLE
                 orderDetailVariantNameTextView.text = item?.variantName
             } else orderDetailVariantNameTextView.visibility = View.GONE
-            if (priceEditText.visibility == View.VISIBLE) {
+            if (View.VISIBLE == priceEditText.visibility) {
                 priceEditText.addTextChangedListener(object : TextWatcher {
-                    override fun afterTextChanged(p0: Editable?) {
+                    override fun afterTextChanged(editable: Editable?) {
                         Log.d(mTag, "afterTextChanged: ")
-                        val str = p0?.toString()?.trim()
-                        if (str?.isNotEmpty() == true) {
-                            item?.item_price = str.toDouble()
-                        } else item?.item_price = 0.0
+                        val str = editable?.toString()?.trim()
+                        if (isEmpty(str)) {
+                            item?.item_price = 0.0
+                            item?.amount = 0.0
+                            item?.actualAmount = 0.0
+                            item?.discountedPrice = 0.0
+                        } else {
+                            item?.item_price = str?.toDouble()
+                            item?.amount = str?.toDouble()
+                            item?.actualAmount = str?.toDouble()
+                            item?.discountedPrice = str?.toDouble() ?: 0.0
+                        }
                         mListener?.onOrderDetailListUpdateListener()
                     }
 
