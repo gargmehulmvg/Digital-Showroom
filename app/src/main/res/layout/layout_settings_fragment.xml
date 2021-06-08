@@ -332,6 +332,21 @@
                     app:layout_constraintTop_toTopOf="parent"
                     tools:text="@string/new_release" />
 
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/viewAllHeading"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_13sdp"
+                    android:layout_marginEnd="@dimen/_15sdp"
+                    android:fontFamily="@font/montserrat"
+                    android:onClick="onClick"
+                    android:background="?selectableItemBackground"
+                    android:textColor="@color/open_green"
+                    android:textSize="@dimen/_12sdp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="View All" />
+
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/newReleaseRecyclerView"
                     android:layout_width="match_parent"
