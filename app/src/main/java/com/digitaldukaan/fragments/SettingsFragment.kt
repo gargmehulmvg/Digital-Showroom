@@ -516,6 +516,17 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                 )
                 when (responseItem.mType) {
                     Constants.NEW_RELEASE_TYPE_CUSTOM_DOMAIN -> openUrlInBrowser(responseItem.mPage + PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
+                    Constants.NEW_RELEASE_TYPE_PREPAID_ORDER -> {
+                        AppEventsManager.pushAppEvents(
+                            eventName = AFInAppEventType.EVENT_SET_PREPAID_ORDER,
+                            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                            data = mapOf(
+                                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                                AFInAppEventParameterName.PATH to AFInAppEventParameterName.NEW_RELEASES
+                            )
+                        )
+                        launchFragment(SetOrderTypeFragment.newInstance(), true)
+                    }
                     else -> openUrlInBrowser(responseItem.mPage)
                 }
 
