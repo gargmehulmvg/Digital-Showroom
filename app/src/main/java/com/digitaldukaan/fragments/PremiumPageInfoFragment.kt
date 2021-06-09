@@ -158,4 +158,22 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
     override fun showAndroidLog(data: String) {
         Log.d(TAG, "showAndroidLog :: $data")
     }
+
+    override fun onBackPressed(): Boolean {
+        return try {
+            Log.d(TAG, "onBackPressed :: called")
+            if(fragmentManager != null && fragmentManager?.backStackEntryCount == 1) {
+                clearFragmentBackStack()
+                launchFragment(HomeFragment.newInstance(), true)
+                true
+            } else {
+                if (commonWebView?.canGoBack() == true) {
+                    commonWebView?.goBack()
+                    true
+                } else false
+            }
+        } catch (e: Exception) {
+            false
+        }
+    }
 }

@@ -267,16 +267,20 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
     }
 
     override fun onBackPressed(): Boolean {
-        try {
-            Log.d(mTagName, "onBackPressed: called")
+        return try {
+            Log.d(mTagName, "onBackPressed :: called")
             if(fragmentManager != null && fragmentManager?.backStackEntryCount == 1) {
                 clearFragmentBackStack()
                 launchFragment(HomeFragment.newInstance(), true)
-                return true
+                true
+            } else {
+                if (commonWebView?.canGoBack() == true) {
+                    commonWebView?.goBack()
+                    true
+                } else false
             }
         } catch (e: Exception) {
-            return false
+            false
         }
-        return false
     }
 }
