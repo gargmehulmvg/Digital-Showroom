@@ -75,8 +75,7 @@ class NewReleaseFragment: BaseFragment(), IStoreSettingsItemClicked {
                     eventName = eventName,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                     data = mapOf(
-                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(
-                            Constants.STORE_ID),
+                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
                         AFInAppEventParameterName.CHANNEL to AFInAppEventParameterName.SETTINGS_PAGE
                     )
                 )

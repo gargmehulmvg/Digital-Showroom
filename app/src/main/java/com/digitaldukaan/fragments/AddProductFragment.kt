@@ -55,7 +55,6 @@ import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import org.shadow.apache.commons.lang3.StringUtils
 import java.io.File
 
 
@@ -672,13 +671,6 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     priceStr = "0$priceStr"
                     priceEditText?.setText(priceStr)
                     return true
-                }
-                !StringUtils.isNumeric(priceEditText?.text) -> {
-                    priceEditText?.apply {
-                        error = addProductStaticData?.error_mandatory_field
-                        requestFocus()
-                    }
-                    return false
                 }
                 true == discountPriceEditText?.text?.toString()?.isNotEmpty() && "." == discountPriceEditText?.text?.toString() -> {
                     discountPriceEditText?.apply {
