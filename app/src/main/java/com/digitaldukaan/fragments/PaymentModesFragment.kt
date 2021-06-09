@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.ToolBarManager
+import kotlinx.android.synthetic.main.layout_payment_modes.*
 
 class PaymentModesFragment: BaseFragment() {
 
@@ -29,15 +30,18 @@ class PaymentModesFragment: BaseFragment() {
 
     private fun initializeUI() {
         ToolBarManager.getInstance()?.apply {
-            hideToolBar(mActivity, false)
-            setHeaderTitle("")
-            onBackPressed(this@PaymentModesFragment)
-            setSideIconVisibility(false)
-            setSecondSideIconVisibility(false)
+            hideToolBar(mActivity, true)
         }
         hideBottomNavigationView(true)
         mContentView?.let { view ->
             //payBothRadioButton = view.findViewById(R.id.payBothRadioButton)
+        }
+    }
+
+    override fun onClick(view: View?) {
+        super.onClick(view)
+        when (view?.id) {
+            backButtonToolbar?.id -> mActivity?.onBackPressed()
         }
     }
 
