@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/upiImageView"
+        android:layout_width="@dimen/_50sdp"
+        android:layout_height="@dimen/_45sdp"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:layout_marginBottom="@dimen/_5sdp"
+        android:background="@drawable/slight_curve_light_grey_border_without_padding"
+        android:contentDescription="@string/image_view_content_description"
+        android:padding="@dimen/_8sdp"
+        android:src="@drawable/ic_cash"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/headingTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_12sdp"
+        android:clickable="false"
+        android:fontFamily="@font/roboto_medium"
+        android:text="UPI"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_13sdp"
+        app:layout_constraintStart_toEndOf="@+id/upiImageView"
+        app:layout_constraintTop_toTopOf="@+id/upiImageView" />
+
+    <TextView
+        android:id="@+id/upiTxnChargeTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_4sdp"
+        android:background="@drawable/curve_grey_background"
+        android:paddingStart="@dimen/_8sdp"
+        android:paddingTop="@dimen/_2sdp"
+        android:paddingEnd="@dimen/_8sdp"
+        android:paddingBottom="@dimen/_2sdp"
+        android:text="0% Txn Charge"
+        android:textColor="@color/dark_blackish"
+        android:textSize="@dimen/_8sdp"
+        app:layout_constraintStart_toStartOf="@+id/headingTextView"
+        app:layout_constraintTop_toBottomOf="@+id/headingTextView" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

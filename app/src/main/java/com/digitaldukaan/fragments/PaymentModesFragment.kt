@@ -4,11 +4,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
+import com.digitaldukaan.adapters.PaymentModeAdapter
 import com.digitaldukaan.constants.ToolBarManager
 import kotlinx.android.synthetic.main.layout_payment_modes.*
 
 class PaymentModesFragment: BaseFragment() {
+
+    private var paymentModesRecyclerView: RecyclerView? = null
 
     companion object {
         private const val TAG = "PaymentModesFragment"
@@ -34,7 +39,11 @@ class PaymentModesFragment: BaseFragment() {
         }
         hideBottomNavigationView(true)
         mContentView?.let { view ->
-            //payBothRadioButton = view.findViewById(R.id.payBothRadioButton)
+            paymentModesRecyclerView = view.findViewById(R.id.paymentModesRecyclerView)
+        }
+        paymentModesRecyclerView?.apply {
+            layoutManager = LinearLayoutManager(mActivity)
+            adapter = PaymentModeAdapter(mActivity)
         }
     }
 
@@ -42,6 +51,7 @@ class PaymentModesFragment: BaseFragment() {
         super.onClick(view)
         when (view?.id) {
             backButtonToolbar?.id -> mActivity?.onBackPressed()
+            completeKycNowTextView?.id -> launchFragment(ProfilePreviewFragment(), true)
         }
     }
 
