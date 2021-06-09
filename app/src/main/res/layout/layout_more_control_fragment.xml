@@ -284,4 +284,61 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/paymentModesContainer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@drawable/ripple_rect_grey_white_background"
+        android:elevation="@dimen/_1sdp"
+        android:layout_marginTop="0.5dp"
+        android:onClick="onClick"
+        android:paddingStart="@dimen/_20sdp"
+        android:paddingTop="@dimen/_15sdp"
+        android:paddingEnd="@dimen/_20sdp"
+        android:paddingBottom="@dimen/_15sdp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/onlinePaymentsContainer"
+        tools:targetApi="lollipop">
+
+        <ImageView
+            android:id="@+id/paymentModesImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:contentDescription="@string/image_view_content_description"
+            android:src="@drawable/ic_half_arrow_forward"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/paymentModesHeadingTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_12sdp"
+            app:layout_constraintEnd_toStartOf="@id/paymentModesImageView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Set Online Payment Modes" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/paymentModesOptionalTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:layout_marginTop="@dimen/_2sdp"
+            android:paddingTop="@dimen/_2sdp"
+            android:textColor="@color/default_text_light_grey"
+            android:textSize="@dimen/_9sdp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@id/paymentModesHeadingTextView"
+            app:layout_constraintTop_toBottomOf="@id/paymentModesHeadingTextView"
+            tools:text="UPI, Debit / Credit cards, Wallets etc" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

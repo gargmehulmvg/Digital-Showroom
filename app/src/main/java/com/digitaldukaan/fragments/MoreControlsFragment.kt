@@ -132,6 +132,9 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
                 )
                 launchFragment(SetOrderTypeFragment.newInstance(), true)
             }
+            paymentModesContainer?.id -> {
+                launchFragment(PaymentModesFragment.newInstance(), true)
+            }
         }
     }
 

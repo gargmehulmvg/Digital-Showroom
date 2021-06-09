@@ -64,6 +64,7 @@ class NewReleaseFragment: BaseFragment(), IStoreSettingsItemClicked {
     }
 
     override fun onNewReleaseItemClicked(responseItem: TrendingListResponse?) {
+        Log.d(TAG, "onNewReleaseItemClicked :: responseItem?.mAction :: ${responseItem?.mAction}")
         when (responseItem?.mAction) {
             Constants.NEW_RELEASE_TYPE_WEBVIEW -> {
                 val eventName = when (responseItem.mType) {
@@ -96,6 +97,7 @@ class NewReleaseFragment: BaseFragment(), IStoreSettingsItemClicked {
                         AFInAppEventParameterName.CHANNEL to AFInAppEventParameterName.SETTINGS_PAGE
                     )
                 )
+                Log.d(TAG, "onNewReleaseItemClicked :: responseItem.mType :: ${responseItem.mType}")
                 when (responseItem.mType) {
                     Constants.NEW_RELEASE_TYPE_CUSTOM_DOMAIN -> {
                         openUrlInBrowser(responseItem.mPage + PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
@@ -110,6 +112,9 @@ class NewReleaseFragment: BaseFragment(), IStoreSettingsItemClicked {
                             )
                         )
                         launchFragment(SetOrderTypeFragment.newInstance(), true)
+                    }
+                    Constants.NEW_RELEASE_TYPE_PAYMENT_MODES -> {
+                        launchFragment(PaymentModesFragment.newInstance(), true)
                     }
                     else -> openUrlInBrowser(responseItem.mPage)
                 }

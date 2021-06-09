@@ -14,8 +14,8 @@ android {
         applicationId "com.digitaldukaan"
         minSdkVersion 24
         targetSdkVersion 29
-        versionCode 68
-        versionName "4.1.6"
+        versionCode 69
+        versionName "4.1.7"
         multiDexEnabled true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

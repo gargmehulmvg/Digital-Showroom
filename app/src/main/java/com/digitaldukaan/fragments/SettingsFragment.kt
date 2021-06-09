@@ -515,7 +515,9 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                     data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.CHANNEL to AFInAppEventParameterName.SETTINGS_PAGE)
                 )
                 when (responseItem.mType) {
-                    Constants.NEW_RELEASE_TYPE_CUSTOM_DOMAIN -> openUrlInBrowser(responseItem.mPage + PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
+                    Constants.NEW_RELEASE_TYPE_CUSTOM_DOMAIN -> {
+                        openUrlInBrowser(responseItem.mPage + PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
+                    }
                     Constants.NEW_RELEASE_TYPE_PREPAID_ORDER -> {
                         AppEventsManager.pushAppEvents(
                             eventName = AFInAppEventType.EVENT_SET_PREPAID_ORDER,
@@ -526,6 +528,9 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                             )
                         )
                         launchFragment(SetOrderTypeFragment.newInstance(), true)
+                    }
+                    Constants.NEW_RELEASE_TYPE_PAYMENT_MODES -> {
+                        launchFragment(PaymentModesFragment.newInstance(), true)
                     }
                     else -> openUrlInBrowser(responseItem.mPage)
                 }
