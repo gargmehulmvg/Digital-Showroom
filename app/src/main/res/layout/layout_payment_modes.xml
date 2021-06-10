@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -9,16 +9,20 @@
     android:fillViewport="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout6"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize">
+        android:layout_height="?attr/actionBarSize"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:id="@+id/backButtonToolbar"
             android:layout_width="@dimen/_35sdp"
             android:layout_height="@dimen/_30sdp"
+            android:layout_marginStart="@dimen/_5sdp"
             android:contentDescription="@string/image_view_content_description"
             android:onClick="onClick"
-            android:layout_marginStart="@dimen/_5sdp"
             android:padding="@dimen/_4sdp"
             android:rotation="180"
             android:src="@drawable/ic_arrow_forward_white"
@@ -30,10 +34,13 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/nestedScrollView2"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:background="@color/default_bg"
-        android:fillViewport="true">
+        android:fillViewport="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/constraintLayout6">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -54,7 +61,7 @@
                     android:fontFamily="@font/roboto_medium"
                     android:paddingStart="@dimen/_10sdp"
                     android:paddingEnd="@dimen/_10sdp"
-                    android:text="Select payment modes for your customers"
+                    tools:text="Select payment modes for your customers"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_18sdp" />
 
@@ -66,7 +73,7 @@
                     android:paddingTop="@dimen/_5sdp"
                     android:paddingEnd="@dimen/_10sdp"
                     android:paddingBottom="@dimen/_5sdp"
-                    android:text="Select payment modes for your customers"
+                    tools:text="Select payment modes for your customers"
                     android:textColor="@color/default_text_light_grey"
                     android:textSize="@dimen/_10sdp" />
 
@@ -106,7 +113,7 @@
                         android:layout_marginStart="@dimen/_12sdp"
                         android:clickable="false"
                         android:fontFamily="@font/roboto_medium"
-                        android:text="UPI"
+                        tools:text="UPI"
                         android:textColor="@color/black"
                         android:textSize="@dimen/_14sdp"
                         app:layout_constraintStart_toEndOf="@id/upiImageView"
@@ -192,7 +199,7 @@
                         android:layout_marginStart="@dimen/_12sdp"
                         android:clickable="false"
                         android:fontFamily="@font/roboto_medium"
-                        android:text="Cash on delivery"
+                        tools:text="Cash on delivery"
                         android:textColor="@color/black"
                         android:textSize="@dimen/_14sdp"
                         app:layout_constraintBottom_toBottomOf="@id/codImageView"
@@ -211,13 +218,21 @@
             </androidx.cardview.widget.CardView>
 
             <View
+                android:id="@+id/view8"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginTop="@dimen/_15sdp"
                 android:alpha="0.5"
                 android:background="@color/curve_grey_border" />
 
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/kycGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:constraint_referenced_ids="kycContainer,view8" />
+
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/kycContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/_12sdp">
@@ -230,7 +245,7 @@
                     android:paddingTop="@dimen/_5sdp"
                     android:paddingEnd="@dimen/_5sdp"
                     android:paddingBottom="@dimen/_5sdp"
-                    android:text="Complete KYC to Unlock these Payment Modes"
+                    tools:text="Complete KYC to Unlock these Payment Modes"
                     android:textColor="@color/default_text_light_grey"
                     android:textSize="@dimen/_10sdp"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -250,7 +265,7 @@
                     android:paddingTop="@dimen/_3sdp"
                     android:paddingEnd="@dimen/_8sdp"
                     android:paddingBottom="@dimen/_3sdp"
-                    android:text="Complete KYC Now"
+                    tools:text="Complete KYC Now"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_10sdp"
                     app:drawableEndCompat="@drawable/ic_arrow_small"
@@ -272,4 +287,4 @@
 
     </androidx.core.widget.NestedScrollView>
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

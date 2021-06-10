@@ -111,7 +111,9 @@ data class AccountStaticTextResponse(
     @SerializedName("text_type_colon") var text_type_colon: String?,
     @SerializedName("text_online_payments") var text_online_payments: String?,
     @SerializedName("heading_set_orders_for_online_payments") var heading_set_orders_to_online_payments: String?,
-    @SerializedName("heading_new_releases") var heading_new_releases: String?
+    @SerializedName("heading_new_releases") var heading_new_releases: String?,
+    @SerializedName("message_set_online_payment_modes") var message_set_online_payment_modes: String?,
+    @SerializedName("heading_set_online_payment_modes") var heading_set_online_payment_modes: String?
 )
 
 data class StoreShareResponse(

@@ -81,6 +81,8 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
         onlinePaymentsTextView?.text = mMoreControlsStaticData?.text_online_payments
         deliveryHeadingTextView?.text = mMoreControlsStaticData?.mDeliveryText
         onlinePaymentsHeadingTextView?.text = mMoreControlsStaticData?.heading_set_orders_to_online_payments
+        paymentModesHeadingTextView?.text = mMoreControlsStaticData?.heading_set_online_payment_modes
+        paymentModesOptionalTextView?.text = mMoreControlsStaticData?.message_set_online_payment_modes
         onlinePaymentsOptionalTextView?.text = mMoreControlsStaticData?.text_type_colon
         onlinePaymentsValueAmountTextView?.text = mPaymentPaymentMethod
         if (0 != mDeliveryChargeType) {

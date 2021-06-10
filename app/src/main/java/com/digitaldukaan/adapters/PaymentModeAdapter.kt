@@ -23,7 +23,7 @@ class PaymentModeAdapter(
         )
     }
 
-    override fun getItemCount(): Int = 5
+    override fun getItemCount(): Int = 2
 
     override fun onBindViewHolder(
         holder: ReferAndEarnViewHolder,

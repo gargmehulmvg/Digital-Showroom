@@ -19,7 +19,7 @@ class PaymentModeChildAdapter(private var mContext: Context?) : RecyclerView.Ada
         )
     }
 
-    override fun getItemCount(): Int = 5
+    override fun getItemCount(): Int = 2
 
     override fun onBindViewHolder(
         holder: ReferAndEarnViewHolder,
