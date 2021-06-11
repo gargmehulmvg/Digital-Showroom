@@ -1,6 +1,7 @@
 package com.digitaldukaan.services
 
 import com.digitaldukaan.constants.CoroutineScopeUtils
+import com.digitaldukaan.models.request.PaymentModeRequest
 import com.digitaldukaan.services.networkservice.PaymentModesNetworkService
 import com.digitaldukaan.services.serviceinterface.IPaymentModesServiceInterface
 
@@ -15,7 +16,13 @@ class PaymentModesService {
 
     fun getPaymentModesPageInfo() {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.getPaymentModesPageInfo(mServiceInterface)
+            mNetworkService.getPaymentModesPageInfoServerCall(mServiceInterface)
+        }
+    }
+
+    fun setPaymentOptions(request: PaymentModeRequest) {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.setPaymentOptionsServerCall(request, mServiceInterface)
         }
     }
 

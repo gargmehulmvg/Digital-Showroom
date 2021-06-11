@@ -20,6 +20,7 @@ import com.google.android.material.textfield.TextInputLayout
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.layout_more_control_fragment.*
 
+
 class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
 
     private var mMoreControlsStaticData: AccountStaticTextResponse? = null
@@ -31,6 +32,7 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
     private var mPaymentPaymentMethod: String? = ""
 
     companion object {
+        private const val TAG = "MoreControlsFragment"
         fun newInstance(appSettingsResponseStaticData: AccountStaticTextResponse?): MoreControlsFragment {
             val fragment = MoreControlsFragment()
             fragment.mMoreControlsStaticData = appSettingsResponseStaticData
@@ -136,6 +138,26 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
             }
             paymentModesContainer?.id -> {
                 launchFragment(PaymentModesFragment.newInstance(), true)
+                /*val GOOGLE_PAY_PACKAGE_NAME = "com.google.android.apps.nbu.paisa.user"
+                val GOOGLE_PAY_PACKAGE_NAME = "com.phonepe.app"
+                val GOOGLE_PAY_REQUEST_CODE = 123
+
+                val uri: Uri = Uri.Builder()
+                    .scheme("upi")
+                    .authority("pay")
+                    .appendQueryParameter("pa", "dotpe.payu@indus")
+                    .appendQueryParameter("pn", "DOTPE PRIVATE LIMITED")
+                    //.appendQueryParameter("mc", "your-merchant-code")
+                    .appendQueryParameter("tr", "13230050241")
+                    .appendQueryParameter("tn", "OrderId-CWzMK1PmJLao5VkA")
+                    .appendQueryParameter("am", "3600.00")
+                    .appendQueryParameter("cu", "INR")
+                    //.appendQueryParameter("url", "your-transaction-url")
+                    .build()
+                val intent = Intent(Intent.ACTION_VIEW)
+                intent.data = uri
+                intent.setPackage(GOOGLE_PAY_PACKAGE_NAME)
+                mActivity?.startActivityForResult(intent, GOOGLE_PAY_REQUEST_CODE)*/
             }
         }
     }

@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CompoundButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,6 +17,7 @@ import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.constants.isEmpty
 import com.digitaldukaan.models.dto.PaymentModelDTO
+import com.digitaldukaan.models.request.PaymentModeRequest
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.PaymentModesResponse
 import com.digitaldukaan.services.PaymentModesService
@@ -25,11 +27,13 @@ import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.layout_payment_modes.*
 
-class PaymentModesFragment: BaseFragment(), IPaymentModesServiceInterface {
+class PaymentModesFragment: BaseFragment(), IPaymentModesServiceInterface,
+    CompoundButton.OnCheckedChangeListener {
 
     private var paymentModesRecyclerView: RecyclerView? = null
     private val mService: PaymentModesService = PaymentModesService()
     private var mPaymentModesResponse: PaymentModesResponse? = null
+    private var mSelectedSwitch: SwitchMaterial? = null
 
     companion object {
         private const val TAG = "PaymentModesFragment"
@@ -93,6 +97,41 @@ class PaymentModesFragment: BaseFragment(), IPaymentModesServiceInterface {
         }
     }
 
+    private fun showActivationBottomSheet() {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            try {
+                mActivity?.let {
+                    val bottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
+                    val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_payment_mode_activation, it.findViewById(R.id.bottomSheetContainer))
+                    bottomSheetDialog.apply {
+                        setContentView(view)
+                        setCancelable(true)
+                        view.run {
+                            val paymentModesStaticText = mPaymentModesResponse?.staticText
+                            val bottomSheetHeading: TextView = findViewById(R.id.bottomSheetHeading)
+                            val bottomSheetSubHeading: TextView = findViewById(R.id.bottomSheetSubHeading)
+                            val conditionOne: TextView = findViewById(R.id.conditionOne)
+                            val conditionTwo: TextView = findViewById(R.id.conditiontwo)
+                            val completeKycTextView: TextView = findViewById(R.id.completeKycTextView)
+                            val bottomSheetClose: View = findViewById(R.id.bottomSheetClose)
+                            bottomSheetHeading.text = paymentModesStaticText?.message_activate_and_start_payment
+                            bottomSheetSubHeading.text = paymentModesStaticText?.text_please_note
+                            conditionOne.text = paymentModesStaticText?.message_transaction_charges_will_be_applied
+                            conditionTwo.text = paymentModesStaticText?.message_receive_the_amount_in_your_bank
+                            completeKycTextView.text = paymentModesStaticText?.text_activate
+                            completeKycTextView.setOnClickListener {
+                                this@apply.dismiss()
+                            }
+                            bottomSheetClose.setOnClickListener { this@apply.dismiss() }
+                        }
+                    }.show()
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "showCompleteYourKYCBottomSheet: ${e.message}", e)
+            }
+        }
+    }
+
     private fun showConfirmationBottomSheet() {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             try {
@@ -103,15 +142,23 @@ class PaymentModesFragment: BaseFragment(), IPaymentModesServiceInterface {
                         setContentView(view)
                         setCancelable(true)
                         view.run {
-                            val completeKycTextView: TextView = findViewById(R.id.completeKycTextView)
+                            val staticText = mPaymentModesResponse?.staticText
+                            val bottomSheetHeading: TextView = findViewById(R.id.bottomSheetHeading)
+                            val bottomSheetSubHeading: TextView = findViewById(R.id.bottomSheetSubHeading)
+                            val yesTextView: TextView = findViewById(R.id.yesTextView)
+                            val noTextView: TextView = findViewById(R.id.noTextView)
                             val bottomSheetClose: View = findViewById(R.id.bottomSheetClose)
-                            completeKycTextView.setOnClickListener {
+                            bottomSheetHeading.text = staticText?.text_confirmation
+                            yesTextView.text = staticText?.text_yes
+                            bottomSheetSubHeading.text = staticText?.message_confirm_payment_mode
+                            noTextView.text = staticText?.text_no
+                            yesTextView.setOnClickListener {
                                 this@apply.dismiss()
-                                launchFragment(ProfilePreviewFragment(), true)
                             }
-                            bottomSheetClose.setOnClickListener {
+                            noTextView.setOnClickListener {
                                 this@apply.dismiss()
                             }
+                            bottomSheetClose.setOnClickListener { this@apply.dismiss() }
                         }
                     }.show()
                 }
@@ -129,6 +176,17 @@ class PaymentModesFragment: BaseFragment(), IPaymentModesServiceInterface {
         }
     }
 
+    override fun onSetPaymentModesResponse(response: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            if (response.mIsSuccessStatus) {
+                showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
+                mSelectedSwitch?.isChecked = !mSelectedSwitch?.isChecked!!
+            } else showShortSnackBar(response.mMessage, true, R.drawable.ic_close_red)
+            mSelectedSwitch?.setOnCheckedChangeListener(this)
+        }
+    }
+
     private fun setupUIFromResponse() {
         val paymentModesStaticData = mPaymentModesResponse?.staticText
         mContentView?.let {
@@ -142,7 +200,6 @@ class PaymentModesFragment: BaseFragment(), IPaymentModesServiceInterface {
             val upiTextView: TextView = it.findViewById(R.id.headingTextView)
             val upiImageView: ImageView = it.findViewById(R.id.upiImageView)
             val codImageView: ImageView = it.findViewById(R.id.codImageView)
-            val separator: View = it.findViewById(R.id.separator)
             val kycContainer: View = it.findViewById(R.id.kycContainer)
             paymentModeHeadingTextView.text = paymentModesStaticData?.page_heading_payment_mode
             paymentModeSubHeadingTextView.text = paymentModesStaticData?.page_sub_heading_payment_mode
@@ -150,22 +207,22 @@ class PaymentModesFragment: BaseFragment(), IPaymentModesServiceInterface {
             completeKycNowTextView.text = paymentModesStaticData?.text_complete_kyc_now
             mPaymentModesResponse?.upi?.let { upiResponse ->
                 upiTextView.text = upiResponse.name
-                upiSwitch.isChecked = 1 == upiResponse.status
+                upiSwitch.isChecked = (1 == upiResponse.status)
+                upiSwitch.setOnCheckedChangeListener(this)
                 if (!isEmpty(upiResponse.imageUrl)) {
                     mActivity?.let { context -> Glide.with(context).load(upiResponse.imageUrl).into(upiImageView) }
                 }
             }
             mPaymentModesResponse?.cod?.let { codResponse ->
                 codTextView.text = codResponse.name
-                codSwitch.isChecked = 1 == codResponse.status
+                codSwitch.isChecked = (1 == codResponse.status)
+                codSwitch.setOnCheckedChangeListener(this)
                 if (!isEmpty(codResponse.imageUrl)) {
                     mActivity?.let { context -> Glide.with(context).load(codResponse.imageUrl).into(codImageView) }
                 }
             }
             val isKycActive = mPaymentModesResponse?.kycStatus?.isKycActive
-            showToast("KYC STATUS :: $isKycActive")
             kycContainer.visibility = if (true == isKycActive) View.GONE else View.VISIBLE
-            separator.visibility = if (true == isKycActive) View.GONE else View.VISIBLE
             paymentModesRecyclerView = it.findViewById(R.id.paymentModesRecyclerView)
             paymentModesRecyclerView?.apply {
                 layoutManager = LinearLayoutManager(mActivity)
@@ -180,5 +237,41 @@ class PaymentModesFragment: BaseFragment(), IPaymentModesServiceInterface {
     }
 
     override fun onPaymentModesServerException(e: Exception) = exceptionHandlingForAPIResponse(e)
+
+    override fun onCheckedChanged(switch: CompoundButton?, isChecked: Boolean) {
+        when (switch?.id) {
+            upiSwitch?.id -> {
+                mSelectedSwitch = upiSwitch
+                val request: PaymentModeRequest
+                if (isChecked) {
+                    mSelectedSwitch?.isChecked = false
+                    request = PaymentModeRequest(1, mPaymentModesResponse?.upi?.paymentType)
+                } else {
+                    mSelectedSwitch?.isChecked = true
+                    request = PaymentModeRequest(0, mPaymentModesResponse?.upi?.paymentType)
+                }
+                mSelectedSwitch?.setOnCheckedChangeListener(null)
+                initiateSetPaymentModeRequest(request)
+            }
+            codSwitch?.id -> {
+                mSelectedSwitch = codSwitch
+                val request: PaymentModeRequest
+                if (isChecked) {
+                    mSelectedSwitch?.isChecked = false
+                    request = PaymentModeRequest(1, mPaymentModesResponse?.cod?.paymentType)
+                } else {
+                    mSelectedSwitch?.isChecked = true
+                    request = PaymentModeRequest(0, mPaymentModesResponse?.cod?.paymentType)
+                }
+                mSelectedSwitch?.setOnCheckedChangeListener(null)
+                initiateSetPaymentModeRequest(request)
+            }
+        }
+    }
+
+    private fun initiateSetPaymentModeRequest(request: PaymentModeRequest) {
+        showProgressDialog(mActivity)
+        mService.setPaymentOptions(request)
+    }
 
 }

@@ -83,6 +83,9 @@ interface Apis {
     @GET("api/dotk/vm1/settings/getPaymentModesPageInfo")
     suspend fun getPaymentModesPageInfo(): Response<CommonApiResponse>
 
+    @POST("api/dotk/vm1/settings/setPaymentOptions")
+    suspend fun setPaymentOptions(@Body request: PaymentModeRequest): Response<CommonApiResponse>
+
     /* ----------------------       Images         ---------------------- */
     @POST("api/dotk/vm1/media/setStoreLogo")
     suspend fun setStoreLogo(@Header("auth_token") authToken:String, @Body request: StoreLogoRequest) : Response<CommonApiResponse>

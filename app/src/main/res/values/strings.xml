@@ -112,6 +112,7 @@
     <string name="discount">Discount</string>
     <string name="delivery_charge">Delivery Charge</string>
     <string name="please_fill_price_for_each_product">Please add price for all products</string>
+    <string name="activate">Activate</string>
     <string-array name="state_array">
         <item >Andhra Pradesh</item>
         <item >Arunachal Pradesh</item>

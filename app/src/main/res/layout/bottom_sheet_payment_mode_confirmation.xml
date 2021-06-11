@@ -24,7 +24,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:fontFamily="@font/roboto_bold"
-        android:text="Confirmation"
+        tools:text="Confirmation"
         android:textColor="@color/black"
         android:textSize="@dimen/_20sdp"
         app:layout_constraintStart_toStartOf="parent"
@@ -36,25 +36,46 @@
         android:layout_height="wrap_content"
         android:paddingTop="@dimen/_8sdp"
         android:paddingBottom="@dimen/_8sdp"
-        android:textColor="@color/black"
         android:text="Are you sure you want to make Credit And Debit Cards payment mode inactive?"
+        android:textColor="@color/black"
         android:textSize="@dimen/_11sdp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/bottomSheetHeading" />
 
     <TextView
-        android:id="@+id/completeKycTextView"
-        android:layout_width="match_parent"
+        android:id="@+id/yesTextView"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_18sdp"
         android:background="@drawable/ripple_curve_grey_black_background"
         android:gravity="center"
-        android:paddingTop="@dimen/_10sdp"
-        android:paddingBottom="@dimen/_10sdp"
-        android:text="Complete KYC Now"
+        android:layout_marginEnd="@dimen/_5sdp"
+        android:paddingTop="@dimen/_8sdp"
+        android:paddingBottom="@dimen/_8sdp"
         android:textColor="@color/white"
         android:textSize="@dimen/_16sdp"
+        app:layout_constraintEnd_toStartOf="@+id/noTextView"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/bottomSheetSubHeading"
-        tools:layout_editor_absoluteX="13dp" />
+        tools:text="Yes" />
+
+    <TextView
+        android:id="@+id/noTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_18sdp"
+        android:background="@drawable/curve_black_border"
+        android:gravity="center"
+        android:layout_marginStart="@dimen/_5sdp"
+        android:paddingTop="@dimen/_8sdp"
+        android:paddingBottom="@dimen/_8sdp"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_16sdp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/yesTextView"
+        app:layout_constraintTop_toBottomOf="@+id/bottomSheetSubHeading"
+        tools:text="No" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

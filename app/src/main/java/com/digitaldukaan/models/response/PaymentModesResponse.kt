@@ -13,7 +13,16 @@ data class PaymentModesResponse (
 data class PaymentModesStaticData(
     @SerializedName("page_heading_payment_mode") var page_heading_payment_mode: String?,
     @SerializedName("message_complete_kyc_to_unlock") var message_complete_kyc_to_unlock: String?,
+    @SerializedName("message_activate_and_start_payment") var message_activate_and_start_payment: String?,
     @SerializedName("text_complete_kyc_now") var text_complete_kyc_now: String?,
+    @SerializedName("text_please_note") var text_please_note: String?,
+    @SerializedName("text_confirmation") var text_confirmation: String?,
+    @SerializedName("message_confirm_payment_mode1") var message_confirm_payment_mode: String?,
+    @SerializedName("text_no") var text_no: String?,
+    @SerializedName("text_yes") var text_yes: String?,
+    @SerializedName("text_activate") var text_activate: String?,
+    @SerializedName("message_receive_the_amount_in_your_bank") var message_receive_the_amount_in_your_bank: String?,
+    @SerializedName("message_transaction_charges_will_be_applied") var message_transaction_charges_will_be_applied: String?,
     @SerializedName("page_sub_heading_payment_mode") var page_sub_heading_payment_mode: String?
 )
 data class PaymentModesKYCStatusResponse(

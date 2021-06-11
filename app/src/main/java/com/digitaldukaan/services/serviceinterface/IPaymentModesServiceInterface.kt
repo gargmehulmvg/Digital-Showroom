@@ -6,5 +6,7 @@ interface IPaymentModesServiceInterface {
 
     fun onPaymentModesResponse(response: CommonApiResponse)
 
+    fun onSetPaymentModesResponse(response: CommonApiResponse)
+
     fun onPaymentModesServerException(e: Exception)
 }
