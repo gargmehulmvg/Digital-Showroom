@@ -17,7 +17,7 @@ data class PaymentModesStaticData(
     @SerializedName("page_sub_heading_payment_mode") var page_sub_heading_payment_mode: String?
 )
 data class PaymentModesKYCStatusResponse(
-    @SerializedName("kyc_status") var kycStatus: Boolean,
+    @SerializedName("kyc_status") var isKycActive: Boolean,
     @SerializedName("kyc_cdn") var kycCdn: String?,
     @SerializedName("heading_complete_your_kyc") var heading_complete_your_kyc: String?,
     @SerializedName("message_complete_your_kyc") var message_complete_your_kyc: String?,

@@ -218,18 +218,12 @@
             </androidx.cardview.widget.CardView>
 
             <View
-                android:id="@+id/view8"
+                android:id="@+id/separator"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:layout_marginTop="@dimen/_15sdp"
                 android:alpha="0.5"
                 android:background="@color/curve_grey_border" />
-
-            <androidx.constraintlayout.widget.Group
-                android:id="@+id/kycGroup"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:constraint_referenced_ids="kycContainer,view8" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/kycContainer"
@@ -280,6 +274,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingBottom="@dimen/_25sdp"
+                android:layout_marginTop="@dimen/_5sdp"
                 tools:itemCount="1"
                 tools:listitem="@layout/layout_payment_mode_item" />
 

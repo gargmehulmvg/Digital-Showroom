@@ -26,7 +26,7 @@
             android:layout_marginTop="@dimen/_5sdp"
             android:clickable="false"
             android:fontFamily="@font/roboto_medium"
-            android:text="Credit And Debit Cards"
+            tools:text="Credit And Debit Cards"
             android:textColor="@color/black"
             android:textSize="@dimen/_14sdp"
             app:layout_constraintStart_toStartOf="parent"
@@ -40,14 +40,15 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
+            android:id="@+id/lockImageView"
             android:layout_width="@dimen/_12sdp"
             android:layout_height="@dimen/_12sdp"
             android:layout_marginEnd="@dimen/_5sdp"
             android:contentDescription="@string/image_view_content_description"
             android:src="@drawable/ic_lock_black"
-            app:layout_constraintBottom_toBottomOf="@+id/paymentModeSwitch"
-            app:layout_constraintEnd_toStartOf="@+id/paymentModeSwitch"
-            app:layout_constraintTop_toTopOf="@+id/paymentModeSwitch" />
+            app:layout_constraintBottom_toBottomOf="@id/paymentModeSwitch"
+            app:layout_constraintEnd_toStartOf="@id/paymentModeSwitch"
+            app:layout_constraintTop_toTopOf="@id/paymentModeSwitch" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/paymentModeChildRecyclerView"
@@ -59,8 +60,8 @@
             android:nestedScrollingEnabled="false"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/paymentModeTextView"
-            app:layout_constraintTop_toBottomOf="@+id/paymentModeSwitch"
+            app:layout_constraintStart_toStartOf="@id/paymentModeTextView"
+            app:layout_constraintTop_toBottomOf="@id/paymentModeSwitch"
             tools:itemCount="3"
             tools:listitem="@layout/layout_payment_mode_child_item" />
 

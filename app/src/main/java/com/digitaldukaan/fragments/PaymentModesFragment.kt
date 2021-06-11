@@ -15,11 +15,13 @@ import com.digitaldukaan.adapters.PaymentModeAdapter
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.constants.isEmpty
+import com.digitaldukaan.models.dto.PaymentModelDTO
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.PaymentModesResponse
 import com.digitaldukaan.services.PaymentModesService
 import com.digitaldukaan.services.serviceinterface.IPaymentModesServiceInterface
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.layout_payment_modes.*
 
@@ -47,13 +49,6 @@ class PaymentModesFragment: BaseFragment(), IPaymentModesServiceInterface {
     private fun initializeUI() {
         ToolBarManager.getInstance()?.apply { hideToolBar(mActivity, true) }
         hideBottomNavigationView(true)
-        mContentView?.let { view ->
-            paymentModesRecyclerView = view.findViewById(R.id.paymentModesRecyclerView)
-            paymentModesRecyclerView?.apply {
-                layoutManager = LinearLayoutManager(mActivity)
-                adapter = PaymentModeAdapter(mActivity)
-            }
-        }
     }
 
     override fun onClick(view: View?) {
@@ -130,7 +125,6 @@ class PaymentModesFragment: BaseFragment(), IPaymentModesServiceInterface {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             mPaymentModesResponse = Gson().fromJson<PaymentModesResponse>(response.mCommonDataStr, PaymentModesResponse::class.java)
-            Log.d(TAG, "onPaymentModesResponse: MAP :: ${mPaymentModesResponse?.paymentOptionsMap}")
             setupUIFromResponse()
         }
     }
@@ -142,28 +136,46 @@ class PaymentModesFragment: BaseFragment(), IPaymentModesServiceInterface {
             val paymentModeSubHeadingTextView: TextView = it.findViewById(R.id.paymentModeSubHeadingTextView)
             val completeKycTextView: TextView = it.findViewById(R.id.completeKycTextView)
             val completeKycNowTextView: TextView = it.findViewById(R.id.completeKycNowTextView)
+            val codSwitch: SwitchMaterial = it.findViewById(R.id.codSwitch)
+            val upiSwitch: SwitchMaterial = it.findViewById(R.id.upiSwitch)
             val codTextView: TextView = it.findViewById(R.id.codTextView)
             val upiTextView: TextView = it.findViewById(R.id.headingTextView)
             val upiImageView: ImageView = it.findViewById(R.id.upiImageView)
             val codImageView: ImageView = it.findViewById(R.id.codImageView)
-            val kycGroup: View = it.findViewById(R.id.kycGroup)
+            val separator: View = it.findViewById(R.id.separator)
+            val kycContainer: View = it.findViewById(R.id.kycContainer)
             paymentModeHeadingTextView.text = paymentModesStaticData?.page_heading_payment_mode
             paymentModeSubHeadingTextView.text = paymentModesStaticData?.page_sub_heading_payment_mode
             completeKycTextView.text = paymentModesStaticData?.message_complete_kyc_to_unlock
             completeKycNowTextView.text = paymentModesStaticData?.text_complete_kyc_now
             mPaymentModesResponse?.upi?.let { upiResponse ->
                 upiTextView.text = upiResponse.name
+                upiSwitch.isChecked = 1 == upiResponse.status
                 if (!isEmpty(upiResponse.imageUrl)) {
                     mActivity?.let { context -> Glide.with(context).load(upiResponse.imageUrl).into(upiImageView) }
                 }
             }
             mPaymentModesResponse?.cod?.let { codResponse ->
                 codTextView.text = codResponse.name
+                codSwitch.isChecked = 1 == codResponse.status
                 if (!isEmpty(codResponse.imageUrl)) {
                     mActivity?.let { context -> Glide.with(context).load(codResponse.imageUrl).into(codImageView) }
                 }
             }
-            kycGroup.visibility = if (true == mPaymentModesResponse?.kycStatus?.kycStatus) View.GONE else View.VISIBLE
+            val isKycActive = mPaymentModesResponse?.kycStatus?.isKycActive
+            showToast("KYC STATUS :: $isKycActive")
+            kycContainer.visibility = if (true == isKycActive) View.GONE else View.VISIBLE
+            separator.visibility = if (true == isKycActive) View.GONE else View.VISIBLE
+            paymentModesRecyclerView = it.findViewById(R.id.paymentModesRecyclerView)
+            paymentModesRecyclerView?.apply {
+                layoutManager = LinearLayoutManager(mActivity)
+                val list: ArrayList<PaymentModelDTO> = ArrayList()
+                mPaymentModesResponse?.paymentOptionsMap?.forEach { key, arrayList ->
+                    val item = PaymentModelDTO(key, arrayList)
+                    list.add(item)
+                }
+                adapter = PaymentModeAdapter(mActivity, isKycActive, list)
+            }
         }
     }
 
