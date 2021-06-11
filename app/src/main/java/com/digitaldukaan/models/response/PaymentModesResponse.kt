@@ -21,6 +21,8 @@ data class PaymentModesStaticData(
     @SerializedName("text_no") var text_no: String?,
     @SerializedName("text_yes") var text_yes: String?,
     @SerializedName("text_activate") var text_activate: String?,
+    @SerializedName("text_view_your_payment_report") var text_view_your_payment_report: String?,
+    @SerializedName("heading_view_your_payments_and_settlements") var heading_view_your_payments_and_settlements: String?,
     @SerializedName("message_receive_the_amount_in_your_bank") var message_receive_the_amount_in_your_bank: String?,
     @SerializedName("message_transaction_charges_will_be_applied") var message_transaction_charges_will_be_applied: String?,
     @SerializedName("page_sub_heading_payment_mode") var page_sub_heading_payment_mode: String?

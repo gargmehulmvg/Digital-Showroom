@@ -4,9 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@color/white"
-    android:fillViewport="true">
+    android:fillViewport="true"
+    android:orientation="vertical">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout6"
@@ -61,9 +61,9 @@
                     android:fontFamily="@font/roboto_medium"
                     android:paddingStart="@dimen/_10sdp"
                     android:paddingEnd="@dimen/_10sdp"
-                    tools:text="Select payment modes for your customers"
                     android:textColor="@color/black"
-                    android:textSize="@dimen/_18sdp" />
+                    android:textSize="@dimen/_18sdp"
+                    tools:text="Select payment modes for your customers" />
 
                 <TextView
                     android:id="@+id/paymentModeSubHeadingTextView"
@@ -73,17 +73,61 @@
                     android:paddingTop="@dimen/_5sdp"
                     android:paddingEnd="@dimen/_10sdp"
                     android:paddingBottom="@dimen/_5sdp"
-                    tools:text="Select payment modes for your customers"
                     android:textColor="@color/default_text_light_grey"
-                    android:textSize="@dimen/_10sdp" />
+                    android:textSize="@dimen/_10sdp"
+                    tools:text="Select payment modes for your customers" />
 
             </LinearLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/paymentSettlementContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/_12sdp">
+
+                <TextView
+                    android:id="@+id/paymentSettlementTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="@dimen/_1sdp"
+                    android:paddingTop="@dimen/_5sdp"
+                    android:paddingEnd="@dimen/_10sdp"
+                    android:paddingBottom="@dimen/_5sdp"
+                    android:textColor="@color/default_text_light_grey"
+                    android:textSize="@dimen/_10sdp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/paymentSettlementViewTextView"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="View your Payments And Settlement history" />
+
+                <TextView
+                    android:id="@+id/paymentSettlementViewTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/slight_curve_black_border_without_padding"
+                    android:drawablePadding="@dimen/_5sdp"
+                    android:fontFamily="@font/roboto_medium"
+                    android:onClick="onClick"
+                    android:paddingStart="@dimen/_8sdp"
+                    android:paddingTop="@dimen/_3sdp"
+                    android:paddingEnd="@dimen/_8sdp"
+                    android:paddingBottom="@dimen/_3sdp"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_10sdp"
+                    app:drawableEndCompat="@drawable/ic_arrow_small"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="Complete KYC Now" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/upiContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/_12sdp"
+                android:layout_margin="@dimen/_10sdp"
                 android:elevation="@dimen/_5sdp"
                 app:cardCornerRadius="@dimen/_10sdp">
 
@@ -98,9 +142,7 @@
                         android:layout_width="@dimen/_50sdp"
                         android:layout_height="@dimen/_60sdp"
                         android:layout_margin="@dimen/_10sdp"
-                        android:background="@drawable/slight_curve_light_grey_border_without_padding"
                         android:contentDescription="@string/image_view_content_description"
-                        android:padding="@dimen/_8sdp"
                         android:src="@drawable/ic_cash"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -113,11 +155,11 @@
                         android:layout_marginStart="@dimen/_12sdp"
                         android:clickable="false"
                         android:fontFamily="@font/roboto_medium"
-                        tools:text="UPI"
                         android:textColor="@color/black"
                         android:textSize="@dimen/_14sdp"
                         app:layout_constraintStart_toEndOf="@id/upiImageView"
-                        app:layout_constraintTop_toTopOf="@id/upiImageView" />
+                        app:layout_constraintTop_toTopOf="@id/upiImageView"
+                        tools:text="UPI" />
 
                     <TextView
                         android:id="@+id/upiTxnChargeTextView"
@@ -184,9 +226,7 @@
                         android:layout_marginStart="@dimen/_10sdp"
                         android:layout_marginTop="@dimen/_5sdp"
                         android:layout_marginBottom="@dimen/_5sdp"
-                        android:background="@drawable/slight_curve_light_grey_border_without_padding"
                         android:contentDescription="@string/image_view_content_description"
-                        android:padding="@dimen/_8sdp"
                         android:src="@drawable/ic_cash"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -199,12 +239,12 @@
                         android:layout_marginStart="@dimen/_12sdp"
                         android:clickable="false"
                         android:fontFamily="@font/roboto_medium"
-                        tools:text="Cash on delivery"
                         android:textColor="@color/black"
                         android:textSize="@dimen/_14sdp"
                         app:layout_constraintBottom_toBottomOf="@id/codImageView"
                         app:layout_constraintStart_toEndOf="@id/codImageView"
-                        app:layout_constraintTop_toTopOf="@id/codImageView" />
+                        app:layout_constraintTop_toTopOf="@id/codImageView"
+                        tools:text="Cash on delivery" />
 
                     <com.google.android.material.switchmaterial.SwitchMaterial
                         android:id="@+id/codSwitch"
@@ -239,13 +279,13 @@
                     android:paddingTop="@dimen/_5sdp"
                     android:paddingEnd="@dimen/_5sdp"
                     android:paddingBottom="@dimen/_5sdp"
-                    tools:text="Complete KYC to Unlock these Payment Modes"
                     android:textColor="@color/default_text_light_grey"
                     android:textSize="@dimen/_10sdp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@id/completeKycNowTextView"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="Complete KYC to Unlock these Payment Modes" />
 
                 <TextView
                     android:id="@+id/completeKycNowTextView"
@@ -259,13 +299,13 @@
                     android:paddingTop="@dimen/_3sdp"
                     android:paddingEnd="@dimen/_8sdp"
                     android:paddingBottom="@dimen/_3sdp"
-                    tools:text="Complete KYC Now"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_10sdp"
                     app:drawableEndCompat="@drawable/ic_arrow_small"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="Complete KYC Now" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -273,8 +313,8 @@
                 android:id="@+id/paymentModesRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingBottom="@dimen/_25sdp"
                 android:layout_marginTop="@dimen/_5sdp"
+                android:paddingBottom="@dimen/_25sdp"
                 tools:itemCount="1"
                 tools:listitem="@layout/layout_payment_mode_item" />
 

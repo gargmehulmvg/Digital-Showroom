@@ -16,6 +16,7 @@ import com.digitaldukaan.adapters.PaymentModeAdapter
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.constants.isEmpty
+import com.digitaldukaan.interfaces.ISwitchCheckChangeListener
 import com.digitaldukaan.models.dto.PaymentModelDTO
 import com.digitaldukaan.models.request.PaymentModeRequest
 import com.digitaldukaan.models.response.CommonApiResponse
@@ -33,7 +34,7 @@ class PaymentModesFragment: BaseFragment(), IPaymentModesServiceInterface,
     private var paymentModesRecyclerView: RecyclerView? = null
     private val mService: PaymentModesService = PaymentModesService()
     private var mPaymentModesResponse: PaymentModesResponse? = null
-    private var mSelectedSwitch: SwitchMaterial? = null
+    private var mPaymentType: String? = ""
 
     companion object {
         private const val TAG = "PaymentModesFragment"
@@ -181,9 +182,9 @@ class PaymentModesFragment: BaseFragment(), IPaymentModesServiceInterface,
             stopProgress()
             if (response.mIsSuccessStatus) {
                 showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
-                mSelectedSwitch?.isChecked = !mSelectedSwitch?.isChecked!!
+                showProgressDialog(mActivity)
+                mService.getPaymentModesPageInfo()
             } else showShortSnackBar(response.mMessage, true, R.drawable.ic_close_red)
-            mSelectedSwitch?.setOnCheckedChangeListener(this)
         }
     }
 
@@ -198,9 +199,12 @@ class PaymentModesFragment: BaseFragment(), IPaymentModesServiceInterface,
             val upiSwitch: SwitchMaterial = it.findViewById(R.id.upiSwitch)
             val codTextView: TextView = it.findViewById(R.id.codTextView)
             val upiTextView: TextView = it.findViewById(R.id.headingTextView)
+            val paymentSettlementTextView: TextView = it.findViewById(R.id.paymentSettlementTextView)
+            val paymentSettlementViewTextView: TextView = it.findViewById(R.id.paymentSettlementViewTextView)
             val upiImageView: ImageView = it.findViewById(R.id.upiImageView)
             val codImageView: ImageView = it.findViewById(R.id.codImageView)
             val kycContainer: View = it.findViewById(R.id.kycContainer)
+            val paymentSettlementContainer: View = it.findViewById(R.id.paymentSettlementContainer)
             paymentModeHeadingTextView.text = paymentModesStaticData?.page_heading_payment_mode
             paymentModeSubHeadingTextView.text = paymentModesStaticData?.page_sub_heading_payment_mode
             completeKycTextView.text = paymentModesStaticData?.message_complete_kyc_to_unlock
@@ -221,8 +225,11 @@ class PaymentModesFragment: BaseFragment(), IPaymentModesServiceInterface,
                     mActivity?.let { context -> Glide.with(context).load(codResponse.imageUrl).into(codImageView) }
                 }
             }
-            val isKycActive = mPaymentModesResponse?.kycStatus?.isKycActive
+            val isKycActive = !mPaymentModesResponse?.kycStatus?.isKycActive!!
             kycContainer.visibility = if (true == isKycActive) View.GONE else View.VISIBLE
+            paymentSettlementContainer.visibility = if (true == isKycActive) View.VISIBLE else View.GONE
+            paymentSettlementTextView.text = paymentModesStaticData?.heading_view_your_payments_and_settlements
+            paymentSettlementViewTextView.text = paymentModesStaticData?.text_view_your_payment_report
             paymentModesRecyclerView = it.findViewById(R.id.paymentModesRecyclerView)
             paymentModesRecyclerView?.apply {
                 layoutManager = LinearLayoutManager(mActivity)
@@ -231,7 +238,14 @@ class PaymentModesFragment: BaseFragment(), IPaymentModesServiceInterface,
                     val item = PaymentModelDTO(key, arrayList)
                     list.add(item)
                 }
-                adapter = PaymentModeAdapter(mActivity, isKycActive, list)
+                adapter = PaymentModeAdapter(mActivity, isKycActive, list, object : ISwitchCheckChangeListener {
+
+                    override fun onSwitchCheckChangeListener(switch: CompoundButton?, isChecked: Boolean, paymentType: String?) {
+                        mPaymentType = paymentType
+                        onCheckedChanged(switch, isChecked)
+                        switch?.isChecked = !isChecked
+                    }
+                })
             }
         }
     }
@@ -241,29 +255,33 @@ class PaymentModesFragment: BaseFragment(), IPaymentModesServiceInterface,
     override fun onCheckedChanged(switch: CompoundButton?, isChecked: Boolean) {
         when (switch?.id) {
             upiSwitch?.id -> {
-                mSelectedSwitch = upiSwitch
                 val request: PaymentModeRequest
                 if (isChecked) {
-                    mSelectedSwitch?.isChecked = false
+                    upiSwitch?.isChecked = false
                     request = PaymentModeRequest(1, mPaymentModesResponse?.upi?.paymentType)
                 } else {
-                    mSelectedSwitch?.isChecked = true
+                    upiSwitch?.isChecked = true
                     request = PaymentModeRequest(0, mPaymentModesResponse?.upi?.paymentType)
                 }
-                mSelectedSwitch?.setOnCheckedChangeListener(null)
                 initiateSetPaymentModeRequest(request)
             }
             codSwitch?.id -> {
-                mSelectedSwitch = codSwitch
                 val request: PaymentModeRequest
                 if (isChecked) {
-                    mSelectedSwitch?.isChecked = false
+                    codSwitch?.isChecked = false
                     request = PaymentModeRequest(1, mPaymentModesResponse?.cod?.paymentType)
                 } else {
-                    mSelectedSwitch?.isChecked = true
+                    codSwitch?.isChecked = true
                     request = PaymentModeRequest(0, mPaymentModesResponse?.cod?.paymentType)
                 }
-                mSelectedSwitch?.setOnCheckedChangeListener(null)
+                initiateSetPaymentModeRequest(request)
+            }
+            else -> {
+                val request: PaymentModeRequest = if (isChecked) {
+                    PaymentModeRequest(1, mPaymentType)
+                } else {
+                    PaymentModeRequest(0, mPaymentType)
+                }
                 initiateSetPaymentModeRequest(request)
             }
         }
