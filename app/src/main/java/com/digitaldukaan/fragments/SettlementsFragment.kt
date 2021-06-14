@@ -9,7 +9,7 @@ import com.digitaldukaan.R
 class SettlementsFragment: BaseFragment() {
 
     companion object {
-        private const val TAG = "MyPaymentsFragment"
+        private const val TAG = "SettlementsFragment"
 
         fun newInstance(): SettlementsFragment = SettlementsFragment()
     }

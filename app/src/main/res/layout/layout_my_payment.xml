@@ -13,7 +13,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:tabGravity="fill"
-        app:tabIndicatorAnimationMode="elastic"
+        app:tabIndicatorAnimationMode="linear"
         app:tabIndicatorGravity="bottom"
         app:tabMode="fixed"
         app:tabSelectedTextColor="@color/black"

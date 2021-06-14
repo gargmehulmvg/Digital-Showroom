@@ -1,6 +1,7 @@
 package com.digitaldukaan.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,7 +11,7 @@ import com.digitaldukaan.adapters.MyPaymentsPagerAdapter
 import com.digitaldukaan.constants.ToolBarManager
 import com.google.android.material.tabs.TabLayout
 
-class MyPaymentsFragment: BaseFragment() {
+class MyPaymentsFragment: BaseFragment(), TabLayout.OnTabSelectedListener {
 
     private var tabLayout: TabLayout? = null
     private var viewPager: ViewPager? = null
@@ -39,6 +40,27 @@ class MyPaymentsFragment: BaseFragment() {
         mMyPaymentsPagerAdapter = MyPaymentsPagerAdapter(mActivity?.supportFragmentManager)
         viewPager?.adapter = mMyPaymentsPagerAdapter
         tabLayout?.setupWithViewPager(viewPager)
+        tabLayout?.addOnTabSelectedListener(this)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        Log.d(TAG, "onViewCreated: called")
+    }
+
+    override fun onTabReselected(tab: TabLayout.Tab?) {
+        showToast("onTabReselected :: ${tab?.text}")
+        Log.d(TAG, "onTabReselected :: ${tab?.text}")
+    }
+
+    override fun onTabUnselected(tab: TabLayout.Tab?) {
+        showToast("onTabUnselected :: ${tab?.text}")
+        Log.d(TAG, "onTabUnselected :: ${tab?.text}")
+    }
+
+    override fun onTabSelected(tab: TabLayout.Tab?) {
+        showToast("onTabSelected :: ${tab?.text}")
+        Log.d(TAG, "onTabSelected :: ${tab?.text}")
     }
 
 }

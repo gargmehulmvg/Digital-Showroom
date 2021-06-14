@@ -2,14 +2,14 @@ package com.digitaldukaan.adapters;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.fragment.app.FragmentStatePagerAdapter;
 
 import com.digitaldukaan.fragments.SettlementsFragment;
 import com.digitaldukaan.fragments.TransactionsFragment;
 
 import org.jetbrains.annotations.NotNull;
 
-public class MyPaymentsPagerAdapter extends FragmentPagerAdapter {
+public class MyPaymentsPagerAdapter extends FragmentStatePagerAdapter {
 
     public MyPaymentsPagerAdapter(FragmentManager fm) {
         super(fm);
@@ -34,12 +34,10 @@ public class MyPaymentsPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public CharSequence getPageTitle(int position) {
-        String title;
         if (position == 0) {
-            title = "Transactions";
+            return  "Transactions";
         } else {
-            title = "Settlements";
+            return  "Settlements";
         }
-        return title;
     }
 }
