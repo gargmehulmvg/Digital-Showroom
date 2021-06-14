@@ -61,4 +61,10 @@
         <item name="colorControlActivated">@color/open_green</item>
         <item name="colorSwitchThumbNormal">@color/red_switch_off</item>
     </style>
+
+    <style name="TabLayoutTextStyle">
+        <item name="android:textSize">@dimen/_13sdp</item>
+        <item name="android:fontFamily">@font/roboto</item>
+    </style>
+
 </resources>
