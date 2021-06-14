@@ -453,6 +453,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
     }
 
     private fun checkStoreOptionClick(response: StoreOptionsResponse) {
+        Log.d(TAG, "checkStoreOptionClick: $response")
         when (response.mPage) {
             Constants.PAGE_REFER -> {
                 if (mReferAndEarnResponse != null) {
@@ -464,9 +465,10 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                     return
                 }
                 showProgressDialog(mActivity)
-                mProfileService.getReferAndEarnData()
                 mProfileService.getReferAndEarnDataOverWhatsApp()
+                mProfileService.getReferAndEarnData()
             }
+            Constants.PAGE_MY_PAYMENTS -> launchFragment(MyPaymentsFragment.newInstance(), true)
             Constants.PAGE_HELP -> onToolbarSideIconClicked()
             Constants.PAGE_FEEDBACK -> openPlayStore()
             Constants.PAGE_APP_SETTINGS -> launchFragment(AppSettingsFragment().newInstance(mProfileResponse?.mSubPages, response.mText, mAppSettingsResponseStaticData), true)
@@ -489,6 +491,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
     override fun onStoreSettingItemClicked(storeResponse: StoreOptionsResponse) = checkStoreOptionClick(storeResponse)
 
     override fun onNewReleaseItemClicked(responseItem: TrendingListResponse?) {
+        Log.d(TAG, "onNewReleaseItemClicked: ${responseItem?.mAction}")
         when (responseItem?.mAction) {
             Constants.NEW_RELEASE_TYPE_WEBVIEW -> {
                 val eventName = when (responseItem.mType) {

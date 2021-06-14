@@ -79,9 +79,11 @@ class PaymentModesFragment: BaseFragment(), IPaymentModesServiceInterface,
                             val bottomSheetSubHeading: TextView = findViewById(R.id.bottomSheetSubHeading)
                             val completeKycTextView: TextView = findViewById(R.id.completeKycTextView)
                             val bottomSheetClose: View = findViewById(R.id.bottomSheetClose)
+                            val kycImageView: ImageView = findViewById(R.id.kycImageView)
                             bottomSheetHeading.text = paymentModesKYCStatusResponse?.heading_complete_your_kyc
                             bottomSheetSubHeading.text = paymentModesKYCStatusResponse?.message_complete_your_kyc
                             completeKycTextView.text = paymentModesKYCStatusResponse?.text_complete_kyc_now
+                            if (!isEmpty(paymentModesKYCStatusResponse?.kycCdn)) mActivity?.let { context -> Glide.with(context).load(paymentModesKYCStatusResponse?.kycCdn).into(kycImageView) }
                             completeKycTextView.setOnClickListener {
                                 this@apply.dismiss()
                                 launchFragment(ProfilePreviewFragment(), true)
@@ -122,6 +124,7 @@ class PaymentModesFragment: BaseFragment(), IPaymentModesServiceInterface,
                             completeKycTextView.text = paymentModesStaticText?.text_activate
                             completeKycTextView.setOnClickListener {
                                 this@apply.dismiss()
+                                initiateSetPaymentModeRequest(PaymentModeRequest(1, mPaymentType))
                             }
                             bottomSheetClose.setOnClickListener { this@apply.dismiss() }
                         }
@@ -155,6 +158,7 @@ class PaymentModesFragment: BaseFragment(), IPaymentModesServiceInterface,
                             noTextView.text = staticText?.text_no
                             yesTextView.setOnClickListener {
                                 this@apply.dismiss()
+                                initiateSetPaymentModeRequest(PaymentModeRequest(0, mPaymentType))
                             }
                             noTextView.setOnClickListener {
                                 this@apply.dismiss()
@@ -225,7 +229,7 @@ class PaymentModesFragment: BaseFragment(), IPaymentModesServiceInterface,
                     mActivity?.let { context -> Glide.with(context).load(codResponse.imageUrl).into(codImageView) }
                 }
             }
-            val isKycActive = !mPaymentModesResponse?.kycStatus?.isKycActive!!
+            val isKycActive = mPaymentModesResponse?.kycStatus?.isKycActive
             kycContainer.visibility = if (true == isKycActive) View.GONE else View.VISIBLE
             paymentSettlementContainer.visibility = if (true == isKycActive) View.VISIBLE else View.GONE
             paymentSettlementTextView.text = paymentModesStaticData?.heading_view_your_payments_and_settlements
@@ -242,7 +246,10 @@ class PaymentModesFragment: BaseFragment(), IPaymentModesServiceInterface,
 
                     override fun onSwitchCheckChangeListener(switch: CompoundButton?, isChecked: Boolean, paymentType: String?) {
                         mPaymentType = paymentType
-                        onCheckedChanged(switch, isChecked)
+                        if (isChecked) {
+                            showActivationBottomSheet()
+                        } else showConfirmationBottomSheet()
+                        //onCheckedChanged(switch, isChecked)
                         switch?.isChecked = !isChecked
                     }
                 })
@@ -273,14 +280,6 @@ class PaymentModesFragment: BaseFragment(), IPaymentModesServiceInterface,
                 } else {
                     codSwitch?.isChecked = true
                     request = PaymentModeRequest(0, mPaymentModesResponse?.cod?.paymentType)
-                }
-                initiateSetPaymentModeRequest(request)
-            }
-            else -> {
-                val request: PaymentModeRequest = if (isChecked) {
-                    PaymentModeRequest(1, mPaymentType)
-                } else {
-                    PaymentModeRequest(0, mPaymentType)
                 }
                 initiateSetPaymentModeRequest(request)
             }

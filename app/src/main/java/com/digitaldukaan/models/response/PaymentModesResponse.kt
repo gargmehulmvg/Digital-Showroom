@@ -17,7 +17,7 @@ data class PaymentModesStaticData(
     @SerializedName("text_complete_kyc_now") var text_complete_kyc_now: String?,
     @SerializedName("text_please_note") var text_please_note: String?,
     @SerializedName("text_confirmation") var text_confirmation: String?,
-    @SerializedName("message_confirm_payment_mode1") var message_confirm_payment_mode: String?,
+    @SerializedName("message_confirm_payment_mode") var message_confirm_payment_mode: String?,
     @SerializedName("text_no") var text_no: String?,
     @SerializedName("text_yes") var text_yes: String?,
     @SerializedName("text_activate") var text_activate: String?,

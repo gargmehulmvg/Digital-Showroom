@@ -67,6 +67,7 @@ class Constants {
         const val PAGE_FEEDBACK                                 = "Feedback"
         const val PAGE_APP_SETTINGS                             = "Sitemap"
         const val PAGE_REWARDS                                  = "RewardsPage"
+        const val PAGE_MY_PAYMENTS                              = "my-payments"
         //ERROR_CODES
         const val ERROR_DOMAIN_ALREADY_EXISTS                   = "domain_already_exists"
         //GRID_LAYOUT_SPAN_TYPE

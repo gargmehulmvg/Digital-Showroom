@@ -138,6 +138,12 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
             }
             paymentModesContainer?.id -> {
                 launchFragment(PaymentModesFragment.newInstance(), true)
+
+                /*val intent = Intent()
+                intent.data = Uri.parse("upi://pay?pa=dotpe.payu@indus&pn=DOTPE PRIVATE LIMITED&tr=13230050241&tid=CWzMK1PmJLao5VkA&am=3600.00&cu=INR&tn=OrderId-CWzMK1PmJLao5VkA#Intent;scheme=upi;package=com.google.android.apps.nbu.paisa.user;S.browser_fallback_url=https://play.google.com/store/apps/details?id=com.google.android.apps.nbu.paisa.user;end")
+                val chooser = Intent.createChooser(intent, "Pay with...")
+                startActivityForResult(chooser, 1, null)*/
+
                 /*val GOOGLE_PAY_PACKAGE_NAME = "com.google.android.apps.nbu.paisa.user"
                 val GOOGLE_PAY_PACKAGE_NAME = "com.phonepe.app"
                 val GOOGLE_PAY_REQUEST_CODE = 123
