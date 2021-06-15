@@ -61,6 +61,7 @@ class PaymentModesFragment: BaseFragment(), IPaymentModesServiceInterface,
         when (view?.id) {
             backButtonToolbar?.id -> mActivity?.onBackPressed()
             completeKycNowTextView?.id -> showCompleteYourKYCBottomSheet()
+            paymentSettlementViewTextView?.id -> launchFragment(MyPaymentsFragment.newInstance(), true)
         }
     }
 
@@ -249,12 +250,21 @@ class PaymentModesFragment: BaseFragment(), IPaymentModesServiceInterface,
                         if (isChecked) {
                             showActivationBottomSheet()
                         } else showConfirmationBottomSheet()
-                        //onCheckedChanged(switch, isChecked)
+                        switch?.setOnCheckedChangeListener(null)
                         switch?.isChecked = !isChecked
                     }
                 })
             }
         }
+    }
+
+    private fun isAllListItemDisabled(): Boolean {
+        val list: ArrayList<PaymentModelDTO> = ArrayList()
+        mPaymentModesResponse?.paymentOptionsMap?.forEach { key, arrayList ->
+            val item = PaymentModelDTO(key, arrayList)
+            list.add(item)
+        }
+        return list[0].value[0].status == 0
     }
 
     override fun onPaymentModesServerException(e: Exception) = exceptionHandlingForAPIResponse(e)
@@ -268,8 +278,13 @@ class PaymentModesFragment: BaseFragment(), IPaymentModesServiceInterface,
                     request = PaymentModeRequest(1, mPaymentModesResponse?.upi?.paymentType)
                 } else {
                     upiSwitch?.isChecked = true
+                    if (isAllListItemDisabled() && codSwitch?.isChecked != true) {
+                        showToast("Please enable at least 1 Payment Mode")
+                        return
+                    }
                     request = PaymentModeRequest(0, mPaymentModesResponse?.upi?.paymentType)
                 }
+                upiSwitch.setOnCheckedChangeListener(null)
                 initiateSetPaymentModeRequest(request)
             }
             codSwitch?.id -> {
@@ -279,8 +294,13 @@ class PaymentModesFragment: BaseFragment(), IPaymentModesServiceInterface,
                     request = PaymentModeRequest(1, mPaymentModesResponse?.cod?.paymentType)
                 } else {
                     codSwitch?.isChecked = true
+                    if (isAllListItemDisabled() && upiSwitch?.isChecked != true) {
+                        showToast("Please enable at least 1 Payment Mode")
+                        return
+                    }
                     request = PaymentModeRequest(0, mPaymentModesResponse?.cod?.paymentType)
                 }
+                codSwitch.setOnCheckedChangeListener(null)
                 initiateSetPaymentModeRequest(request)
             }
         }

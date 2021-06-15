@@ -8,8 +8,11 @@ import android.view.ViewGroup
 import androidx.viewpager.widget.ViewPager
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.MyPaymentsPagerAdapter
+import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.ToolBarManager
+import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.tabs.TabLayout
+
 
 class MyPaymentsFragment: BaseFragment(), TabLayout.OnTabSelectedListener {
 
@@ -28,6 +31,16 @@ class MyPaymentsFragment: BaseFragment(), TabLayout.OnTabSelectedListener {
         return mContentView
     }
 
+    private fun showDatePickerDialog() {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            val dateRangePicker = MaterialDatePicker.Builder.dateRangePicker().setTitleText("Select start And end date").build()
+            mActivity?.let { context -> dateRangePicker.show(context.supportFragmentManager, TAG) }
+            dateRangePicker.addOnPositiveButtonClickListener { showToast("Yes") }
+            dateRangePicker.addOnNegativeButtonClickListener { showToast("No") }
+            //dateRangePicker.addOnDismissListener { mActivity?.onBackPressed() }
+        }
+    }
+
     private fun initializeUI() {
         ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, false)
@@ -37,10 +50,19 @@ class MyPaymentsFragment: BaseFragment(), TabLayout.OnTabSelectedListener {
         hideBottomNavigationView(true)
         tabLayout = mContentView?.findViewById(R.id.tabLayout)
         viewPager = mContentView?.findViewById(R.id.viewPager)
-        mMyPaymentsPagerAdapter = MyPaymentsPagerAdapter(mActivity?.supportFragmentManager)
+        val transactionFragment = TransactionsFragment()
+        val settlementFragment = SettlementsFragment()
+        val fragmentList = ArrayList<BaseFragment>()
+        fragmentList.add(transactionFragment)
+        fragmentList.add(settlementFragment)
+        val fragmentHeaderList = ArrayList<String>()
+        fragmentHeaderList.add("Transactions")
+        fragmentHeaderList.add("Settlements")
+        mMyPaymentsPagerAdapter = MyPaymentsPagerAdapter(mActivity?.supportFragmentManager, fragmentList, fragmentHeaderList)
         viewPager?.adapter = mMyPaymentsPagerAdapter
         tabLayout?.setupWithViewPager(viewPager)
         tabLayout?.addOnTabSelectedListener(this)
+        showDatePickerDialog()
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

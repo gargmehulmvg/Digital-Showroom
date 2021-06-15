@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/container"
+    android:background="@drawable/ripple_slight_curve_grey_white_background"
+    android:onClick="onClick"
+    android:layout_marginTop="0.75dp"
+    android:padding="@dimen/_12sdp">
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="@dimen/_40sdp"
+        android:layout_height="@dimen/_40sdp"
+        android:clickable="false"
+        android:contentDescription="@string/image_view_content_description"
+        android:src="@drawable/amazon_pay"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/tickImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_tick_green_small"
+        app:layout_constraintBottom_toTopOf="@+id/imageView"
+        app:layout_constraintEnd_toEndOf="@+id/imageView"
+        app:layout_constraintStart_toEndOf="@+id/imageView"
+        app:layout_constraintTop_toTopOf="@+id/imageView"
+        android:contentDescription="@string/image_view_content_description" />
+
+    <TextView
+        android:id="@+id/headingTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_15sdp"
+        android:clickable="false"
+        android:padding="@dimen/_2sdp"
+        android:text="UTR: 114516218924"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_12sdp"
+        app:layout_constraintStart_toEndOf="@+id/imageView"
+        app:layout_constraintTop_toTopOf="@+id/imageView" />
+
+    <TextView
+        android:id="@+id/amountTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="false"
+        android:drawablePadding="@dimen/_5sdp"
+        android:fontFamily="@font/montserrat_bold"
+        android:padding="@dimen/_2sdp"
+        android:text="₹ 470"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_12sdp"
+        app:drawableEndCompat="@drawable/ic_half_arrow_forward"
+        app:drawableTint="@color/black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/subHeadingTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:clickable="false"
+        android:padding="@dimen/_2sdp"
+        android:text="Settled | 04:22 PM"
+        android:textSize="@dimen/_10sdp"
+        app:layout_constraintStart_toStartOf="@+id/headingTextView"
+        app:layout_constraintTop_toBottomOf="@+id/headingTextView" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

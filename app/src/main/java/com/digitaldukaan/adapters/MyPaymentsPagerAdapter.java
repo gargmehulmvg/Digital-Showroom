@@ -4,40 +4,36 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 
-import com.digitaldukaan.fragments.SettlementsFragment;
-import com.digitaldukaan.fragments.TransactionsFragment;
+import com.digitaldukaan.fragments.BaseFragment;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+
 public class MyPaymentsPagerAdapter extends FragmentStatePagerAdapter {
 
-    public MyPaymentsPagerAdapter(FragmentManager fm) {
+    private final ArrayList<BaseFragment> mFragmentList;
+    private final ArrayList<String> mFragmentHeaderList;
+
+    public MyPaymentsPagerAdapter(FragmentManager fm, ArrayList<BaseFragment> list, ArrayList<String> headerNameList) {
         super(fm);
+        this.mFragmentList = list;
+        this.mFragmentHeaderList = headerNameList;
     }
 
     @NotNull
     @Override
     public Fragment getItem(int position) {
-        Fragment fragment;
-        if (position == 0) {
-            fragment = new TransactionsFragment();
-        } else {
-            fragment = new SettlementsFragment();
-        }
-        return fragment;
+        return mFragmentList.get(position);
     }
 
     @Override
     public int getCount() {
-        return 2;
+        return mFragmentList.size();
     }
 
     @Override
     public CharSequence getPageTitle(int position) {
-        if (position == 0) {
-            return  "Transactions";
-        } else {
-            return  "Settlements";
-        }
+        return mFragmentHeaderList.get(position);
     }
 }

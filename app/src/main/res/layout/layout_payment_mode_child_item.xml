@@ -12,7 +12,7 @@
         android:layout_marginTop="@dimen/_5sdp"
         android:layout_marginBottom="@dimen/_5sdp"
         android:contentDescription="@string/image_view_content_description"
-        android:src="@drawable/ic_cash"
+        tools:src="@drawable/ic_cash"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

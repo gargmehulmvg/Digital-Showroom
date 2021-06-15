@@ -129,41 +129,12 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_SET_PREPAID_ORDER,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                    data = mapOf(
-                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                        AFInAppEventParameterName.PATH to AFInAppEventParameterName.MORE_CONTROLS
-                    )
+                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.PATH to AFInAppEventParameterName.MORE_CONTROLS)
                 )
                 launchFragment(SetOrderTypeFragment.newInstance(), true)
             }
             paymentModesContainer?.id -> {
                 launchFragment(PaymentModesFragment.newInstance(), true)
-
-                /*val intent = Intent()
-                intent.data = Uri.parse("upi://pay?pa=dotpe.payu@indus&pn=DOTPE PRIVATE LIMITED&tr=13230050241&tid=CWzMK1PmJLao5VkA&am=3600.00&cu=INR&tn=OrderId-CWzMK1PmJLao5VkA#Intent;scheme=upi;package=com.google.android.apps.nbu.paisa.user;S.browser_fallback_url=https://play.google.com/store/apps/details?id=com.google.android.apps.nbu.paisa.user;end")
-                val chooser = Intent.createChooser(intent, "Pay with...")
-                startActivityForResult(chooser, 1, null)*/
-
-                /*val GOOGLE_PAY_PACKAGE_NAME = "com.google.android.apps.nbu.paisa.user"
-                val GOOGLE_PAY_PACKAGE_NAME = "com.phonepe.app"
-                val GOOGLE_PAY_REQUEST_CODE = 123
-
-                val uri: Uri = Uri.Builder()
-                    .scheme("upi")
-                    .authority("pay")
-                    .appendQueryParameter("pa", "dotpe.payu@indus")
-                    .appendQueryParameter("pn", "DOTPE PRIVATE LIMITED")
-                    //.appendQueryParameter("mc", "your-merchant-code")
-                    .appendQueryParameter("tr", "13230050241")
-                    .appendQueryParameter("tn", "OrderId-CWzMK1PmJLao5VkA")
-                    .appendQueryParameter("am", "3600.00")
-                    .appendQueryParameter("cu", "INR")
-                    //.appendQueryParameter("url", "your-transaction-url")
-                    .build()
-                val intent = Intent(Intent.ACTION_VIEW)
-                intent.data = uri
-                intent.setPackage(GOOGLE_PAY_PACKAGE_NAME)
-                mActivity?.startActivityForResult(intent, GOOGLE_PAY_REQUEST_CODE)*/
             }
         }
     }

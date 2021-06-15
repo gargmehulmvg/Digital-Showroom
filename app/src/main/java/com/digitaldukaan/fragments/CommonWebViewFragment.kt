@@ -10,6 +10,7 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.PopupMenu
 import androidx.core.content.ContextCompat
+import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.MainActivity
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.*
@@ -34,6 +35,7 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
         val fragment = CommonWebViewFragment()
         fragment.mHeaderText = headerText
         fragment.mLoadUrl = loadUrl
+        fragment.mLoadUrl ="${fragment.mLoadUrl}&app_version=${BuildConfig.VERSION_NAME}"
         return fragment
     }
 
@@ -146,6 +148,27 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
             launchFragment(HomeFragment.newInstance(), true)
         } else if (jsonData.optBoolean("startLoader")) {
             showProgressDialog(mActivity)
+        } else if (jsonData.optBoolean("openUPIIntent")) {
+            val intent = Intent()
+            intent.data = Uri.parse(jsonData.optString("data"))
+            val chooser = Intent.createChooser(intent, "Pay with...")
+            startActivityForResult(chooser, 1, null)
+        } else if (jsonData.optBoolean("openUPI")) {
+            val packageName = jsonData.optString("packageName")
+            val uri: Uri = Uri.Builder()
+                .scheme("upi")
+                .authority("pay")
+                .appendQueryParameter("pa", jsonData.optString("pa"))
+                .appendQueryParameter("pn", jsonData.optString("pn"))
+                .appendQueryParameter("tr", jsonData.optString("tr"))
+                .appendQueryParameter("tn", jsonData.optString("tn"))
+                .appendQueryParameter("am", jsonData.optString("am"))
+                .appendQueryParameter("cu", "INR")
+                .build()
+            val intent = Intent(Intent.ACTION_VIEW)
+            intent.data = uri
+            intent.setPackage(packageName)
+            mActivity?.startActivityForResult(intent, 123)
         } else if (jsonData.optBoolean("convertImage")) {
             showProgressDialog(mActivity)
             val imageUrl = jsonData.optString("data")
