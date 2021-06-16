@@ -4,7 +4,8 @@ import com.google.gson.annotations.SerializedName
 import java.util.*
 
 data class MyPaymentsResponse(
-    @SerializedName("my_payments_list")         var mMyPaymentList: ArrayList<MyPaymentsItemResponse>?
+    @SerializedName("my_payments_list")         var mMyPaymentList: ArrayList<MyPaymentsItemResponse>?,
+    @SerializedName("is_next_page")             var mIsNextPage: Boolean
 )
 
 data class MyPaymentsItemResponse(

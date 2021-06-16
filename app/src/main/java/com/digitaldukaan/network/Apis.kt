@@ -203,8 +203,8 @@ interface Apis {
     suspend fun shareBill(@Path("order_id") orderId: String): Response<CommonApiResponse>
 
     /* ----------------------       Payments         ---------------------- */
-    @GET("api/dotk/vm1/orders/getOrderTransactions/{order_id}")
-    suspend fun getOrderTransactions(@Path("order_id") orderId: String): Response<CommonApiResponse>
+    @GET("api/dotk/vm1/orders/getOrderTransactions/{orderId}")
+    suspend fun getOrderTransactions(@Path("orderId") orderId: String): Response<CommonApiResponse>
 
 
     /* ----------------------       Premium         ---------------------- */

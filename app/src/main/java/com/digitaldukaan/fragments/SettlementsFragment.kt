@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.widget.NestedScrollView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
@@ -35,6 +36,7 @@ class SettlementsFragment : BaseFragment(), IMyPaymentsServiceInterface {
     private var mStartDateStr: String? = ""
     private var mEndDateStr: String? = ""
     private var mPageNumber = 1
+    private var mIsMoreTransactionsAvailable = false
     private var mTxnAdapter: TransactionsAdapter? = null
     private var mPaymentList: ArrayList<MyPaymentsItemResponse>? = ArrayList()
 
@@ -59,7 +61,21 @@ class SettlementsFragment : BaseFragment(), IMyPaymentsServiceInterface {
         startDateTextView?.setOnClickListener { showDatePickerDialog("Select Start date", startDateTextView) }
         endDateTextView?.setOnClickListener { showDatePickerDialog("Select End Date", endDateTextView) }
         mService.setServiceInterface(this)
+        applyPagination()
         return mContentView
+    }
+
+    private fun applyPagination() {
+        setupRecyclerView()
+        val scrollView: NestedScrollView? = mContentView?.findViewById(R.id.nestedScrollView)
+        scrollView?.setOnScrollChangeListener(NestedScrollView.OnScrollChangeListener { v, _, scrollY, _, _ ->
+            if (scrollY == (v.getChildAt(0).measuredHeight - v.measuredHeight)) {
+                if (mIsMoreTransactionsAvailable) {
+                    mPageNumber++
+                    getSettlementsList()
+                }
+            }
+        })
     }
 
     private fun showDatePickerDialog(message: String, textView: TextView?) {
@@ -81,16 +97,11 @@ class SettlementsFragment : BaseFragment(), IMyPaymentsServiceInterface {
                 val displayDate = getTxnDateStringFromTxnDate(todayCalendar.time)
                 if (textView?.id == startDateTextView?.id) {
                     startDateTextView?.text = displayDate
-                    mStartDateStr = "${todayCalendar.get(Calendar.YEAR)}-${todayCalendar.get(
-                        Calendar.MONTH
-                    ) + 1}-${todayCalendar.get(Calendar.DAY_OF_WEEK)}"
+                    mStartDateStr = "${todayCalendar.get(Calendar.YEAR)}-${todayCalendar.get(Calendar.MONTH) + 1}-${todayCalendar.get(Calendar.DATE)}"
                     if (!isEmpty(endDateTextView?.text?.toString())) getSettlementsList()
                 } else {
                     endDateTextView?.text = displayDate
-                    mEndDateStr =
-                        "${todayCalendar.get(Calendar.YEAR)}-${todayCalendar.get(Calendar.MONTH) + 1}-${todayCalendar.get(
-                            Calendar.DAY_OF_WEEK
-                        )}"
+                    mEndDateStr = "${todayCalendar.get(Calendar.YEAR)}-${todayCalendar.get(Calendar.MONTH) + 1}-${todayCalendar.get(Calendar.DATE)}"
                     if (!isEmpty(startDateTextView?.text?.toString())) getSettlementsList()
                 }
             }
@@ -109,24 +120,26 @@ class SettlementsFragment : BaseFragment(), IMyPaymentsServiceInterface {
             if (response.mIsSuccessStatus) {
                 val myPaymentList = Gson().fromJson<MyPaymentsResponse>(response.mCommonDataStr, MyPaymentsResponse::class.java)
                 val paymentList: ArrayList<MyPaymentsItemResponse>? = myPaymentList?.mMyPaymentList
-                mPaymentList = paymentList
+                paymentList?.let { mPaymentList?.addAll(it) }
+                mIsMoreTransactionsAvailable = myPaymentList?.mIsNextPage ?: false
                 if (isEmpty(mPaymentList)) {
                     zeroOrderContainer?.visibility = View.VISIBLE
                     amountContainer?.visibility = View.GONE
                     mTxnAdapter?.setMyPaymentsList(ArrayList())
                 } else {
-                    setupRecyclerView()
+                    amountContainer?.visibility = View.VISIBLE
+                    zeroOrderContainer?.visibility = View.GONE
+                    convertDateStringOfTransactions()
+                    mTxnAdapter?.setMyPaymentsList(mPaymentList)
                 }
             }
         }
     }
 
     private fun setupRecyclerView() {
-        amountContainer?.visibility = View.VISIBLE
-        zeroOrderContainer?.visibility = View.GONE
+        convertDateStringOfTransactions()
         settlementsRecyclerView?.apply {
             mTxnAdapter = TransactionsAdapter(mActivity, mPaymentList)
-            convertDateStringOfTransactions()
             layoutManager = LinearLayoutManager(mActivity)
             adapter = mTxnAdapter
             addItemDecoration(StickyRecyclerHeadersDecoration(mTxnAdapter))
