@@ -92,10 +92,10 @@ class TransactionsFragment: BaseFragment(), IMyPaymentsServiceInterface {
 
     private fun getTxnList() {
         showProgressDialog(mActivity)
-        mService.getMyPaymentsList(mPageNumber, mStartDateStr, mEndDateStr)
+        mService.getTransactionsList(mPageNumber, mStartDateStr, mEndDateStr)
     }
 
-    override fun onMyPaymentsListResponse(response: CommonApiResponse) {
+    override fun onGetTransactionsListResponse(response: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             if (response.mIsSuccessStatus) {

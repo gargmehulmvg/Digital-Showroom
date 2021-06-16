@@ -72,7 +72,7 @@ class TransactionsAdapter(private val activity: MainActivity?, private var mPaym
         holder.apply {
             val item = mPaymentList?.get(position)
             if (!isEmpty(item?.imageUrl)) activity?.let { context -> Glide.with(context).load(item?.imageUrl).into(imageView) }
-            headingTextView.text = if (isEmpty(item?.orderId)) "UTR : ${item?.utr}" else "Order No. ${item?.orderId}"
+            headingTextView.text = if (!isEmpty(item?.utr)) "UTR : ${item?.utr}" else "Order No. ${item?.orderId}"
             val status = "${item?.transactionState} | ${getStringTimeFromDate(getCompleteDateFromOrderString(item?.transactionTimestamp))}"
             subHeadingTextView.text = status
             val amount = "${activity?.getString(R.string.rupee_symbol)} ${item?.amount}"

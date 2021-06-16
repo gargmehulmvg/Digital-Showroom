@@ -13,9 +13,15 @@ class MyPaymentsService {
         mServiceInterface = serviceInterface
     }
 
-    fun getMyPaymentsList(pageNo: Int, startDate: String?, endDate: String?) {
+    fun getTransactionsList(pageNo: Int, startDate: String?, endDate: String?) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.getMyPaymentsListServerCall(pageNo, startDate, endDate, mServiceInterface)
+            mNetworkService.getTransactionsListServerCall(pageNo, startDate, endDate, mServiceInterface)
+        }
+    }
+
+    fun getSettlementsList(pageNo: Int, startDate: String?, endDate: String?) {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.getSettlementListServerCall(pageNo, startDate, endDate, mServiceInterface)
         }
     }
 

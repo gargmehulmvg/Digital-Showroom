@@ -4,7 +4,7 @@ import com.digitaldukaan.models.response.CommonApiResponse
 
 interface IMyPaymentsServiceInterface {
 
-    fun onMyPaymentsListResponse(response: CommonApiResponse)
+    fun onGetTransactionsListResponse(response: CommonApiResponse)
 
     fun onMyPaymentsServerException(e: Exception)
 }
