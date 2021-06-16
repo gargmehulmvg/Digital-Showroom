@@ -256,6 +256,12 @@ fun getStringDateTimeFromOrderDate(date: Date?): String {
     return dateFormat.format(date)
 }
 
+fun getStringTimeFromDate(date: Date?): String {
+    if (date == null) return ""
+    val dateFormat = SimpleDateFormat("hh:mm a", Locale.getDefault());
+    return dateFormat.format(date)
+}
+
 fun getContactsFromStorage2(ctx: Context?) {
     val tag = "CONTACTS"
     try {
@@ -348,4 +354,35 @@ fun isEmpty(list: List<Any>?): Boolean {
 
 fun isEmpty(string: String?): Boolean {
     return string == null || string.isEmpty()
+}
+
+fun getDayOfTheWeek(count: Int): String {
+    when(count) {
+        0 -> return "Sun"
+        1 -> return "Mon"
+        2 -> return "Tue"
+        3 -> return "Wed"
+        4 -> return "Thu"
+        5 -> return "Fri"
+        6 -> return "Sat"
+    }
+    return ""
+}
+
+fun getMonthOfTheWeek(count: Int): String {
+    when(count) {
+        0 -> return "Jan"
+        1 -> return "Feb"
+        2 -> return "Mar"
+        3 -> return "Apr"
+        4 -> return "May"
+        5 -> return "Jun"
+        6 -> return "Jul"
+        7 -> return "Aug"
+        8 -> return "Sep"
+        9 -> return "Oct"
+        10 -> return "Nov"
+        11 -> return "Dec"
+    }
+    return ""
 }

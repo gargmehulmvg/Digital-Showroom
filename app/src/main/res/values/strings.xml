@@ -58,6 +58,7 @@
     <string name="map_api_key">AIzaSyA9UIK8Gfrvs0JTLjaGKeEB8w7hb_RXKWM</string>
     <string name="how_it_works">How it works?</string>
     <string name="text_no">NO</string>
+    <string name="rupee_symbol">₹</string>
     <string name="txt_yes">YES</string>
     <string name="today_s_sale">Today\'s Sale</string>
     <string name="week_s_sale">Week\'s Sale</string>
@@ -145,22 +146,4 @@
         <item >West Bengal</item>
     </string-array>
 </resources>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
     android:background="@drawable/ripple_slight_curve_grey_white_background"
     android:onClick="onClick"
@@ -15,7 +16,7 @@
         android:layout_height="@dimen/_40sdp"
         android:clickable="false"
         android:contentDescription="@string/image_view_content_description"
-        android:src="@drawable/amazon_pay"
+        tools:src="@drawable/amazon_pay"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

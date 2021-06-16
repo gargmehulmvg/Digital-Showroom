@@ -2,12 +2,12 @@
 <androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
+    android:background="@color/white"
     android:layout_height="match_parent">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/default_bg"
         android:orientation="vertical">
 
         <androidx.cardview.widget.CardView
@@ -98,6 +98,70 @@
                 app:layout_constraintStart_toEndOf="@+id/amountSettledTextView"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.692" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/zeroOrderContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/noTxnImageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/image_view_content_description"
+                android:src="@drawable/ic_no_settlements_found"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.35" />
+
+            <TextView
+                android:id="@+id/noSettlementForSelectedDateTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:fontFamily="@font/roboto"
+                android:padding="@dimen/_8sdp"
+                android:layout_marginTop="@dimen/_15sdp"
+                android:textColor="@color/black"
+                android:text="No Settlements for the selected date"
+                app:layout_constraintTop_toBottomOf="@id/noTxnImageView" />
+
+            <TextView
+                android:id="@+id/shareYourStoreTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto"
+                android:gravity="center"
+                android:textSize="@dimen/_10sdp"
+                android:text="Share your store now to get Orders"
+                app:layout_constraintTop_toBottomOf="@+id/noSettlementForSelectedDateTextView" />
+
+            <TextView
+                android:id="@+id/shareButtonTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ripple_curve_grey_black_background"
+                android:drawablePadding="@dimen/_10sdp"
+                android:gravity="center_vertical"
+                android:onClick="onClick"
+                android:layout_marginTop="@dimen/_20sdp"
+                android:paddingStart="@dimen/_15sdp"
+                android:paddingTop="@dimen/_10sdp"
+                android:paddingEnd="@dimen/_15sdp"
+                android:paddingBottom="@dimen/_10sdp"
+                android:text="@string/share_product"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_15sdp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/shareYourStoreTextView"
+                app:drawableStartCompat="@drawable/ic_whatsapp" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

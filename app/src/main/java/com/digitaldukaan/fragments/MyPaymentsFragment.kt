@@ -31,16 +31,6 @@ class MyPaymentsFragment: BaseFragment(), TabLayout.OnTabSelectedListener {
         return mContentView
     }
 
-    private fun showDatePickerDialog() {
-        CoroutineScopeUtils().runTaskOnCoroutineMain {
-            val dateRangePicker = MaterialDatePicker.Builder.dateRangePicker().setTitleText("Select start And end date").build()
-            mActivity?.let { context -> dateRangePicker.show(context.supportFragmentManager, TAG) }
-            dateRangePicker.addOnPositiveButtonClickListener { showToast("Yes") }
-            dateRangePicker.addOnNegativeButtonClickListener { showToast("No") }
-            //dateRangePicker.addOnDismissListener { mActivity?.onBackPressed() }
-        }
-    }
-
     private fun initializeUI() {
         ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, false)
@@ -62,7 +52,17 @@ class MyPaymentsFragment: BaseFragment(), TabLayout.OnTabSelectedListener {
         viewPager?.adapter = mMyPaymentsPagerAdapter
         tabLayout?.setupWithViewPager(viewPager)
         tabLayout?.addOnTabSelectedListener(this)
-        showDatePickerDialog()
+        //showDatePickerDialog()
+    }
+
+    private fun showDatePickerDialog() {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            val dateRangePicker = MaterialDatePicker.Builder.dateRangePicker().setTitleText("Select start And end date").build()
+            mActivity?.let { context -> dateRangePicker.show(context.supportFragmentManager, TAG) }
+            dateRangePicker.addOnPositiveButtonClickListener { showToast("Yes") }
+            dateRangePicker.addOnNegativeButtonClickListener { showToast("No") }
+            //dateRangePicker.addOnDismissListener { mActivity?.onBackPressed() }
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -71,17 +71,17 @@ class MyPaymentsFragment: BaseFragment(), TabLayout.OnTabSelectedListener {
     }
 
     override fun onTabReselected(tab: TabLayout.Tab?) {
-        showToast("onTabReselected :: ${tab?.text}")
+        //showToast("onTabReselected :: ${tab?.text}")
         Log.d(TAG, "onTabReselected :: ${tab?.text}")
     }
 
     override fun onTabUnselected(tab: TabLayout.Tab?) {
-        showToast("onTabUnselected :: ${tab?.text}")
+        //showToast("onTabUnselected :: ${tab?.text}")
         Log.d(TAG, "onTabUnselected :: ${tab?.text}")
     }
 
     override fun onTabSelected(tab: TabLayout.Tab?) {
-        showToast("onTabSelected :: ${tab?.text}")
+        //showToast("onTabSelected :: ${tab?.text}")
         Log.d(TAG, "onTabSelected :: ${tab?.text}")
     }
 

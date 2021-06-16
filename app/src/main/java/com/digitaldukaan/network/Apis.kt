@@ -38,6 +38,9 @@ interface Apis {
     @GET("api/dotk/vm1/settings/getOrderTypePageInfo")
     suspend fun getOrderTypePageInfo() : Response<CommonApiResponse>
 
+    @GET("api/dotk/vm1/settings/getMyPaymentsList")
+    suspend fun getMyPaymentsList(@Query("page_no") pageNo: Int, @Query("start_date") startDate: String?, @Query("end_date") endDate: String?, @Query("list_type") listType: String) : Response<CommonApiResponse>
+
     @POST("api/dotk/vm1/settings/updatePaymentMethod")
     suspend fun updatePaymentMethod(@Body request: UpdatePaymentMethodRequest) : Response<CommonApiResponse>
 

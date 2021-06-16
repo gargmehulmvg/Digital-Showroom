@@ -51,6 +51,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
+import com.google.gson.Gson
 import com.squareup.picasso.Picasso
 import com.yalantis.ucrop.UCrop
 import id.zelory.compressor.Compressor
@@ -1314,6 +1315,27 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         storeStringDataInSharedPref(Constants.USER_MOBILE_NUMBER, "")
         storeStringDataInSharedPref(Constants.STORE_ID, "")
         launchFragment(LoginFragment.newInstance(), false)
+    }
+
+    fun shareStoreOverWhatsAppServerCall() {
+        showProgressDialog(mActivity)
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            try {
+                val response = RetrofitApi().getServerCallObject()?.getShareStore()
+                response?.let {
+                    stopProgress()
+                    if (it.isSuccessful) {
+                        it.body()?.let {
+                            withContext(Dispatchers.Main) {
+                                if (it.mIsSuccessStatus) shareOnWhatsApp(Gson().fromJson<String>(it.mCommonDataStr, String::class.java)) else showShortSnackBar(it.mMessage, true, R.drawable.ic_close_red)
+                            }
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                exceptionHandlingForAPIResponse(e)
+            }
+        }
     }
 
 }
