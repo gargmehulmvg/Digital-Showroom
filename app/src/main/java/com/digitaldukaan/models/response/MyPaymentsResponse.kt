@@ -1,6 +1,7 @@
 package com.digitaldukaan.models.response
 
 import com.google.gson.annotations.SerializedName
+import java.util.*
 
 data class MyPaymentsResponse(
     @SerializedName("my_payments_list")         var mMyPaymentList: ArrayList<MyPaymentsItemResponse>?
@@ -13,5 +14,7 @@ data class MyPaymentsItemResponse(
     @SerializedName("order_id")                 var orderId: String?,
     @SerializedName("utr")                      var utr: String?,
     @SerializedName("image_url")                var imageUrl: String?,
-    @SerializedName("transaction_state")        var transactionState: String?
+    @SerializedName("transaction_state")        var transactionState: String?,
+    var updatedDate: Date? = Date(),
+    var updatedCompleteDate: Date? = Date()
 )

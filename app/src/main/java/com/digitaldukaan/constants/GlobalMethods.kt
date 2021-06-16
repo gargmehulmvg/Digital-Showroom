@@ -226,7 +226,8 @@ fun openWebViewFragment(fragment: BaseFragment, title: String, webViewType: Stri
     }
 }
 
-fun getDateFromOrderString(dateStr: String): Date? {
+fun getDateFromOrderString(dateStr: String?): Date? {
+    if (isEmpty(dateStr)) return Date()
     val format: DateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
     return format.parse(dateStr)
 }
@@ -239,26 +240,32 @@ fun getCompleteDateFromOrderString(dateStr: String?): Date? {
 
 fun getTimeFromOrderString(date: Date?): String {
     date?.run {
-        val dateFormat = SimpleDateFormat("hh:mm a", Locale.getDefault());
+        val dateFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())
         return dateFormat.format(this)
     }
     return ""
 }
 
 fun getStringFromOrderDate(date: Date): String {
-    val dateFormat = SimpleDateFormat("dd MMM yy", Locale.getDefault());
+    val dateFormat = SimpleDateFormat("dd MMM yy", Locale.getDefault())
     return dateFormat.format(date)
+}
+
+fun getTxnDateStringFromTxnDate(date: Date): String {
+    val dateFormat = SimpleDateFormat("d MMM, EEE yy", Locale.getDefault())
+    val string = dateFormat.format(date)
+    return string.substring(0, string.length - 3) + "\'" + string.substring(string.length -2, string.length)
 }
 
 fun getStringDateTimeFromOrderDate(date: Date?): String {
     if (date == null) return ""
-    val dateFormat = SimpleDateFormat("dd MMM yy | hh:mm a", Locale.getDefault());
+    val dateFormat = SimpleDateFormat("dd MMM yy | hh:mm a", Locale.getDefault())
     return dateFormat.format(date)
 }
 
 fun getStringTimeFromDate(date: Date?): String {
     if (date == null) return ""
-    val dateFormat = SimpleDateFormat("hh:mm a", Locale.getDefault());
+    val dateFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())
     return dateFormat.format(date)
 }
 

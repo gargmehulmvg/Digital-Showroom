@@ -9,10 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.TransactionsAdapter
-import com.digitaldukaan.constants.CoroutineScopeUtils
-import com.digitaldukaan.constants.getDayOfTheWeek
-import com.digitaldukaan.constants.getMonthOfTheWeek
-import com.digitaldukaan.constants.isEmpty
+import com.digitaldukaan.constants.*
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.MyPaymentsItemResponse
 import com.digitaldukaan.models.response.MyPaymentsResponse
@@ -22,6 +19,7 @@ import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.DateValidatorPointBackward
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.gson.Gson
+import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -67,7 +65,6 @@ class TransactionsFragment: BaseFragment(), IMyPaymentsServiceInterface {
             val constraints = CalendarConstraints.Builder()
             constraints.setStart(calendar.timeInMillis)
             constraints.setValidator(DateValidatorPointBackward.now())
-
             val dateRangePicker = MaterialDatePicker.Builder.datePicker().setTitleText(message).setCalendarConstraints(constraints.build()).build()
 
             mActivity?.let { context -> dateRangePicker.show(context.supportFragmentManager, TAG) }
@@ -75,7 +72,8 @@ class TransactionsFragment: BaseFragment(), IMyPaymentsServiceInterface {
                 date ->
                 val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
                 calendar.timeInMillis = date
-                val displayDate = "${calendar.get(Calendar.DATE)} ${getMonthOfTheWeek(calendar.get(Calendar.MONTH))}, ${getDayOfTheWeek(calendar.get(Calendar.DAY_OF_WEEK))}, ${calendar.get(Calendar.YEAR)}"
+                //val displayDate = "${calendar.get(Calendar.DATE)} ${getMonthOfTheWeek(calendar.get(Calendar.MONTH))}, ${getDayOfTheWeek(calendar.get(Calendar.DAY_OF_WEEK))}, ${calendar.get(Calendar.YEAR)}"
+                val displayDate = getTxnDateStringFromTxnDate(calendar.time)
                 if (textView?.id == startDateTextView?.id) {
                     startDateTextView?.text = displayDate
                     mStartDateStr = "${calendar.get(Calendar.YEAR)}-${calendar.get(Calendar.MONTH) + 1}-${calendar.get(Calendar.DAY_OF_WEEK)}"
@@ -109,11 +107,21 @@ class TransactionsFragment: BaseFragment(), IMyPaymentsServiceInterface {
 
     private fun setupRecyclerView() {
         transactionRecyclerView?.apply {
+            val txnAdapter = TransactionsAdapter(mActivity, mPaymentList)
+            convertDateStringOfTransactions()
             layoutManager = LinearLayoutManager(mActivity)
-            adapter = TransactionsAdapter(mActivity, mPaymentList)
+            adapter = txnAdapter
+            addItemDecoration(StickyRecyclerHeadersDecoration(txnAdapter))
         }
     }
 
     override fun onMyPaymentsServerException(e: Exception) = exceptionHandlingForAPIResponse(e)
+
+    private fun convertDateStringOfTransactions() {
+        mPaymentList?.forEachIndexed { _, itemResponse ->
+            itemResponse.updatedDate = getDateFromOrderString(itemResponse.transactionTimestamp)
+            itemResponse.updatedCompleteDate = getCompleteDateFromOrderString(itemResponse.transactionTimestamp)
+        }
+    }
 
 }
