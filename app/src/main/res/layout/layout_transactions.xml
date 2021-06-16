@@ -4,18 +4,21 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:background="@color/white"
+    android:animateLayoutChanges="true"
     android:layout_height="match_parent">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:animateLayoutChanges="true" >
 
         <androidx.cardview.widget.CardView
+            android:id="@+id/cardView2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="@dimen/_5sdp"
-            app:cardElevation="@dimen/_10sdp">
+            app:cardElevation="@dimen/_10sdp"
+            app:layout_constraintTop_toTopOf="parent">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -33,14 +36,14 @@
                     android:gravity="center"
                     android:onClick="onClick"
                     android:padding="@dimen/_6sdp"
-                    tools:text="9 Jun, Wed"
                     android:textColor="@color/dark_blackish"
+                    app:drawableEndCompat="@drawable/ic_half_arrow_down"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/endDateTextView"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:drawableEndCompat="@drawable/ic_half_arrow_down" />
+                    tools:text="9 Jun, Wed" />
 
                 <TextView
                     android:id="@+id/endDateTextView"
@@ -51,32 +54,35 @@
                     android:gravity="center"
                     android:onClick="onClick"
                     android:padding="@dimen/_6sdp"
-                    tools:text="9 Jun, Wed"
                     android:textColor="@color/dark_blackish"
+                    app:drawableEndCompat="@drawable/ic_half_arrow_down"
                     app:layout_constraintBottom_toBottomOf="@+id/startDateTextView"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toEndOf="@+id/startDateTextView"
                     app:layout_constraintTop_toTopOf="@+id/startDateTextView"
-                    app:drawableEndCompat="@drawable/ic_half_arrow_down" />
+                    tools:text="9 Jun, Wed" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.cardview.widget.CardView>
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/amountContainer"
             android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:background="@color/white"
             android:padding="@dimen/_12sdp"
-            android:layout_height="wrap_content">
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@+id/cardView2">
 
             <ImageView
                 android:id="@+id/tickGreenImageView"
                 android:layout_width="@dimen/_40sdp"
                 android:layout_height="@dimen/_40sdp"
+                android:layout_marginTop="@dimen/_12sdp"
                 android:contentDescription="@string/image_view_content_description"
                 android:padding="@dimen/_2sdp"
-                android:layout_marginTop="@dimen/_12sdp"
                 android:src="@drawable/tick_green_bg"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.02"
@@ -87,11 +93,11 @@
                 android:id="@+id/amountSettledTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Amount Settled"
-                android:paddingStart="@dimen/_2sdp"
-                android:paddingEnd="@dimen/_2sdp"
-                android:paddingTop="@dimen/_4sdp"
                 android:layout_marginStart="@dimen/_5sdp"
+                android:paddingStart="@dimen/_2sdp"
+                android:paddingTop="@dimen/_4sdp"
+                android:paddingEnd="@dimen/_2sdp"
+                android:text="Amount Settled"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_9sdp"
                 app:layout_constraintEnd_toStartOf="@+id/waitingImageView"
@@ -102,11 +108,11 @@
                 android:id="@+id/amountToSettledTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_5sdp"
                 android:paddingStart="@dimen/_2sdp"
                 android:paddingTop="@dimen/_4sdp"
                 android:paddingEnd="@dimen/_2sdp"
                 android:text="Amount to Settled"
-                android:layout_marginStart="@dimen/_5sdp"
                 android:textSize="@dimen/_9sdp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@+id/waitingImageView"
@@ -157,12 +163,12 @@
                 android:id="@+id/cashTxnNotShownTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Cash transactions are not shown"
                 android:layout_marginTop="@dimen/_15sdp"
                 android:drawablePadding="@dimen/_5sdp"
                 android:fontFamily="@font/roboto_light"
-                android:textSize="@dimen/_9sdp"
+                android:text="Cash transactions are not shown"
                 android:textColor="@color/dark_blackish"
+                android:textSize="@dimen/_9sdp"
                 app:drawableStartCompat="@drawable/ic_exclamation_circle_black_small"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -173,9 +179,11 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/zeroOrderContainer"
-            android:visibility="gone"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/amountContainer">
 
             <ImageView
                 android:id="@+id/noTxnImageView"
@@ -194,12 +202,12 @@
                 android:id="@+id/noSettlementForSelectedDateTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
-                android:fontFamily="@font/roboto"
-                android:padding="@dimen/_8sdp"
                 android:layout_marginTop="@dimen/_15sdp"
-                android:textColor="@color/black"
+                android:fontFamily="@font/roboto"
+                android:gravity="center"
+                android:padding="@dimen/_8sdp"
                 android:text="No Payments received for the selected date"
+                android:textColor="@color/black"
                 app:layout_constraintTop_toBottomOf="@id/noTxnImageView" />
 
             <TextView
@@ -208,19 +216,19 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/roboto"
                 android:gravity="center"
-                android:textSize="@dimen/_10sdp"
                 android:text="Share your store now to get Orders"
+                android:textSize="@dimen/_10sdp"
                 app:layout_constraintTop_toBottomOf="@+id/noSettlementForSelectedDateTextView" />
 
             <TextView
                 android:id="@+id/shareButtonTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_20sdp"
                 android:background="@drawable/ripple_curve_grey_black_background"
                 android:drawablePadding="@dimen/_10sdp"
                 android:gravity="center_vertical"
                 android:onClick="onClick"
-                android:layout_marginTop="@dimen/_20sdp"
                 android:paddingStart="@dimen/_15sdp"
                 android:paddingTop="@dimen/_10sdp"
                 android:paddingEnd="@dimen/_15sdp"
@@ -228,21 +236,24 @@
                 android:text="@string/share_product"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_15sdp"
+                app:drawableStartCompat="@drawable/ic_whatsapp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/shareYourStoreTextView"
-                app:drawableStartCompat="@drawable/ic_whatsapp" />
+                app:layout_constraintTop_toBottomOf="@+id/shareYourStoreTextView" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/transactionRecyclerView"
             android:layout_width="match_parent"
+            tools:itemCount="1"
+            android:layout_height="wrap_content"
             android:background="@color/light_grey_background"
-            tools:listitem="@layout/transactions_item"
-            android:layout_height="wrap_content" />
+            android:visibility="visible"
+            app:layout_constraintTop_toBottomOf="@+id/amountContainer"
+            tools:listitem="@layout/transactions_item" />
 
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.core.widget.NestedScrollView>

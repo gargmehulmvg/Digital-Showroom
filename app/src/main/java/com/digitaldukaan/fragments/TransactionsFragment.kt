@@ -26,12 +26,15 @@ import kotlin.collections.ArrayList
 class TransactionsFragment: BaseFragment(), IMyPaymentsServiceInterface {
 
     private var transactionRecyclerView: RecyclerView? = null
+    private var amountContainer: View? = null
+    private var zeroOrderContainer: View? = null
     private var startDateTextView: TextView? = null
     private var endDateTextView: TextView? = null
     private val mService: MyPaymentsService = MyPaymentsService()
     private var mStartDateStr: String? = ""
     private var mEndDateStr: String? = ""
     private var mPageNumber = 1
+    private var mTxnAdapter: TransactionsAdapter? = null
     private var mPaymentList: ArrayList<MyPaymentsItemResponse>? = ArrayList()
 
     companion object {
@@ -45,6 +48,8 @@ class TransactionsFragment: BaseFragment(), IMyPaymentsServiceInterface {
         transactionRecyclerView = mContentView?.findViewById(R.id.transactionRecyclerView)
         startDateTextView = mContentView?.findViewById(R.id.startDateTextView)
         endDateTextView = mContentView?.findViewById(R.id.endDateTextView)
+        amountContainer = mContentView?.findViewById(R.id.amountContainer)
+        zeroOrderContainer = mContentView?.findViewById(R.id.zeroOrderContainer)
         startDateTextView?.setOnClickListener { showDatePickerDialog("Select Start date", startDateTextView) }
         endDateTextView?.setOnClickListener { showDatePickerDialog("Select End Date", endDateTextView) }
         val shareButtonTextView: TextView? = mContentView?.findViewById(R.id.shareButtonTextView)
@@ -55,8 +60,6 @@ class TransactionsFragment: BaseFragment(), IMyPaymentsServiceInterface {
 
     private fun showDatePickerDialog(message: String, textView: TextView?) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            showToast()
-
             val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
             calendar.clear()
             calendar.timeInMillis = MaterialDatePicker.todayInUtcMilliseconds()
@@ -66,22 +69,20 @@ class TransactionsFragment: BaseFragment(), IMyPaymentsServiceInterface {
             constraints.setStart(calendar.timeInMillis)
             constraints.setValidator(DateValidatorPointBackward.now())
             val dateRangePicker = MaterialDatePicker.Builder.datePicker().setTitleText(message).setCalendarConstraints(constraints.build()).build()
-
             mActivity?.let { context -> dateRangePicker.show(context.supportFragmentManager, TAG) }
             dateRangePicker.addOnPositiveButtonClickListener {
                 date ->
-                val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
-                calendar.timeInMillis = date
-                //val displayDate = "${calendar.get(Calendar.DATE)} ${getMonthOfTheWeek(calendar.get(Calendar.MONTH))}, ${getDayOfTheWeek(calendar.get(Calendar.DAY_OF_WEEK))}, ${calendar.get(Calendar.YEAR)}"
-                val displayDate = getTxnDateStringFromTxnDate(calendar.time)
+                val todayCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+                todayCalendar.timeInMillis = date
+                val displayDate = getTxnDateStringFromTxnDate(todayCalendar.time)
                 if (textView?.id == startDateTextView?.id) {
                     startDateTextView?.text = displayDate
-                    mStartDateStr = "${calendar.get(Calendar.YEAR)}-${calendar.get(Calendar.MONTH) + 1}-${calendar.get(Calendar.DAY_OF_WEEK)}"
+                    mStartDateStr = "${todayCalendar.get(Calendar.YEAR)}-${todayCalendar.get(Calendar.MONTH) + 1}-${todayCalendar.get(Calendar.DAY_OF_WEEK)}"
                     if (!isEmpty(endDateTextView?.text?.toString())) getTxnList()
                 }
                 else {
                     endDateTextView?.text = displayDate
-                    mEndDateStr = "${calendar.get(Calendar.YEAR)}-${calendar.get(Calendar.MONTH) + 1}-${calendar.get(Calendar.DAY_OF_WEEK)}"
+                    mEndDateStr = "${todayCalendar.get(Calendar.YEAR)}-${todayCalendar.get(Calendar.MONTH) + 1}-${todayCalendar.get(Calendar.DAY_OF_WEEK)}"
                     if (!isEmpty(startDateTextView?.text?.toString())) getTxnList()
                 }
             }
@@ -99,19 +100,28 @@ class TransactionsFragment: BaseFragment(), IMyPaymentsServiceInterface {
             stopProgress()
             if (response.mIsSuccessStatus) {
                 val myPaymentList = Gson().fromJson<MyPaymentsResponse>(response.mCommonDataStr, MyPaymentsResponse::class.java)
-                mPaymentList = myPaymentList?.mMyPaymentList
-                setupRecyclerView()
+                val paymentList: ArrayList<MyPaymentsItemResponse>? = myPaymentList?.mMyPaymentList
+                mPaymentList = paymentList
+                if (isEmpty(mPaymentList)) {
+                    zeroOrderContainer?.visibility = View.VISIBLE
+                    amountContainer?.visibility = View.GONE
+                    mTxnAdapter?.setMyPaymentsList(ArrayList())
+                } else {
+                    setupRecyclerView()
+                }
             }
         }
     }
 
     private fun setupRecyclerView() {
+        amountContainer?.visibility = View.VISIBLE
+        zeroOrderContainer?.visibility = View.GONE
         transactionRecyclerView?.apply {
-            val txnAdapter = TransactionsAdapter(mActivity, mPaymentList)
+            mTxnAdapter = TransactionsAdapter(mActivity, mPaymentList)
             convertDateStringOfTransactions()
             layoutManager = LinearLayoutManager(mActivity)
-            adapter = txnAdapter
-            addItemDecoration(StickyRecyclerHeadersDecoration(txnAdapter))
+            adapter = mTxnAdapter
+            addItemDecoration(StickyRecyclerHeadersDecoration(mTxnAdapter))
         }
     }
 
