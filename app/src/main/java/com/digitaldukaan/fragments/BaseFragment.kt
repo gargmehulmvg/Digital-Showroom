@@ -1315,7 +1315,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         storeStringDataInSharedPref(Constants.STORE_NAME, "")
         storeStringDataInSharedPref(Constants.USER_MOBILE_NUMBER, "")
         storeStringDataInSharedPref(Constants.STORE_ID, "")
-        launchFragment(LoginFragment.newInstance(), false)
+        launchFragment(LoginFragment.newInstance(), true)
     }
 
     fun shareStoreOverWhatsAppServerCall() {

@@ -43,6 +43,7 @@ class TransactionsFragment: BaseFragment(), IMyPaymentsServiceInterface, ITransa
     private var mIsMoreTransactionsAvailable = false
     private var mIsDateSelectionDone = false
     private var mTxnAdapter: TransactionsAdapter? = null
+    private var mIsPrevDateSelected = false
     private var mPaymentList: ArrayList<MyPaymentsItemResponse>? = ArrayList()
 
     companion object {
@@ -61,8 +62,28 @@ class TransactionsFragment: BaseFragment(), IMyPaymentsServiceInterface, ITransa
         shareButtonTextView?.setOnClickListener { shareStoreOverWhatsAppServerCall() }
         mService.setServiceInterface(this)
         applyPagination()
-        showProgressDialog(mActivity)
         mService.getMyPaymentPageInfo()
+        val startDate = PrefsManager.getStringDataFromSharedPref(PrefsManager.KEY_TXN_START_DATE)
+        val endDate = PrefsManager.getStringDataFromSharedPref(PrefsManager.KEY_TXN_END_DATE)
+        if (isEmpty(startDate) && isEmpty(endDate)) {
+            mIsPrevDateSelected = false
+            showDatePickerDialog()
+        } else {
+            mIsPrevDateSelected = true
+            val secondDateCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+            secondDateCalendar.timeInMillis = endDate.toLong()
+            mEndDateStr = "${secondDateCalendar.get(Calendar.YEAR)}-${secondDateCalendar.get(Calendar.MONTH) + 1}-${secondDateCalendar.get(Calendar.DATE)}"
+
+            val firstDateCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+            firstDateCalendar.timeInMillis = startDate.toLong()
+            mStartDateStr = "${firstDateCalendar.get(Calendar.YEAR)}-${firstDateCalendar.get(Calendar.MONTH) + 1}-${firstDateCalendar.get(Calendar.DATE)}"
+
+            val displayDate = "${getTxnDateStringFromTxnDate(firstDateCalendar.time)} - ${getTxnDateStringFromTxnDate(secondDateCalendar.time)}"
+            startDateTextView?.text = displayDate
+            mIsDateSelectionDone = true
+            mPageNumber = 1
+            getTxnList()
+        }
         return mContentView
     }
 
@@ -95,14 +116,14 @@ class TransactionsFragment: BaseFragment(), IMyPaymentsServiceInterface, ITransa
                     .setCallback(object : SlyCalendarDialog.Callback {
 
                         override fun onCancelled() {
-                            mActivity?.onBackPressed()
+                            if (!mIsPrevDateSelected) mActivity?.onBackPressed()
                         }
 
                         override fun onDataSelected(firstDate: Calendar?, secondDate: Calendar?, hours: Int, minutes: Int) {
                             Log.d(TAG, "onDataSelected: firstDate ${firstDate?.time}")
                             Log.d(TAG, "onDataSelected: secondDate:: ${secondDate?.time}")
                             val secondDateCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
-                            secondDateCalendar.timeInMillis = secondDate?.timeInMillis ?: 0
+                            secondDateCalendar.timeInMillis = secondDate?.timeInMillis ?: firstDate?.timeInMillis ?: 0
                             mEndDateStr = "${secondDateCalendar.get(Calendar.YEAR)}-${secondDateCalendar.get(Calendar.MONTH) + 1}-${secondDateCalendar.get(Calendar.DATE)}"
                             val firstDateCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
                             firstDateCalendar.timeInMillis = firstDate?.timeInMillis ?: (secondDate?.timeInMillis ?: 0)
@@ -110,6 +131,8 @@ class TransactionsFragment: BaseFragment(), IMyPaymentsServiceInterface, ITransa
                             val displayDate = "${getTxnDateStringFromTxnDate(firstDateCalendar.time)} - ${getTxnDateStringFromTxnDate(secondDateCalendar.time)}"
                             startDateTextView?.text = displayDate
                             mIsDateSelectionDone = true
+                            PrefsManager.storeStringDataInSharedPref(PrefsManager.KEY_TXN_START_DATE, "${firstDateCalendar.timeInMillis}")
+                            PrefsManager.storeStringDataInSharedPref(PrefsManager.KEY_TXN_END_DATE, "${secondDateCalendar.timeInMillis}")
                             getTxnList()
                             AppEventsManager.pushAppEvents(
                                 eventName = AFInAppEventType.EVENT_SET_ORDER_DATE_SELECTION,
@@ -128,7 +151,7 @@ class TransactionsFragment: BaseFragment(), IMyPaymentsServiceInterface, ITransa
     }
 
     private fun getTxnList() {
-        showProgressDialog(mActivity)
+        showCancellableProgressDialog(mActivity)
         val request = TransactionRequest(mPageNumber, mStartDateStr, mEndDateStr, Constants.MODE_ORDERS)
         mService.getTransactionsList(request)
     }
@@ -142,9 +165,9 @@ class TransactionsFragment: BaseFragment(), IMyPaymentsServiceInterface, ITransa
                 if (mIsDateSelectionDone) mPaymentList?.clear()
                 paymentList?.let { mPaymentList?.addAll(it) }
                 mIsMoreTransactionsAvailable = myPaymentList?.mIsNextPage ?: false
-                val settleAmount = "${getString(R.string.rupee_symbol)}${myPaymentList?.mSettledAmount}"
+                val settleAmount = "${getString(R.string.rupee_symbol)} ${myPaymentList?.mSettledAmount}"
                 amountSettledValueTextView?.text = settleAmount
-                val unSettleAmount = "${getString(R.string.rupee_symbol)}${myPaymentList?.mUnsettledAmount}"
+                val unSettleAmount = "${getString(R.string.rupee_symbol)} ${myPaymentList?.mUnsettledAmount}"
                 amountToSettledValueTextView?.text = unSettleAmount
                 if (isEmpty(mPaymentList)) {
                     zeroOrderContainer?.visibility = View.VISIBLE

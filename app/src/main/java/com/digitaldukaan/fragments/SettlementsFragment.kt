@@ -39,6 +39,7 @@ class SettlementsFragment : BaseFragment(), IMyPaymentsServiceInterface, ITransa
     private var mEndDateStr: String? = ""
     private var mPageNumber = 1
     private var mIsDateSelectionDone = false
+    private var mIsPrevDateSelected = false
     private var mIsMoreTransactionsAvailable = false
     private var mTxnAdapter: TransactionsAdapter? = null
     private var mPaymentList: ArrayList<MyPaymentsItemResponse>? = ArrayList()
@@ -46,6 +47,7 @@ class SettlementsFragment : BaseFragment(), IMyPaymentsServiceInterface, ITransa
     companion object {
         private const val TAG = "SettlementsFragment"
         fun newInstance(): SettlementsFragment = SettlementsFragment()
+
     }
 
     override fun onCreateView(
@@ -63,6 +65,7 @@ class SettlementsFragment : BaseFragment(), IMyPaymentsServiceInterface, ITransa
         startDateTextView?.setOnClickListener { showDatePickerDialog() }
         mService.setServiceInterface(this)
         applyPagination()
+        setupCalenderView()
         return mContentView
     }
 
@@ -80,6 +83,37 @@ class SettlementsFragment : BaseFragment(), IMyPaymentsServiceInterface, ITransa
         })
     }
 
+    private fun setupCalenderView() {
+        var startDate = PrefsManager.getStringDataFromSharedPref(PrefsManager.KEY_SETTLEMENT_START_DATE)
+        var endDate = PrefsManager.getStringDataFromSharedPref(PrefsManager.KEY_SETTLEMENT_END_DATE)
+        if (isEmpty(startDate) && isEmpty(endDate)) {
+            mIsPrevDateSelected = false
+            startDate = PrefsManager.getStringDataFromSharedPref(PrefsManager.KEY_TXN_START_DATE)
+            endDate = PrefsManager.getStringDataFromSharedPref(PrefsManager.KEY_TXN_END_DATE)
+            if (isEmpty(startDate) && isEmpty(endDate)) {
+                startDate = "${Date().time}"
+                endDate = "${Date().time}"
+            }
+            initiateSettlementServerCall(endDate, startDate)
+        } else {
+            initiateSettlementServerCall(endDate, startDate)
+        }
+    }
+
+    private fun initiateSettlementServerCall(endDate: String, startDate: String) {
+        mIsPrevDateSelected = true
+        val secondDateCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+        secondDateCalendar.timeInMillis = endDate.toLong()
+        mEndDateStr = "${secondDateCalendar.get(Calendar.YEAR)}-${secondDateCalendar.get(Calendar.MONTH) + 1}-${secondDateCalendar.get(Calendar.DATE)}"
+        val firstDateCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+        firstDateCalendar.timeInMillis = startDate.toLong()
+        mStartDateStr = "${firstDateCalendar.get(Calendar.YEAR)}-${firstDateCalendar.get(Calendar.MONTH) + 1}-${firstDateCalendar.get(Calendar.DATE)}"
+        val displayDate = "${getTxnDateStringFromTxnDate(firstDateCalendar.time)} - ${getTxnDateStringFromTxnDate(secondDateCalendar.time)}"
+        startDateTextView?.text = displayDate
+        mIsDateSelectionDone = true
+        getSettlementsList()
+    }
+
     private fun showDatePickerDialog() {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             val today = Date(MaterialDatePicker.todayInUtcMilliseconds())
@@ -95,14 +129,14 @@ class SettlementsFragment : BaseFragment(), IMyPaymentsServiceInterface, ITransa
                     .setCallback(object : SlyCalendarDialog.Callback {
 
                         override fun onCancelled() {
-                            mActivity?.onBackPressed()
+                            if (!mIsPrevDateSelected) mActivity?.onBackPressed()
                         }
 
                         override fun onDataSelected(firstDate: Calendar?, secondDate: Calendar?, hours: Int, minutes: Int) {
                             Log.d(TAG, "onDataSelected: firstDate ${firstDate?.time}")
                             Log.d(TAG, "onDataSelected: secondDate:: ${secondDate?.time}")
                             val secondDateCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
-                            secondDateCalendar.timeInMillis = secondDate?.timeInMillis ?: 0
+                            secondDateCalendar.timeInMillis = secondDate?.timeInMillis ?: firstDate?.timeInMillis ?: 0
                             mEndDateStr = "${secondDateCalendar.get(Calendar.YEAR)}-${secondDateCalendar.get(Calendar.MONTH) + 1}-${secondDateCalendar.get(Calendar.DATE)}"
                             val firstDateCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
                             firstDateCalendar.timeInMillis = firstDate?.timeInMillis ?: (secondDate?.timeInMillis ?: 0)
@@ -110,6 +144,9 @@ class SettlementsFragment : BaseFragment(), IMyPaymentsServiceInterface, ITransa
                             val displayDate = "${getTxnDateStringFromTxnDate(firstDateCalendar.time)} - ${getTxnDateStringFromTxnDate(secondDateCalendar.time)}"
                             startDateTextView?.text = displayDate
                             mIsDateSelectionDone = true
+                            PrefsManager.storeStringDataInSharedPref(PrefsManager.KEY_SETTLEMENT_START_DATE, "${firstDateCalendar.timeInMillis}")
+                            PrefsManager.storeStringDataInSharedPref(PrefsManager.KEY_SETTLEMENT_END_DATE, "${secondDateCalendar.timeInMillis}")
+                            mPageNumber = 1
                             getSettlementsList()
                             AppEventsManager.pushAppEvents(
                                 eventName = AFInAppEventType.EVENT_SET_SETTLEMENTS_DATE_SELECTION,
@@ -139,10 +176,10 @@ class SettlementsFragment : BaseFragment(), IMyPaymentsServiceInterface, ITransa
             if (response.mIsSuccessStatus) {
                 val myPaymentList = Gson().fromJson<MyPaymentsResponse>(response.mCommonDataStr, MyPaymentsResponse::class.java)
                 val paymentList: ArrayList<MyPaymentsItemResponse>? = myPaymentList?.mMyPaymentList
-                if (mIsDateSelectionDone) if (isEmpty(paymentList)) mPaymentList?.clear()
+                if (mIsDateSelectionDone) mPaymentList?.clear()
                 paymentList?.let { mPaymentList?.addAll(it) }
                 mIsMoreTransactionsAvailable = myPaymentList?.mIsNextPage ?: false
-                val settleAmount = "${getString(R.string.rupee_symbol)}${myPaymentList?.mSettledAmount}"
+                val settleAmount = "${getString(R.string.rupee_symbol)} ${myPaymentList?.mSettledAmount}"
                 amountSettledValueTextView?.text = settleAmount
                 if (isEmpty(mPaymentList)) {
                     zeroOrderContainer?.visibility = View.VISIBLE
