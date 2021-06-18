@@ -75,7 +75,7 @@ class PaymentModesFragment: BaseFragment(), IPaymentModesServiceInterface,
                         AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
                         AFInAppEventParameterName.PATH to AFInAppEventParameterName.ACTIVATION_SCREEN)
                 )
-                showCompleteYourKYCBottomSheet()
+                launchFragment(ProfilePreviewFragment(), true)
             }
             paymentSettlementViewTextView?.id -> {
                 AppEventsManager.pushAppEvents(

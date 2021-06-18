@@ -5,10 +5,12 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.widget.NestedScrollView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.TransactionsAdapter
 import com.digitaldukaan.constants.*
@@ -47,7 +49,6 @@ class SettlementsFragment : BaseFragment(), IMyPaymentsServiceInterface, ITransa
     companion object {
         private const val TAG = "SettlementsFragment"
         fun newInstance(): SettlementsFragment = SettlementsFragment()
-
     }
 
     override fun onCreateView(
@@ -65,7 +66,8 @@ class SettlementsFragment : BaseFragment(), IMyPaymentsServiceInterface, ITransa
         startDateTextView?.setOnClickListener { showDatePickerDialog() }
         mService.setServiceInterface(this)
         applyPagination()
-        setupCalenderView()
+        val noTxnImageView: ImageView? = mContentView?.findViewById(R.id.noTxnImageView)
+        mActivity?.let { context -> noTxnImageView?.let { view -> Glide.with(context).load("https://cdn.dotpe.in/kiranaStatic/image/zero_settlement.png").into(view) } }
         return mContentView
     }
 
@@ -84,17 +86,11 @@ class SettlementsFragment : BaseFragment(), IMyPaymentsServiceInterface, ITransa
     }
 
     private fun setupCalenderView() {
-        var startDate = PrefsManager.getStringDataFromSharedPref(PrefsManager.KEY_SETTLEMENT_START_DATE)
-        var endDate = PrefsManager.getStringDataFromSharedPref(PrefsManager.KEY_SETTLEMENT_END_DATE)
+        val startDate = PrefsManager.getStringDataFromSharedPref(PrefsManager.KEY_SETTLEMENT_START_DATE)
+        val endDate = PrefsManager.getStringDataFromSharedPref(PrefsManager.KEY_SETTLEMENT_END_DATE)
         if (isEmpty(startDate) && isEmpty(endDate)) {
             mIsPrevDateSelected = false
-            startDate = PrefsManager.getStringDataFromSharedPref(PrefsManager.KEY_TXN_START_DATE)
-            endDate = PrefsManager.getStringDataFromSharedPref(PrefsManager.KEY_TXN_END_DATE)
-            if (isEmpty(startDate) && isEmpty(endDate)) {
-                startDate = "${Date().time}"
-                endDate = "${Date().time}"
-            }
-            initiateSettlementServerCall(endDate, startDate)
+            showDatePickerDialog()
         } else {
             initiateSettlementServerCall(endDate, startDate)
         }
@@ -223,6 +219,11 @@ class SettlementsFragment : BaseFragment(), IMyPaymentsServiceInterface, ITransa
 
     override fun onTransactionItemClicked(idStr: String?) {
         getTransactionDetailBottomSheet(idStr, AFInAppEventParameterName.SETTLEMENTS)
+    }
+
+    override fun onNoInternetButtonClick(isNegativeButtonClick: Boolean) {
+        super.onNoInternetButtonClick(isNegativeButtonClick)
+        setupCalenderView()
     }
 
 }

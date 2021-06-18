@@ -44,6 +44,7 @@ class TransactionsFragment: BaseFragment(), IMyPaymentsServiceInterface, ITransa
     private var mIsDateSelectionDone = false
     private var mTxnAdapter: TransactionsAdapter? = null
     private var mIsPrevDateSelected = false
+    private var myPaymentPageInfoResponse: MyPaymentsPageInfoResponse? = null
     private var mPaymentList: ArrayList<MyPaymentsItemResponse>? = ArrayList()
 
     companion object {
@@ -84,6 +85,8 @@ class TransactionsFragment: BaseFragment(), IMyPaymentsServiceInterface, ITransa
             mPageNumber = 1
             getTxnList()
         }
+        val noTxnImageView: ImageView? = mContentView?.findViewById(R.id.noTxnImageView)
+        mActivity?.let { context -> noTxnImageView?.let { view -> Glide.with(context).load("https://cdn.dotpe.in/kiranaStatic/image/zero_orders.png").into(view) } }
         return mContentView
     }
 
@@ -187,7 +190,7 @@ class TransactionsFragment: BaseFragment(), IMyPaymentsServiceInterface, ITransa
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             if (response.mIsSuccessStatus) {
-                val myPaymentPageInfoResponse = Gson().fromJson<MyPaymentsPageInfoResponse>(response.mCommonDataStr, MyPaymentsPageInfoResponse::class.java)
+                myPaymentPageInfoResponse = Gson().fromJson<MyPaymentsPageInfoResponse>(response.mCommonDataStr, MyPaymentsPageInfoResponse::class.java)
                 shareButtonTextView?.text = myPaymentPageInfoResponse?.text_share
                 shareYourStoreTextView?.text = myPaymentPageInfoResponse?.message_share_your_store_now_to_get_orders
                 noSettlementForSelectedDateTextView?.text = myPaymentPageInfoResponse?.message_order_no_payment_received

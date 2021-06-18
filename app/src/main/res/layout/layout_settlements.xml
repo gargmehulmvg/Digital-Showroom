@@ -94,8 +94,8 @@
 
             <ImageView
                 android:id="@+id/noTxnImageView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="@dimen/_90sdp"
+                android:layout_height="@dimen/_90sdp"
                 android:contentDescription="@string/image_view_content_description"
                 android:src="@drawable/ic_no_settlements_found"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -140,7 +140,7 @@
                 android:paddingTop="@dimen/_10sdp"
                 android:paddingEnd="@dimen/_15sdp"
                 android:paddingBottom="@dimen/_10sdp"
-                android:text="@string/share_product"
+                android:text="@string/share"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_15sdp"
                 app:drawableStartCompat="@drawable/ic_whatsapp"
