@@ -145,7 +145,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                     showProgressDialog(mActivity)
                     mOrderDetailService?.getOrderDetailStatus(orderDetailMainResponse?.orders?.orderId)
                 }*/
-                getTransactionDetailBottomSheet(orderDetailMainResponse?.orders?.transactionId)
+                getTransactionDetailBottomSheet(orderDetailMainResponse?.orders?.transactionId, AFInAppEventParameterName.ORDER_DETAILS)
             }
             sideIconWhatsAppToolbar?.id -> {
                 val displayStatus = orderDetailMainResponse?.orders?.displayStatus

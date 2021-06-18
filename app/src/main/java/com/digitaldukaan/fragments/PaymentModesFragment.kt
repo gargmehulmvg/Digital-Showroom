@@ -13,9 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.PaymentModeAdapter
-import com.digitaldukaan.constants.CoroutineScopeUtils
-import com.digitaldukaan.constants.ToolBarManager
-import com.digitaldukaan.constants.isEmpty
+import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.ISwitchCheckChangeListener
 import com.digitaldukaan.models.dto.PaymentModelDTO
 import com.digitaldukaan.models.request.PaymentModeRequest
@@ -40,6 +38,15 @@ class PaymentModesFragment: BaseFragment(), IPaymentModesServiceInterface,
         private const val TAG = "PaymentModesFragment"
 
         fun newInstance(): PaymentModesFragment = PaymentModesFragment()
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        AppEventsManager.pushAppEvents(
+            eventName = AFInAppEventType.EVENT_SET_ONLINE_PAYMENT_MODE,
+            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+            data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
+        )
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

@@ -111,6 +111,15 @@ class SettlementsFragment : BaseFragment(), IMyPaymentsServiceInterface, ITransa
                             startDateTextView?.text = displayDate
                             mIsDateSelectionDone = true
                             getSettlementsList()
+                            AppEventsManager.pushAppEvents(
+                                eventName = AFInAppEventType.EVENT_SET_SETTLEMENTS_DATE_SELECTION,
+                                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                                data = mapOf(
+                                    AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                                    AFInAppEventParameterName.DATE_FROM to mStartDateStr,
+                                    AFInAppEventParameterName.DATE_TO to mEndDateStr
+                                )
+                            )
                         }
                     })
                     .show(context.supportFragmentManager, TAG)
@@ -176,7 +185,7 @@ class SettlementsFragment : BaseFragment(), IMyPaymentsServiceInterface, ITransa
     }
 
     override fun onTransactionItemClicked(idStr: String?) {
-        getTransactionDetailBottomSheet(idStr)
+        getTransactionDetailBottomSheet(idStr, AFInAppEventParameterName.SETTLEMENTS)
     }
 
 }

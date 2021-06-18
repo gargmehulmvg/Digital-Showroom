@@ -84,5 +84,9 @@ interface AFInAppEventType {
         const val EVENT_DELETE_CATEGORY = "DeleteCategory"
         const val EVENT_EDIT_CATEGORY = "EditCategory"
         const val EVENT_TRUE_CALLER_VERIFIED = "TrueCaller_OTPVerified"
+        const val EVENT_SET_ONLINE_PAYMENT_MODE = "Set_online_payment_modes"
+        const val EVENT_SET_ORDER_DATE_SELECTION = "orders_date_selected"
+        const val EVENT_SET_SETTLEMENTS_DATE_SELECTION = "settlements_date_selected"
+        const val EVENT_SET_ORDER_PAYMENT_DETAIL = "order_payment_details"
     }
 }

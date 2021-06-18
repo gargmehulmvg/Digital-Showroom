@@ -1339,7 +1339,16 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         }
     }
 
-    open fun getTransactionDetailBottomSheet(txnId: String?) {
+    open fun getTransactionDetailBottomSheet(txnId: String?, path: String) {
+        AppEventsManager.pushAppEvents(
+            eventName = AFInAppEventType.EVENT_SET_ORDER_PAYMENT_DETAIL,
+            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+            data = mapOf(
+                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                AFInAppEventParameterName.TRANSACTION_ID to txnId,
+                AFInAppEventParameterName.PATH to path
+            )
+        )
         showProgressDialog(mActivity)
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
             try {
