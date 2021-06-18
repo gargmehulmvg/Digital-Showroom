@@ -1414,6 +1414,14 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                     if (null != response?.ctaItem) {
                         ctaTextView.visibility = View.VISIBLE
                         displayMessage.visibility = View.VISIBLE
+                        ctaTextView.setOnClickListener {
+                            when(response.ctaItem?.action) {
+                                Constants.ACTION_ADD_BANK -> {
+                                    bottomSheetDialog.dismiss()
+                                    launchFragment(BankAccountFragment.newInstance(null, 0, false, null), true)
+                                }
+                            }
+                        }
                     } else {
                         ctaTextView.visibility = View.INVISIBLE
                         displayMessage.visibility = View.GONE

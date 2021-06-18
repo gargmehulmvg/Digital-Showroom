@@ -33,6 +33,6 @@ data class TransactionDetailStaticTextResponse(
 
 data class CTAItemResponse(
     @SerializedName("text")             var text: String?,
-    @SerializedName("action")           var action: OnErrorAction,
+    @SerializedName("action")           var action: String,
     @SerializedName("display_message")  var displayMessage: String?
 )

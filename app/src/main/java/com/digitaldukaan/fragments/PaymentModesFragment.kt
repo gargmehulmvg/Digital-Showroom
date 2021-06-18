@@ -67,8 +67,27 @@ class PaymentModesFragment: BaseFragment(), IPaymentModesServiceInterface,
         super.onClick(view)
         when (view?.id) {
             backButtonToolbar?.id -> mActivity?.onBackPressed()
-            completeKycNowTextView?.id -> showCompleteYourKYCBottomSheet()
-            paymentSettlementViewTextView?.id -> launchFragment(MyPaymentsFragment.newInstance(), true)
+            completeKycNowTextView?.id -> {
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_COMPLETE_KYC_FOR_PAYMENTS,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(
+                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                        AFInAppEventParameterName.PATH to AFInAppEventParameterName.ACTIVATION_SCREEN)
+                )
+                showCompleteYourKYCBottomSheet()
+            }
+            paymentSettlementViewTextView?.id -> {
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_VIEW_MY_PAYMENTS,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(
+                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                        AFInAppEventParameterName.PATH to AFInAppEventParameterName.ACTIVATION_SCREEN
+                    )
+                )
+                launchFragment(MyPaymentsFragment.newInstance(), true)
+            }
         }
     }
 
@@ -125,13 +144,18 @@ class PaymentModesFragment: BaseFragment(), IPaymentModesServiceInterface,
                             val conditionTwo: TextView = findViewById(R.id.conditiontwo)
                             val completeKycTextView: TextView = findViewById(R.id.completeKycTextView)
                             val bottomSheetClose: View = findViewById(R.id.bottomSheetClose)
-                            bottomSheetHeading.text = paymentModesStaticText?.message_activate_and_start_payment
+                            bottomSheetHeading.setHtmlData(paymentModesStaticText?.message_activate_and_start_payment)
                             bottomSheetSubHeading.text = paymentModesStaticText?.text_please_note
                             conditionOne.text = paymentModesStaticText?.message_transaction_charges_will_be_applied
                             conditionTwo.text = paymentModesStaticText?.message_receive_the_amount_in_your_bank
                             completeKycTextView.text = paymentModesStaticText?.text_activate
                             completeKycTextView.setOnClickListener {
                                 this@apply.dismiss()
+                                AppEventsManager.pushAppEvents(
+                                    eventName = AFInAppEventType.EVENT_CONFIRM_PAYMENTS_ACTIVATION,
+                                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
+                                )
                                 initiateSetPaymentModeRequest(PaymentModeRequest(1, mPaymentType))
                             }
                             bottomSheetClose.setOnClickListener { this@apply.dismiss() }
@@ -255,15 +279,26 @@ class PaymentModesFragment: BaseFragment(), IPaymentModesServiceInterface,
                 adapter = PaymentModeAdapter(mActivity, isKycActive, list, object : ISwitchCheckChangeListener {
 
                     override fun onSwitchCheckChangeListener(switch: CompoundButton?, isChecked: Boolean, paymentType: String?) {
-                        mPaymentType = paymentType
                         switch?.isChecked = !isChecked
-                        if (!isAllListItemDisabled() && !upiSwitch.isChecked && !codSwitch.isChecked) {
-                            showToast("Please enable at least 1 Payment Mode")
-                            return
+                        if (isKycActive == true) {
+                            mPaymentType = paymentType
+                            if (!isAllListItemDisabled() && !upiSwitch.isChecked && !codSwitch.isChecked) {
+                                showToast("Please enable at least 1 Payment Mode")
+                                return
+                            }
+                            if (isChecked) {
+                                showActivationBottomSheet()
+                            } else showConfirmationBottomSheet()
+                        } else {
+                            AppEventsManager.pushAppEvents(
+                                eventName = AFInAppEventType.EVENT_COMPLETE_KYC_FOR_PAYMENTS,
+                                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                                data = mapOf(
+                                    AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                                    AFInAppEventParameterName.PATH to AFInAppEventParameterName.LOCK_BUTTON_CLICKED)
+                            )
+                            showCompleteYourKYCBottomSheet()
                         }
-                        if (isChecked) {
-                            showActivationBottomSheet()
-                        } else showConfirmationBottomSheet()
                     }
                 })
             }

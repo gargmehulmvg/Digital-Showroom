@@ -49,6 +49,8 @@ interface AFInAppEventParameterName {
         const val NEW_RELEASES = "new_releases"
         const val MORE_CONTROLS = "more_controls"
         const val SETTINGS_PAGE = "Settings Page"
+        const val ACTIVATION_SCREEN = "activation_screen"
+        const val LOCK_BUTTON_CLICKED = "lock_button_click"
         const val IS_MARKETING_PAGE = "isMarketingPage"
         const val IS_MARKETING = "isMarketing"
         const val IS_PROFILE_PAGE = "isProfilePage"

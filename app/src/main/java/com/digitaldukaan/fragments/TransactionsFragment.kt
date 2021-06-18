@@ -5,10 +5,12 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.widget.NestedScrollView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.TransactionsAdapter
 import com.digitaldukaan.constants.*
@@ -169,6 +171,12 @@ class TransactionsFragment: BaseFragment(), IMyPaymentsServiceInterface, ITransa
                 amountSettledTextView?.text = myPaymentPageInfoResponse?.text_amount_settled
                 amountToSettledTextView?.text = myPaymentPageInfoResponse?.text_amount_to_settle
                 cashTxnNotShownTextView?.text = myPaymentPageInfoResponse?.message_cash_transactions_are_not_shown
+                mActivity?.let { context ->
+                    val tickGreenImageView: ImageView? = mContentView?.findViewById(R.id.tickGreenImageView)
+                    tickGreenImageView?.let { view -> Glide.with(context).load(myPaymentPageInfoResponse?.amount_settle_cdn).into(view) }
+                    val waitingImageView: ImageView? = mContentView?.findViewById(R.id.waitingImageView)
+                    waitingImageView?.let { view -> Glide.with(context).load(myPaymentPageInfoResponse?.amount_to_settle_cdn).into(view) }
+                }
             }
         }
     }

@@ -40,10 +40,8 @@ class PaymentModeAdapter(
         holder.apply {
             val item = mPaymentOptionsList?.get(position)
             if (mIsKycActive == true) {
-                paymentModeSwitch?.isEnabled = true
                 lockImageView?.visibility = View.GONE
             } else {
-                paymentModeSwitch?.isEnabled = false
                 lockImageView?.visibility = View.VISIBLE
             }
             paymentModeSwitch?.isChecked = 1 == item?.value?.get(0)?.status

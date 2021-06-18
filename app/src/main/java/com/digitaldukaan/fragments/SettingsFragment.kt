@@ -468,7 +468,17 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                 mProfileService.getReferAndEarnDataOverWhatsApp()
                 mProfileService.getReferAndEarnData()
             }
-            Constants.PAGE_MY_PAYMENTS -> launchFragment(MyPaymentsFragment.newInstance(), true)
+            Constants.PAGE_MY_PAYMENTS -> {
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_VIEW_MY_PAYMENTS,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(
+                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                        AFInAppEventParameterName.PATH to AFInAppEventParameterName.SETTINGS_PAGE
+                    )
+                )
+                launchFragment(MyPaymentsFragment.newInstance(), true)
+            }
             Constants.PAGE_HELP -> onToolbarSideIconClicked()
             Constants.PAGE_FEEDBACK -> openPlayStore()
             Constants.PAGE_APP_SETTINGS -> launchFragment(AppSettingsFragment().newInstance(mProfileResponse?.mSubPages, response.mText, mAppSettingsResponseStaticData), true)

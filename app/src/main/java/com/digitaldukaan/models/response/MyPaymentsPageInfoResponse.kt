@@ -5,6 +5,8 @@ import com.google.gson.annotations.SerializedName
 data class MyPaymentsPageInfoResponse(
     @SerializedName("heading_my_payments")                          var heading_my_payments: String?,
     @SerializedName("text_share")                                   var text_share: String?,
+    @SerializedName("amount_settle_cdn")                            var amount_settle_cdn: String?,
+    @SerializedName("amount_to_settle_cdn")                         var amount_to_settle_cdn: String?,
     @SerializedName("text_amount_to_settle")                        var text_amount_to_settle: String?,
     @SerializedName("text_amount_settled")                          var text_amount_settled: String?,
     @SerializedName("message_share_your_store_now_to_get_orders")   var message_share_your_store_now_to_get_orders: String?,
