@@ -52,8 +52,8 @@ class PaymentModeAdapter(
                 layoutManager = LinearLayoutManager(mContext)
                 adapter = PaymentModeChildAdapter(mContext, mIsKycActive, item?.value)
             }
-            paymentModeSwitch?.setOnCheckedChangeListener { button, isChecked ->
-                mListener?.onSwitchCheckChangeListener(button, isChecked, item?.value?.get(0)?.paymentType)
+            paymentModeSwitch?.setOnClickListener {
+                mListener?.onSwitchCheckChangeListener(paymentModeSwitch, paymentModeSwitch.isChecked, item?.value?.get(0)?.paymentType)
             }
         }
     }

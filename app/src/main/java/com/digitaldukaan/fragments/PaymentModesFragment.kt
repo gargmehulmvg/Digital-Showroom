@@ -256,11 +256,14 @@ class PaymentModesFragment: BaseFragment(), IPaymentModesServiceInterface,
 
                     override fun onSwitchCheckChangeListener(switch: CompoundButton?, isChecked: Boolean, paymentType: String?) {
                         mPaymentType = paymentType
+                        switch?.isChecked = !isChecked
+                        if (!isAllListItemDisabled() && !upiSwitch.isChecked && !codSwitch.isChecked) {
+                            showToast("Please enable at least 1 Payment Mode")
+                            return
+                        }
                         if (isChecked) {
                             showActivationBottomSheet()
                         } else showConfirmationBottomSheet()
-                        switch?.setOnCheckedChangeListener(null)
-                        switch?.isChecked = !isChecked
                     }
                 })
             }
