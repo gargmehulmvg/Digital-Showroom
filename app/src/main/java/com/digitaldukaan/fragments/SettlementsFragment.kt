@@ -1,6 +1,7 @@
 package com.digitaldukaan.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,11 +17,10 @@ import com.digitaldukaan.models.response.MyPaymentsItemResponse
 import com.digitaldukaan.models.response.MyPaymentsResponse
 import com.digitaldukaan.services.MyPaymentsService
 import com.digitaldukaan.services.serviceinterface.IMyPaymentsServiceInterface
-import com.google.android.material.datepicker.CalendarConstraints
-import com.google.android.material.datepicker.DateValidatorPointBackward
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.gson.Gson
 import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration
+import ru.slybeaver.slycalendarview.SlyCalendarDialog
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -30,12 +30,12 @@ class SettlementsFragment : BaseFragment(), IMyPaymentsServiceInterface {
     private var amountContainer: View? = null
     private var zeroOrderContainer: View? = null
     private var startDateTextView: TextView? = null
-    private var endDateTextView: TextView? = null
     private var shareButtonTextView: TextView? = null
     private val mService: MyPaymentsService = MyPaymentsService()
     private var mStartDateStr: String? = ""
     private var mEndDateStr: String? = ""
     private var mPageNumber = 1
+    private var mIsDateSelectionDone = false
     private var mIsMoreTransactionsAvailable = false
     private var mTxnAdapter: TransactionsAdapter? = null
     private var mPaymentList: ArrayList<MyPaymentsItemResponse>? = ArrayList()
@@ -54,12 +54,10 @@ class SettlementsFragment : BaseFragment(), IMyPaymentsServiceInterface {
         settlementsRecyclerView = mContentView?.findViewById(R.id.transactionRecyclerView)
         shareButtonTextView = mContentView?.findViewById(R.id.shareButtonTextView)
         startDateTextView = mContentView?.findViewById(R.id.startDateTextView)
-        endDateTextView = mContentView?.findViewById(R.id.endDateTextView)
         amountContainer = mContentView?.findViewById(R.id.amountContainer)
         zeroOrderContainer = mContentView?.findViewById(R.id.zeroOrderContainer)
         shareButtonTextView?.setOnClickListener { shareStoreOverWhatsAppServerCall() }
-        startDateTextView?.setOnClickListener { showDatePickerDialog("Select Start date", startDateTextView) }
-        endDateTextView?.setOnClickListener { showDatePickerDialog("Select End Date", endDateTextView) }
+        startDateTextView?.setOnClickListener { showDatePickerDialog() }
         mService.setServiceInterface(this)
         applyPagination()
         return mContentView
@@ -72,40 +70,48 @@ class SettlementsFragment : BaseFragment(), IMyPaymentsServiceInterface {
             if (scrollY == (v.getChildAt(0).measuredHeight - v.measuredHeight)) {
                 if (mIsMoreTransactionsAvailable) {
                     mPageNumber++
+                    mIsDateSelectionDone = false
                     getSettlementsList()
                 }
             }
         })
     }
 
-    private fun showDatePickerDialog(message: String, textView: TextView?) {
+    private fun showDatePickerDialog() {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            val calendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
-            calendar.clear()
-            calendar.timeInMillis = MaterialDatePicker.todayInUtcMilliseconds()
-            calendar.set(Calendar.MONTH, Calendar.OCTOBER)
-            calendar.set(Calendar.YEAR, 2020)
-            val constraints = CalendarConstraints.Builder()
-            constraints.setStart(calendar.timeInMillis)
-            constraints.setValidator(DateValidatorPointBackward.now())
-            val dateRangePicker = MaterialDatePicker.Builder.datePicker().setTitleText(message)
-                .setCalendarConstraints(constraints.build()).build()
-            mActivity?.let { context -> dateRangePicker.show(context.supportFragmentManager, TAG) }
-            dateRangePicker.addOnPositiveButtonClickListener { date ->
-                val todayCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
-                todayCalendar.timeInMillis = date
-                val displayDate = getTxnDateStringFromTxnDate(todayCalendar.time)
-                if (textView?.id == startDateTextView?.id) {
-                    startDateTextView?.text = displayDate
-                    mStartDateStr = "${todayCalendar.get(Calendar.YEAR)}-${todayCalendar.get(Calendar.MONTH) + 1}-${todayCalendar.get(Calendar.DATE)}"
-                    if (!isEmpty(endDateTextView?.text?.toString())) getSettlementsList()
-                } else {
-                    endDateTextView?.text = displayDate
-                    mEndDateStr = "${todayCalendar.get(Calendar.YEAR)}-${todayCalendar.get(Calendar.MONTH) + 1}-${todayCalendar.get(Calendar.DATE)}"
-                    if (!isEmpty(startDateTextView?.text?.toString())) getSettlementsList()
-                }
+            val today = Date(MaterialDatePicker.todayInUtcMilliseconds())
+            mActivity?.let { context ->
+                SlyCalendarDialog()
+                    .setEndDate(today)
+                    .setSelectedColor(context.getColor(R.color.black))
+                    .setHeaderColor(context.getColor(R.color.black))
+                    .setHeaderTextColor(context.getColor(R.color.white))
+                    .setSelectedTextColor(context.getColor(R.color.white))
+                    .setSingle(false)
+                    .setFirstMonday(true)
+                    .setCallback(object : SlyCalendarDialog.Callback {
+
+                        override fun onCancelled() {
+                            mActivity?.onBackPressed()
+                        }
+
+                        override fun onDataSelected(firstDate: Calendar?, secondDate: Calendar?, hours: Int, minutes: Int) {
+                            Log.d(TAG, "onDataSelected: firstDate ${firstDate?.time}")
+                            Log.d(TAG, "onDataSelected: secondDate:: ${secondDate?.time}")
+                            val secondDateCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+                            secondDateCalendar.timeInMillis = secondDate?.timeInMillis ?: 0
+                            mEndDateStr = "${secondDateCalendar.get(Calendar.YEAR)}-${secondDateCalendar.get(Calendar.MONTH) + 1}-${secondDateCalendar.get(Calendar.DATE)}"
+                            val firstDateCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+                            firstDateCalendar.timeInMillis = firstDate?.timeInMillis ?: (secondDate?.timeInMillis ?: 0)
+                            mStartDateStr = "${firstDateCalendar.get(Calendar.YEAR)}-${firstDateCalendar.get(Calendar.MONTH) + 1}-${firstDateCalendar.get(Calendar.DATE)}"
+                            val displayDate = "${getTxnDateStringFromTxnDate(firstDateCalendar.time)} - ${getTxnDateStringFromTxnDate(secondDateCalendar.time)}"
+                            startDateTextView?.text = displayDate
+                            mIsDateSelectionDone = true
+                            getSettlementsList()
+                        }
+                    })
+                    .show(context.supportFragmentManager, TAG)
             }
-            dateRangePicker.addOnNegativeButtonClickListener { showToast("No") }
         }
     }
 
@@ -120,6 +126,7 @@ class SettlementsFragment : BaseFragment(), IMyPaymentsServiceInterface {
             if (response.mIsSuccessStatus) {
                 val myPaymentList = Gson().fromJson<MyPaymentsResponse>(response.mCommonDataStr, MyPaymentsResponse::class.java)
                 val paymentList: ArrayList<MyPaymentsItemResponse>? = myPaymentList?.mMyPaymentList
+                if (mIsDateSelectionDone) if (isEmpty(paymentList)) mPaymentList?.clear()
                 paymentList?.let { mPaymentList?.addAll(it) }
                 mIsMoreTransactionsAvailable = myPaymentList?.mIsNextPage ?: false
                 if (isEmpty(mPaymentList)) {

@@ -33,6 +33,7 @@ import com.google.android.gms.auth.api.credentials.HintRequest
 import com.google.gson.Gson
 import com.truecaller.android.sdk.*
 import kotlinx.android.synthetic.main.layout_login_fragment.*
+import net.yslibrary.android.keyboardvisibilityevent.util.UIUtil
 
 class LoginFragment : BaseFragment(), ILoginServiceInterface {
 
@@ -184,7 +185,7 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
                 data = mapOf(AFInAppEventParameterName.PHONE to mobileNumber, AFInAppEventParameterName.IS_MERCHANT to "1")
             )
             showProgressDialog(mActivity)
-            mobileNumberEditText?.hideKeyboard()
+            mActivity?.let { context -> UIUtil.hideKeyboard(context) }
             mLoginService.generateOTP(mobileNumber)
         }
     }

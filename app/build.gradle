@@ -147,4 +147,8 @@ dependencies {
     implementation 'id.zelory:compressor:3.0.1'
     //  Glide
     implementation 'com.github.bumptech.glide:glide:4.12.0'
+    //  Custom Calender
+    implementation 'com.github.psinetron:slycalendarview:0.0.9'
+    //  Custom Keyboard Visibility
+    implementation 'net.yslibrary.keyboardvisibilityevent:keyboardvisibilityevent:3.0.0-RC3'
 }

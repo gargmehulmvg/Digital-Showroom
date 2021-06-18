@@ -1338,4 +1338,28 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         }
     }
 
+    private fun showTransactionDetailBottomSheet() {
+        mActivity?.run {
+            val bottomSheetDialog = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
+            val view = LayoutInflater.from(this).inflate(
+                R.layout.bottom_sheet_transaction_detail,
+                findViewById(R.id.bottomSheetContainer)
+            )
+            bottomSheetDialog.apply {
+                setContentView(view)
+                setBottomSheetCommonProperty()
+                view.run {
+                    val bottomSheetHeadingTextView: TextView = findViewById(R.id.bottomSheetHeadingTextView)
+                    /*val billAmountTextView: TextView = findViewById(R.id.billAmountTextView)
+                    val orderIdTextView: TextView = findViewById(R.id.orderIdTextView)
+                    val textViewTop: TextView = findViewById(R.id.textViewTop)
+                    val txnId: TextView = findViewById(R.id.txnId)
+                    val textViewBottom: TextView = findViewById(R.id.textViewBottom)
+                    val imageViewTop: ImageView = findViewById(R.id.imageViewTop)
+                    val imageViewBottom: ImageView = findViewById(R.id.imageViewBottom)*/
+                }
+            }.show()
+        }
+    }
+
 }

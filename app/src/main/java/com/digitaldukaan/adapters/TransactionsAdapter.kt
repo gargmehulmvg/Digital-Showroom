@@ -16,7 +16,10 @@ import com.digitaldukaan.constants.isEmpty
 import com.digitaldukaan.models.response.MyPaymentsItemResponse
 import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersAdapter
 
-class TransactionsAdapter(private val activity: MainActivity?, private var mPaymentList: ArrayList<MyPaymentsItemResponse>? = ArrayList()) : RecyclerView.Adapter<TransactionsAdapter.TransactionsViewHolder>(),
+class TransactionsAdapter(
+    private val activity: MainActivity?,
+    private var mPaymentList: ArrayList<MyPaymentsItemResponse>? = ArrayList()
+) : RecyclerView.Adapter<TransactionsAdapter.TransactionsViewHolder>(),
     StickyRecyclerHeadersAdapter<TransactionsAdapter.HeaderViewHolder> {
 
     inner class TransactionsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

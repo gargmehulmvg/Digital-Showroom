@@ -252,9 +252,9 @@ fun getStringFromOrderDate(date: Date): String {
 }
 
 fun getTxnDateStringFromTxnDate(date: Date): String {
-    val dateFormat = SimpleDateFormat("d MMM, EEE yy", Locale.getDefault())
+    val dateFormat = SimpleDateFormat("d MMM yy, EEE", Locale.getDefault())
     val string = dateFormat.format(date)
-    return string.substring(0, string.length - 3) + " \'" + string.substring(string.length -2, string.length)
+    return string.substring(0, string.length - 7) + "\'" + string.substring(string.length - 7, string.length)
 }
 
 fun getStringDateTimeFromOrderDate(date: Date?): String {

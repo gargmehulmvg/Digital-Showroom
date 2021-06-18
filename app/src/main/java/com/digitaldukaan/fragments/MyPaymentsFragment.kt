@@ -8,9 +8,7 @@ import android.view.ViewGroup
 import androidx.viewpager.widget.ViewPager
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.MyPaymentsPagerAdapter
-import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.ToolBarManager
-import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.tabs.TabLayout
 
 
@@ -52,36 +50,17 @@ class MyPaymentsFragment: BaseFragment(), TabLayout.OnTabSelectedListener {
         viewPager?.adapter = mMyPaymentsPagerAdapter
         tabLayout?.setupWithViewPager(viewPager)
         tabLayout?.addOnTabSelectedListener(this)
-        //showDatePickerDialog()
-    }
-
-    private fun showDatePickerDialog() {
-        CoroutineScopeUtils().runTaskOnCoroutineMain {
-            val dateRangePicker = MaterialDatePicker.Builder.dateRangePicker().setTitleText("Select start And end date").build()
-            mActivity?.let { context -> dateRangePicker.show(context.supportFragmentManager, TAG) }
-            dateRangePicker.addOnPositiveButtonClickListener { showToast("Yes") }
-            dateRangePicker.addOnNegativeButtonClickListener { showToast("No") }
-            //dateRangePicker.addOnDismissListener { mActivity?.onBackPressed() }
-        }
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        Log.d(TAG, "onViewCreated: called")
     }
 
     override fun onTabReselected(tab: TabLayout.Tab?) {
-        //showToast("onTabReselected :: ${tab?.text}")
         Log.d(TAG, "onTabReselected :: ${tab?.text}")
     }
 
     override fun onTabUnselected(tab: TabLayout.Tab?) {
-        //showToast("onTabUnselected :: ${tab?.text}")
         Log.d(TAG, "onTabUnselected :: ${tab?.text}")
     }
 
     override fun onTabSelected(tab: TabLayout.Tab?) {
-        //showToast("onTabSelected :: ${tab?.text}")
         Log.d(TAG, "onTabSelected :: ${tab?.text}")
     }
 
