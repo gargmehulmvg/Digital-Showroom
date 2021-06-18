@@ -214,6 +214,8 @@ class PaymentModesFragment: BaseFragment(), IPaymentModesServiceInterface,
             paymentModeSubHeadingTextView.text = paymentModesStaticData?.page_sub_heading_payment_mode
             completeKycTextView.text = paymentModesStaticData?.message_complete_kyc_to_unlock
             completeKycNowTextView.text = paymentModesStaticData?.text_complete_kyc_now
+            upiInstantSettlementTextView?.text = paymentModesStaticData?.text_instant_settlements
+            upiTxnChargeTextView?.text = "0% ${paymentModesStaticData?.text_txn_charge}"
             mPaymentModesResponse?.upi?.let { upiResponse ->
                 upiTextView.text = upiResponse.name
                 upiSwitch.isChecked = (1 == upiResponse.status)

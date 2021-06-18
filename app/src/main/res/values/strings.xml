@@ -114,6 +114,8 @@
     <string name="delivery_charge">Delivery Charge</string>
     <string name="please_fill_price_for_each_product">Please add price for all products</string>
     <string name="activate">Activate</string>
+    <string name="my_payments">My Payments</string>
+    <string name="settlements">Settlements</string>
     <string name="read_more"><u>Read more</u></string>
     <string name="txn_charges_are_applicable">*Txn charges are applicable</string>
     <string-array name="state_array">

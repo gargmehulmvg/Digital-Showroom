@@ -6,5 +6,7 @@ interface IMyPaymentsServiceInterface {
 
     fun onGetTransactionsListResponse(response: CommonApiResponse)
 
+    fun onGetMyPaymentPageInfoResponse(response: CommonApiResponse)
+
     fun onMyPaymentsServerException(e: Exception)
 }

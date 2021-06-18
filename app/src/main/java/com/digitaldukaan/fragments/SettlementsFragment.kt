@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.TransactionsAdapter
 import com.digitaldukaan.constants.*
+import com.digitaldukaan.interfaces.ITransactionItemClicked
+import com.digitaldukaan.models.request.TransactionRequest
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.MyPaymentsItemResponse
 import com.digitaldukaan.models.response.MyPaymentsResponse
@@ -20,11 +22,12 @@ import com.digitaldukaan.services.serviceinterface.IMyPaymentsServiceInterface
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.gson.Gson
 import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration
+import kotlinx.android.synthetic.main.layout_settlements.*
 import ru.slybeaver.slycalendarview.SlyCalendarDialog
 import java.util.*
 import kotlin.collections.ArrayList
 
-class SettlementsFragment : BaseFragment(), IMyPaymentsServiceInterface {
+class SettlementsFragment : BaseFragment(), IMyPaymentsServiceInterface, ITransactionItemClicked {
 
     private var settlementsRecyclerView: RecyclerView? = null
     private var amountContainer: View? = null
@@ -117,7 +120,8 @@ class SettlementsFragment : BaseFragment(), IMyPaymentsServiceInterface {
 
     private fun getSettlementsList() {
         showProgressDialog(mActivity)
-        mService.getSettlementsList(mPageNumber, mStartDateStr, mEndDateStr)
+        val request = TransactionRequest(mPageNumber, mStartDateStr, mEndDateStr, Constants.MODE_SETTLEMENTS)
+        mService.getTransactionsList(request)
     }
 
     override fun onGetTransactionsListResponse(response: CommonApiResponse) {
@@ -129,6 +133,8 @@ class SettlementsFragment : BaseFragment(), IMyPaymentsServiceInterface {
                 if (mIsDateSelectionDone) if (isEmpty(paymentList)) mPaymentList?.clear()
                 paymentList?.let { mPaymentList?.addAll(it) }
                 mIsMoreTransactionsAvailable = myPaymentList?.mIsNextPage ?: false
+                val settleAmount = "${getString(R.string.rupee_symbol)}${myPaymentList?.mSettledAmount}"
+                amountSettledValueTextView?.text = settleAmount
                 if (isEmpty(mPaymentList)) {
                     zeroOrderContainer?.visibility = View.VISIBLE
                     amountContainer?.visibility = View.GONE
@@ -146,7 +152,7 @@ class SettlementsFragment : BaseFragment(), IMyPaymentsServiceInterface {
     private fun setupRecyclerView() {
         convertDateStringOfTransactions()
         settlementsRecyclerView?.apply {
-            mTxnAdapter = TransactionsAdapter(mActivity, mPaymentList)
+            mTxnAdapter = TransactionsAdapter(mActivity, mPaymentList, Constants.MODE_SETTLEMENTS, this@SettlementsFragment)
             layoutManager = LinearLayoutManager(mActivity)
             adapter = mTxnAdapter
             addItemDecoration(StickyRecyclerHeadersDecoration(mTxnAdapter))
@@ -162,5 +168,15 @@ class SettlementsFragment : BaseFragment(), IMyPaymentsServiceInterface {
     }
 
     override fun onMyPaymentsServerException(e: Exception) = exceptionHandlingForAPIResponse(e)
+
+    override fun onGetMyPaymentPageInfoResponse(response: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+        }
+    }
+
+    override fun onTransactionItemClicked(idStr: String?) {
+        getTransactionDetailBottomSheet(idStr)
+    }
 
 }

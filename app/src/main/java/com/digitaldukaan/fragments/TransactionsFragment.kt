@@ -12,19 +12,23 @@ import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.TransactionsAdapter
 import com.digitaldukaan.constants.*
+import com.digitaldukaan.interfaces.ITransactionItemClicked
+import com.digitaldukaan.models.request.TransactionRequest
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.MyPaymentsItemResponse
+import com.digitaldukaan.models.response.MyPaymentsPageInfoResponse
 import com.digitaldukaan.models.response.MyPaymentsResponse
 import com.digitaldukaan.services.MyPaymentsService
 import com.digitaldukaan.services.serviceinterface.IMyPaymentsServiceInterface
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.gson.Gson
 import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration
+import kotlinx.android.synthetic.main.layout_transactions.*
 import ru.slybeaver.slycalendarview.SlyCalendarDialog
 import java.util.*
 import kotlin.collections.ArrayList
 
-class TransactionsFragment: BaseFragment(), IMyPaymentsServiceInterface {
+class TransactionsFragment: BaseFragment(), IMyPaymentsServiceInterface, ITransactionItemClicked {
 
     private var transactionRecyclerView: RecyclerView? = null
     private var amountContainer: View? = null
@@ -55,6 +59,8 @@ class TransactionsFragment: BaseFragment(), IMyPaymentsServiceInterface {
         shareButtonTextView?.setOnClickListener { shareStoreOverWhatsAppServerCall() }
         mService.setServiceInterface(this)
         applyPagination()
+        showProgressDialog(mActivity)
+        mService.getMyPaymentPageInfo()
         return mContentView
     }
 
@@ -112,7 +118,8 @@ class TransactionsFragment: BaseFragment(), IMyPaymentsServiceInterface {
 
     private fun getTxnList() {
         showProgressDialog(mActivity)
-        mService.getTransactionsList(mPageNumber, mStartDateStr, mEndDateStr)
+        val request = TransactionRequest(mPageNumber, mStartDateStr, mEndDateStr, Constants.MODE_ORDERS)
+        mService.getTransactionsList(request)
     }
 
     override fun onGetTransactionsListResponse(response: CommonApiResponse) {
@@ -121,9 +128,13 @@ class TransactionsFragment: BaseFragment(), IMyPaymentsServiceInterface {
             if (response.mIsSuccessStatus) {
                 val myPaymentList = Gson().fromJson<MyPaymentsResponse>(response.mCommonDataStr, MyPaymentsResponse::class.java)
                 val paymentList: ArrayList<MyPaymentsItemResponse>? = myPaymentList?.mMyPaymentList
-                if (mIsDateSelectionDone) if (isEmpty(paymentList)) mPaymentList?.clear()
+                if (mIsDateSelectionDone) mPaymentList?.clear()
                 paymentList?.let { mPaymentList?.addAll(it) }
                 mIsMoreTransactionsAvailable = myPaymentList?.mIsNextPage ?: false
+                val settleAmount = "${getString(R.string.rupee_symbol)}${myPaymentList?.mSettledAmount}"
+                amountSettledValueTextView?.text = settleAmount
+                val unSettleAmount = "${getString(R.string.rupee_symbol)}${myPaymentList?.mUnsettledAmount}"
+                amountToSettledValueTextView?.text = unSettleAmount
                 if (isEmpty(mPaymentList)) {
                     zeroOrderContainer?.visibility = View.VISIBLE
                     amountContainer?.visibility = View.GONE
@@ -138,10 +149,25 @@ class TransactionsFragment: BaseFragment(), IMyPaymentsServiceInterface {
         }
     }
 
+    override fun onGetMyPaymentPageInfoResponse(response: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            if (response.mIsSuccessStatus) {
+                val myPaymentPageInfoResponse = Gson().fromJson<MyPaymentsPageInfoResponse>(response.mCommonDataStr, MyPaymentsPageInfoResponse::class.java)
+                shareButtonTextView?.text = myPaymentPageInfoResponse?.text_share
+                shareYourStoreTextView?.text = myPaymentPageInfoResponse?.message_share_your_store_now_to_get_orders
+                noSettlementForSelectedDateTextView?.text = myPaymentPageInfoResponse?.message_order_no_payment_received
+                amountSettledTextView?.text = myPaymentPageInfoResponse?.text_amount_settled
+                amountToSettledTextView?.text = myPaymentPageInfoResponse?.text_amount_to_settle
+                cashTxnNotShownTextView?.text = myPaymentPageInfoResponse?.message_cash_transactions_are_not_shown
+            }
+        }
+    }
+
     private fun setupRecyclerView() {
         convertDateStringOfTransactions()
         transactionRecyclerView?.apply {
-            mTxnAdapter = TransactionsAdapter(mActivity, mPaymentList)
+            mTxnAdapter = TransactionsAdapter(mActivity, mPaymentList, Constants.MODE_ORDERS, this@TransactionsFragment)
             layoutManager = LinearLayoutManager(mActivity)
             adapter = mTxnAdapter
             addItemDecoration(StickyRecyclerHeadersDecoration(mTxnAdapter))
@@ -155,6 +181,10 @@ class TransactionsFragment: BaseFragment(), IMyPaymentsServiceInterface {
             itemResponse.updatedDate = getDateFromOrderString(itemResponse.transactionTimestamp)
             itemResponse.updatedCompleteDate = getCompleteDateFromOrderString(itemResponse.transactionTimestamp)
         }
+    }
+
+    override fun onTransactionItemClicked(idStr: String?) {
+        getTransactionDetailBottomSheet(idStr)
     }
 
 }

@@ -263,6 +263,12 @@ fun getStringDateTimeFromOrderDate(date: Date?): String {
     return dateFormat.format(date)
 }
 
+fun getStringDateTimeFromTransactionDetailDate(date: Date?): String {
+    if (date == null) return ""
+    val dateFormat = SimpleDateFormat("hh:mm a - d MMM,yyyy", Locale.getDefault())
+    return dateFormat.format(date)
+}
+
 fun getStringTimeFromDate(date: Date?): String {
     if (date == null) return ""
     val dateFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())

@@ -38,6 +38,7 @@ import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.digitaldukaan.MainActivity
 import com.digitaldukaan.MyFcmMessageListenerService
 import com.digitaldukaan.R
@@ -1338,7 +1339,31 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         }
     }
 
-    private fun showTransactionDetailBottomSheet() {
+    open fun getTransactionDetailBottomSheet(txnId: String?) {
+        showProgressDialog(mActivity)
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            try {
+                val response = RetrofitApi().getServerCallObject()?.getOrderTransactions(txnId)
+                response?.let {
+                    stopProgress()
+                    if (it.isSuccessful) {
+                        it.body()?.let {
+                            withContext(Dispatchers.Main) {
+                                if (it.mIsSuccessStatus) {
+                                    val responseObj = Gson().fromJson<TransactionDetailResponse>(it.mCommonDataStr, TransactionDetailResponse::class.java)
+                                    showTransactionDetailBottomSheet(responseObj)
+                                } else showShortSnackBar(it.mMessage, true, R.drawable.ic_close_red)
+                            }
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                exceptionHandlingForAPIResponse(e)
+            }
+        }
+    }
+
+    private fun showTransactionDetailBottomSheet(response: TransactionDetailResponse?) {
         mActivity?.run {
             val bottomSheetDialog = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
             val view = LayoutInflater.from(this).inflate(
@@ -1349,14 +1374,49 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                 setContentView(view)
                 setBottomSheetCommonProperty()
                 view.run {
+                    val staticText = response?.staticText
                     val bottomSheetHeadingTextView: TextView = findViewById(R.id.bottomSheetHeadingTextView)
-                    /*val billAmountTextView: TextView = findViewById(R.id.billAmountTextView)
-                    val orderIdTextView: TextView = findViewById(R.id.orderIdTextView)
+                    val billAmountValueTextView: TextView = findViewById(R.id.billAmountValueTextView)
+                    val txnChargeValueTextView: TextView = findViewById(R.id.txnChargeValueTextView)
                     val textViewTop: TextView = findViewById(R.id.textViewTop)
-                    val txnId: TextView = findViewById(R.id.txnId)
                     val textViewBottom: TextView = findViewById(R.id.textViewBottom)
-                    val imageViewTop: ImageView = findViewById(R.id.imageViewTop)
-                    val imageViewBottom: ImageView = findViewById(R.id.imageViewBottom)*/
+                    val billAmountTextView: TextView = findViewById(R.id.billAmountTextView)
+                    val txnChargeTextView: TextView = findViewById(R.id.txnChargeTextView)
+                    val paymentModeTextView: TextView = findViewById(R.id.paymentModeTextView)
+                    val amountSettleTextView: TextView = findViewById(R.id.amountSettleTextView)
+                    val amountSettleValueTextView: TextView = findViewById(R.id.amountSettleValueTextView)
+                    val txnId: TextView = findViewById(R.id.txnId)
+                    val bottomDate: TextView = findViewById(R.id.bottomDate)
+                    val displayMessage: TextView = findViewById(R.id.displayMessage)
+                    val ctaTextView: TextView = findViewById(R.id.ctaTextView)
+                    val closeImageView: ImageView = findViewById(R.id.closeImageView)
+                    val imageViewBottom: ImageView = findViewById(R.id.imageViewBottom)
+                    val paymentModeImageView: ImageView = findViewById(R.id.paymentModeImageView)
+                    textViewTop.text = response?.transactionMessage
+                    textViewBottom.text = response?.settlementMessage
+                    billAmountTextView.text = staticText?.bill_amount
+                    amountSettleTextView.text = staticText?.amount_to_settled
+                    paymentModeTextView.text = staticText?.payment_mode
+                    txnId.text = getStringDateTimeFromTransactionDetailDate(getCompleteDateFromOrderString(response?.transactionTimestamp))
+                    if (Constants.ORDER_STATUS_PAYOUT_SUCCESS == response?.settlementState) {
+                        val bottomDisplayStr = "${getStringDateTimeFromTransactionDetailDate(getCompleteDateFromOrderString(response.settlementTimestamp))} ${if (!isEmpty(response.utr)) "| UTR : ${response.utr}" else ""}"
+                        bottomDate.text = bottomDisplayStr
+                    }
+                    if (null != response?.ctaItem) {
+                        ctaTextView.visibility = View.VISIBLE
+                        displayMessage.visibility = View.VISIBLE
+                    } else {
+                        ctaTextView.visibility = View.INVISIBLE
+                        displayMessage.visibility = View.GONE
+                    }
+                    txnChargeTextView.text = "${staticText?.transaction_charges} (${response?.transactionCharges}%)"
+                    bottomSheetHeadingTextView.text = "${staticText?.order_number} ${response?.orderId}"
+                    billAmountValueTextView.text = "${getString(R.string.rupee_symbol)} ${response?.amount}"
+                    txnChargeValueTextView.text = "${getString(R.string.rupee_symbol)} ${response?.transactionChargeAmount}"
+                    amountSettleValueTextView.text = "${getString(R.string.rupee_symbol)} ${response?.settlementAmount}"
+                    if (!isEmpty(response?.paymentImage)) mActivity?.let { context -> Glide.with(context).load(response?.paymentImage).into(paymentModeImageView) }
+                    if (!isEmpty(response?.settlementCdn)) mActivity?.let { context -> Glide.with(context).load(response?.settlementCdn).into(imageViewBottom) }
+                    closeImageView.setOnClickListener { bottomSheetDialog.dismiss() }
                 }
             }.show()
         }

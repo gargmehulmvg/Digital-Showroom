@@ -15,6 +15,7 @@
         android:layout_width="@dimen/_40sdp"
         android:layout_height="@dimen/_40sdp"
         android:clickable="false"
+        android:visibility="visible"
         android:contentDescription="@string/image_view_content_description"
         tools:src="@drawable/amazon_pay"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -22,9 +23,24 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
+        android:id="@+id/smallImageView"
+        android:layout_width="@dimen/_20sdp"
+        android:layout_height="@dimen/_20sdp"
+        android:padding="@dimen/_2sdp"
+        android:clickable="false"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:visibility="gone"
+        android:contentDescription="@string/image_view_content_description"
+        app:layout_constraintEnd_toStartOf="@+id/headingTextView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@drawable/ic_tick_green_small" />
+
+    <ImageView
         android:id="@+id/tickImageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/_12sdp"
+        android:layout_height="@dimen/_12sdp"
+        android:visibility="visible"
         android:src="@drawable/ic_tick_green_small"
         app:layout_constraintBottom_toTopOf="@+id/imageView"
         app:layout_constraintEnd_toEndOf="@+id/imageView"
@@ -38,12 +54,13 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_15sdp"
         android:clickable="false"
+        app:layout_goneMarginStart="@dimen/_30sdp"
         android:padding="@dimen/_2sdp"
-        tools:text="UTR: 114516218924"
         android:textColor="@color/black"
         android:textSize="@dimen/_12sdp"
         app:layout_constraintStart_toEndOf="@+id/imageView"
-        app:layout_constraintTop_toTopOf="@+id/imageView" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="UTR: 114516218924" />
 
     <TextView
         android:id="@+id/amountTextView"

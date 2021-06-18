@@ -1,6 +1,7 @@
 package com.digitaldukaan.services
 
 import com.digitaldukaan.constants.CoroutineScopeUtils
+import com.digitaldukaan.models.request.TransactionRequest
 import com.digitaldukaan.services.networkservice.MyPaymentsNetworkService
 import com.digitaldukaan.services.serviceinterface.IMyPaymentsServiceInterface
 
@@ -13,15 +14,15 @@ class MyPaymentsService {
         mServiceInterface = serviceInterface
     }
 
-    fun getTransactionsList(pageNo: Int, startDate: String?, endDate: String?) {
+    fun getTransactionsList(request: TransactionRequest) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.getTransactionsListServerCall(pageNo, startDate, endDate, mServiceInterface)
+            mNetworkService.getTransactionsListServerCall(request, mServiceInterface)
         }
     }
 
-    fun getSettlementsList(pageNo: Int, startDate: String?, endDate: String?) {
+    fun getMyPaymentPageInfo() {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.getSettlementListServerCall(pageNo, startDate, endDate, mServiceInterface)
+            mNetworkService.getMyPaymentPageInfoServerCall(mServiceInterface)
         }
     }
 

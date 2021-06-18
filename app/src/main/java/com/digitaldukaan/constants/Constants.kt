@@ -99,6 +99,9 @@ class Constants {
         const val MODE_COMPLETED                                = "mode_completed"
         const val MODE_PREPAID                                  = "mode_prepaid"
         const val MODE_POSTPAID                                 = "mode_postpaid"
+        const val MODE_SETTLEMENTS                              = "settlements"
+        const val MODE_ORDERS                                   = "orders"
+        const val MODE_SETTLED                                  = "Settled"
         //ORDER_STATUS
         const val StatusCustomerUpdated                         = 1
         const val StatusMerchantUpdated                         = 2

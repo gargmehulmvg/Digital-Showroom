@@ -139,12 +139,13 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                 } else handleDeliveryTimeBottomSheet(isCallSendBillServerCall = false, isPrepaidOrder = true)
             }
             detailTextView?.id -> {
-                if (!isInternetConnectionAvailable(mActivity)) {
+                /*if (!isInternetConnectionAvailable(mActivity)) {
                     showNoInternetConnectionDialog()
                 } else {
                     showProgressDialog(mActivity)
                     mOrderDetailService?.getOrderDetailStatus(orderDetailMainResponse?.orders?.orderId)
-                }
+                }*/
+                getTransactionDetailBottomSheet(orderDetailMainResponse?.orders?.transactionId)
             }
             sideIconWhatsAppToolbar?.id -> {
                 val displayStatus = orderDetailMainResponse?.orders?.displayStatus

@@ -38,11 +38,11 @@ interface Apis {
     @GET("api/dotk/vm1/settings/getOrderTypePageInfo")
     suspend fun getOrderTypePageInfo() : Response<CommonApiResponse>
 
-    @GET("api/dotk/vm1/settings/getTransactionList")
-    suspend fun getTransactionsList(@Query("page_no") pageNo: Int, @Query("start_date") startDate: String?, @Query("end_date") endDate: String?, @Query("list_type") listType: String) : Response<CommonApiResponse>
+    @POST("api/dotk/vm1/settings/getTransactionsList")
+    suspend fun getTransactionsList(@Body request: TransactionRequest) : Response<CommonApiResponse>
 
-    @GET("api/dotk/vm1/settings/getSettlementList")
-    suspend fun getSettlementList(@Query("page_no") pageNo: Int, @Query("start_date") startDate: String?, @Query("end_date") endDate: String?, @Query("list_type") listType: String) : Response<CommonApiResponse>
+    @GET("api/dotk/vm1/settings/getMyPaymentsPageInfo")
+    suspend fun getMyPaymentsPageInfo() : Response<CommonApiResponse>
 
     @POST("api/dotk/vm1/settings/updatePaymentMethod")
     suspend fun updatePaymentMethod(@Body request: UpdatePaymentMethodRequest) : Response<CommonApiResponse>
@@ -203,8 +203,8 @@ interface Apis {
     suspend fun shareBill(@Path("order_id") orderId: String): Response<CommonApiResponse>
 
     /* ----------------------       Payments         ---------------------- */
-    @GET("api/dotk/vm1/orders/getOrderTransactions/{orderId}")
-    suspend fun getOrderTransactions(@Path("orderId") orderId: String): Response<CommonApiResponse>
+    @GET("api/dotk/vm1/settings/getOrderBannerDetails/{orderId}")
+    suspend fun getOrderTransactions(@Path("orderId") orderId: String?): Response<CommonApiResponse>
 
 
     /* ----------------------       Premium         ---------------------- */

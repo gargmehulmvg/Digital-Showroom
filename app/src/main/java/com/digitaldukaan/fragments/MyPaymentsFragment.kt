@@ -32,7 +32,7 @@ class MyPaymentsFragment: BaseFragment(), TabLayout.OnTabSelectedListener {
     private fun initializeUI() {
         ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, false)
-            setHeaderTitle("My Payments")
+            setHeaderTitle(getString(R.string.my_payments))
             onBackPressed(this@MyPaymentsFragment)
         }
         hideBottomNavigationView(true)
@@ -44,8 +44,8 @@ class MyPaymentsFragment: BaseFragment(), TabLayout.OnTabSelectedListener {
         fragmentList.add(transactionFragment)
         fragmentList.add(settlementFragment)
         val fragmentHeaderList = ArrayList<String>()
-        fragmentHeaderList.add("Transactions")
-        fragmentHeaderList.add("Settlements")
+        fragmentHeaderList.add(getString(R.string.orders))
+        fragmentHeaderList.add(getString(R.string.settlements))
         mMyPaymentsPagerAdapter = MyPaymentsPagerAdapter(mActivity?.supportFragmentManager, fragmentList, fragmentHeaderList)
         viewPager?.adapter = mMyPaymentsPagerAdapter
         tabLayout?.setupWithViewPager(viewPager)

@@ -72,7 +72,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/montserrat_bold"
                 android:padding="@dimen/_2sdp"
-                android:text="₹500"
+                tools:text="₹500"
                 android:textColor="@color/open_green_darker"
                 android:textSize="@dimen/_14sdp"
                 app:layout_constraintBottom_toBottomOf="parent"
