@@ -30,7 +30,6 @@ import com.digitaldukaan.adapters.SettingsStoreAdapter
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.IOnToolbarIconClick
 import com.digitaldukaan.interfaces.IStoreSettingsItemClicked
-import com.digitaldukaan.models.request.StoreDeliveryStatusChangeRequest
 import com.digitaldukaan.models.request.StoreLogoRequest
 import com.digitaldukaan.models.response.*
 import com.digitaldukaan.services.ProfileService
@@ -100,37 +99,26 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         StaticInstances.sAppStoreServicesResponse = mAppStoreServicesResponse
         StaticInstances.sPaymentMethodStr = mProfileResponse?.mOnlinePaymentType
         when (view?.id) {
-            storeSwitch?.id -> changeStoreDeliveryStatus()
-            deliverySwitch?.id -> changeStoreDeliveryStatus()
-            moreControlsTextView?.id -> launchFragment(MoreControlsFragment.newInstance(mAppSettingsResponseStaticData), true)
-            moreControlsImageView?.id -> launchFragment(MoreControlsFragment.newInstance(mAppSettingsResponseStaticData), true)
-            dukaanNameTextView?.id -> launchFragment(ProfilePreviewFragment().newInstance(mProfileResponse?.mStoreInfo?.storeInfo?.name), true)
-            profileStatusRecyclerView?.id -> launchFragment(ProfilePreviewFragment().newInstance(mProfileResponse?.mStoreInfo?.storeInfo?.name), true)
-            stepsLeftTextView?.id -> launchFragment(ProfilePreviewFragment().newInstance(mProfileResponse?.mStoreInfo?.storeInfo?.name), true)
-            completeProfileTextView?.id -> launchFragment(ProfilePreviewFragment().newInstance(mProfileResponse?.mStoreInfo?.storeInfo?.name), true)
-            shapeableImageView?.id -> launchFragment(ProfilePreviewFragment().newInstance(mProfileResponse?.mStoreInfo?.storeInfo?.name), true)
+//            storeSwitch?.id -> changeStoreDeliveryStatus()
+//            deliverySwitch?.id -> changeStoreDeliveryStatus()
+//            moreControlsTextView?.id -> launchFragment(MoreControlsFragment.newInstance(mAppSettingsResponseStaticData), true)
+            storeControlView?.id -> launchFragment(MoreControlsFragment.newInstance(mAppSettingsResponseStaticData), true)
+            dukaanNameTextView?.id -> launchProfilePreviewFragment()
+            editProfileTextView?.id -> launchProfilePreviewFragment()
+            profileStatusRecyclerView?.id -> launchProfilePreviewFragment()
+            stepsLeftTextView?.id -> launchProfilePreviewFragment()
+            completeProfileTextView?.id -> launchProfilePreviewFragment()
+            shapeableImageView?.id -> launchProfilePreviewFragment()
             linearLayout?.id -> {
                 var storeLogo = mAccountInfoResponse?.mStoreInfo?.storeInfo?.logoImage
                 if (mStoreLogo?.isNotEmpty() == true) storeLogo = mStoreLogo
                 if (storeLogo?.isNotEmpty() == true) launchFragment(ProfilePhotoFragment.newInstance(storeLogo), true, storePhotoImageView) else askCameraPermission()
             }
-            whatsAppTextView?.id -> {
-                AppEventsManager.pushAppEvents(
-                    eventName = AFInAppEventType.EVENT_STORE_SHARE,
-                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.IS_SETTINGS to AFInAppEventParameterName.TRUE)
-                )
-                if (mShareDataOverWhatsAppText.isNotEmpty()) shareOnWhatsApp(mShareDataOverWhatsAppText) else if (!isInternetConnectionAvailable(mActivity)) {
-                    showNoInternetConnectionDialog()
-                    return
-                } else {
-                    showProgressDialog(mActivity)
-                    mProfileService.getProductShareStoreData()
-                }
-            }
             viewAllHeading?.id -> launchFragment(NewReleaseFragment.newInstance(mAccountInfoResponse?.mTrendingList, mAccountInfoResponse?.mAccountStaticText), true)
         }
     }
+
+    private fun launchProfilePreviewFragment() = launchFragment(ProfilePreviewFragment.newInstance(mProfileResponse?.mStoreInfo?.storeInfo?.name), true)
 
     override fun onImageSelectionResultFile(file: File?, mode: String) {
         if (mode == Constants.MODE_CROP) {
@@ -259,11 +247,11 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             return
         }
         showCancellableProgressDialog(mActivity)
-        val request = StoreDeliveryStatusChangeRequest(
-            if (storeSwitch.isChecked) 1 else 0,
-            if (deliverySwitch.isChecked) 1 else 0
-        )
-        mProfileService.changeStoreAndDeliveryStatus(request)
+//        val request = StoreDeliveryStatusChangeRequest(
+//            if (storeSwitch.isChecked) 1 else 0,
+//            if (deliverySwitch.isChecked) 1 else 0
+//        )
+//        mProfileService.changeStoreAndDeliveryStatus(request)
     }
 
     override fun onToolbarSideIconClicked() = launchFragment(CommonWebViewFragment().newInstance(getString(R.string.help), "${BuildConfig.WEB_VIEW_URL}${WebViewUrls.WEB_VIEW_HELP}?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&redirectFrom=settings&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"), true)
@@ -308,10 +296,10 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (response.mIsSuccessStatus) {
                 val storeDeliveryService = Gson().fromJson<StoreDeliveryServiceResponse>(response.mCommonDataStr, StoreDeliveryServiceResponse::class.java)
-                storeDeliveryService?.let {
-                    storeSwitch?.isChecked = (it.mStoreFlag == 1)
-                    deliverySwitch?.isChecked = (it.mDeliveryFlag == 1)
-                }
+//                storeDeliveryService?.let {
+//                    storeSwitch?.isChecked = (it.mStoreFlag == 1)
+//                    deliverySwitch?.isChecked = (it.mDeliveryFlag == 1)
+//                }
             } else {
                 showToast(response.mMessage)
             }
@@ -402,10 +390,13 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             stepsLeftTextView?.visibility = View.GONE
             completeProfileTextView?.visibility = View.GONE
             shapeableImageView?.visibility = View.GONE
+            editProfileTextView?.visibility = View.VISIBLE
+            editProfileTextView?.text = "Edit Profile"
         } else {
             stepsLeftTextView?.visibility = View.VISIBLE
             completeProfileTextView?.visibility = View.VISIBLE
             shapeableImageView?.visibility = View.VISIBLE
+            editProfileTextView?.visibility = View.GONE
             profileStatusRecyclerView?.apply {
                 visibility = View.VISIBLE
                 layoutManager = GridLayoutManager(mActivity, infoResponse.mTotalSteps)
@@ -426,27 +417,36 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         val remainingSteps = infoResponse.mTotalSteps.minus(infoResponse.mCompletedSteps)
         stepsLeftTextView?.text = if (remainingSteps == 1) "$remainingSteps ${infoResponse.mAccountStaticText?.mStepLeft}" else "$remainingSteps ${infoResponse.mAccountStaticText?.mStepsLeft}"
         completeProfileTextView?.text = infoResponse.mAccountStaticText?.mCompleteProfile
-        storeSwitch?.setOnCheckedChangeListener { _, isChecked ->
-            Log.d(TAG, "storeSwitch.setOnCheckedChangeListener $isChecked")
-            val storeStatus = "${infoResponse.mAccountStaticText?.mStoreText} : ${if (isChecked) infoResponse.mAccountStaticText?.mOpenText else infoResponse.mAccountStaticText?.mClosedText}"
-            storeStatusTextView?.text = storeStatus
-        }
-        deliverySwitch?.setOnCheckedChangeListener { _, isChecked ->
-            Log.d(TAG, "deliverySwitch.setOnCheckedChangeListener $isChecked")
-            val deliveryStatus = "${infoResponse.mAccountStaticText?.mDeliveryText} : ${if (isChecked) infoResponse.mAccountStaticText?.mOnText else infoResponse.mAccountStaticText?.mOffText}"
-            deliveryStatusTextView?.text = deliveryStatus
-        }
-        deliverySwitch?.isChecked = infoResponse.mStoreInfo.storeServices.mDeliveryFlag == 1
-        val deliveryStatus = "${infoResponse.mAccountStaticText?.mDeliveryText} : ${if (deliverySwitch?.isChecked == true) infoResponse.mAccountStaticText?.mOnText else infoResponse.mAccountStaticText?.mOffText}"
+//        storeSwitch?.setOnCheckedChangeListener { _, isChecked ->
+//            Log.d(TAG, "storeSwitch.setOnCheckedChangeListener $isChecked")
+//            val storeStatus = "${infoResponse.mAccountStaticText?.mStoreText} : ${if (isChecked) infoResponse.mAccountStaticText?.mOpenText else infoResponse.mAccountStaticText?.mClosedText}"
+//            storeStatusTextView?.text = storeStatus
+//        }
+//        deliverySwitch?.setOnCheckedChangeListener { _, isChecked ->
+//            Log.d(TAG, "deliverySwitch.setOnCheckedChangeListener $isChecked")
+//            val deliveryStatus = "${infoResponse.mAccountStaticText?.mDeliveryText} : ${if (isChecked) infoResponse.mAccountStaticText?.mOnText else infoResponse.mAccountStaticText?.mOffText}"
+//            deliveryStatusTextView?.text = deliveryStatus
+//        }
+//        deliverySwitch?.isChecked = infoResponse.mStoreInfo.storeServices.mDeliveryFlag == 1
+//        val deliveryStatus = "${infoResponse.mAccountStaticText?.mDeliveryText} : ${if (deliverySwitch?.isChecked == true) infoResponse.mAccountStaticText?.mOnText else infoResponse.mAccountStaticText?.mOffText}"
+//        deliveryStatusTextView?.text = deliveryStatus
+//        storeSwitch?.isChecked = infoResponse.mStoreInfo.storeServices.mStoreFlag == 1
+//        val storeStatus = "${infoResponse.mAccountStaticText?.mStoreText} : ${if (storeSwitch?.isChecked == true) infoResponse.mAccountStaticText?.mOpenText else infoResponse.mAccountStaticText?.mClosedText}"
+//        storeStatusTextView?.text = storeStatus
+//        moreControlsTextView?.text = infoResponse.mAccountStaticText?.page_heading_more_controls
+//        whatsAppShareTextView?.text = infoResponse.mAccountStaticText?.mShareText
+//        shareShowRoomWithCustomerTextView?.text = infoResponse.mAccountStaticText?.mShareMessageText
+//        materialTextView?.text = infoResponse.mAccountStaticText?.mStoreControlsText
+
+        val storeStatus = "${infoResponse.mAccountStaticText?.mStoreText} :"
+        val deliveryStatus = "${infoResponse.mAccountStaticText?.mDeliveryText} :"
+        storeTextView?.text = storeStatus
+        storeControlMessageTextView?.text = "Set Online payment modes, minimum order value, delivery charge And more"
+        storeControlNewTextView?.text = "NEW"
         deliveryStatusTextView?.text = deliveryStatus
-        storeSwitch?.isChecked = infoResponse.mStoreInfo.storeServices.mStoreFlag == 1
-        val storeStatus = "${infoResponse.mAccountStaticText?.mStoreText} : ${if (storeSwitch?.isChecked == true) infoResponse.mAccountStaticText?.mOpenText else infoResponse.mAccountStaticText?.mClosedText}"
-        storeStatusTextView?.text = storeStatus
+        storeValueTextView?.text = if (infoResponse.mStoreInfo.storeServices.mStoreFlag == 1) infoResponse.mAccountStaticText?.mOpenText else infoResponse.mAccountStaticText?.mClosedText
+        deliveryStatusValueTextView?.text = if (infoResponse.mStoreInfo.storeServices.mDeliveryFlag == 1) infoResponse.mAccountStaticText?.mOnText else infoResponse.mAccountStaticText?.mOffText
         hiddenTextView?.text = infoResponse.mAccountStaticText?.mTextAddPhoto
-        moreControlsTextView?.text = infoResponse.mAccountStaticText?.page_heading_more_controls
-        whatsAppShareTextView?.text = infoResponse.mAccountStaticText?.mShareText
-        shareShowRoomWithCustomerTextView?.text = infoResponse.mAccountStaticText?.mShareMessageText
-        materialTextView?.text = infoResponse.mAccountStaticText?.mStoreControlsText
         newReleaseHeading?.text = infoResponse.mAccountStaticText?.mNewReleaseText
         viewAllHeading?.text = infoResponse.mAccountStaticText?.mViewAllText
         ToolBarManager.getInstance()?.setHeaderTitle(infoResponse.mAccountStaticText?.page_heading)

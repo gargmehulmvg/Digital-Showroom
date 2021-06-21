@@ -148,7 +148,7 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
         clearFragmentBackStack()
         when {
             intentUriStr.contains("${deepLinkStr}Settings") -> launchFragment(SettingsFragment.newInstance(), true)
-            intentUriStr.contains("${deepLinkStr}ProfilePage") -> launchFragment(ProfilePreviewFragment().newInstance(), true)
+            intentUriStr.contains("${deepLinkStr}ProfilePage") -> launchFragment(ProfilePreviewFragment.newInstance(), true)
             intentUriStr.contains("${deepLinkStr}ProductList") -> launchFragment(HomeFragment.newInstance(), true)
             intentUriStr.contains("${deepLinkStr}OrderList") -> launchFragment(HomeFragment.newInstance(), true)
             intentUriStr.contains("${deepLinkStr}ProductAdd") -> launchFragment(ProductFragment.newInstance(), true)
