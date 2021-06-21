@@ -118,7 +118,7 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
         savedInstanceState: Bundle?
     ): View? {
         mContentView = inflater.inflate(R.layout.layout_login_fragment, container, false)
-        mAuthStaticData = StaticInstances.mStaticData?.mAuthNew
+        mAuthStaticData = StaticInstances.sStaticData?.mAuthNew
         return mContentView
     }
 

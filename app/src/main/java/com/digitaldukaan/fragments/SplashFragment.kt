@@ -79,7 +79,7 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
 
     override fun onStaticDataResponse(staticDataResponse: CommonApiResponse) {
         val staticData = Gson().fromJson<StaticData>(staticDataResponse.mCommonDataStr, StaticData::class.java)
-        StaticInstances.mStaticData = staticData
+        StaticInstances.sStaticData = staticData
         splashService.getAppVersion()
     }
 

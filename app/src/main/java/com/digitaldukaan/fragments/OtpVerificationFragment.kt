@@ -74,7 +74,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
         mContentView = inflater.inflate(R.layout.otp_verification_fragment, container, false)
         mOtpVerificationService = OtpVerificationService()
         mOtpVerificationService?.setOtpVerificationListener(this)
-        mOtpStaticResponseData = StaticInstances.mStaticData?.mVerifyOtpStaticData
+        mOtpStaticResponseData = StaticInstances.sStaticData?.mVerifyOtpStaticData
         mActivity?.let {
             KeyboardVisibilityEvent.setEventListener(it, object : KeyboardVisibilityEventListener {
                     override fun onVisibilityChanged(isOpen: Boolean) {

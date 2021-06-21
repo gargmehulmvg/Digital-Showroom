@@ -206,18 +206,21 @@
                 android:drawablePadding="@dimen/_10sdp"
                 android:gravity="center_vertical"
                 android:onClick="onClick"
+                android:layout_marginBottom="@dimen/_15sdp"
+                android:elevation="@dimen/_5sdp"
                 android:paddingStart="@dimen/_15sdp"
                 android:paddingTop="@dimen/_10sdp"
                 android:paddingEnd="@dimen/_15sdp"
                 android:paddingBottom="@dimen/_10sdp"
-                tools:text="@string/share_product"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_15sdp"
                 app:drawableStartCompat="@drawable/ic_whatsapp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/shareYourStoreTextView" />
+                app:layout_constraintTop_toBottomOf="@+id/shareYourStoreTextView"
+                tools:text="@string/share_product" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

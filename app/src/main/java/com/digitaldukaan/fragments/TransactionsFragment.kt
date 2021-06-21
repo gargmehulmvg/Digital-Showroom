@@ -191,6 +191,7 @@ class TransactionsFragment: BaseFragment(), IMyPaymentsServiceInterface, ITransa
             stopProgress()
             if (response.mIsSuccessStatus) {
                 myPaymentPageInfoResponse = Gson().fromJson<MyPaymentsPageInfoResponse>(response.mCommonDataStr, MyPaymentsPageInfoResponse::class.java)
+                StaticInstances.sMyPaymentPageInfoResponse = myPaymentPageInfoResponse
                 shareButtonTextView?.text = myPaymentPageInfoResponse?.text_share
                 shareYourStoreTextView?.text = myPaymentPageInfoResponse?.message_share_your_store_now_to_get_orders
                 noSettlementForSelectedDateTextView?.text = myPaymentPageInfoResponse?.message_order_no_payment_received
@@ -227,6 +228,10 @@ class TransactionsFragment: BaseFragment(), IMyPaymentsServiceInterface, ITransa
     }
 
     override fun onTransactionItemClicked(idStr: String?) {
+        if (isEmpty(idStr)) {
+            showShortSnackBar(getString(R.string.txn_id_is_blank), true, R.drawable.ic_close_red)
+            return
+        }
         getTransactionDetailBottomSheet(idStr, AFInAppEventParameterName.PAYMENT_ORDERS)
     }
 

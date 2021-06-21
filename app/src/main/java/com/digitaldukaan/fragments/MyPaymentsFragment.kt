@@ -76,7 +76,7 @@ class MyPaymentsFragment: BaseFragment(), TabLayout.OnTabSelectedListener,
 
     override fun onPageSelected(position: Int) {
         Log.d(TAG, "onPageSelected :: $position")
-        mSettlementsFragment.onNoInternetButtonClick(false)
+        mSettlementsFragment.onMyPaymentFragmentTabChanged()
     }
 
 }

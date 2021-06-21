@@ -11,5 +11,6 @@ data class MyPaymentsPageInfoResponse(
     @SerializedName("text_amount_settled")                          var text_amount_settled: String?,
     @SerializedName("message_share_your_store_now_to_get_orders")   var message_share_your_store_now_to_get_orders: String?,
     @SerializedName("message_order_no_payment_received")            var message_order_no_payment_received: String?,
+    @SerializedName("message_settlements_no_payment_received")      var message_settlements_no_payment_received: String?,
     @SerializedName("message_cash_transactions_are_not_shown")      var message_cash_transactions_are_not_shown: String?
 )

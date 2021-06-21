@@ -565,10 +565,6 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         }
     }
 
-    open fun onAlertDialogItemClicked(selectedStr: String?, id: Int, position: Int) = Unit
-
-    open fun onImageSelectionResult(base64Str : String?) = Unit
-
     open fun askCameraPermission() {
         mActivity?.let {
             if (ActivityCompat.checkSelfPermission(it, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED &&
@@ -604,7 +600,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
 
     open fun showImagePickerBottomSheet() {
         mActivity?.let {
-            val imageUploadStaticData = StaticInstances.mStaticData?.mCatalogStaticData
+            val imageUploadStaticData = StaticInstances.sStaticData?.mCatalogStaticData
             mImagePickBottomSheet = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
             val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_image_pick, it.findViewById(R.id.bottomSheetContainer))
             mImagePickBottomSheet?.apply {
@@ -932,14 +928,6 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         }
     }
 
-    open fun onImageSelectionResultFile(file: File?, mode: String = "") = Unit
-
-    open fun onImageSelectionResultUri(fileUri: Uri?) = Unit
-
-    open fun onImageSelectionResultFileAndUri(fileUri: Uri?, file: File?) = Unit
-
-    open fun onNoInternetButtonClick(isNegativeButtonClick: Boolean) = Unit
-
     override fun onSearchImageItemClicked(photoStr: String) {
         showCancellableProgressDialog(mActivity)
         Log.d(TAG, "onSearchImageItemClicked :: $photoStr")
@@ -1130,8 +1118,6 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         }
     }
 
-    open fun onSearchDialogContinueButtonClicked(inputOrderId: String, inputMobileNumber: String) = Unit
-
     open fun convertDateStringOfOrders(list: ArrayList<OrderItemResponse>) {
         list.forEachIndexed { _, itemResponse ->
             itemResponse.updatedDate = getDateFromOrderString(itemResponse.createdAt)
@@ -1177,8 +1163,6 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
             }.show()
         }
     }
-
-    open fun onDontShowDialogPositiveButtonClicked(item: OrderItemResponse?) = Unit
 
     protected fun showImageDialog(imageStr: String?) {
         mActivity?.let {

@@ -218,12 +218,24 @@ class SettlementsFragment : BaseFragment(), IMyPaymentsServiceInterface, ITransa
     }
 
     override fun onTransactionItemClicked(idStr: String?) {
+        if (isEmpty(idStr)) {
+            showShortSnackBar(getString(R.string.txn_id_is_blank), true, R.drawable.ic_close_red)
+            return
+        }
         getTransactionDetailBottomSheet(idStr, AFInAppEventParameterName.SETTLEMENTS)
     }
 
-    override fun onNoInternetButtonClick(isNegativeButtonClick: Boolean) {
-        super.onNoInternetButtonClick(isNegativeButtonClick)
+    override fun onMyPaymentFragmentTabChanged() {
+        super.onMyPaymentFragmentTabChanged()
         setupCalenderView()
+        if (null != StaticInstances.sMyPaymentPageInfoResponse) {
+            StaticInstances.sMyPaymentPageInfoResponse?.run {
+                shareButtonTextView?.text = text_share
+                noSettlementForSelectedDateTextView?.text = message_settlements_no_payment_received
+                shareYourStoreTextView?.text = message_share_your_store_now_to_get_orders
+                amountSettledTextView?.text = text_amount_settled
+            }
+        }
     }
 
 }

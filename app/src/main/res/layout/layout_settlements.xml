@@ -57,7 +57,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/_5sdp"
-                android:text="Amount Settled"
+                tools:text="Amount Settled"
                 android:textColor="@color/black"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/amountSettledValueTextView"
@@ -113,7 +113,7 @@
                 android:fontFamily="@font/roboto"
                 android:gravity="center"
                 android:padding="@dimen/_8sdp"
-                android:text="No Settlements for the selected date"
+                tools:text="No Settlements for the selected date"
                 android:textColor="@color/black"
                 app:layout_constraintTop_toBottomOf="@id/noTxnImageView" />
 
@@ -123,7 +123,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/roboto"
                 android:gravity="center"
-                android:text="Share your store now to get Orders"
+                tools:text="Share your store now to get Orders"
                 android:textSize="@dimen/_10sdp"
                 app:layout_constraintTop_toBottomOf="@+id/noSettlementForSelectedDateTextView" />
 
@@ -137,6 +137,8 @@
                 android:gravity="center_vertical"
                 android:onClick="onClick"
                 android:paddingStart="@dimen/_15sdp"
+                android:layout_marginBottom="@dimen/_15sdp"
+                android:elevation="@dimen/_5sdp"
                 android:paddingTop="@dimen/_10sdp"
                 android:paddingEnd="@dimen/_15sdp"
                 android:paddingBottom="@dimen/_10sdp"
@@ -144,6 +146,7 @@
                 android:textColor="@color/white"
                 android:textSize="@dimen/_15sdp"
                 app:drawableStartCompat="@drawable/ic_whatsapp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"

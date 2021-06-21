@@ -54,7 +54,7 @@ class StoreDescriptionFragment : BaseFragment(), IStoreDescriptionServiceInterfa
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        mStoreDescriptionStaticData = StaticInstances.mStaticData?.mProfileStaticData
+        mStoreDescriptionStaticData = StaticInstances.sStaticData?.mProfileStaticData
         ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, false)
             val stepStr = if (mIsSingleStep) "" else "Step $mPosition : "
