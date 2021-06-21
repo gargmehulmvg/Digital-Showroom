@@ -230,11 +230,11 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/roboto"
         android:textColor="@color/black"
-        android:layout_marginTop="@dimen/_3sdp"
         android:textSize="@dimen/_12sdp"
+        app:layout_constraintBottom_toBottomOf="@+id/imageViewBottom"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/dottedView"
-        app:layout_constraintTop_toBottomOf="@+id/dottedView"
+        app:layout_constraintTop_toTopOf="@+id/imageViewBottom"
         tools:text="Order ID:342" />
 
     <com.google.android.material.textview.MaterialTextView
@@ -243,6 +243,7 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/roboto"
         android:textSize="@dimen/_10sdp"
+        android:visibility="visible"
         app:layout_constraintStart_toStartOf="@+id/textViewBottom"
         app:layout_constraintTop_toBottomOf="@+id/textViewBottom"
         tools:text="Order ID:342" />
@@ -252,12 +253,12 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:fontFamily="@font/roboto"
+        android:textColor="@color/orange"
         android:textSize="@dimen/_10sdp"
         android:visibility="gone"
-        android:textColor="@color/orange"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@+id/textViewBottom"
-        app:layout_constraintTop_toBottomOf="@+id/bottomDate"
+        app:layout_constraintTop_toBottomOf="@+id/textViewBottom"
         tools:text="Order ID:342" />
 
     <TextView

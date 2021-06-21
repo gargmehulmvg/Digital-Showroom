@@ -139,12 +139,6 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                 } else handleDeliveryTimeBottomSheet(isCallSendBillServerCall = false, isPrepaidOrder = true)
             }
             detailTextView?.id -> {
-                /*if (!isInternetConnectionAvailable(mActivity)) {
-                    showNoInternetConnectionDialog()
-                } else {
-                    showProgressDialog(mActivity)
-                    mOrderDetailService?.getOrderDetailStatus(orderDetailMainResponse?.orders?.orderId)
-                }*/
                 getTransactionDetailBottomSheet(orderDetailMainResponse?.orders?.transactionId, AFInAppEventParameterName.ORDER_DETAILS)
             }
             sideIconWhatsAppToolbar?.id -> {
@@ -600,7 +594,12 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
             newOrderTextView?.text = text_new_order
             billAmountLabel?.text = "$text_bill_amount:"
             statusLabel?.text = "$text_status:"
-            detailTextView?.text = "$text_details:"
+            if (isEmpty(orderDetailResponse?.transactionId))
+                detailTextView?.visibility = View.INVISIBLE
+            else {
+                detailTextView?.visibility = View.VISIBLE
+                detailTextView?.text = text_details
+            }
             billAmountValue?.text = "$text_rupees_symbol ${orderDetailResponse?.payAmount}"
             appTitleTextView?.text = "$text_order #${orderDetailResponse?.orderId}"
             if (Constants.ORDER_TYPE_PREPAID == orderDetailResponse?.prepaidFlag || orderDetailResponse?.deliveryInfo?.customDeliveryTime?.isEmpty() == true) {
@@ -613,10 +612,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
             mActivity?.run {
                 Log.d(TAG, "setStaticDataToUI: orderDetailResponse?.orderPaymentStatus?.key ${orderDetailResponse?.orderPaymentStatus?.key}")
                 when (orderDetailResponse?.orderPaymentStatus?.key) {
-                    Constants.ORDER_STATUS_SUCCESS -> {
-                        statusValue?.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_tick_green_hollow, 0)
-                        orderDetailContainer?.setBackgroundColor(ContextCompat.getColor(this, R.color.open_green))
-                    }
+                    Constants.ORDER_STATUS_SUCCESS -> orderDetailContainer?.setBackgroundColor(ContextCompat.getColor(this, R.color.open_green))
                     Constants.ORDER_STATUS_REJECTED -> orderDetailContainer?.setBackgroundColor(ContextCompat.getColor(this, R.color.red))
                     Constants.ORDER_STATUS_IN_PROGRESS -> orderDetailContainer?.setBackgroundColor(ContextCompat.getColor(this, R.color.order_detail_in_progress))
                     else -> orderDetailContainer?.setBackgroundColor(ContextCompat.getColor(this, R.color.black))

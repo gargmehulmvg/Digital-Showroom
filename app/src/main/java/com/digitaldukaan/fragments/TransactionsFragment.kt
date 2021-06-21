@@ -60,7 +60,17 @@ class TransactionsFragment: BaseFragment(), IMyPaymentsServiceInterface, ITransa
         zeroOrderContainer = mContentView?.findViewById(R.id.zeroOrderContainer)
         startDateTextView?.setOnClickListener { showDatePickerDialog() }
         val shareButtonTextView: TextView? = mContentView?.findViewById(R.id.shareButtonTextView)
-        shareButtonTextView?.setOnClickListener { shareStoreOverWhatsAppServerCall() }
+        shareButtonTextView?.setOnClickListener {
+            AppEventsManager.pushAppEvents(
+                eventName = AFInAppEventType.EVENT_STORE_SHARE,
+                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                data = mapOf(
+                    AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                    AFInAppEventParameterName.IS_ORDER_PAGE to AFInAppEventParameterName.TRUE
+                )
+            )
+            shareStoreOverWhatsAppServerCall()
+        }
         mService.setServiceInterface(this)
         applyPagination()
         mService.getMyPaymentPageInfo()

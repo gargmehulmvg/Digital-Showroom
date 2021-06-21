@@ -118,7 +118,7 @@
     <string name="settlements">Settlements</string>
     <string name="read_more"><u>Read more</u></string>
     <string name="txn_charges_are_applicable">*Txn charges are applicable</string>
-    <string name="txn_id_is_blank">Transaction ID is Blank</string>
+    <string name="txn_id_is_blank">Error in getting details. Contact care@dotpe.in</string>
     <string-array name="state_array">
         <item >Andhra Pradesh</item>
         <item >Arunachal Pradesh</item>

@@ -194,10 +194,9 @@
                     android:textColor="@color/white"
                     android:textSize="@dimen/_12sdp"
                     app:layout_constraintBaseline_toBaselineOf="@id/statusLabel"
-                    app:layout_constraintEnd_toStartOf="@id/detailTextView"
-                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintEnd_toStartOf="@+id/detailTextView"
                     app:layout_constraintStart_toEndOf="@id/statusLabel"
-                    tools:text="Bill Amount:" />
+                    tools:text="Bill Amount: Bill Amount: Bill" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/statusLabel"

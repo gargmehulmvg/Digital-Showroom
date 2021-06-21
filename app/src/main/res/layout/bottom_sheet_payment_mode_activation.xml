@@ -23,9 +23,10 @@
         android:id="@+id/bottomSheetHeading"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textColor="@color/black"
         android:layout_marginTop="@dimen/_10sdp"
+        android:textColor="@color/black"
         android:textSize="@dimen/_15sdp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/bottomSheetClose"
         tools:text="Activate And start accepting payment on Credit And Debit Cards" />

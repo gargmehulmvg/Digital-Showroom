@@ -47,7 +47,7 @@ class MyPaymentsFragment: BaseFragment(), TabLayout.OnTabSelectedListener,
         val fragmentHeaderList = ArrayList<String>()
         fragmentHeaderList.add(getString(R.string.orders))
         fragmentHeaderList.add(getString(R.string.settlements))
-        mMyPaymentsPagerAdapter = MyPaymentsPagerAdapter(mActivity?.supportFragmentManager, fragmentList, fragmentHeaderList)
+        mMyPaymentsPagerAdapter = MyPaymentsPagerAdapter(childFragmentManager, fragmentList, fragmentHeaderList)
         viewPager?.adapter = mMyPaymentsPagerAdapter
         tabLayout?.setupWithViewPager(viewPager)
         tabLayout?.addOnTabSelectedListener(this)

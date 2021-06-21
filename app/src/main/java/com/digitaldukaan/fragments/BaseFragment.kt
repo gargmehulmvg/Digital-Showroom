@@ -1391,9 +1391,13 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                     amountSettleTextView.text = staticText?.amount_to_settled
                     paymentModeTextView.text = staticText?.payment_mode
                     txnId.text = getStringDateTimeFromTransactionDetailDate(getCompleteDateFromOrderString(response?.transactionTimestamp))
-                    if (Constants.ORDER_STATUS_PAYOUT_SUCCESS == response?.settlementState) {
-                        val bottomDisplayStr = "${getStringDateTimeFromTransactionDetailDate(getCompleteDateFromOrderString(response.settlementTimestamp))} ${if (!isEmpty(response.utr)) "| UTR : ${response.utr}" else ""}"
-                        bottomDate.text = bottomDisplayStr
+                    when (Constants.ORDER_STATUS_PAYOUT_SUCCESS) {
+                        response?.settlementState -> {
+                            bottomDate.visibility = View.VISIBLE
+                            val bottomDisplayStr = "${getStringDateTimeFromTransactionDetailDate(getCompleteDateFromOrderString(response.settlementTimestamp))} ${if (!isEmpty(response.utr)) "| UTR : ${response.utr}" else ""}"
+                            bottomDate.text = bottomDisplayStr
+                        }
+                        else -> bottomDate.visibility = View.GONE
                     }
                     if (null != response?.ctaItem) {
                         displayMessage.text = response.ctaItem?.displayMessage
@@ -1403,7 +1407,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                             when(response.ctaItem?.action) {
                                 Constants.ACTION_ADD_BANK -> {
                                     bottomSheetDialog.dismiss()
-                                    launchFragment(BankAccountFragment.newInstance(null, 0, false, null), true)
+                                    launchFragment(BankAccountFragment.newInstance(null, 0, false, null), false)
                                 }
                             }
                         }

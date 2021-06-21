@@ -62,7 +62,17 @@ class SettlementsFragment : BaseFragment(), IMyPaymentsServiceInterface, ITransa
         startDateTextView = mContentView?.findViewById(R.id.startDateTextView)
         amountContainer = mContentView?.findViewById(R.id.amountContainer)
         zeroOrderContainer = mContentView?.findViewById(R.id.zeroOrderContainer)
-        shareButtonTextView?.setOnClickListener { shareStoreOverWhatsAppServerCall() }
+        shareButtonTextView?.setOnClickListener {
+            AppEventsManager.pushAppEvents(
+                eventName = AFInAppEventType.EVENT_STORE_SHARE,
+                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                data = mapOf(
+                    AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                    AFInAppEventParameterName.IS_SETTLEMENT_PAGE to AFInAppEventParameterName.TRUE
+                )
+            )
+            shareStoreOverWhatsAppServerCall()
+        }
         startDateTextView?.setOnClickListener { showDatePickerDialog() }
         mService.setServiceInterface(this)
         applyPagination()
@@ -86,6 +96,7 @@ class SettlementsFragment : BaseFragment(), IMyPaymentsServiceInterface, ITransa
     }
 
     private fun setupCalenderView() {
+        mService.setServiceInterface(this)
         val startDate = PrefsManager.getStringDataFromSharedPref(PrefsManager.KEY_SETTLEMENT_START_DATE)
         val endDate = PrefsManager.getStringDataFromSharedPref(PrefsManager.KEY_SETTLEMENT_END_DATE)
         if (isEmpty(startDate) && isEmpty(endDate)) {
