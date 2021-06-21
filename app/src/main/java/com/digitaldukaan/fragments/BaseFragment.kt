@@ -1412,6 +1412,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                         bottomDate.text = bottomDisplayStr
                     }
                     if (null != response?.ctaItem) {
+                        displayMessage.text = response.ctaItem?.displayMessage
                         ctaTextView.visibility = View.VISIBLE
                         displayMessage.visibility = View.VISIBLE
                         ctaTextView.setOnClickListener {
