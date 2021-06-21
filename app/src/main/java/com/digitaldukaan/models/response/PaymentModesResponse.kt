@@ -32,9 +32,9 @@ data class PaymentModesStaticData(
 data class PaymentModesKYCStatusResponse(
     @SerializedName("kyc_status") var isKycActive: Boolean,
     @SerializedName("kyc_cdn") var kycCdn: String?,
-    @SerializedName("heading_complete_your_kyc") var heading_complete_your_kyc: String?,
-    @SerializedName("message_complete_your_kyc") var message_complete_your_kyc: String?,
-    @SerializedName("text_complete_kyc_now") var text_complete_kyc_now: String?
+    @SerializedName("heading") var heading_complete_your_kyc: String?,
+    @SerializedName("message") var message_complete_your_kyc: String?,
+    @SerializedName("cta_text") var text_complete_kyc_now: String?
 )
 
 data class PaymentModesItemResponse(

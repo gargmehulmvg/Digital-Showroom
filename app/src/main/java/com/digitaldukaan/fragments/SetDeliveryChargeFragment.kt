@@ -1,6 +1,7 @@
 package com.digitaldukaan.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,6 +23,8 @@ class SetDeliveryChargeFragment : BaseFragment(), IMoreControlsServiceInterface 
     private var mAppStoreServicesResponse: StoreServicesResponse? = null
 
     companion object {
+        private const val TAG: String = "SetDeliveryChargeFragment"
+
         fun newInstance(appSettingsResponseStaticData: AccountStaticTextResponse?): SetDeliveryChargeFragment {
             val fragment = SetDeliveryChargeFragment()
             fragment.mMoreControlsStaticData = appSettingsResponseStaticData
@@ -259,6 +262,10 @@ class SetDeliveryChargeFragment : BaseFragment(), IMoreControlsServiceInterface 
                 mActivity?.onBackPressed()
             } else showShortSnackBar(response.mMessage, true, R.drawable.ic_close_red)
         }
+    }
+
+    override fun onChangeStoreAndDeliveryStatusResponse(response: CommonApiResponse) {
+        Log.d(TAG, "onChangeStoreAndDeliveryStatusResponse: do nothing")
     }
 
     override fun onMoreControlsServerException(e: Exception) = exceptionHandlingForAPIResponse(e)

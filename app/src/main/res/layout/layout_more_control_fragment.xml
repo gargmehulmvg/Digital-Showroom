@@ -40,8 +40,8 @@
                     android:id="@+id/storeSwitch"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:onClick="onClick"
                     android:layout_marginTop="@dimen/_20sdp"
+                    android:onClick="onClick"
                     android:thumb="@drawable/ic_store_switch_selector"
                     app:layout_constraintEnd_toStartOf="@id/deliverySwitch"
                     app:layout_constraintHorizontal_bias="0.5"
@@ -63,17 +63,36 @@
                     app:track="@drawable/ic_store_switch_track" />
 
                 <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/storeStatusTextView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_6sdp"
+                    android:layout_marginBottom="@dimen/_20sdp"
+                    android:padding="@dimen/_2sdp"
+                    android:textColor="@color/black"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@+id/storeSwitch"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/storeStatusTextView"
+                    app:layout_constraintTop_toBottomOf="@id/storeSwitch"
+                    app:layout_constraintVertical_bias="1.0"
+                    tools:text="@string/close" />
+
+                <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/storeStatusTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_6sdp"
-                    android:padding="@dimen/_2sdp"
                     android:layout_marginBottom="@dimen/_20sdp"
+                    android:padding="@dimen/_2sdp"
                     android:textColor="@color/black"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="@id/storeSwitch"
-                    app:layout_constraintStart_toStartOf="@id/storeSwitch"
+                    app:layout_constraintEnd_toStartOf="@+id/storeStatusTextView2"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintHorizontal_chainStyle="packed"
+                    app:layout_constraintStart_toStartOf="@+id/storeSwitch"
                     app:layout_constraintTop_toBottomOf="@id/storeSwitch"
+                    app:layout_constraintVertical_bias="1.0"
                     tools:text="@string/store_controls" />
 
                 <com.google.android.material.textview.MaterialTextView
@@ -83,9 +102,23 @@
                     android:padding="@dimen/_2sdp"
                     android:textColor="@color/black"
                     app:layout_constraintBaseline_toBaselineOf="@id/storeStatusTextView"
-                    app:layout_constraintEnd_toEndOf="@id/deliverySwitch"
-                    app:layout_constraintStart_toStartOf="@id/deliverySwitch"
+                    app:layout_constraintEnd_toStartOf="@+id/deliveryStatusTextView2"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintHorizontal_chainStyle="packed"
+                    app:layout_constraintStart_toStartOf="@+id/deliverySwitch"
                     tools:text="@string/store_controls" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/deliveryStatusTextView2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/_2sdp"
+                    android:textColor="@color/black"
+                    app:layout_constraintBaseline_toBaselineOf="@id/storeStatusTextView"
+                    app:layout_constraintEnd_toEndOf="@+id/deliverySwitch"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@+id/deliveryStatusTextView"
+                    tools:text="@string/close" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

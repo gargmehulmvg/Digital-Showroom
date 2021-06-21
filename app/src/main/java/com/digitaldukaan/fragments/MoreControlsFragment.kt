@@ -1,14 +1,17 @@
 package com.digitaldukaan.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.models.request.MoreControlsRequest
+import com.digitaldukaan.models.request.StoreDeliveryStatusChangeRequest
 import com.digitaldukaan.models.response.AccountStaticTextResponse
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.StoreServicesResponse
@@ -51,7 +54,7 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
         super.onViewCreated(view, savedInstanceState)
         ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, false)
-            setHeaderTitle(mMoreControlsStaticData?.page_heading_more_controls)
+            setHeaderTitle(mMoreControlsStaticData?.mTextStoreControls)
             onBackPressed(this@MoreControlsFragment)
             hideBackPressFromToolBar(mActivity, false)
         }
@@ -71,6 +74,32 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
             this@MoreControlsFragment.mFreeDeliveryAbove = mFreeDeliveryAbove
             this@MoreControlsFragment.mDeliveryChargeType = mDeliveryChargeType ?: 0
             this@MoreControlsFragment.mPaymentPaymentMethod = StaticInstances.sPaymentMethodStr ?: ""
+            storeSwitch?.setOnCheckedChangeListener { _, isChecked ->
+                Log.d(TAG, "storeSwitch.setOnCheckedChangeListener $isChecked")
+                val storeStatus = "${mMoreControlsStaticData?.mStoreText} :"
+                storeStatusTextView?.text = storeStatus
+                storeStatusTextView2?.text = if (isChecked) mMoreControlsStaticData?.mOpenText else mMoreControlsStaticData?.mClosedText
+                mActivity?.let { context -> storeStatusTextView2?.setTextColor(ContextCompat.getColor(context, if (isChecked) R.color.open_green else R.color.red)) }
+            }
+            deliverySwitch?.setOnCheckedChangeListener { _, isChecked ->
+                Log.d(TAG, "deliverySwitch.setOnCheckedChangeListener $isChecked")
+                val deliveryStatus = "${mMoreControlsStaticData?.mDeliveryText} :"
+                deliveryStatusTextView?.text = deliveryStatus
+                deliveryStatusTextView2?.text = if (isChecked) mMoreControlsStaticData?.mOnText else mMoreControlsStaticData?.mOffText
+                mActivity?.let { context -> deliveryStatusTextView2?.setTextColor(ContextCompat.getColor(context, if (isChecked) R.color.open_green else R.color.red)) }
+
+            }
+            deliverySwitch?.isChecked = (mDeliveryFlag == 1)
+            val deliveryStatus = "${mMoreControlsStaticData?.mDeliveryText} :"
+            deliveryStatusTextView?.text = deliveryStatus
+            deliveryStatusTextView2?.text = if (mDeliveryFlag == 1) mMoreControlsStaticData?.mOnText else mMoreControlsStaticData?.mOffText
+            mActivity?.let { context -> deliveryStatusTextView2?.setTextColor(ContextCompat.getColor(context, if (mDeliveryFlag == 1) R.color.open_green else R.color.red)) }
+
+            storeSwitch?.isChecked = (mStoreFlag == 1)
+            val storeStatus = "${mMoreControlsStaticData?.mStoreText} :"
+            storeStatusTextView?.text = storeStatus
+            storeStatusTextView2?.text = if (mStoreFlag == 1) mMoreControlsStaticData?.mOpenText else mMoreControlsStaticData?.mClosedText
+            mActivity?.let { context -> storeStatusTextView2?.setTextColor(ContextCompat.getColor(context, if (mStoreFlag == 1) R.color.open_green else R.color.red)) }
         }
     }
 
@@ -136,6 +165,8 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
             paymentModesContainer?.id -> {
                 launchFragment(PaymentModesFragment.newInstance(), true)
             }
+            storeSwitch?.id -> changeStoreDeliveryStatus()
+            deliverySwitch?.id -> changeStoreDeliveryStatus()
         }
     }
 
@@ -205,8 +236,32 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
         }
     }
 
-    override fun onMoreControlsServerException(e: Exception) {
-        exceptionHandlingForAPIResponse(e)
+    override fun onMoreControlsServerException(e: Exception) = exceptionHandlingForAPIResponse(e)
+
+    private fun changeStoreDeliveryStatus() {
+        if (!isInternetConnectionAvailable(mActivity)) {
+            showNoInternetConnectionDialog()
+            return
+        }
+        showCancellableProgressDialog(mActivity)
+        val request = StoreDeliveryStatusChangeRequest(
+            if (storeSwitch?.isChecked == true) 1 else 0,
+            if (deliverySwitch?.isChecked == true) 1 else 0
+        )
+        mMoreControlsService?.changeStoreAndDeliveryStatus(request)
+    }
+
+    override fun onChangeStoreAndDeliveryStatusResponse(response: CommonApiResponse) {
+        stopProgress()
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            if (response.mIsSuccessStatus) {
+                val storeDeliveryService = Gson().fromJson<StoreServicesResponse>(response.mCommonDataStr, StoreServicesResponse::class.java)
+                showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
+                StaticInstances.sAppStoreServicesResponse = storeDeliveryService
+                updateStoreServiceInstances()
+                setUIDataFromResponse()
+            } else showShortSnackBar(response.mMessage, true, R.drawable.ic_close_red)
+        }
     }
 
 }

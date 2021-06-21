@@ -185,7 +185,7 @@
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/statusValue"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:drawablePadding="@dimen/_4sdp"
                     android:fontFamily="sans-serif-medium"

@@ -212,7 +212,7 @@
                     app:layout_constraintBottom_toBottomOf="@id/storeControlImageView"
                     app:layout_constraintStart_toEndOf="@id/storeControlImageView"
                     app:layout_constraintTop_toTopOf="@id/storeControlImageView"
-                    android:text="@string/store_controls" />
+                    tools:text="@string/store_controls" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/storeControlNewTextView"
