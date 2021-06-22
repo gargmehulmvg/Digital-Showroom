@@ -29,6 +29,18 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/bottomSheetClose"
+        tools:text="Activate And start accepting payment on" />
+
+    <TextView
+        android:id="@+id/bottomSheetHeading2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_2sdp"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_15sdp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/bottomSheetHeading"
         tools:text="Activate And start accepting payment on Credit And Debit Cards" />
 
     <TextView
@@ -39,7 +51,7 @@
         android:textColor="@color/black"
         android:layout_marginTop="@dimen/_20sdp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/bottomSheetHeading"
+        app:layout_constraintTop_toBottomOf="@id/bottomSheetHeading2"
         tools:text="Please Note" />
 
     <TextView

@@ -139,12 +139,14 @@ class PaymentModesFragment: BaseFragment(), IPaymentModesServiceInterface,
                         view.run {
                             val paymentModesStaticText = mPaymentModesResponse?.staticText
                             val bottomSheetHeading: TextView = findViewById(R.id.bottomSheetHeading)
+                            val bottomSheetHeading2: TextView = findViewById(R.id.bottomSheetHeading2)
                             val bottomSheetSubHeading: TextView = findViewById(R.id.bottomSheetSubHeading)
                             val conditionOne: TextView = findViewById(R.id.conditionOne)
                             val conditionTwo: TextView = findViewById(R.id.conditiontwo)
                             val completeKycTextView: TextView = findViewById(R.id.completeKycTextView)
                             val bottomSheetClose: View = findViewById(R.id.bottomSheetClose)
                             bottomSheetHeading.setHtmlData(paymentModesStaticText?.message_activate_and_start_payment)
+                            bottomSheetHeading2.setHtmlData(paymentModesStaticText?.message_activate_and_start_payment2)
                             bottomSheetSubHeading.text = paymentModesStaticText?.text_please_note
                             conditionOne.text = paymentModesStaticText?.message_transaction_charges_will_be_applied
                             conditionTwo.text = paymentModesStaticText?.message_receive_the_amount_in_your_bank
