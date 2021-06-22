@@ -38,6 +38,7 @@ import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.digitaldukaan.MainActivity
 import com.digitaldukaan.MyFcmMessageListenerService
 import com.digitaldukaan.R
@@ -51,6 +52,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
+import com.google.gson.Gson
 import com.squareup.picasso.Picasso
 import com.yalantis.ucrop.UCrop
 import id.zelory.compressor.Compressor
@@ -563,10 +565,6 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         }
     }
 
-    open fun onAlertDialogItemClicked(selectedStr: String?, id: Int, position: Int) = Unit
-
-    open fun onImageSelectionResult(base64Str : String?) = Unit
-
     open fun askCameraPermission() {
         mActivity?.let {
             if (ActivityCompat.checkSelfPermission(it, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED &&
@@ -602,7 +600,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
 
     open fun showImagePickerBottomSheet() {
         mActivity?.let {
-            val imageUploadStaticData = StaticInstances.mStaticData?.mCatalogStaticData
+            val imageUploadStaticData = StaticInstances.sStaticData?.mCatalogStaticData
             mImagePickBottomSheet = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
             val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_image_pick, it.findViewById(R.id.bottomSheetContainer))
             mImagePickBottomSheet?.apply {
@@ -930,14 +928,6 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         }
     }
 
-    open fun onImageSelectionResultFile(file: File?, mode: String = "") = Unit
-
-    open fun onImageSelectionResultUri(fileUri: Uri?) = Unit
-
-    open fun onImageSelectionResultFileAndUri(fileUri: Uri?, file: File?) = Unit
-
-    open fun onNoInternetButtonClick(isNegativeButtonClick: Boolean) = Unit
-
     override fun onSearchImageItemClicked(photoStr: String) {
         showCancellableProgressDialog(mActivity)
         Log.d(TAG, "onSearchImageItemClicked :: $photoStr")
@@ -1128,8 +1118,6 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         }
     }
 
-    open fun onSearchDialogContinueButtonClicked(inputOrderId: String, inputMobileNumber: String) = Unit
-
     open fun convertDateStringOfOrders(list: ArrayList<OrderItemResponse>) {
         list.forEachIndexed { _, itemResponse ->
             itemResponse.updatedDate = getDateFromOrderString(itemResponse.createdAt)
@@ -1175,8 +1163,6 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
             }.show()
         }
     }
-
-    open fun onDontShowDialogPositiveButtonClicked(item: OrderItemResponse?) = Unit
 
     protected fun showImageDialog(imageStr: String?) {
         mActivity?.let {
@@ -1313,7 +1299,133 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         storeStringDataInSharedPref(Constants.STORE_NAME, "")
         storeStringDataInSharedPref(Constants.USER_MOBILE_NUMBER, "")
         storeStringDataInSharedPref(Constants.STORE_ID, "")
-        launchFragment(LoginFragment.newInstance(), false)
+        launchFragment(LoginFragment.newInstance(), true)
+    }
+
+    fun shareStoreOverWhatsAppServerCall() {
+        showProgressDialog(mActivity)
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            try {
+                val response = RetrofitApi().getServerCallObject()?.getShareStore()
+                response?.let {
+                    stopProgress()
+                    if (it.isSuccessful) {
+                        it.body()?.let {
+                            withContext(Dispatchers.Main) {
+                                if (it.mIsSuccessStatus) shareOnWhatsApp(Gson().fromJson<String>(it.mCommonDataStr, String::class.java)) else showShortSnackBar(it.mMessage, true, R.drawable.ic_close_red)
+                            }
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                exceptionHandlingForAPIResponse(e)
+            }
+        }
+    }
+
+    open fun getTransactionDetailBottomSheet(txnId: String?, path: String) {
+        AppEventsManager.pushAppEvents(
+            eventName = AFInAppEventType.EVENT_SET_ORDER_PAYMENT_DETAIL,
+            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+            data = mapOf(
+                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                AFInAppEventParameterName.TRANSACTION_ID to txnId,
+                AFInAppEventParameterName.PATH to path
+            )
+        )
+        showProgressDialog(mActivity)
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            try {
+                val response = RetrofitApi().getServerCallObject()?.getOrderTransactions(txnId)
+                response?.let {
+                    stopProgress()
+                    if (it.isSuccessful) {
+                        it.body()?.let {
+                            withContext(Dispatchers.Main) {
+                                if (it.mIsSuccessStatus) {
+                                    val responseObj = Gson().fromJson<TransactionDetailResponse>(it.mCommonDataStr, TransactionDetailResponse::class.java)
+                                    showTransactionDetailBottomSheet(responseObj)
+                                } else showShortSnackBar(it.mMessage, true, R.drawable.ic_close_red)
+                            }
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                exceptionHandlingForAPIResponse(e)
+            }
+        }
+    }
+
+    private fun showTransactionDetailBottomSheet(response: TransactionDetailResponse?) {
+        mActivity?.run {
+            val bottomSheetDialog = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
+            val view = LayoutInflater.from(this).inflate(
+                R.layout.bottom_sheet_transaction_detail,
+                findViewById(R.id.bottomSheetContainer)
+            )
+            bottomSheetDialog.apply {
+                setContentView(view)
+                setBottomSheetCommonProperty()
+                view.run {
+                    val staticText = response?.staticText
+                    val bottomSheetHeadingTextView: TextView = findViewById(R.id.bottomSheetHeadingTextView)
+                    val billAmountValueTextView: TextView = findViewById(R.id.billAmountValueTextView)
+                    val txnChargeValueTextView: TextView = findViewById(R.id.txnChargeValueTextView)
+                    val textViewTop: TextView = findViewById(R.id.textViewTop)
+                    val textViewBottom: TextView = findViewById(R.id.textViewBottom)
+                    val billAmountTextView: TextView = findViewById(R.id.billAmountTextView)
+                    val txnChargeTextView: TextView = findViewById(R.id.txnChargeTextView)
+                    val paymentModeTextView: TextView = findViewById(R.id.paymentModeTextView)
+                    val amountSettleTextView: TextView = findViewById(R.id.amountSettleTextView)
+                    val amountSettleValueTextView: TextView = findViewById(R.id.amountSettleValueTextView)
+                    val txnId: TextView = findViewById(R.id.txnId)
+                    val bottomDate: TextView = findViewById(R.id.bottomDate)
+                    val displayMessage: TextView = findViewById(R.id.displayMessage)
+                    val ctaTextView: TextView = findViewById(R.id.ctaTextView)
+                    val closeImageView: ImageView = findViewById(R.id.closeImageView)
+                    val imageViewBottom: ImageView = findViewById(R.id.imageViewBottom)
+                    val paymentModeImageView: ImageView = findViewById(R.id.paymentModeImageView)
+                    textViewTop.text = response?.transactionMessage
+                    textViewBottom.text = response?.settlementMessage
+                    billAmountTextView.text = staticText?.bill_amount
+                    amountSettleTextView.text = staticText?.amount_to_settled
+                    paymentModeTextView.text = staticText?.payment_mode
+                    txnId.text = getStringDateTimeFromTransactionDetailDate(getCompleteDateFromOrderString(response?.transactionTimestamp))
+                    when (Constants.ORDER_STATUS_PAYOUT_SUCCESS) {
+                        response?.settlementState -> {
+                            bottomDate.visibility = View.VISIBLE
+                            val bottomDisplayStr = "${getStringDateTimeFromTransactionDetailDate(getCompleteDateFromOrderString(response.settlementTimestamp))} ${if (!isEmpty(response.utr)) "| UTR : ${response.utr}" else ""}"
+                            bottomDate.text = bottomDisplayStr
+                        }
+                        else -> bottomDate.visibility = View.GONE
+                    }
+                    if (null != response?.ctaItem) {
+                        displayMessage.text = response.ctaItem?.displayMessage
+                        ctaTextView.visibility = View.VISIBLE
+                        displayMessage.visibility = View.VISIBLE
+                        ctaTextView.setOnClickListener {
+                            when(response.ctaItem?.action) {
+                                Constants.ACTION_ADD_BANK -> {
+                                    bottomSheetDialog.dismiss()
+                                    launchFragment(BankAccountFragment.newInstance(null, 0, false, null), false)
+                                }
+                            }
+                        }
+                    } else {
+                        ctaTextView.visibility = View.INVISIBLE
+                        displayMessage.visibility = View.GONE
+                    }
+                    txnChargeTextView.text = "${staticText?.transaction_charges} (${response?.transactionCharges}%)"
+                    bottomSheetHeadingTextView.text = "${staticText?.order_number} ${response?.orderId}"
+                    billAmountValueTextView.text = "${getString(R.string.rupee_symbol)} ${response?.amount}"
+                    txnChargeValueTextView.text = "${getString(R.string.rupee_symbol)} ${response?.transactionChargeAmount}"
+                    amountSettleValueTextView.text = "${getString(R.string.rupee_symbol)} ${response?.settlementAmount}"
+                    if (!isEmpty(response?.paymentImage)) mActivity?.let { context -> Glide.with(context).load(response?.paymentImage).into(paymentModeImageView) }
+                    if (!isEmpty(response?.settlementCdn)) mActivity?.let { context -> Glide.with(context).load(response?.settlementCdn).into(imageViewBottom) }
+                    closeImageView.setOnClickListener { bottomSheetDialog.dismiss() }
+                }
+            }.show()
+        }
     }
 
 }

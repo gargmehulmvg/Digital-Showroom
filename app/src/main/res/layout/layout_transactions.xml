@@ -1,0 +1,237 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:id="@+id/scrollView"
+    android:background="@color/white"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardView2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/_5sdp"
+            app:cardElevation="@dimen/_10sdp"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="@dimen/_15sdp"
+                android:background="@color/white">
+
+                <TextView
+                    android:id="@+id/startDateTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/ripple_curve_grey_grey_background"
+                    android:fontFamily="@font/roboto_medium"
+                    android:gravity="center"
+                    android:onClick="onClick"
+                    android:padding="@dimen/_6sdp"
+                    android:textColor="@color/dark_blackish"
+                    app:drawableEndCompat="@drawable/ic_half_arrow_down"
+                    tools:text="9 Jun, Wed" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/amountContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:padding="@dimen/_12sdp"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@+id/cardView2">
+
+            <ImageView
+                android:id="@+id/tickGreenImageView"
+                android:layout_width="@dimen/_40sdp"
+                android:layout_height="@dimen/_40sdp"
+                android:layout_marginTop="@dimen/_12sdp"
+                android:contentDescription="@string/image_view_content_description"
+                android:padding="@dimen/_2sdp"
+                tools:src="@drawable/tick_green_bg"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.02"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/amountSettledTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:paddingStart="@dimen/_2sdp"
+                android:paddingTop="@dimen/_4sdp"
+                android:paddingEnd="@dimen/_2sdp"
+                tools:text="Amount Settled"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_9sdp"
+                app:layout_constraintEnd_toStartOf="@+id/waitingImageView"
+                app:layout_constraintStart_toEndOf="@+id/tickGreenImageView"
+                app:layout_constraintTop_toTopOf="@+id/tickGreenImageView" />
+
+            <TextView
+                android:id="@+id/amountToSettledTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:paddingStart="@dimen/_2sdp"
+                android:paddingTop="@dimen/_4sdp"
+                android:paddingEnd="@dimen/_2sdp"
+                tools:text="Amount to Settled"
+                android:textSize="@dimen/_9sdp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/waitingImageView"
+                app:layout_constraintTop_toTopOf="@+id/tickGreenImageView" />
+
+            <TextView
+                android:id="@+id/amountSettledValueTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:fontFamily="@font/montserrat_bold"
+                android:paddingStart="@dimen/_2sdp"
+                android:paddingEnd="@dimen/_2sdp"
+                tools:text="₹500"
+                android:textColor="@color/open_green_darker"
+                android:textSize="@dimen/_14sdp"
+                app:layout_constraintEnd_toStartOf="@+id/waitingImageView"
+                app:layout_constraintStart_toEndOf="@+id/tickGreenImageView"
+                app:layout_constraintTop_toBottomOf="@+id/amountSettledTextView" />
+
+            <TextView
+                android:id="@+id/amountToSettledValueTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/montserrat_bold"
+                android:paddingStart="@dimen/_2sdp"
+                android:paddingEnd="@dimen/_2sdp"
+                tools:text="₹455"
+                android:textSize="@dimen/_14sdp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/amountToSettledTextView"
+                app:layout_constraintTop_toBottomOf="@+id/amountSettledTextView" />
+
+            <ImageView
+                android:id="@+id/waitingImageView"
+                android:layout_width="@dimen/_40sdp"
+                android:layout_height="@dimen/_40sdp"
+                android:contentDescription="@string/image_view_content_description"
+                android:padding="@dimen/_2sdp"
+                tools:src="@drawable/tick_green_bg"
+                app:layout_constraintBottom_toBottomOf="@+id/tickGreenImageView"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.6"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/tickGreenImageView" />
+
+            <TextView
+                android:id="@+id/cashTxnNotShownTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_15sdp"
+                android:drawablePadding="@dimen/_5sdp"
+                android:fontFamily="@font/roboto_light"
+                tools:text="Cash transactions are not shown"
+                android:textColor="@color/dark_blackish"
+                android:textSize="@dimen/_9sdp"
+                app:drawableStartCompat="@drawable/ic_exclamation_circle_black_small"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tickGreenImageView" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/zeroOrderContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/amountContainer">
+
+            <ImageView
+                android:id="@+id/noTxnImageView"
+                android:layout_width="@dimen/_90sdp"
+                android:layout_height="@dimen/_90sdp"
+                android:contentDescription="@string/image_view_content_description"
+                android:src="@drawable/ic_no_txn_found"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.35" />
+
+            <TextView
+                android:id="@+id/noSettlementForSelectedDateTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_15sdp"
+                android:fontFamily="@font/roboto"
+                android:gravity="center"
+                android:padding="@dimen/_8sdp"
+                tools:text="No Payments received for the selected date"
+                android:textColor="@color/black"
+                app:layout_constraintTop_toBottomOf="@id/noTxnImageView" />
+
+            <TextView
+                android:id="@+id/shareYourStoreTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto"
+                android:gravity="center"
+                tools:text="Share your store now to get Orders"
+                android:textSize="@dimen/_10sdp"
+                app:layout_constraintTop_toBottomOf="@+id/noSettlementForSelectedDateTextView" />
+
+            <TextView
+                android:id="@+id/shareButtonTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_20sdp"
+                android:background="@drawable/ripple_curve_grey_black_background"
+                android:drawablePadding="@dimen/_10sdp"
+                android:gravity="center_vertical"
+                android:onClick="onClick"
+                android:layout_marginBottom="@dimen/_15sdp"
+                android:elevation="@dimen/_5sdp"
+                android:paddingStart="@dimen/_15sdp"
+                android:paddingTop="@dimen/_10sdp"
+                android:paddingEnd="@dimen/_15sdp"
+                android:paddingBottom="@dimen/_10sdp"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_15sdp"
+                app:drawableStartCompat="@drawable/ic_whatsapp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/shareYourStoreTextView"
+                tools:text="@string/share_product" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/transactionRecyclerView"
+            android:layout_width="match_parent"
+            tools:itemCount="1"
+            android:layout_height="wrap_content"
+            android:background="@color/light_grey_background"
+            android:visibility="visible"
+            app:layout_constraintTop_toBottomOf="@+id/amountContainer"
+            tools:listitem="@layout/transactions_item" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>

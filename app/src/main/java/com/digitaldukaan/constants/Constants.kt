@@ -67,6 +67,7 @@ class Constants {
         const val PAGE_FEEDBACK                                 = "Feedback"
         const val PAGE_APP_SETTINGS                             = "Sitemap"
         const val PAGE_REWARDS                                  = "RewardsPage"
+        const val PAGE_MY_PAYMENTS                              = "my-payments"
         //ERROR_CODES
         const val ERROR_DOMAIN_ALREADY_EXISTS                   = "domain_already_exists"
         //GRID_LAYOUT_SPAN_TYPE
@@ -98,6 +99,9 @@ class Constants {
         const val MODE_COMPLETED                                = "mode_completed"
         const val MODE_PREPAID                                  = "mode_prepaid"
         const val MODE_POSTPAID                                 = "mode_postpaid"
+        const val MODE_SETTLEMENTS                              = "settlements"
+        const val MODE_ORDERS                                   = "orders"
+        const val MODE_SETTLED                                  = "Settled"
         //ORDER_STATUS
         const val StatusCustomerUpdated                         = 1
         const val StatusMerchantUpdated                         = 2
@@ -122,6 +126,7 @@ class Constants {
         const val NEW_RELEASE_TYPE_NEW                          = "new"
         const val NEW_RELEASE_TYPE_CUSTOM_DOMAIN                = "custom-domain"
         const val NEW_RELEASE_TYPE_PREPAID_ORDER                = "prepaid-order"
+        const val NEW_RELEASE_TYPE_PAYMENT_MODES                = "payment-mode"
         const val NEW_RELEASE_TYPE_TRENDING                     = "trending"
         const val NEW_RELEASE_TYPE_EXTERNAL                     = "external"
         //EDIT PHOTO MODES

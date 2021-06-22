@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/curve_white_background"
+    android:minWidth="@dimen/_220sdp"
+    android:orientation="vertical"
+    android:padding="@dimen/_15sdp">
+
+    <TextView
+        android:id="@+id/messageTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_18sdp"
+        android:textColor="@color/black"
+        android:lineSpacingMultiplier="1.2"
+        android:textSize="@dimen/_10sdp"
+        tools:text="I hereby provide my consent to receive emails, SMS, phone calls, whatsapp messages and other communications from Dotpe in order to understand about Dotpe’s services, offerings, promotions and other related information." />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/updateTextView"
+        style="@style/common_text_view_background"
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/_22sdp"
+        android:gravity="center"
+        android:onClick="onClick"
+        tools:text="@string/ok" />
+
+</LinearLayout>

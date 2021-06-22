@@ -185,7 +185,7 @@
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/statusValue"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:drawablePadding="@dimen/_4sdp"
                     android:fontFamily="sans-serif-medium"
@@ -194,10 +194,9 @@
                     android:textColor="@color/white"
                     android:textSize="@dimen/_12sdp"
                     app:layout_constraintBaseline_toBaselineOf="@id/statusLabel"
-                    app:layout_constraintEnd_toStartOf="@id/detailTextView"
-                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintEnd_toStartOf="@+id/detailTextView"
                     app:layout_constraintStart_toEndOf="@id/statusLabel"
-                    tools:text="Bill Amount:" />
+                    tools:text="Bill Amount: Bill Amount: Bill" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/statusLabel"
@@ -228,7 +227,7 @@
                     android:paddingBottom="@dimen/_5sdp"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_10sdp"
-                    android:visibility="gone"
+                    android:visibility="visible"
                     app:layout_constraintBottom_toBottomOf="@id/statusValue"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/billAmountValue"

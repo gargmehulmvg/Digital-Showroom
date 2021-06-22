@@ -45,30 +45,23 @@ class NewReleaseAdapter(
         val responseItem = newReleaseList?.get(position)
         holder.run {
             textView.text = responseItem?.mText
-            imageView?.let {
+            imageView.let {view ->
                 try {
-                    activity?.let { context -> Glide.with(context).load(responseItem?.mCDN).into(it) }
+                    activity?.let { context -> Glide.with(context).load(responseItem?.mCDN).into(view) }
                 } catch (e: Exception) {
                     Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
                 }
             }
             when (responseItem?.mType) {
-                Constants.NEW_RELEASE_TYPE_CUSTOM_DOMAIN -> {
-                    activity?.let { itemLayout.background = ContextCompat.getDrawable(it, R.drawable.curve_premium_selector) }
-                    newTextView.visibility = View.VISIBLE
-                }
+                Constants.NEW_RELEASE_TYPE_CUSTOM_DOMAIN -> activity?.let { itemLayout.background = ContextCompat.getDrawable(it, R.drawable.curve_premium_selector) }
                 Constants.NEW_RELEASE_TYPE_PREPAID_ORDER -> newTextView.visibility = View.VISIBLE
                 Constants.NEW_RELEASE_TYPE_PREMIUM -> activity?.let { itemLayout.background = ContextCompat.getDrawable(it, R.drawable.curve_premium_selector) }
                 Constants.NEW_RELEASE_TYPE_NEW -> newTextView.visibility = View.VISIBLE
+                Constants.NEW_RELEASE_TYPE_PAYMENT_MODES -> newTextView.visibility = View.VISIBLE
                 Constants.NEW_RELEASE_TYPE_TRENDING -> {
                     newTextView.visibility = View.GONE
                     trendingTextView.text = responseItem.mType
-                    trendingTextView.setCompoundDrawablesWithIntrinsicBounds(
-                        R.drawable.ic_trending,
-                        0,
-                        0,
-                        0
-                    )
+                    trendingTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_trending, 0, 0, 0)
                 }
                 else -> {}
             }
