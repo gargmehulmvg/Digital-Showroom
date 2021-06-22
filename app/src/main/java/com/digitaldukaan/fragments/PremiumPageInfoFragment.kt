@@ -89,7 +89,7 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
                 addJavascriptInterface(WebViewBridge(), "Android")
                 val isBottomNavBarActive = premiumPageInfoResponse?.mIsBottomNavBarActive ?: false
                 hideBottomNavigationView(!isBottomNavBarActive)
-                val url = BuildConfig.WEB_VIEW_URL + premiumPageInfoResponse?.premium?.mUrl + "?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"
+                val url = BuildConfig.WEB_VIEW_URL + premiumPageInfoResponse?.premium?.mUrl + "?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&app_version=${BuildConfig.VERSION_NAME}"
                 Log.d(PremiumPageInfoFragment::class.simpleName, "onViewCreated: $url")
                 webViewClient = object : WebViewClient() {
                     override fun onPageFinished(view: WebView, url: String) {
@@ -141,6 +141,29 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
         when {
             jsonData.optBoolean("redirectNative") -> launchFragment(EditPremiumFragment.newInstance(mStaticText, premiumPageInfoResponse), true)
             jsonData.optBoolean("redirectBrowser") -> openUrlInBrowser(jsonData.optString("data"))
+            jsonData.optBoolean("openUPIIntent") -> {
+                val intent = Intent()
+                intent.data = Uri.parse(jsonData.optString("data"))
+                val chooser = Intent.createChooser(intent, "Pay with...")
+                startActivityForResult(chooser, 1, null)
+            }
+            jsonData.optBoolean("openUPI") -> {
+                val packageName = jsonData.optString("packageName")
+                val uri: Uri = Uri.Builder()
+                    .scheme("upi")
+                    .authority("pay")
+                    .appendQueryParameter("pa", jsonData.optString("pa"))
+                    .appendQueryParameter("pn", jsonData.optString("pn"))
+                    .appendQueryParameter("tr", jsonData.optString("tr"))
+                    .appendQueryParameter("tn", jsonData.optString("tn"))
+                    .appendQueryParameter("am", jsonData.optString("am"))
+                    .appendQueryParameter("cu", "INR")
+                    .build()
+                val intent = Intent(Intent.ACTION_VIEW)
+                intent.data = uri
+                intent.setPackage(packageName)
+                mActivity?.startActivityForResult(intent, 123)
+            }
             jsonData.optBoolean("trackEventData") -> {
                 val eventName = jsonData.optString("eventName")
                 val additionalData = jsonData.optString("additionalData")
@@ -157,5 +180,23 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
 
     override fun showAndroidLog(data: String) {
         Log.d(TAG, "showAndroidLog :: $data")
+    }
+
+    override fun onBackPressed(): Boolean {
+        return try {
+            Log.d(TAG, "onBackPressed :: called")
+            if(fragmentManager != null && fragmentManager?.backStackEntryCount == 1) {
+                clearFragmentBackStack()
+                launchFragment(HomeFragment.newInstance(), true)
+                true
+            } else {
+                if (commonWebView?.canGoBack() == true) {
+                    commonWebView?.goBack()
+                    true
+                } else false
+            }
+        } catch (e: Exception) {
+            false
+        }
     }
 }
