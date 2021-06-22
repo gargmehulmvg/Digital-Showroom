@@ -609,13 +609,13 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                 estimateDeliveryTextView?.text = estimatedDeliveryStr
             }
             statusValue?.text = orderDetailResponse?.orderPaymentStatus?.value
-            mActivity?.run {
+            mActivity?.let {context ->
                 Log.d(TAG, "setStaticDataToUI: orderDetailResponse?.orderPaymentStatus?.key ${orderDetailResponse?.orderPaymentStatus?.key}")
                 when (orderDetailResponse?.orderPaymentStatus?.key) {
-                    Constants.ORDER_STATUS_SUCCESS -> orderDetailContainer?.setBackgroundColor(ContextCompat.getColor(this, R.color.open_green))
-                    Constants.ORDER_STATUS_REJECTED -> orderDetailContainer?.setBackgroundColor(ContextCompat.getColor(this, R.color.red))
-                    Constants.ORDER_STATUS_IN_PROGRESS -> orderDetailContainer?.setBackgroundColor(ContextCompat.getColor(this, R.color.order_detail_in_progress))
-                    else -> orderDetailContainer?.setBackgroundColor(ContextCompat.getColor(this, R.color.black))
+                    Constants.ORDER_STATUS_REJECTED -> orderDetailContainer?.setBackgroundColor(ContextCompat.getColor(context, R.color.red))
+                    Constants.ORDER_STATUS_IN_PROGRESS -> orderDetailContainer?.setBackgroundColor(ContextCompat.getColor(context, R.color.order_detail_in_progress))
+                    Constants.ORDER_STATUS_SUCCESS -> orderDetailContainer?.setBackgroundColor(ContextCompat.getColor(context, R.color.open_green))
+                    else -> orderDetailContainer?.setBackgroundColor(ContextCompat.getColor(context, R.color.black))
                 }
             }
         }
