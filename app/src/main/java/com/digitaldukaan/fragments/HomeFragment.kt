@@ -247,7 +247,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                 settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
                 setLayerType(View.LAYER_TYPE_HARDWARE, null)
                 addJavascriptInterface(WebViewBridge(), "Android")
-                val url = webViewUrl + "?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&storeName=${getStringDataFromSharedPref(Constants.STORE_NAME)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"
+                val url = webViewUrl + "?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&storeName=${getStringDataFromSharedPref(Constants.STORE_NAME)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&app_version=${BuildConfig.VERSION_NAME}"
                 Log.d(TAG, "setupHomePageWebView: $url")
                 loadUrl(url)
             }

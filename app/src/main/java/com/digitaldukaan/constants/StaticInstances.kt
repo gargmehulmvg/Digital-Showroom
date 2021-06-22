@@ -20,5 +20,6 @@ object StaticInstances {
     var sAppStoreServicesResponse: StoreServicesResponse? = null
     var sPaymentMethodStr: String? = null
     var sAppFlyerRefMobileNumber: String? = ""
-    var mStaticData: StaticData? = null
+    var sStaticData: StaticData? = null
+    var sMyPaymentPageInfoResponse: MyPaymentsPageInfoResponse? = null
 }

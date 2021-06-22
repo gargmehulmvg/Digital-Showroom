@@ -226,7 +226,8 @@ fun openWebViewFragment(fragment: BaseFragment, title: String, webViewType: Stri
     }
 }
 
-fun getDateFromOrderString(dateStr: String): Date? {
+fun getDateFromOrderString(dateStr: String?): Date? {
+    if (isEmpty(dateStr)) return Date()
     val format: DateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
     return format.parse(dateStr)
 }
@@ -239,20 +240,38 @@ fun getCompleteDateFromOrderString(dateStr: String?): Date? {
 
 fun getTimeFromOrderString(date: Date?): String {
     date?.run {
-        val dateFormat = SimpleDateFormat("hh:mm a", Locale.getDefault());
+        val dateFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())
         return dateFormat.format(this)
     }
     return ""
 }
 
 fun getStringFromOrderDate(date: Date): String {
-    val dateFormat = SimpleDateFormat("dd MMM yy", Locale.getDefault());
+    val dateFormat = SimpleDateFormat("dd MMM yy", Locale.getDefault())
     return dateFormat.format(date)
+}
+
+fun getTxnDateStringFromTxnDate(date: Date): String {
+    val dateFormat = SimpleDateFormat("d MMM yy, EEE", Locale.getDefault())
+    val string = dateFormat.format(date)
+    return string.substring(0, string.length - 7) + "\'" + string.substring(string.length - 7, string.length)
 }
 
 fun getStringDateTimeFromOrderDate(date: Date?): String {
     if (date == null) return ""
-    val dateFormat = SimpleDateFormat("dd MMM yy | hh:mm a", Locale.getDefault());
+    val dateFormat = SimpleDateFormat("dd MMM yy | hh:mm a", Locale.getDefault())
+    return dateFormat.format(date)
+}
+
+fun getStringDateTimeFromTransactionDetailDate(date: Date?): String {
+    if (date == null) return ""
+    val dateFormat = SimpleDateFormat("hh:mm a - d MMM,yyyy", Locale.getDefault())
+    return dateFormat.format(date)
+}
+
+fun getStringTimeFromDate(date: Date?): String {
+    if (date == null) return ""
+    val dateFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())
     return dateFormat.format(date)
 }
 
@@ -348,4 +367,35 @@ fun isEmpty(list: List<Any>?): Boolean {
 
 fun isEmpty(string: String?): Boolean {
     return string == null || string.isEmpty()
+}
+
+fun getDayOfTheWeek(count: Int): String {
+    when(count) {
+        0 -> return "Sun"
+        1 -> return "Mon"
+        2 -> return "Tue"
+        3 -> return "Wed"
+        4 -> return "Thu"
+        5 -> return "Fri"
+        6 -> return "Sat"
+    }
+    return ""
+}
+
+fun getMonthOfTheWeek(count: Int): String {
+    when(count) {
+        0 -> return "Jan"
+        1 -> return "Feb"
+        2 -> return "Mar"
+        3 -> return "Apr"
+        4 -> return "May"
+        5 -> return "Jun"
+        6 -> return "Jul"
+        7 -> return "Aug"
+        8 -> return "Sep"
+        9 -> return "Oct"
+        10 -> return "Nov"
+        11 -> return "Dec"
+    }
+    return ""
 }

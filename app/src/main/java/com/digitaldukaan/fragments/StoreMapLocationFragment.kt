@@ -86,7 +86,7 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.layout_store_map_location_fragment, container, false)
         locationManager = mActivity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        mMapStaticData = StaticInstances.mStaticData?.mMapStaticData
+        mMapStaticData = StaticInstances.sStaticData?.mMapStaticData
         return mContentView
     }
 
