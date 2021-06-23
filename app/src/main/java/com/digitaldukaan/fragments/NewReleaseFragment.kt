@@ -64,6 +64,7 @@ class NewReleaseFragment: BaseFragment(), IStoreSettingsItemClicked {
     }
 
     override fun onNewReleaseItemClicked(responseItem: TrendingListResponse?) {
+        Log.d(TAG, "onNewReleaseItemClicked :: responseItem?.mAction :: ${responseItem?.mAction}")
         when (responseItem?.mAction) {
             Constants.NEW_RELEASE_TYPE_WEBVIEW -> {
                 val eventName = when (responseItem.mType) {
@@ -74,11 +75,7 @@ class NewReleaseFragment: BaseFragment(), IStoreSettingsItemClicked {
                 AppEventsManager.pushAppEvents(
                     eventName = eventName,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                    data = mapOf(
-                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(
-                            Constants.STORE_ID),
-                        AFInAppEventParameterName.CHANNEL to AFInAppEventParameterName.SETTINGS_PAGE
-                    )
+                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.CHANNEL to AFInAppEventParameterName.SETTINGS_PAGE)
                 )
                 openWebViewFragment(this, "", BuildConfig.WEB_VIEW_URL + responseItem.mPage)
             }
@@ -91,26 +88,20 @@ class NewReleaseFragment: BaseFragment(), IStoreSettingsItemClicked {
                 AppEventsManager.pushAppEvents(
                     eventName = eventName,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                    data = mapOf(
-                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                        AFInAppEventParameterName.CHANNEL to AFInAppEventParameterName.SETTINGS_PAGE
-                    )
+                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.CHANNEL to AFInAppEventParameterName.SETTINGS_PAGE)
                 )
+                Log.d(TAG, "onNewReleaseItemClicked :: responseItem.mType :: ${responseItem.mType}")
                 when (responseItem.mType) {
-                    Constants.NEW_RELEASE_TYPE_CUSTOM_DOMAIN -> {
-                        openUrlInBrowser(responseItem.mPage + PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
-                    }
+                    Constants.NEW_RELEASE_TYPE_CUSTOM_DOMAIN -> openUrlInBrowser(responseItem.mPage + PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
                     Constants.NEW_RELEASE_TYPE_PREPAID_ORDER -> {
                         AppEventsManager.pushAppEvents(
                             eventName = AFInAppEventType.EVENT_SET_PREPAID_ORDER,
                             isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                            data = mapOf(
-                                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                                AFInAppEventParameterName.PATH to AFInAppEventParameterName.NEW_RELEASES
-                            )
+                            data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.PATH to AFInAppEventParameterName.NEW_RELEASES)
                         )
                         launchFragment(SetOrderTypeFragment.newInstance(), true)
                     }
+                    Constants.NEW_RELEASE_TYPE_PAYMENT_MODES -> launchFragment(PaymentModesFragment.newInstance(), true)
                     else -> openUrlInBrowser(responseItem.mPage)
                 }
 
@@ -122,10 +113,7 @@ class NewReleaseFragment: BaseFragment(), IStoreSettingsItemClicked {
     private fun showTrendingOffersBottomSheet() {
         mActivity?.let {
             val bottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
-            val view = LayoutInflater.from(it).inflate(
-                R.layout.bottom_sheet_trending_offers,
-                it.findViewById(R.id.bottomSheetContainer)
-            )
+            val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_trending_offers, it.findViewById(R.id.bottomSheetContainer))
             bottomSheetDialog.apply {
                 setContentView(view)
                 behavior.state = BottomSheetBehavior.STATE_EXPANDED

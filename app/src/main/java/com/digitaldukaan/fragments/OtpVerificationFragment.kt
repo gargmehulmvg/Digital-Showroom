@@ -1,11 +1,15 @@
 package com.digitaldukaan.fragments
 
+import android.app.Dialog
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import com.appsflyer.AppsFlyerLib
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.*
@@ -22,6 +26,8 @@ import com.digitaldukaan.smsapi.ISmsReceivedListener
 import com.digitaldukaan.smsapi.MySMSBroadcastReceiver
 import com.google.android.gms.auth.api.phone.SmsRetriever
 import kotlinx.android.synthetic.main.otp_verification_fragment.*
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
+import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
 
 
 class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerificationServiceInterface, ISmsReceivedListener,
@@ -33,6 +39,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
     private var mMobileNumberStr = ""
     private var mLoginService: LoginService? = null
     private var mIsNewUser: Boolean = false
+    private var mIsConsentTakenFromUser = true
     private var mIsServerCallInitiated: Boolean = false
     private var mOtpStaticResponseData: VerifyOtpStaticResponseData? = null
 
@@ -67,13 +74,29 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
         mContentView = inflater.inflate(R.layout.otp_verification_fragment, container, false)
         mOtpVerificationService = OtpVerificationService()
         mOtpVerificationService?.setOtpVerificationListener(this)
-        mOtpStaticResponseData = StaticInstances.mStaticData?.mVerifyOtpStaticData
+        mOtpStaticResponseData = StaticInstances.sStaticData?.mVerifyOtpStaticData
+        mActivity?.let {
+            KeyboardVisibilityEvent.setEventListener(it, object : KeyboardVisibilityEventListener {
+                    override fun onVisibilityChanged(isOpen: Boolean) {
+                        if (isOpen) {
+                            consentCheckBox?.visibility = View.GONE
+                            readMoreTextView?.visibility = View.GONE
+                        } else {
+                            consentCheckBox?.visibility = View.VISIBLE
+                            readMoreTextView?.visibility = View.VISIBLE
+                        }
+                    }
+                })
+        }
+        consentCheckBox?.setOnCheckedChangeListener { _, isChecked -> mIsConsentTakenFromUser = isChecked }
         return mContentView
     }
 
     private fun setupUIFromStaticResponse() {
         enterMobileNumberHeading?.text = mOtpStaticResponseData?.mHeadingText
         verifyTextView?.text = mOtpStaticResponseData?.mVerifyText
+        readMoreTextView?.setHtmlData(mOtpStaticResponseData?.mReadMore)
+        consentCheckBox?.text = mOtpStaticResponseData?.mHeadingMessage
     }
 
     override fun onClick(view: View?) {
@@ -103,6 +126,28 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
                     }
                     mLoginService?.generateOTP(mMobileNumberStr)
                 }
+            }
+            readMoreTextView?.id -> showConsentDialog()
+        }
+    }
+
+    private fun showConsentDialog() {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            mActivity?.let {
+                val dialog = Dialog(it)
+                val view = LayoutInflater.from(mActivity).inflate(R.layout.dialog_user_consent, null)
+                dialog.apply {
+                    setContentView(view)
+                    setCancelable(true)
+                    window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                    view?.run {
+                        val updateTextView: TextView = findViewById(R.id.updateTextView)
+                        val messageTextView: TextView = findViewById(R.id.messageTextView)
+                        messageTextView.text = mOtpStaticResponseData?.mConsentMessage
+                        updateTextView.text = mOtpStaticResponseData?.mTextOk
+                        updateTextView.setOnClickListener { (this@apply).dismiss() }
+                    }
+                }.show()
             }
         }
     }
@@ -180,7 +225,9 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_OTP_VERIFIED,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
+                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                        AFInAppEventParameterName.PHONE to mMobileNumberStr,
+                        AFInAppEventParameterName.IS_CONSENT to if (mIsConsentTakenFromUser) "1" else "0")
                 )
                 if (null == validateOtpResponse.mStore && mIsNewUser) launchFragment(OnBoardScreenDukaanNameFragment(), true) else launchFragment(HomeFragment(), true)
             }

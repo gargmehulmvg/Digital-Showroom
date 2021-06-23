@@ -84,5 +84,12 @@ interface AFInAppEventType {
         const val EVENT_DELETE_CATEGORY = "DeleteCategory"
         const val EVENT_EDIT_CATEGORY = "EditCategory"
         const val EVENT_TRUE_CALLER_VERIFIED = "TrueCaller_OTPVerified"
+        const val EVENT_SET_ONLINE_PAYMENT_MODE = "Set_online_payment_modes"
+        const val EVENT_SET_ORDER_DATE_SELECTION = "orders_date_selected"
+        const val EVENT_SET_SETTLEMENTS_DATE_SELECTION = "settlements_date_selected"
+        const val EVENT_SET_ORDER_PAYMENT_DETAIL = "order_payment_details"
+        const val EVENT_VIEW_MY_PAYMENTS = "View_my_payments"
+        const val EVENT_CONFIRM_PAYMENTS_ACTIVATION = "Confirm_payment_activation"
+        const val EVENT_COMPLETE_KYC_FOR_PAYMENTS = "complete_kyc_for_payments"
     }
 }

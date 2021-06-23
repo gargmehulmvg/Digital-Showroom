@@ -121,7 +121,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                 orderDetailMainResponse?.orders?.run {
                     var isAllProductsAmountSet = true
                     orderDetailsItemsList?.forEachIndexed { _, itemResponse ->
-                        if ((itemResponse.amount ?: 0.0) <= 0.0) {
+                        if ((itemResponse.amount ?: 0.0) <= 0.0 && itemResponse.item_status == 1) {
                             showToast(getString(R.string.please_fill_price_for_each_product))
                             isAllProductsAmountSet = false
                             return@forEachIndexed
@@ -139,12 +139,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                 } else handleDeliveryTimeBottomSheet(isCallSendBillServerCall = false, isPrepaidOrder = true)
             }
             detailTextView?.id -> {
-                if (!isInternetConnectionAvailable(mActivity)) {
-                    showNoInternetConnectionDialog()
-                } else {
-                    showProgressDialog(mActivity)
-                    mOrderDetailService?.getOrderDetailStatus(orderDetailMainResponse?.orders?.orderId)
-                }
+                getTransactionDetailBottomSheet(orderDetailMainResponse?.orders?.transactionId, AFInAppEventParameterName.ORDER_DETAILS)
             }
             sideIconWhatsAppToolbar?.id -> {
                 val displayStatus = orderDetailMainResponse?.orders?.displayStatus
@@ -192,10 +187,10 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                 }
                 return
             }
-            var deliveryChargesAmount = calculateDeliveryCharge(payAmount)
+            val deliveryChargesAmount = calculateDeliveryCharge(payAmount)
             var isAllProductsAmountSet = true
             orderDetailsItemsList?.forEachIndexed { _, itemResponse ->
-                if ((itemResponse.amount ?: 0.0) <= 0.0) {
+                if ((itemResponse.amount ?: 0.0) <= 0.0 && itemResponse.item_status == 1) {
                     showToast(getString(R.string.please_fill_price_for_each_product))
                     isAllProductsAmountSet = false
                     return@forEachIndexed
@@ -599,7 +594,12 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
             newOrderTextView?.text = text_new_order
             billAmountLabel?.text = "$text_bill_amount:"
             statusLabel?.text = "$text_status:"
-            detailTextView?.text = "$text_details:"
+            if (isEmpty(orderDetailResponse?.transactionId))
+                detailTextView?.visibility = View.INVISIBLE
+            else {
+                detailTextView?.visibility = View.VISIBLE
+                detailTextView?.text = text_details
+            }
             billAmountValue?.text = "$text_rupees_symbol ${orderDetailResponse?.payAmount}"
             appTitleTextView?.text = "$text_order #${orderDetailResponse?.orderId}"
             if (Constants.ORDER_TYPE_PREPAID == orderDetailResponse?.prepaidFlag || orderDetailResponse?.deliveryInfo?.customDeliveryTime?.isEmpty() == true) {
@@ -609,16 +609,13 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                 estimateDeliveryTextView?.text = estimatedDeliveryStr
             }
             statusValue?.text = orderDetailResponse?.orderPaymentStatus?.value
-            mActivity?.run {
+            mActivity?.let {context ->
                 Log.d(TAG, "setStaticDataToUI: orderDetailResponse?.orderPaymentStatus?.key ${orderDetailResponse?.orderPaymentStatus?.key}")
                 when (orderDetailResponse?.orderPaymentStatus?.key) {
-                    Constants.ORDER_STATUS_SUCCESS -> {
-                        statusValue?.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_tick_green_hollow, 0)
-                        orderDetailContainer?.setBackgroundColor(ContextCompat.getColor(this, R.color.open_green))
-                    }
-                    Constants.ORDER_STATUS_REJECTED -> orderDetailContainer?.setBackgroundColor(ContextCompat.getColor(this, R.color.red))
-                    Constants.ORDER_STATUS_IN_PROGRESS -> orderDetailContainer?.setBackgroundColor(ContextCompat.getColor(this, R.color.order_detail_in_progress))
-                    else -> orderDetailContainer?.setBackgroundColor(ContextCompat.getColor(this, R.color.black))
+                    Constants.ORDER_STATUS_REJECTED -> orderDetailContainer?.setBackgroundColor(ContextCompat.getColor(context, R.color.red))
+                    Constants.ORDER_STATUS_IN_PROGRESS -> orderDetailContainer?.setBackgroundColor(ContextCompat.getColor(context, R.color.order_detail_in_progress))
+                    Constants.ORDER_STATUS_SUCCESS -> orderDetailContainer?.setBackgroundColor(ContextCompat.getColor(context, R.color.open_green))
+                    else -> orderDetailContainer?.setBackgroundColor(ContextCompat.getColor(context, R.color.black))
                 }
             }
         }
@@ -671,7 +668,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
             if (commonResponse.mIsSuccessStatus) {
                 val listType = object : TypeToken<List<OrderDetailTransactionItemResponse?>>() {}.type
                 val txnItemList = Gson().fromJson<ArrayList<OrderDetailTransactionItemResponse?>>(commonResponse.mCommonDataStr, listType)
-                showOrderDetailBottomSheet(txnItemList)
+                showOrderDetailBottomSheet()
             } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
         }
     }
@@ -785,42 +782,15 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
         bottomSheetSendBillText.isEnabled = true
     }
 
-    private fun showOrderDetailBottomSheet(txnItemList: ArrayList<OrderDetailTransactionItemResponse?>) {
+    private fun showOrderDetailBottomSheet() {
         mActivity?.run {
             val bottomSheetDialog = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
-            val view = LayoutInflater.from(this).inflate(
-                R.layout.bottom_sheet_order_detail,
-                findViewById(R.id.bottomSheetContainer)
-            )
+            val view = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_transaction_detail, findViewById(R.id.bottomSheetContainer))
             bottomSheetDialog.apply {
                 setContentView(view)
                 setBottomSheetCommonProperty()
                 view.run {
-                    val bottomSheetHeadingTextView: TextView = findViewById(R.id.bottomSheetHeadingTextView)
-                    val billAmountTextView: TextView = findViewById(R.id.billAmountTextView)
-                    val orderIdTextView: TextView = findViewById(R.id.orderIdTextView)
-                    val textViewTop: TextView = findViewById(R.id.textViewTop)
-                    val txnId: TextView = findViewById(R.id.txnId)
-                    val textViewBottom: TextView = findViewById(R.id.textViewBottom)
-                    val imageViewTop: ImageView = findViewById(R.id.imageViewTop)
-                    val imageViewBottom: ImageView = findViewById(R.id.imageViewBottom)
-                    orderDetailMainResponse?.let {
-                        mOrderDetailStaticData?.run {
-                            bottomSheetHeadingTextView.text = text_details
-                            val billAmountStr = "$text_bill_amount: ${it.orders?.amount}"
-                            billAmountTextView.text = billAmountStr
-                            val orderIdStr = "$text_order_id: ${it.orders?.orderId}"
-                            orderIdTextView.text = orderIdStr
-                            val firstItem = txnItemList[0]
-                            val lastItem = txnItemList[txnItemList.size -1]
-                            firstItem?.run {
-                                setOrderDetailBottomSheetItem(imageViewTop, textViewTop, this)
-                                val txnIdStr = "Txn ID : ${firstItem.transactionId}"
-                                txnId.text = txnIdStr
-                            }
-                            lastItem?.run { setOrderDetailBottomSheetItem(imageViewBottom, textViewBottom, this) }
-                        }
-                    }
+
                 }
             }.show()
         }

@@ -304,7 +304,7 @@ class SetOrderTypeFragment: BaseFragment(), ISetOrderTypeServiceInterface, IRecy
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                     data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.STEP to AFInAppEventParameterName.KYC)
                 )
-                launchFragment(ProfilePreviewFragment().newInstance(""), true)
+                launchFragment(ProfilePreviewFragment.newInstance(""), true)
             }
             Constants.ACTION_DELIVERY_CHARGES -> {
                 AppEventsManager.pushAppEvents(

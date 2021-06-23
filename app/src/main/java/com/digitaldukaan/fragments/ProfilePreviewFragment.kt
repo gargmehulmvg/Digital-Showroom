@@ -62,6 +62,12 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
 
     companion object {
         private const val TAG = "ProfilePreviewFragment"
+
+        fun newInstance(storeName: String? = ""): ProfilePreviewFragment {
+            val fragment = ProfilePreviewFragment()
+            fragment.mStoreName = storeName
+            return fragment
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -71,12 +77,6 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
             isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
             data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
         )
-    }
-
-    fun newInstance(storeName: String? = ""): ProfilePreviewFragment {
-        val fragment = ProfilePreviewFragment()
-        fragment.mStoreName = storeName
-        return fragment
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

@@ -93,6 +93,10 @@ data class VerifyOtpStaticResponseData(
     @SerializedName("sub_heading") var mSubHeadingText: String?,
     @SerializedName("verify_text") var mVerifyText: String?,
     @SerializedName("verifying_text") var mVerifyingText: String?,
+    @SerializedName("text_ok") var mTextOk: String?,
+    @SerializedName("text_read_more") var mReadMore: String?,
+    @SerializedName("message_consent") var mConsentMessage: String?,
+    @SerializedName("heading_consent") var mHeadingMessage: String?,
     @SerializedName("seconds_text") var mSecondText: String?
 )
 

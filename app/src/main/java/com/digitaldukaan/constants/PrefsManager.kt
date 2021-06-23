@@ -8,6 +8,10 @@ class PrefsManager {
     companion object {
 
         const val APP_INSTANCE_ID = "APP_INSTANCE_ID"
+        const val KEY_SETTLEMENT_START_DATE = "KEY_SETTLEMENT_START_DATE"
+        const val KEY_SETTLEMENT_END_DATE = "KEY_SETTLEMENT_END_DATE"
+        const val KEY_TXN_START_DATE = "KEY_TXN_START_DATE"
+        const val KEY_TXN_END_DATE = "KEY_TXN_END_DATE"
 
         private var mActivityInstance: Activity? = null
         fun setPrefsManager(activity: Activity) = run { mActivityInstance = activity }

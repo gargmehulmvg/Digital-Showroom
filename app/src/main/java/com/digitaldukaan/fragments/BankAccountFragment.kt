@@ -26,12 +26,7 @@ class BankAccountFragment : BaseFragment(), IBankDetailsServiceInterface {
     private var mProfilePreviewStaticData: BankDetailsPageStaticTextResponse? = null
 
     companion object {
-        fun newInstance(
-            profilePreviewResponse: ProfilePreviewSettingsKeyResponse?,
-            position: Int,
-            isSingleStep: Boolean,
-            profileInfoResponse: ProfileInfoResponse?
-        ): BankAccountFragment {
+        fun newInstance(profilePreviewResponse: ProfilePreviewSettingsKeyResponse?, position: Int, isSingleStep: Boolean, profileInfoResponse: ProfileInfoResponse?): BankAccountFragment {
             val fragment = BankAccountFragment()
             fragment.mProfilePreviewResponse = profilePreviewResponse
             fragment.mPosition = position
@@ -41,11 +36,7 @@ class BankAccountFragment : BaseFragment(), IBankDetailsServiceInterface {
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.layout_bank_account_fragment, container, false)
         mService = BankDetailsService()
         mService.setServiceInterface(this)
@@ -92,81 +83,94 @@ class BankAccountFragment : BaseFragment(), IBankDetailsServiceInterface {
         mobileNumberEditText?.setText(if (bankDetail == null || (bankDetail.registeredPhone?.isEmpty() == true)) PrefsManager.getStringDataFromSharedPref(Constants.USER_MOBILE_NUMBER) else bankDetail.registeredPhone)
         mobileNumberEditText?.isEnabled = false
         ifscEditText?.allowOnlyAlphaNumericCharacters()
+        saveTextView?.setOnClickListener { initiateServerCall() }
     }
 
     override fun onClick(view: View?) {
         when (view?.id) {
             saveTextView.id -> {
-                var isValidationFailed = false
-                val accountHolderNameStr = accountHolderNameEditText?.run {
-                    if (text.trim().toString().isEmpty()) {
-                        requestFocus()
-                        error = mProfilePreviewStaticData?.error_mandatory_field
-                        isValidationFailed = true
-                    }
-                    text.trim().toString()
-                }
-                val accountNumberStr = accountNumberEditText?.run {
-                    if (text.trim().toString().isEmpty()) {
-                        requestFocus()
-                        error = mProfilePreviewStaticData?.error_mandatory_field
-                        isValidationFailed = true
-                    } else if (text.trim().toString().length <= resources.getInteger(R.integer.account_number_length)) {
-                        requestFocus()
-                        error = mProfilePreviewStaticData?.error_invalid_account_number
-                        isValidationFailed = true
-                    }
-                    text.trim().toString()
-                }
-                val verifyAccountNumberStr = verifyAccountNumberEditText?.run {
-                    if (text.trim().toString().isEmpty()) {
-                        requestFocus()
-                        error = mProfilePreviewStaticData?.error_mandatory_field
-                        isValidationFailed = true
-                    } else if (text.trim().toString().length <= resources.getInteger(R.integer.account_number_length)) {
-                        requestFocus()
-                        error = mProfilePreviewStaticData?.error_invalid_account_number
-                        isValidationFailed = true
-                    }
-                    text.trim().toString()
-                }
-                if (accountNumberStr != verifyAccountNumberStr) {
-                    verifyAccountNumberEditText?.run {
-                        requestFocus()
-                        error = mProfilePreviewStaticData?.error_both_account_number_verify_account_number_must_be_same
-                        isValidationFailed = true
-                    }
-                }
-                val ifscCodeStr = ifscEditText?.run {
-                    if (text.trim().toString().isEmpty()) {
-                        requestFocus()
-                        error = mProfilePreviewStaticData?.error_mandatory_field
-                        isValidationFailed = true
-                    }
-                    text.trim().toString()
-                }
-                val mobileNumberStr = mobileNumberEditText?.run {
-                    if (text.trim().toString().isEmpty()) {
-                        requestFocus()
-                        error = mProfilePreviewStaticData?.error_mandatory_field
-                        isValidationFailed = true
-                    } else if (text.trim().toString().length != resources.getInteger(R.integer.mobile_number_length)) {
-                        requestFocus()
-                        error = mProfilePreviewStaticData?.error_invalid_mobile_number
-                        isValidationFailed = true
-                    }
-                    text.trim().toString()
-                }
-                if (isValidationFailed) return
-                val request = BankDetailsRequest(accountHolderNameStr, mobileNumberStr, accountNumberStr, ifscCodeStr)
-                if (!isInternetConnectionAvailable(mActivity)) {
-                    showNoInternetConnectionDialog()
-                    return
-                }
-                showProgressDialog(mActivity)
-                mService.setBankDetails(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
+                initiateServerCall()
             }
         }
+    }
+
+    private fun initiateServerCall() {
+        var isValidationFailed = false
+        val accountHolderNameStr = accountHolderNameEditText?.run {
+            if (text.trim().toString().isEmpty()) {
+                requestFocus()
+                error = mProfilePreviewStaticData?.error_mandatory_field
+                isValidationFailed = true
+            }
+            text.trim().toString()
+        }
+        val accountNumberStr = accountNumberEditText?.run {
+            if (text.trim().toString().isEmpty()) {
+                requestFocus()
+                error = mProfilePreviewStaticData?.error_mandatory_field
+                isValidationFailed = true
+            } else if (text.trim()
+                    .toString().length <= resources.getInteger(R.integer.account_number_length)
+            ) {
+                requestFocus()
+                error = mProfilePreviewStaticData?.error_invalid_account_number
+                isValidationFailed = true
+            }
+            text.trim().toString()
+        }
+        val verifyAccountNumberStr = verifyAccountNumberEditText?.run {
+            if (text.trim().toString().isEmpty()) {
+                requestFocus()
+                error = mProfilePreviewStaticData?.error_mandatory_field
+                isValidationFailed = true
+            } else if (text.trim()
+                    .toString().length <= resources.getInteger(R.integer.account_number_length)
+            ) {
+                requestFocus()
+                error = mProfilePreviewStaticData?.error_invalid_account_number
+                isValidationFailed = true
+            }
+            text.trim().toString()
+        }
+        if (accountNumberStr != verifyAccountNumberStr) {
+            verifyAccountNumberEditText?.run {
+                requestFocus()
+                error =
+                    mProfilePreviewStaticData?.error_both_account_number_verify_account_number_must_be_same
+                isValidationFailed = true
+            }
+        }
+        val ifscCodeStr = ifscEditText?.run {
+            if (text.trim().toString().isEmpty()) {
+                requestFocus()
+                error = mProfilePreviewStaticData?.error_mandatory_field
+                isValidationFailed = true
+            }
+            text.trim().toString()
+        }
+        val mobileNumberStr = mobileNumberEditText?.run {
+            if (text.trim().toString().isEmpty()) {
+                requestFocus()
+                error = mProfilePreviewStaticData?.error_mandatory_field
+                isValidationFailed = true
+            } else if (text.trim()
+                    .toString().length != resources.getInteger(R.integer.mobile_number_length)
+            ) {
+                requestFocus()
+                error = mProfilePreviewStaticData?.error_invalid_mobile_number
+                isValidationFailed = true
+            }
+            text.trim().toString()
+        }
+        if (isValidationFailed) return
+        val request =
+            BankDetailsRequest(accountHolderNameStr, mobileNumberStr, accountNumberStr, ifscCodeStr)
+        if (!isInternetConnectionAvailable(mActivity)) {
+            showNoInternetConnectionDialog()
+            return
+        }
+        showProgressDialog(mActivity)
+        mService.setBankDetails(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
     }
 
     override fun onBankDetailsResponse(response: CommonApiResponse) {
