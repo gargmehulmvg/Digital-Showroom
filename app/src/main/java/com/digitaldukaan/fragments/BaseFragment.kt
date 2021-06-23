@@ -37,15 +37,19 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.digitaldukaan.MainActivity
 import com.digitaldukaan.MyFcmMessageListenerService
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.ImagesSearchAdapter
+import com.digitaldukaan.adapters.OrderNotificationsAdapter
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.exceptions.UnAuthorizedAccessException
+import com.digitaldukaan.interfaces.IAdapterItemClickListener
 import com.digitaldukaan.interfaces.ISearchImageItemClicked
+import com.digitaldukaan.models.request.UpdatePaymentMethodRequest
 import com.digitaldukaan.models.response.*
 import com.digitaldukaan.network.RetrofitApi
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -1425,6 +1429,84 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                     closeImageView.setOnClickListener { bottomSheetDialog.dismiss() }
                 }
             }.show()
+        }
+    }
+
+    open fun getOrderNotificationBottomSheet() {
+        showProgressDialog(mActivity)
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            try {
+                val response = RetrofitApi().getServerCallObject()?.getOrderNotificationPageInfo()
+                response?.let {
+                    stopProgress()
+                    if (it.isSuccessful) {
+                        it.body()?.let {
+                            withContext(Dispatchers.Main) {
+                                if (it.mIsSuccessStatus) {
+                                    val responseObj = Gson().fromJson<OrderNotificationResponse>(it.mCommonDataStr, OrderNotificationResponse::class.java)
+                                    showOrderNotificationBottomSheet(responseObj)
+                                } else showShortSnackBar(it.mMessage, true, R.drawable.ic_close_red)
+                            }
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                exceptionHandlingForAPIResponse(e)
+            }
+        }
+    }
+
+    private fun showOrderNotificationBottomSheet(response: OrderNotificationResponse?) {
+        mActivity?.run {
+            val bottomSheetDialog = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
+            val view = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_order_notification, findViewById(R.id.bottomSheetContainer))
+            bottomSheetDialog.apply {
+                setContentView(view)
+                behavior.state = BottomSheetBehavior.STATE_EXPANDED
+                view.run {
+                    val bottomSheetHeadingTextView: TextView = findViewById(R.id.bottomSheetHeadingTextView)
+                    val closeImageView: ImageView = findViewById(R.id.closeImageView)
+                    val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
+                    bottomSheetHeadingTextView.text = response?.headingBottomSheet
+                    closeImageView.setOnClickListener { bottomSheetDialog.dismiss() }
+                    recyclerView.apply {
+                        layoutManager = LinearLayoutManager(mActivity)
+                        adapter = OrderNotificationsAdapter(mActivity, response?.orderNotificationList, object : IAdapterItemClickListener {
+                            override fun onAdapterItemClickListener(position: Int) {
+                                val list = response?.orderNotificationList
+                                val item = list?.get(position)
+                                if (item?.isSelected != true) {
+                                    bottomSheetDialog.dismiss()
+                                    setOrderNotificationServerCall(item?.id ?: 0)
+                                }
+                            }
+                        })
+                    }
+                }
+            }.show()
+        }
+    }
+
+    open fun setOrderNotificationServerCall(flag: Int) {
+        showProgressDialog(mActivity)
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            try {
+                val response = RetrofitApi().getServerCallObject()?.updateNotificationFlag(UpdatePaymentMethodRequest(flag))
+                response?.let {
+                    stopProgress()
+                    if (it.isSuccessful) {
+                        it.body()?.let {
+                            withContext(Dispatchers.Main) {
+                                if (it.mIsSuccessStatus) {
+                                    showShortSnackBar(it.mMessage, true, R.drawable.ic_check_circle)
+                                } else showShortSnackBar(it.mMessage, true, R.drawable.ic_close_red)
+                            }
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                exceptionHandlingForAPIResponse(e)
+            }
         }
     }
 

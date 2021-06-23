@@ -116,6 +116,9 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
         paymentModesOptionalTextView?.text = mMoreControlsStaticData?.message_set_online_payment_modes
         onlinePaymentsOptionalTextView?.text = mMoreControlsStaticData?.text_type_colon
         onlinePaymentsValueAmountTextView?.text = mPaymentPaymentMethod
+        notificationsTextView?.text = mMoreControlsStaticData?.mNotificationText
+        notificationsHeadingTextView?.text = mMoreControlsStaticData?.mHeadingSetOrderNotifications
+        notificationsOptionalTextView?.text = mMoreControlsStaticData?.mMessageSetOrderNotifications
         if (0 != mDeliveryChargeType) {
             deliveryChargeTypeTextView?.text = mMoreControlsStaticData?.sub_heading_success_set_delivery_charge
             if (1 == mDeliveryChargeType) {
@@ -165,6 +168,7 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
             paymentModesContainer?.id -> {
                 launchFragment(PaymentModesFragment.newInstance(), true)
             }
+            notificationsContainer?.id -> getOrderNotificationBottomSheet()
             storeSwitch?.id -> changeStoreDeliveryStatus()
             deliverySwitch?.id -> changeStoreDeliveryStatus()
         }

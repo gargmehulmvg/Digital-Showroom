@@ -118,6 +118,9 @@ data class AccountStaticTextResponse(
     @SerializedName("text_new")                                                 var mNewText: String?,
     @SerializedName("text_store_controls")                                      var mTextStoreControls: String?,
     @SerializedName("text_delivery_status")                                     var mTextDeliveryStatus: String?,
+    @SerializedName("text_notification")                                        var mNotificationText: String?,
+    @SerializedName("heading_set_order_notifications")                          var mHeadingSetOrderNotifications: String?,
+    @SerializedName("message_set_order_notifications")                          var mMessageSetOrderNotifications: String?,
     @SerializedName("edit_profile_text")                                        var mTextEditProfile: String?
 )
 

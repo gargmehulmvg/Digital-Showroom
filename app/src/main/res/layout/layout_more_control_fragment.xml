@@ -71,9 +71,9 @@
                     android:padding="@dimen/_2sdp"
                     android:textColor="@color/black"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="@+id/storeSwitch"
+                    app:layout_constraintEnd_toEndOf="@id/storeSwitch"
                     app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/storeStatusTextView"
+                    app:layout_constraintStart_toEndOf="@id/storeStatusTextView"
                     app:layout_constraintTop_toBottomOf="@id/storeSwitch"
                     app:layout_constraintVertical_bias="1.0"
                     tools:text="@string/close" />
@@ -87,10 +87,10 @@
                     android:padding="@dimen/_2sdp"
                     android:textColor="@color/black"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/storeStatusTextView2"
+                    app:layout_constraintEnd_toStartOf="@id/storeStatusTextView2"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintHorizontal_chainStyle="packed"
-                    app:layout_constraintStart_toStartOf="@+id/storeSwitch"
+                    app:layout_constraintStart_toStartOf="@id/storeSwitch"
                     app:layout_constraintTop_toBottomOf="@id/storeSwitch"
                     app:layout_constraintVertical_bias="1.0"
                     tools:text="@string/store_controls" />
@@ -102,10 +102,10 @@
                     android:padding="@dimen/_2sdp"
                     android:textColor="@color/black"
                     app:layout_constraintBaseline_toBaselineOf="@id/storeStatusTextView"
-                    app:layout_constraintEnd_toStartOf="@+id/deliveryStatusTextView2"
+                    app:layout_constraintEnd_toStartOf="@id/deliveryStatusTextView2"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintHorizontal_chainStyle="packed"
-                    app:layout_constraintStart_toStartOf="@+id/deliverySwitch"
+                    app:layout_constraintStart_toStartOf="@id/deliverySwitch"
                     tools:text="@string/store_controls" />
 
                 <com.google.android.material.textview.MaterialTextView
@@ -115,9 +115,9 @@
                     android:padding="@dimen/_2sdp"
                     android:textColor="@color/black"
                     app:layout_constraintBaseline_toBaselineOf="@id/storeStatusTextView"
-                    app:layout_constraintEnd_toEndOf="@+id/deliverySwitch"
+                    app:layout_constraintEnd_toEndOf="@id/deliverySwitch"
                     app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintStart_toEndOf="@+id/deliveryStatusTextView"
+                    app:layout_constraintStart_toEndOf="@id/deliveryStatusTextView"
                     tools:text="@string/close" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
@@ -457,11 +457,81 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
+            <TextView
+                android:id="@+id/notificationsTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_20sdp"
+                android:fontFamily="@font/roboto_medium"
+                android:padding="@dimen/_5sdp"
+                tools:text="Notifications"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_14sdp"
+                app:layout_constraintStart_toStartOf="@id/onlinePaymentsTextView"
+                app:layout_constraintTop_toBottomOf="@id/paymentModesContainer" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/notificationsContainer"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="0.5dp"
+                android:background="@drawable/ripple_slight_curve_grey_white_background"
+                android:elevation="@dimen/_5sdp"
+                android:onClick="onClick"
+                android:paddingStart="@dimen/_20sdp"
+                android:paddingTop="@dimen/_15sdp"
+                android:paddingEnd="@dimen/_20sdp"
+                android:paddingBottom="@dimen/_15sdp"
+                app:layout_constraintEnd_toEndOf="@id/onlinePaymentsContainer"
+                app:layout_constraintStart_toStartOf="@id/onlinePaymentsContainer"
+                app:layout_constraintTop_toBottomOf="@id/notificationsTextView"
+                tools:targetApi="lollipop">
+
+                <ImageView
+                    android:id="@+id/notificationsImageView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:clickable="false"
+                    android:contentDescription="@string/image_view_content_description"
+                    android:src="@drawable/ic_half_arrow_forward"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/notificationsHeadingTextView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:clickable="false"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_11sdp"
+                    app:layout_constraintEnd_toStartOf="@id/notificationsImageView"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="Set Online Payment Modes" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/notificationsOptionalTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_2sdp"
+                    android:clickable="false"
+                    android:paddingTop="@dimen/_2sdp"
+                    android:textColor="@color/default_text_light_grey"
+                    android:textSize="@dimen/_9sdp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="@id/notificationsHeadingTextView"
+                    app:layout_constraintTop_toBottomOf="@id/notificationsHeadingTextView"
+                    tools:text="UPI, Debit / Credit cards, Wallets etc" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
             <View
                 android:id="@+id/blankSpace"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_100sdp"
-                app:layout_constraintTop_toBottomOf="@id/paymentModesContainer" />
+                app:layout_constraintTop_toBottomOf="@id/notificationsContainer" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

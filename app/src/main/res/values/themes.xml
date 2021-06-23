@@ -67,4 +67,11 @@
         <item name="android:fontFamily">@font/roboto</item>
     </style>
 
+    <style name="popupMenuStyle" >
+        <item name="android:textColor">@color/black</item>
+        <item name="android:itemBackground">@color/white</item>
+        <item name="android:divider">@color/black</item>
+        <item name="android:dividerHeight">@dimen/_1sdp</item>
+    </style>
+
 </resources>

@@ -89,8 +89,14 @@ interface Apis {
     @GET("api/dotk/vm1/settings/getPaymentModesPageInfo")
     suspend fun getPaymentModesPageInfo(): Response<CommonApiResponse>
 
+    @GET("api/dotk/vm1/settings/getOrderNotificationPageInfo")
+    suspend fun getOrderNotificationPageInfo(): Response<CommonApiResponse>
+
     @POST("api/dotk/vm1/settings/setPaymentOptions")
     suspend fun setPaymentOptions(@Body request: PaymentModeRequest): Response<CommonApiResponse>
+
+    @POST("api/dotk/vm1/settings/updateNotificationFlag")
+    suspend fun updateNotificationFlag(@Body request: UpdatePaymentMethodRequest): Response<CommonApiResponse>
 
     /* ----------------------       Images         ---------------------- */
     @POST("api/dotk/vm1/media/setStoreLogo")
