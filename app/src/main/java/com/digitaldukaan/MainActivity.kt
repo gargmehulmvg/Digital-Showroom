@@ -198,9 +198,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     }
 
     private fun doSwitchToScreen(fragment: Fragment?, addToBackStack: Boolean) {
-        if (null == fragment) {
-            return
-        }
+        if (null == fragment) return
         val manager = supportFragmentManager
         val fragmentTransaction = manager.beginTransaction()
         val fragmentTag = fragment.javaClass.canonicalName
@@ -303,7 +301,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         }
     }
 
-    private fun launchInAppReviewDialog() {
+    fun launchInAppReviewDialog() {
         reviewInfo?.let { info ->
             val flow = manager?.launchReviewFlow(this, info)
             flow?.addOnCompleteListener { _ ->

@@ -646,6 +646,10 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             if (commonResponse.mIsSuccessStatus) {
+                if (!PrefsManager.getBoolDataFromSharedPref(PrefsManager.KEY_FIRST_ITEM_COMPLETED)) {
+                    PrefsManager.storeBoolDataInSharedPref(PrefsManager.KEY_FIRST_ITEM_COMPLETED, true)
+                    mActivity?.launchInAppReviewDialog()
+                }
                 showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_green_check_small)
                 mActivity?.onBackPressed()
             } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
