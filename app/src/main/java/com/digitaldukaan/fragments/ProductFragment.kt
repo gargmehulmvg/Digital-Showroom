@@ -1,6 +1,5 @@
 package com.digitaldukaan.fragments
 
-import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -324,9 +323,6 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
             optionsMenu.menu?.add(Menu.NONE, position, Menu.NONE, response.mText)
         }
         optionsMenu.setOnMenuItemClickListener(this)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            optionsMenu.setForceShowIcon(true)
-        }
         optionsMenu.show()
     }
 
@@ -378,9 +374,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
             AppEventsManager.pushAppEvents(
                 eventName = AFInAppEventType.EVENT_VIEW_AS_CUSTOMER,
                 isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                    AFInAppEventParameterName.CHANNEL to "isCatalog"
-                )
+                data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.CHANNEL to "isCatalog")
             )
             val isPremiumEnable = (jsonData.optInt("isPremium") == 1)
             launchFragment(ViewAsCustomerFragment.newInstance(jsonData.optString("domain"), isPremiumEnable, addProductStaticData), true)
