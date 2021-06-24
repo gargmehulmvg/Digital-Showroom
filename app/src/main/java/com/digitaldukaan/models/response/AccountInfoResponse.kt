@@ -13,6 +13,7 @@ data class AccountInfoResponse(
     @SerializedName("completed_steps")          var mCompletedSteps: Int,
     @SerializedName("static_text")              var mAccountStaticText: AccountStaticTextResponse?,
     @SerializedName("footer_images")            var mFooterImages: ArrayList<String>?,
+    @SerializedName("is_order_notification_on") var mIsOrderNotificationOn: Boolean,
     @SerializedName("online_payment_type")      var mOnlinePaymentType: String?
 )
 

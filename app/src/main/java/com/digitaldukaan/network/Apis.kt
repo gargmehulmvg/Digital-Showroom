@@ -68,7 +68,7 @@ interface Apis {
     @GET("api/dotk/vm1/settings/getAllBusinessList")
     suspend fun getBusinessList() : Response<CommonApiResponse>
 
-    @GET("api/dotk/vm1/settings/referApp")
+    @GET("api/dotk/vm1/settings/getReferPageInfo")
     suspend fun getReferAndEarnData() : Response<CommonApiResponse>
 
     @POST("api/dotk/vm1/settings/setStoreBusinesses")

@@ -1,7 +1,6 @@
 package com.digitaldukaan.services
 
 import com.digitaldukaan.constants.CoroutineScopeUtils
-import com.digitaldukaan.models.request.StoreDeliveryStatusChangeRequest
 import com.digitaldukaan.models.request.StoreLogoRequest
 import com.digitaldukaan.services.networkservice.ProfileNetworkService
 import com.digitaldukaan.services.serviceinterface.IProfileServiceInterface
@@ -20,15 +19,6 @@ class ProfileService {
     fun getUserProfile() {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
             mNetworkService.getProfileServerCall(mProfileServiceInterface)
-        }
-    }
-
-    fun changeStoreAndDeliveryStatus(request: StoreDeliveryStatusChangeRequest) {
-        CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.changeStoreAndDeliveryStatusServerCall(
-                request,
-                mProfileServiceInterface
-            )
         }
     }
 
