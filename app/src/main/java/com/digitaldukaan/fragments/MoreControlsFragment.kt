@@ -168,7 +168,7 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
             paymentModesContainer?.id -> {
                 launchFragment(PaymentModesFragment.newInstance(), true)
             }
-            notificationsContainer?.id -> getOrderNotificationBottomSheet()
+            notificationsContainer?.id -> getOrderNotificationBottomSheet(AFInAppEventParameterName.STORE_CONTROLS)
             storeSwitch?.id -> changeStoreDeliveryStatus()
             deliverySwitch?.id -> changeStoreDeliveryStatus()
         }

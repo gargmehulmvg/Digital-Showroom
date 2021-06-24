@@ -154,6 +154,7 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
             intentUriStr.contains("${deepLinkStr}ProductAdd") -> launchFragment(ProductFragment.newInstance(), true)
             intentUriStr.contains("${deepLinkStr}MarketingBroadCast") -> launchFragment(MarketingFragment.newInstance(), true)
             intentUriStr.contains("${deepLinkStr}OTP") -> launchFragment(LoginFragment.newInstance(), true)
+            intentUriStr.contains("${deepLinkStr}PaymentOptions") -> launchFragment(PaymentModesFragment.newInstance(), true)
             intentUriStr.contains("${deepLinkStr}Webview") -> {
                 try {
                     var webViewUrl = intentUriStr.split("${deepLinkStr}Webview?webURL=")[1]

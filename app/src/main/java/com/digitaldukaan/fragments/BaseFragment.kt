@@ -1432,7 +1432,15 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         }
     }
 
-    open fun getOrderNotificationBottomSheet() {
+    open fun getOrderNotificationBottomSheet(path: String) {
+        AppEventsManager.pushAppEvents(
+            eventName = AFInAppEventType.EVENT_SET_NEW_ORDER_NOTIFICATIONS,
+            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+            data = mapOf(
+                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                AFInAppEventParameterName.PATH to path
+            )
+        )
         showProgressDialog(mActivity)
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
             try {
@@ -1475,6 +1483,14 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                             override fun onAdapterItemClickListener(position: Int) {
                                 val list = response?.orderNotificationList
                                 val item = list?.get(position)
+                                AppEventsManager.pushAppEvents(
+                                    eventName = AFInAppEventType.EVENT_NEW_ORDER_NOTIFICATION_SELECTION,
+                                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                                    data = mapOf(
+                                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                                        AFInAppEventParameterName.SELECTION to item?.eventName
+                                    )
+                                )
                                 if (item?.isSelected != true) {
                                     bottomSheetDialog.dismiss()
                                     setOrderNotificationServerCall(item?.id ?: 0)

@@ -756,7 +756,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         val optionMenuItem = orderPageInfoResponse?.optionMenuList?.get(menuItem?.itemId ?: 0)
         when(optionMenuItem?.mAction) {
             Constants.NEW_RELEASE_TYPE_WEBVIEW -> openWebViewFragment(this, getString(R.string.help), WebViewUrls.WEB_VIEW_HELP, Constants.SETTINGS)
-            Constants.ACTION_BOTTOM_SHEET -> if (Constants.PAGE_ORDER_NOTIFICATIONS == optionMenuItem.mPage) getOrderNotificationBottomSheet()
+            Constants.ACTION_BOTTOM_SHEET -> if (Constants.PAGE_ORDER_NOTIFICATIONS == optionMenuItem.mPage) getOrderNotificationBottomSheet(AFInAppEventParameterName.IS_ORDER_PAGE)
         }
         return true
     }
