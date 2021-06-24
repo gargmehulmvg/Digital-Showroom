@@ -119,6 +119,8 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
         notificationsTextView?.text = mMoreControlsStaticData?.mNotificationText
         notificationsHeadingTextView?.text = mMoreControlsStaticData?.mHeadingSetOrderNotifications
         notificationsOptionalTextView?.text = mMoreControlsStaticData?.mMessageSetOrderNotifications
+        paymentModesNewTextView?.text = mMoreControlsStaticData?.mNewText
+        notificationsNewTextView?.text = mMoreControlsStaticData?.mNewText
         if (0 != mDeliveryChargeType) {
             deliveryChargeTypeTextView?.text = mMoreControlsStaticData?.sub_heading_success_set_delivery_charge
             if (1 == mDeliveryChargeType) {

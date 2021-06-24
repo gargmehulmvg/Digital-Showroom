@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.RadioButton
 import android.widget.TextView
-import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
@@ -26,7 +25,6 @@ class OrderNotificationsAdapter(
         val headingTextView: TextView = itemView.findViewById(R.id.headingTextView)
         val subHeadingTextView: TextView = itemView.findViewById(R.id.subHeadingTextView)
         val container: View = itemView.findViewById(R.id.container)
-        val bottomSheetContainer: CardView = itemView.findViewById(R.id.bottomSheetContainer)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OrderNotificationsViewHolder {
@@ -52,12 +50,14 @@ class OrderNotificationsAdapter(
                     subHeadingTextView.text = item?.subHeading
                 }
                 if (item?.isSelected == true) {
-                    bottomSheetContainer.cardElevation = 1f
+                    container.elevation = 1f
                     radioButton.isChecked = true
                     container.background = ContextCompat.getDrawable(context, R.drawable.ripple_slight_curve_grey_white_background_green_border)
+                    headingTextView.setTextColor(ContextCompat.getColor(context, R.color.open_green))
                 } else {
-                    bottomSheetContainer.cardElevation = 10f
+                    container.elevation = 10f
                     radioButton.isChecked = false
+                    headingTextView.setTextColor(ContextCompat.getColor(context, R.color.black))
                     container.background = ContextCompat.getDrawable(context, R.drawable.ripple_slight_curve_grey_white_background)
                 }
             }

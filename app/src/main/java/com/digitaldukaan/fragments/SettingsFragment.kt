@@ -16,7 +16,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.appsflyer.CreateOneLinkHttpTask
 import com.appsflyer.share.ShareInviteHelper
@@ -25,7 +24,6 @@ import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.NewReleaseAdapter
 import com.digitaldukaan.adapters.ProfileStatusAdapter
-import com.digitaldukaan.adapters.ReferAndEarnAdapter
 import com.digitaldukaan.adapters.SettingsStoreAdapter
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.IOnToolbarIconClick
@@ -164,7 +162,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         mActivity?.let {
             try {
                 val bottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
-                val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_refer_and_earn, it.findViewById(R.id.bottomSheetContainer))
+                val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_refer_and_earn_v2, it.findViewById(R.id.bottomSheetContainer))
                 bottomSheetDialog.apply {
                     setContentView(view)
                     setBottomSheetCommonProperty()
@@ -173,7 +171,6 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                         val bottomSheetUpperImageView: ImageView = findViewById(R.id.bottomSheetUpperImageView)
                         val bottomSheetHeadingTextView: TextView = findViewById(R.id.bottomSheetHeadingTextView)
                         val verifyTextView: TextView = findViewById(R.id.verifyTextView)
-                        val referAndEarnRecyclerView: RecyclerView = findViewById(R.id.referAndEarnRecyclerView)
                         bottomSheetUpperImageView.let {view ->
                             try {
                                 Glide.with(this).load(response?.imageUrl).into(view)
@@ -190,10 +187,6 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                                 shareReferAndEarnWithDeepLink(this)
                                 bottomSheetDialog.dismiss()
                             }
-                        }
-                        referAndEarnRecyclerView.apply {
-                            layoutManager = LinearLayoutManager(mActivity)
-                            adapter = ReferAndEarnAdapter(response?.workJourneyList)
                         }
                     }
                 }.show()

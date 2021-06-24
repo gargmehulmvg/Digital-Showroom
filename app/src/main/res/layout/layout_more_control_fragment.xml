@@ -430,15 +430,31 @@
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/paymentModesHeadingTextView"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:clickable="false"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_11sdp"
-                    app:layout_constraintEnd_toStartOf="@id/paymentModesImageView"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     tools:text="Set Online Payment Modes" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/paymentModesNewTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:background="@drawable/slight_curve_red_background_without_padding"
+                    android:clickable="false"
+                    android:fontFamily="@font/roboto_medium"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_8sdp"
+                    app:layout_constraintBottom_toBottomOf="@+id/paymentModesHeadingTextView"
+                    app:layout_constraintEnd_toStartOf="@+id/paymentModesImageView"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toEndOf="@+id/paymentModesHeadingTextView"
+                    app:layout_constraintTop_toTopOf="@+id/paymentModesHeadingTextView"
+                    tools:text="@string/text_new" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/paymentModesOptionalTextView"
@@ -474,7 +490,7 @@
                 android:id="@+id/notificationsContainer"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="0.5dp"
+                android:layout_marginTop="@dimen/_5sdp"
                 android:background="@drawable/ripple_slight_curve_grey_white_background"
                 android:elevation="@dimen/_5sdp"
                 android:onClick="onClick"
@@ -500,15 +516,31 @@
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/notificationsHeadingTextView"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:clickable="false"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_11sdp"
-                    app:layout_constraintEnd_toStartOf="@id/notificationsImageView"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     tools:text="Set Online Payment Modes" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/notificationsNewTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:background="@drawable/slight_curve_red_background_without_padding"
+                    android:clickable="false"
+                    android:fontFamily="@font/roboto_medium"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_8sdp"
+                    app:layout_constraintBottom_toBottomOf="@+id/notificationsHeadingTextView"
+                    app:layout_constraintEnd_toStartOf="@+id/notificationsImageView"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toEndOf="@+id/notificationsHeadingTextView"
+                    app:layout_constraintTop_toTopOf="@+id/notificationsHeadingTextView"
+                    tools:text="@string/text_new" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/notificationsOptionalTextView"
