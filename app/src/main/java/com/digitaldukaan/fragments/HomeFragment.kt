@@ -643,11 +643,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
     }
 
     override fun onNativeBackPressed() {
-        mActivity?.let {
-            it.runOnUiThread {
-                it.onBackPressed()
-            }
-        }
+        mActivity?.runOnUiThread { mActivity?.onBackPressed() }
     }
 
     override fun sendData(data: String) {
