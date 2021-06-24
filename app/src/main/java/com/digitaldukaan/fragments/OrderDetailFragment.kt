@@ -239,7 +239,9 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
         var deliveryChargesAmount = 0.0
         val storeServices = orderDetailMainResponse?.storeServices
         if (!mIsPickUpOrder) {
-            if ((Constants.CUSTOM_DELIVERY_CHARGE == storeServices?.mDeliveryChargeType && payAmount ?: 0.0 <= storeServices.mFreeDeliveryAbove) || (Constants.UNKNOWN_DELIVERY_CHARGE == storeServices?.mDeliveryChargeType)) {
+            if (Constants.CUSTOM_DELIVERY_CHARGE == storeServices?.mDeliveryChargeType && 0.0 == storeServices.mFreeDeliveryAbove) {
+                deliveryChargesAmount = mDeliveryChargeAmount
+            } else if ((Constants.CUSTOM_DELIVERY_CHARGE == storeServices?.mDeliveryChargeType && payAmount ?: 0.0 <= storeServices.mFreeDeliveryAbove) || (Constants.UNKNOWN_DELIVERY_CHARGE == storeServices?.mDeliveryChargeType)) {
                 deliveryChargesAmount = mDeliveryChargeAmount
             } else if (Constants.FIXED_DELIVERY_CHARGE == storeServices?.mDeliveryChargeType && storeServices.mDeliveryPrice != 0.0 && payAmount ?: 0.0 <= storeServices.mFreeDeliveryAbove) {
                 deliveryChargesAmount = storeServices.mDeliveryPrice ?: 0.0
