@@ -322,8 +322,6 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
         mOptionsMenuResponse?.forEachIndexed { position, response ->
             Log.d(TAG, "onToolbarSideIconClicked: $response")
             optionsMenu.menu?.add(Menu.NONE, position, Menu.NONE, response.mText)
-//            val menuItem = optionsMenu.menu?.add(Menu.NONE, position, Menu.NONE, response.mText)
-//            menuItem?.setIcon(R.drawable.ic_help_small)
         }
         optionsMenu.setOnMenuItemClickListener(this)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
