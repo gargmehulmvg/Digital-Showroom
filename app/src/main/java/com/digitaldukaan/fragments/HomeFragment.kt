@@ -528,6 +528,10 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                 mOrderList.clear()
                 mCompletedOrderList.clear()
                 fetchLatestOrders(Constants.MODE_PENDING, mFetchingOrdersStr, pendingPageCount)
+                if (!PrefsManager.getBoolDataFromSharedPref(PrefsManager.KEY_FIRST_ITEM_COMPLETED)) {
+                    PrefsManager.storeBoolDataInSharedPref(PrefsManager.KEY_FIRST_ITEM_COMPLETED, true)
+                    mActivity?.launchInAppReviewDialog()
+                }
             } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
         }
     }

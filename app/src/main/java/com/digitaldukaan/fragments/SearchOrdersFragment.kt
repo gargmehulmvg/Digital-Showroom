@@ -141,6 +141,10 @@ class SearchOrdersFragment: BaseFragment(), IOnToolbarIconClick, ISearchOrderSer
         stopProgress()
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (commonResponse.mIsSuccessStatus) {
+                if (!PrefsManager.getBoolDataFromSharedPref(PrefsManager.KEY_FIRST_ITEM_COMPLETED)) {
+                    PrefsManager.storeBoolDataInSharedPref(PrefsManager.KEY_FIRST_ITEM_COMPLETED, true)
+                    mActivity?.launchInAppReviewDialog()
+                }
                 onSearchDialogContinueButtonClicked(mOrderIdString, mMobileNumberString)
             } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
         }
