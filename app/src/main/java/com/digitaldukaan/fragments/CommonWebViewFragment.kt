@@ -133,6 +133,8 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
             }
         } else if (jsonData.optBoolean("redirectBrowser")) {
             openUrlInBrowser(jsonData.optString("data"))
+        } else if (jsonData.optBoolean("scratchClaimed")) {
+            mActivity?.launchInAppReviewDialog()
         } else if (jsonData.optBoolean("shareQRCode")) {
             AppEventsManager.pushAppEvents(
                 eventName = AFInAppEventType.EVENT_QR_SHARED,
