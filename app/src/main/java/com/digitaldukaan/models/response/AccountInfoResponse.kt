@@ -13,6 +13,7 @@ data class AccountInfoResponse(
     @SerializedName("completed_steps")          var mCompletedSteps: Int,
     @SerializedName("static_text")              var mAccountStaticText: AccountStaticTextResponse?,
     @SerializedName("footer_images")            var mFooterImages: ArrayList<String>?,
+    @SerializedName("is_order_notification_on") var mIsOrderNotificationOn: Boolean,
     @SerializedName("online_payment_type")      var mOnlinePaymentType: String?
 )
 
@@ -118,6 +119,9 @@ data class AccountStaticTextResponse(
     @SerializedName("text_new")                                                 var mNewText: String?,
     @SerializedName("text_store_controls")                                      var mTextStoreControls: String?,
     @SerializedName("text_delivery_status")                                     var mTextDeliveryStatus: String?,
+    @SerializedName("text_notification")                                        var mNotificationText: String?,
+    @SerializedName("heading_set_order_notifications")                          var mHeadingSetOrderNotifications: String?,
+    @SerializedName("message_set_order_notifications")                          var mMessageSetOrderNotifications: String?,
     @SerializedName("edit_profile_text")                                        var mTextEditProfile: String?
 )
 

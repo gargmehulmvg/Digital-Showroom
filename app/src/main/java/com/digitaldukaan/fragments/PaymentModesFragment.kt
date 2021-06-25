@@ -115,9 +115,7 @@ class PaymentModesFragment: BaseFragment(), IPaymentModesServiceInterface,
                                 this@apply.dismiss()
                                 launchFragment(ProfilePreviewFragment(), true)
                             }
-                            bottomSheetClose.setOnClickListener {
-                                this@apply.dismiss()
-                            }
+                            bottomSheetClose.setOnClickListener { this@apply.dismiss() }
                         }
                     }.show()
                 }
@@ -194,9 +192,7 @@ class PaymentModesFragment: BaseFragment(), IPaymentModesServiceInterface,
                                 this@apply.dismiss()
                                 initiateSetPaymentModeRequest(PaymentModeRequest(0, mPaymentType))
                             }
-                            noTextView.setOnClickListener {
-                                this@apply.dismiss()
-                            }
+                            noTextView.setOnClickListener { this@apply.dismiss() }
                             bottomSheetClose.setOnClickListener { this@apply.dismiss() }
                         }
                     }.show()
@@ -358,6 +354,16 @@ class PaymentModesFragment: BaseFragment(), IPaymentModesServiceInterface,
     private fun initiateSetPaymentModeRequest(request: PaymentModeRequest) {
         showProgressDialog(mActivity)
         mService.setPaymentOptions(request)
+    }
+
+    override fun onBackPressed(): Boolean {
+        Log.d(TAG, "onBackPressed: called")
+        if(fragmentManager != null && fragmentManager?.backStackEntryCount == 1) {
+            clearFragmentBackStack()
+            launchFragment(HomeFragment.newInstance(), true)
+            return true
+        }
+        return false
     }
 
 }

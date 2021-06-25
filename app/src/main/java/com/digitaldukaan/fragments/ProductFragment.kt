@@ -314,10 +314,12 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
     }
 
     override fun onToolbarSideIconClicked() {
+        val wrapper = ContextThemeWrapper(mActivity, R.style.popupMenuStyle)
         val sideView:View? = mActivity?.findViewById(R.id.sideIconToolbar)
-        val optionsMenu = PopupMenu(mActivity, sideView)
+        val optionsMenu = PopupMenu(wrapper, sideView)
         optionsMenu.inflate(R.menu.menu_product_fragment)
         mOptionsMenuResponse?.forEachIndexed { position, response ->
+            Log.d(TAG, "onToolbarSideIconClicked: $response")
             optionsMenu.menu?.add(Menu.NONE, position, Menu.NONE, response.mText)
         }
         optionsMenu.setOnMenuItemClickListener(this)
@@ -372,9 +374,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
             AppEventsManager.pushAppEvents(
                 eventName = AFInAppEventType.EVENT_VIEW_AS_CUSTOMER,
                 isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                    AFInAppEventParameterName.CHANNEL to "isCatalog"
-                )
+                data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.CHANNEL to "isCatalog")
             )
             val isPremiumEnable = (jsonData.optInt("isPremium") == 1)
             launchFragment(ViewAsCustomerFragment.newInstance(jsonData.optString("domain"), isPremiumEnable, addProductStaticData), true)
