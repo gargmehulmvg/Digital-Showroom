@@ -179,25 +179,29 @@ class SettlementsFragment : BaseFragment(), IMyPaymentsServiceInterface, ITransa
 
     override fun onGetTransactionsListResponse(response: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            stopProgress()
-            if (response.mIsSuccessStatus) {
-                val myPaymentList = Gson().fromJson<MyPaymentsResponse>(response.mCommonDataStr, MyPaymentsResponse::class.java)
-                val paymentList: ArrayList<MyPaymentsItemResponse>? = myPaymentList?.mMyPaymentList
-                if (mIsDateSelectionDone) mPaymentList?.clear()
-                paymentList?.let { mPaymentList?.addAll(it) }
-                mIsMoreTransactionsAvailable = myPaymentList?.mIsNextPage ?: false
-                val settleAmount = "${getString(R.string.rupee_symbol)} ${myPaymentList?.mSettledAmount}"
-                amountSettledValueTextView?.text = settleAmount
-                if (isEmpty(mPaymentList)) {
-                    zeroOrderContainer?.visibility = View.VISIBLE
-                    amountContainer?.visibility = View.GONE
-                    mTxnAdapter?.setMyPaymentsList(ArrayList())
-                } else {
-                    amountContainer?.visibility = View.VISIBLE
-                    zeroOrderContainer?.visibility = View.GONE
-                    convertDateStringOfTransactions()
-                    mTxnAdapter?.setMyPaymentsList(mPaymentList)
+            try {
+                stopProgress()
+                if (response.mIsSuccessStatus) {
+                    val myPaymentList = Gson().fromJson<MyPaymentsResponse>(response.mCommonDataStr, MyPaymentsResponse::class.java)
+                    val paymentList: ArrayList<MyPaymentsItemResponse>? = myPaymentList?.mMyPaymentList
+                    if (mIsDateSelectionDone) mPaymentList?.clear()
+                    paymentList?.let { mPaymentList?.addAll(it) }
+                    mIsMoreTransactionsAvailable = myPaymentList?.mIsNextPage ?: false
+                    val settleAmount = "₹ ${myPaymentList?.mSettledAmount}"
+                    amountSettledValueTextView?.text = settleAmount
+                    if (isEmpty(mPaymentList)) {
+                        zeroOrderContainer?.visibility = View.VISIBLE
+                        amountContainer?.visibility = View.GONE
+                        mTxnAdapter?.setMyPaymentsList(ArrayList())
+                    } else {
+                        amountContainer?.visibility = View.VISIBLE
+                        zeroOrderContainer?.visibility = View.GONE
+                        convertDateStringOfTransactions()
+                        mTxnAdapter?.setMyPaymentsList(mPaymentList)
+                    }
                 }
+            } catch (e: Exception) {
+                Log.e(TAG, "onGetTransactionsListResponse: ${e.message}", e)
             }
         }
     }

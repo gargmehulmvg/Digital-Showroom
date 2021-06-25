@@ -55,6 +55,7 @@ class Constants {
         const val ACTION_DOMAIN_SUCCESS                         = "domain-success"
         const val ACTION_KYC                                    = "kyc"
         const val ACTION_DELIVERY_CHARGES                       = "delivery-charges"
+        const val ACTION_BOTTOM_SHEET                           = "bottom-sheet"
         //Incomplete profile actions
         const val ACTION_LOGO                                   = "logo"
         const val ACTION_DESCRIPTION                            = "description"
@@ -64,6 +65,7 @@ class Constants {
         //PAGES
         const val PAGE_REFER                                    = "refer"
         const val PAGE_HELP                                     = "help"
+        const val PAGE_ORDER_NOTIFICATIONS                      = "order-notification"
         const val PAGE_FEEDBACK                                 = "Feedback"
         const val PAGE_APP_SETTINGS                             = "Sitemap"
         const val PAGE_REWARDS                                  = "RewardsPage"

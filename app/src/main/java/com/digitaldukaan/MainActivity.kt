@@ -20,6 +20,9 @@ import com.digitaldukaan.constants.*
 import com.digitaldukaan.fragments.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomnavigation.LabelVisibilityMode.LABEL_VISIBILITY_LABELED
+import com.google.android.play.core.review.ReviewInfo
+import com.google.android.play.core.review.ReviewManager
+import com.google.android.play.core.review.ReviewManagerFactory
 import com.google.firebase.messaging.FirebaseMessaging
 import com.truecaller.android.sdk.TruecallerSDK
 import io.sentry.Sentry
@@ -28,6 +31,9 @@ import java.util.*
 
 
 class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener, CTPushNotificationListener, InAppNotificationButtonListener {
+
+    private var manager: ReviewManager? = null
+    private var reviewInfo: ReviewInfo? = null
 
     companion object {
         private val mNetworkChangeListener = NetworkChangeListener()
@@ -41,6 +47,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         ToolBarManager.getInstance().setupToolbar(toolbarLayout)
         setupBottomNavigation()
         PrefsManager.setPrefsManager(this)
+        requestInAppReviewObject()
         AppEventsManager.setAppEventsManager(this)
         if (StaticInstances.sAppSessionId?.isEmpty() == true) StaticInstances.sAppSessionId = RandomStringGenerator(16).nextString()
         if (PrefsManager.getStringDataFromSharedPref(PrefsManager.APP_INSTANCE_ID).isEmpty()) PrefsManager.storeStringDataInSharedPref(PrefsManager.APP_INSTANCE_ID, RandomStringGenerator(16).nextString())
@@ -73,12 +80,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
                     AppEventsManager.pushAppEvents(
                         eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
                         isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                        data = mapOf(
-                            AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                            "Exception Point" to "handlingFirebaseToken",
-                            "Exception Message" to e.message,
-                            "Exception Logs" to e.toString()
-                        )
+                        data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), "Exception Point" to "handlingFirebaseToken", "Exception Message" to e.message, "Exception Logs" to e.toString())
                     )
                 }
             }
@@ -87,12 +89,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             AppEventsManager.pushAppEvents(
                 eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
                 isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                data = mapOf(
-                    AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                    "Exception Point" to "handlingFirebaseToken",
-                    "Exception Message" to e.message,
-                    "Exception Logs" to e.toString()
-                )
+                data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), "Exception Point" to "handlingFirebaseToken", "Exception Message" to e.message, "Exception Logs" to e.toString())
             )
         }
     }
@@ -106,12 +103,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             AppEventsManager.pushAppEvents(
                 eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
                 isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                data = mapOf(
-                    AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                    "Exception Point" to "Main Activity : onStart",
-                    "Exception Message" to e.message,
-                    "Exception Logs" to e.toString()
-                )
+                data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), "Exception Point" to "Main Activity : onStart", "Exception Message" to e.message, "Exception Logs" to e.toString())
             )
         }
         super.onStart()
@@ -125,12 +117,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             AppEventsManager.pushAppEvents(
                 eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
                 isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                data = mapOf(
-                    AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                    "Exception Point" to "Main Activity : onStop",
-                    "Exception Message" to e.message,
-                    "Exception Logs" to e.toString()
-                )
+                data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), "Exception Point" to "Main Activity : onStop", "Exception Message" to e.message, "Exception Logs" to e.toString())
             )
         }
         super.onStop()
@@ -178,12 +165,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             AppEventsManager.pushAppEvents(
                 eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
                 isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                data = mapOf(
-                    AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                    "Exception Point" to "getCurrentFragment",
-                    "Exception Message" to e.message,
-                    "Exception Logs" to e.toString()
-                )
+                data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), "Exception Point" to "getCurrentFragment", "Exception Message" to e.message, "Exception Logs" to e.toString())
             )
             null
         }
@@ -216,9 +198,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     }
 
     private fun doSwitchToScreen(fragment: Fragment?, addToBackStack: Boolean) {
-        if (null == fragment) {
-            return
-        }
+        if (null == fragment) return
         val manager = supportFragmentManager
         val fragmentTransaction = manager.beginTransaction()
         val fragmentTag = fragment.javaClass.canonicalName
@@ -254,12 +234,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         val fragmentTransaction = manager.beginTransaction()
         val fragmentTag = fragment.javaClass.canonicalName
         try {
-            fragmentTransaction.setCustomAnimations(
-                R.anim.slide_in,
-                R.anim.fade_out,
-                R.anim.fade_in,
-                R.anim.slide_out
-            )
+            fragmentTransaction.setCustomAnimations(R.anim.slide_in, R.anim.fade_out, R.anim.fade_in, R.anim.slide_out)
             fragmentTransaction.replace(R.id.homeFrame, fragment, fragmentTag)
             if (addToBackStack) fragmentTransaction.addToBackStack(fragmentTag)
             fragmentTransaction.addSharedElement(animationView, getString(R.string.transition_name))
@@ -293,10 +268,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_PREMIUM_PAGE,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                    data = mapOf(
-                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                        AFInAppEventParameterName.CHANNEL to "isBottomNav"
-                    )
+                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.CHANNEL to "isBottomNav")
                 )
                 launchFragment(PremiumPageInfoFragment.newInstance(), true)
             }
@@ -317,5 +289,26 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
     override fun onInAppButtonClick(payload: HashMap<String, String>?) {
         Log.d(TAG, "onInAppButtonClick :: $payload")
+    }
+
+    private fun requestInAppReviewObject() {
+        manager = ReviewManagerFactory.create(this)
+        val request = manager?.requestReviewFlow()
+        request?.addOnCompleteListener { task ->
+            if (task.isSuccessful) {
+                reviewInfo = task.result
+            }
+        }
+    }
+
+    fun launchInAppReviewDialog() {
+        reviewInfo?.let { info ->
+            val flow = manager?.launchReviewFlow(this, info)
+            flow?.addOnCompleteListener { _ ->
+                // The flow has finished. The API does not indicate whether the user
+                // reviewed or not, or even whether the review dialog was shown. Thus, no
+                // matter the result, we continue our app flow.
+            }
+        }
     }
 }

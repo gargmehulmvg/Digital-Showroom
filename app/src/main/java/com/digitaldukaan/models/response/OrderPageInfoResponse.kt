@@ -9,6 +9,7 @@ data class OrderPageInfoResponse(
     @SerializedName("is_search_on")                     var mIsSearchOrder: Boolean,
     @SerializedName("help_page")                        var mIsHelpOrder: HelpPageResponse,
     @SerializedName("banners")                          var mBannerList: ArrayList<HomePageBannerResponse>,
+    @SerializedName("options_menu_list")                 var optionMenuList: ArrayList<TrendingListResponse>,
     @SerializedName("is_analytics")                     var mIsAnalyticsOrder: Boolean,
     @SerializedName("completed_order_count")            var mCompletedOrderCount: Int,
     @SerializedName("pending_order_count")              var mPendingOrderCount: Int,

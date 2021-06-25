@@ -16,7 +16,6 @@ import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.appsflyer.CreateOneLinkHttpTask
 import com.appsflyer.share.ShareInviteHelper
@@ -25,7 +24,6 @@ import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.NewReleaseAdapter
 import com.digitaldukaan.adapters.ProfileStatusAdapter
-import com.digitaldukaan.adapters.ReferAndEarnAdapter
 import com.digitaldukaan.adapters.SettingsStoreAdapter
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.IOnToolbarIconClick
@@ -55,7 +53,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
     private var mAppSettingsResponseStaticData: AccountStaticTextResponse? = null
     private var mAppStoreServicesResponse: StoreServicesResponse? = null
     private val mProfileService = ProfileService()
-    private var mReferAndEarnResponse: ReferAndEarnItemResponse? = null
+    private var mReferAndEarnResponse: ReferAndEarnResponse? = null
     private var mAccountInfoResponse: AccountInfoResponse? = null
     private var mStoreLogo: String? = ""
     private var mShareDataOverWhatsAppText = ""
@@ -99,7 +97,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         StaticInstances.sAppStoreServicesResponse = mAppStoreServicesResponse
         StaticInstances.sPaymentMethodStr = mProfileResponse?.mOnlinePaymentType
         when (view?.id) {
-            storeControlView?.id -> launchFragment(MoreControlsFragment.newInstance(mAppSettingsResponseStaticData), true)
+            storeControlView?.id -> launchFragment(MoreControlsFragment.newInstance(mAppSettingsResponseStaticData, mProfileResponse?.mIsOrderNotificationOn), true)
             dukaanNameTextView?.id -> launchProfilePreviewFragment()
             editProfileTextView?.id -> launchProfilePreviewFragment()
             profileStatusRecyclerView?.id -> launchProfilePreviewFragment()
@@ -160,11 +158,11 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         }
     }
 
-    private fun showReferAndEarnBottomSheet(response: ReferAndEarnItemResponse?) {
+    private fun showReferAndEarnBottomSheet(response: ReferAndEarnResponse?) {
         mActivity?.let {
             try {
                 val bottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
-                val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_refer_and_earn, it.findViewById(R.id.bottomSheetContainer))
+                val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_refer_and_earn_v2, it.findViewById(R.id.bottomSheetContainer))
                 bottomSheetDialog.apply {
                     setContentView(view)
                     setBottomSheetCommonProperty()
@@ -172,28 +170,22 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                         val bottomSheetClose: View = findViewById(R.id.bottomSheetClose)
                         val bottomSheetUpperImageView: ImageView = findViewById(R.id.bottomSheetUpperImageView)
                         val bottomSheetHeadingTextView: TextView = findViewById(R.id.bottomSheetHeadingTextView)
+                        val messageTextView: TextView = findViewById(R.id.messageTextView)
+                        val bottomSheetHeading2TextView: TextView = findViewById(R.id.bottomSheetHeading2TextView)
                         val verifyTextView: TextView = findViewById(R.id.verifyTextView)
-                        val referAndEarnRecyclerView: RecyclerView = findViewById(R.id.referAndEarnRecyclerView)
                         bottomSheetUpperImageView.let {view ->
-                            try {
-                                Glide.with(this).load(response?.imageUrl).into(view)
-                            } catch (e: Exception) {
-                                Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
-                            }
+
                         }
                         bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
-                        val headingStr = "${response?.heading1}\n${response?.heading2}"
-                        bottomSheetHeadingTextView.text = headingStr
-                        verifyTextView.text = response?.settingsTxt
+                        messageTextView.text = response?.message
+                        bottomSheetHeadingTextView.text = response?.heading
+                        bottomSheetHeading2TextView.setHtmlData(response?.heading2)
+                        verifyTextView.text = response?.referNow
                         verifyTextView.setOnClickListener{
                             mReferEarnOverWhatsAppResponse?.run {
                                 shareReferAndEarnWithDeepLink(this)
                                 bottomSheetDialog.dismiss()
                             }
-                        }
-                        referAndEarnRecyclerView.apply {
-                            layoutManager = LinearLayoutManager(mActivity)
-                            adapter = ReferAndEarnAdapter(response?.workJourneyList)
                         }
                     }
                 }.show()
@@ -261,7 +253,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
 
     override fun onReferAndEarnResponse(response: CommonApiResponse) {
         stopProgress()
-        val responseModel = Gson().fromJson<ReferAndEarnItemResponse>(response.mCommonDataStr, ReferAndEarnItemResponse::class.java)
+        val responseModel = Gson().fromJson<ReferAndEarnResponse>(response.mCommonDataStr, ReferAndEarnResponse::class.java)
         mReferAndEarnResponse = responseModel
         CoroutineScopeUtils().runTaskOnCoroutineMain { showReferAndEarnBottomSheet(responseModel) }
     }

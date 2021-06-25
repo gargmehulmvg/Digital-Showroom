@@ -6,12 +6,11 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.widget.ImageView
+import android.widget.PopupMenu
 import android.widget.ScrollView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
@@ -50,7 +49,8 @@ import java.io.File
 
 
 class HomeFragment : BaseFragment(), IHomeServiceInterface,
-    SwipeRefreshLayout.OnRefreshListener, IOrderListItemListener {
+    SwipeRefreshLayout.OnRefreshListener, IOrderListItemListener,
+    PopupMenu.OnMenuItemClickListener {
 
     companion object {
         private val TAG = HomeFragment::class.simpleName
@@ -418,7 +418,12 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                     takeOrderTextView?.visibility = View.GONE
                     setupHomePageWebView(mIsZeroOrder.mUrl)
                     mSwipeRefreshLayout?.isEnabled = false
+                    if (mIsHelpOrder.mIsActive) {
+                        helpImageView?.visibility = View.VISIBLE
+                        helpImageView?.setOnClickListener { openWebViewFragmentV2(this@HomeFragment, getString(R.string.help), mIsHelpOrder.mUrl, Constants.SETTINGS) }
+                    }
                 } else {
+                    setupSideOptionMenu()
                     mSwipeRefreshLayout?.isEnabled = true
                     homePageWebViewLayout?.visibility = View.GONE
                     orderLayout?.visibility = View.VISIBLE
@@ -445,10 +450,6 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                     }
                     Handler(Looper.getMainLooper()).postDelayed({ fetchLatestOrders(Constants.MODE_PENDING, mFetchingOrdersStr, pendingPageCount) }, 150)
                 }
-                if (mIsHelpOrder.mIsActive) {
-                    helpImageView?.visibility = View.VISIBLE
-                    helpImageView?.setOnClickListener { openWebViewFragmentV2(this@HomeFragment, getString(R.string.help), mIsHelpOrder.mUrl, Constants.SETTINGS) }
-                }
                 takeOrderTextView?.text = mOrderPageInfoStaticData?.text_add_new_order
                 analyticsImageView?.visibility = if (mIsAnalyticsOrder) View.VISIBLE else View.GONE
                 searchImageView?.visibility = if (mIsSearchOrder) View.VISIBLE else View.GONE
@@ -466,6 +467,32 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                     "Exception Logs" to e.toString()
                 )
             )
+        }
+    }
+
+    private fun setupSideOptionMenu() {
+        mActivity?.let { context ->
+            val helpImageView: ImageView? = mContentView?.findViewById(R.id.helpImageView)
+            helpImageView?.visibility = View.VISIBLE
+            helpImageView?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_options_menu))
+            helpImageView?.setOnClickListener {
+                val wrapper = ContextThemeWrapper(mActivity, R.style.popupMenuStyle)
+                val optionsMenu = PopupMenu(wrapper, helpImageView)
+                optionsMenu.inflate(R.menu.menu_product_fragment)
+                orderPageInfoResponse?.optionMenuList?.forEachIndexed { position, response ->
+                    Log.d(TAG, "setupSideOptionMenu: $response")
+                    val menuItem = optionsMenu.menu?.add(Menu.NONE, position, Menu.NONE, response.mText)
+                    /*val icon = when(response.mPage) {
+                        Constants.PAGE_ORDER_NOTIFICATIONS -> R.drawable.ic_order_notification2
+                        Constants.PAGE_HELP -> R.drawable.ic_help
+                        else -> 0
+                    }*/
+                    //menuItem?.setIcon(icon)
+                }
+                optionsMenu.setOnMenuItemClickListener(this)
+                //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) optionsMenu.setForceShowIcon(true)
+                optionsMenu.show()
+            }
         }
     }
 
@@ -501,6 +528,10 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                 mOrderList.clear()
                 mCompletedOrderList.clear()
                 fetchLatestOrders(Constants.MODE_PENDING, mFetchingOrdersStr, pendingPageCount)
+                if (!PrefsManager.getBoolDataFromSharedPref(PrefsManager.KEY_FIRST_ITEM_COMPLETED)) {
+                    PrefsManager.storeBoolDataInSharedPref(PrefsManager.KEY_FIRST_ITEM_COMPLETED, true)
+                    mActivity?.launchInAppReviewDialog()
+                }
             } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
         }
     }
@@ -616,11 +647,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
     }
 
     override fun onNativeBackPressed() {
-        mActivity?.let {
-            it.runOnUiThread {
-                it.onBackPressed()
-            }
-        }
+        mActivity?.runOnUiThread { mActivity?.onBackPressed() }
     }
 
     override fun sendData(data: String) {
@@ -727,5 +754,14 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
     override fun onDestroy() {
         super.onDestroy()
         orderPageInfoResponse = null
+    }
+
+    override fun onMenuItemClick(menuItem: MenuItem?): Boolean {
+        val optionMenuItem = orderPageInfoResponse?.optionMenuList?.get(menuItem?.itemId ?: 0)
+        when(optionMenuItem?.mAction) {
+            Constants.NEW_RELEASE_TYPE_WEBVIEW -> openWebViewFragment(this, getString(R.string.help), WebViewUrls.WEB_VIEW_HELP, Constants.SETTINGS)
+            Constants.ACTION_BOTTOM_SHEET -> if (Constants.PAGE_ORDER_NOTIFICATIONS == optionMenuItem.mPage) getOrderNotificationBottomSheet(AFInAppEventParameterName.IS_ORDER_PAGE)
+        }
+        return true
     }
 }

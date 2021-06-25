@@ -221,7 +221,7 @@
                     android:background="@drawable/slight_curve_red_background_without_padding"
                     android:clickable="false"
                     android:layout_marginStart="@dimen/_10sdp"
-                    android:fontFamily="@font/montserrat"
+                    android:fontFamily="@font/roboto_medium"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_8sdp"
                     app:layout_constraintBottom_toBottomOf="@id/storeControlTextView"

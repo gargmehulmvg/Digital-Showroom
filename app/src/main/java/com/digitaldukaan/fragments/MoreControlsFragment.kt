@@ -33,12 +33,14 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
     private var mFreeDeliveryAbove = 0.0
     private var mDeliveryChargeType = 0
     private var mPaymentPaymentMethod: String? = ""
+    private var mIsOrderNotificationOn: Boolean? = false
 
     companion object {
         private const val TAG = "MoreControlsFragment"
-        fun newInstance(appSettingsResponseStaticData: AccountStaticTextResponse?): MoreControlsFragment {
+        fun newInstance(appSettingsResponseStaticData: AccountStaticTextResponse?, isOrderNotificationOn: Boolean?): MoreControlsFragment {
             val fragment = MoreControlsFragment()
             fragment.mMoreControlsStaticData = appSettingsResponseStaticData
+            fragment.mIsOrderNotificationOn = isOrderNotificationOn
             return fragment
         }
     }
@@ -104,6 +106,8 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
     }
 
     private fun setUIDataFromResponse() {
+        val orderNotificationGroup: View? = mContentView?.findViewById(R.id.orderNotificationGroup)
+        orderNotificationGroup?.visibility = if (mIsOrderNotificationOn == true) View.VISIBLE else View.GONE
         minOrderValueHeadingTextView?.text = if (0.0 == mMinOrderValue) mMoreControlsStaticData?.heading_set_min_order_value_for_delivery else mMoreControlsStaticData?.heading_edit_min_order_value
         minOrderValueOptionalTextView?.text = if (0.0 == mMinOrderValue) mMoreControlsStaticData?.text_optional else "${mMoreControlsStaticData?.sub_heading_success_set_min_order_value_for_delivery} "
         minOrderValueAmountTextView?.text = if (0.0 != mMinOrderValue) "${mMoreControlsStaticData?.text_ruppee_symbol} $mMinOrderValue" else ""
@@ -116,6 +120,11 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
         paymentModesOptionalTextView?.text = mMoreControlsStaticData?.message_set_online_payment_modes
         onlinePaymentsOptionalTextView?.text = mMoreControlsStaticData?.text_type_colon
         onlinePaymentsValueAmountTextView?.text = mPaymentPaymentMethod
+        notificationsTextView?.text = mMoreControlsStaticData?.mNotificationText
+        notificationsHeadingTextView?.text = mMoreControlsStaticData?.mHeadingSetOrderNotifications
+        notificationsOptionalTextView?.text = mMoreControlsStaticData?.mMessageSetOrderNotifications
+        paymentModesNewTextView?.text = mMoreControlsStaticData?.mNewText
+        notificationsNewTextView?.text = mMoreControlsStaticData?.mNewText
         if (0 != mDeliveryChargeType) {
             deliveryChargeTypeTextView?.text = mMoreControlsStaticData?.sub_heading_success_set_delivery_charge
             if (1 == mDeliveryChargeType) {
@@ -165,6 +174,7 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
             paymentModesContainer?.id -> {
                 launchFragment(PaymentModesFragment.newInstance(), true)
             }
+            notificationsContainer?.id -> getOrderNotificationBottomSheet(AFInAppEventParameterName.STORE_CONTROLS)
             storeSwitch?.id -> changeStoreDeliveryStatus()
             deliverySwitch?.id -> changeStoreDeliveryStatus()
         }
