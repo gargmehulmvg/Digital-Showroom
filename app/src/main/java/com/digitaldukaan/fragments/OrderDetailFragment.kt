@@ -282,13 +282,17 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                     if (Constants.DS_PENDING_PAYMENT_LINK == displayStatus && isEmpty(orderDetailResponse.imageLink)) {
                         reminderContainer?.visibility = View.VISIBLE
                     } else {
-                        billPhotoImageView?.let {
+                        if (isEmpty(orderDetailResponse.imageLink)) {
+                            getTransactionDetailBottomSheet(orderDetailMainResponse?.orders?.transactionId, AFInAppEventParameterName.ORDER_DETAILS)
+                        } else {
+                            billPhotoImageView?.let {
                             it.visibility = View.VISIBLE
                             try {
                                 Glide.with(this).load(orderDetailResponse.imageLink).into(it)
                             } catch (e: Exception) {
                                 Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
                             }
+                        }
                         }
                     }
                 }
