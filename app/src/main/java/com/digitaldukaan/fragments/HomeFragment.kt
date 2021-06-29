@@ -747,7 +747,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
             bottomSheetDialog.apply {
                 setContentView(view)
                 setBottomSheetCommonProperty()
-                setCancelable(false)
+                setCancelable(true)
                 view?.run {
                     val billCameraImageView: View = findViewById(R.id.billCameraImageView)
                     val bottomSheetClose: View = findViewById(R.id.bottomSheetClose)

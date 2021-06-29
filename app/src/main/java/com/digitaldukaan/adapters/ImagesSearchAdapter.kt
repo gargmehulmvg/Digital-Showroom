@@ -10,12 +10,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.isEmpty
-import com.digitaldukaan.interfaces.ISearchImageItemClicked
+import com.digitaldukaan.interfaces.ISearchItemClicked
 
 class ImagesSearchAdapter : RecyclerView.Adapter<ImagesSearchAdapter.ImagesSearchViewHolder>() {
 
     private var mSearchImagesList: ArrayList<String>? = ArrayList()
-    private lateinit var mListener: ISearchImageItemClicked
+    private lateinit var mListener: ISearchItemClicked
     private var mContext: Context? = null
 
     fun setSearchImageList(list: ArrayList<String>) {
@@ -27,7 +27,7 @@ class ImagesSearchAdapter : RecyclerView.Adapter<ImagesSearchAdapter.ImagesSearc
         this.mContext = context
     }
 
-    fun setSearchImageListener(listener: ISearchImageItemClicked) {
+    fun setSearchImageListener(listener: ISearchItemClicked) {
         this.mListener = listener
     }
 

@@ -43,12 +43,13 @@ import com.bumptech.glide.Glide
 import com.digitaldukaan.MainActivity
 import com.digitaldukaan.MyFcmMessageListenerService
 import com.digitaldukaan.R
+import com.digitaldukaan.adapters.ContactAdapter
 import com.digitaldukaan.adapters.ImagesSearchAdapter
 import com.digitaldukaan.adapters.OrderNotificationsAdapter
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.exceptions.UnAuthorizedAccessException
 import com.digitaldukaan.interfaces.IAdapterItemClickListener
-import com.digitaldukaan.interfaces.ISearchImageItemClicked
+import com.digitaldukaan.interfaces.ISearchItemClicked
 import com.digitaldukaan.models.request.UpdatePaymentMethodRequest
 import com.digitaldukaan.models.response.*
 import com.digitaldukaan.network.RetrofitApi
@@ -75,7 +76,7 @@ import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
 
 
-open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
+open class BaseFragment : ParentFragment(), ISearchItemClicked {
 
     protected var mContentView: View? = null
     private var mProgressDialog: Dialog? = null
@@ -1203,9 +1204,23 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                 setCancelable(true)
                 setContentView(R.layout.dialog_payment_link_selection)
                 val bottomSheetClose: ImageView = findViewById(R.id.bottomSheetClose)
-                bottomSheetClose.setOnClickListener {
+                val smsTextView: TextView = findViewById(R.id.smsTextView)
+                val whatsAppTextView: TextView = findViewById(R.id.whatsappTextView)
+                val smsImageView: ImageView = findViewById(R.id.smsImageView)
+                val whatsAppImageView: ImageView = findViewById(R.id.whatsAppImageView)
+                whatsAppTextView.setOnClickListener {}
+                smsTextView.setOnClickListener {
                     this.dismiss()
+                    showContactPickerBottomSheet()
                 }
+                smsImageView.setOnClickListener {
+                    this.dismiss()
+                    showContactPickerBottomSheet()
+                }
+                whatsAppImageView.setOnClickListener {}
+                bottomSheetClose.setOnClickListener {
+                }
+                window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             }.show()
         }
     }
@@ -1536,6 +1551,33 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                 }
             } catch (e: Exception) {
                 exceptionHandlingForAPIResponse(e)
+            }
+        }
+    }
+
+    open fun showContactPickerBottomSheet() {
+        if (!askContactPermission()) {
+            mActivity?.let {
+                val mContactPickerBottomSheet: BottomSheetDialog? = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
+                val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_contact_pick, it.findViewById(R.id.bottomSheetContainer))
+                mContactPickerBottomSheet?.apply {
+                    setContentView(view)
+                    view?.run {
+                        val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
+                        recyclerView.apply {
+                            layoutManager = LinearLayoutManager(it)
+                            adapter = ContactAdapter(mActivity, object : ISearchItemClicked {
+                                override fun onSearchImageItemClicked(str: String) {
+                                    val position = str.toInt()
+                                    val item = StaticInstances.sUserContactList[position]
+                                    showToast(item.number)
+                                    Log.d(TAG, "showContactPickerBottomSheet :: onSearchImageItemClicked: $item")
+                                }
+
+                            })
+                        }
+                    }
+                }?.show()
             }
         }
     }
