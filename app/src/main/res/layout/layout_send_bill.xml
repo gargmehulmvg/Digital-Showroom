@@ -2,7 +2,8 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/toolBarContainer"
@@ -47,7 +48,7 @@
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@id/backButtonToolbar"
             app:layout_constraintTop_toTopOf="parent"
-            android:text="Send Payment Link" />
+            tools:text="Send Payment Link" />
 
         <ImageView
             android:id="@+id/refreshImageView"

@@ -47,6 +47,7 @@
             android:layout_height="match_parent"
             android:background="@android:color/transparent"
             android:inputType="number"
+            android:maxLength="@integer/amount_length"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/separator"
             app:layout_constraintStart_toStartOf="parent"

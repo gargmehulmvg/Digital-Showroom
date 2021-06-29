@@ -36,6 +36,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -49,7 +50,9 @@ import com.digitaldukaan.adapters.OrderNotificationsAdapter
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.exceptions.UnAuthorizedAccessException
 import com.digitaldukaan.interfaces.IAdapterItemClickListener
+import com.digitaldukaan.interfaces.IContactItemClicked
 import com.digitaldukaan.interfaces.ISearchItemClicked
+import com.digitaldukaan.models.dto.ContactModel
 import com.digitaldukaan.models.request.UpdatePaymentMethodRequest
 import com.digitaldukaan.models.response.*
 import com.digitaldukaan.network.RetrofitApi
@@ -74,6 +77,7 @@ import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
+import kotlin.collections.ArrayList
 
 
 open class BaseFragment : ParentFragment(), ISearchItemClicked {
@@ -1203,11 +1207,16 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked {
                 requestWindowFeature(Window.FEATURE_NO_TITLE)
                 setCancelable(true)
                 setContentView(R.layout.dialog_payment_link_selection)
+                val staticText = StaticInstances.sOrderPageInfoStaticData
                 val bottomSheetClose: ImageView = findViewById(R.id.bottomSheetClose)
+                val headingTextView: TextView = findViewById(R.id.headingTextView)
                 val smsTextView: TextView = findViewById(R.id.smsTextView)
                 val whatsAppTextView: TextView = findViewById(R.id.whatsappTextView)
                 val smsImageView: ImageView = findViewById(R.id.smsImageView)
                 val whatsAppImageView: ImageView = findViewById(R.id.whatsAppImageView)
+                headingTextView.text = staticText?.heading_share_payment_link
+                smsTextView.text = staticText?.text_sms
+                whatsAppTextView.text = staticText?.text_whatsapp
                 whatsAppTextView.setOnClickListener {}
                 smsTextView.setOnClickListener {
                     this.dismiss()
@@ -1219,6 +1228,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked {
                 }
                 whatsAppImageView.setOnClickListener {}
                 bottomSheetClose.setOnClickListener {
+                    this.dismiss()
                 }
                 window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             }.show()
@@ -1562,19 +1572,49 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked {
                 val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_contact_pick, it.findViewById(R.id.bottomSheetContainer))
                 mContactPickerBottomSheet?.apply {
                     setContentView(view)
-                    view?.run {
-                        val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
-                        recyclerView.apply {
-                            layoutManager = LinearLayoutManager(it)
-                            adapter = ContactAdapter(mActivity, object : ISearchItemClicked {
-                                override fun onSearchImageItemClicked(str: String) {
-                                    val position = str.toInt()
-                                    val item = StaticInstances.sUserContactList[position]
-                                    showToast(item.number)
-                                    Log.d(TAG, "showContactPickerBottomSheet :: onSearchImageItemClicked: $item")
-                                }
+                    setBottomSheetCommonProperty()
+                    val contactList : ArrayList<ContactModel> = ArrayList()
+                    val contactAdapter = ContactAdapter(contactList, mActivity, object : IContactItemClicked {
+                        override fun onContactItemClicked(contact: ContactModel) {
+                            showToast(contact.number)
+                            Log.d(TAG, "showContactPickerBottomSheet :: onSearchImageItemClicked: $contact")
+                        }
 
-                            })
+                    })
+                    StaticInstances.sUserContactList.forEachIndexed { _, model -> contactList.add(model) }
+                    view?.run {
+                        val closeImageView: View = findViewById(R.id.bottomSheetUploadImageCloseImageView)
+                        val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
+                        val searchImageEditText: EditText = findViewById(R.id.searchImageEditText)
+                        searchImageEditText.addTextChangedListener(object : TextWatcher {
+                            override fun afterTextChanged(editable: Editable?) {
+                                val string = editable?.toString()
+                                if (!isEmpty(string)) {
+                                    val updatedContactList : ArrayList<ContactModel> = ArrayList()
+                                    contactList.forEachIndexed { _, contactModel ->
+                                        if (contactModel.name?.toLowerCase(Locale.getDefault())?.contains(string?.toLowerCase(Locale.getDefault()) ?: "") == true ||
+                                            contactModel.number?.contains(string ?: "") == true) {
+                                            updatedContactList.add(contactModel)
+                                        }
+                                    }
+                                    contactAdapter.setContactList(updatedContactList)
+                                }
+                            }
+
+                            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                                Log.d(TAG, "beforeTextChanged: $p0")
+                            }
+
+                            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                                Log.d(TAG, "onTextChanged: $p0")
+                            }
+
+                        })
+                        closeImageView.setOnClickListener { this@apply.dismiss() }
+                        recyclerView.apply {
+                            itemAnimator = DefaultItemAnimator()
+                            layoutManager = LinearLayoutManager(it)
+                            adapter = contactAdapter
                         }
                     }
                 }?.show()

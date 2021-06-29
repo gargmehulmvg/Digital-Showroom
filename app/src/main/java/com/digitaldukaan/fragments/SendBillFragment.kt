@@ -5,9 +5,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.TextView
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.CoroutineScopeUtils
+import com.digitaldukaan.constants.StaticInstances
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.constants.getBitmapFromUri
 import kotlinx.android.synthetic.main.layout_send_bill.*
@@ -22,10 +24,11 @@ class SendBillFragment : BaseFragment() {
 
     companion object {
         private const val TAG = "SendBillFragment"
-        fun newInstance(uri: Uri?, file: File?): SendBillFragment {
+        fun newInstance(uri: Uri?, file: File?, amount: String): SendBillFragment {
             val fragment = SendBillFragment()
             fragment.mImageUri = uri
             fragment.mImageFile = file
+            fragment.mAmountStr = amount
             return fragment
         }
     }
@@ -39,9 +42,19 @@ class SendBillFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         loadImageFromUri()
+        val appTitleTextView: TextView? = mContentView?.findViewById(R.id.appTitleTextView)
+        val customerCanPayUsingTextView: TextView? = mContentView?.findViewById(R.id.customerCanPayUsingTextView)
+        val sendBillToCustomerTextView: TextView? = mContentView?.findViewById(R.id.sendBillToCustomerTextView)
         val bottomSheetClose: View? = mContentView?.findViewById(R.id.bottomSheetClose)
+        val amountEditText: EditText? = mContentView?.findViewById(R.id.amountEditText)
         sendLinkTextView = mContentView?.findViewById(R.id.sendLinkTextView)
         bottomSheetClose?.visibility = View.GONE
+        amountEditText?.setText(mAmountStr)
+        val staticText = StaticInstances.sOrderPageInfoStaticData
+        sendLinkTextView?.text = staticText?.text_send_link
+        appTitleTextView?.text = staticText?.text_send_payment_link
+        sendBillToCustomerTextView?.setHtmlData(staticText?.bottom_sheet_heading_send_link)
+        customerCanPayUsingTextView?.setHtmlData(staticText?.bottom_sheet_message_customer_pay)
     }
 
     override fun onResume() {

@@ -69,6 +69,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         private var mSwipeRefreshLayout: SwipeRefreshLayout? = null
         private var orderPageInfoResponse: OrderPageInfoResponse? = null
         private var analyticsResponse: AnalyticsResponse? = null
+        private var mPaymentLinkAmountStr: String? = null
 
         fun newInstance(): HomeFragment {
             return HomeFragment()
@@ -684,7 +685,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
     override fun onImageSelectionResultFileAndUri(fileUri: Uri?, file: File?) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             try {
-                launchFragment(SendBillFragment.newInstance(fileUri, file), true)
+                launchFragment(SendBillFragment.newInstance(fileUri, file, mPaymentLinkAmountStr ?: ""), true)
             } catch (e: Exception) {
                 Log.e(TAG, "onImageSelectionResultUri: ${e.message}", e)
                 AppEventsManager.pushAppEvents(
@@ -749,16 +750,28 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                 setBottomSheetCommonProperty()
                 setCancelable(true)
                 view?.run {
+                    val staticText = StaticInstances.sOrderPageInfoStaticData
                     val billCameraImageView: View = findViewById(R.id.billCameraImageView)
                     val bottomSheetClose: View = findViewById(R.id.bottomSheetClose)
                     val amountEditText: EditText = findViewById(R.id.amountEditText)
                     val sendLinkTextView: TextView = findViewById(R.id.sendLinkTextView)
+                    val sendBillToCustomerTextView: TextView = findViewById(R.id.sendBillToCustomerTextView)
+                    val customerCanPayUsingTextView: TextView = findViewById(R.id.customerCanPayUsingTextView)
+                    sendLinkTextView.text = staticText?.text_send_link
+                    sendBillToCustomerTextView.setHtmlData(staticText?.bottom_sheet_heading_send_link)
+                    customerCanPayUsingTextView.setHtmlData(staticText?.bottom_sheet_message_customer_pay)
                     bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
                     billCameraImageView.setOnClickListener {
+                        mPaymentLinkAmountStr = amountEditText.text.toString()
                         bottomSheetDialog.dismiss()
                         openCameraWithoutCrop()
                     }
                     sendLinkTextView.setOnClickListener {
+                        if (isEmpty(amountEditText.text.toString())) {
+                            amountEditText.requestFocus()
+                            amountEditText.error = staticText?.error_mandatory_field
+                            return@setOnClickListener
+                        }
                         showPaymentLinkSelectionDialog()
                     }
                     amountEditText.requestFocus()

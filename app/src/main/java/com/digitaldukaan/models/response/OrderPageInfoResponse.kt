@@ -72,6 +72,12 @@ data class OrderPageStaticTextResponse(
     @SerializedName("dialog_message_prepaid_delivery")  var dialog_message_prepaid_delivery: String,
     @SerializedName("dialog_message_prepaid_pickup")    var dialog_message_prepaid_pickup: String,
 
+    @SerializedName("text_send_link")                   var text_send_link: String,
+    @SerializedName("text_whatsapp")                    var text_whatsapp: String,
+    @SerializedName("bottom_sheet_message_customer_pay")var bottom_sheet_message_customer_pay: String,
+    @SerializedName("bottom_sheet_heading_send_link")   var bottom_sheet_heading_send_link: String,
+    @SerializedName("text_sms")                         var text_sms: String,
+    @SerializedName("heading_share_payment_link")       var heading_share_payment_link: String,
     @SerializedName("bottom_sheet_message_payment_link")var bottom_sheet_message_payment_link: String,
     @SerializedName("text_send_payment_link")           var text_send_payment_link: String,
     @SerializedName("text_payment_link")                var text_payment_link: String
