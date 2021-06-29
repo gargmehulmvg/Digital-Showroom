@@ -1196,6 +1196,20 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         }
     }
 
+    protected fun showPaymentLinkSelectionDialog() {
+        mActivity?.let {
+            Dialog(it).apply {
+                requestWindowFeature(Window.FEATURE_NO_TITLE)
+                setCancelable(true)
+                setContentView(R.layout.dialog_payment_link_selection)
+                val bottomSheetClose: ImageView = findViewById(R.id.bottomSheetClose)
+                bottomSheetClose.setOnClickListener {
+                    this.dismiss()
+                }
+            }.show()
+        }
+    }
+
     protected fun showMasterCatalogBottomSheet(addProductBannerStaticDataResponse: AddProductBannerTextResponse?, addProductStaticText: AddProductStaticText?, mode: String) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             try {

@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:background="@drawable/upper_curve_white_background"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/_10sdp">
+
+    <ImageView
+        android:id="@+id/bottomSheetClose"
+        android:layout_width="@dimen/_30sdp"
+        android:layout_height="@dimen/_30sdp"
+        android:contentDescription="@string/image_view_content_description"
+        android:padding="@dimen/_4sdp"
+        android:src="@drawable/ic_black_close"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/sendBillToCustomerTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_18sdp"
+        android:layout_marginStart="@dimen/_5sdp"
+        android:layout_marginEnd="@dimen/_5sdp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/bottomSheetClose"
+        tools:text="SEND LINK And get money" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/amountLayout"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/_40sdp"
+        android:layout_marginEnd="@dimen/_5sdp"
+        android:layout_marginTop="@dimen/_15sdp"
+        android:background="@drawable/slight_curve_green_border"
+        app:layout_constraintEnd_toStartOf="@+id/sendLinkTextView"
+        app:layout_constraintStart_toStartOf="@+id/sendBillToCustomerTextView"
+        app:layout_constraintTop_toBottomOf="@+id/sendBillToCustomerTextView">
+
+        <EditText
+            android:id="@+id/amountEditText"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"
+            android:inputType="number"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/separator"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:hint="1512" />
+
+        <View
+            android:id="@+id/separator"
+            android:layout_width="@dimen/_1sdp"
+            android:layout_height="match_parent"
+            android:alpha="0.2"
+            android:layout_marginTop="@dimen/_2sdp"
+            android:layout_marginBottom="@dimen/_2sdp"
+            android:background="@color/default_text_light_grey"
+            app:layout_constraintEnd_toStartOf="@+id/billCameraImageView"
+            tools:layout_editor_absoluteY="6dp" />
+
+        <ImageView
+            android:id="@+id/billCameraImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:paddingStart="@dimen/_5sdp"
+            android:paddingEnd="@dimen/_5sdp"
+            android:background="?selectableItemBackgroundBorderless"
+            android:contentDescription="@string/image_view_content_description"
+            android:onClick="onClick"
+            android:src="@drawable/ic_camera_black"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/sendLinkTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:background="@drawable/ripple_curve_grey_black_background"
+        android:elevation="@dimen/_4sdp"
+        android:textSize="@dimen/_11sdp"
+        android:paddingStart="@dimen/_15sdp"
+        android:paddingEnd="@dimen/_15sdp"
+        android:fontFamily="@font/roboto_bold"
+        android:gravity="center"
+        android:onClick="onClick"
+        android:textColor="@color/white"
+        app:layout_constraintBottom_toBottomOf="@+id/amountLayout"
+        app:layout_constraintEnd_toEndOf="@+id/sendBillToCustomerTextView"
+        app:layout_constraintTop_toTopOf="@+id/amountLayout"
+        tools:text="SEND LINK" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/customerCanPayUsingTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_15sdp"
+        android:layout_marginBottom="@dimen/_20sdp"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_12sdp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/amountLayout"
+        app:layout_constraintTop_toBottomOf="@+id/amountLayout"
+        tools:text="Send bill to your customer" />
+
+    <ImageView
+        android:layout_width="@dimen/_100sdp"
+        android:layout_height="0dp"
+        android:contentDescription="@string/image_view_content_description"
+        android:src="@drawable/payment_gateway_group"
+        app:layout_constraintBottom_toBottomOf="@+id/customerCanPayUsingTextView"
+        app:layout_constraintEnd_toEndOf="@+id/sendBillTextView"
+        app:layout_constraintHorizontal_bias="0.30"
+        app:layout_constraintStart_toEndOf="@+id/customerCanPayUsingTextView"
+        app:layout_constraintTop_toTopOf="@+id/customerCanPayUsingTextView" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

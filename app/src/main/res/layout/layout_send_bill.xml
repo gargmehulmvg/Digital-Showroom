@@ -8,7 +8,7 @@
         android:id="@+id/toolBarContainer"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/black"
+        android:background="@color/white"
         android:elevation="@dimen/_4sdp"
         android:paddingStart="@dimen/_10sdp"
         android:paddingEnd="@dimen/_1sdp"
@@ -25,7 +25,8 @@
             android:src="@drawable/ic_arrow_forward_white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="@color/black" />
 
         <TextView
             android:id="@+id/appTitleTextView"
@@ -39,14 +40,14 @@
             android:paddingTop="@dimen/_4sdp"
             android:paddingEnd="@dimen/_5sdp"
             android:paddingBottom="@dimen/_4sdp"
-            android:textColor="@color/white"
+            android:textColor="@color/black"
             android:textSize="@dimen/_14sdp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/refreshImageView"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@id/backButtonToolbar"
             app:layout_constraintTop_toTopOf="parent"
-            android:text="@string/send_bill" />
+            android:text="Send Payment Link" />
 
         <ImageView
             android:id="@+id/refreshImageView"
@@ -58,7 +59,7 @@
             android:onClick="onClick"
             android:padding="@dimen/_10sdp"
             android:src="@drawable/ic_refresh_white"
-            android:visibility="visible"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -77,62 +78,13 @@
     <LinearLayout
         android:id="@+id/sendBillBottomLayout"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/_50sdp"
-        android:background="@color/open_green"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
         android:baselineAligned="false"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_margin="@dimen/_8sdp"
-            android:layout_weight="1"
-            android:background="@drawable/slight_curve_white_background">
-
-            <EditText
-                android:id="@+id/sendBillEditText"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@android:color/transparent"
-                android:hint="@string/enter_bill_amount"
-                android:importantForAutofill="no"
-                android:inputType="numberDecimal"
-                android:maxLength="@integer/amount_length"
-                android:paddingStart="@dimen/_10sdp"
-                android:paddingEnd="@dimen/_10sdp"
-                android:textSize="@dimen/_12sdp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_margin="@dimen/_8sdp"
-            android:layout_weight="1">
-
-            <TextView
-                android:id="@+id/sendBillTextView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/slight_curve_black_background_selector"
-                android:onClick="onClick"
-                android:gravity="center"
-                android:text="@string/send_bill"
-                android:enabled="false"
-                android:textColor="@color/white"
-                android:textSize="@dimen/_15sdp"
-                app:drawableEndCompat="@drawable/ic_arrow_forward_white"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
+        <include layout="@layout/bottom_sheet_payment_link" />
 
     </LinearLayout>
 

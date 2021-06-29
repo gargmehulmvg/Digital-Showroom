@@ -9,10 +9,7 @@ import android.util.Log
 import android.view.*
 import android.webkit.WebSettings
 import android.webkit.WebView
-import android.widget.ImageView
-import android.widget.PopupMenu
-import android.widget.ScrollView
-import android.widget.TextView
+import android.widget.*
 import androidx.core.content.ContextCompat
 import androidx.core.widget.NestedScrollView
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -39,7 +36,6 @@ import com.digitaldukaan.webviews.WebViewBridge
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
-import com.squareup.picasso.Picasso
 import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration
 import kotlinx.android.synthetic.main.home_fragment.*
 import kotlinx.android.synthetic.main.layout_analytics.*
@@ -450,7 +446,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                     }
                     Handler(Looper.getMainLooper()).postDelayed({ fetchLatestOrders(Constants.MODE_PENDING, mFetchingOrdersStr, pendingPageCount) }, 150)
                 }
-                takeOrderTextView?.text = mOrderPageInfoStaticData?.text_add_new_order
+                takeOrderTextView?.text = mOrderPageInfoStaticData?.text_payment_link
                 analyticsImageView?.visibility = if (mIsAnalyticsOrder) View.VISIBLE else View.GONE
                 searchImageView?.visibility = if (mIsSearchOrder) View.VISIBLE else View.GONE
                 takeOrderTextView?.visibility = if (mIsTakeOrder) View.VISIBLE else View.GONE
@@ -716,26 +712,19 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                 setContentView(view)
                 behavior.state = BottomSheetBehavior.STATE_EXPANDED
                 view?.run {
-                    val imageViewSendBill: ImageView = findViewById(R.id.imageViewSendBill)
-                    val shareButtonTextView: TextView = findViewById(R.id.shareButtonTextView)
+                    val bottomSheetClose: View = findViewById(R.id.bottomSheetClose)
+                    val sendPaymentLinkTextView: TextView = findViewById(R.id.sendPaymentLinkTextView)
                     val takeOrderMessageTextView: TextView = findViewById(R.id.takeOrderMessageTextView)
                     val createNewBillTextView: TextView = findViewById(R.id.createNewBillTextView)
-                    val clickBillPhotoContainer: View = findViewById(R.id.clickBillPhotoContainer)
-                    clickBillPhotoContainer.setOnClickListener {
-                        clickBillPhotoContainer.isEnabled = false
+                    sendPaymentLinkTextView.setOnClickListener {
+                        sendPaymentLinkTextView.isEnabled = false
+                        showPaymentLinkBottomSheet()
                         bottomSheetDialog.dismiss()
-                        openCameraWithoutCrop()
                     }
-                    shareButtonTextView.text = mOrderPageInfoStaticData?.bottom_sheet_click_bill_photo
-                    takeOrderMessageTextView.text = mOrderPageInfoStaticData?.bottom_sheet_take_order_message
+                    bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
+                    sendPaymentLinkTextView.text = mOrderPageInfoStaticData?.text_send_payment_link
+                    takeOrderMessageTextView.setHtmlData(mOrderPageInfoStaticData?.bottom_sheet_message_payment_link)
                     createNewBillTextView.text = mOrderPageInfoStaticData?.bottom_sheet_create_a_new_bill
-                    imageViewSendBill?.let {
-                        try {
-                            Picasso.get().load(orderPageInfoResponse?.mTakeOrderImage).into(it)
-                        } catch (e: Exception) {
-                            Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
-                        }
-                    }
                     createNewBillTextView.setOnClickListener {
                         createNewBillTextView.isEnabled = false
                         bottomSheetDialog.dismiss()
@@ -746,6 +735,34 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                             ), true
                         )
                     }
+                }
+            }.show()
+        }
+    }
+
+    private fun showPaymentLinkBottomSheet() {
+        mActivity?.let {
+            val bottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
+            val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_payment_link, it.findViewById(R.id.bottomSheetContainer))
+            bottomSheetDialog.apply {
+                setContentView(view)
+                setBottomSheetCommonProperty()
+                setCancelable(false)
+                view?.run {
+                    val billCameraImageView: View = findViewById(R.id.billCameraImageView)
+                    val bottomSheetClose: View = findViewById(R.id.bottomSheetClose)
+                    val amountEditText: EditText = findViewById(R.id.amountEditText)
+                    val sendLinkTextView: TextView = findViewById(R.id.sendLinkTextView)
+                    bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
+                    billCameraImageView.setOnClickListener {
+                        bottomSheetDialog.dismiss()
+                        openCameraWithoutCrop()
+                    }
+                    sendLinkTextView.setOnClickListener {
+                        showPaymentLinkSelectionDialog()
+                    }
+                    amountEditText.requestFocus()
+                    amountEditText.showKeyboard()
                 }
             }.show()
         }

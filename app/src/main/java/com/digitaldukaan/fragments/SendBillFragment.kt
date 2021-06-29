@@ -2,22 +2,15 @@ package com.digitaldukaan.fragments
 
 import android.net.Uri
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.digitaldukaan.BuildConfig
+import android.widget.TextView
 import com.digitaldukaan.R
-import com.digitaldukaan.constants.*
-import com.digitaldukaan.network.RetrofitApi
-import com.google.gson.Gson
-import io.sentry.Sentry
+import com.digitaldukaan.constants.CoroutineScopeUtils
+import com.digitaldukaan.constants.ToolBarManager
+import com.digitaldukaan.constants.getBitmapFromUri
 import kotlinx.android.synthetic.main.layout_send_bill.*
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import java.io.File
 
 class SendBillFragment : BaseFragment() {
@@ -25,6 +18,7 @@ class SendBillFragment : BaseFragment() {
     private var mImageUri: Uri? = null
     private var mImageFile: File? = null
     private var mAmountStr: String? = ""
+    private var sendLinkTextView: TextView? = null
 
     companion object {
         private const val TAG = "SendBillFragment"
@@ -36,11 +30,7 @@ class SendBillFragment : BaseFragment() {
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.layout_send_bill, container, false)
         hideBottomNavigationView(true)
         ToolBarManager.getInstance()?.apply { hideToolBar(mActivity, true) }
@@ -49,21 +39,9 @@ class SendBillFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         loadImageFromUri()
-        sendBillEditText?.addTextChangedListener(object : TextWatcher{
-            override fun afterTextChanged(str: Editable?) {
-                mAmountStr = str?.toString()
-                sendBillTextView.isEnabled = str?.toString()?.isEmpty() != true
-            }
-
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                Log.d(TAG, "beforeTextChanged: do nothing")
-            }
-
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                Log.d(TAG, "onTextChanged: do nothing")
-            }
-
-        })
+        val bottomSheetClose: View? = mContentView?.findViewById(R.id.bottomSheetClose)
+        sendLinkTextView = mContentView?.findViewById(R.id.sendLinkTextView)
+        bottomSheetClose?.visibility = View.GONE
     }
 
     override fun onResume() {
@@ -84,7 +62,8 @@ class SendBillFragment : BaseFragment() {
         when (view?.id) {
             refreshImageView?.id -> openCameraWithoutCrop()
             backButtonToolbar?.id -> mActivity?.onBackPressed()
-            sendBillTextView?.id -> {
+            sendLinkTextView?.id -> showPaymentLinkSelectionDialog()
+            /*sendBillTextView?.id -> {
                 AppEventsManager.pushAppEvents(eventName = AFInAppEventType.EVENT_GENERATE_SELF_BILL, isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true, data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)))
                 try {
                     mImageFile?.run {
@@ -128,7 +107,8 @@ class SendBillFragment : BaseFragment() {
                         )
                     )
                 }
-            }
+            }*/
+             */
         }
     }
 

@@ -133,6 +133,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
             showNoInternetConnectionDialog()
             return
         }
+        Log.d(TAG, "onMarketingItemClick: ${response?.action}")
         when (response?.action) {
             Constants.ACTION_BUSINESS_CREATIVE -> {
                 AppEventsManager.pushAppEvents(
