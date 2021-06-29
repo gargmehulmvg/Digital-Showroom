@@ -274,14 +274,17 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                 Constants.ORDER_TYPE_SELF_IMAGE -> {
                     blankSpace?.visibility = View.GONE
                     deliveryLabelLayout?.visibility = View.GONE
-                    deliveryLabelLayout?.visibility = View.GONE
                     customerDetailsLabel?.visibility = View.GONE
-                    billPhotoImageView?.visibility = View.VISIBLE
-                    billPhotoImageView?.let {
-                        try {
-                            Glide.with(this).load(orderDetailResponse.imageLink).into(it)
-                        } catch (e: Exception) {
-                            Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+                    if (Constants.DS_PENDING_PAYMENT_LINK == displayStatus) {
+                        reminderContainer?.visibility = View.VISIBLE
+                    } else {
+                        billPhotoImageView?.let {
+                            it.visibility = View.VISIBLE
+                            try {
+                                Glide.with(this).load(orderDetailResponse.imageLink).into(it)
+                            } catch (e: Exception) {
+                                Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+                            }
                         }
                     }
                 }

@@ -497,7 +497,7 @@
             android:layout_margin="@dimen/_10sdp"
             android:layout_weight="1"
             android:animateLayoutChanges="true"
-            android:background="@drawable/curve_black_background_selector"
+            android:background="@drawable/ripple_curve_grey_black_background"
             android:onClick="onClick">
 
             <ImageView
