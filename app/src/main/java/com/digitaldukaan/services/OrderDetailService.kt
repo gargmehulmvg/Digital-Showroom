@@ -54,9 +54,9 @@ class OrderDetailService {
         }
     }
 
-    fun getOrderDetailStatus(orderId: Int?) {
+    fun sharePaymentLink(orderId: String?) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            orderId?.let { mNetworkService.onOrderDetailStatusResponse("$it", mServiceInterface) }
+            mNetworkService.sharePaymentLink(orderId, mServiceInterface)
         }
     }
 

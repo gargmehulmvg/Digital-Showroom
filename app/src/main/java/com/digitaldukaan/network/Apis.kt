@@ -178,6 +178,9 @@ interface Apis {
     @GET("api/dotk/vm1/orders/getOrderAnalytics")
     suspend fun getAnalyticsData() : Response<CommonApiResponse>
 
+    @GET("api/dotk/vm1/orders/sharePaymentLink")
+    suspend fun sharePaymentLink(@Query("order_id") orderId: String?): Response<CommonApiResponse>
+
     @GET("api/dotk/vm1/orders/getOrdersPageInfo")
     suspend fun getOrderPageInfo() : Response<CommonApiResponse>
 

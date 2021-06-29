@@ -51,7 +51,7 @@ import java.util.*
 
 class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupMenu.OnMenuItemClickListener {
 
-    private var mOrderId = ""
+    private var mOrderHash = ""
     private var mMobileNumber = ""
     private var mOrderDetailService: OrderDetailService? = null
     private var mOrderDetailStaticData: OrderDetailsStaticTextResponse? = null
@@ -74,9 +74,9 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
         private const val CUSTOM = "custom"
         private var mShareBillResponseStr: String? = ""
 
-        fun newInstance(orderId: String, isNewOrder: Boolean): OrderDetailFragment {
+        fun newInstance(orderHash: String, isNewOrder: Boolean): OrderDetailFragment {
             val fragment = OrderDetailFragment()
-            fragment.mOrderId = orderId
+            fragment.mOrderHash = orderHash
             fragment.mIsNewOrder = isNewOrder
             return fragment
         }
@@ -91,7 +91,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
         } else {
             showProgressDialog(mActivity)
             mOrderDetailService?.getDeliveryTime()
-            mOrderDetailService?.getOrderDetail(mOrderId)
+            mOrderDetailService?.getOrderDetail(mOrderHash)
         }
         mShareBillResponseStr = ""
         return mContentView
@@ -140,6 +140,10 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
             }
             detailTextView?.id -> {
                 getTransactionDetailBottomSheet(orderDetailMainResponse?.orders?.transactionId, AFInAppEventParameterName.ORDER_DETAILS)
+            }
+            shareProductContainer?.id -> {
+                showProgressDialog(mActivity)
+                mOrderDetailService?.sharePaymentLink(mOrderHash)
             }
             sideIconWhatsAppToolbar?.id -> {
                 val displayStatus = orderDetailMainResponse?.orders?.displayStatus
@@ -275,7 +279,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                     blankSpace?.visibility = View.GONE
                     deliveryLabelLayout?.visibility = View.GONE
                     customerDetailsLabel?.visibility = View.GONE
-                    if (Constants.DS_PENDING_PAYMENT_LINK == displayStatus) {
+                    if (Constants.DS_PENDING_PAYMENT_LINK == displayStatus && isEmpty(orderDetailResponse.imageLink)) {
                         reminderContainer?.visibility = View.VISIBLE
                     } else {
                         billPhotoImageView?.let {
@@ -671,6 +675,13 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
         }
     }
 
+    override fun onSharePaymentLinkResponse(commonResponse: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            shareOnWhatsApp(Gson().fromJson<String>(commonResponse.mCommonDataStr, String::class.java))
+        }
+    }
+
     override fun onOrderDetailStatusResponse(commonResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
@@ -698,7 +709,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
             if (commonResponse.mIsSuccessStatus) {
                 val response = Gson().fromJson<UpdateOrderResponse>(commonResponse.mCommonDataStr, UpdateOrderResponse::class.java)
                 shareDataOnWhatsAppByNumber(mMobileNumber, response?.whatsAppText)
-                mOrderDetailService?.getOrderDetail(mOrderId)
+                mOrderDetailService?.getOrderDetail(mOrderHash)
             } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
         }
     }
