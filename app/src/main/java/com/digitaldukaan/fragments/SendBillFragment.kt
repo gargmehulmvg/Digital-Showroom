@@ -114,4 +114,10 @@ class SendBillFragment : BaseFragment() {
         }
     }
 
+    override fun refreshOrderPage() {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            mActivity?.onBackPressed()
+        }
+    }
+
 }
