@@ -48,6 +48,8 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
     SwipeRefreshLayout.OnRefreshListener, IOrderListItemListener,
     PopupMenu.OnMenuItemClickListener {
 
+    private var paymentLinkBottomSheet: BottomSheetDialog? = null
+
     companion object {
         private val TAG = HomeFragment::class.simpleName
         private var mOrderPageInfoStaticData: OrderPageStaticTextResponse? = null
@@ -743,9 +745,9 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
 
     private fun showPaymentLinkBottomSheet() {
         mActivity?.let {
-            val bottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
+            paymentLinkBottomSheet = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
             val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_payment_link, it.findViewById(R.id.bottomSheetContainer))
-            bottomSheetDialog.apply {
+            paymentLinkBottomSheet?.apply {
                 setContentView(view)
                 setBottomSheetCommonProperty()
                 setCancelable(true)
@@ -760,10 +762,10 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                     sendLinkTextView.text = staticText?.text_send_link
                     sendBillToCustomerTextView.setHtmlData(staticText?.bottom_sheet_heading_send_link)
                     customerCanPayUsingTextView.setHtmlData(staticText?.bottom_sheet_message_customer_pay)
-                    bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
+                    bottomSheetClose.setOnClickListener { paymentLinkBottomSheet?.dismiss() }
                     billCameraImageView.setOnClickListener {
                         mPaymentLinkAmountStr = amountEditText.text.toString()
-                        bottomSheetDialog.dismiss()
+                        paymentLinkBottomSheet?.dismiss()
                         openCameraWithoutCrop()
                     }
                     sendLinkTextView.setOnClickListener {
@@ -772,12 +774,32 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                             amountEditText.error = staticText?.error_mandatory_field
                             return@setOnClickListener
                         }
-                        showPaymentLinkSelectionDialog()
+                        showPaymentLinkSelectionDialog(amountEditText.text.toString())
                     }
                     amountEditText.requestFocus()
                     amountEditText.showKeyboard()
                 }
-            }.show()
+            }?.show()
+        }
+    }
+
+    override fun onWhatsAppIconClicked() {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            try {
+                paymentLinkBottomSheet?.dismiss()
+            } catch (e: Exception) {
+                Log.e(TAG, "onWhatsAppIconClicked: ${e.message}", e)
+            }
+        }
+    }
+
+    override fun onSMSIconClicked() {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            try {
+                paymentLinkBottomSheet?.dismiss()
+            } catch (e: Exception) {
+                Log.e(TAG, "onWhatsAppIconClicked: ${e.message}", e)
+            }
         }
     }
 

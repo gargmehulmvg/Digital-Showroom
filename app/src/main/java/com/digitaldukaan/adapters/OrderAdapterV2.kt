@@ -78,7 +78,7 @@ class OrderAdapterV2(
     override fun onBindViewHolder(holder: OrderAdapterV2.OrderViewHolder, position: Int) {
         val item = mOrderList?.get(position)
         holder.apply {
-            val str = "#${item?.orderId} | ${getNameFromContactList(item?.phone) ?: item?.phone}"
+            val str = "#${item?.orderId}${if ("0000000000" == item?.phone) "" else " | ${getNameFromContactList(item?.phone) ?: item?.phone}"}"
             orderDetailsTextView.text = str
             orderTimeTextView.text = getTimeFromOrderString(item?.updatedCompleteDate)
             orderAddressTextView.text = getAddress(item)

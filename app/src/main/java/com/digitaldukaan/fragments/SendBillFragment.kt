@@ -8,11 +8,14 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
 import com.digitaldukaan.R
-import com.digitaldukaan.constants.CoroutineScopeUtils
-import com.digitaldukaan.constants.StaticInstances
-import com.digitaldukaan.constants.ToolBarManager
-import com.digitaldukaan.constants.getBitmapFromUri
+import com.digitaldukaan.constants.*
+import com.digitaldukaan.network.RetrofitApi
+import com.google.gson.Gson
+import io.sentry.Sentry
 import kotlinx.android.synthetic.main.layout_send_bill.*
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import java.io.File
 
 class SendBillFragment : BaseFragment() {
@@ -20,6 +23,7 @@ class SendBillFragment : BaseFragment() {
     private var mImageUri: Uri? = null
     private var mImageFile: File? = null
     private var mAmountStr: String? = ""
+    private var mImageCdnLink: String = ""
     private var sendLinkTextView: TextView? = null
 
     companion object {
@@ -55,6 +59,7 @@ class SendBillFragment : BaseFragment() {
         appTitleTextView?.text = staticText?.text_send_payment_link
         sendBillToCustomerTextView?.setHtmlData(staticText?.bottom_sheet_heading_send_link)
         customerCanPayUsingTextView?.setHtmlData(staticText?.bottom_sheet_message_customer_pay)
+        mImageFile?.let { file -> uploadImageToGetCDNLink(file) }
     }
 
     override fun onResume() {
@@ -75,53 +80,7 @@ class SendBillFragment : BaseFragment() {
         when (view?.id) {
             refreshImageView?.id -> openCameraWithoutCrop()
             backButtonToolbar?.id -> mActivity?.onBackPressed()
-            sendLinkTextView?.id -> showPaymentLinkSelectionDialog()
-            /*sendBillTextView?.id -> {
-                AppEventsManager.pushAppEvents(eventName = AFInAppEventType.EVENT_GENERATE_SELF_BILL, isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true, data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)))
-                try {
-                    mImageFile?.run {
-                        val fileRequestBody = MultipartBody.Part.createFormData("media", name, RequestBody.create("image/*".toMediaTypeOrNull(), this))
-                        val imageTypeRequestBody = RequestBody.create("text/plain".toMediaTypeOrNull(), Constants.BASE64_ORDER_BILL)
-                        showProgressDialog(mActivity)
-                        CoroutineScopeUtils().runTaskOnCoroutineBackground {
-                            try {
-                                val response = RetrofitApi().getServerCallObject()?.getImageUploadCdnLink(imageTypeRequestBody, fileRequestBody)
-                                response?.let {
-                                    CoroutineScopeUtils().runTaskOnCoroutineMain {
-                                        stopProgress()
-                                        if (response.isSuccessful) {
-                                            val base64Str = Gson().fromJson<String>(response.body()?.mCommonDataStr, String::class.java)
-                                            launchFragment(
-                                                CommonWebViewFragment().newInstance(
-                                                    "",
-                                                    "${BuildConfig.WEB_VIEW_URL}${WebViewUrls.WEB_VIEW_BILL_CONFIRM}?storeid=${getStringDataFromSharedPref(Constants.STORE_ID
-                                                    )}&imageURL=$base64Str&amount=${if (mAmountStr?.isEmpty() == true) 0.0 else mAmountStr?.toDouble()}"
-                                                ), true
-                                            )
-                                        }
-                                    }
-                                }
-                            } catch (e: Exception) {
-                                Sentry.captureException(e, "$TAG onClick: exception")
-                                exceptionHandlingForAPIResponse(e)
-                            }
-                        }
-                    }
-                } catch (e: Exception) {
-                    Log.e(TAG, "sendBillTextView: ${e.message}", e)
-                    AppEventsManager.pushAppEvents(
-                        eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
-                        isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                        data = mapOf(
-                            AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                            "Exception Point" to "sendBillTextView Click for Image Conversion",
-                            "Exception Message" to e.message,
-                            "Exception Logs" to e.toString()
-                        )
-                    )
-                }
-            }*/
-             */
+            sendLinkTextView?.id -> showPaymentLinkSelectionDialog(mAmountStr ?: "0", mImageCdnLink)
         }
     }
 
@@ -133,6 +92,26 @@ class SendBillFragment : BaseFragment() {
     override fun onImageSelectionResultFile(file: File?, mode: String) {
         mImageFile = file
         loadImageFromUri()
+    }
+
+    private fun uploadImageToGetCDNLink(file: File) {
+        showProgressDialog(mActivity)
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            try {
+                val fileRequestBody = MultipartBody.Part.createFormData("media", file.name, RequestBody.create("image/*".toMediaTypeOrNull(), file))
+                val imageTypeRequestBody = RequestBody.create("text/plain".toMediaTypeOrNull(), Constants.BASE64_THEMES)
+                val response = RetrofitApi().getServerCallObject()?.getImageUploadCdnLink(imageTypeRequestBody, fileRequestBody)
+                response?.let {
+                    stopProgress()
+                    if (response.isSuccessful) {
+                        mImageCdnLink = Gson().fromJson<String>(response.body()?.mCommonDataStr, String::class.java)
+                    }
+                }
+            } catch (e: Exception) {
+                Sentry.captureException(e, "$TAG uploadImageToGetCDNLink: exception")
+                exceptionHandlingForAPIResponse(e)
+            }
+        }
     }
 
 }

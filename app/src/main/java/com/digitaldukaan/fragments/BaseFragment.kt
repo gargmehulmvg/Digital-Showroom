@@ -53,6 +53,7 @@ import com.digitaldukaan.interfaces.IAdapterItemClickListener
 import com.digitaldukaan.interfaces.IContactItemClicked
 import com.digitaldukaan.interfaces.ISearchItemClicked
 import com.digitaldukaan.models.dto.ContactModel
+import com.digitaldukaan.models.request.PaymentLinkRequest
 import com.digitaldukaan.models.request.UpdatePaymentMethodRequest
 import com.digitaldukaan.models.response.*
 import com.digitaldukaan.network.RetrofitApi
@@ -1201,7 +1202,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked {
         }
     }
 
-    protected fun showPaymentLinkSelectionDialog() {
+    protected fun showPaymentLinkSelectionDialog(amount: String, imageCdn: String = "") {
         mActivity?.let {
             Dialog(it).apply {
                 requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -1217,16 +1218,28 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked {
                 headingTextView.text = staticText?.heading_share_payment_link
                 smsTextView.text = staticText?.text_sms
                 whatsAppTextView.text = staticText?.text_whatsapp
-                whatsAppTextView.setOnClickListener {}
                 smsTextView.setOnClickListener {
                     this.dismiss()
-                    showContactPickerBottomSheet()
+                    onSMSIconClicked()
+                    showContactPickerBottomSheet(amount, imageCdn)
                 }
                 smsImageView.setOnClickListener {
                     this.dismiss()
-                    showContactPickerBottomSheet()
+                    onSMSIconClicked()
+                    showContactPickerBottomSheet(amount, imageCdn)
                 }
-                whatsAppImageView.setOnClickListener {}
+                whatsAppImageView.setOnClickListener {
+                    this.dismiss()
+                    onWhatsAppIconClicked()
+                    val request = PaymentLinkRequest(Constants.MODE_WHATS_APP, amount.toDouble(), "", imageCdn)
+                    initiatePaymentLinkServerCall(request)
+                }
+                whatsAppTextView.setOnClickListener {
+                    this.dismiss()
+                    onWhatsAppIconClicked()
+                    val request = PaymentLinkRequest(Constants.MODE_WHATS_APP, amount.toDouble(), "", imageCdn)
+                    initiatePaymentLinkServerCall(request)
+                }
                 bottomSheetClose.setOnClickListener {
                     this.dismiss()
                 }
@@ -1565,7 +1578,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked {
         }
     }
 
-    open fun showContactPickerBottomSheet() {
+    open fun showContactPickerBottomSheet(amount: String, imageCdn: String = "") {
         if (!askContactPermission()) {
             mActivity?.let {
                 val mContactPickerBottomSheet: BottomSheetDialog? = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
@@ -1576,8 +1589,8 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked {
                     val contactList : ArrayList<ContactModel> = ArrayList()
                     val contactAdapter = ContactAdapter(contactList, mActivity, object : IContactItemClicked {
                         override fun onContactItemClicked(contact: ContactModel) {
-                            showToast(contact.number)
-                            Log.d(TAG, "showContactPickerBottomSheet :: onSearchImageItemClicked: $contact")
+                            val request = PaymentLinkRequest(Constants.MODE_SMS, amount.toDouble(), contact.number ?: "", imageCdn)
+                            initiatePaymentLinkServerCall(request)
                         }
 
                     })
@@ -1618,6 +1631,34 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked {
                         }
                     }
                 }?.show()
+            }
+        }
+    }
+
+    private fun initiatePaymentLinkServerCall(request: PaymentLinkRequest) {
+        showProgressDialog(mActivity)
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            try {
+                val response = RetrofitApi().getServerCallObject()?.sendPaymentLink(request)
+                response?.let {
+                    stopProgress()
+                    if (it.isSuccessful) {
+                        it.body()?.let {
+                            withContext(Dispatchers.Main) {
+                                if (it.mIsSuccessStatus) {
+                                    val responseObj = Gson().fromJson<PaymentLinkResponse>(it.mCommonDataStr, PaymentLinkResponse::class.java)
+                                    if (request.mode == Constants.MODE_WHATS_APP) {
+                                        shareOnWhatsApp(responseObj?.whatsapp?.text)
+                                    } else {
+                                        showToast("Show SMS dialog")
+                                    }
+                                } else showShortSnackBar(it.mMessage, true, R.drawable.ic_close_red)
+                            }
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                exceptionHandlingForAPIResponse(e)
             }
         }
     }

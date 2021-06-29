@@ -181,6 +181,9 @@ interface Apis {
     @GET("api/dotk/vm1/orders/getOrdersPageInfo")
     suspend fun getOrderPageInfo() : Response<CommonApiResponse>
 
+    @POST("api/dotk/vm1/orders/sendPaymentLink")
+    suspend fun sendPaymentLink(@Body request: PaymentLinkRequest): Response<CommonApiResponse>
+
     @POST("api/dotk/vm1/orders/getOrderList")
     suspend fun getOrdersList(@Body request: OrdersRequest): Response<CommonApiResponse>
 

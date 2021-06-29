@@ -30,6 +30,10 @@ open class ParentFragment : Fragment(), IWebViewCallbacks {
 
     open fun onMyPaymentFragmentTabChanged() = Unit
 
+    open fun onWhatsAppIconClicked() = Unit
+
+    open fun onSMSIconClicked() = Unit
+
     open fun onSearchDialogContinueButtonClicked(inputOrderId: String, inputMobileNumber: String) = Unit
 
 }
