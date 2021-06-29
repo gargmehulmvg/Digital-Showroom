@@ -80,5 +80,6 @@ data class OrderPageStaticTextResponse(
     @SerializedName("heading_share_payment_link")       var heading_share_payment_link: String,
     @SerializedName("bottom_sheet_message_payment_link")var bottom_sheet_message_payment_link: String,
     @SerializedName("text_send_payment_link")           var text_send_payment_link: String,
+    @SerializedName("payment_link")                     var payment_link: String,
     @SerializedName("text_payment_link")                var text_payment_link: String
 )

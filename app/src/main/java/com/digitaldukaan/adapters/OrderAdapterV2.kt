@@ -246,6 +246,7 @@ class OrderAdapterV2(
                 orderStatusImageView.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_order_status_paid))
             }
             else -> {
+                orderStatusTextView.text = null
                 if (Constants.ORDER_TYPE_PREPAID == item?.prepaidFlag) {
                     orderStatusImageView.visibility = View.VISIBLE
                     orderStatusImageView.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_prepaid))
@@ -263,7 +264,7 @@ class OrderAdapterV2(
             Constants.ORDER_TYPE_ADDRESS -> "${item.deliveryInfo.address1} ${item.deliveryInfo.address2}"
             Constants.ORDER_TYPE_PICK_UP -> mOrderPageInfoStaticData?.pickUpOrder ?: "Pick up Order"
             Constants.ORDER_TYPE_SELF -> mOrderPageInfoStaticData?.selfBilled ?: "Self Billed"
-            Constants.ORDER_TYPE_SELF_IMAGE -> mOrderPageInfoStaticData?.selfBilled ?: "Self Billed"
+            Constants.ORDER_TYPE_SELF_IMAGE -> mOrderPageInfoStaticData?.payment_link ?: "Payment Link"
             else -> ""
         }
     }
