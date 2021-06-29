@@ -1589,8 +1589,9 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked {
                     val contactList : ArrayList<ContactModel> = ArrayList()
                     val contactAdapter = ContactAdapter(contactList, mActivity, object : IContactItemClicked {
                         override fun onContactItemClicked(contact: ContactModel) {
+                            mContactPickerBottomSheet?.dismiss()
                             val request = PaymentLinkRequest(Constants.MODE_SMS, amount.toDouble(), contact.number ?: "", imageCdn)
-                            initiatePaymentLinkServerCall(request)
+                            initiatePaymentLinkServerCall(request, contact.name ?: "")
                         }
 
                     })
@@ -1635,7 +1636,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked {
         }
     }
 
-    private fun initiatePaymentLinkServerCall(request: PaymentLinkRequest) {
+    private fun initiatePaymentLinkServerCall(request: PaymentLinkRequest, contactName: String = "") {
         showProgressDialog(mActivity)
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
             try {
@@ -1650,8 +1651,9 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked {
                                     if (request.mode == Constants.MODE_WHATS_APP) {
                                         shareOnWhatsApp(responseObj?.whatsapp?.text)
                                     } else {
-                                        showToast("Show SMS dialog")
+                                        showPaymentLinkSuccessDialog(responseObj?.sms, contactName)
                                     }
+                                    refreshOrderPage()
                                 } else showShortSnackBar(it.mMessage, true, R.drawable.ic_close_red)
                             }
                         }
@@ -1660,6 +1662,39 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked {
             } catch (e: Exception) {
                 exceptionHandlingForAPIResponse(e)
             }
+        }
+    }
+
+    private fun showPaymentLinkSuccessDialog(smsObj: SMSItemResponse?, contactName: String) {
+        mActivity?.let {
+            Dialog(it).apply {
+                requestWindowFeature(Window.FEATURE_NO_TITLE)
+                setCancelable(true)
+                setContentView(R.layout.dialog_payment_link_success)
+                val dateHeading: TextView = findViewById(R.id.dateHeading)
+                val timeHeading: TextView = findViewById(R.id.timeHeading)
+                val amountHeading: TextView = findViewById(R.id.amountHeading)
+                val dateTextView: TextView = findViewById(R.id.dateTextView)
+                val timeTextView: TextView = findViewById(R.id.timeTextView)
+                val idHeading: TextView = findViewById(R.id.idHeading)
+                val amountTextView: TextView = findViewById(R.id.amountTextView)
+                val linkSentToTextView: TextView = findViewById(R.id.linkSentToTextView)
+                val floatingClose: ImageView = findViewById(R.id.floatingClose)
+                val idStr = "${smsObj?.staticText?.text_id} ${smsObj?.orderId}"
+                idHeading.text = idStr
+                val amountStr = "₹ ${smsObj?.amount}"
+                amountTextView.text = amountStr
+                linkSentToTextView.text = "${smsObj?.staticText?.text_your_link_sent_to} $contactName"
+                dateHeading.text = smsObj?.staticText?.text_date
+                timeTextView.text = smsObj?.time
+                dateTextView.text = smsObj?.date
+                timeHeading.text = smsObj?.staticText?.text_time
+                amountHeading.text = smsObj?.staticText?.text_amount
+                floatingClose.setOnClickListener {
+                    this.dismiss()
+                }
+                window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            }.show()
         }
     }
 

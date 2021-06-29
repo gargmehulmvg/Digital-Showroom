@@ -816,4 +816,10 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         }
         return true
     }
+
+    override fun refreshOrderPage() {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            onRefresh()
+        }
+    }
 }
