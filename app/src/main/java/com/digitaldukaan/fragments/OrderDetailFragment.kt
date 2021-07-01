@@ -283,7 +283,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                         reminderContainer?.visibility = View.VISIBLE
                     } else {
                         if (isEmpty(orderDetailResponse.imageLink)) {
-                            getTransactionDetailBottomSheet(orderDetailMainResponse?.orders?.transactionId, AFInAppEventParameterName.ORDER_DETAILS)
+                            getTransactionDetailBottomSheet(orderDetailMainResponse?.orders?.transactionId)
                         } else {
                             billPhotoImageView?.let {
                             it.visibility = View.VISIBLE
@@ -820,20 +820,6 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
         }
     }
 
-    private fun setOrderDetailBottomSheetItem(imageView:ImageView, textView: TextView, item: OrderDetailTransactionItemResponse) {
-        mActivity?.run {
-            textView.setTextColor(ContextCompat.getColor(this, R.color.black))
-            textView.text = item.settlementStatus
-            when(item.transactionStatus?.toLowerCase(Locale.getDefault())) {
-                "" -> imageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_order_detail_green_tick))
-                Constants.ORDER_STATUS_PAYOUT_SUCCESS -> imageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_order_detail_green_tick))
-                Constants.ORDER_STATUS_IN_PROGRESS -> imageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_order_detail_yellow_icon))
-                Constants.ORDER_STATUS_REFUND_SUCCESS -> imageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_order_detail_black_tick))
-                Constants.ORDER_STATUS_REJECTED -> imageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_close_red))
-            }
-        }
-    }
-
     private fun showOrderRejectBottomSheet() {
         mActivity?.run {
             val bottomSheetDialog = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
@@ -954,10 +940,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
         return false
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int, permissions: Array<String>,
-        grantResults: IntArray
-    ) {
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         Log.i(TAG, "onRequestPermissionResult")
         if (requestCode == Constants.EXTERNAL_STORAGE_REQUEST_CODE) {
             when {
@@ -989,6 +972,68 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
         } else {
             showProgressDialog(mActivity)
             mOrderDetailService?.completeOrder(CompleteOrderRequest(orderDetailMainResponse?.orders?.orderId?.toLong()))
+        }
+    }
+
+    override fun onTransactionDetailResponse(response: TransactionDetailResponse?) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            detailTextView?.visibility = View.INVISIBLE
+            transactionDetailLayout?.visibility = View.VISIBLE
+            mContentView?.run {
+                val billAmountValueTextView: TextView = findViewById(R.id.billAmountValueTextView)
+                val txnChargeValueTextView: TextView = findViewById(R.id.txnChargeValueTextView)
+                val textViewTop: TextView = findViewById(R.id.textViewTop)
+                val textViewBottom: TextView = findViewById(R.id.textViewBottom)
+                val billAmountTextView: TextView = findViewById(R.id.billAmountTextView)
+                val txnChargeTextView: TextView = findViewById(R.id.txnChargeTextView)
+                val paymentModeTextView: TextView = findViewById(R.id.paymentModeTextView)
+                val amountSettleTextView: TextView = findViewById(R.id.amountSettleTextView)
+                val amountSettleValueTextView: TextView = findViewById(R.id.amountSettleValueTextView)
+                val txnId: TextView = findViewById(R.id.txnId)
+                val bottomDate: TextView = findViewById(R.id.bottomDate)
+                val displayMessage: TextView = findViewById(R.id.displayMessage)
+                val ctaTextView: TextView = findViewById(R.id.ctaTextView)
+                val imageViewBottom: ImageView = findViewById(R.id.imageViewBottom)
+                val paymentModeImageView: ImageView = findViewById(R.id.paymentModeImageView)
+
+                val staticText = response?.staticText
+                textViewTop.text = response?.transactionMessage
+                textViewBottom.text = response?.settlementMessage
+                billAmountTextView.text = staticText?.bill_amount
+                amountSettleTextView.text = staticText?.amount_to_settled
+                paymentModeTextView.text = staticText?.payment_mode
+                txnId.text = getStringDateTimeFromTransactionDetailDate(getCompleteDateFromOrderString(response?.transactionTimestamp))
+                when (Constants.ORDER_STATUS_PAYOUT_SUCCESS) {
+                    response?.settlementState -> {
+                        bottomDate.visibility = View.VISIBLE
+                        val bottomDisplayStr = "${getStringDateTimeFromTransactionDetailDate(getCompleteDateFromOrderString(response.settlementTimestamp))} ${if (!isEmpty(response.utr)) "| UTR : ${response.utr}" else ""}"
+                        bottomDate.text = bottomDisplayStr
+                    }
+                    else -> bottomDate.visibility = View.GONE
+                }
+                if (null != response?.ctaItem) {
+                    displayMessage.text = response.ctaItem?.displayMessage
+                    ctaTextView.visibility = View.VISIBLE
+                    displayMessage.visibility = View.VISIBLE
+                    ctaTextView.setOnClickListener {
+                        when(response.ctaItem?.action) {
+                            Constants.ACTION_ADD_BANK -> {
+                                launchFragment(BankAccountFragment.newInstance(null, 0, false, null), false)
+                            }
+                        }
+                    }
+                } else {
+                    ctaTextView.visibility = View.INVISIBLE
+                    displayMessage.visibility = View.GONE
+                }
+                txnChargeTextView.text = "${staticText?.transaction_charges} (${response?.transactionCharges}%)"
+                billAmountValueTextView.text = "${getString(R.string.rupee_symbol)} ${response?.amount}"
+                txnChargeValueTextView.text = "${getString(R.string.rupee_symbol)} ${response?.transactionChargeAmount}"
+                amountSettleValueTextView.text = "${getString(R.string.rupee_symbol)} ${response?.settlementAmount}"
+                if (!isEmpty(response?.paymentImage)) mActivity?.let { context -> Glide.with(context).load(response?.paymentImage).into(paymentModeImageView) }
+                if (!isEmpty(response?.settlementCdn)) mActivity?.let { context -> Glide.with(context).load(response?.settlementCdn).into(imageViewBottom) }
+            }
         }
     }
 }

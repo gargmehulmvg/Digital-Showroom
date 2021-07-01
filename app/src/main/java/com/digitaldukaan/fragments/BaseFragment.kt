@@ -822,6 +822,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked {
                         Log.d(TAG, "onActivityResult: OK")
                         val bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath)
                         Log.d(TAG, "onActivityResult: bitmap :: $bitmap")
+                        stopProgress()
                         if (null == bitmap) handleGalleryResult(result, true) else handleCameraResult(bitmap, true)
                     } catch (e: Exception) {
                         Log.e(TAG, "resultLauncherForCamera: ${e.message}", e)
@@ -834,10 +835,12 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked {
             Log.d(TAG, "onActivityResult: ")
             if (result.resultCode == Activity.RESULT_OK) {
                 CoroutineScopeUtils().runTaskOnCoroutineMain {
+                    showProgressDialog(mActivity)
                     try {
                         Log.d(TAG, "onActivityResult: OK")
                         val bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath)
                         Log.d(TAG, "onActivityResult: bitmap :: $bitmap")
+                        stopProgress()
                         if (null == bitmap) handleGalleryResult(result, false) else handleCameraResult(bitmap, false)
                     } catch (e: Exception) {
                         Log.e(TAG, "resultLauncherForCamera: ${e.message}", e)
@@ -1379,16 +1382,18 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked {
         }
     }
 
-    open fun getTransactionDetailBottomSheet(txnId: String?, path: String) {
-        AppEventsManager.pushAppEvents(
-            eventName = AFInAppEventType.EVENT_SET_ORDER_PAYMENT_DETAIL,
-            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-            data = mapOf(
-                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                AFInAppEventParameterName.TRANSACTION_ID to txnId,
-                AFInAppEventParameterName.PATH to path
+    open fun getTransactionDetailBottomSheet(txnId: String?, path: String = "") {
+        if (!isEmpty(path)) {
+            AppEventsManager.pushAppEvents(
+                eventName = AFInAppEventType.EVENT_SET_ORDER_PAYMENT_DETAIL,
+                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                data = mapOf(
+                    AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                    AFInAppEventParameterName.TRANSACTION_ID to txnId,
+                    AFInAppEventParameterName.PATH to path
+                )
             )
-        )
+        }
         showProgressDialog(mActivity)
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
             try {
@@ -1400,7 +1405,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked {
                             withContext(Dispatchers.Main) {
                                 if (it.mIsSuccessStatus) {
                                     val responseObj = Gson().fromJson<TransactionDetailResponse>(it.mCommonDataStr, TransactionDetailResponse::class.java)
-                                    showTransactionDetailBottomSheet(responseObj)
+                                    if (isEmpty(path)) onTransactionDetailResponse(responseObj) else showTransactionDetailBottomSheet(responseObj)
                                 } else showShortSnackBar(it.mMessage, true, R.drawable.ic_close_red)
                             }
                         }

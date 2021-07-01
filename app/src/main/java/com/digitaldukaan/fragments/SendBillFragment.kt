@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.*
@@ -25,6 +26,7 @@ class SendBillFragment : BaseFragment() {
     private var mAmountStr: String? = ""
     private var mImageCdnLink: String = ""
     private var sendLinkTextView: TextView? = null
+    private var billCameraImageView: ImageView? = null
 
     companion object {
         private const val TAG = "SendBillFragment"
@@ -51,6 +53,7 @@ class SendBillFragment : BaseFragment() {
         val sendBillToCustomerTextView: TextView? = mContentView?.findViewById(R.id.sendBillToCustomerTextView)
         val bottomSheetClose: View? = mContentView?.findViewById(R.id.bottomSheetClose)
         val amountEditText: EditText? = mContentView?.findViewById(R.id.amountEditText)
+        billCameraImageView = mContentView?.findViewById(R.id.billCameraImageView)
         sendLinkTextView = mContentView?.findViewById(R.id.sendLinkTextView)
         bottomSheetClose?.visibility = View.GONE
         amountEditText?.setText(mAmountStr)
@@ -59,7 +62,6 @@ class SendBillFragment : BaseFragment() {
         appTitleTextView?.text = staticText?.text_send_payment_link
         sendBillToCustomerTextView?.setHtmlData(staticText?.bottom_sheet_heading_send_link)
         customerCanPayUsingTextView?.setHtmlData(staticText?.bottom_sheet_message_customer_pay)
-        mImageFile?.let { file -> uploadImageToGetCDNLink(file) }
     }
 
     override fun onResume() {
@@ -68,6 +70,7 @@ class SendBillFragment : BaseFragment() {
     }
 
     private fun loadImageFromUri() {
+        mImageFile?.let { file -> uploadImageToGetCDNLink(file) }
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             mImageUri?.let {
                 val bitmap = getBitmapFromUri(mImageUri, mActivity)
@@ -80,6 +83,7 @@ class SendBillFragment : BaseFragment() {
         when (view?.id) {
             refreshImageView?.id -> openCameraWithoutCrop()
             backButtonToolbar?.id -> mActivity?.onBackPressed()
+            billCameraImageView?.id -> openCameraWithoutCrop()
             sendLinkTextView?.id -> showPaymentLinkSelectionDialog(mAmountStr ?: "0", mImageCdnLink)
         }
     }

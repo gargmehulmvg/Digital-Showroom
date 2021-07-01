@@ -301,13 +301,39 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
+            <LinearLayout
+                android:id="@+id/transactionDetailLayout"
+                android:layout_width="match_parent"
+                android:orientation="vertical"
+                android:visibility="gone"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/headerTransactionDetail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#F5F5F5"
+                    android:fontFamily="@font/roboto_medium"
+                    android:padding="@dimen/_10sdp"
+                    android:text="Transaction Details"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_12sdp"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <include
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    layout="@layout/bottom_sheet_transaction_detail_common_layout" />
+
+            </LinearLayout>
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/orderDetailItemRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_10sdp"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:itemCount="1"
+                tools:itemCount="0"
                 tools:listitem="@layout/order_detail_item" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -515,7 +541,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/_60sdp"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:itemCount="5"
+                tools:itemCount="0"
                 tools:listitem="@layout/customer_detail_item" />
 
             <View

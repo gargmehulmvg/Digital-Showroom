@@ -168,8 +168,8 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         }
     }
 
-    private fun fetchLatestOrders(mode: String, fetchingOrderStr: String?, page: Int = 1) {
-        if (fetchingOrderStr?.isNotEmpty() == true) showCancellableProgressDialog(mActivity, fetchingOrderStr)
+    private fun fetchLatestOrders(mode: String, fetchingOrderStr: String?, page: Int = 1, showProgressDialog: Boolean = true) {
+        if (showProgressDialog) if (fetchingOrderStr?.isNotEmpty() == true) showCancellableProgressDialog(mActivity, fetchingOrderStr)
         val request = OrdersRequest(mode, page)
         mHomeFragmentService?.getOrders(request)
     }
@@ -819,7 +819,13 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
 
     override fun refreshOrderPage() {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            onRefresh()
+            mOrderList.clear()
+            mCompletedOrderList.clear()
+            completedPageCount = 1
+            pendingPageCount = 1
+            fetchLatestOrders(Constants.MODE_PENDING, mFetchingOrdersStr, pendingPageCount, false)
+            mHomeFragmentService?.getOrderPageInfo()
+            mHomeFragmentService?.getAnalyticsData()
         }
     }
 }
