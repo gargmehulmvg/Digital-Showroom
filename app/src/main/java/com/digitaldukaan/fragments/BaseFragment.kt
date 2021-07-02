@@ -1589,12 +1589,13 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked {
                 val mContactPickerBottomSheet: BottomSheetDialog? = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
                 val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_contact_pick, it.findViewById(R.id.bottomSheetContainer))
                 mContactPickerBottomSheet?.apply {
+                    val staticText = StaticInstances.sOrderPageInfoStaticData
                     setContentView(view)
                     setBottomSheetCommonProperty()
                     val contactList : ArrayList<ContactModel> = ArrayList()
                     val contactAdapter = ContactAdapter(contactList, mActivity, object : IContactItemClicked {
                         override fun onContactItemClicked(contact: ContactModel) {
-                            mContactPickerBottomSheet?.dismiss()
+                            mContactPickerBottomSheet.dismiss()
                             val request = PaymentLinkRequest(Constants.MODE_SMS, amount.toDouble(), contact.number ?: "", imageCdn)
                             initiatePaymentLinkServerCall(request, contact.name ?: "")
                         }
@@ -1603,8 +1604,11 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked {
                     StaticInstances.sUserContactList.forEachIndexed { _, model -> contactList.add(model) }
                     view?.run {
                         val closeImageView: View = findViewById(R.id.bottomSheetUploadImageCloseImageView)
+                        val bottomSheetHeading: TextView = findViewById(R.id.bottomSheetHeading)
                         val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
                         val searchImageEditText: EditText = findViewById(R.id.searchImageEditText)
+                        bottomSheetHeading.setHtmlData(staticText?.bottom_sheet_heading_enter_contact_number)
+                        searchImageEditText.setHint(staticText?.bottom_sheet_hint_enter_contact_number)
                         searchImageEditText.addTextChangedListener(object : TextWatcher {
                             override fun afterTextChanged(editable: Editable?) {
                                 val string = editable?.toString()

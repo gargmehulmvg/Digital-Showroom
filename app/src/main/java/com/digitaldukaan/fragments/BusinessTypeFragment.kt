@@ -31,12 +31,7 @@ class BusinessTypeFragment : BaseFragment(), IBusinessTypeServiceInterface {
     private var mBusinessSelectedList: ArrayList<BusinessTypeItemResponse> = ArrayList()
 
     companion object {
-        fun newInstance(
-            profilePreviewResponse: ProfilePreviewSettingsKeyResponse?,
-            position: Int,
-            isSingleStep: Boolean,
-            profileInfoResponse: ProfileInfoResponse?
-        ): BusinessTypeFragment {
+        fun newInstance(profilePreviewResponse: ProfilePreviewSettingsKeyResponse?, position: Int, isSingleStep: Boolean, profileInfoResponse: ProfileInfoResponse?): BusinessTypeFragment {
             val fragment = BusinessTypeFragment()
             fragment.mProfilePreviewResponse = profilePreviewResponse
             fragment.mPosition = position
@@ -112,7 +107,7 @@ class BusinessTypeFragment : BaseFragment(), IBusinessTypeServiceInterface {
 
     override fun onClick(view: View?) {
         when(view?.id) {
-            skipTextView.id -> {
+            skipTextView?.id -> {
                 StaticInstances.sStepsCompletedList?.run {
                     for (completedItem in this) {
                         if (completedItem.action == Constants.ACTION_DESCRIPTION) {
@@ -123,7 +118,7 @@ class BusinessTypeFragment : BaseFragment(), IBusinessTypeServiceInterface {
                     switchToInCompleteProfileFragment(mProfileInfoResponse)
                 }
             }
-            verifyTextView.id -> {
+            verifyTextView?.id -> {
                 if (!isInternetConnectionAvailable(mActivity)) {
                     showNoInternetConnectionDialog()
                     return
@@ -142,6 +137,7 @@ class BusinessTypeFragment : BaseFragment(), IBusinessTypeServiceInterface {
                     showToast("Only ${resources.getInteger(R.integer.business_type_count)} selections are allowed")
                     return
                 }
+                verifyTextView?.isEnabled = false
                 val businessTypRequest = BusinessTypeRequest(businessTypeSelectedList)
                 showProgressDialog(mActivity)
                 businessTypeService.setStoreBusinesses(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), businessTypRequest)
@@ -152,6 +148,7 @@ class BusinessTypeFragment : BaseFragment(), IBusinessTypeServiceInterface {
     override fun onSavingBusinessTypeResponse(response: CommonApiResponse) {
         stopProgress()
         CoroutineScopeUtils().runTaskOnCoroutineMain {
+            verifyTextView?.isEnabled = true
             if (response.mIsSuccessStatus) {
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_BUSINESS_TYPE_SELECT,
@@ -179,7 +176,10 @@ class BusinessTypeFragment : BaseFragment(), IBusinessTypeServiceInterface {
     }
 
     override fun onBusinessTypeServerException(e: Exception) {
-        exceptionHandlingForAPIResponse(e)
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            verifyTextView?.isEnabled = true
+            exceptionHandlingForAPIResponse(e)
+        }
     }
 
 }

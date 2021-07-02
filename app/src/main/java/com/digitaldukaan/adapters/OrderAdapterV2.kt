@@ -176,6 +176,17 @@ class OrderAdapterV2(
                     orderStatusImageView.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_prepaid))
                 }
             }
+            Constants.DS_PENDING_PAYMENT_LINK -> {
+                orderStatusTextView.background = null
+                Log.d(mTag, "getOrderStatus: ${mOrderPageInfoStaticData?.payment_link}")
+                orderStatusTextView.text = null
+                orderCheckBox.isEnabled = true
+                orderStatusImageView.visibility = View.GONE
+                if (Constants.ORDER_TYPE_PREPAID == item.prepaidFlag) {
+                    orderStatusImageView.visibility = View.VISIBLE
+                    orderStatusImageView.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_prepaid))
+                }
+            }
             Constants.DS_PAID_ONLINE -> {
                 orderStatusImageView.visibility = View.VISIBLE
                 orderStatusImageView.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_order_status_paid))

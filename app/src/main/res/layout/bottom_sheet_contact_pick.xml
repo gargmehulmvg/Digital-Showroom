@@ -33,7 +33,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_10sdp"
-            android:text="Enter Contact Number\nor Name"
+            tools:text="Enter Contact Number\nor Name"
             android:textSize="@dimen/_18sdp"
             app:layout_constraintEnd_toStartOf="@id/bottomSheetUploadImageCloseImageView"
             app:layout_constraintStart_toStartOf="parent"
@@ -49,8 +49,8 @@
             android:drawablePadding="@dimen/_5sdp"
             android:drawableTint="@color/default_text_light_grey"
             android:fontFamily="@font/roboto_medium"
-            android:hint="Enter Mobile Number or Name"
-            android:imeOptions="actionSearch"
+            tools:hint="Enter Mobile Number or Name"
+            android:imeOptions="actionDone"
             android:importantForAutofill="no"
             android:inputType="text"
             android:paddingTop="@dimen/_8sdp"
@@ -69,13 +69,13 @@
         android:layout_marginTop="@dimen/_15sdp"
         android:layout_marginBottom="@dimen/_15sdp"
         android:fontFamily="@font/roboto_medium"
-        android:text="or Pick from contacts"
+        android:text="@string/pick_from_contacts"
         android:textSize="@dimen/_12sdp" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/_200sdp"
+        android:layout_height="@dimen/_225sdp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         tools:itemCount="15"
         tools:listitem="@layout/contact_item" />

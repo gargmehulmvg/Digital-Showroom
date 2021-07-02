@@ -444,10 +444,17 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                                 mAddProductResponse?.storeItem?.variantsList?.addAll(deletedVariantList)
                             }
                         }
+                        var price = 0.0
+                        try {
+                            price = if (priceStr.isNotEmpty()) priceStr.toDouble() else 0.0
+                        } catch (e: Exception) {
+                            Log.e(TAG, "AddProductFragment onClick request: ", e)
+                            Sentry.captureException(e, "AddProductFragment onClick request: ")
+                        }
                         val request = AddProductRequest(
                             mItemId,
                             1,
-                            if (priceStr.isNotEmpty()) priceStr.toDouble() else 0.0,
+                            price,
                             if (discountedStr.isNotEmpty()) {
                                 if (discountedStr.startsWith(".")) {
                                     discountedStr = "0$discountedStr"
