@@ -119,15 +119,6 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
             }
             sendBillTextView?.id -> {
                 orderDetailMainResponse?.orders?.run {
-                    var isAllProductsAmountSet = true
-                    orderDetailsItemsList?.forEachIndexed { _, itemResponse ->
-                        if ((itemResponse.amount ?: 0.0) <= 0.0 && itemResponse.item_status == 1) {
-                            showToast(getString(R.string.please_fill_price_for_each_product))
-                            isAllProductsAmountSet = false
-                            return@forEachIndexed
-                        }
-                    }
-                    if (!isAllProductsAmountSet) return@run
                     if (mIsPickUpOrder) initiateSendBillServerCall() else handleDeliveryTimeBottomSheet(isCallSendBillServerCall = true, isPrepaidOrder = false)
                 }
             }
@@ -192,15 +183,6 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                 return
             }
             val deliveryChargesAmount = calculateDeliveryCharge(payAmount)
-            var isAllProductsAmountSet = true
-            orderDetailsItemsList?.forEachIndexed { _, itemResponse ->
-                if ((itemResponse.amount ?: 0.0) <= 0.0 && itemResponse.item_status == 1) {
-                    showToast(getString(R.string.please_fill_price_for_each_product))
-                    isAllProductsAmountSet = false
-                    return@forEachIndexed
-                }
-            }
-            if (!isAllProductsAmountSet) return@run
             val orderDetailList = orderDetailsItemsList?.toMutableList()
             if (!isEmpty(orderDetailList)) {
                 orderDetailList?.forEachIndexed { _, itemResponse -> if (Constants.ITEM_TYPE_DELIVERY_CHARGE == itemResponse.item_type || Constants.ITEM_TYPE_CHARGE == itemResponse.item_type) orderDetailsItemsList?.remove(itemResponse) }

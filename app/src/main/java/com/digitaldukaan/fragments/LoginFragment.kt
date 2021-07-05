@@ -3,7 +3,6 @@ package com.digitaldukaan.fragments
 import android.app.Activity
 import android.app.PendingIntent
 import android.content.Intent
-import android.content.IntentSender
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -222,8 +221,8 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
                 val hintRequest = HintRequest.Builder().setPhoneNumberIdentifierSupported(true).build()
                 val intent: PendingIntent = Credentials.getClient(it).getHintPickerIntent(hintRequest)
                 startIntentSenderForResult(intent.intentSender, CREDENTIAL_PICKER_REQUEST, null, 0, 0, 0, Bundle())
-            } catch (e: IntentSender.SendIntentException) {
-                e.printStackTrace()
+            } catch (e: Exception) {
+                Log.e(TAG, "initiateAutoDetectMobileNumber: ", e)
             }
         }
     }
@@ -301,7 +300,7 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
                     "${it.address1}, ${it.googleAddress}, ${it.pinCode}"
                 }
                 AppEventsManager.pushCleverTapProfile(cleverTapProfile)
-                if (null == validateUserResponse.store && validateUserResponse.user.isNewUser) launchFragment(OnBoardScreenDukaanNameFragment(), true) else launchFragment(HomeFragment(), true)
+                if (null == validateUserResponse.store && validateUserResponse.user.isNewUser) launchFragment(OnBoardScreenDukaanNameFragment.newInstance(), true) else launchFragment(HomeFragment(), true)
             } else showShortSnackBar(response.mMessage, true, R.drawable.ic_close_red)
         }
     }

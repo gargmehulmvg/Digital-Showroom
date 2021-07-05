@@ -400,3 +400,8 @@ fun getMonthOfTheWeek(count: Int): String {
     }
     return ""
 }
+
+fun isDouble(str: String?): Boolean {
+    if (null == str?.toDoubleOrNull()) return false
+    return true
+}

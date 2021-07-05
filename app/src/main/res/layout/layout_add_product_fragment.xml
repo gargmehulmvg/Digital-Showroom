@@ -214,7 +214,7 @@
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/discountContainer"
                 android:layout_width="match_parent"
-                android:visibility="gone"
+                android:visibility="visible"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_20sdp"
                 android:layout_marginTop="@dimen/_10sdp"

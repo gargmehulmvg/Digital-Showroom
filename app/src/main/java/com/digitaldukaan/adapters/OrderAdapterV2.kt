@@ -57,7 +57,9 @@ class OrderAdapterV2(
         val view = OrderViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.order_item, parent, false))
         view.orderCheckBox.setOnClickListener {
             if (mOrderList?.isEmpty() == true) return@setOnClickListener
-            mListItemListener?.onOrderCheckBoxChanged(view.orderCheckBox.isChecked, mOrderList?.get(view.adapterPosition))
+            val position = view.adapterPosition
+            if (position < 0 || position >= mOrderList?.size ?: 0) return@setOnClickListener
+            mListItemListener?.onOrderCheckBoxChanged(view.orderCheckBox.isChecked, mOrderList?.get(position))
             view.orderCheckBox.isChecked = false
             view.orderCheckBox.isSelected = false
         }

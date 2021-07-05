@@ -229,7 +229,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
                         AFInAppEventParameterName.PHONE to mMobileNumberStr,
                         AFInAppEventParameterName.IS_CONSENT to if (mIsConsentTakenFromUser) "1" else "0")
                 )
-                if (null == validateOtpResponse.mStore && mIsNewUser) launchFragment(OnBoardScreenDukaanNameFragment(), true) else launchFragment(HomeFragment(), true)
+                if (null == validateOtpResponse.mStore && mIsNewUser) launchFragment(OnBoardScreenDukaanNameFragment.newInstance(), true) else launchFragment(HomeFragment(), true)
             }
         }
     }

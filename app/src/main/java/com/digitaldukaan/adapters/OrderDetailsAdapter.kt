@@ -105,14 +105,20 @@ class OrderDetailsAdapter(
                 priceEditText.addTextChangedListener(object : TextWatcher {
                     override fun afterTextChanged(editable: Editable?) {
                         Log.d(mTag, "afterTextChanged: ")
-                        val str = editable?.toString()?.trim()
+                        var str = editable?.toString()?.trim()
                         if (isEmpty(str)) {
                             item?.item_price = 0.0
                             item?.amount = 0.0
                             item?.actualAmount = 0.0
                             item?.discountedPrice = 0.0
                         } else {
-                            item?.item_price = str?.toDouble()
+                            item?.item_price = if (str == ".") 0.0 else {
+                                if (str?.startsWith(".") == true) {
+                                    str = "0$str"
+                                    str.toDouble()
+                                }
+                                else str?.toDouble()
+                            }
                             item?.amount = str?.toDouble()
                             item?.actualAmount = str?.toDouble()
                             item?.discountedPrice = str?.toDouble() ?: 0.0

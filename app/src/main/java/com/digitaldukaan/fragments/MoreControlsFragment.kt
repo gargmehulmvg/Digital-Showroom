@@ -91,23 +91,23 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
                 mActivity?.let { context -> deliveryStatusTextView2?.setTextColor(ContextCompat.getColor(context, if (isChecked) R.color.open_green else R.color.red)) }
 
             }
-            deliverySwitch?.isChecked = (mDeliveryFlag == 1)
+            deliverySwitch?.isChecked = (1 == mDeliveryFlag)
             val deliveryStatus = "${mMoreControlsStaticData?.mDeliveryText} :"
             deliveryStatusTextView?.text = deliveryStatus
-            deliveryStatusTextView2?.text = if (mDeliveryFlag == 1) mMoreControlsStaticData?.mOnText else mMoreControlsStaticData?.mOffText
+            deliveryStatusTextView2?.text = if (1 == mDeliveryFlag) mMoreControlsStaticData?.mOnText else mMoreControlsStaticData?.mOffText
             mActivity?.let { context -> deliveryStatusTextView2?.setTextColor(ContextCompat.getColor(context, if (mDeliveryFlag == 1) R.color.open_green else R.color.red)) }
 
-            storeSwitch?.isChecked = (mStoreFlag == 1)
+            storeSwitch?.isChecked = (1 == mStoreFlag)
             val storeStatus = "${mMoreControlsStaticData?.mStoreText} :"
             storeStatusTextView?.text = storeStatus
-            storeStatusTextView2?.text = if (mStoreFlag == 1) mMoreControlsStaticData?.mOpenText else mMoreControlsStaticData?.mClosedText
+            storeStatusTextView2?.text = if (1 == mStoreFlag) mMoreControlsStaticData?.mOpenText else mMoreControlsStaticData?.mClosedText
             mActivity?.let { context -> storeStatusTextView2?.setTextColor(ContextCompat.getColor(context, if (mStoreFlag == 1) R.color.open_green else R.color.red)) }
         }
     }
 
     private fun setUIDataFromResponse() {
         val orderNotificationGroup: View? = mContentView?.findViewById(R.id.orderNotificationGroup)
-        orderNotificationGroup?.visibility = if (mIsOrderNotificationOn == true) View.VISIBLE else View.GONE
+        orderNotificationGroup?.visibility = if (true == mIsOrderNotificationOn) View.VISIBLE else View.GONE
         minOrderValueHeadingTextView?.text = if (0.0 == mMinOrderValue) mMoreControlsStaticData?.heading_set_min_order_value_for_delivery else mMoreControlsStaticData?.heading_edit_min_order_value
         minOrderValueOptionalTextView?.text = if (0.0 == mMinOrderValue) mMoreControlsStaticData?.text_optional else "${mMoreControlsStaticData?.sub_heading_success_set_min_order_value_for_delivery} "
         minOrderValueAmountTextView?.text = if (0.0 != mMinOrderValue) "${mMoreControlsStaticData?.text_ruppee_symbol} $mMinOrderValue" else ""
@@ -171,9 +171,7 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
                 )
                 launchFragment(SetOrderTypeFragment.newInstance(), true)
             }
-            paymentModesContainer?.id -> {
-                launchFragment(PaymentModesFragment.newInstance(), true)
-            }
+            paymentModesContainer?.id -> { launchFragment(PaymentModesFragment.newInstance(), true) }
             notificationsContainer?.id -> getOrderNotificationBottomSheet(AFInAppEventParameterName.STORE_CONTROLS)
             storeSwitch?.id -> changeStoreDeliveryStatus()
             deliverySwitch?.id -> changeStoreDeliveryStatus()
@@ -201,9 +199,9 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
                     verifyTextView.text = mMoreControlsStaticData?.save_changes
                     verifyTextView.setOnClickListener {
                         val amount = minDeliveryAmountEditText.text.trim().toString()
-                        if (amount.isNotEmpty() && 0.0 != mFreeDeliveryAbove && amount.toDouble() > mFreeDeliveryAbove) {
+                        if (amount.isNotEmpty() && 0.0 != mFreeDeliveryAbove && amount.toDoubleOrNull() ?: 0.0 > mFreeDeliveryAbove) {
                             minDeliveryAmountEditText.error = mMoreControlsStaticData?.error_amount_must_greater_than_free_delivery_above
-                            requestFocus()
+                            minDeliveryAmountEditText.requestFocus()
                             return@setOnClickListener
                         }
                         if (!isInternetConnectionAvailable(mActivity)) {
@@ -214,7 +212,7 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
                             mDeliveryChargeType,
                             mFreeDeliveryAbove,
                             mDeliveryPrice,
-                            if (amount.isEmpty()) 0.0 else if (amount.startsWith(".")) "0$amount".toDouble() else amount.toDouble()
+                            if (amount.isEmpty()) 0.0 else if (amount.startsWith(".")) "0$amount".toDoubleOrNull() else amount.toDoubleOrNull()
                         )
                         showProgressDialog(mActivity)
                         bottomSheetDialog.dismiss()
@@ -234,8 +232,8 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
                     eventName = AFInAppEventType.EVENT_SET_MIN_ORDER_VALUE_SAVE,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                     data = mapOf(
-                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                        AFInAppEventParameterName.AMOUNT to "${moreControlResponse?.mMinOrderValue}"
+                        AFInAppEventParameterName.STORE_ID  to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                        AFInAppEventParameterName.AMOUNT    to "${moreControlResponse?.mMinOrderValue}"
                     )
                 )
                 showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
@@ -255,8 +253,8 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
         }
         showCancellableProgressDialog(mActivity)
         val request = StoreDeliveryStatusChangeRequest(
-            if (storeSwitch?.isChecked == true) 1 else 0,
-            if (deliverySwitch?.isChecked == true) 1 else 0
+            if (true == storeSwitch?.isChecked)     1 else 0,
+            if (true == deliverySwitch?.isChecked)  1 else 0
         )
         mMoreControlsService?.changeStoreAndDeliveryStatus(request)
     }
