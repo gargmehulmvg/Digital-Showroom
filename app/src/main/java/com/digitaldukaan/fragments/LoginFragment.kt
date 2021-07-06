@@ -111,11 +111,7 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
         }
     }
     
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.layout_login_fragment, container, false)
         mAuthStaticData = StaticInstances.sStaticData?.mAuthNew
         return mContentView

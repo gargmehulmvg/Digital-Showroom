@@ -118,9 +118,9 @@
         android:contentDescription="@string/image_view_content_description"
         android:src="@drawable/payment_gateway_group"
         app:layout_constraintBottom_toBottomOf="@+id/customerCanPayUsingTextView"
-        app:layout_constraintEnd_toEndOf="@+id/sendBillTextView"
-        app:layout_constraintHorizontal_bias="0.30"
-        app:layout_constraintStart_toEndOf="@+id/customerCanPayUsingTextView"
-        app:layout_constraintTop_toTopOf="@+id/customerCanPayUsingTextView" />
+        app:layout_constraintEnd_toEndOf="@id/sendLinkTextView"
+        app:layout_constraintHorizontal_bias="0.3"
+        app:layout_constraintStart_toEndOf="@id/customerCanPayUsingTextView"
+        app:layout_constraintTop_toTopOf="@id/customerCanPayUsingTextView" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
