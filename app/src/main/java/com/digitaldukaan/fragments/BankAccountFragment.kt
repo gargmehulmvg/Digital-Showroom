@@ -82,6 +82,7 @@ class BankAccountFragment : BaseFragment(), IBankDetailsServiceInterface {
         }
         mobileNumberEditText?.setText(if (bankDetail == null || (bankDetail.registeredPhone?.isEmpty() == true)) PrefsManager.getStringDataFromSharedPref(Constants.USER_MOBILE_NUMBER) else bankDetail.registeredPhone)
         mobileNumberEditText?.isEnabled = false
+        accountHolderNameEditText?.allowOnlyAlphaNumericCharacters()
         ifscEditText?.allowOnlyAlphaNumericCharacters()
         saveTextView?.setOnClickListener { initiateServerCall() }
     }
