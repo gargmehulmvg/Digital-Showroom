@@ -142,7 +142,7 @@ interface Apis {
     suspend fun getItemInfo(@Path("itemId") itemId: Int): Response<CommonApiResponse>
 
     @POST("api/dotk/vm1/products/setItem")
-    suspend fun setItem(@Header("auth_token") authToken: String, @Body request: AddProductRequest): Response<CommonApiResponse>
+    suspend fun setItem(@Body request: AddProductRequest): Response<CommonApiResponse>
 
     @GET("api/dotk/vm1/products/getMasterCategories")
     suspend fun getMasterCategories(): Response<CommonApiResponse>

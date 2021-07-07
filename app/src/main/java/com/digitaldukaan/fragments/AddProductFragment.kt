@@ -431,10 +431,10 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             }
             continueTextView?.id -> {
                 if (checkValidation()) {
-                    val nameStr = nameEditText?.text.toString()
+                    val nameStr = nameEditText?.text.toString().trim()
                     val priceStr = priceEditText?.text?.trim().toString()
                     var discountedStr = discountPriceEditText?.text?.trim().toString()
-                    val descriptionStr = productDescriptionEditText?.text.toString()
+                    val descriptionStr = productDescriptionEditText?.text.toString().trim()
                     val categoryStr = enterCategoryEditText?.text.toString()
                     if (!isInternetConnectionAvailable(mActivity)) return else {
                         showProgressDialog(mActivity)
@@ -487,7 +487,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                                 AFInAppEventParameterName.PRICE             to priceStr
                             )
                         )
-                        mService?.setItem(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
+                        mService?.setItem(request)
                     }
                 }
             }
