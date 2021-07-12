@@ -2,12 +2,14 @@ package com.digitaldukaan.constants
 
 import android.app.Activity
 import android.app.NotificationManager
+import android.os.Bundle
 import android.util.Log
 import com.appsflyer.AppsFlyerLib
 import com.clevertap.android.sdk.CleverTapAPI
 import com.digitaldukaan.models.dto.CleverTapProfile
 import com.digitaldukaan.models.request.AndroidEventLogRequest
 import com.digitaldukaan.network.RetrofitApi
+import com.google.firebase.analytics.FirebaseAnalytics
 import io.sentry.Sentry
 
 class AppEventsManager {
@@ -18,10 +20,12 @@ class AppEventsManager {
 
         private var mActivityInstance: Activity? = null
         private var mCleverTapAPI: CleverTapAPI? = null
+        private var mFirebaseAnalytics: FirebaseAnalytics? = null
 
         fun setAppEventsManager(activity: Activity) = run {
             mActivityInstance = activity
             mCleverTapAPI = CleverTapAPI.getDefaultInstance(mActivityInstance)
+            mActivityInstance?.let { context -> mFirebaseAnalytics = FirebaseAnalytics.getInstance(context) }
             StaticInstances.sCleverTapId = mCleverTapAPI?.cleverTapID
             Log.d(TAG, "setAppEventsManager: ${StaticInstances.sCleverTapId}")
             createNotificationChannel()
@@ -75,6 +79,18 @@ class AppEventsManager {
                 Log.d(TAG, "pushAppFlyerEvent: DONE")
             } catch (e: Exception) {
                 Sentry.captureException(e, "pushAppFlyerEvent: exception")
+                pushServerCallEvent(AFInAppEventType.EVENT_APPFLYER_EXCEPTION, mapOf("exception" to e.toString()))
+            }
+            try {
+                val bundle = Bundle()
+                for (entry in data.entries)
+                    bundle.putString(entry.key, entry.value)
+                Log.d(TAG, "FIREBASE ANALYTICS: event name :: $eventName && bundle :: $bundle")
+                mFirebaseAnalytics?.logEvent(eventName ?: "", bundle)
+                Log.d(TAG, "FIREBASE ANALYTICS: DONE")
+            } catch (e: Exception) {
+                Log.e(TAG, "pushAppFlyerEvent: FIREBASE ANALYTICS Exception", e)
+                Sentry.captureException(e, "FIREBASE ANALYTICS: exception")
                 pushServerCallEvent(AFInAppEventType.EVENT_APPFLYER_EXCEPTION, mapOf("exception" to e.toString()))
             }
         }

@@ -35,6 +35,8 @@ import com.digitaldukaan.services.serviceinterface.IHomeServiceInterface
 import com.digitaldukaan.webviews.WebViewBridge
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration
 import kotlinx.android.synthetic.main.home_fragment.*
@@ -83,13 +85,13 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         mHomeFragmentService = HomeFragmentService()
         mHomeFragmentService?.setHomeFragmentServiceListener(this)
         AppsFlyerLib.getInstance().setCustomerUserId(PrefsManager.getStringDataFromSharedPref(Constants.USER_MOBILE_NUMBER))
+        Log.d(TAG, "onCreate: FIREBASE ANALYTICS CALLED")
+        val firebaseAnalytics = Firebase.analytics
+        firebaseAnalytics.setUserId(PrefsManager.getStringDataFromSharedPref(Constants.USER_MOBILE_NUMBER))
+        Log.d(TAG, "onCreate: FIREBASE ANALYTICS END")
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.home_fragment, container, false)
         if (!askContactPermission()) if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else {
             if (orderPageInfoResponse == null) {
