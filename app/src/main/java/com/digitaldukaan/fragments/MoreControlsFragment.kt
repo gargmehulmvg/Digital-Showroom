@@ -316,18 +316,19 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
                     val pickupSwitch: SwitchMaterial = findViewById(R.id.pickupSwitch)
                     val pickupContainer: View = findViewById(R.id.pickupContainer)
                     val deliveryContainer: View = findViewById(R.id.deliveryContainer)
+                    val deliveryImageView: ImageView = findViewById(R.id.deliveryImageView)
                     val closeImageView: ImageView = findViewById(R.id.closeImageView)
                     deliverySubHeadingTextView.text = mMoreControlsStaticData?.message_bottom_sheet_delivery
                     pickupSubHeadingTextView.text = mMoreControlsStaticData?.message_bottom_sheet_pickup
                     pickupHeadingTextView.text = mMoreControlsStaticData?.text_pickup
                     deliveryHeadingTextView.text = mMoreControlsStaticData?.mDeliveryText
                     bottomSheetHeadingTextView.text = mMoreControlsStaticData?.heading_bottom_sheet_set_delivery_pickup
-                    setupBottomSheetDeliveryUI(deliverySwitch, deliveryHeadingTextView, deliveryContainer)
+                    setupBottomSheetDeliveryUI(deliverySwitch, deliveryHeadingTextView, deliveryContainer, deliveryImageView)
                     setupBottomSheetPickupUI(pickupContainer, pickupSwitch, pickupHeadingTextView)
                     deliverySwitch.setOnCheckedChangeListener { _, isChecked ->
                         mIsDeliveryOn = isChecked
                         changeStoreDeliveryStatus()
-                        setupBottomSheetDeliveryUI(deliverySwitch, deliveryHeadingTextView, deliveryContainer)
+                        setupBottomSheetDeliveryUI(deliverySwitch, deliveryHeadingTextView, deliveryContainer, deliveryImageView)
                     }
                     pickupSwitch.setOnCheckedChangeListener { _, isChecked ->
                         mIsPickupOn = isChecked
@@ -343,34 +344,36 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
     private fun setupBottomSheetPickupUI(pickupContainer: View, pickupSwitch: SwitchMaterial, pickupHeadingTextView: TextView) {
         mActivity?.let { context ->
             if (mIsPickupOn) {
-                pickupContainer.elevation = 1f
                 pickupSwitch.isSelected = true
                 pickupSwitch.isChecked = true
                 pickupHeadingTextView.setTextColor(ContextCompat.getColor(context, R.color.open_green))
-                pickupContainer.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_green_border)
+                pickupContainer.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_white_background_green_border)
+                pickupContainer.elevation = 1f
             } else {
-                pickupContainer.elevation = 5f
                 pickupSwitch.isSelected = false
                 pickupSwitch.isChecked = false
                 pickupHeadingTextView.setTextColor(ContextCompat.getColor(context, R.color.default_text_light_grey))
                 pickupContainer.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_white_background)
+                pickupContainer.elevation = 5f
             }
         }
     }
 
-    private fun setupBottomSheetDeliveryUI(deliverySwitch: SwitchMaterial, deliveryHeadingTextView: TextView, deliveryContainer: View) {
+    private fun setupBottomSheetDeliveryUI(deliverySwitch: SwitchMaterial, deliveryHeadingTextView: TextView, deliveryContainer: View, deliveryImageView: ImageView) {
         mActivity?.let { context ->
             if (mIsDeliveryOn) {
                 deliverySwitch.isSelected = true
                 deliverySwitch.isChecked = true
                 deliveryHeadingTextView.setTextColor(ContextCompat.getColor(context, R.color.open_green))
-                deliveryContainer.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_green_border)
+                deliveryImageView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_delivery_green_grey_border))
+                deliveryContainer.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_white_background_green_border)
                 deliveryContainer.elevation = 1f
             } else {
                 deliverySwitch.isSelected = false
                 deliverySwitch.isChecked = false
                 deliveryHeadingTextView.setTextColor(ContextCompat.getColor(context, R.color.default_text_light_grey))
                 deliveryContainer.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_white_background)
+                deliveryImageView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_delivery_grey_grey_border))
                 deliveryContainer.elevation = 5f
             }
         }

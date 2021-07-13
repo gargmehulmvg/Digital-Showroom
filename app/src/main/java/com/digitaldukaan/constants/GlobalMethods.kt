@@ -362,41 +362,37 @@ fun replaceTemplateString(text: String?): String? {
     return returnText
 }
 
-fun isEmpty(list: List<Any>?): Boolean {
-    return list == null || list.isEmpty()
-}
+fun isEmpty(list: List<Any>?): Boolean = list == null || list.isEmpty()
 
-fun isEmpty(string: String?): Boolean {
-    return string == null || string.isEmpty()
-}
+fun isEmpty(string: String?): Boolean = string == null || string.isEmpty()
 
 fun getDayOfTheWeek(count: Int): String {
     when(count) {
-        0 -> return "Sun"
-        1 -> return "Mon"
-        2 -> return "Tue"
-        3 -> return "Wed"
-        4 -> return "Thu"
-        5 -> return "Fri"
-        6 -> return "Sat"
+        0   ->  return "Sun"
+        1   ->  return "Mon"
+        2   ->  return "Tue"
+        3   ->  return "Wed"
+        4   ->  return "Thu"
+        5   ->  return "Fri"
+        6   ->  return "Sat"
     }
     return ""
 }
 
 fun getMonthOfTheWeek(count: Int): String {
     when(count) {
-        0 -> return "Jan"
-        1 -> return "Feb"
-        2 -> return "Mar"
-        3 -> return "Apr"
-        4 -> return "May"
-        5 -> return "Jun"
-        6 -> return "Jul"
-        7 -> return "Aug"
-        8 -> return "Sep"
-        9 -> return "Oct"
-        10 -> return "Nov"
-        11 -> return "Dec"
+        0   ->  return "Jan"
+        1   ->  return "Feb"
+        2   ->  return "Mar"
+        3   ->  return "Apr"
+        4   ->  return "May"
+        5   ->  return "Jun"
+        6   ->  return "Jul"
+        7   ->  return "Aug"
+        8   ->  return "Sep"
+        9   ->  return "Oct"
+        10  ->  return "Nov"
+        11  ->  return "Dec"
     }
     return ""
 }
@@ -405,3 +401,5 @@ fun isDouble(str: String?): Boolean {
     if (null == str?.toDoubleOrNull()) return false
     return true
 }
+
+fun greatestCommonFactor(width: Int, height: Int): Int = if (0 == height) width else greatestCommonFactor(height, width % height)
