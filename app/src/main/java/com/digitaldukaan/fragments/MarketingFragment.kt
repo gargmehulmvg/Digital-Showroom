@@ -95,6 +95,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                             return if (list[position].type == Constants.SPAN_TYPE_FULL_WIDTH) 2 else 1
                         }
                     }
+                    layoutManager = gridLayoutManager
                     adapter = MarketingCardAdapter(this@MarketingFragment, list, this@MarketingFragment)
                 }
             }
@@ -133,7 +134,16 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
             showNoInternetConnectionDialog()
             return
         }
+        Log.d(TAG, "onMarketingItemClick: ${response?.action}")
         when (response?.action) {
+            Constants.NEW_RELEASE_TYPE_GOOGLE_ADS -> {
+//                AppEventsManager.pushAppEvents(
+//                    eventName = AFInAppEventType.EVENT_MARKET_VIEW_NOW,
+//                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+//                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.TYPE to AFInAppEventParameterName.SOCIAL)
+//                )
+                openWebViewFragment(this, "", BuildConfig.WEB_VIEW_URL + response.pageUrl)
+            }
             Constants.ACTION_BUSINESS_CREATIVE -> {
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_MARKET_VIEW_NOW,

@@ -149,6 +149,7 @@ data class StoreOptionsResponse(
 
 data class TrendingListResponse(
     @SerializedName("image_url")                var mCDN: String,
+    @SerializedName("new_image_url")            var mNewImageUrl: String,
     @SerializedName("text")                     var mText: String?,
     @SerializedName("action")                   var mAction: String?,
     @SerializedName("type")                     var mType: String?,

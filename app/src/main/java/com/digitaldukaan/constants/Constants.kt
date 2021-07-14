@@ -74,6 +74,7 @@ class Constants {
         const val ERROR_DOMAIN_ALREADY_EXISTS                   = "domain_already_exists"
         //GRID_LAYOUT_SPAN_TYPE
         const val SPAN_TYPE_FULL_WIDTH                          = "fullWidth"
+        const val SPAN_TYPE_FULL_HEIGHT                         = "fullHeight"
         //ORDER_TYPE
         const val ORDER_TYPE_ADDRESS                            = 1
         const val ORDER_TYPE_PICK_UP                            = 2
@@ -131,6 +132,7 @@ class Constants {
         const val NEW_RELEASE_TYPE_PAYMENT_MODES                = "payment-mode"
         const val NEW_RELEASE_TYPE_TRENDING                     = "trending"
         const val NEW_RELEASE_TYPE_EXTERNAL                     = "external"
+        const val NEW_RELEASE_TYPE_GOOGLE_ADS                   = "google-ads"
         //EDIT PHOTO MODES
         const val EDIT_PHOTO_MODE_MOBILE                        = "mobile"
         const val EDIT_PHOTO_MODE_DESKTOP                       = "desktop"

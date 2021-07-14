@@ -2,11 +2,11 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
     android:id="@+id/marketingCardParentContainer"
-    android:onClick="onClick"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:background="?selectableItemBackground"
-    android:layout_height="wrap_content">
+    android:onClick="onClick">
 
     <androidx.cardview.widget.CardView
         android:id="@+id/singleSpanContainer"
@@ -14,9 +14,9 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/_6sdp"
         android:clickable="false"
-        app:cardElevation="@dimen/_2sdp"
         android:visibility="gone"
         app:cardCornerRadius="@dimen/_5sdp"
+        app:cardElevation="@dimen/_2sdp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -33,18 +33,18 @@
             android:padding="@dimen/_10sdp">
 
             <ImageView
-                android:layout_marginTop="@dimen/_5sdp"
                 android:id="@+id/singleSpanImageView"
                 android:layout_width="@dimen/_50sdp"
                 android:layout_height="@dimen/_50sdp"
+                android:layout_marginTop="@dimen/_5sdp"
                 android:contentDescription="@string/image_view_content_description" />
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/singleSpanTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
                 android:layout_marginTop="@dimen/_5sdp"
+                android:gravity="center"
                 android:lineSpacingMultiplier="1.2"
                 android:minLines="@integer/min_lines_two"
                 android:padding="@dimen/_4sdp"
@@ -112,11 +112,11 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/_10sdp"
             android:layout_marginTop="@dimen/_5sdp"
+            android:layout_marginBottom="@dimen/_25sdp"
             android:background="@drawable/curve_white_background"
             android:drawableEnd="@drawable/ic_arrow_small"
             android:drawablePadding="@dimen/_5sdp"
             android:elevation="@dimen/_4sdp"
-            android:layout_marginBottom="@dimen/_25sdp"
             android:gravity="center"
             android:paddingStart="@dimen/_8sdp"
             android:paddingTop="@dimen/_2sdp"
@@ -136,19 +136,94 @@
             android:id="@+id/stripTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:visibility="gone"
             android:layout_marginTop="@dimen/_10sdp"
             android:layout_marginEnd="@dimen/_9sdp"
-            android:textColor="@color/white"
-            android:paddingEnd="@dimen/_10sdp"
-            android:textSize="@dimen/_9sdp"
-            android:paddingStart="@dimen/_25sdp"
-            android:gravity="end|center_vertical"
-            android:text="@string/nav_app_bar_navigate_up_description"
             android:background="@drawable/ic_marketing_strip_background"
+            android:gravity="end|center_vertical"
+            android:paddingStart="@dimen/_25sdp"
+            android:paddingEnd="@dimen/_10sdp"
+            android:text="@string/nav_app_bar_navigate_up_description"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_9sdp"
+            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@+id/doubleSpanImageView" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/singleSpanVerticalContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/_6sdp"
+        android:clickable="false"
+        android:visibility="gone"
+        app:cardCornerRadius="@dimen/_5sdp"
+        app:cardElevation="@dimen/_2sdp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:id="@+id/singleSpanVerticalBackgroundView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/slight_curve_premium_background"
+            android:gravity="center_horizontal"
+            android:minWidth="@dimen/_140sdp"
+            android:minHeight="@dimen/_125sdp"
+            android:orientation="vertical"
+            android:padding="@dimen/_10sdp">
+
+            <ImageView
+                android:id="@+id/singleSpanVerticalImageView"
+                android:layout_width="@dimen/_75sdp"
+                android:layout_height="@dimen/_100sdp"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:contentDescription="@string/image_view_content_description" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/singleSpanVerticalTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:gravity="center"
+                android:lineSpacingMultiplier="1.2"
+                android:minLines="@integer/min_lines_two"
+                android:padding="@dimen/_2sdp"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_13sdp"
+                android:textStyle="bold"
+                tools:text="Send Offers,Deals And Promos" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/singleSpanVerticalContinueTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_15sdp"
+                android:layout_marginBottom="@dimen/_5sdp"
+                android:background="@drawable/curve_white_background"
+                android:drawableEnd="@drawable/ic_arrow_small"
+                android:drawablePadding="@dimen/_5sdp"
+                android:elevation="@dimen/_4sdp"
+                android:gravity="center"
+                android:paddingStart="@dimen/_8sdp"
+                android:paddingTop="@dimen/_2sdp"
+                android:paddingEnd="@dimen/_8sdp"
+                android:paddingBottom="@dimen/_2sdp"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_12sdp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/doubleSpanHeadingTextView"
+                app:layout_constraintTop_toBottomOf="@+id/doubleSpanHeadingTextView"
+                app:layout_constraintVertical_bias="0.0"
+                tools:targetApi="lollipop"
+                tools:text="@string/app_name" />
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
