@@ -25,6 +25,7 @@ class MarketingCardAdapter(
         val marketingCardParentContainer: View = itemView.findViewById(R.id.marketingCardParentContainer)
         val singleSpanContainer: View = itemView.findViewById(R.id.singleSpanContainer)
         val singleSpanBackgroundView: View = itemView.findViewById(R.id.singleSpanBackgroundView)
+        val doubleSpanBackgroundView: View = itemView.findViewById(R.id.doubleSpanBackgroundView)
         val singleSpanImageView: ImageView = itemView.findViewById(R.id.singleSpanImageView)
         val doubleSpanImageView: ImageView = itemView.findViewById(R.id.doubleSpanImageView)
         val singleSpanVerticalImageView: ImageView = itemView.findViewById(R.id.singleSpanVerticalImageView)
@@ -58,6 +59,7 @@ class MarketingCardAdapter(
                 doubleSpanImageView?.let { mContext?.let { context -> Glide.with(context).load(item.logo).into(it) } }
                 doubleSpanTextView.text = item.text
                 doubleSpanContinueTextView.text = item.viewNow
+                doubleSpanBackgroundView.setBackgroundColor(Color.parseColor(item?.color))
                 if (item.stripText?.isNotEmpty() == true) {
                     stripTextView.visibility = View.VISIBLE
                     stripTextView.text = item.stripText
