@@ -94,5 +94,7 @@ interface AFInAppEventType {
         const val EVENT_SET_NEW_ORDER_NOTIFICATIONS                 =   "Set_New_Order_Notifications"
         const val EVENT_NEW_ORDER_NOTIFICATION_SELECTION            =   "New_Order_Notification_Selected"
         const val EVENT_GOOGLE_ADS_EXPLORE                          =   "GA_Explore"
+        const val EVENT_SEND_PAYMENT_LINK                           =   "Send_payment_link"
+        const val EVENT_SEND_LINK                                   =   "Send_link"
     }
 }

@@ -748,6 +748,12 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
 
     private fun showPaymentLinkBottomSheet() {
         mActivity?.let {
+            AppEventsManager.pushAppEvents(
+                eventName = AFInAppEventType.EVENT_SEND_PAYMENT_LINK,
+                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                data = mapOf(
+                    AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
+            )
             paymentLinkBottomSheet = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
             val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_payment_link, it.findViewById(R.id.bottomSheetContainer))
             paymentLinkBottomSheet?.apply {
@@ -777,6 +783,12 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                             amountEditText.error = staticText?.error_mandatory_field
                             return@setOnClickListener
                         }
+                        AppEventsManager.pushAppEvents(
+                            eventName = AFInAppEventType.EVENT_SEND_LINK,
+                            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                            data = mapOf(
+                                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
+                        )
                         showPaymentLinkSelectionDialog(amountEditText.text.toString())
                     }
                     amountEditText.requestFocus()
