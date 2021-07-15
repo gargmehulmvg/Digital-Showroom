@@ -138,7 +138,11 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
             }
             sideIconWhatsAppToolbar?.id -> {
                 val displayStatus = orderDetailMainResponse?.orders?.displayStatus
-                shareDataOnWhatsAppByNumber(mMobileNumber, if (Constants.DS_SEND_BILL == displayStatus || Constants.DS_NEW == displayStatus) "Hi, we are checking your order." else "")
+                if (getString(R.string.default_mobile) == mMobileNumber) {
+                    shareOnWhatsApp("Hi, we are checking your order." , null)
+                } else {
+                    shareDataOnWhatsAppByNumber(mMobileNumber, if (Constants.DS_SEND_BILL == displayStatus || Constants.DS_NEW == displayStatus) "Hi, we are checking your order." else "")
+                }
             }
             backButtonToolbar?.id -> mActivity?.onBackPressed()
             sideIconToolbar?.id -> {
@@ -329,7 +333,8 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                 instructionsLabel?.visibility = View.VISIBLE
             }
             mMobileNumber = orderDetailResponse?.phone ?: ""
-            sideIconToolbar?.visibility = if (orderDetailMainResponse?.optionMenuList?.isEmpty() == true) View.GONE else View. VISIBLE
+            sideIcon2Toolbar?.visibility = if (getString(R.string.default_mobile) == mMobileNumber) View.GONE else View.VISIBLE
+            sideIconToolbar?.visibility = if (orderDetailMainResponse?.optionMenuList?.isEmpty() == true) View.GONE else View.VISIBLE
         }
     }
 

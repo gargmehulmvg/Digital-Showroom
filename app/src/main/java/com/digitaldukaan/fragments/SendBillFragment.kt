@@ -84,7 +84,18 @@ class SendBillFragment : BaseFragment() {
             refreshImageView?.id -> openCameraWithoutCrop()
             backButtonToolbar?.id -> mActivity?.onBackPressed()
             billCameraImageView?.id -> openCameraWithoutCrop()
-            sendLinkTextView?.id -> showPaymentLinkSelectionDialog(mAmountStr ?: "0", mImageCdnLink)
+            sendLinkTextView?.id -> {
+                val amountEditText: EditText? = mContentView?.findViewById(R.id.amountEditText)
+                mAmountStr = amountEditText?.text?.toString()?.trim()
+                if (isEmpty(mAmountStr)) {
+                    amountEditText?.apply {
+                        requestFocus()
+                        error = getString(R.string.mandatory_field_message)
+                    }
+                    return
+                }
+                showPaymentLinkSelectionDialog(mAmountStr ?: "0", mImageCdnLink)
+            }
         }
     }
 
