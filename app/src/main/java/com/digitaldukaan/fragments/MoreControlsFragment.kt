@@ -292,8 +292,9 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
             return
         }
         showCancellableProgressDialog(mActivity)
+        val isStoreOpen = (true == storeSwitch?.isChecked)
         val request = StoreDeliveryStatusChangeRequest(
-            if (!mIsDeliveryOn && !mIsPickupOn) 0 else 1,
+            if (!mIsDeliveryOn && !mIsPickupOn) 0 else if (isStoreOpen) 1 else 0,
             if (mIsDeliveryOn) 1 else 0,
             if (mIsPickupOn) 1 else 0
         )

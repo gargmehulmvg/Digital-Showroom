@@ -167,6 +167,9 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
                 Log.d(TAG, "sendData: working $map")
                 AppEventsManager.pushAppEvents(eventName = eventName, isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true, data = map)
             }
+            jsonData.optBoolean("refreshToken") -> {
+                mService.getPremiumPageInfo()
+            }
         }
     }
 
