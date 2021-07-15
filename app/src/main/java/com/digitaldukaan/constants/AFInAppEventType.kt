@@ -93,5 +93,6 @@ interface AFInAppEventType {
         const val EVENT_COMPLETE_KYC_FOR_PAYMENTS                   =   "complete_kyc_for_payments"
         const val EVENT_SET_NEW_ORDER_NOTIFICATIONS                 =   "Set_New_Order_Notifications"
         const val EVENT_NEW_ORDER_NOTIFICATION_SELECTION            =   "New_Order_Notification_Selected"
+        const val EVENT_GOOGLE_ADS_EXPLORE                          =   "GA_Explore"
     }
 }

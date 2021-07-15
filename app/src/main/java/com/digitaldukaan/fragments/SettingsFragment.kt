@@ -457,6 +457,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                 val eventName = when (responseItem.mType) {
                     Constants.NEW_RELEASE_TYPE_CUSTOM_DOMAIN -> AFInAppEventType.EVENT_DOMAIN_EXPLORE
                     Constants.NEW_RELEASE_TYPE_PREMIUM -> AFInAppEventType.EVENT_GET_PREMIUM_WEBSITE
+                    Constants.NEW_RELEASE_TYPE_GOOGLE_ADS -> AFInAppEventType.EVENT_GOOGLE_ADS_EXPLORE
                     else -> AFInAppEventType.EVENT_VIEW_TOP_STORES
                 }
                 AppEventsManager.pushAppEvents(

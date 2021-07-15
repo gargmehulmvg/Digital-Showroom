@@ -137,11 +137,13 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
         Log.d(TAG, "onMarketingItemClick: ${response?.action}")
         when (response?.action) {
             Constants.NEW_RELEASE_TYPE_GOOGLE_ADS -> {
-//                AppEventsManager.pushAppEvents(
-//                    eventName = AFInAppEventType.EVENT_MARKET_VIEW_NOW,
-//                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-//                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.TYPE to AFInAppEventParameterName.SOCIAL)
-//                )
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_GOOGLE_ADS_EXPLORE,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(
+                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                        AFInAppEventParameterName.CHANNEL to AFInAppEventParameterName.MARKETING)
+                )
                 openWebViewFragment(this, "", BuildConfig.WEB_VIEW_URL + response.pageUrl)
             }
             Constants.ACTION_BUSINESS_CREATIVE -> {
