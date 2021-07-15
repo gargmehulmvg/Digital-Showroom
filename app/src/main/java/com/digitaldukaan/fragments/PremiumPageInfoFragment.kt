@@ -40,11 +40,7 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.layout_premium_fragment, container, false)
         mService.setServiceInterface(this)
         return mContentView

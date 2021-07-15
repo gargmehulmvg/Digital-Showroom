@@ -386,20 +386,12 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         storeControlMessageTextView?.text = infoResponse.mAccountStaticText?.message_store_controls
         storeControlNewTextView?.text = infoResponse.mAccountStaticText?.mNewText
         storeControlTextView?.text = infoResponse.mAccountStaticText?.mTextStoreControls
-        deliveryStatusTextView?.text = deliveryStatus
         if (infoResponse.mStoreInfo.storeServices.mStoreFlag == 1) {
             storeValueTextView?.text = infoResponse.mAccountStaticText?.mOpenText
             mActivity?.let { context -> storeValueTextView?.setTextColor(ContextCompat.getColor(context, R.color.open_green)) }
         } else {
             storeValueTextView?.text = infoResponse.mAccountStaticText?.mClosedText
             mActivity?.let { context -> storeValueTextView?.setTextColor(ContextCompat.getColor(context, R.color.red)) }
-        }
-        if (infoResponse.mStoreInfo.storeServices.mDeliveryFlag == 1) {
-            deliveryStatusValueTextView?.text = infoResponse.mAccountStaticText?.mOnText
-            mActivity?.let { context -> deliveryStatusValueTextView?.setTextColor(ContextCompat.getColor(context, R.color.open_green)) }
-        } else {
-            deliveryStatusValueTextView?.text = infoResponse.mAccountStaticText?.mOffText
-            mActivity?.let { context -> deliveryStatusValueTextView?.setTextColor(ContextCompat.getColor(context, R.color.red)) }
         }
         hiddenTextView?.text = infoResponse.mAccountStaticText?.mTextAddPhoto
         newReleaseHeading?.text = infoResponse.mAccountStaticText?.mNewReleaseText

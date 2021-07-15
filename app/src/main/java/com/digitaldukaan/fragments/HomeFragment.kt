@@ -35,6 +35,9 @@ import com.digitaldukaan.services.serviceinterface.IHomeServiceInterface
 import com.digitaldukaan.webviews.WebViewBridge
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration
 import kotlinx.android.synthetic.main.layout_analytics.*
@@ -83,6 +86,15 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         mHomeFragmentService = HomeFragmentService()
         mHomeFragmentService?.setHomeFragmentServiceListener(this)
         AppsFlyerLib.getInstance().setCustomerUserId(PrefsManager.getStringDataFromSharedPref(Constants.USER_MOBILE_NUMBER))
+        Log.d(TAG, "onCreate: FIREBASE ANALYTICS CALLED")
+        val firebaseAnalytics = Firebase.analytics
+        firebaseAnalytics.setUserId(PrefsManager.getStringDataFromSharedPref(Constants.USER_MOBILE_NUMBER))
+        Log.d(TAG, "onCreate: FIREBASE ANALYTICS END")
+        FirebaseCrashlytics.getInstance().apply {
+            setCustomKey("store_id", PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
+            setCustomKey("store_name", PrefsManager.getStringDataFromSharedPref(Constants.STORE_NAME))
+            setCustomKey("mobile_number", PrefsManager.getStringDataFromSharedPref(Constants.USER_MOBILE_NUMBER))
+        }
     }
 
     override fun onCreateView(

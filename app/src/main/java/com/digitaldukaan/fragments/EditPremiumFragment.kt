@@ -63,11 +63,7 @@ class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
         )
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mService.setServiceInterface(this)
         mEditPremiumColorList = ArrayList()
         mContentView = inflater.inflate(R.layout.layout_edit_premium_fragment, container, false)

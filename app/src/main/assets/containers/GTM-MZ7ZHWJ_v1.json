@@ -1,0 +1,57 @@
+{
+    "exportFormatVersion": 2,
+    "exportTime": "2021-07-12 09:11:44",
+    "containerVersion": {
+        "path": "accounts/6004360435/containers/48296147/versions/1",
+        "accountId": "6004360435",
+        "containerId": "48296147",
+        "containerVersionId": "1",
+        "name": "Android",
+        "container": {
+            "path": "accounts/6004360435/containers/48296147",
+            "accountId": "6004360435",
+            "containerId": "48296147",
+            "name": "com.digitaldukaan",
+            "publicId": "GTM-MZ7ZHWJ",
+            "usageContext": [
+                "ANDROID_SDK_5"
+            ],
+            "fingerprint": "1626080990398",
+            "tagManagerUrl": "https://tagmanager.google.com/#/container/accounts/6004360435/containers/48296147/workspaces?apiLink=container"
+        },
+        "builtInVariable": [
+            {
+                "accountId": "6004360435",
+                "containerId": "48296147",
+                "type": "APP_ID",
+                "name": "App ID"
+            },
+            {
+                "accountId": "6004360435",
+                "containerId": "48296147",
+                "type": "APP_NAME",
+                "name": "App Name"
+            },
+            {
+                "accountId": "6004360435",
+                "containerId": "48296147",
+                "type": "APP_VERSION_CODE",
+                "name": "App Version Code"
+            },
+            {
+                "accountId": "6004360435",
+                "containerId": "48296147",
+                "type": "APP_VERSION_NAME",
+                "name": "App Version Name"
+            },
+            {
+                "accountId": "6004360435",
+                "containerId": "48296147",
+                "type": "EVENT_NAME",
+                "name": "Event Name"
+            }
+        ],
+        "fingerprint": "1626081092118",
+        "tagManagerUrl": "https://tagmanager.google.com/#/versions/accounts/6004360435/containers/48296147/versions/1?apiLink=version"
+    }
+}
