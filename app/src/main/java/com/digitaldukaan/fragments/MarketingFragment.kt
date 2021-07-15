@@ -171,7 +171,18 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                 )
                 openWebViewFragment(this, "", WebViewUrls.WEB_VIEW_SOCIAL_CREATIVE_LIST, Constants.SETTINGS)
             }
-            Constants.ACTION_CATALOG_PREMIUM -> {
+            Constants.ACTION_THEME_DISCOVER -> {
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_GET_PREMIUM_WEBSITE,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(
+                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                        AFInAppEventParameterName.CHANNEL to AFInAppEventParameterName.IS_MARKETING
+                    )
+                )
+                openWebViewFragment(this, "", BuildConfig.WEB_VIEW_URL + response.action)
+            }
+            Constants.ACTION_THEME_EXPLORE -> {
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_GET_PREMIUM_WEBSITE,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
