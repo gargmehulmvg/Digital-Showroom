@@ -78,6 +78,8 @@ interface AFInAppEventParameterName {
         const val VARIANTS_ADDED = "Variants_Added"
         const val SEARCH_BY = "Search by"
         const val SELECT = "SELECT"
+        const val SMS = "SMS"
+        const val WHATSAPP = "Whatsapp"
         const val REFERENCE_STORE_ID = "reference_store_id"
         //NOTIFICATION_CHANNEL
         const val NOTIFICATION_GROUP_ID = "DIGITAL_DUKAAN_G_ID"

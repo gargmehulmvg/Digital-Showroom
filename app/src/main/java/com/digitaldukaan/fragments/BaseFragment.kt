@@ -1222,22 +1222,54 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked {
                 smsTextView.text = staticText?.text_sms
                 whatsAppTextView.text = staticText?.text_whatsapp
                 smsTextView.setOnClickListener {
+                    AppEventsManager.pushAppEvents(
+                        eventName = AFInAppEventType.EVENT_PAYMENT_LINK_SENT,
+                        isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                        data = mapOf(
+                            AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                            AFInAppEventParameterName.PATH to AFInAppEventParameterName.SMS
+                        )
+                    )
                     this.dismiss()
                     onSMSIconClicked()
                     showContactPickerBottomSheet(amount, imageCdn)
                 }
                 smsImageView.setOnClickListener {
+                    AppEventsManager.pushAppEvents(
+                        eventName = AFInAppEventType.EVENT_PAYMENT_LINK_SENT,
+                        isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                        data = mapOf(
+                            AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                            AFInAppEventParameterName.PATH to AFInAppEventParameterName.SMS
+                        )
+                    )
                     this.dismiss()
                     onSMSIconClicked()
                     showContactPickerBottomSheet(amount, imageCdn)
                 }
                 whatsAppImageView.setOnClickListener {
+                    AppEventsManager.pushAppEvents(
+                        eventName = AFInAppEventType.EVENT_PAYMENT_LINK_SENT,
+                        isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                        data = mapOf(
+                            AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                            AFInAppEventParameterName.PATH to AFInAppEventParameterName.WHATSAPP
+                        )
+                    )
                     this.dismiss()
                     onWhatsAppIconClicked()
                     val request = PaymentLinkRequest(Constants.MODE_WHATS_APP, amount.toDouble(), "", imageCdn)
                     initiatePaymentLinkServerCall(request)
                 }
                 whatsAppTextView.setOnClickListener {
+                    AppEventsManager.pushAppEvents(
+                        eventName = AFInAppEventType.EVENT_PAYMENT_LINK_SENT,
+                        isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                        data = mapOf(
+                            AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                            AFInAppEventParameterName.PATH to AFInAppEventParameterName.WHATSAPP
+                        )
+                    )
                     this.dismiss()
                     onWhatsAppIconClicked()
                     val request = PaymentLinkRequest(Constants.MODE_WHATS_APP, amount.toDouble(), "", imageCdn)
