@@ -1608,7 +1608,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked {
                         val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
                         val searchImageEditText: EditText = findViewById(R.id.searchImageEditText)
                         bottomSheetHeading.setHtmlData(staticText?.bottom_sheet_heading_enter_contact_number)
-                        searchImageEditText.setHint(staticText?.bottom_sheet_hint_enter_contact_number)
+                        searchImageEditText.hint = staticText?.bottom_sheet_hint_enter_contact_number
                         searchImageEditText.addTextChangedListener(object : TextWatcher {
                             override fun afterTextChanged(editable: Editable?) {
                                 val string = editable?.toString()
@@ -1619,6 +1619,10 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked {
                                             contactModel.number?.contains(string ?: "") == true) {
                                             updatedContactList.add(contactModel)
                                         }
+                                    }
+                                    if (isEmpty(updatedContactList)) {
+                                        val contact = ContactModel(string, string)
+                                        updatedContactList.add(contact)
                                     }
                                     contactAdapter.setContactList(updatedContactList)
                                 }
