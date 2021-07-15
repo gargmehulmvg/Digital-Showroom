@@ -107,12 +107,12 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
                     mIsPickupOn = true
                     pickupStatusTextView2?.text = mMoreControlsStaticData?.mOnText
                     pickupStatusTextView2?.setTextColor(ContextCompat.getColor(context, R.color.open_green))
-                    pickupImageView?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_delivery_green_grey_border))
+                    pickupImageView?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_pickup_green_grey_border))
                 } else {
                     mIsPickupOn = false
                     pickupStatusTextView2?.text = mMoreControlsStaticData?.mOffText
                     pickupStatusTextView2?.setTextColor(ContextCompat.getColor(context, R.color.red))
-                    pickupImageView?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_delivery_red_grey_border))
+                    pickupImageView?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_pickup_red_grey_border))
                 }
 
                 val deliveryStatus = "${mMoreControlsStaticData?.mDeliveryText} :"
@@ -332,6 +332,7 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
                     val pickupContainer: View = findViewById(R.id.pickupContainer)
                     val deliveryContainer: View = findViewById(R.id.deliveryContainer)
                     val deliveryImageView: ImageView = findViewById(R.id.deliveryImageView)
+                    val pickupImageView: ImageView = findViewById(R.id.pickupImageView)
                     val closeImageView: ImageView = findViewById(R.id.closeImageView)
                     deliverySubHeadingTextView.text = mMoreControlsStaticData?.message_bottom_sheet_delivery
                     pickupSubHeadingTextView.text = mMoreControlsStaticData?.message_bottom_sheet_pickup
@@ -339,7 +340,7 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
                     deliveryHeadingTextView.text = mMoreControlsStaticData?.mDeliveryText
                     bottomSheetHeadingTextView.text = mMoreControlsStaticData?.heading_bottom_sheet_set_delivery_pickup
                     setupBottomSheetDeliveryUI(deliverySwitch, deliveryHeadingTextView, deliveryContainer, deliveryImageView)
-                    setupBottomSheetPickupUI(pickupContainer, pickupSwitch, pickupHeadingTextView)
+                    setupBottomSheetPickupUI(pickupContainer, pickupSwitch, pickupHeadingTextView, pickupImageView)
                     deliverySwitch.setOnCheckedChangeListener { _, isChecked ->
                         mIsDeliveryOn = isChecked
                         changeStoreDeliveryStatusByDeliveryPickUpClicked()
@@ -348,7 +349,7 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
                     pickupSwitch.setOnCheckedChangeListener { _, isChecked ->
                         mIsPickupOn = isChecked
                         changeStoreDeliveryStatusByDeliveryPickUpClicked()
-                        setupBottomSheetPickupUI(pickupContainer, pickupSwitch, pickupHeadingTextView)
+                        setupBottomSheetPickupUI(pickupContainer, pickupSwitch, pickupHeadingTextView, pickupImageView)
                     }
                     closeImageView.setOnClickListener { bottomSheetDialog.dismiss() }
                 }
@@ -356,17 +357,19 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
         }
     }
 
-    private fun setupBottomSheetPickupUI(pickupContainer: View, pickupSwitch: SwitchMaterial, pickupHeadingTextView: TextView) {
+    private fun setupBottomSheetPickupUI(pickupContainer: View, pickupSwitch: SwitchMaterial, pickupHeadingTextView: TextView, pickupImageView: ImageView) {
         mActivity?.let { context ->
             if (mIsPickupOn) {
                 pickupSwitch.isSelected = true
                 pickupSwitch.isChecked = true
                 pickupHeadingTextView.setTextColor(ContextCompat.getColor(context, R.color.open_green))
+                pickupImageView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_pickup_green_grey_border))
                 pickupContainer.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_white_background_green_border)
                 pickupContainer.elevation = 1f
             } else {
                 pickupSwitch.isSelected = false
                 pickupSwitch.isChecked = false
+                pickupImageView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_pickup_grey_grey_border))
                 pickupHeadingTextView.setTextColor(ContextCompat.getColor(context, R.color.default_text_light_grey))
                 pickupContainer.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_white_background)
                 pickupContainer.elevation = 5f
@@ -408,11 +411,11 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
             if (mIsPickupOn) {
                 pickupStatusTextView2?.text = mMoreControlsStaticData?.mOnText
                 pickupStatusTextView2?.setTextColor(ContextCompat.getColor(context, R.color.open_green))
-                pickupImageView?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_delivery_green_grey_border))
+                pickupImageView?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_pickup_green_grey_border))
             } else {
                 pickupStatusTextView2?.text = mMoreControlsStaticData?.mOffText
                 pickupStatusTextView2?.setTextColor(ContextCompat.getColor(context, R.color.red))
-                pickupImageView?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_delivery_red_grey_border))
+                pickupImageView?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_pickup_red_grey_border))
             }
         }
     }
