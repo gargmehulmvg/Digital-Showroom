@@ -288,7 +288,7 @@
                         android:gravity="center_vertical"
                         android:paddingTop="@dimen/_10sdp"
                         android:paddingBottom="@dimen/_10sdp"
-                        android:text="@string/share_product"
+                        android:text="@string/send_reminder"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_15sdp"
                         app:layout_constraintBottom_toBottomOf="parent"

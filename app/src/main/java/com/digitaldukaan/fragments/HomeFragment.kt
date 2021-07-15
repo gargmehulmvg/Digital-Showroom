@@ -37,9 +37,9 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration
-import kotlinx.android.synthetic.main.home_fragment.*
 import kotlinx.android.synthetic.main.layout_analytics.*
 import kotlinx.android.synthetic.main.layout_common_webview_fragment.*
+import kotlinx.android.synthetic.main.layout_home_fragment.*
 import org.json.JSONObject
 import java.io.File
 
@@ -90,7 +90,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        mContentView = inflater.inflate(R.layout.home_fragment, container, false)
+        mContentView = inflater.inflate(R.layout.layout_home_fragment, container, false)
         if (!askContactPermission()) if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else {
             if (orderPageInfoResponse == null) {
                 mHomeFragmentService?.getOrderPageInfo()
@@ -570,26 +570,29 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        Log.i(TAG, "$TAG onRequestPermissionResult")
-        if (requestCode == Constants.CONTACT_REQUEST_CODE) {
-            when {
-                grantResults.isEmpty() -> Log.i(TAG, "User interaction was cancelled.")
-                grantResults[0] == PackageManager.PERMISSION_GRANTED -> {
-                    CoroutineScopeUtils().runTaskOnCoroutineBackground { getContactsFromStorage2(mActivity) }
-                    if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else {
+        Log.d(TAG, "$TAG onRequestPermissionResult")
+        when (requestCode) {
+            Constants.CONTACT_REQUEST_CODE -> {
+                when {
+                    grantResults.isEmpty() -> Log.d(TAG, "CONTACT_REQUEST_CODE :: User interaction was cancelled.")
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED -> {
+                        CoroutineScopeUtils().runTaskOnCoroutineBackground { getContactsFromStorage2(mActivity) }
+                        if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else {
+                            mHomeFragmentService?.getOrderPageInfo()
+                            mHomeFragmentService?.getAnalyticsData()
+                        }
+                    }
+                    else -> {
                         mHomeFragmentService?.getOrderPageInfo()
                         mHomeFragmentService?.getAnalyticsData()
                     }
                 }
-                else -> {
-                    mHomeFragmentService?.getOrderPageInfo()
-                    mHomeFragmentService?.getAnalyticsData()
-                }
             }
-        } else if (requestCode == Constants.IMAGE_PICK_REQUEST_CODE) {
-            when {
-                grantResults.isEmpty() -> Log.i(TAG, "User interaction was cancelled.")
-                grantResults[0] == PackageManager.PERMISSION_GRANTED -> openCameraWithoutCrop()
+            Constants.IMAGE_PICK_REQUEST_CODE -> {
+                when {
+                    grantResults.isEmpty() -> Log.d(TAG, "IMAGE_PICK_REQUEST_CODE :: User interaction was cancelled.")
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED -> openCameraWithoutCrop()
+                }
             }
         }
     }

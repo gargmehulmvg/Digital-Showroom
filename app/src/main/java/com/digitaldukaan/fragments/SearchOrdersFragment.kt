@@ -24,7 +24,7 @@ import com.digitaldukaan.services.SearchOrdersService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.ISearchOrderServiceInterface
 import com.google.gson.Gson
-import kotlinx.android.synthetic.main.home_fragment.*
+import kotlinx.android.synthetic.main.layout_home_fragment.*
 
 class SearchOrdersFragment: BaseFragment(), IOnToolbarIconClick, ISearchOrderServiceInterface,
     IOrderListItemListener {
