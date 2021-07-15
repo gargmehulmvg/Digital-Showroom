@@ -194,7 +194,7 @@
             android:id="@+id/takeOrderTextView"
             style="@style/common_text_view_background"
             android:layout_marginEnd="@dimen/_10sdp"
-            android:layout_marginBottom="@dimen/_10sdp"
+            android:layout_marginBottom="@dimen/_15sdp"
             android:elevation="@dimen/_5sdp"
             android:onClick="onClick"
             android:textSize="@dimen/_12sdp"

@@ -75,12 +75,11 @@ class AddProductNetworkService {
     }
 
     suspend fun setItemServerCall(
-        authToken: String,
         request: AddProductRequest,
         serviceInterface: IAddProductServiceInterface
     ) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.setItem(authToken, request)
+            val response = RetrofitApi().getServerCallObject()?.setItem(request)
             response?.let {
                 if (it.isSuccessful) {
                     it.body()?.let { commonApiResponse -> serviceInterface.onAddProductDataResponse(commonApiResponse)

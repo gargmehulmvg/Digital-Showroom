@@ -36,6 +36,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -43,12 +44,16 @@ import com.bumptech.glide.Glide
 import com.digitaldukaan.MainActivity
 import com.digitaldukaan.MyFcmMessageListenerService
 import com.digitaldukaan.R
+import com.digitaldukaan.adapters.ContactAdapter
 import com.digitaldukaan.adapters.ImagesSearchAdapter
 import com.digitaldukaan.adapters.OrderNotificationsAdapter
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.exceptions.UnAuthorizedAccessException
 import com.digitaldukaan.interfaces.IAdapterItemClickListener
-import com.digitaldukaan.interfaces.ISearchImageItemClicked
+import com.digitaldukaan.interfaces.IContactItemClicked
+import com.digitaldukaan.interfaces.ISearchItemClicked
+import com.digitaldukaan.models.dto.ContactModel
+import com.digitaldukaan.models.request.PaymentLinkRequest
 import com.digitaldukaan.models.request.UpdatePaymentMethodRequest
 import com.digitaldukaan.models.response.*
 import com.digitaldukaan.network.RetrofitApi
@@ -73,9 +78,10 @@ import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
+import kotlin.collections.ArrayList
 
 
-open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
+open class BaseFragment : ParentFragment(), ISearchItemClicked {
 
     protected var mContentView: View? = null
     private var mProgressDialog: Dialog? = null
@@ -377,7 +383,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
     }
 
     open fun shareOnWhatsApp(sharingData: String?, image: Bitmap? = null) {
-        if (null == image) {
+        if (null != image) {
             mActivity?.let {
                 if (ActivityCompat.checkSelfPermission(it, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED &&
                     ActivityCompat.checkSelfPermission(it, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -816,6 +822,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                         Log.d(TAG, "onActivityResult: OK")
                         val bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath)
                         Log.d(TAG, "onActivityResult: bitmap :: $bitmap")
+                        stopProgress()
                         if (null == bitmap) handleGalleryResult(result, true) else handleCameraResult(bitmap, true)
                     } catch (e: Exception) {
                         Log.e(TAG, "resultLauncherForCamera: ${e.message}", e)
@@ -828,10 +835,12 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
             Log.d(TAG, "onActivityResult: ")
             if (result.resultCode == Activity.RESULT_OK) {
                 CoroutineScopeUtils().runTaskOnCoroutineMain {
+                    showProgressDialog(mActivity)
                     try {
                         Log.d(TAG, "onActivityResult: OK")
                         val bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath)
                         Log.d(TAG, "onActivityResult: bitmap :: $bitmap")
+                        stopProgress()
                         if (null == bitmap) handleGalleryResult(result, false) else handleCameraResult(bitmap, false)
                     } catch (e: Exception) {
                         Log.e(TAG, "resultLauncherForCamera: ${e.message}", e)
@@ -1196,6 +1205,52 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         }
     }
 
+    protected fun showPaymentLinkSelectionDialog(amount: String, imageCdn: String = "") {
+        mActivity?.let {
+            Dialog(it).apply {
+                requestWindowFeature(Window.FEATURE_NO_TITLE)
+                setCancelable(true)
+                setContentView(R.layout.dialog_payment_link_selection)
+                val staticText = StaticInstances.sOrderPageInfoStaticData
+                val bottomSheetClose: ImageView = findViewById(R.id.bottomSheetClose)
+                val headingTextView: TextView = findViewById(R.id.headingTextView)
+                val smsTextView: TextView = findViewById(R.id.smsTextView)
+                val whatsAppTextView: TextView = findViewById(R.id.whatsappTextView)
+                val smsImageView: ImageView = findViewById(R.id.smsImageView)
+                val whatsAppImageView: ImageView = findViewById(R.id.whatsAppImageView)
+                headingTextView.text = staticText?.heading_share_payment_link
+                smsTextView.text = staticText?.text_sms
+                whatsAppTextView.text = staticText?.text_whatsapp
+                smsTextView.setOnClickListener {
+                    this.dismiss()
+                    onSMSIconClicked()
+                    showContactPickerBottomSheet(amount, imageCdn)
+                }
+                smsImageView.setOnClickListener {
+                    this.dismiss()
+                    onSMSIconClicked()
+                    showContactPickerBottomSheet(amount, imageCdn)
+                }
+                whatsAppImageView.setOnClickListener {
+                    this.dismiss()
+                    onWhatsAppIconClicked()
+                    val request = PaymentLinkRequest(Constants.MODE_WHATS_APP, amount.toDouble(), "", imageCdn)
+                    initiatePaymentLinkServerCall(request)
+                }
+                whatsAppTextView.setOnClickListener {
+                    this.dismiss()
+                    onWhatsAppIconClicked()
+                    val request = PaymentLinkRequest(Constants.MODE_WHATS_APP, amount.toDouble(), "", imageCdn)
+                    initiatePaymentLinkServerCall(request)
+                }
+                bottomSheetClose.setOnClickListener {
+                    this.dismiss()
+                }
+                window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            }.show()
+        }
+    }
+
     protected fun showMasterCatalogBottomSheet(addProductBannerStaticDataResponse: AddProductBannerTextResponse?, addProductStaticText: AddProductStaticText?, mode: String) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             try {
@@ -1327,16 +1382,18 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
         }
     }
 
-    open fun getTransactionDetailBottomSheet(txnId: String?, path: String) {
-        AppEventsManager.pushAppEvents(
-            eventName = AFInAppEventType.EVENT_SET_ORDER_PAYMENT_DETAIL,
-            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-            data = mapOf(
-                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                AFInAppEventParameterName.TRANSACTION_ID to txnId,
-                AFInAppEventParameterName.PATH to path
+    open fun getTransactionDetailBottomSheet(txnId: String?, path: String = "") {
+        if (!isEmpty(path)) {
+            AppEventsManager.pushAppEvents(
+                eventName = AFInAppEventType.EVENT_SET_ORDER_PAYMENT_DETAIL,
+                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                data = mapOf(
+                    AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                    AFInAppEventParameterName.TRANSACTION_ID to txnId,
+                    AFInAppEventParameterName.PATH to path
+                )
             )
-        )
+        }
         showProgressDialog(mActivity)
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
             try {
@@ -1348,7 +1405,7 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
                             withContext(Dispatchers.Main) {
                                 if (it.mIsSuccessStatus) {
                                     val responseObj = Gson().fromJson<TransactionDetailResponse>(it.mCommonDataStr, TransactionDetailResponse::class.java)
-                                    showTransactionDetailBottomSheet(responseObj)
+                                    if (isEmpty(path)) onTransactionDetailResponse(responseObj) else showTransactionDetailBottomSheet(responseObj)
                                 } else showShortSnackBar(it.mMessage, true, R.drawable.ic_close_red)
                             }
                         }
@@ -1523,6 +1580,130 @@ open class BaseFragment : ParentFragment(), ISearchImageItemClicked {
             } catch (e: Exception) {
                 exceptionHandlingForAPIResponse(e)
             }
+        }
+    }
+
+    open fun showContactPickerBottomSheet(amount: String, imageCdn: String = "") {
+        if (!askContactPermission()) {
+            mActivity?.let {
+                val mContactPickerBottomSheet: BottomSheetDialog? = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
+                val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_contact_pick, it.findViewById(R.id.bottomSheetContainer))
+                mContactPickerBottomSheet?.apply {
+                    val staticText = StaticInstances.sOrderPageInfoStaticData
+                    setContentView(view)
+                    setBottomSheetCommonProperty()
+                    val contactList : ArrayList<ContactModel> = ArrayList()
+                    val contactAdapter = ContactAdapter(contactList, mActivity, object : IContactItemClicked {
+                        override fun onContactItemClicked(contact: ContactModel) {
+                            mContactPickerBottomSheet.dismiss()
+                            val request = PaymentLinkRequest(Constants.MODE_SMS, amount.toDouble(), contact.number ?: "", imageCdn)
+                            initiatePaymentLinkServerCall(request, contact.name ?: "")
+                        }
+
+                    })
+                    StaticInstances.sUserContactList.forEachIndexed { _, model -> contactList.add(model) }
+                    view?.run {
+                        val closeImageView: View = findViewById(R.id.bottomSheetUploadImageCloseImageView)
+                        val bottomSheetHeading: TextView = findViewById(R.id.bottomSheetHeading)
+                        val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
+                        val searchImageEditText: EditText = findViewById(R.id.searchImageEditText)
+                        bottomSheetHeading.setHtmlData(staticText?.bottom_sheet_heading_enter_contact_number)
+                        searchImageEditText.setHint(staticText?.bottom_sheet_hint_enter_contact_number)
+                        searchImageEditText.addTextChangedListener(object : TextWatcher {
+                            override fun afterTextChanged(editable: Editable?) {
+                                val string = editable?.toString()
+                                if (!isEmpty(string)) {
+                                    val updatedContactList : ArrayList<ContactModel> = ArrayList()
+                                    contactList.forEachIndexed { _, contactModel ->
+                                        if (contactModel.name?.toLowerCase(Locale.getDefault())?.contains(string?.toLowerCase(Locale.getDefault()) ?: "") == true ||
+                                            contactModel.number?.contains(string ?: "") == true) {
+                                            updatedContactList.add(contactModel)
+                                        }
+                                    }
+                                    contactAdapter.setContactList(updatedContactList)
+                                }
+                            }
+
+                            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                                Log.d(TAG, "beforeTextChanged: $p0")
+                            }
+
+                            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                                Log.d(TAG, "onTextChanged: $p0")
+                            }
+
+                        })
+                        closeImageView.setOnClickListener { this@apply.dismiss() }
+                        recyclerView.apply {
+                            itemAnimator = DefaultItemAnimator()
+                            layoutManager = LinearLayoutManager(it)
+                            adapter = contactAdapter
+                        }
+                    }
+                }?.show()
+            }
+        }
+    }
+
+    private fun initiatePaymentLinkServerCall(request: PaymentLinkRequest, contactName: String = "") {
+        showProgressDialog(mActivity)
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            try {
+                val response = RetrofitApi().getServerCallObject()?.sendPaymentLink(request)
+                response?.let {
+                    stopProgress()
+                    if (it.isSuccessful) {
+                        it.body()?.let {
+                            withContext(Dispatchers.Main) {
+                                if (it.mIsSuccessStatus) {
+                                    val responseObj = Gson().fromJson<PaymentLinkResponse>(it.mCommonDataStr, PaymentLinkResponse::class.java)
+                                    if (request.mode == Constants.MODE_WHATS_APP) {
+                                        shareOnWhatsApp(responseObj?.whatsapp?.text)
+                                    } else {
+                                        showPaymentLinkSuccessDialog(responseObj?.sms, contactName)
+                                    }
+                                    refreshOrderPage()
+                                } else showShortSnackBar(it.mMessage, true, R.drawable.ic_close_red)
+                            }
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                exceptionHandlingForAPIResponse(e)
+            }
+        }
+    }
+
+    private fun showPaymentLinkSuccessDialog(smsObj: SMSItemResponse?, contactName: String) {
+        mActivity?.let {
+            Dialog(it).apply {
+                requestWindowFeature(Window.FEATURE_NO_TITLE)
+                setCancelable(true)
+                setContentView(R.layout.dialog_payment_link_success)
+                val dateHeading: TextView = findViewById(R.id.dateHeading)
+                val timeHeading: TextView = findViewById(R.id.timeHeading)
+                val amountHeading: TextView = findViewById(R.id.amountHeading)
+                val dateTextView: TextView = findViewById(R.id.dateTextView)
+                val timeTextView: TextView = findViewById(R.id.timeTextView)
+                val idHeading: TextView = findViewById(R.id.idHeading)
+                val amountTextView: TextView = findViewById(R.id.amountTextView)
+                val linkSentToTextView: TextView = findViewById(R.id.linkSentToTextView)
+                val floatingClose: ImageView = findViewById(R.id.floatingClose)
+                val idStr = "${smsObj?.staticText?.text_id} ${smsObj?.orderId}"
+                idHeading.text = idStr
+                val amountStr = "₹ ${smsObj?.amount}"
+                amountTextView.text = amountStr
+                linkSentToTextView.text = "${smsObj?.staticText?.text_your_link_sent_to} $contactName"
+                dateHeading.text = smsObj?.staticText?.text_date
+                timeTextView.text = smsObj?.time
+                dateTextView.text = smsObj?.date
+                timeHeading.text = smsObj?.staticText?.text_time
+                amountHeading.text = smsObj?.staticText?.text_amount
+                floatingClose.setOnClickListener {
+                    this.dismiss()
+                }
+                window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            }.show()
         }
     }
 

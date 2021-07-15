@@ -2,13 +2,12 @@ package com.digitaldukaan.fragments
 
 import android.net.Uri
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.digitaldukaan.BuildConfig
+import android.widget.EditText
+import android.widget.ImageView
+import android.widget.TextView
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.network.RetrofitApi
@@ -25,22 +24,22 @@ class SendBillFragment : BaseFragment() {
     private var mImageUri: Uri? = null
     private var mImageFile: File? = null
     private var mAmountStr: String? = ""
+    private var mImageCdnLink: String = ""
+    private var sendLinkTextView: TextView? = null
+    private var billCameraImageView: ImageView? = null
 
     companion object {
         private const val TAG = "SendBillFragment"
-        fun newInstance(uri: Uri?, file: File?): SendBillFragment {
+        fun newInstance(uri: Uri?, file: File?, amount: String): SendBillFragment {
             val fragment = SendBillFragment()
             fragment.mImageUri = uri
             fragment.mImageFile = file
+            fragment.mAmountStr = amount
             return fragment
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.layout_send_bill, container, false)
         hideBottomNavigationView(true)
         ToolBarManager.getInstance()?.apply { hideToolBar(mActivity, true) }
@@ -49,21 +48,20 @@ class SendBillFragment : BaseFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         loadImageFromUri()
-        sendBillEditText?.addTextChangedListener(object : TextWatcher{
-            override fun afterTextChanged(str: Editable?) {
-                mAmountStr = str?.toString()
-                sendBillTextView.isEnabled = str?.toString()?.isEmpty() != true
-            }
-
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                Log.d(TAG, "beforeTextChanged: do nothing")
-            }
-
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                Log.d(TAG, "onTextChanged: do nothing")
-            }
-
-        })
+        val appTitleTextView: TextView? = mContentView?.findViewById(R.id.appTitleTextView)
+        val customerCanPayUsingTextView: TextView? = mContentView?.findViewById(R.id.customerCanPayUsingTextView)
+        val sendBillToCustomerTextView: TextView? = mContentView?.findViewById(R.id.sendBillToCustomerTextView)
+        val bottomSheetClose: View? = mContentView?.findViewById(R.id.bottomSheetClose)
+        val amountEditText: EditText? = mContentView?.findViewById(R.id.amountEditText)
+        billCameraImageView = mContentView?.findViewById(R.id.billCameraImageView)
+        sendLinkTextView = mContentView?.findViewById(R.id.sendLinkTextView)
+        bottomSheetClose?.visibility = View.GONE
+        amountEditText?.setText(mAmountStr)
+        val staticText = StaticInstances.sOrderPageInfoStaticData
+        sendLinkTextView?.text = staticText?.text_send_link
+        appTitleTextView?.text = staticText?.text_send_payment_link
+        sendBillToCustomerTextView?.setHtmlData(staticText?.bottom_sheet_heading_send_link)
+        customerCanPayUsingTextView?.setHtmlData(staticText?.bottom_sheet_message_customer_pay)
     }
 
     override fun onResume() {
@@ -72,6 +70,7 @@ class SendBillFragment : BaseFragment() {
     }
 
     private fun loadImageFromUri() {
+        mImageFile?.let { file -> uploadImageToGetCDNLink(file) }
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             mImageUri?.let {
                 val bitmap = getBitmapFromUri(mImageUri, mActivity)
@@ -84,50 +83,18 @@ class SendBillFragment : BaseFragment() {
         when (view?.id) {
             refreshImageView?.id -> openCameraWithoutCrop()
             backButtonToolbar?.id -> mActivity?.onBackPressed()
-            sendBillTextView?.id -> {
-                AppEventsManager.pushAppEvents(eventName = AFInAppEventType.EVENT_GENERATE_SELF_BILL, isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true, data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)))
-                try {
-                    mImageFile?.run {
-                        val fileRequestBody = MultipartBody.Part.createFormData("media", name, RequestBody.create("image/*".toMediaTypeOrNull(), this))
-                        val imageTypeRequestBody = RequestBody.create("text/plain".toMediaTypeOrNull(), Constants.BASE64_ORDER_BILL)
-                        showProgressDialog(mActivity)
-                        CoroutineScopeUtils().runTaskOnCoroutineBackground {
-                            try {
-                                val response = RetrofitApi().getServerCallObject()?.getImageUploadCdnLink(imageTypeRequestBody, fileRequestBody)
-                                response?.let {
-                                    CoroutineScopeUtils().runTaskOnCoroutineMain {
-                                        stopProgress()
-                                        if (response.isSuccessful) {
-                                            val base64Str = Gson().fromJson<String>(response.body()?.mCommonDataStr, String::class.java)
-                                            launchFragment(
-                                                CommonWebViewFragment().newInstance(
-                                                    "",
-                                                    "${BuildConfig.WEB_VIEW_URL}${WebViewUrls.WEB_VIEW_BILL_CONFIRM}?storeid=${getStringDataFromSharedPref(Constants.STORE_ID
-                                                    )}&imageURL=$base64Str&amount=${if (mAmountStr?.isEmpty() == true) 0.0 else mAmountStr?.toDouble()}"
-                                                ), true
-                                            )
-                                        }
-                                    }
-                                }
-                            } catch (e: Exception) {
-                                Sentry.captureException(e, "$TAG onClick: exception")
-                                exceptionHandlingForAPIResponse(e)
-                            }
-                        }
+            billCameraImageView?.id -> openCameraWithoutCrop()
+            sendLinkTextView?.id -> {
+                val amountEditText: EditText? = mContentView?.findViewById(R.id.amountEditText)
+                mAmountStr = amountEditText?.text?.toString()?.trim()
+                if (isEmpty(mAmountStr)) {
+                    amountEditText?.apply {
+                        requestFocus()
+                        error = getString(R.string.mandatory_field_message)
                     }
-                } catch (e: Exception) {
-                    Log.e(TAG, "sendBillTextView: ${e.message}", e)
-                    AppEventsManager.pushAppEvents(
-                        eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
-                        isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                        data = mapOf(
-                            AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                            "Exception Point" to "sendBillTextView Click for Image Conversion",
-                            "Exception Message" to e.message,
-                            "Exception Logs" to e.toString()
-                        )
-                    )
+                    return
                 }
+                showPaymentLinkSelectionDialog(mAmountStr ?: "0", mImageCdnLink)
             }
         }
     }
@@ -140,6 +107,32 @@ class SendBillFragment : BaseFragment() {
     override fun onImageSelectionResultFile(file: File?, mode: String) {
         mImageFile = file
         loadImageFromUri()
+    }
+
+    private fun uploadImageToGetCDNLink(file: File) {
+        showProgressDialog(mActivity)
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            try {
+                val fileRequestBody = MultipartBody.Part.createFormData("media", file.name, RequestBody.create("image/*".toMediaTypeOrNull(), file))
+                val imageTypeRequestBody = RequestBody.create("text/plain".toMediaTypeOrNull(), Constants.BASE64_THEMES)
+                val response = RetrofitApi().getServerCallObject()?.getImageUploadCdnLink(imageTypeRequestBody, fileRequestBody)
+                response?.let {
+                    stopProgress()
+                    if (response.isSuccessful) {
+                        mImageCdnLink = Gson().fromJson<String>(response.body()?.mCommonDataStr, String::class.java)
+                    }
+                }
+            } catch (e: Exception) {
+                Sentry.captureException(e, "$TAG uploadImageToGetCDNLink: exception")
+                exceptionHandlingForAPIResponse(e)
+            }
+        }
+    }
+
+    override fun refreshOrderPage() {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            mActivity?.onBackPressed()
+        }
     }
 
 }

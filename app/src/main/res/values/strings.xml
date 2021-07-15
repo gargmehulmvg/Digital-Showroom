@@ -119,6 +119,9 @@
     <string name="read_more"><u>Read more</u></string>
     <string name="txn_charges_are_applicable">*Txn charges are applicable</string>
     <string name="txn_id_is_blank">Error in getting details. Contact care@dotpe.in</string>
+    <string name="pick_from_contacts">or Pick from contacts</string>
+    <string name="send_reminder">Send Reminder</string>
+    <string name="default_mobile">0000000000</string>
     <string-array name="state_array">
         <item >Andhra Pradesh</item>
         <item >Arunachal Pradesh</item>

@@ -73,24 +73,24 @@ class App: Application() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             val processName = getProcessName(this)
             val packageName = this.packageName
-            if (packageName != processName) {
-                WebView.setDataDirectorySuffix(processName)
-            }
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            val process = getProcessName()
-            if (packageName != process) WebView.setDataDirectorySuffix(process)
+            if (packageName != processName) WebView.setDataDirectorySuffix(processName)
         }
     }
 
     private fun getProcessName(context: Context?): String? {
-        if (context == null) return null
-        val manager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
-        for (processInfo in manager.runningAppProcesses) {
-            if (processInfo.pid == Process.myPid()) {
-                return processInfo.processName
+        var processName: String? = ""
+        try {
+            if (null == context) return processName
+            val manager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+            for (processInfo in manager.runningAppProcesses) {
+                if (processInfo.pid == Process.myPid()) {
+                    processName = processInfo.processName
+                    return processName
+                }
             }
+        } catch (e: Exception) {
+            return processName
         }
-        return null
+        return processName
     }
 }

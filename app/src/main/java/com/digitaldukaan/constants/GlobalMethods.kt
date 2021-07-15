@@ -229,19 +229,20 @@ fun openWebViewFragment(fragment: BaseFragment, title: String, webViewType: Stri
 fun getDateFromOrderString(dateStr: String?): Date? {
     if (isEmpty(dateStr)) return Date()
     val format: DateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-    return format.parse(dateStr)
+    return format.parse(dateStr ?: "")
 }
 
-fun getCompleteDateFromOrderString(dateStr: String?): Date? {
-    if (dateStr == null) return Date()
-    val format: DateFormat = SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.getDefault())
+fun getCompleteDateFromOrderString(date: String?): Date? {
+    var dateStr: String? = date ?: return Date()
+    dateStr = if (dateStr?.contains("12:") == true) "$dateStr pm" else "$dateStr am"
+    val format: DateFormat = SimpleDateFormat("yyyy-MM-dd hh:mm:ss a", Locale.getDefault())
     return format.parse(dateStr)
 }
 
 fun getTimeFromOrderString(date: Date?): String {
-    date?.run {
+    date?.let {dateValue ->
         val dateFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())
-        return dateFormat.format(this)
+        return dateFormat.format(dateValue)
     }
     return ""
 }
@@ -398,4 +399,9 @@ fun getMonthOfTheWeek(count: Int): String {
         11 -> return "Dec"
     }
     return ""
+}
+
+fun isDouble(str: String?): Boolean {
+    if (null == str?.toDoubleOrNull()) return false
+    return true
 }

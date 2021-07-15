@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:background="@color/white"
+    android:padding="@dimen/_10sdp"
+    android:layout_height="wrap_content">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/billAmountTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/roboto_light"
+        android:textColor="@color/dark_blackish"
+        android:textSize="@dimen/_10sdp"
+        app:layout_constraintEnd_toStartOf="@+id/billAmountValueTextView"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Bill Amount" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/billAmountValueTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/roboto_light"
+        android:gravity="end"
+        android:textColor="@color/dark_blackish"
+        android:textSize="@dimen/_10sdp"
+        app:layout_constraintBottom_toBottomOf="@+id/billAmountTextView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/billAmountTextView"
+        app:layout_constraintTop_toTopOf="@+id/billAmountTextView"
+        tools:text="₹ 500" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/txnChargeTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:fontFamily="@font/roboto_light"
+        android:textColor="@color/dark_blackish"
+        android:textSize="@dimen/_10sdp"
+        app:layout_constraintEnd_toStartOf="@+id/txnChargeValueTextView"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="@+id/billAmountTextView"
+        app:layout_constraintTop_toBottomOf="@+id/billAmountTextView"
+        tools:text="Transaction Charges (2.3%)" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/txnChargeValueTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/roboto_light"
+        android:gravity="end"
+        android:textColor="@color/dark_blackish"
+        android:textSize="@dimen/_10sdp"
+        app:layout_constraintBottom_toBottomOf="@+id/txnChargeTextView"
+        app:layout_constraintEnd_toEndOf="@+id/billAmountValueTextView"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/billAmountTextView"
+        app:layout_constraintTop_toTopOf="@+id/txnChargeTextView"
+        tools:text="₹ 10.98" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/amountSettleTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:fontFamily="@font/roboto"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_10sdp"
+        app:layout_constraintEnd_toStartOf="@+id/amountSettleValueTextView"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="@+id/txnChargeTextView"
+        app:layout_constraintTop_toBottomOf="@+id/txnChargeTextView"
+        tools:text="Transaction Charges (2.3%)" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/amountSettleValueTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/roboto"
+        android:gravity="end"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_10sdp"
+        app:layout_constraintBottom_toBottomOf="@+id/amountSettleTextView"
+        app:layout_constraintEnd_toEndOf="@+id/txnChargeValueTextView"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/billAmountTextView"
+        app:layout_constraintTop_toTopOf="@+id/amountSettleTextView"
+        tools:text="₹ 10.98" />
+
+    <View
+        android:id="@+id/separator1"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_5sdp"
+        android:layout_marginTop="@dimen/_15sdp"
+        android:background="@color/light_grey_background"
+        app:layout_constraintTop_toBottomOf="@+id/amountSettleTextView" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/paymentModeTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/roboto_light"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_10sdp"
+        app:layout_constraintBottom_toBottomOf="@+id/paymentModeImageView"
+        app:layout_constraintEnd_toStartOf="@+id/amountSettleValueTextView"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="@+id/txnChargeTextView"
+        app:layout_constraintTop_toTopOf="@+id/paymentModeImageView"
+        tools:text="Payment Mode" />
+
+    <ImageView
+        android:id="@+id/paymentModeImageView"
+        android:layout_width="@dimen/_45sdp"
+        android:layout_height="@dimen/_40sdp"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:contentDescription="@string/image_view_content_description"
+        app:layout_constraintEnd_toEndOf="@+id/txnChargeValueTextView"
+        app:layout_constraintTop_toBottomOf="@+id/separator1"
+        tools:src="@drawable/ic_cash" />
+
+    <View
+        android:id="@+id/separator2"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_5sdp"
+        android:layout_marginTop="@dimen/_15sdp"
+        android:background="@color/light_grey_background"
+        app:layout_constraintTop_toBottomOf="@+id/paymentModeImageView" />
+
+    <ImageView
+        android:id="@+id/imageViewTop"
+        android:layout_width="@dimen/_18sdp"
+        android:layout_height="@dimen/_18sdp"
+        android:layout_marginTop="@dimen/_15sdp"
+        android:contentDescription="@string/image_view_content_description"
+        android:src="@drawable/ic_order_detail_green_tick"
+        app:layout_constraintEnd_toEndOf="@id/dottedView"
+        app:layout_constraintStart_toStartOf="@id/dottedView"
+        app:layout_constraintTop_toBottomOf="@id/separator2" />
+
+    <View
+        android:id="@+id/dottedView"
+        android:layout_width="@dimen/_50sdp"
+        android:layout_height="@dimen/_50sdp"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:background="@drawable/dotted_line_view_black"
+        android:rotation="90"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/imageViewTop" />
+
+    <ImageView
+        android:id="@+id/imageViewBottom"
+        android:layout_width="@dimen/_18sdp"
+        android:layout_height="@dimen/_18sdp"
+        android:layout_marginTop="@dimen/_8sdp"
+        android:contentDescription="@string/image_view_content_description"
+        app:layout_constraintEnd_toEndOf="@id/dottedView"
+        app:layout_constraintStart_toStartOf="@id/dottedView"
+        app:layout_constraintTop_toBottomOf="@id/dottedView"
+        tools:src="@drawable/ic_close_red" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/textViewTop"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/roboto"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_12sdp"
+        app:layout_constraintBottom_toBottomOf="@id/imageViewTop"
+        app:layout_constraintStart_toEndOf="@id/dottedView"
+        app:layout_constraintTop_toTopOf="@id/imageViewTop"
+        tools:text="Order ID:342" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/txnId"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/roboto"
+        android:textSize="@dimen/_10sdp"
+        app:layout_constraintStart_toStartOf="@id/textViewTop"
+        app:layout_constraintTop_toBottomOf="@id/textViewTop"
+        tools:text="Order ID:342" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/textViewBottom"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/roboto"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_12sdp"
+        app:layout_constraintBottom_toBottomOf="@+id/imageViewBottom"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/dottedView"
+        app:layout_constraintTop_toTopOf="@+id/imageViewBottom"
+        tools:text="Order ID:342" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/bottomDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/roboto"
+        android:textSize="@dimen/_10sdp"
+        android:visibility="visible"
+        app:layout_constraintStart_toStartOf="@+id/textViewBottom"
+        app:layout_constraintTop_toBottomOf="@+id/textViewBottom"
+        tools:text="Order ID:342" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/displayMessage"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/roboto"
+        android:textColor="@color/orange"
+        android:textSize="@dimen/_10sdp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/textViewBottom"
+        app:layout_constraintTop_toBottomOf="@+id/textViewBottom"
+        tools:text="Order ID:342" />
+
+    <TextView
+        android:id="@+id/ctaTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:layout_marginBottom="@dimen/_10sdp"
+        android:background="@drawable/ripple_curve_grey_black_background"
+        android:paddingStart="@dimen/_10sdp"
+        android:paddingTop="@dimen/_8sdp"
+        android:paddingEnd="@dimen/_10sdp"
+        android:paddingBottom="@dimen/_8sdp"
+        android:text="@string/add_bank_account"
+        android:textColor="@color/white"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/bottomDate"
+        app:layout_constraintTop_toBottomOf="@+id/displayMessage" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

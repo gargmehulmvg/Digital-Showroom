@@ -197,25 +197,25 @@ class OrderDetailNetworkService {
         }
     }
 
-    suspend fun onOrderDetailStatusResponse(
-        orderId: String,
+    suspend fun sharePaymentLink(
+        orderId: String?,
         serviceInterface: IOrderDetailServiceInterface
     ) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.getOrderTransactions(orderId)
+            val response = RetrofitApi().getServerCallObject()?.sharePaymentLink(orderId)
             response?.let {
-                if (it.isSuccessful) it.body()?.let { commonApiResponse -> serviceInterface.onOrderDetailStatusResponse(commonApiResponse) }
+                if (it.isSuccessful) it.body()?.let { commonApiResponse -> serviceInterface.onSharePaymentLinkResponse(commonApiResponse) }
                 else {
                     if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
                     val responseBody = it.errorBody()
                     responseBody?.let {
                         val errorResponse = Gson().fromJson(responseBody.string(), CommonApiResponse::class.java)
-                        serviceInterface.onOrderDetailStatusResponse(errorResponse)
+                        serviceInterface.onSharePaymentLinkResponse(errorResponse)
                     }
                 }
             }
         } catch (e: Exception) {
-            Log.e(HomeNetworkService::class.java.simpleName, "onOrderDetailStatusResponse: ", e)
+            Log.e(HomeNetworkService::class.java.simpleName, "sharePaymentLink: ", e)
             serviceInterface.onOrderDetailException(e)
         }
     }

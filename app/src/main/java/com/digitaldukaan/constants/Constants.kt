@@ -91,6 +91,7 @@ class Constants {
         const val DS_REJECTED                                   = "rejected"              // Order rejected byt customer
         const val DS_COMPLETED_CASH                             = "completedCash"         // When order comes & marked as cash
         const val DS_COMPLETED_ONLINE                           = "completedOnline"       // Order self checklist by merchant :: Paid Online
+        const val DS_PENDING_PAYMENT_LINK                       = "pendingPaymentLink"       // Order self checklist by merchant :: Paid Online
         const val DS_MARK_READY                                 = "markReady"             // Merchant seen & start making the order for customer
         const val DS_PREPAID_PICKUP_READY                       = "prepaidPickupReady"
         const val DS_PREPAID_DELIVERY_READY                     = "prepaidDeliveryReady"
@@ -105,6 +106,8 @@ class Constants {
         const val MODE_SETTLEMENTS                              = "settlements"
         const val MODE_ORDERS                                   = "orders"
         const val MODE_SETTLED                                  = "Settled"
+        const val MODE_SMS                                      = "sms"
+        const val MODE_WHATS_APP                                 = "whatsapp"
         //ORDER_STATUS
         const val StatusCustomerUpdated                         = 1
         const val StatusMerchantUpdated                         = 2

@@ -9,10 +9,7 @@ import android.util.Log
 import android.view.*
 import android.webkit.WebSettings
 import android.webkit.WebView
-import android.widget.ImageView
-import android.widget.PopupMenu
-import android.widget.ScrollView
-import android.widget.TextView
+import android.widget.*
 import androidx.core.content.ContextCompat
 import androidx.core.widget.NestedScrollView
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -39,11 +36,10 @@ import com.digitaldukaan.webviews.WebViewBridge
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
-import com.squareup.picasso.Picasso
 import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration
-import kotlinx.android.synthetic.main.home_fragment.*
 import kotlinx.android.synthetic.main.layout_analytics.*
 import kotlinx.android.synthetic.main.layout_common_webview_fragment.*
+import kotlinx.android.synthetic.main.layout_home_fragment.*
 import org.json.JSONObject
 import java.io.File
 
@@ -51,6 +47,8 @@ import java.io.File
 class HomeFragment : BaseFragment(), IHomeServiceInterface,
     SwipeRefreshLayout.OnRefreshListener, IOrderListItemListener,
     PopupMenu.OnMenuItemClickListener {
+
+    private var paymentLinkBottomSheet: BottomSheetDialog? = null
 
     companion object {
         private val TAG = HomeFragment::class.simpleName
@@ -73,6 +71,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         private var mSwipeRefreshLayout: SwipeRefreshLayout? = null
         private var orderPageInfoResponse: OrderPageInfoResponse? = null
         private var analyticsResponse: AnalyticsResponse? = null
+        private var mPaymentLinkAmountStr: String? = null
 
         fun newInstance(): HomeFragment {
             return HomeFragment()
@@ -91,7 +90,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        mContentView = inflater.inflate(R.layout.home_fragment, container, false)
+        mContentView = inflater.inflate(R.layout.layout_home_fragment, container, false)
         if (!askContactPermission()) if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else {
             if (orderPageInfoResponse == null) {
                 mHomeFragmentService?.getOrderPageInfo()
@@ -169,8 +168,8 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         }
     }
 
-    private fun fetchLatestOrders(mode: String, fetchingOrderStr: String?, page: Int = 1) {
-        if (fetchingOrderStr?.isNotEmpty() == true) showCancellableProgressDialog(mActivity, fetchingOrderStr)
+    private fun fetchLatestOrders(mode: String, fetchingOrderStr: String?, page: Int = 1, showProgressDialog: Boolean = true) {
+        if (showProgressDialog) if (fetchingOrderStr?.isNotEmpty() == true) showCancellableProgressDialog(mActivity, fetchingOrderStr)
         val request = OrdersRequest(mode, page)
         mHomeFragmentService?.getOrders(request)
     }
@@ -450,7 +449,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                     }
                     Handler(Looper.getMainLooper()).postDelayed({ fetchLatestOrders(Constants.MODE_PENDING, mFetchingOrdersStr, pendingPageCount) }, 150)
                 }
-                takeOrderTextView?.text = mOrderPageInfoStaticData?.text_add_new_order
+                takeOrderTextView?.text = mOrderPageInfoStaticData?.text_payment_link
                 analyticsImageView?.visibility = if (mIsAnalyticsOrder) View.VISIBLE else View.GONE
                 searchImageView?.visibility = if (mIsSearchOrder) View.VISIBLE else View.GONE
                 takeOrderTextView?.visibility = if (mIsTakeOrder) View.VISIBLE else View.GONE
@@ -571,26 +570,29 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
-        Log.i(TAG, "$TAG onRequestPermissionResult")
-        if (requestCode == Constants.CONTACT_REQUEST_CODE) {
-            when {
-                grantResults.isEmpty() -> Log.i(TAG, "User interaction was cancelled.")
-                grantResults[0] == PackageManager.PERMISSION_GRANTED -> {
-                    CoroutineScopeUtils().runTaskOnCoroutineBackground { getContactsFromStorage2(mActivity) }
-                    if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else {
+        Log.d(TAG, "$TAG onRequestPermissionResult")
+        when (requestCode) {
+            Constants.CONTACT_REQUEST_CODE -> {
+                when {
+                    grantResults.isEmpty() -> Log.d(TAG, "CONTACT_REQUEST_CODE :: User interaction was cancelled.")
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED -> {
+                        CoroutineScopeUtils().runTaskOnCoroutineBackground { getContactsFromStorage2(mActivity) }
+                        if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else {
+                            mHomeFragmentService?.getOrderPageInfo()
+                            mHomeFragmentService?.getAnalyticsData()
+                        }
+                    }
+                    else -> {
                         mHomeFragmentService?.getOrderPageInfo()
                         mHomeFragmentService?.getAnalyticsData()
                     }
                 }
-                else -> {
-                    mHomeFragmentService?.getOrderPageInfo()
-                    mHomeFragmentService?.getAnalyticsData()
-                }
             }
-        } else if (requestCode == Constants.IMAGE_PICK_REQUEST_CODE) {
-            when {
-                grantResults.isEmpty() -> Log.i(TAG, "User interaction was cancelled.")
-                grantResults[0] == PackageManager.PERMISSION_GRANTED -> openCameraWithoutCrop()
+            Constants.IMAGE_PICK_REQUEST_CODE -> {
+                when {
+                    grantResults.isEmpty() -> Log.d(TAG, "IMAGE_PICK_REQUEST_CODE :: User interaction was cancelled.")
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED -> openCameraWithoutCrop()
+                }
             }
         }
     }
@@ -688,7 +690,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
     override fun onImageSelectionResultFileAndUri(fileUri: Uri?, file: File?) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             try {
-                launchFragment(SendBillFragment.newInstance(fileUri, file), true)
+                launchFragment(SendBillFragment.newInstance(fileUri, file, mPaymentLinkAmountStr ?: ""), true)
             } catch (e: Exception) {
                 Log.e(TAG, "onImageSelectionResultUri: ${e.message}", e)
                 AppEventsManager.pushAppEvents(
@@ -716,26 +718,19 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                 setContentView(view)
                 behavior.state = BottomSheetBehavior.STATE_EXPANDED
                 view?.run {
-                    val imageViewSendBill: ImageView = findViewById(R.id.imageViewSendBill)
-                    val shareButtonTextView: TextView = findViewById(R.id.shareButtonTextView)
+                    val bottomSheetClose: View = findViewById(R.id.bottomSheetClose)
+                    val sendPaymentLinkTextView: TextView = findViewById(R.id.sendPaymentLinkTextView)
                     val takeOrderMessageTextView: TextView = findViewById(R.id.takeOrderMessageTextView)
                     val createNewBillTextView: TextView = findViewById(R.id.createNewBillTextView)
-                    val clickBillPhotoContainer: View = findViewById(R.id.clickBillPhotoContainer)
-                    clickBillPhotoContainer.setOnClickListener {
-                        clickBillPhotoContainer.isEnabled = false
+                    sendPaymentLinkTextView.setOnClickListener {
+                        sendPaymentLinkTextView.isEnabled = false
+                        showPaymentLinkBottomSheet()
                         bottomSheetDialog.dismiss()
-                        openCameraWithoutCrop()
                     }
-                    shareButtonTextView.text = mOrderPageInfoStaticData?.bottom_sheet_click_bill_photo
-                    takeOrderMessageTextView.text = mOrderPageInfoStaticData?.bottom_sheet_take_order_message
+                    bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
+                    sendPaymentLinkTextView.text = mOrderPageInfoStaticData?.text_send_payment_link
+                    takeOrderMessageTextView.setHtmlData(mOrderPageInfoStaticData?.bottom_sheet_message_payment_link)
                     createNewBillTextView.text = mOrderPageInfoStaticData?.bottom_sheet_create_a_new_bill
-                    imageViewSendBill?.let {
-                        try {
-                            Picasso.get().load(orderPageInfoResponse?.mTakeOrderImage).into(it)
-                        } catch (e: Exception) {
-                            Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
-                        }
-                    }
                     createNewBillTextView.setOnClickListener {
                         createNewBillTextView.isEnabled = false
                         bottomSheetDialog.dismiss()
@@ -751,6 +746,66 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         }
     }
 
+    private fun showPaymentLinkBottomSheet() {
+        mActivity?.let {
+            paymentLinkBottomSheet = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
+            val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_payment_link, it.findViewById(R.id.bottomSheetContainer))
+            paymentLinkBottomSheet?.apply {
+                setContentView(view)
+                setBottomSheetCommonProperty()
+                setCancelable(true)
+                view?.run {
+                    val staticText = StaticInstances.sOrderPageInfoStaticData
+                    val billCameraImageView: View = findViewById(R.id.billCameraImageView)
+                    val bottomSheetClose: View = findViewById(R.id.bottomSheetClose)
+                    val amountEditText: EditText = findViewById(R.id.amountEditText)
+                    val sendLinkTextView: TextView = findViewById(R.id.sendLinkTextView)
+                    val sendBillToCustomerTextView: TextView = findViewById(R.id.sendBillToCustomerTextView)
+                    val customerCanPayUsingTextView: TextView = findViewById(R.id.customerCanPayUsingTextView)
+                    sendLinkTextView.text = staticText?.text_send_link
+                    sendBillToCustomerTextView.setHtmlData(staticText?.bottom_sheet_heading_send_link)
+                    customerCanPayUsingTextView.setHtmlData(staticText?.bottom_sheet_message_customer_pay)
+                    bottomSheetClose.setOnClickListener { paymentLinkBottomSheet?.dismiss() }
+                    billCameraImageView.setOnClickListener {
+                        mPaymentLinkAmountStr = amountEditText.text.toString()
+                        paymentLinkBottomSheet?.dismiss()
+                        openCameraWithoutCrop()
+                    }
+                    sendLinkTextView.setOnClickListener {
+                        if (isEmpty(amountEditText.text.toString())) {
+                            amountEditText.requestFocus()
+                            amountEditText.error = staticText?.error_mandatory_field
+                            return@setOnClickListener
+                        }
+                        showPaymentLinkSelectionDialog(amountEditText.text.toString())
+                    }
+                    amountEditText.requestFocus()
+                    amountEditText.showKeyboard()
+                }
+            }?.show()
+        }
+    }
+
+    override fun onWhatsAppIconClicked() {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            try {
+                paymentLinkBottomSheet?.dismiss()
+            } catch (e: Exception) {
+                Log.e(TAG, "onWhatsAppIconClicked: ${e.message}", e)
+            }
+        }
+    }
+
+    override fun onSMSIconClicked() {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            try {
+                paymentLinkBottomSheet?.dismiss()
+            } catch (e: Exception) {
+                Log.e(TAG, "onWhatsAppIconClicked: ${e.message}", e)
+            }
+        }
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         orderPageInfoResponse = null
@@ -763,5 +818,17 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
             Constants.ACTION_BOTTOM_SHEET -> if (Constants.PAGE_ORDER_NOTIFICATIONS == optionMenuItem.mPage) getOrderNotificationBottomSheet(AFInAppEventParameterName.IS_ORDER_PAGE)
         }
         return true
+    }
+
+    override fun refreshOrderPage() {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            mOrderList.clear()
+            mCompletedOrderList.clear()
+            completedPageCount = 1
+            pendingPageCount = 1
+            fetchLatestOrders(Constants.MODE_PENDING, mFetchingOrdersStr, pendingPageCount, false)
+            mHomeFragmentService?.getOrderPageInfo()
+            mHomeFragmentService?.getAnalyticsData()
+        }
     }
 }

@@ -222,6 +222,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:overScrollMode="never"
+                tools:itemCount="5"
+                android:paddingBottom="@dimen/_20sdp"
                 android:background="@color/light_grey_background"
                 android:paddingStart="@dimen/_5sdp"
                 android:paddingEnd="@dimen/_5sdp"
