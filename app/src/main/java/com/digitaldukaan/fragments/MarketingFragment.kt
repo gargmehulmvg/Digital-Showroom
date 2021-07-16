@@ -1,5 +1,12 @@
 package com.digitaldukaan.fragments
 
+import android.Manifest
+import android.app.AlertDialog
+import android.content.Context
+import android.content.pm.PackageManager
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -7,6 +14,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -25,6 +33,8 @@ import com.digitaldukaan.services.MarketingService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IMarketingServiceInterface
 import com.digitaldukaan.webviews.WebViewBridge
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -32,7 +42,9 @@ import io.sentry.Sentry
 import kotlinx.android.synthetic.main.layout_marketing_fragment.*
 
 
-class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingServiceInterface {
+class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingServiceInterface, LocationListener {
+
+    private var mMarketingItemClickResponse: MarketingCardsItemResponse? = null
 
     companion object {
         private lateinit var service: MarketingService
@@ -75,6 +87,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
         showProgressDialog(mActivity)
         service.getMarketingCardsData()
         WebViewBridge.mWebViewListener = this
+        mActivity?.let { context -> mGoogleApiClient = LocationServices.getFusedLocationProviderClient(context) }
     }
 
     override fun onToolbarSideIconClicked() = openWebViewFragment(this, getString(R.string.help), WebViewUrls.WEB_VIEW_HELP, Constants.SETTINGS)
@@ -137,14 +150,8 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
         Log.d(TAG, "onMarketingItemClick: ${response?.action}")
         when (response?.action) {
             Constants.NEW_RELEASE_TYPE_GOOGLE_ADS -> {
-                AppEventsManager.pushAppEvents(
-                    eventName = AFInAppEventType.EVENT_GOOGLE_ADS_EXPLORE,
-                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                    data = mapOf(
-                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                        AFInAppEventParameterName.CHANNEL to AFInAppEventParameterName.MARKETING)
-                )
-                openWebViewFragment(this, "", BuildConfig.WEB_VIEW_URL + response.pageUrl)
+                mMarketingItemClickResponse = response
+                getLocationForGoogleAds()
             }
             Constants.ACTION_BUSINESS_CREATIVE -> {
                 AppEventsManager.pushAppEvents(
@@ -235,6 +242,11 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
         }
     }
 
+    private fun getLocationForGoogleAds() {
+        if (checkLocationPermissionWithDialog()) return
+        getLastLocation()
+    }
+
     private fun showPDFShareBottomSheet(response: ShareStorePDFDataItemResponse?) {
         try {
             mActivity?.let {
@@ -311,5 +323,106 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
             return true
         }
         return false
+    }
+
+    private fun checkLocationPermissionWithDialog(): Boolean {
+        mActivity?.let {
+            return if (ContextCompat.checkSelfPermission(it, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(it, Manifest.permission.ACCESS_FINE_LOCATION)) {
+                    AlertDialog.Builder(it).apply {
+                        setTitle("Location Permission")
+                        setMessage("Please allow Location permission to continue")
+                        setPositiveButton(R.string.ok) { _, _ -> ActivityCompat.requestPermissions(it, arrayOf(
+                            Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), Constants.LOCATION_REQUEST_CODE)
+                        }
+                    }.create().show()
+                } else ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), Constants.LOCATION_REQUEST_CODE)
+                true
+            } else false
+        }
+        return false
+    }
+
+    private var mGoogleApiClient: FusedLocationProviderClient? = null
+    private var mCurrentLatitude = 0.0
+    private var lastLocation: Location? = null
+    private var mCurrentLongitude = 0.0
+
+    private fun getLastLocation() {
+        if (checkLocationPermission()) return
+        val locationManager = mActivity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 1f, this)
+        mGoogleApiClient?.lastLocation?.addOnCompleteListener(mActivity) { task ->
+            if (task.isSuccessful && task.result != null) {
+                lastLocation = task.result
+                mCurrentLatitude = lastLocation?.latitude ?: 0.0
+                mCurrentLongitude = lastLocation?.longitude ?: 0.0
+                openGoogleAds()
+            } else {
+                if (!isLocationEnabledInSettings(mActivity)) openLocationSettings(true)
+                mCurrentLatitude = 0.0
+                mCurrentLongitude =  0.0
+                openGoogleAds()
+            }
+        }
+    }
+
+    private fun openGoogleAds() {
+        AppEventsManager.pushAppEvents(
+            eventName = AFInAppEventType.EVENT_GOOGLE_ADS_EXPLORE,
+            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+            data = mapOf(
+                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(
+                    Constants.STORE_ID
+                ),
+                AFInAppEventParameterName.CHANNEL to AFInAppEventParameterName.MARKETING
+            )
+        )
+        openWebViewFragmentWithLocation(this, "", BuildConfig.WEB_VIEW_URL + mMarketingItemClickResponse?.pageUrl + "?storeid=${PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)}&token=${PrefsManager.getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&lat=$mCurrentLatitude&lng=$mCurrentLongitude")
+    }
+
+    private fun checkLocationPermission(): Boolean {
+        mActivity?.let {
+            if (ContextCompat.checkSelfPermission(it, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(it, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION), Constants.LOCATION_REQUEST_CODE)
+                return true
+            }
+        }
+        return false
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        Log.i(TAG, "onRequestPermissionResult")
+        if (requestCode == Constants.LOCATION_REQUEST_CODE) {
+            when {
+                grantResults.isEmpty() -> Log.i(TAG, "User interaction was cancelled.")
+                grantResults[0] == PackageManager.PERMISSION_GRANTED -> {
+                    getLastLocation()
+                }
+                else -> {
+                    mActivity?.onBackPressed()
+                    showShortSnackBar("Permission was denied", true, R.drawable.ic_close_red)
+                }
+            }
+        }
+    }
+
+    override fun onLocationChanged(location: Location) {
+        Log.d(TAG, "onLocationChanged() Latitude: " + location.latitude + " , Longitude: " + location.longitude)
+        mCurrentLatitude = location.latitude
+        mCurrentLongitude = location.longitude
+    }
+
+    override fun onStatusChanged(p0: String?, p1: Int, p2: Bundle?) {
+        Log.d(TAG, "onStatusChanged :: p0 :: $p0, p1 :: $p1, p2:: $p2")
+    }
+
+    override fun onProviderEnabled(p0: String?) {
+        Log.d(TAG, "onProviderEnabled :: $p0")
+    }
+
+    override fun onProviderDisabled(p0: String?) {
+        Log.d(TAG, "onProviderDisabled :: $p0")
     }
 }

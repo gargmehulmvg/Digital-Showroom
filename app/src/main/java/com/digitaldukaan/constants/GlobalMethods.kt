@@ -226,6 +226,14 @@ fun openWebViewFragment(fragment: BaseFragment, title: String, webViewType: Stri
     }
 }
 
+fun openWebViewFragmentWithLocation(fragment: BaseFragment, title: String, webViewType: String?) {
+    try {
+        fragment.launchFragment(CommonWebViewFragment().newInstance(title, webViewType ?: ""), true)
+    } catch (e: Exception) {
+        Sentry.captureException(e, "openWebViewFragment :: fragment: BaseFragment, title: String, webViewType: String?")
+    }
+}
+
 fun getDateFromOrderString(dateStr: String?): Date? {
     if (isEmpty(dateStr)) return Date()
     val format: DateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())

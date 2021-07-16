@@ -216,8 +216,6 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
         mGoogleApiClient?.lastLocation?.addOnCompleteListener(mActivity) { task ->
             if (task.isSuccessful && task.result != null) {
                 lastLocation = task.result
-                //mCurrentLatitude = lastLocation?.latitude ?: 0.0
-                //mCurrentLongitude = lastLocation?.longitude ?: 0.0
                 supportMapFragment.getMapAsync{
                     mGoogleMap = it
                     showCurrentLocationMarkers(mCurrentLatitude, mCurrentLongitude)

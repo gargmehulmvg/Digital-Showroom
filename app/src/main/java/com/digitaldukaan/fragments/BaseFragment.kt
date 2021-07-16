@@ -1743,4 +1743,6 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked {
         }
     }
 
+
+
 }
