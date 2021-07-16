@@ -200,7 +200,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked {
         stopProgress()
         when (e) {
             is IllegalStateException -> showToast("System Error :: IllegalStateException :: Unable to reach Server")
-            is IOException -> Sentry.captureException(e, "$TAG exceptionHandlingForAPIResponse: ${e.message}")
+            is IOException -> Log.e(TAG, "$TAG exceptionHandlingForAPIResponse: ${e.message}", e)
             is UnknownHostException -> showToast(e.message)
             is UnAuthorizedAccessException -> {
                 showToast(e.message)

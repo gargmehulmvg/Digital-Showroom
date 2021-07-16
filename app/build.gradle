@@ -16,7 +16,7 @@ android {
         minSdkVersion 24
         targetSdkVersion 29
         versionCode 72
-        versionName "4.1.10"
+        versionName "4.2.0"
         multiDexEnabled true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"

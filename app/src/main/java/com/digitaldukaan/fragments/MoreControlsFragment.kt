@@ -286,7 +286,7 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
         mMoreControlsService?.changeStoreAndDeliveryStatus(request)
     }
 
-    private fun changeStoreDeliveryStatusByDeliveryPickUpClicked() {
+    private fun changeStoreDeliveryStatusByDeliveryClicked() {
         if (!isInternetConnectionAvailable(mActivity)) {
             showNoInternetConnectionDialog()
             return
@@ -294,7 +294,22 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
         showCancellableProgressDialog(mActivity)
         val isStoreOpen = (true == storeSwitch?.isChecked)
         val request = StoreDeliveryStatusChangeRequest(
-            if (!mIsDeliveryOn && !mIsPickupOn) 0 else if (isStoreOpen) 1 else 0,
+            if (!mIsPickupOn && !mIsDeliveryOn && isStoreOpen) 0 else if (mIsPickupOn && !mIsDeliveryOn && !isStoreOpen) 0 else if (!mIsPickupOn && !mIsDeliveryOn && !isStoreOpen) 0 else 1,
+            if (mIsDeliveryOn) 1 else 0,
+            if (mIsPickupOn) 1 else 0
+        )
+        mMoreControlsService?.changeStoreAndDeliveryStatus(request)
+    }
+
+    private fun changeStoreDeliveryStatusByPickupClicked() {
+        if (!isInternetConnectionAvailable(mActivity)) {
+            showNoInternetConnectionDialog()
+            return
+        }
+        showCancellableProgressDialog(mActivity)
+        val isStoreOpen = (true == storeSwitch?.isChecked)
+        val request = StoreDeliveryStatusChangeRequest(
+            if (!mIsPickupOn && !mIsDeliveryOn && isStoreOpen) 0 else if (!mIsPickupOn && mIsDeliveryOn && !isStoreOpen) 0 else if (!mIsPickupOn && !mIsDeliveryOn && !isStoreOpen) 0 else 1,
             if (mIsDeliveryOn) 1 else 0,
             if (mIsPickupOn) 1 else 0
         )
@@ -344,12 +359,12 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
                     setupBottomSheetPickupUI(pickupContainer, pickupSwitch, pickupHeadingTextView, pickupImageView)
                     deliverySwitch.setOnCheckedChangeListener { _, isChecked ->
                         mIsDeliveryOn = isChecked
-                        changeStoreDeliveryStatusByDeliveryPickUpClicked()
+                        changeStoreDeliveryStatusByDeliveryClicked()
                         setupBottomSheetDeliveryUI(deliverySwitch, deliveryHeadingTextView, deliveryContainer, deliveryImageView)
                     }
                     pickupSwitch.setOnCheckedChangeListener { _, isChecked ->
                         mIsPickupOn = isChecked
-                        changeStoreDeliveryStatusByDeliveryPickUpClicked()
+                        changeStoreDeliveryStatusByPickupClicked()
                         setupBottomSheetPickupUI(pickupContainer, pickupSwitch, pickupHeadingTextView, pickupImageView)
                     }
                     closeImageView.setOnClickListener { bottomSheetDialog.dismiss() }

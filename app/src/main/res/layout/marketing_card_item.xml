@@ -96,6 +96,25 @@
                 app:layout_constraintTop_toTopOf="parent"
                 tools:src="@drawable/ic_catalog_new" />
 
+            <TextView
+                android:id="@+id/betaTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:alpha="0.75"
+                android:background="@drawable/curve_white_border"
+                tools:text="Beta"
+                android:visibility="gone"
+                android:layout_marginStart="@dimen/_8sdp"
+                android:layout_marginBottom="@dimen/_5sdp"
+                android:textSize="@dimen/_9sdp"
+                android:paddingStart="@dimen/_6sdp"
+                android:paddingTop="@dimen/_1sdp"
+                android:paddingBottom="@dimen/_1sdp"
+                android:paddingEnd="@dimen/_6sdp"
+                android:textColor="@color/white"
+                app:layout_constraintBottom_toTopOf="@+id/doubleSpanHeadingTextView"
+                app:layout_constraintStart_toStartOf="@+id/doubleSpanHeadingTextView" />
+
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/doubleSpanHeadingTextView"
                 android:layout_width="0dp"
@@ -191,7 +210,7 @@
 
             <ImageView
                 android:id="@+id/singleSpanVerticalImageView"
-                android:layout_width="@dimen/_75sdp"
+                android:layout_width="@dimen/_85sdp"
                 android:layout_height="@dimen/_100sdp"
                 android:layout_marginTop="@dimen/_5sdp"
                 android:contentDescription="@string/image_view_content_description" />

@@ -108,6 +108,7 @@
             android:layout_height="0dp"
             android:background="?selectableItemBackground"
             android:padding="@dimen/_5sdp"
+            app:layout_goneMarginRight="@dimen/_5sdp"
             android:onClick="onClick"
             android:src="@drawable/ic_whatsapp"
             app:layout_constraintBottom_toBottomOf="parent"
