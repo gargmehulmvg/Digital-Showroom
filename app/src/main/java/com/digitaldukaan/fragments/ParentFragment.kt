@@ -41,4 +41,6 @@ open class ParentFragment : Fragment(), IWebViewCallbacks {
 
     open fun onSearchDialogContinueButtonClicked(inputOrderId: String, inputMobileNumber: String) = Unit
 
+    open fun onLocationChanged(lat: Double, lng: Double) = Unit
+
 }

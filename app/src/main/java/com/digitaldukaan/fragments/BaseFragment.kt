@@ -13,11 +13,11 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
+import android.location.Location
+import android.location.LocationListener
+import android.location.LocationManager
 import android.net.Uri
-import android.os.Build
-import android.os.Environment
-import android.os.Handler
-import android.os.Looper
+import android.os.*
 import android.provider.MediaStore
 import android.provider.Settings
 import android.text.Editable
@@ -57,6 +57,8 @@ import com.digitaldukaan.models.request.PaymentLinkRequest
 import com.digitaldukaan.models.request.UpdatePaymentMethodRequest
 import com.digitaldukaan.models.response.*
 import com.digitaldukaan.network.RetrofitApi
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
@@ -81,7 +83,7 @@ import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
 
 
-open class BaseFragment : ParentFragment(), ISearchItemClicked {
+open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener {
 
     protected var mContentView: View? = null
     private var mProgressDialog: Dialog? = null
@@ -1743,6 +1745,58 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked {
         }
     }
 
+    private var mGoogleApiClient: FusedLocationProviderClient? = null
+    private var lastLocation: Location? = null
+    private var mCurrentLatitude = 0.0
+    private var mCurrentLongitude = 0.0
 
+    private fun checkLocationPermission(): Boolean {
+        mActivity?.let {
+            if (ContextCompat.checkSelfPermission(it, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(it, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION), Constants.LOCATION_REQUEST_CODE)
+                return true
+            }
+        }
+        return false
+    }
+    
+    protected fun getLocationFromGoogleMap() {
+        if (checkLocationPermission()) return
+        val locationManager = mActivity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 1f, this)
+        mActivity?.let { context -> mGoogleApiClient = LocationServices.getFusedLocationProviderClient(context) }
+        mGoogleApiClient?.lastLocation?.addOnCompleteListener(mActivity) { task ->
+            if (task.isSuccessful && task.result != null) {
+                lastLocation = task.result
+                mCurrentLatitude = lastLocation?.latitude ?: 0.0
+                mCurrentLongitude = lastLocation?.longitude ?: 0.0
+                onLocationChanged(mCurrentLatitude, mCurrentLongitude)
+            } else {
+                if (!isLocationEnabledInSettings(mActivity)) openLocationSettings(true)
+                mCurrentLatitude = 0.0
+                mCurrentLongitude =  0.0
+                onLocationChanged(mCurrentLatitude, mCurrentLongitude)
+            }
+        }
+    }
+
+    override fun onLocationChanged(location: Location) {
+        Log.d(TAG, "onLocationChanged() Latitude: " + location.latitude + " , Longitude: " + location.longitude)
+        mCurrentLatitude = location.latitude
+        mCurrentLongitude = location.longitude
+    }
+
+    override fun onStatusChanged(p0: String?, p1: Int, p2: Bundle?) {
+        Log.d(TAG, "onStatusChanged :: p0 :: $p0, p1 :: $p1, p2:: $p2")
+    }
+
+    override fun onProviderEnabled(p0: String?) {
+        Log.d(TAG, "onProviderEnabled :: $p0")
+    }
+
+    override fun onProviderDisabled(p0: String?) {
+        Log.d(TAG, "onProviderDisabled :: $p0")
+    }
 
 }

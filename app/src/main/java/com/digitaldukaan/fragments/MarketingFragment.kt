@@ -2,11 +2,8 @@ package com.digitaldukaan.fragments
 
 import android.Manifest
 import android.app.AlertDialog
-import android.content.Context
 import android.content.pm.PackageManager
-import android.location.Location
 import android.location.LocationListener
-import android.location.LocationManager
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -33,8 +30,6 @@ import com.digitaldukaan.services.MarketingService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IMarketingServiceInterface
 import com.digitaldukaan.webviews.WebViewBridge
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -45,6 +40,8 @@ import kotlinx.android.synthetic.main.layout_marketing_fragment.*
 class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingServiceInterface, LocationListener {
 
     private var mMarketingItemClickResponse: MarketingCardsItemResponse? = null
+    private var mCurrentLatitude = 0.0
+    private var mCurrentLongitude = 0.0
 
     companion object {
         private lateinit var service: MarketingService
@@ -87,7 +84,6 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
         showProgressDialog(mActivity)
         service.getMarketingCardsData()
         WebViewBridge.mWebViewListener = this
-        mActivity?.let { context -> mGoogleApiClient = LocationServices.getFusedLocationProviderClient(context) }
     }
 
     override fun onToolbarSideIconClicked() = openWebViewFragment(this, getString(R.string.help), WebViewUrls.WEB_VIEW_HELP, Constants.SETTINGS)
@@ -244,7 +240,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
 
     private fun getLocationForGoogleAds() {
         if (checkLocationPermissionWithDialog()) return
-        getLastLocation()
+        getLocationFromGoogleMap()
     }
 
     private fun showPDFShareBottomSheet(response: ShareStorePDFDataItemResponse?) {
@@ -343,30 +339,6 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
         return false
     }
 
-    private var mGoogleApiClient: FusedLocationProviderClient? = null
-    private var mCurrentLatitude = 0.0
-    private var lastLocation: Location? = null
-    private var mCurrentLongitude = 0.0
-
-    private fun getLastLocation() {
-        if (checkLocationPermission()) return
-        val locationManager = mActivity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 1f, this)
-        mGoogleApiClient?.lastLocation?.addOnCompleteListener(mActivity) { task ->
-            if (task.isSuccessful && task.result != null) {
-                lastLocation = task.result
-                mCurrentLatitude = lastLocation?.latitude ?: 0.0
-                mCurrentLongitude = lastLocation?.longitude ?: 0.0
-                openGoogleAds()
-            } else {
-                if (!isLocationEnabledInSettings(mActivity)) openLocationSettings(true)
-                mCurrentLatitude = 0.0
-                mCurrentLongitude =  0.0
-                openGoogleAds()
-            }
-        }
-    }
-
     private fun openGoogleAds() {
         AppEventsManager.pushAppEvents(
             eventName = AFInAppEventType.EVENT_GOOGLE_ADS_EXPLORE,
@@ -381,24 +353,13 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
         openWebViewFragmentWithLocation(this, "", BuildConfig.WEB_VIEW_URL + mMarketingItemClickResponse?.pageUrl + "?storeid=${PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)}&token=${PrefsManager.getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&lat=$mCurrentLatitude&lng=$mCurrentLongitude")
     }
 
-    private fun checkLocationPermission(): Boolean {
-        mActivity?.let {
-            if (ContextCompat.checkSelfPermission(it, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(it, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION), Constants.LOCATION_REQUEST_CODE)
-                return true
-            }
-        }
-        return false
-    }
-
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         Log.i(TAG, "onRequestPermissionResult")
         if (requestCode == Constants.LOCATION_REQUEST_CODE) {
             when {
                 grantResults.isEmpty() -> Log.i(TAG, "User interaction was cancelled.")
                 grantResults[0] == PackageManager.PERMISSION_GRANTED -> {
-                    getLastLocation()
+                    getLocationFromGoogleMap()
                 }
                 else -> {
                     mActivity?.onBackPressed()
@@ -408,21 +369,9 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
         }
     }
 
-    override fun onLocationChanged(location: Location) {
-        Log.d(TAG, "onLocationChanged() Latitude: " + location.latitude + " , Longitude: " + location.longitude)
-        mCurrentLatitude = location.latitude
-        mCurrentLongitude = location.longitude
-    }
-
-    override fun onStatusChanged(p0: String?, p1: Int, p2: Bundle?) {
-        Log.d(TAG, "onStatusChanged :: p0 :: $p0, p1 :: $p1, p2:: $p2")
-    }
-
-    override fun onProviderEnabled(p0: String?) {
-        Log.d(TAG, "onProviderEnabled :: $p0")
-    }
-
-    override fun onProviderDisabled(p0: String?) {
-        Log.d(TAG, "onProviderDisabled :: $p0")
+    override fun onLocationChanged(lat: Double, lng: Double) {
+        mCurrentLatitude = lat
+        mCurrentLongitude = lng
+        openGoogleAds()
     }
 }
