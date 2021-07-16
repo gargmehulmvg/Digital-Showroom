@@ -149,7 +149,7 @@ class EditPhotoFragment: BaseFragment() {
                         if (response.isSuccessful) {
                             if (response.body()?.mIsSuccessStatus == true) {
                                 showShortSnackBar(response.body()?.mMessage, true, R.drawable.ic_green_check_small)
-                                launchFragment(HomeFragment.newInstance(), true)
+                                mActivity?.onBackPressed()
                             }
                             else
                                 showShortSnackBar(response.body()?.mMessage, true, R.drawable.ic_close_red)
