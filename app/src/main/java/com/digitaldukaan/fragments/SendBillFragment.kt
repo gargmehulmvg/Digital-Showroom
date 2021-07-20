@@ -2,6 +2,7 @@ package com.digitaldukaan.fragments
 
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -73,8 +74,13 @@ class SendBillFragment : BaseFragment() {
         mImageFile?.let { file -> uploadImageToGetCDNLink(file) }
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             mImageUri?.let {
-                val bitmap = getBitmapFromUri(mImageUri, mActivity)
-                imageView?.setImageBitmap(bitmap)
+                try {
+                    val bitmap = getBitmapFromUri(mImageUri, mActivity)
+                    imageView?.setImageBitmap(bitmap)
+                } catch (e: Exception) {
+                    showToast(e.message)
+                    Log.e(TAG, "loadImageFromUri: ${e.message}", e)
+                }
             }
         }
     }

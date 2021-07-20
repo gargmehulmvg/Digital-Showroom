@@ -71,8 +71,9 @@ class EditPhotoFragment: BaseFragment() {
             Constants.EDIT_PHOTO_MODE_MOBILE -> {
                 appTitleTextView?.text = mStaticText?.heading_crop_for_mobile_view
                 val mobileObj = mPremiumPageInfoResponse?.theme?.themeComponent?.body?.get(1)?.images?.get(0)
-                val factor = greatestCommonFactor(mobileObj?.width ?: 0, mobileObj?.height ?: 0)
+                var factor = greatestCommonFactor(mobileObj?.width ?: 0, mobileObj?.height ?: 0)
                 Log.d(TAG, "Constants.EDIT_PHOTO_MODE_MOBILE: factor: $factor width : ${mobileObj?.width} height : ${mobileObj?.height}")
+                if (0 == factor) factor = 1
                 val widthRatio = (mobileObj?.width ?: 0) / factor
                 val heightRatio = (mobileObj?.height ?: 0) / factor
                 Log.d(TAG, "Constants.EDIT_PHOTO_MODE_MOBILE: Aspect Ratio: $widthRatio : $heightRatio")
@@ -80,8 +81,9 @@ class EditPhotoFragment: BaseFragment() {
             }
             Constants.EDIT_PHOTO_MODE_DESKTOP -> {
                 val desktopObj = mPremiumPageInfoResponse?.theme?.themeComponent?.body?.get(1)?.images?.get(1)
-                val factor = greatestCommonFactor(desktopObj?.width ?: 0, desktopObj?.height ?: 0)
+                var factor = greatestCommonFactor(desktopObj?.width ?: 0, desktopObj?.height ?: 0)
                 Log.d(TAG, "Constants.EDIT_PHOTO_MODE_DESKTOP: factor: $factor width : ${desktopObj?.width} height : ${desktopObj?.height}")
+                if (0 == factor) factor = 1
                 val widthRatio = (desktopObj?.width ?: 0) / factor
                 val heightRatio = (desktopObj?.height ?: 0) / factor
                 cropImageView?.setAspectRatio(widthRatio, heightRatio)

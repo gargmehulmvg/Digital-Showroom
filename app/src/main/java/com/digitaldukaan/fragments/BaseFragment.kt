@@ -508,8 +508,8 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                                     type = "*/*"
                                     addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                                     mActivity?.startActivity(this)
-                                } catch (ex: ActivityNotFoundException) {
-                                    showToast("WhatsApp have not been installed. ${ex.message}")
+                                } catch (e: Exception) {
+                                    showToast("WhatsApp have not been installed. ${e.message}")
                                 }
                             }
                         }
@@ -1762,22 +1762,26 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     }
     
     protected fun getLocationFromGoogleMap() {
-        if (checkLocationPermission()) return
-        val locationManager = mActivity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 1f, this)
-        mActivity?.let { context -> mGoogleApiClient = LocationServices.getFusedLocationProviderClient(context) }
-        mGoogleApiClient?.lastLocation?.addOnCompleteListener(mActivity) { task ->
-            if (task.isSuccessful && task.result != null) {
-                lastLocation = task.result
-                mCurrentLatitude = lastLocation?.latitude ?: 0.0
-                mCurrentLongitude = lastLocation?.longitude ?: 0.0
-                onLocationChanged(mCurrentLatitude, mCurrentLongitude)
-            } else {
-                if (!isLocationEnabledInSettings(mActivity)) openLocationSettings(true)
-                mCurrentLatitude = 0.0
-                mCurrentLongitude =  0.0
-                onLocationChanged(mCurrentLatitude, mCurrentLongitude)
+        try {
+            if (checkLocationPermission()) return
+            val locationManager = mActivity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 1f, this)
+            mActivity?.let { context -> mGoogleApiClient = LocationServices.getFusedLocationProviderClient(context) }
+            mGoogleApiClient?.lastLocation?.addOnCompleteListener(mActivity) { task ->
+                if (task.isSuccessful && task.result != null) {
+                    lastLocation = task.result
+                    mCurrentLatitude = lastLocation?.latitude ?: 0.0
+                    mCurrentLongitude = lastLocation?.longitude ?: 0.0
+                    onLocationChanged(mCurrentLatitude, mCurrentLongitude)
+                } else {
+                    if (!isLocationEnabledInSettings(mActivity)) openLocationSettings(true)
+                    mCurrentLatitude = 0.0
+                    mCurrentLongitude =  0.0
+                    onLocationChanged(mCurrentLatitude, mCurrentLongitude)
+                }
             }
+        } catch (e: Exception) {
+            Sentry.captureException(e, "$TAG getLocationFromGoogleMap")
         }
     }
 

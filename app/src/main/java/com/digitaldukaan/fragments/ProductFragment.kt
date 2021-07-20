@@ -480,13 +480,13 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                             if (mTempProductCategoryList.isNotEmpty())
                                 addProductChipsAdapter = AddProductsChipsAdapter(mTempProductCategoryList, object : IChipItemClickListener {
                                     override fun onChipItemClickListener(position: Int) {
-                                        CoroutineScopeUtils().runTaskOnCoroutineMain {
-                                            mTempProductCategoryList.forEachIndexed { _, categoryItem -> categoryItem.isSelected = false }
-                                            mTempProductCategoryList[position].isSelected = true
-                                            categoryNameEditText.setText(mTempProductCategoryList[position].name)
-                                            mSelectedCategoryItem = mTempProductCategoryList[position]
-                                            addProductChipsAdapter?.setAddProductStoreCategoryList(mTempProductCategoryList)
+                                        mTempProductCategoryList.forEachIndexed { _, categoryItem ->
+                                            categoryItem.isSelected = false
                                         }
+                                        mTempProductCategoryList[position].isSelected = true
+                                        categoryNameEditText.setText(mTempProductCategoryList[position].name)
+                                        mSelectedCategoryItem = mTempProductCategoryList[position]
+                                        addProductChipsAdapter?.setAddProductStoreCategoryList(mTempProductCategoryList)
                                     }
                                 })
                             adapter = addProductChipsAdapter

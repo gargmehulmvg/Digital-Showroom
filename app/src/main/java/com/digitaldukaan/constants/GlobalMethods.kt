@@ -241,10 +241,15 @@ fun getDateFromOrderString(dateStr: String?): Date? {
 }
 
 fun getCompleteDateFromOrderString(date: String?): Date? {
-    var dateStr: String? = date ?: return Date()
-    dateStr = if (dateStr?.contains("12:") == true) "$dateStr pm" else "$dateStr am"
-    val format: DateFormat = SimpleDateFormat("yyyy-MM-dd hh:mm:ss a", Locale.getDefault())
-    return format.parse(dateStr)
+    var dateStr: String = date ?: return Date()
+    return try {
+        dateStr = if (dateStr.contains("12:")) "$dateStr pm" else "$dateStr am"
+        val format: DateFormat = SimpleDateFormat("yyyy-MM-dd hh:mm:ss a", Locale.getDefault())
+        format.parse(dateStr)
+    } catch (e: Exception) {
+        val format: DateFormat = SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.getDefault())
+        format.parse(dateStr)
+    }
 }
 
 fun getTimeFromOrderString(date: Date?): String {
