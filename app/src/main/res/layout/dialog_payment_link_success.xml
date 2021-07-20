@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:minWidth="@dimen/_275sdp"
+    android:orientation="vertical">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/curve_white_background"
+        android:padding="@dimen/_15sdp">
+
+        <ImageView
+            android:id="@+id/imageView4"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_120sdp"
+            android:contentDescription="@string/image_view_content_description"
+            android:src="@drawable/ic_sent_bill"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/linkSentToTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_12sdp"
+            android:fontFamily="@font/roboto"
+            android:gravity="center"
+            android:textColor="@color/black"
+            app:layout_constraintTop_toBottomOf="@+id/imageView4"
+            tools:layout_editor_absoluteX="16dp"
+            tools:text="Your link is sent to " />
+
+        <TextView
+            android:id="@+id/dateHeading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_15sdp"
+            android:fontFamily="@font/roboto"
+            android:gravity="center"
+            app:layout_constraintStart_toStartOf="@+id/dottedSeparator"
+            app:layout_constraintTop_toBottomOf="@+id/dottedSeparator"
+            tools:text="DATE" />
+
+        <TextView
+            android:id="@+id/amountHeading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_15sdp"
+            android:fontFamily="@font/roboto"
+            android:gravity="center"
+            app:layout_constraintStart_toStartOf="@+id/dottedSeparator2"
+            app:layout_constraintTop_toBottomOf="@+id/dottedSeparator2"
+            tools:text="AMOUNT" />
+
+        <TextView
+            android:id="@+id/idHeading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto"
+            android:gravity="center"
+            app:layout_constraintBaseline_toBaselineOf="@+id/amountHeading"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:text="ID:32432" />
+
+        <TextView
+            android:id="@+id/timeHeading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_15sdp"
+            android:fontFamily="@font/roboto"
+            android:gravity="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/dottedSeparator"
+            tools:text="TIME" />
+
+        <TextView
+            android:id="@+id/dateTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:fontFamily="@font/roboto_medium"
+            android:gravity="center"
+            android:textColor="@color/black"
+            app:layout_constraintStart_toStartOf="@+id/dateHeading"
+            app:layout_constraintTop_toBottomOf="@+id/dateHeading"
+            tools:text="20, JUNE 2020" />
+
+        <TextView
+            android:id="@+id/amountTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:fontFamily="@font/roboto_medium"
+            android:gravity="center"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_18sdp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/amountHeading"
+            app:layout_constraintTop_toBottomOf="@+id/amountHeading"
+            tools:text="₹6,600" />
+
+        <TextView
+            android:id="@+id/timeTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto_medium"
+            android:gravity="center"
+            android:textColor="@color/black"
+            app:layout_constraintBaseline_toBaselineOf="@+id/dateTextView"
+            app:layout_constraintEnd_toEndOf="@+id/timeHeading"
+            tools:text="20, JUNE 2020" />
+
+        <View
+            android:id="@+id/dottedSeparator"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_20sdp"
+            android:alpha="0.2"
+            android:background="@drawable/dotted_line_view_black"
+            app:layout_constraintTop_toBottomOf="@+id/linkSentToTextView" />
+
+        <View
+            android:id="@+id/dottedSeparator2"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_20sdp"
+            android:alpha="0.2"
+            android:background="@drawable/dotted_line_view_black"
+            app:layout_constraintTop_toBottomOf="@+id/dateTextView"
+            tools:layout_editor_absoluteX="16dp" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <ImageView
+        android:id="@+id/floatingClose"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/_20sdp"
+        android:contentDescription="@string/image_view_content_description"
+        android:src="@drawable/ic_floating_close" />
+
+</LinearLayout>

@@ -22,13 +22,14 @@ import com.google.gson.Gson
 import kotlinx.android.synthetic.main.layout_on_board_screen_dukaan_fragment.*
 
 
-class OnBoardScreenDukaanNameFragment : BaseFragment(),
-    ICreateStoreServiceInterface {
+class OnBoardScreenDukaanNameFragment : BaseFragment(), ICreateStoreServiceInterface {
 
     private var mDukaanNameStaticData: OnBoardStep1StaticResponseData? = null
 
     companion object {
         private val TAG = OnBoardScreenDukaanNameFragment::class.simpleName
+
+        fun newInstance(): OnBoardScreenDukaanNameFragment = OnBoardScreenDukaanNameFragment()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,13 +47,15 @@ class OnBoardScreenDukaanNameFragment : BaseFragment(),
         dukaanNameEditText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
              val str = s.toString()
-             nextTextView.isEnabled = str.isNotBlank()
+             nextTextView?.isEnabled = str.isNotBlank()
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                Log.d(TAG, "beforeTextChanged: ")
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                Log.d(TAG, "onTextChanged: ")
             }
         })
         setupUIFromStaticData()
@@ -67,15 +70,17 @@ class OnBoardScreenDukaanNameFragment : BaseFragment(),
 
     override fun onClick(view: View?) {
         when(view?.id) {
-            backImageView.id -> {
+            backImageView?.id -> {
                 mActivity?.onBackPressed()
             }
-            nextTextView.id -> {
+            nextTextView?.id -> {
                 val dukanName = dukaanNameEditText?.text?.trim().toString()
                 if (dukanName.isEmpty()) {
-                    dukaanNameEditText?.requestFocus()
-                    dukaanNameEditText?.showKeyboard()
-                    dukaanNameEditText?.error = getString(R.string.mandatory_field_message)
+                    dukaanNameEditText?.apply {
+                        requestFocus()
+                        showKeyboard()
+                        error = getString(R.string.mandatory_field_message)
+                    }
                 } else {
                     if (!isInternetConnectionAvailable(mActivity)) {
                         showNoInternetConnectionDialog()
@@ -108,20 +113,18 @@ class OnBoardScreenDukaanNameFragment : BaseFragment(),
                 showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
                 val createStoreResponse = Gson().fromJson<CreateStoreResponse>(response.mCommonDataStr, CreateStoreResponse::class.java)
                 PrefsManager.storeStringDataInSharedPref(Constants.STORE_ID, "${createStoreResponse.storeId}")
-                Log.d("STORE_OBJECT_TEST", "$TAG onCreateStoreResponse: STORE_ID :: ${PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)}")
                 PrefsManager.storeStringDataInSharedPref(Constants.STORE_NAME, "${createStoreResponse.storeInfo?.name}")
-                Log.d("STORE_OBJECT_TEST", "$TAG onCreateStoreResponse: STORE_NAME :: ${PrefsManager.getStringDataFromSharedPref(Constants.STORE_NAME)}")
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_ENTER_NAME,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                     data = mapOf(
-                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                        AFInAppEventParameterName.PHONE to PrefsManager.getStringDataFromSharedPref(Constants.USER_MOBILE_NUMBER),
-                        AFInAppEventParameterName.USER_ID to PrefsManager.getStringDataFromSharedPref(Constants.USER_ID),
-                        AFInAppEventParameterName.STORE_NAME to createStoreResponse?.storeInfo?.name,
-                        AFInAppEventParameterName.STORE_TYPE to AFInAppEventParameterName.STORE_TYPE_DUKAAN,
-                        AFInAppEventParameterName.VERIFY_PHONE to "1",
-                        AFInAppEventParameterName.REFERENCE_PHONE to ""
+                        AFInAppEventParameterName.STORE_ID          to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                        AFInAppEventParameterName.PHONE             to PrefsManager.getStringDataFromSharedPref(Constants.USER_MOBILE_NUMBER),
+                        AFInAppEventParameterName.USER_ID           to PrefsManager.getStringDataFromSharedPref(Constants.USER_ID),
+                        AFInAppEventParameterName.STORE_NAME        to createStoreResponse?.storeInfo?.name,
+                        AFInAppEventParameterName.STORE_TYPE        to AFInAppEventParameterName.STORE_TYPE_DUKAAN,
+                        AFInAppEventParameterName.VERIFY_PHONE      to "1",
+                        AFInAppEventParameterName.REFERENCE_PHONE   to ""
                     )
                 )
                 launchFragment(OnBoardScreenDukaanLocationFragment(), true)

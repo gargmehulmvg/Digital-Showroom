@@ -45,7 +45,8 @@ class Constants {
         const val ACTION_QR_DOWNLOAD                            = "qr_download"
         const val ACTION_SHARE_DATA                             = "share_text"
         const val ACTION_CATALOG_WHATSAPP                       = "catalog_whatsapp"
-        const val ACTION_CATALOG_PREMIUM                        = "theme-discover"
+        const val ACTION_THEME_DISCOVER                         = "theme-discover"
+        const val ACTION_THEME_EXPLORE                          = "theme-explore"
         const val ACTION_KYC_STATUS                             = "kyc_status"
         const val ACTION_ADD_BANK                               = "add-bank"
         const val ACTION_REJECT_ORDER                           = "reject-order"
@@ -74,6 +75,7 @@ class Constants {
         const val ERROR_DOMAIN_ALREADY_EXISTS                   = "domain_already_exists"
         //GRID_LAYOUT_SPAN_TYPE
         const val SPAN_TYPE_FULL_WIDTH                          = "fullWidth"
+        const val SPAN_TYPE_FULL_HEIGHT                         = "fullHeight"
         //ORDER_TYPE
         const val ORDER_TYPE_ADDRESS                            = 1
         const val ORDER_TYPE_PICK_UP                            = 2
@@ -90,6 +92,7 @@ class Constants {
         const val DS_REJECTED                                   = "rejected"              // Order rejected byt customer
         const val DS_COMPLETED_CASH                             = "completedCash"         // When order comes & marked as cash
         const val DS_COMPLETED_ONLINE                           = "completedOnline"       // Order self checklist by merchant :: Paid Online
+        const val DS_PENDING_PAYMENT_LINK                       = "pendingPaymentLink"       // Order self checklist by merchant :: Paid Online
         const val DS_MARK_READY                                 = "markReady"             // Merchant seen & start making the order for customer
         const val DS_PREPAID_PICKUP_READY                       = "prepaidPickupReady"
         const val DS_PREPAID_DELIVERY_READY                     = "prepaidDeliveryReady"
@@ -104,6 +107,8 @@ class Constants {
         const val MODE_SETTLEMENTS                              = "settlements"
         const val MODE_ORDERS                                   = "orders"
         const val MODE_SETTLED                                  = "Settled"
+        const val MODE_SMS                                      = "sms"
+        const val MODE_WHATS_APP                                 = "whatsapp"
         //ORDER_STATUS
         const val StatusCustomerUpdated                         = 1
         const val StatusMerchantUpdated                         = 2
@@ -131,6 +136,7 @@ class Constants {
         const val NEW_RELEASE_TYPE_PAYMENT_MODES                = "payment-mode"
         const val NEW_RELEASE_TYPE_TRENDING                     = "trending"
         const val NEW_RELEASE_TYPE_EXTERNAL                     = "external"
+        const val NEW_RELEASE_TYPE_GOOGLE_ADS                   = "google-ads"
         //EDIT PHOTO MODES
         const val EDIT_PHOTO_MODE_MOBILE                        = "mobile"
         const val EDIT_PHOTO_MODE_DESKTOP                       = "desktop"

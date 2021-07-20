@@ -146,6 +146,7 @@
                 android:clickable="false"
                 android:drawablePadding="@dimen/_10sdp"
                 android:gravity="center"
+                android:maxLines="1"
                 android:paddingStart="@dimen/_20sdp"
                 android:paddingTop="@dimen/_10sdp"
                 android:paddingEnd="@dimen/_20sdp"

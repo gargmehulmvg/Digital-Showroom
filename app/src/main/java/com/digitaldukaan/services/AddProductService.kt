@@ -30,9 +30,9 @@ class AddProductService {
         }
     }
 
-    fun setItem(authToken: String, request: AddProductRequest) {
+    fun setItem(request: AddProductRequest) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.setItemServerCall(authToken, request, mServiceInterface)
+            mNetworkService.setItemServerCall(request, mServiceInterface)
         }
     }
 

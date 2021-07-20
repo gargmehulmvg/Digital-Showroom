@@ -40,11 +40,7 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.layout_premium_fragment, container, false)
         mService.setServiceInterface(this)
         return mContentView
@@ -170,6 +166,9 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
                 val map = Gson().fromJson<HashMap<String, String>>(additionalData.toString(), HashMap::class.java)
                 Log.d(TAG, "sendData: working $map")
                 AppEventsManager.pushAppEvents(eventName = eventName, isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true, data = map)
+            }
+            jsonData.optBoolean("refreshToken") -> {
+                //mService.getPremiumPageInfo()
             }
         }
     }

@@ -50,29 +50,25 @@ class MasterCatalogItemsAdapter(
         }
         view.setPriceTextView.setOnClickListener {
             val item = mCategoryItemList?.get(view.adapterPosition)
-            if (item?.isAdded == true) {
+            if (true == item?.isAdded) {
                 return@setOnClickListener
             }
             mCategoryItemClickListener.onCategoryItemsSetPriceClick(view.adapterPosition, mCategoryItemList?.get(view.adapterPosition))
         }
         view.priceTextView.setOnClickListener {
             val item = mCategoryItemList?.get(view.adapterPosition)
-            if (item?.price != 0.0) {
-                return@setOnClickListener
-            }
-            if (item.isAdded) {
-                return@setOnClickListener
-            }
+            if (0.0 != item?.price) return@setOnClickListener
+            if (item.isAdded) return@setOnClickListener
             mCategoryItemClickListener.onCategoryItemsSetPriceClick(view.adapterPosition, item)
         }
         view.checkBox.setOnCheckedChangeListener { _, isChecked ->
             val item = mCategoryItemList?.get(view.adapterPosition)
-            if (item?.isAdded == true) {
+            if (true == item?.isAdded) {
                 view.checkBox.isChecked = false
                 view.checkBox.isSelected = false
                 return@setOnCheckedChangeListener
             }
-            if (mSelectedProductsHashMap?.size == mActivity.resources.getInteger(R.integer.max_selection_item_catalog)) {
+            if (mActivity.resources.getInteger(R.integer.max_selection_item_catalog) == mSelectedProductsHashMap?.size) {
                 mActivity.showToast("Only ${mActivity.resources.getInteger(R.integer.max_selection_item_catalog)} products are allowed to add at a time")
                 view.checkBox.isChecked = false
                 view.checkBox.isSelected = false
@@ -80,12 +76,12 @@ class MasterCatalogItemsAdapter(
         }
         view.titleTextView.setOnClickListener {
             val item = mCategoryItemList?.get(view.adapterPosition)
-            if (item?.isAdded == true) {
+            if (true == item?.isAdded) {
                 view.checkBox.isChecked = false
                 view.checkBox.isSelected = false
                 return@setOnClickListener
             }
-            if (mSelectedProductsHashMap?.size == mActivity.resources.getInteger(R.integer.max_selection_item_catalog)) {
+            if (mActivity.resources.getInteger(R.integer.max_selection_item_catalog) == mSelectedProductsHashMap?.size) {
                 mActivity.showToast("Only ${mActivity.resources.getInteger(R.integer.max_selection_item_catalog)} products are allowed to add at a time")
                 view.checkBox.isChecked = false
                 view.checkBox.isSelected = false
@@ -121,7 +117,8 @@ class MasterCatalogItemsAdapter(
                 }
             }
             titleTextView.text = item?.itemName
-            priceTextView.text = "${mStaticText?.text_rupees_symbol} ${item?.price}"
+            val priceStr = "${mStaticText?.text_rupees_symbol} ${item?.price}"
+            priceTextView.text = priceStr
             titleTextView.setTextColor(ContextCompat.getColor(mActivity, if (item?.isSelected == true) R.color.open_green else R.color.black))
             if (item?.isAdded == true) {
                 container.isEnabled = false
@@ -132,16 +129,17 @@ class MasterCatalogItemsAdapter(
                 container.alpha = 1f
                 checkBox.isEnabled = true
             }
-            if (item?.price == 0.0) {
-                priceTextView.text = "${mStaticText?.text_set_your_price} ${mStaticText?.text_rupees_symbol}"
-                //setPriceTextView.text = item.price.toString()
-                setPriceTextView.text = "_____"
+            if (0.0 == item?.price) {
+                val priceString = "${mStaticText?.text_set_your_price} ${mStaticText?.text_rupees_symbol}"
+                priceTextView.text = priceString
+                val emptySpace = "_____"
+                setPriceTextView.text = emptySpace
             } else {
                 setPriceTextView.text = null
                 checkBox.isEnabled = true
             }
-            checkBox.isChecked = (item?.isSelected == true || mSelectedProductsHashMap?.containsKey(item?.itemId) == true)
-            checkBox.isSelected = (item?.isSelected == true || mSelectedProductsHashMap?.containsKey(item?.itemId) == true)
+            checkBox.isChecked = (true == item?.isSelected || true == mSelectedProductsHashMap?.containsKey(item?.itemId))
+            checkBox.isSelected = (true == item?.isSelected || true == mSelectedProductsHashMap?.containsKey(item?.itemId))
         }
     }
 

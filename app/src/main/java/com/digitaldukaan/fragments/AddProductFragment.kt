@@ -183,6 +183,13 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                             return
                         }
                         "." == str -> {}
+                        !isDouble(str) -> {
+                            discountPriceEditText?.apply {
+                                text = null
+                                error = addProductStaticData?.error_mandatory_field
+                                requestFocus()
+                            }
+                        }
                         priceStr.toDouble() < str.toDouble() -> {
                             discountPriceEditText?.apply {
                                 error = addProductStaticData?.error_discount_price_less_then_original_price
@@ -190,7 +197,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                                 requestFocus()
                             }
                         }
-                        0.0 == str.toDouble() -> {
+                        0.0 == str.toDoubleOrNull() -> {
                             originalPriceTextView?.text = null
                             discountedPriceTextView?.apply {
                                 visibility = View.INVISIBLE
@@ -225,7 +232,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-
+                Log.d(TAG, "beforeTextChanged: ")
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
@@ -424,10 +431,10 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             }
             continueTextView?.id -> {
                 if (checkValidation()) {
-                    val nameStr = nameEditText?.text.toString()
+                    val nameStr = nameEditText?.text.toString().trim()
                     val priceStr = priceEditText?.text?.trim().toString()
                     var discountedStr = discountPriceEditText?.text?.trim().toString()
-                    val descriptionStr = productDescriptionEditText?.text.toString()
+                    val descriptionStr = productDescriptionEditText?.text.toString().trim()
                     val categoryStr = enterCategoryEditText?.text.toString()
                     if (!isInternetConnectionAvailable(mActivity)) return else {
                         showProgressDialog(mActivity)
@@ -444,10 +451,17 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                                 mAddProductResponse?.storeItem?.variantsList?.addAll(deletedVariantList)
                             }
                         }
+                        var price: Double? = 0.0
+                        try {
+                            price = if (priceStr.isNotEmpty()) priceStr.toDoubleOrNull() else 0.0
+                        } catch (e: Exception) {
+                            Log.e(TAG, "AddProductFragment onClick request: ", e)
+                            Sentry.captureException(e, "AddProductFragment onClick request: ")
+                        }
                         val request = AddProductRequest(
                             mItemId,
                             1,
-                            if (priceStr.isNotEmpty()) priceStr.toDouble() else 0.0,
+                            price,
                             if (discountedStr.isNotEmpty()) {
                                 if (discountedStr.startsWith(".")) {
                                     discountedStr = "0$discountedStr"
@@ -464,16 +478,16 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                             eventName = AFInAppEventType.EVENT_SAVE_ITEM,
                             isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                             data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                                AFInAppEventParameterName.IMAGES to Gson().toJson(mImagesStrList),
-                                AFInAppEventParameterName.NAME to mProductNameStr,
-                                AFInAppEventParameterName.AVAILABLE to "1",
-                                AFInAppEventParameterName.DESCRIPTION to descriptionStr,
-                                AFInAppEventParameterName.CATEGORY to categoryStr,
-                                AFInAppEventParameterName.DISCOUNTED_PRICE to discountedStr,
-                                AFInAppEventParameterName.PRICE to priceStr
+                                AFInAppEventParameterName.IMAGES            to Gson().toJson(mImagesStrList),
+                                AFInAppEventParameterName.NAME              to mProductNameStr,
+                                AFInAppEventParameterName.AVAILABLE         to "1",
+                                AFInAppEventParameterName.DESCRIPTION       to descriptionStr,
+                                AFInAppEventParameterName.CATEGORY          to categoryStr,
+                                AFInAppEventParameterName.DISCOUNTED_PRICE  to discountedStr,
+                                AFInAppEventParameterName.PRICE             to priceStr
                             )
                         )
-                        mService?.setItem(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
+                        mService?.setItem(request)
                     }
                 }
             }
@@ -839,7 +853,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     }
 
     private fun shareBillWithImage(str: String, url: String?) {
-        if (null == url || url.isEmpty()) return
+        if (isEmpty(url)) return
         Picasso.get().load(url).into(object : com.squareup.picasso.Target {
             override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
                 try {
@@ -1006,9 +1020,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                         setTitle(addProductStaticData?.text_go_back)
                         setMessage(addProductStaticData?.text_go_back_message)
                         setCancelable(true)
-                        setNegativeButton(getString(R.string.text_no)) { dialog, _ ->
-                            dialog.dismiss()
-                        }
+                        setNegativeButton(getString(R.string.text_no)) { dialog, _ -> dialog.dismiss() }
                         setPositiveButton(getString(R.string.txt_yes)) { dialog, _ ->
                             nameEditText?.hideKeyboard()
                             mIsOrderEdited = false
@@ -1053,8 +1065,8 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
 
     private fun showAddProductContainer() {
         if (View.VISIBLE == shareProductContainer?.visibility) {
-            shareProductContainer?.visibility = View.GONE
-            continueTextView?.visibility = View.VISIBLE
+            shareProductContainer?.visibility   = View.GONE
+            continueTextView?.visibility        = View.VISIBLE
             if (!mIsAddNewProduct) continueTextView?.text = getString(R.string.save)
         }
     }

@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/bottomSheetContainer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/upper_curve_white_background" >
+
+    <ImageView
+        android:id="@+id/closeImageView"
+        android:layout_width="@dimen/_20sdp"
+        android:layout_height="@dimen/_20sdp"
+        android:layout_gravity="end"
+        android:layout_margin="@dimen/_10sdp"
+        android:contentDescription="@string/image_view_content_description"
+        android:src="@drawable/ic_black_close"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/bottomSheetHeadingTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/_12sdp"
+        android:fontFamily="@font/roboto_medium"
+        android:gravity="center_vertical"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_19sdp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/closeImageView"
+        tools:text="Set Delivery/Pickup" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/deliveryContainer"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/_65sdp"
+        android:background="@drawable/slight_curve_white_background"
+        android:padding="@dimen/_10sdp"
+        android:elevation="@dimen/_5sdp"
+        android:layout_marginTop="@dimen/_25sdp"
+        app:layout_constraintEnd_toEndOf="@id/closeImageView"
+        app:layout_constraintStart_toStartOf="@id/bottomSheetHeadingTextView"
+        app:layout_constraintTop_toBottomOf="@id/bottomSheetHeadingTextView">
+
+        <ImageView
+            android:id="@+id/deliveryImageView"
+            android:layout_width="@dimen/_42sdp"
+            android:layout_height="@dimen/_42sdp"
+            android:clickable="false"
+            android:contentDescription="@string/image_view_content_description"
+            android:fontFamily="@font/roboto_medium"
+            android:layout_marginStart="@dimen/_5sdp"
+            android:gravity="center"
+            android:src="@drawable/ic_delivery_grey_grey_border"
+            android:textColor="@color/light_blue"
+            android:textSize="@dimen/_14sdp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/deliveryHeadingTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:layout_marginStart="@dimen/_5sdp"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:fontFamily="@font/roboto_medium"
+            android:paddingStart="@dimen/_5sdp"
+            android:paddingEnd="@dimen/_10sdp"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_12sdp"
+            app:layout_constraintStart_toEndOf="@id/deliveryImageView"
+            app:layout_constraintTop_toTopOf="@id/deliveryImageView"
+            tools:text="Delivery" />
+
+        <TextView
+            android:id="@+id/deliverySubHeadingTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:paddingStart="@dimen/_5sdp"
+            android:paddingTop="@dimen/_4sdp"
+            android:paddingEnd="@dimen/_10sdp"
+            android:paddingBottom="@dimen/_5sdp"
+            android:textSize="@dimen/_9sdp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/deliveryHeadingTextView"
+            app:layout_constraintTop_toBottomOf="@id/deliveryHeadingTextView"
+            tools:text="Deliver Orders to Customers" />
+
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/deliverySwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/_15sdp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/pickupContainer"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/_65sdp"
+        android:layout_marginTop="@dimen/_20sdp"
+        android:layout_marginBottom="@dimen/_15sdp"
+        android:background="@drawable/slight_curve_white_background"
+        android:elevation="@dimen/_5sdp"
+        android:padding="@dimen/_10sdp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/deliveryContainer"
+        app:layout_constraintStart_toStartOf="@id/deliveryContainer"
+        app:layout_constraintTop_toBottomOf="@id/deliveryContainer">
+
+        <ImageView
+            android:id="@+id/pickupImageView"
+            android:layout_width="@dimen/_42sdp"
+            android:layout_height="@dimen/_42sdp"
+            android:clickable="false"
+            android:contentDescription="@string/image_view_content_description"
+            android:fontFamily="@font/roboto_medium"
+            android:gravity="center"
+            android:layout_marginStart="@dimen/_5sdp"
+            android:src="@drawable/ic_delivery_grey_grey_border"
+            android:textColor="@color/light_blue"
+            android:textSize="@dimen/_14sdp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/pickupHeadingTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_5sdp"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:clickable="false"
+            android:fontFamily="@font/roboto_medium"
+            android:paddingStart="@dimen/_5sdp"
+            android:paddingEnd="@dimen/_10sdp"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_12sdp"
+            app:layout_constraintStart_toEndOf="@id/pickupImageView"
+            app:layout_constraintTop_toTopOf="@id/pickupImageView"
+            tools:text="Delivery" />
+
+        <TextView
+            android:id="@+id/pickupSubHeadingTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:paddingStart="@dimen/_5sdp"
+            android:paddingTop="@dimen/_4sdp"
+            android:paddingEnd="@dimen/_10sdp"
+            android:paddingBottom="@dimen/_5sdp"
+            android:textSize="@dimen/_9sdp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/pickupHeadingTextView"
+            app:layout_constraintTop_toBottomOf="@id/pickupHeadingTextView"
+            tools:text="Deliver Orders to Customers" />
+
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/pickupSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/_15sdp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

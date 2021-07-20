@@ -3,6 +3,7 @@ package com.digitaldukaan.fragments
 import android.app.Dialog
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -54,11 +55,7 @@ class EditPhotoFragment: BaseFragment() {
         )
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.layout_edit_photo_fragment, container, false)
         return mContentView
     }
@@ -69,15 +66,28 @@ class EditPhotoFragment: BaseFragment() {
 
     private fun setupUI() {
         cropImageView?.setImageUriAsync(mFileUri)
-        appSubTitleTextView?.text = "Adjust the image in the white box"
+        appSubTitleTextView?.text = getString(R.string.adjust_image_in_white_box)
         when (mMode) {
             Constants.EDIT_PHOTO_MODE_MOBILE -> {
                 appTitleTextView?.text = mStaticText?.heading_crop_for_mobile_view
-                cropImageView?.setAspectRatio(1, 1)
+                val mobileObj = mPremiumPageInfoResponse?.theme?.themeComponent?.body?.get(1)?.images?.get(0)
+                val factor = greatestCommonFactor(mobileObj?.width ?: 0, mobileObj?.height ?: 0)
+                Log.d(TAG, "Constants.EDIT_PHOTO_MODE_MOBILE: factor: $factor width : ${mobileObj?.width} height : ${mobileObj?.height}")
+                val widthRatio = (mobileObj?.width ?: 0) / factor
+                val heightRatio = (mobileObj?.height ?: 0) / factor
+                Log.d(TAG, "Constants.EDIT_PHOTO_MODE_MOBILE: Aspect Ratio: $widthRatio : $heightRatio")
+                cropImageView?.setAspectRatio(widthRatio, heightRatio)
             }
             Constants.EDIT_PHOTO_MODE_DESKTOP -> {
+                val desktopObj = mPremiumPageInfoResponse?.theme?.themeComponent?.body?.get(1)?.images?.get(1)
+                val factor = greatestCommonFactor(desktopObj?.width ?: 0, desktopObj?.height ?: 0)
+                Log.d(TAG, "Constants.EDIT_PHOTO_MODE_DESKTOP: factor: $factor width : ${desktopObj?.width} height : ${desktopObj?.height}")
+                val widthRatio = (desktopObj?.width ?: 0) / factor
+                val heightRatio = (desktopObj?.height ?: 0) / factor
+                cropImageView?.setAspectRatio(widthRatio, heightRatio)
                 appTitleTextView?.text = mStaticText?.heading_crop_for_desktop_view
-                cropImageView?.setAspectRatio(2, 1)
+                Log.d(TAG, "Constants.EDIT_PHOTO_MODE_DESKTOP: Aspect Ratio: $widthRatio : $heightRatio")
+                cropImageView?.setAspectRatio(widthRatio, heightRatio)
             }
         }
     }
@@ -139,7 +149,7 @@ class EditPhotoFragment: BaseFragment() {
                         if (response.isSuccessful) {
                             if (response.body()?.mIsSuccessStatus == true) {
                                 showShortSnackBar(response.body()?.mMessage, true, R.drawable.ic_green_check_small)
-                                launchFragment(HomeFragment.newInstance(), true)
+                                mActivity?.onBackPressed()
                             }
                             else
                                 showShortSnackBar(response.body()?.mMessage, true, R.drawable.ic_close_red)

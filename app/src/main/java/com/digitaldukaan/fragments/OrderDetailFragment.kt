@@ -51,7 +51,7 @@ import java.util.*
 
 class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupMenu.OnMenuItemClickListener {
 
-    private var mOrderId = ""
+    private var mOrderHash = ""
     private var mMobileNumber = ""
     private var mOrderDetailService: OrderDetailService? = null
     private var mOrderDetailStaticData: OrderDetailsStaticTextResponse? = null
@@ -74,9 +74,9 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
         private const val CUSTOM = "custom"
         private var mShareBillResponseStr: String? = ""
 
-        fun newInstance(orderId: String, isNewOrder: Boolean): OrderDetailFragment {
+        fun newInstance(orderHash: String, isNewOrder: Boolean): OrderDetailFragment {
             val fragment = OrderDetailFragment()
-            fragment.mOrderId = orderId
+            fragment.mOrderHash = orderHash
             fragment.mIsNewOrder = isNewOrder
             return fragment
         }
@@ -91,7 +91,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
         } else {
             showProgressDialog(mActivity)
             mOrderDetailService?.getDeliveryTime()
-            mOrderDetailService?.getOrderDetail(mOrderId)
+            mOrderDetailService?.getOrderDetail(mOrderHash)
         }
         mShareBillResponseStr = ""
         return mContentView
@@ -119,15 +119,6 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
             }
             sendBillTextView?.id -> {
                 orderDetailMainResponse?.orders?.run {
-                    var isAllProductsAmountSet = true
-                    orderDetailsItemsList?.forEachIndexed { _, itemResponse ->
-                        if ((itemResponse.amount ?: 0.0) <= 0.0 && itemResponse.item_status == 1) {
-                            showToast(getString(R.string.please_fill_price_for_each_product))
-                            isAllProductsAmountSet = false
-                            return@forEachIndexed
-                        }
-                    }
-                    if (!isAllProductsAmountSet) return@run
                     if (mIsPickUpOrder) initiateSendBillServerCall() else handleDeliveryTimeBottomSheet(isCallSendBillServerCall = true, isPrepaidOrder = false)
                 }
             }
@@ -141,9 +132,17 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
             detailTextView?.id -> {
                 getTransactionDetailBottomSheet(orderDetailMainResponse?.orders?.transactionId, AFInAppEventParameterName.ORDER_DETAILS)
             }
+            shareProductContainer?.id -> {
+                showProgressDialog(mActivity)
+                mOrderDetailService?.sharePaymentLink(mOrderHash)
+            }
             sideIconWhatsAppToolbar?.id -> {
                 val displayStatus = orderDetailMainResponse?.orders?.displayStatus
-                shareDataOnWhatsAppByNumber(mMobileNumber, if (Constants.DS_SEND_BILL == displayStatus || Constants.DS_NEW == displayStatus) "Hi, we are checking your order." else "")
+                if (getString(R.string.default_mobile) == mMobileNumber) {
+                    shareOnWhatsApp("Hi, we are checking your order." , null)
+                } else {
+                    shareDataOnWhatsAppByNumber(mMobileNumber, if (Constants.DS_SEND_BILL == displayStatus || Constants.DS_NEW == displayStatus) "Hi, we are checking your order." else "")
+                }
             }
             backButtonToolbar?.id -> mActivity?.onBackPressed()
             sideIconToolbar?.id -> {
@@ -188,15 +187,6 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                 return
             }
             val deliveryChargesAmount = calculateDeliveryCharge(payAmount)
-            var isAllProductsAmountSet = true
-            orderDetailsItemsList?.forEachIndexed { _, itemResponse ->
-                if ((itemResponse.amount ?: 0.0) <= 0.0 && itemResponse.item_status == 1) {
-                    showToast(getString(R.string.please_fill_price_for_each_product))
-                    isAllProductsAmountSet = false
-                    return@forEachIndexed
-                }
-            }
-            if (!isAllProductsAmountSet) return@run
             val orderDetailList = orderDetailsItemsList?.toMutableList()
             if (!isEmpty(orderDetailList)) {
                 orderDetailList?.forEachIndexed { _, itemResponse -> if (Constants.ITEM_TYPE_DELIVERY_CHARGE == itemResponse.item_type || Constants.ITEM_TYPE_CHARGE == itemResponse.item_type) orderDetailsItemsList?.remove(itemResponse) }
@@ -274,14 +264,21 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                 Constants.ORDER_TYPE_SELF_IMAGE -> {
                     blankSpace?.visibility = View.GONE
                     deliveryLabelLayout?.visibility = View.GONE
-                    deliveryLabelLayout?.visibility = View.GONE
                     customerDetailsLabel?.visibility = View.GONE
-                    billPhotoImageView?.visibility = View.VISIBLE
-                    billPhotoImageView?.let {
-                        try {
-                            Glide.with(this).load(orderDetailResponse.imageLink).into(it)
-                        } catch (e: Exception) {
-                            Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+                    if (Constants.DS_PENDING_PAYMENT_LINK == displayStatus && isEmpty(orderDetailResponse.imageLink)) {
+                        reminderContainer?.visibility = View.VISIBLE
+                    } else {
+                        if (isEmpty(orderDetailResponse.imageLink)) {
+                            getTransactionDetailBottomSheet(orderDetailMainResponse?.orders?.transactionId)
+                        } else {
+                            billPhotoImageView?.let {
+                            it.visibility = View.VISIBLE
+                            try {
+                                Glide.with(this).load(orderDetailResponse.imageLink).into(it)
+                            } catch (e: Exception) {
+                                Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+                            }
+                        }
                         }
                     }
                 }
@@ -336,7 +333,8 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                 instructionsLabel?.visibility = View.VISIBLE
             }
             mMobileNumber = orderDetailResponse?.phone ?: ""
-            sideIconToolbar?.visibility = if (orderDetailMainResponse?.optionMenuList?.isEmpty() == true) View.GONE else View. VISIBLE
+            sideIcon2Toolbar?.visibility = if (getString(R.string.default_mobile) == mMobileNumber) View.GONE else View.VISIBLE
+            sideIconToolbar?.visibility = if (orderDetailMainResponse?.optionMenuList?.isEmpty() == true) View.GONE else View.VISIBLE
         }
     }
 
@@ -668,6 +666,13 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
         }
     }
 
+    override fun onSharePaymentLinkResponse(commonResponse: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            shareOnWhatsApp(Gson().fromJson<String>(commonResponse.mCommonDataStr, String::class.java))
+        }
+    }
+
     override fun onOrderDetailStatusResponse(commonResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
@@ -695,7 +700,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
             if (commonResponse.mIsSuccessStatus) {
                 val response = Gson().fromJson<UpdateOrderResponse>(commonResponse.mCommonDataStr, UpdateOrderResponse::class.java)
                 shareDataOnWhatsAppByNumber(mMobileNumber, response?.whatsAppText)
-                mOrderDetailService?.getOrderDetail(mOrderId)
+                mOrderDetailService?.getOrderDetail(mOrderHash)
             } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
         }
     }
@@ -799,20 +804,6 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
 
                 }
             }.show()
-        }
-    }
-
-    private fun setOrderDetailBottomSheetItem(imageView:ImageView, textView: TextView, item: OrderDetailTransactionItemResponse) {
-        mActivity?.run {
-            textView.setTextColor(ContextCompat.getColor(this, R.color.black))
-            textView.text = item.settlementStatus
-            when(item.transactionStatus?.toLowerCase(Locale.getDefault())) {
-                "" -> imageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_order_detail_green_tick))
-                Constants.ORDER_STATUS_PAYOUT_SUCCESS -> imageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_order_detail_green_tick))
-                Constants.ORDER_STATUS_IN_PROGRESS -> imageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_order_detail_yellow_icon))
-                Constants.ORDER_STATUS_REFUND_SUCCESS -> imageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_order_detail_black_tick))
-                Constants.ORDER_STATUS_REJECTED -> imageView.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_close_red))
-            }
         }
     }
 
@@ -936,10 +927,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
         return false
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int, permissions: Array<String>,
-        grantResults: IntArray
-    ) {
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         Log.i(TAG, "onRequestPermissionResult")
         if (requestCode == Constants.EXTERNAL_STORAGE_REQUEST_CODE) {
             when {
@@ -971,6 +959,68 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
         } else {
             showProgressDialog(mActivity)
             mOrderDetailService?.completeOrder(CompleteOrderRequest(orderDetailMainResponse?.orders?.orderId?.toLong()))
+        }
+    }
+
+    override fun onTransactionDetailResponse(response: TransactionDetailResponse?) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            detailTextView?.visibility = View.INVISIBLE
+            transactionDetailLayout?.visibility = View.VISIBLE
+            mContentView?.run {
+                val billAmountValueTextView: TextView = findViewById(R.id.billAmountValueTextView)
+                val txnChargeValueTextView: TextView = findViewById(R.id.txnChargeValueTextView)
+                val textViewTop: TextView = findViewById(R.id.textViewTop)
+                val textViewBottom: TextView = findViewById(R.id.textViewBottom)
+                val billAmountTextView: TextView = findViewById(R.id.billAmountTextView)
+                val txnChargeTextView: TextView = findViewById(R.id.txnChargeTextView)
+                val paymentModeTextView: TextView = findViewById(R.id.paymentModeTextView)
+                val amountSettleTextView: TextView = findViewById(R.id.amountSettleTextView)
+                val amountSettleValueTextView: TextView = findViewById(R.id.amountSettleValueTextView)
+                val txnId: TextView = findViewById(R.id.txnId)
+                val bottomDate: TextView = findViewById(R.id.bottomDate)
+                val displayMessage: TextView = findViewById(R.id.displayMessage)
+                val ctaTextView: TextView = findViewById(R.id.ctaTextView)
+                val imageViewBottom: ImageView = findViewById(R.id.imageViewBottom)
+                val paymentModeImageView: ImageView = findViewById(R.id.paymentModeImageView)
+
+                val staticText = response?.staticText
+                textViewTop.text = response?.transactionMessage
+                textViewBottom.text = response?.settlementMessage
+                billAmountTextView.text = staticText?.bill_amount
+                amountSettleTextView.text = staticText?.amount_to_settled
+                paymentModeTextView.text = staticText?.payment_mode
+                txnId.text = getStringDateTimeFromTransactionDetailDate(getCompleteDateFromOrderString(response?.transactionTimestamp))
+                when (Constants.ORDER_STATUS_PAYOUT_SUCCESS) {
+                    response?.settlementState -> {
+                        bottomDate.visibility = View.VISIBLE
+                        val bottomDisplayStr = "${getStringDateTimeFromTransactionDetailDate(getCompleteDateFromOrderString(response.settlementTimestamp))} ${if (!isEmpty(response.utr)) "| UTR : ${response.utr}" else ""}"
+                        bottomDate.text = bottomDisplayStr
+                    }
+                    else -> bottomDate.visibility = View.GONE
+                }
+                if (null != response?.ctaItem) {
+                    displayMessage.text = response.ctaItem?.displayMessage
+                    ctaTextView.visibility = View.VISIBLE
+                    displayMessage.visibility = View.VISIBLE
+                    ctaTextView.setOnClickListener {
+                        when(response.ctaItem?.action) {
+                            Constants.ACTION_ADD_BANK -> {
+                                launchFragment(BankAccountFragment.newInstance(null, 0, false, null), false)
+                            }
+                        }
+                    }
+                } else {
+                    ctaTextView.visibility = View.INVISIBLE
+                    displayMessage.visibility = View.GONE
+                }
+                txnChargeTextView.text = "${staticText?.transaction_charges} (${response?.transactionCharges}%)"
+                billAmountValueTextView.text = "${getString(R.string.rupee_symbol)} ${response?.amount}"
+                txnChargeValueTextView.text = "${getString(R.string.rupee_symbol)} ${response?.transactionChargeAmount}"
+                amountSettleValueTextView.text = "${getString(R.string.rupee_symbol)} ${response?.settlementAmount}"
+                if (!isEmpty(response?.paymentImage)) mActivity?.let { context -> Glide.with(context).load(response?.paymentImage).into(paymentModeImageView) }
+                if (!isEmpty(response?.settlementCdn)) mActivity?.let { context -> Glide.with(context).load(response?.settlementCdn).into(imageViewBottom) }
+            }
         }
     }
 }

@@ -216,8 +216,6 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
         mGoogleApiClient?.lastLocation?.addOnCompleteListener(mActivity) { task ->
             if (task.isSuccessful && task.result != null) {
                 lastLocation = task.result
-                //mCurrentLatitude = lastLocation?.latitude ?: 0.0
-                //mCurrentLongitude = lastLocation?.longitude ?: 0.0
                 supportMapFragment.getMapAsync{
                     mGoogleMap = it
                     showCurrentLocationMarkers(mCurrentLatitude, mCurrentLongitude)
@@ -239,17 +237,17 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
                         }
 
                         override fun onMarkerDragStart(marker: Marker?) {
+                            Log.d(TAG, "onMarkerDragStart: ")
                         }
 
                         override fun onMarkerDrag(marker: Marker?) {
+                            Log.d(TAG, "onMarkerDrag: ")
                         }
 
                     })
                 }
             } else {
-                if (!isLocationEnabledInSettings(mActivity)) {
-                    openLocationSettings(true)
-                }
+                if (!isLocationEnabledInSettings(mActivity)) openLocationSettings(true)
                 mCurrentLatitude = mProfileInfoResponse?.mStoreItemResponse?.storeAddress?.latitude ?: 0.0
                 mCurrentLongitude = mProfileInfoResponse?.mStoreItemResponse?.storeAddress?.longitude ?: 0.0
                 showCurrentLocationMarkers(mCurrentLatitude, mCurrentLongitude)
@@ -257,10 +255,7 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
         }
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int, permissions: Array<String>,
-        grantResults: IntArray
-    ) {
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         Log.i(TAG, "onRequestPermissionResult")
         if (requestCode == Constants.LOCATION_REQUEST_CODE) {
             when {
@@ -282,6 +277,7 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
         val markerOptions = MarkerOptions().title("current location").position(LatLng(lat, lng)).icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_location_marker)).draggable(true).snippet(mGoogleDrivenAddress)
         val cameraUpdate = CameraUpdateFactory.newLatLngZoom(LatLng(lat, lng), 11f)
         mGoogleMap?.animateCamera(cameraUpdate)
+        mCurrentMarker?.remove()
         mCurrentMarker = mGoogleMap?.addMarker(markerOptions)
         mCurrentMarker?.showInfoWindow()
     }
@@ -328,16 +324,12 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
                         }
                         switchToInCompleteProfileFragment(mProfileInfoResponse)
                     }
-                } else {
-                    mActivity?.onBackPressed()
-                }
+                } else mActivity?.onBackPressed()
             } else showToast(response.mMessage)
         }
     }
 
-    override fun onStoreAddressServerException(e: Exception) {
-        exceptionHandlingForAPIResponse(e)
-    }
+    override fun onStoreAddressServerException(e: Exception) = exceptionHandlingForAPIResponse(e)
 
     private fun checkLocationPermissionWithDialog(): Boolean {
         mActivity?.let {

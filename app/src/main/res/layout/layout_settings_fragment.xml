@@ -258,44 +258,15 @@
                     android:id="@+id/storeValueTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_5sdp"
-                    android:clickable="false"
-                    android:gravity="center_vertical"
-                    tools:text="Open"
                     android:layout_marginStart="@dimen/_5sdp"
+                    android:clickable="false"
                     android:fontFamily="@font/roboto_medium"
+                    android:gravity="center_vertical"
                     android:textColor="@color/open_green"
                     android:textSize="@dimen/_11sdp"
+                    app:layout_constraintBaseline_toBaselineOf="@+id/storeTextView"
                     app:layout_constraintStart_toEndOf="@id/storeTextView"
-                    app:layout_constraintTop_toBottomOf="@id/storeControlImageView" />
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/deliveryStatusTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_2sdp"
-                    android:clickable="false"
-                    android:gravity="center_vertical"
-                    tools:text="Delivery Status:"
-                    android:textColor="@color/dark_blackish"
-                    android:textSize="@dimen/_10sdp"
-                    app:layout_constraintStart_toStartOf="@id/storeTextView"
-                    app:layout_constraintTop_toBottomOf="@id/storeTextView" />
-
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/deliveryStatusValueTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_2sdp"
-                    android:clickable="false"
-                    android:fontFamily="@font/roboto_medium"
-                    android:layout_marginStart="@dimen/_5sdp"
-                    android:gravity="center_vertical"
-                    tools:text="On"
-                    android:textColor="@color/open_green"
-                    android:textSize="@dimen/_11sdp"
-                    app:layout_constraintStart_toEndOf="@id/deliveryStatusTextView"
-                    app:layout_constraintTop_toBottomOf="@id/storeTextView" />
+                    tools:text="Open" />
 
                 <TextView
                     android:id="@+id/storeControlMessageTextView"
@@ -303,11 +274,13 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_5sdp"
                     android:layout_marginBottom="@dimen/_23sdp"
+                    android:textSize="@dimen/_11sdp"
+                    android:fontFamily="@font/roboto"
                     tools:text="Set Online payment modes, minimum order value, delivery charge And more"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="@id/imageView5"
-                    app:layout_constraintStart_toStartOf="@id/deliveryStatusTextView"
-                    app:layout_constraintTop_toBottomOf="@id/deliveryStatusTextView"
+                    app:layout_constraintStart_toStartOf="@id/storeTextView"
+                    app:layout_constraintTop_toBottomOf="@id/storeTextView"
                     app:layout_constraintVertical_bias="0.469" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>

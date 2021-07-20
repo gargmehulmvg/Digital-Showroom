@@ -1,7 +1,6 @@
 package com.digitaldukaan.adapters
 
 import android.graphics.Color
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
+import com.digitaldukaan.constants.isEmpty
 import com.digitaldukaan.fragments.BaseFragment
 import com.digitaldukaan.models.response.MarketingCardsItemResponse
 import com.digitaldukaan.services.serviceinterface.IMarketingServiceInterface
@@ -26,13 +26,20 @@ class MarketingCardAdapter(
         val marketingCardParentContainer: View = itemView.findViewById(R.id.marketingCardParentContainer)
         val singleSpanContainer: View = itemView.findViewById(R.id.singleSpanContainer)
         val singleSpanBackgroundView: View = itemView.findViewById(R.id.singleSpanBackgroundView)
+        val doubleSpanBackgroundView: View = itemView.findViewById(R.id.doubleSpanBackgroundView)
         val singleSpanImageView: ImageView = itemView.findViewById(R.id.singleSpanImageView)
         val doubleSpanImageView: ImageView = itemView.findViewById(R.id.doubleSpanImageView)
+        val singleSpanVerticalImageView: ImageView = itemView.findViewById(R.id.singleSpanVerticalImageView)
         val stripTextView: TextView = itemView.findViewById(R.id.stripTextView)
         val singleSpanTextView: TextView = itemView.findViewById(R.id.singleSpanTextView)
+        val singleSpanVerticalTextView: TextView = itemView.findViewById(R.id.singleSpanVerticalTextView)
+        val singleSpanVerticalContinueTextView: TextView = itemView.findViewById(R.id.singleSpanVerticalContinueTextView)
         val doubleSpanTextView: TextView = itemView.findViewById(R.id.doubleSpanHeadingTextView)
+        val betaTextView: TextView = itemView.findViewById(R.id.betaTextView)
         val doubleSpanContinueTextView: TextView = itemView.findViewById(R.id.doubleSpanContinueTextView)
         val doubleSpanContainer: View = itemView.findViewById(R.id.doubleSpanContainer)
+        val singleSpanVerticalBackgroundView: View = itemView.findViewById(R.id.singleSpanVerticalBackgroundView)
+        val singleSpanVerticalContainer: View = itemView.findViewById(R.id.singleSpanVerticalContainer)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MarketingCardViewHolder {
@@ -51,28 +58,27 @@ class MarketingCardAdapter(
         holder.run {
             if (item?.type == Constants.SPAN_TYPE_FULL_WIDTH) {
                 doubleSpanContainer.visibility = View.VISIBLE
-                doubleSpanImageView?.let {
-                    try {
-                        mContext?.let { context -> Glide.with(context).load(item.logo).into(it) }
-                    } catch (e: Exception) {
-                        Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
-                    }
-                }
+                doubleSpanImageView.let { mContext?.let { context -> Glide.with(context).load(item.logo).into(it) } }
                 doubleSpanTextView.text = item.text
                 doubleSpanContinueTextView.text = item.viewNow
+                doubleSpanBackgroundView.setBackgroundColor(Color.parseColor(item.color))
+                if (!isEmpty(item.infoText)) {
+                    betaTextView.visibility = View.VISIBLE
+                    betaTextView.text = item.infoText
+                }
                 if (item.stripText?.isNotEmpty() == true) {
                     stripTextView.visibility = View.VISIBLE
                     stripTextView.text = item.stripText
                 } else stripTextView.visibility = View.GONE
+            } else if (item?.type == Constants.SPAN_TYPE_FULL_HEIGHT) {
+                singleSpanVerticalContainer.visibility = View.VISIBLE
+                singleSpanVerticalBackgroundView.setBackgroundColor(Color.parseColor(item.color))
+                singleSpanVerticalImageView.let { mContext?.let { context -> Glide.with(context).load(item.logo).into(it) } }
+                singleSpanVerticalTextView.text = item.text
+                singleSpanVerticalContinueTextView.text = item.viewNow
             } else {
                 singleSpanContainer.visibility = View.VISIBLE
-                singleSpanImageView?.let {
-                    try {
-                        mContext?.let { context -> Glide.with(context).load(item?.logo).into(it) }
-                    } catch (e: Exception) {
-                        Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
-                    }
-                }
+                singleSpanImageView.let { mContext?.let { context -> Glide.with(context).load(item?.logo).into(it) } }
                 singleSpanTextView.text = item?.heading
                 singleSpanBackgroundView.setBackgroundColor(Color.parseColor(item?.color))
             }
