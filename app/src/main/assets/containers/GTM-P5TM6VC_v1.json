@@ -1,0 +1,57 @@
+{
+    "exportFormatVersion": 2,
+    "exportTime": "2021-07-12 08:56:26",
+    "containerVersion": {
+        "path": "accounts/6004360431/containers/48296141/versions/1",
+        "accountId": "6004360431",
+        "containerId": "48296141",
+        "containerVersionId": "1",
+        "name": "Empty Container",
+        "container": {
+            "path": "accounts/6004360431/containers/48296141",
+            "accountId": "6004360431",
+            "containerId": "48296141",
+            "name": "com.digitaldukaanlocal",
+            "publicId": "GTM-P5TM6VC",
+            "usageContext": [
+                "ANDROID_SDK_5"
+            ],
+            "fingerprint": "1626080051278",
+            "tagManagerUrl": "https://tagmanager.google.com/#/container/accounts/6004360431/containers/48296141/workspaces?apiLink=container"
+        },
+        "builtInVariable": [
+            {
+                "accountId": "6004360431",
+                "containerId": "48296141",
+                "type": "APP_ID",
+                "name": "App ID"
+            },
+            {
+                "accountId": "6004360431",
+                "containerId": "48296141",
+                "type": "APP_NAME",
+                "name": "App Name"
+            },
+            {
+                "accountId": "6004360431",
+                "containerId": "48296141",
+                "type": "APP_VERSION_CODE",
+                "name": "App Version Code"
+            },
+            {
+                "accountId": "6004360431",
+                "containerId": "48296141",
+                "type": "APP_VERSION_NAME",
+                "name": "App Version Name"
+            },
+            {
+                "accountId": "6004360431",
+                "containerId": "48296141",
+                "type": "EVENT_NAME",
+                "name": "Event Name"
+            }
+        ],
+        "fingerprint": "1626080051282",
+        "tagManagerUrl": "https://tagmanager.google.com/#/versions/accounts/6004360431/containers/48296141/versions/1?apiLink=version"
+    }
+}

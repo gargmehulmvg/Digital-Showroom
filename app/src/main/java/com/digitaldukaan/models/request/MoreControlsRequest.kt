@@ -6,5 +6,5 @@ data class MoreControlsRequest(
     @SerializedName("delivery_charge_type") var deliveryChargeType: Int,
     @SerializedName("free_delivery_above") var freeDeliveryAbove: Double,
     @SerializedName("delivery_price") var deliveryPrice: Double,
-    @SerializedName("min_order_value") var minOrderValue: Double
+    @SerializedName("min_order_value") var minOrderValue: Double?
 )

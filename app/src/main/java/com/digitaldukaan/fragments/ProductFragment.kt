@@ -376,12 +376,12 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                 isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                 data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.CHANNEL to "isCatalog")
             )
-            val isPremiumEnable = (jsonData.optInt("isPremium") == 1)
+            val isPremiumEnable = (1 == jsonData.optInt("isPremium"))
             launchFragment(ViewAsCustomerFragment.newInstance(jsonData.optString("domain"), isPremiumEnable, addProductStaticData), true)
         } else if (jsonData.optBoolean("catalogStockUpdate")) {
             val jsonDataObject = JSONObject(jsonData.optString("data"))
             val isAvailable = jsonDataObject.optInt("available")
-            if (isAvailable == 1) {
+            if (1 == isAvailable) {
                 if (Constants.TEXT_YES == PrefsManager.getStringDataFromSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN_STOCK)) {
                     val request = UpdateStockRequest(jsonDataObject.optInt("id"), 0)
                     mService?.updateStock(request)
@@ -480,11 +480,13 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                             if (mTempProductCategoryList.isNotEmpty())
                                 addProductChipsAdapter = AddProductsChipsAdapter(mTempProductCategoryList, object : IChipItemClickListener {
                                     override fun onChipItemClickListener(position: Int) {
-                                        mTempProductCategoryList.forEachIndexed { _, categoryItem -> categoryItem.isSelected = false }
-                                        mTempProductCategoryList[position].isSelected = true
-                                        categoryNameEditText.setText(mTempProductCategoryList[position].name)
-                                        mSelectedCategoryItem = mTempProductCategoryList[position]
-                                        addProductChipsAdapter?.setAddProductStoreCategoryList(mTempProductCategoryList)
+                                        CoroutineScopeUtils().runTaskOnCoroutineMain {
+                                            mTempProductCategoryList.forEachIndexed { _, categoryItem -> categoryItem.isSelected = false }
+                                            mTempProductCategoryList[position].isSelected = true
+                                            categoryNameEditText.setText(mTempProductCategoryList[position].name)
+                                            mSelectedCategoryItem = mTempProductCategoryList[position]
+                                            addProductChipsAdapter?.setAddProductStoreCategoryList(mTempProductCategoryList)
+                                        }
                                     }
                                 })
                             adapter = addProductChipsAdapter

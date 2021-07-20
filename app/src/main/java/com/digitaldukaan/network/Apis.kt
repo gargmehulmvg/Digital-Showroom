@@ -142,7 +142,7 @@ interface Apis {
     suspend fun getItemInfo(@Path("itemId") itemId: Int): Response<CommonApiResponse>
 
     @POST("api/dotk/vm1/products/setItem")
-    suspend fun setItem(@Header("auth_token") authToken: String, @Body request: AddProductRequest): Response<CommonApiResponse>
+    suspend fun setItem(@Body request: AddProductRequest): Response<CommonApiResponse>
 
     @GET("api/dotk/vm1/products/getMasterCategories")
     suspend fun getMasterCategories(): Response<CommonApiResponse>
@@ -178,8 +178,14 @@ interface Apis {
     @GET("api/dotk/vm1/orders/getOrderAnalytics")
     suspend fun getAnalyticsData() : Response<CommonApiResponse>
 
+    @GET("api/dotk/vm1/orders/sharePaymentLink/{order_id}")
+    suspend fun sharePaymentLink(@Path("order_id") orderId: String?): Response<CommonApiResponse>
+
     @GET("api/dotk/vm1/orders/getOrdersPageInfo")
     suspend fun getOrderPageInfo() : Response<CommonApiResponse>
+
+    @POST("api/dotk/vm1/orders/sendPaymentLink")
+    suspend fun sendPaymentLink(@Body request: PaymentLinkRequest): Response<CommonApiResponse>
 
     @POST("api/dotk/vm1/orders/getOrderList")
     suspend fun getOrdersList(@Body request: OrdersRequest): Response<CommonApiResponse>

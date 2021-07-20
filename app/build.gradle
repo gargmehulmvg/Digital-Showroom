@@ -4,6 +4,7 @@ plugins {
     id 'kotlin-android-extensions'
     id 'com.google.gms.google-services'
     id 'com.google.firebase.crashlytics'
+    id "io.sentry.android.gradle" version "2.0.1"
 }
 
 android {
@@ -14,8 +15,8 @@ android {
         applicationId "com.digitaldukaan"
         minSdkVersion 24
         targetSdkVersion 29
-        versionCode 71
-        versionName "4.1.9"
+        versionCode 72
+        versionName "4.2.0"
         multiDexEnabled true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -27,6 +28,9 @@ android {
             storePassword '8377844923'
             storeFile file('dotpe-release-key.keystore')
         }
+    }
+    sentry {
+        autoUpload.set(true)
     }
     buildTypes {
         applicationVariants.all { variant ->
@@ -45,6 +49,11 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    buildscript {
+        repositories {
+            mavenCentral()
+        }
+    }
     compileOptions {
         // Sets Java compatibility to Java 8
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -53,10 +62,11 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+
     flavorDimensions "default"
     productFlavors {
         local {
-            buildConfigField('String', 'BASE_URL', '"https://api.dotq.in/"')
+            buildConfigField('String', 'BASE_URL', '"https://api.digitaldukaan.store/"')
             buildConfigField('String', 'WEB_VIEW_URL', '"https://digitaldukaanwebview.dotq.in/"')
             buildConfigField('String', 'WEB_VIEW_SHOW_ROOM_URL', '"https://showroom.dotq.in/"')
             buildConfigField('String', 'WEB_VIEW_PREVIEW_URL', '"https://showroom-preview2.dotq.in/"')
@@ -142,7 +152,7 @@ dependencies {
     //  Circular Dots
     implementation 'com.tbuonomo:dotsindicator:4.2'
     //  Add Sentry's SDK as a dependency
-    implementation 'io.sentry:sentry-android:4.3.0'
+    implementation 'io.sentry:sentry-android:5.0.1'
     //  Image compression
     implementation 'id.zelory:compressor:3.0.1'
     //  Glide
@@ -154,4 +164,7 @@ dependencies {
     //  In App Rating
     implementation "com.google.android.play:core:1.10.0"
     implementation "com.google.android.play:core-ktx:1.8.1"
+    //  Google Tag Manager
+    implementation 'com.google.android.gms:play-services-tagmanager:17.0.0'
+    implementation 'com.google.firebase:firebase-core:17.0.0'
 }

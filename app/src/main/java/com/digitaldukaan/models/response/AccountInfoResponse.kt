@@ -122,7 +122,11 @@ data class AccountStaticTextResponse(
     @SerializedName("text_notification")                                        var mNotificationText: String?,
     @SerializedName("heading_set_order_notifications")                          var mHeadingSetOrderNotifications: String?,
     @SerializedName("message_set_order_notifications")                          var mMessageSetOrderNotifications: String?,
-    @SerializedName("edit_profile_text")                                        var mTextEditProfile: String?
+    @SerializedName("edit_profile_text")                                        var mTextEditProfile: String?,
+    @SerializedName("text_pickup")                                              var text_pickup: String?,
+    @SerializedName("heading_bottom_sheet_set_delivery_pickup")                 var heading_bottom_sheet_set_delivery_pickup: String?,
+    @SerializedName("message_bottom_sheet_delivery")                            var message_bottom_sheet_delivery: String?,
+    @SerializedName("message_bottom_sheet_pickup")                              var message_bottom_sheet_pickup: String?
 )
 
 data class StoreShareResponse(
@@ -149,6 +153,7 @@ data class StoreOptionsResponse(
 
 data class TrendingListResponse(
     @SerializedName("image_url")                var mCDN: String,
+    @SerializedName("new_image_url")            var mNewImageUrl: String,
     @SerializedName("text")                     var mText: String?,
     @SerializedName("action")                   var mAction: String?,
     @SerializedName("type")                     var mType: String?,

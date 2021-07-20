@@ -57,7 +57,9 @@ class OrderAdapterV2(
         val view = OrderViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.order_item, parent, false))
         view.orderCheckBox.setOnClickListener {
             if (mOrderList?.isEmpty() == true) return@setOnClickListener
-            mListItemListener?.onOrderCheckBoxChanged(view.orderCheckBox.isChecked, mOrderList?.get(view.adapterPosition))
+            val position = view.adapterPosition
+            if (position < 0 || position >= mOrderList?.size ?: 0) return@setOnClickListener
+            mListItemListener?.onOrderCheckBoxChanged(view.orderCheckBox.isChecked, mOrderList?.get(position))
             view.orderCheckBox.isChecked = false
             view.orderCheckBox.isSelected = false
         }
@@ -78,7 +80,7 @@ class OrderAdapterV2(
     override fun onBindViewHolder(holder: OrderAdapterV2.OrderViewHolder, position: Int) {
         val item = mOrderList?.get(position)
         holder.apply {
-            val str = "#${item?.orderId} | ${getNameFromContactList(item?.phone) ?: item?.phone}"
+            val str = "#${item?.orderId}${if (mContext.getString(R.string.default_mobile) == item?.phone) "" else " | ${getNameFromContactList(item?.phone) ?: item?.phone}"}"
             orderDetailsTextView.text = str
             orderTimeTextView.text = getTimeFromOrderString(item?.updatedCompleteDate)
             orderAddressTextView.text = getAddress(item)
@@ -176,6 +178,17 @@ class OrderAdapterV2(
                     orderStatusImageView.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_prepaid))
                 }
             }
+            Constants.DS_PENDING_PAYMENT_LINK -> {
+                orderStatusTextView.background = null
+                Log.d(mTag, "getOrderStatus: ${mOrderPageInfoStaticData?.payment_link}")
+                orderStatusTextView.text = null
+                orderCheckBox.isEnabled = true
+                orderStatusImageView.visibility = View.GONE
+                if (Constants.ORDER_TYPE_PREPAID == item.prepaidFlag) {
+                    orderStatusImageView.visibility = View.VISIBLE
+                    orderStatusImageView.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_prepaid))
+                }
+            }
             Constants.DS_PAID_ONLINE -> {
                 orderStatusImageView.visibility = View.VISIBLE
                 orderStatusImageView.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_order_status_paid))
@@ -246,6 +259,7 @@ class OrderAdapterV2(
                 orderStatusImageView.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_order_status_paid))
             }
             else -> {
+                orderStatusTextView.text = null
                 if (Constants.ORDER_TYPE_PREPAID == item?.prepaidFlag) {
                     orderStatusImageView.visibility = View.VISIBLE
                     orderStatusImageView.setImageDrawable(ContextCompat.getDrawable(mContext, R.drawable.ic_prepaid))
@@ -263,7 +277,7 @@ class OrderAdapterV2(
             Constants.ORDER_TYPE_ADDRESS -> "${item.deliveryInfo.address1} ${item.deliveryInfo.address2}"
             Constants.ORDER_TYPE_PICK_UP -> mOrderPageInfoStaticData?.pickUpOrder ?: "Pick up Order"
             Constants.ORDER_TYPE_SELF -> mOrderPageInfoStaticData?.selfBilled ?: "Self Billed"
-            Constants.ORDER_TYPE_SELF_IMAGE -> mOrderPageInfoStaticData?.selfBilled ?: "Self Billed"
+            Constants.ORDER_TYPE_SELF_IMAGE -> mOrderPageInfoStaticData?.payment_link ?: "Payment Link"
             else -> ""
         }
     }

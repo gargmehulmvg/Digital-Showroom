@@ -189,6 +189,7 @@ class SetDeliveryChargeFragment : BaseFragment(), IMoreControlsServiceInterface 
                     return
                 }
                 showProgressDialog(mActivity)
+                continueTextView?.isEnabled = false
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_DELIVERY_MODEL_SELECT,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
@@ -254,6 +255,7 @@ class SetDeliveryChargeFragment : BaseFragment(), IMoreControlsServiceInterface 
 
     override fun onMoreControlsResponse(response: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
+            continueTextView?.isEnabled = true
             stopProgress()
             if (response.mIsSuccessStatus) {
                 showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
@@ -268,6 +270,9 @@ class SetDeliveryChargeFragment : BaseFragment(), IMoreControlsServiceInterface 
         Log.d(TAG, "onChangeStoreAndDeliveryStatusResponse: do nothing")
     }
 
-    override fun onMoreControlsServerException(e: Exception) = exceptionHandlingForAPIResponse(e)
+    override fun onMoreControlsServerException(e: Exception) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain { continueTextView?.isEnabled = true }
+        exceptionHandlingForAPIResponse(e)
+    }
 
 }

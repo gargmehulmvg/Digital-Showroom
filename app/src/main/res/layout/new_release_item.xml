@@ -76,17 +76,17 @@
             tools:layout_conversion_absoluteWidth="124dp"
             tools:text="digital _ show room_ web digital _showroom_web" />
 
-        <TextView
+        <ImageView
             android:id="@+id/newTextView"
             android:layout_width="@dimen/_20sdp"
             android:layout_height="@dimen/_20sdp"
             android:background="@drawable/ic_new_with_text"
             android:clickable="false"
             android:gravity="center"
-            android:padding="@dimen/_5sdp"
             android:visibility="gone"
             app:layout_constraintStart_toStartOf="@+id/itemLayout"
-            app:layout_constraintTop_toTopOf="@+id/itemLayout" />
+            app:layout_constraintTop_toTopOf="@+id/itemLayout"
+            android:contentDescription="@string/image_view_content_description" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

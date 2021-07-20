@@ -3,6 +3,7 @@ package com.digitaldukaan.fragments
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -32,12 +33,8 @@ class StoreDescriptionFragment : BaseFragment(), IStoreDescriptionServiceInterfa
     private var mStoreDescriptionStaticData: ProfileStaticData? = null
 
     companion object {
-        fun newInstance(
-            profilePreviewResponse: ProfilePreviewSettingsKeyResponse?,
-            position: Int,
-            isSingleStep: Boolean,
-            profileInfoResponse: ProfileInfoResponse?
-        ): StoreDescriptionFragment {
+        private const val TAG = "StoreDescriptionFragment"
+        fun newInstance(profilePreviewResponse: ProfilePreviewSettingsKeyResponse?, position: Int, isSingleStep: Boolean, profileInfoResponse: ProfileInfoResponse?): StoreDescriptionFragment {
             val fragment = StoreDescriptionFragment()
             fragment.mProfilePreviewResponse = profilePreviewResponse
             fragment.mPosition = position
@@ -68,14 +65,18 @@ class StoreDescriptionFragment : BaseFragment(), IStoreDescriptionServiceInterfa
         }
         storeDescriptionEditText?.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
-                val str = s.toString()
+                Log.d(TAG, "afterTextChanged: BEFORE TRIM :: ${s.toString()}")
+                val str = s.toString().trim()
+                Log.d(TAG, "afterTextChanged: AFTER TRIM :: $str")
                 continueTextView.isEnabled = str.isNotEmpty()
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                Log.d(TAG, "beforeTextChanged: ")
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                Log.d(TAG, "onTextChanged: ")
             }
 
         })

@@ -226,22 +226,31 @@ fun openWebViewFragment(fragment: BaseFragment, title: String, webViewType: Stri
     }
 }
 
+fun openWebViewFragmentWithLocation(fragment: BaseFragment, title: String, webViewType: String?) {
+    try {
+        fragment.launchFragment(CommonWebViewFragment().newInstance(title, webViewType ?: ""), true)
+    } catch (e: Exception) {
+        Sentry.captureException(e, "openWebViewFragment :: fragment: BaseFragment, title: String, webViewType: String?")
+    }
+}
+
 fun getDateFromOrderString(dateStr: String?): Date? {
     if (isEmpty(dateStr)) return Date()
     val format: DateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-    return format.parse(dateStr)
+    return format.parse(dateStr ?: "")
 }
 
-fun getCompleteDateFromOrderString(dateStr: String?): Date? {
-    if (dateStr == null) return Date()
-    val format: DateFormat = SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.getDefault())
+fun getCompleteDateFromOrderString(date: String?): Date? {
+    var dateStr: String? = date ?: return Date()
+    dateStr = if (dateStr?.contains("12:") == true) "$dateStr pm" else "$dateStr am"
+    val format: DateFormat = SimpleDateFormat("yyyy-MM-dd hh:mm:ss a", Locale.getDefault())
     return format.parse(dateStr)
 }
 
 fun getTimeFromOrderString(date: Date?): String {
-    date?.run {
+    date?.let {dateValue ->
         val dateFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())
-        return dateFormat.format(this)
+        return dateFormat.format(dateValue)
     }
     return ""
 }
@@ -361,41 +370,44 @@ fun replaceTemplateString(text: String?): String? {
     return returnText
 }
 
-fun isEmpty(list: List<Any>?): Boolean {
-    return list == null || list.isEmpty()
-}
+fun isEmpty(list: List<Any>?): Boolean = list == null || list.isEmpty()
 
-fun isEmpty(string: String?): Boolean {
-    return string == null || string.isEmpty()
-}
+fun isEmpty(string: String?): Boolean = string == null || string.isEmpty()
 
 fun getDayOfTheWeek(count: Int): String {
     when(count) {
-        0 -> return "Sun"
-        1 -> return "Mon"
-        2 -> return "Tue"
-        3 -> return "Wed"
-        4 -> return "Thu"
-        5 -> return "Fri"
-        6 -> return "Sat"
+        0   ->  return "Sun"
+        1   ->  return "Mon"
+        2   ->  return "Tue"
+        3   ->  return "Wed"
+        4   ->  return "Thu"
+        5   ->  return "Fri"
+        6   ->  return "Sat"
     }
     return ""
 }
 
 fun getMonthOfTheWeek(count: Int): String {
     when(count) {
-        0 -> return "Jan"
-        1 -> return "Feb"
-        2 -> return "Mar"
-        3 -> return "Apr"
-        4 -> return "May"
-        5 -> return "Jun"
-        6 -> return "Jul"
-        7 -> return "Aug"
-        8 -> return "Sep"
-        9 -> return "Oct"
-        10 -> return "Nov"
-        11 -> return "Dec"
+        0   ->  return "Jan"
+        1   ->  return "Feb"
+        2   ->  return "Mar"
+        3   ->  return "Apr"
+        4   ->  return "May"
+        5   ->  return "Jun"
+        6   ->  return "Jul"
+        7   ->  return "Aug"
+        8   ->  return "Sep"
+        9   ->  return "Oct"
+        10  ->  return "Nov"
+        11  ->  return "Dec"
     }
     return ""
 }
+
+fun isDouble(str: String?): Boolean {
+    if (null == str?.toDoubleOrNull()) return false
+    return true
+}
+
+fun greatestCommonFactor(width: Int, height: Int): Int = if (0 == height) width else greatestCommonFactor(height, width % height)

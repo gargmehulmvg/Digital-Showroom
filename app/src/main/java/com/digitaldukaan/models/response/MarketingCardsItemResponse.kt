@@ -5,6 +5,7 @@ import com.google.gson.annotations.SerializedName
 data class MarketingCardsItemResponse(
     @SerializedName("heading") var heading: String?,
     @SerializedName("sub_heading") var subHeading: String?,
+    @SerializedName("info_text") var infoText: String?,
     @SerializedName("logo") var logo: String?,
     @SerializedName("action") var action: String?,
     @SerializedName("color") var color: String?,

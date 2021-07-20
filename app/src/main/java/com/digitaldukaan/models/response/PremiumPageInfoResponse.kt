@@ -3,40 +3,43 @@ package com.digitaldukaan.models.response
 import com.google.gson.annotations.SerializedName
 
 data class PremiumPageInfoResponse(
-    @SerializedName("theme") var theme: ThemeResponse?,
-    @SerializedName("static_text") var staticText: PremiumPageInfoStaticTextResponse?,
-    @SerializedName("domain") var domain: String?,
+    @SerializedName("theme")            var theme: ThemeResponse?,
+    @SerializedName("static_text")      var staticText: PremiumPageInfoStaticTextResponse?,
+    @SerializedName("domain")           var domain: String?,
     @SerializedName("is_bottom_nav_bar_active") var mIsBottomNavBarActive: Boolean,
-    @SerializedName("premium") var premium: PremiumPageActiveResponse?
+    @SerializedName("premium")          var premium: PremiumPageActiveResponse?
 )
 
 data class PremiumPageActiveResponse(
-    @SerializedName("is_active") var mIsActive: Boolean,
-    @SerializedName("deep_link") var mUrl: String
+    @SerializedName("is_active")        var mIsActive: Boolean,
+    @SerializedName("deep_link")        var mUrl: String
 )
 
 data class ThemeResponse(
-    @SerializedName("theme_id") var themeId: Int,
-    @SerializedName("store_theme_id") var storeThemeId: Int,
-    @SerializedName("roundness") var roundness: Int,
-    @SerializedName("is_quick_view") var isQuickView: Int,
-    @SerializedName("category") var category: String,
-    @SerializedName("colors") var colorItem: EditPremiumColorItemResponse,
-    @SerializedName("components") var themeComponent: ThemeComponentResponse,
-    @SerializedName("expiry") var expiry: String
+    @SerializedName("theme_id")         var themeId: Int,
+    @SerializedName("store_theme_id")   var storeThemeId: Int,
+    @SerializedName("roundness")        var roundness: Int,
+    @SerializedName("is_quick_view")    var isQuickView: Int,
+    @SerializedName("category")         var category: String,
+    @SerializedName("colors")           var colorItem: EditPremiumColorItemResponse,
+    @SerializedName("components")       var themeComponent: ThemeComponentResponse,
+    @SerializedName("expiry")           var expiry: String
 )
 
 data class ThemeComponentResponse(
-    @SerializedName("Body") var body: ArrayList<ThemeBodyResponse>
+    @SerializedName("Body")             var body: ArrayList<ThemeBodyResponse>
 )
 
 data class ThemeBodyResponse(
-    @SerializedName("images") var images: ArrayList<ThemeBodyImagesItemResponse>
+    @SerializedName("images")           var images: ArrayList<ThemeBodyImagesItemResponse>
 )
 
 data class ThemeBodyImagesItemResponse(
-    @SerializedName("id") var id: Int,
-    @SerializedName("image_url") var imageUrl: String
+    @SerializedName("id")               var id: Int,
+    @SerializedName("height")           var height: Int,
+    @SerializedName("width")            var width: Int,
+    @SerializedName("is_desktop")       var isDesktop: Boolean,
+    @SerializedName("image_url")        var imageUrl: String
 )
 
 data class PremiumPageInfoStaticTextResponse(

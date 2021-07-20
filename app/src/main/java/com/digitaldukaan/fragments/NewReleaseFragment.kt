@@ -1,5 +1,8 @@
 package com.digitaldukaan.fragments
 
+import android.Manifest
+import android.app.AlertDialog
+import android.content.pm.PackageManager
 import android.graphics.Typeface
 import android.os.Bundle
 import android.text.Spannable
@@ -10,6 +13,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.BuildConfig
@@ -28,6 +33,7 @@ class NewReleaseFragment: BaseFragment(), IStoreSettingsItemClicked {
     private var mNewReleaseList: ArrayList<TrendingListResponse>? = null
     private var mHeadingStr: String? = null
     private var mSettingsStaticData: AccountStaticTextResponse? = null
+    private var mNewReleaseItemClickResponse: TrendingListResponse? = null
 
     companion object {
         private const val TAG = "NewReleaseFragment"
@@ -67,6 +73,16 @@ class NewReleaseFragment: BaseFragment(), IStoreSettingsItemClicked {
         Log.d(TAG, "onNewReleaseItemClicked :: responseItem?.mAction :: ${responseItem?.mAction}")
         when (responseItem?.mAction) {
             Constants.NEW_RELEASE_TYPE_WEBVIEW -> {
+                if (Constants.NEW_RELEASE_TYPE_GOOGLE_ADS == responseItem.mType) {
+                    AppEventsManager.pushAppEvents(
+                        eventName = AFInAppEventType.EVENT_GOOGLE_ADS_EXPLORE,
+                        isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                        data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.CHANNEL to AFInAppEventParameterName.SETTINGS_PAGE)
+                    )
+                    mNewReleaseItemClickResponse = responseItem
+                    getLocationForGoogleAds()
+                    return
+                }
                 val eventName = when (responseItem.mType) {
                     Constants.NEW_RELEASE_TYPE_CUSTOM_DOMAIN -> AFInAppEventType.EVENT_GET_CUSTOM_DOMAIN
                     Constants.NEW_RELEASE_TYPE_PREMIUM -> AFInAppEventType.EVENT_GET_PREMIUM_WEBSITE
@@ -132,6 +148,49 @@ class NewReleaseFragment: BaseFragment(), IStoreSettingsItemClicked {
                     bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
                 }
             }.show()
+        }
+    }
+
+    private fun checkLocationPermissionWithDialog(): Boolean {
+        mActivity?.let {
+            return if (ContextCompat.checkSelfPermission(it, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(it, Manifest.permission.ACCESS_FINE_LOCATION)) {
+                    AlertDialog.Builder(it).apply {
+                        setTitle("Location Permission")
+                        setMessage("Please allow Location permission to continue")
+                        setPositiveButton(R.string.ok) { _, _ -> ActivityCompat.requestPermissions(it, arrayOf(
+                            Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), Constants.LOCATION_REQUEST_CODE)
+                        }
+                    }.create().show()
+                } else ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), Constants.LOCATION_REQUEST_CODE)
+                true
+            } else false
+        }
+        return false
+    }
+
+    private fun getLocationForGoogleAds() {
+        if (checkLocationPermissionWithDialog()) return
+        getLocationFromGoogleMap()
+    }
+
+    override fun onLocationChanged(lat: Double, lng: Double) {
+        openWebViewFragmentWithLocation(this, "", BuildConfig.WEB_VIEW_URL + mNewReleaseItemClickResponse?.mPage + "?storeid=${PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)}&token=${PrefsManager.getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&lat=$lat&lng=$lng")
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        Log.i(TAG, "onRequestPermissionResult")
+        if (requestCode == Constants.LOCATION_REQUEST_CODE) {
+            when {
+                grantResults.isEmpty() -> Log.i(TAG, "User interaction was cancelled.")
+                grantResults[0] == PackageManager.PERMISSION_GRANTED -> {
+                    getLocationFromGoogleMap()
+                }
+                else -> {
+                    mActivity?.onBackPressed()
+                    showShortSnackBar("Permission was denied", true, R.drawable.ic_close_red)
+                }
+            }
         }
     }
 
