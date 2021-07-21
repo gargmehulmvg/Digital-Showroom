@@ -189,7 +189,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
     override fun onClick(view: View?) {
         when (view?.id) {
             analyticsImageView?.id -> {
-                AppEventsManager.pushAppEvents(
+                /*AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_ORDER_ANALYTICS,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                     data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
@@ -197,7 +197,8 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                 analyticsContainer?.visibility = View.VISIBLE
                 mActivity?.let {
                     analyticsImageView?.setImageDrawable(ContextCompat.getDrawable(it, R.drawable.ic_analytics_green))
-                }
+                }*/
+                launchFragment(CreateCouponsFragment.newInstance(), true)
             }
             takeOrderTextView?.id -> {
                 AppEventsManager.pushAppEvents(

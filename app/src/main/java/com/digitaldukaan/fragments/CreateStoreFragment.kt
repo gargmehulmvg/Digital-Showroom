@@ -16,9 +16,7 @@ class CreateStoreFragment : BaseFragment() {
 
     companion object {
         private const val TAG = "CreateStoreFragment"
-        fun newInstance(): CreateStoreFragment {
-            return CreateStoreFragment()
-        }
+        fun newInstance(): CreateStoreFragment = CreateStoreFragment()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
