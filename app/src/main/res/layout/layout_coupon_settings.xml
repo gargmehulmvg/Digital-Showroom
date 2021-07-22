@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:padding="@dimen/_18sdp"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/couponSettingHeadingTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/roboto"
+        android:text="Coupon Settings"
+        android:textColor="@color/default_text_light_grey"
+        android:textSize="@dimen/_11sdp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/setting1Heading"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_15sdp"
+        android:fontFamily="@font/roboto_medium"
+        android:text="Applicable once per customer"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_14sdp"
+        app:layout_constraintEnd_toStartOf="@+id/setting1CheckBox"
+        app:layout_constraintStart_toStartOf="@+id/couponSettingHeadingTextView"
+        app:layout_constraintTop_toBottomOf="@+id/couponSettingHeadingTextView" />
+
+    <CheckBox
+        android:id="@+id/setting1CheckBox"
+        android:layout_width="@dimen/_20sdp"
+        android:layout_height="@dimen/_20sdp"
+        android:checked="true"
+        app:layout_constraintBottom_toBottomOf="@+id/setting1Heading"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/setting1Heading" />
+
+    <TextView
+        android:id="@+id/setting1Message"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_8sdp"
+        android:text="Select this option if you want your customers to use this coupon only once"
+        android:textSize="@dimen/_10sdp"
+        app:layout_constraintEnd_toEndOf="@+id/setting1Heading"
+        app:layout_constraintStart_toStartOf="@+id/setting1Heading"
+        app:layout_constraintTop_toBottomOf="@+id/setting1Heading" />
+
+    <TextView
+        android:id="@+id/setting2Heading"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_15sdp"
+        android:fontFamily="@font/roboto_medium"
+        android:text="Show this Coupon on Website"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_14sdp"
+        app:layout_constraintEnd_toStartOf="@+id/setting2CheckBox"
+        app:layout_constraintStart_toStartOf="@+id/couponSettingHeadingTextView"
+        app:layout_constraintTop_toBottomOf="@+id/setting1Message" />
+
+    <CheckBox
+        android:id="@+id/setting2CheckBox"
+        android:layout_width="@dimen/_20sdp"
+        android:layout_height="@dimen/_20sdp"
+        app:layout_constraintBottom_toBottomOf="@+id/setting2Heading"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/setting2Heading" />
+
+    <TextView
+        android:id="@+id/setting2Message"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_8sdp"
+        android:text="This will allow customers to see this coupon on your website"
+        android:textSize="@dimen/_10sdp"
+        app:layout_constraintEnd_toEndOf="@+id/setting2Heading"
+        app:layout_constraintStart_toStartOf="@+id/setting2Heading"
+        app:layout_constraintTop_toBottomOf="@+id/setting2Heading" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

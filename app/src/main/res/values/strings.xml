@@ -123,6 +123,7 @@
     <string name="adjust_image_in_white_box">Adjust the image in the white box</string>
     <string name="send_reminder">Send Reminder</string>
     <string name="default_mobile">0000000000</string>
+    <string name="flat">Flat</string>
     <string-array name="state_array">
         <item >Andhra Pradesh</item>
         <item >Arunachal Pradesh</item>

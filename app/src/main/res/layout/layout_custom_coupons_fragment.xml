@@ -9,7 +9,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:animateLayoutChanges="true" >
+        android:animateLayoutChanges="true">
 
         <TextView
             android:id="@+id/selectDiscountTypeTextView"
@@ -70,11 +70,26 @@
             app:layout_constraintTop_toBottomOf="@+id/percentageDiscountTextView" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/constraintLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/_15sdp"
             android:animateLayoutChanges="true"
             app:layout_constraintTop_toBottomOf="@id/separator1">
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/pdGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="visible"
+                app:constraint_referenced_ids="pdPercentageInputLayout,pdCouponCodeInputLayout,pdMaxDiscountInputLayout,pdMinOrderAmountInputLayout" />
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/fdGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:constraint_referenced_ids="fdCouponCodeInputLayout,fdMinOrderAmountInputLayout,fdDiscountInputLayout" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/pdPercentageInputLayout"
@@ -105,11 +120,14 @@
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/pdMaxDiscountInputLayout"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="@dimen/_200sdp"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_8sdp"
+                android:layout_marginEnd="@dimen/_8sdp"
+                app:layout_goneMarginEnd="@dimen/_60sdp"
                 android:hint="Enter Maximum Discount (₹)"
                 app:hintTextColor="@color/black"
+                app:layout_constraintEnd_toStartOf="@+id/pdDiscountPreviewLayout"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/pdPercentageInputLayout">
 
@@ -184,42 +202,211 @@
 
             <LinearLayout
                 android:id="@+id/pdDiscountPreviewLayout"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="0dp"
-                android:background="@drawable/curve_green_dotted_border_green_background"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:visibility="gone"
-                android:layout_marginStart="@dimen/_5sdp"
                 android:layout_marginTop="@dimen/_3sdp"
+                android:background="@drawable/curve_green_dotted_border_green_background"
+                android:gravity="center"
+                android:paddingStart="@dimen/_10sdp"
+                android:paddingEnd="@dimen/_10sdp"
+                android:orientation="vertical"
+                android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="@+id/pdMaxDiscountInputLayout"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/pdMaxDiscountInputLayout"
                 app:layout_constraintTop_toTopOf="@+id/pdMaxDiscountInputLayout">
 
                 <TextView
                     android:id="@+id/pdDiscountOffTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    tools:text="30% OFF"
                     android:fontFamily="@font/roboto_medium"
+                    android:maxLines="1"
                     android:textColor="@color/open_green"
-                    android:textSize="@dimen/_12sdp" />
+                    android:textSize="@dimen/_12sdp"
+                    tools:text="30% OFF" />
 
                 <TextView
                     android:id="@+id/pdDiscountUpToTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    tools:text="Upto ₹50"
+                    android:ellipsize="marquee"
+                    android:fontFamily="@font/roboto"
                     android:paddingStart="@dimen/_5sdp"
                     android:paddingEnd="@dimen/_5sdp"
-                    android:fontFamily="@font/roboto"
+                    android:singleLine="true"
                     android:textColor="@color/open_green"
-                    android:textSize="@dimen/_10sdp" />
+                    android:textSize="@dimen/_10sdp"
+                    tools:text="Upto ₹50" />
+
+            </LinearLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/fdDiscountInputLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:hint="Discount (₹)"
+                android:layout_marginEnd="@dimen/_8sdp"
+                app:layout_goneMarginEnd="@dimen/_60sdp"
+                app:hintTextColor="@color/black"
+                app:layout_constraintEnd_toStartOf="@+id/fdDiscountPreviewLayout"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/pdPercentageInputLayout">
+
+                <EditText
+                    android:id="@+id/fdDiscountEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:importantForAutofill="no"
+                    android:inputType="number"
+                    android:maxLength="@integer/amount_length"
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/default_text_light_grey"
+                    android:textSize="@dimen/_12sdp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/fdMinOrderAmountInputLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:hint="Enter Minimum Order Amount (₹)"
+                app:hintTextColor="@color/black"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/fdDiscountInputLayout">
+
+                <EditText
+                    android:id="@+id/fdMinOrderAmountEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:importantForAutofill="no"
+                    android:inputType="number"
+                    android:maxLength="@integer/amount_length"
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/default_text_light_grey"
+                    android:textSize="@dimen/_12sdp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/fdCouponCodeInputLayout"
+                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:hint="Coupon Code"
+                app:hintTextColor="@color/black"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/fdMinOrderAmountInputLayout">
+
+                <EditText
+                    android:id="@+id/fdCouponCodeEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:importantForAutofill="no"
+                    android:inputType="textCapWords"
+                    android:maxLength="@integer/coupon_code_length"
+                    android:textAllCaps="true"
+                    android:textColor="@color/black"
+                    android:textColorHint="@color/default_text_light_grey"
+                    android:textSize="@dimen/_12sdp" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <LinearLayout
+                android:id="@+id/fdDiscountPreviewLayout"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:paddingStart="@dimen/_5sdp"
+                android:paddingEnd="@dimen/_5sdp"
+                android:layout_marginTop="@dimen/_3sdp"
+                android:background="@drawable/curve_green_dotted_border_green_background"
+                android:gravity="center_vertical"
+                android:orientation="vertical"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@+id/fdDiscountInputLayout"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/fdDiscountInputLayout">
+
+                <TextView
+                    android:id="@+id/fdDiscountOffTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/roboto"
+                    android:maxLines="1"
+                    android:paddingStart="@dimen/_8sdp"
+                    android:paddingEnd="@dimen/_8sdp"
+                    android:textColor="@color/open_green"
+                    android:textSize="@dimen/_10sdp"
+                    tools:text="Flat" />
+
+                <TextView
+                    android:id="@+id/fdDiscountUpToTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="marquee"
+                    android:fontFamily="@font/roboto_medium"
+                    android:paddingStart="@dimen/_8sdp"
+                    android:paddingEnd="@dimen/_8sdp"
+                    android:singleLine="true"
+                    android:textColor="@color/open_green"
+                    android:textSize="@dimen/_12sdp"
+                    tools:text="₹50 OFF" />
 
             </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <View
+            android:id="@+id/separator2"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_1sdp"
+            android:layout_marginTop="@dimen/_20sdp"
+            android:background="@color/curve_grey_border"
+            app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
+
+        <LinearLayout
+            android:id="@+id/couponSettingLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@+id/separator2" >
+
+            <include layout="@layout/layout_coupon_settings" />
+
+        </LinearLayout>
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardElevation="@dimen/_10sdp"
+            app:layout_constraintTop_toBottomOf="@+id/couponSettingLayout" >
+
+            <TextView
+                android:id="@+id/createCouponsTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:gravity="center"
+                android:onClick="onClick"
+                android:layout_margin="@dimen/_15sdp"
+                android:fontFamily="@font/roboto_medium"
+                android:textSize="@dimen/_16sdp"
+                android:paddingTop="@dimen/_8sdp"
+                android:paddingBottom="@dimen/_8sdp"
+                android:background="@drawable/ripple_curve_grey_black_background"
+                android:text="Create Coupon" />
+
+        </androidx.cardview.widget.CardView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
