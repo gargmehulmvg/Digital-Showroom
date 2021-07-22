@@ -8,11 +8,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.constants.isEmpty
+import com.digitaldukaan.views.allowOnlyAlphaNumericCharacters
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
 
 class CustomCouponsFragment : BaseFragment() {
 
@@ -79,6 +83,8 @@ class CustomCouponsFragment : BaseFragment() {
         pdGroup = mContentView?.findViewById(R.id.pdGroup)
         setupTextWatchers()
         percentageDiscountTextView?.callOnClick()
+        fdCouponCodeEditText?.allowOnlyAlphaNumericCharacters()
+        pdCouponCodeEditText?.allowOnlyAlphaNumericCharacters()
     }
 
     private fun setupTextWatchers() {
@@ -209,6 +215,7 @@ class CustomCouponsFragment : BaseFragment() {
             }
             return
         }
+        showCreateCouponConfirmationBottomSheet()
     }
 
     private fun checkFlatDiscountValidation() {
@@ -236,6 +243,24 @@ class CustomCouponsFragment : BaseFragment() {
                 error = mActivity?.getString(R.string.mandatory_field_message)
             }
             return
+        }
+        showCreateCouponConfirmationBottomSheet()
+    }
+
+    private fun showCreateCouponConfirmationBottomSheet() {
+        mActivity?.run {
+            val bottomSheetDialog = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
+            val view = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_create_coupon_confirmation, findViewById(R.id.bottomSheetContainer))
+            bottomSheetDialog.apply {
+                setContentView(view)
+                behavior.state = BottomSheetBehavior.STATE_EXPANDED
+                view.run {
+                    val bottomSheetHeadingTextView: TextView = findViewById(R.id.bottomSheetHeadingTextView)
+                    val bottomSheetClose: ImageView = findViewById(R.id.bottomSheetClose)
+                    bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
+                    bottomSheetHeadingTextView.text = "Please Confirm"
+                }
+            }.show()
         }
     }
 

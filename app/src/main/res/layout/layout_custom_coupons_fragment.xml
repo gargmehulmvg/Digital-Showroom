@@ -190,6 +190,7 @@
                     android:layout_height="wrap_content"
                     android:clickable="true"
                     android:focusable="true"
+
                     android:importantForAutofill="no"
                     android:inputType="textCapWords"
                     android:maxLength="@integer/coupon_code_length"

@@ -906,6 +906,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
             val croppedImgFile = File(it.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "${System.currentTimeMillis()}_croppedImgFile.jpg")
             UCrop.of(Uri.fromFile(originalImgFile), Uri.fromFile(croppedImgFile))
                 .withAspectRatio(1f, 1f)
+                .withMaxResultSize(500, 500)
                 .start(it)
             stopProgress()
         }
