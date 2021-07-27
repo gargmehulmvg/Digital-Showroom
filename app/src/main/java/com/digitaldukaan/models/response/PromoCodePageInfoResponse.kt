@@ -15,9 +15,11 @@ data class ZeroPromoCodePageResponse(
 
 data class PromoCodePageStaticTextResponse(
     @SerializedName("active_text")                              var active_text: String?,
+    @SerializedName("inactive_text")                            var inactive_text: String?,
     @SerializedName("text_create_coupon")                       var text_create_coupon: String?,
     @SerializedName("heading_create_and_share")                 var heading_create_and_share: String?,
     @SerializedName("heading_custom_coupon")                    var heading_custom_coupon: String?,
+    @SerializedName("heading_discount_coupon")                  var heading_discount_coupon: String?,
     @SerializedName("text_percent_discount")                    var text_percent_discount: String?,
     @SerializedName("text_enter_percentage")                    var text_enter_percentage: String?,
     @SerializedName("text_coupon_code")                         var text_coupon_code: String?,

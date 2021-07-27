@@ -2,6 +2,7 @@ package com.digitaldukaan.services
 
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.models.request.CreateCouponsRequest
+import com.digitaldukaan.models.request.GetPromoCodeRequest
 import com.digitaldukaan.services.networkservice.CustomCouponsNetworkService
 import com.digitaldukaan.services.serviceinterface.ICustomCouponsServiceInterface
 import com.digitaldukaan.services.serviceinterface.IPromoCodePageInfoServiceInterface
@@ -24,6 +25,12 @@ class CustomCouponsService {
     fun getCreatePromoCode(request: CreateCouponsRequest?) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
             request?.let { req -> mNetworkService.getCreatePromoCodeServerCall(mServiceInterface, req) }
+        }
+    }
+
+    fun getAllMerchantPromoCodes(request: GetPromoCodeRequest) {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.getAllMerchantPromoCodesServerCall(mPromoPageInfoServiceInterface, request)
         }
     }
 

@@ -4,6 +4,7 @@ import android.util.Log
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.exceptions.UnAuthorizedAccessException
 import com.digitaldukaan.models.request.CreateCouponsRequest
+import com.digitaldukaan.models.request.GetPromoCodeRequest
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.network.RetrofitApi
 import com.digitaldukaan.services.serviceinterface.ICustomCouponsServiceInterface
@@ -23,12 +24,40 @@ class CustomCouponsNetworkService {
                     it.body()?.let { generateOtpResponse -> serviceInterface.onCustomCouponsResponse(generateOtpResponse) }
                 } else {
                     if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
-                    serviceInterface.onCustomCouponsErrorResponse(Exception(response.message()))
+                    val errorResponseBody = it.errorBody()
+                    errorResponseBody?.let {
+                        val errorResponse = Gson().fromJson(errorResponseBody.string(), CommonApiResponse::class.java)
+                        serviceInterface.onCustomCouponsResponse(errorResponse)
+                    }
                 }
             }
         } catch (e : Exception) {
             Log.e(CustomCouponsNetworkService::class.java.simpleName, "getMarketingCardsDataServerCall: ", e)
             serviceInterface.onCustomCouponsErrorResponse(e)
+        }
+    }
+
+    suspend fun getAllMerchantPromoCodesServerCall(
+        serviceInterface: IPromoCodePageInfoServiceInterface,
+        request: GetPromoCodeRequest
+    ) {
+        try {
+            val response = RetrofitApi().getServerCallObject()?.getAllMerchantPromoCodes(request)
+            response?.let {
+                if (it.isSuccessful) {
+                    it.body()?.let { generateOtpResponse -> serviceInterface.onGetPromoCodeListResponse(generateOtpResponse) }
+                } else {
+                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    val errorResponseBody = it.errorBody()
+                    errorResponseBody?.let {
+                        val errorResponse = Gson().fromJson(errorResponseBody.string(), CommonApiResponse::class.java)
+                        serviceInterface.onGetPromoCodeListResponse(errorResponse)
+                    }
+                }
+            }
+        } catch (e : Exception) {
+            Log.e(CustomCouponsNetworkService::class.java.simpleName, "getAllMerchantPromoCodesServerCall: ", e)
+            serviceInterface.onPromoCodePageInfoException(e)
         }
     }
 

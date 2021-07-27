@@ -8,4 +8,6 @@ interface IPromoCodePageInfoServiceInterface {
 
     fun onPromoCodePageInfoResponse(response: CommonApiResponse)
 
+    fun onGetPromoCodeListResponse(response: CommonApiResponse)
+
 }

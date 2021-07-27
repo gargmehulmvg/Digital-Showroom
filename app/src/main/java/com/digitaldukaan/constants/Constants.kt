@@ -111,6 +111,8 @@ class Constants {
         const val MODE_WHATS_APP                                = "whatsapp"
         const val MODE_COUPON_TYPE_PERCENTAGE                   = "percentage"
         const val MODE_COUPON_TYPE_FLAT                         = "flat"
+        const val MODE_ACTIVE                                   = "active"
+        const val MODE_INACTIVE                                 = "inactive"
         //ORDER_STATUS
         const val StatusCustomerUpdated                         = 1
         const val StatusMerchantUpdated                         = 2
