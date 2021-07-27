@@ -31,7 +31,10 @@ data class PromoCodePageStaticTextResponse(
     @SerializedName("heading_show_this_coupon_website")         var heading_show_this_coupon_website: String?,
     @SerializedName("message_allow_customer_see_coupon")        var message_allow_customer_see_coupon: String?,
     @SerializedName("text_discount")                            var text_discount: String?,
+    @SerializedName("text_use_code")                            var text_use_code: String?,
+    @SerializedName("text_flat")                                var text_flat: String?,
     @SerializedName("heading_please_confirm")                   var heading_please_confirm: String?,
+    @SerializedName("text_min_order_amount")                    var text_min_order_amount: String?,
     @SerializedName("heading_applicable_once_per_customer")     var heading_applicable_once_per_customer: String?,
     @SerializedName("heading_bold_create_and_share")            var heading_bold_create_and_share: String?
 )

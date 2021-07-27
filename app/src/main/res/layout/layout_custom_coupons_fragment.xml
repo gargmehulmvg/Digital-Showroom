@@ -81,14 +81,14 @@
                 android:id="@+id/pdGroup"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:visibility="visible"
+                android:visibility="gone"
                 app:constraint_referenced_ids="pdPercentageInputLayout,pdCouponCodeInputLayout,pdMaxDiscountInputLayout,pdMinOrderAmountInputLayout" />
 
             <androidx.constraintlayout.widget.Group
                 android:id="@+id/fdGroup"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
+                android:visibility="visible"
                 app:constraint_referenced_ids="fdCouponCodeInputLayout,fdMinOrderAmountInputLayout,fdDiscountInputLayout" />
 
             <com.google.android.material.textfield.TextInputLayout
@@ -317,6 +317,7 @@
                     android:importantForAutofill="no"
                     android:inputType="textCapWords"
                     android:maxLength="@integer/coupon_code_length"
+                    android:imeOptions="actionDone"
                     android:textAllCaps="true"
                     android:textColor="@color/black"
                     android:textColorHint="@color/default_text_light_grey"

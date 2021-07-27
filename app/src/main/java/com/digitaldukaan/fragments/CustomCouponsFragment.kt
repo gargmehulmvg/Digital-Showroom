@@ -13,10 +13,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.digitaldukaan.R
-import com.digitaldukaan.constants.Constants
-import com.digitaldukaan.constants.CoroutineScopeUtils
-import com.digitaldukaan.constants.ToolBarManager
-import com.digitaldukaan.constants.isEmpty
+import com.digitaldukaan.constants.*
 import com.digitaldukaan.models.request.CreateCouponsRequest
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.PromoCodePageStaticTextResponse
@@ -27,6 +24,7 @@ import com.digitaldukaan.views.allowOnlyAlphaNumericCharacters
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.textfield.TextInputLayout
+import java.util.*
 
 class CustomCouponsFragment : BaseFragment(), ICustomCouponsServiceInterface {
 
@@ -64,11 +62,13 @@ class CustomCouponsFragment : BaseFragment(), ICustomCouponsServiceInterface {
     private var mService = CustomCouponsService()
     private var mCreateCouponsRequest: CreateCouponsRequest? = null
     private var mStaticText: PromoCodePageStaticTextResponse? = null
+    private var mStoreName = ""
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.layout_custom_coupons_fragment, container, false)
         initializeUI()
         mService.setCustomCouponsServiceListener(this)
+        mStoreName = PrefsManager.getStringDataFromSharedPref(Constants.STORE_NAME)
         return mContentView
     }
 
@@ -143,7 +143,7 @@ class CustomCouponsFragment : BaseFragment(), ICustomCouponsServiceInterface {
                 pdMaxDiscountStr = pdMaxDiscountStr.trim()
                 if (!isEmpty(pdPercentageStr) && !isEmpty(pdMaxDiscountStr)) {
                     pdDiscountPreviewLayout?.visibility = View.VISIBLE
-                    pdDiscountUpToTextView?.text = "${mStaticText?.text_upto_capital} ${getString(R.string.rupee_symbol)}$pdMaxDiscountStr"
+                    pdDiscountUpToTextView?.text = "${mStaticText?.text_upto_capital} ₹$pdMaxDiscountStr"
                     pdDiscountOffTextView?.text = "$pdPercentageStr% ${mStaticText?.text_off_all_caps}"
                 } else pdDiscountPreviewLayout?.visibility = View.GONE
             }
@@ -163,9 +163,14 @@ class CustomCouponsFragment : BaseFragment(), ICustomCouponsServiceInterface {
                 fdDiscountStr = fdDiscountStr.trim()
                 if (!isEmpty(fdDiscountStr)) {
                     fdDiscountPreviewLayout?.visibility = View.VISIBLE
-                    fdDiscountUpToTextView?.text = "$fdDiscountStr ${mStaticText?.text_off_all_caps}"
-                    fdDiscountOffTextView?.text = mActivity?.getString(R.string.flat)
+                    fdDiscountUpToTextView?.text = "₹$fdDiscountStr ${mStaticText?.text_off_all_caps}"
+                    fdDiscountOffTextView?.text = mStaticText?.text_flat
                 } else fdDiscountPreviewLayout?.visibility = View.GONE
+                if (!isEmpty(fdDiscountStr)) {
+                    val storeNameStr = getCouponStoreName()
+                    val couponCodeStr = "$storeNameStr$fdDiscountStr"
+                    fdCouponCodeEditText?.setText(couponCodeStr)
+                } else fdCouponCodeEditText?.text = null
             }
 
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
@@ -184,8 +189,13 @@ class CustomCouponsFragment : BaseFragment(), ICustomCouponsServiceInterface {
                 if (!isEmpty(pdPercentageStr) && !isEmpty(pdMaxDiscountStr)) {
                     pdDiscountPreviewLayout?.visibility = View.VISIBLE
                     pdDiscountOffTextView?.text = "$pdPercentageStr% ${mStaticText?.text_off_all_caps}"
-                    pdDiscountUpToTextView?.text = "${mStaticText?.text_upto_capital} ${getString(R.string.rupee_symbol)}$pdMaxDiscountStr"
+                    pdDiscountUpToTextView?.text = "${mStaticText?.text_upto_capital} ₹$pdMaxDiscountStr"
                 } else pdDiscountPreviewLayout?.visibility = View.GONE
+                if (!isEmpty(pdPercentageStr)) {
+                    val storeNameStr = getCouponStoreName()
+                    val couponCodeStr = "$storeNameStr$pdPercentageStr"
+                    pdCouponCodeEditText?.setText(couponCodeStr)
+                } else pdCouponCodeEditText?.text = null
             }
 
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
@@ -197,6 +207,14 @@ class CustomCouponsFragment : BaseFragment(), ICustomCouponsServiceInterface {
             }
 
         })
+    }
+
+    private fun getCouponStoreName(): String? {
+        return when {
+            isEmpty(mStoreName) -> ""
+            mStoreName.length <= 3 -> mStoreName
+            else -> mStoreName.trim().substring(0, 3).toUpperCase(Locale.getDefault())
+        }
     }
 
     override fun onClick(view: View?) {
@@ -329,6 +347,28 @@ class CustomCouponsFragment : BaseFragment(), ICustomCouponsServiceInterface {
                     val createCouponsTextView: TextView = findViewById(R.id.createCouponsTextView)
                     val bottomSheetHeadingTextView: TextView = findViewById(R.id.bottomSheetHeadingTextView)
                     val bottomSheetClose: ImageView = findViewById(R.id.bottomSheetClose)
+                    val couponSettingHeadingTextView: TextView? = findViewById(R.id.couponSettingHeadingTextView)
+                    val setting1Heading: TextView? = findViewById(R.id.setting1Heading)
+                    val setting2Heading: TextView? = findViewById(R.id.setting2Heading)
+                    val setting1Message: TextView? = findViewById(R.id.setting1Message)
+                    val setting2Message: TextView? = findViewById(R.id.setting2Message)
+                    val useCodeTextView: TextView? = findViewById(R.id.useCodeTextView)
+                    val descriptionTextView: TextView? = findViewById(R.id.descriptionTextView)
+                    val minOrderValueTextView: TextView? = findViewById(R.id.minOrderValueTextView)
+                    couponSettingHeadingTextView?.text = mStaticText?.text_coupon_settings
+                    createCouponsTextView.text = mStaticText?.text_create_coupon
+                    setting1Heading?.text = mStaticText?.heading_applicable_once_per_customer
+                    setting2Heading?.text = mStaticText?.heading_show_this_coupon_website
+                    setting1Message?.text = mStaticText?.message_select_this_coupon
+                    setting2Message?.text = mStaticText?.message_allow_customer_see_coupon
+                    useCodeTextView?.text = "${mStaticText?.text_use_code} ${mCreateCouponsRequest?.promoCode}"
+                    minOrderValueTextView?.text = "${mStaticText?.text_min_order_amount} ${mCreateCouponsRequest?.minOrderPrice}"
+                    val discountStr = if (mIsFlatDiscountSelected) {
+                        "${mStaticText?.text_flat} ₹${mCreateCouponsRequest?.discount?.toInt()} ${mStaticText?.text_off_all_caps}"
+                    } else {
+                        "${mCreateCouponsRequest?.discount?.toInt()}% ${mStaticText?.text_off_all_caps} ${mStaticText?.text_upto_capital} ₹${mCreateCouponsRequest?.maxDiscount}"
+                    }
+                    descriptionTextView?.text = discountStr
                     bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
                     bottomSheetHeadingTextView.text = mStaticText?.heading_please_confirm
                     applicablePerCustomerCheckBox.isChecked = mCreateCouponsRequest?.isOneTime ?: false
@@ -336,6 +376,7 @@ class CustomCouponsFragment : BaseFragment(), ICustomCouponsServiceInterface {
                     showOnWebsiteCheckBox.isChecked = mCreateCouponsRequest?.isHidden ?: false
                     showOnWebsiteCheckBox.setOnCheckedChangeListener { _, isChecked -> mCreateCouponsRequest?.isHidden = isChecked }
                     createCouponsTextView.setOnClickListener {
+                        bottomSheetDialog.dismiss()
                         createCoupon()
                     }
                 }
