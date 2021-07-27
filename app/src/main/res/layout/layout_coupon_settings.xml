@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:padding="@dimen/_18sdp"
     android:layout_height="match_parent">
 
@@ -10,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="@font/roboto"
-        android:text="Coupon Settings"
+        tools:text="Coupon Settings"
         android:textColor="@color/default_text_light_grey"
         android:textSize="@dimen/_11sdp"
         app:layout_constraintStart_toStartOf="parent"
@@ -22,7 +23,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_15sdp"
         android:fontFamily="@font/roboto_medium"
-        android:text="Applicable once per customer"
+        tools:text="Applicable once per customer"
         android:textColor="@color/black"
         android:textSize="@dimen/_14sdp"
         app:layout_constraintEnd_toStartOf="@+id/setting1CheckBox"
@@ -43,11 +44,13 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_8sdp"
-        android:text="Select this option if you want your customers to use this coupon only once"
+        tools:text="Select this option if you want your customers to use this coupon only once"
         android:textSize="@dimen/_10sdp"
         app:layout_constraintEnd_toEndOf="@+id/setting1Heading"
         app:layout_constraintStart_toStartOf="@+id/setting1Heading"
-        app:layout_constraintTop_toBottomOf="@+id/setting1Heading" />
+        app:layout_constraintTop_toBottomOf="@+id/setting1Heading"
+        android:drawablePadding="@dimen/_5sdp"
+        app:drawableStartCompat="@drawable/ic_coupon_light_bulb" />
 
     <TextView
         android:id="@+id/setting2Heading"
@@ -55,7 +58,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_15sdp"
         android:fontFamily="@font/roboto_medium"
-        android:text="Show this Coupon on Website"
+        tools:text="Show this Coupon on Website"
         android:textColor="@color/black"
         android:textSize="@dimen/_14sdp"
         app:layout_constraintEnd_toStartOf="@+id/setting2CheckBox"
@@ -75,8 +78,10 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_8sdp"
-        android:text="This will allow customers to see this coupon on your website"
+        tools:text="This will allow customers to see this coupon on your website"
         android:textSize="@dimen/_10sdp"
+        android:drawablePadding="@dimen/_5sdp"
+        app:drawableStartCompat="@drawable/ic_coupon_light_bulb"
         app:layout_constraintEnd_toEndOf="@+id/setting2Heading"
         app:layout_constraintStart_toStartOf="@+id/setting2Heading"
         app:layout_constraintTop_toBottomOf="@+id/setting2Heading" />

@@ -198,7 +198,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                 mActivity?.let {
                     analyticsImageView?.setImageDrawable(ContextCompat.getDrawable(it, R.drawable.ic_analytics_green))
                 }*/
-                launchFragment(CreateCouponsFragment.newInstance(), true)
+                launchFragment(PromoCodePageInfoFragment.newInstance(), true)
             }
             takeOrderTextView?.id -> {
                 AppEventsManager.pushAppEvents(

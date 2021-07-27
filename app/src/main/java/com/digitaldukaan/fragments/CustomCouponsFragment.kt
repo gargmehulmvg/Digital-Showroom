@@ -7,22 +7,37 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.digitaldukaan.R
+import com.digitaldukaan.constants.Constants
+import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.constants.isEmpty
+import com.digitaldukaan.models.request.CreateCouponsRequest
+import com.digitaldukaan.models.response.CommonApiResponse
+import com.digitaldukaan.models.response.PromoCodePageStaticTextResponse
+import com.digitaldukaan.services.CustomCouponsService
+import com.digitaldukaan.services.isInternetConnectionAvailable
+import com.digitaldukaan.services.serviceinterface.ICustomCouponsServiceInterface
 import com.digitaldukaan.views.allowOnlyAlphaNumericCharacters
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.textfield.TextInputLayout
 
-class CustomCouponsFragment : BaseFragment() {
+class CustomCouponsFragment : BaseFragment(), ICustomCouponsServiceInterface {
 
     companion object {
         private const val TAG = "CustomCouponsFragment"
-        fun newInstance(): CustomCouponsFragment = CustomCouponsFragment()
+
+        fun newInstance(staticText: PromoCodePageStaticTextResponse?): CustomCouponsFragment {
+            val fragment = CustomCouponsFragment()
+            fragment.mStaticText = staticText
+            return fragment
+        }
     }
 
     private var createCouponsTextView: TextView? = null
@@ -46,21 +61,21 @@ class CustomCouponsFragment : BaseFragment() {
     private var pdMaxDiscountStr = ""
     private var pdPercentageStr = ""
     private var mIsFlatDiscountSelected = false
+    private var mService = CustomCouponsService()
+    private var mCreateCouponsRequest: CreateCouponsRequest? = null
+    private var mStaticText: PromoCodePageStaticTextResponse? = null
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.layout_custom_coupons_fragment, container, false)
         initializeUI()
+        mService.setCustomCouponsServiceListener(this)
         return mContentView
     }
 
     private fun initializeUI() {
         hideBottomNavigationView(true)
         ToolBarManager.getInstance()?.apply {
-            setHeaderTitle("Custom Coupons")
+            setHeaderTitle(mStaticText?.heading_custom_coupon)
             hideToolBar(mActivity, false)
             onBackPressed(this@CustomCouponsFragment)
         }
@@ -82,9 +97,43 @@ class CustomCouponsFragment : BaseFragment() {
         fdGroup = mContentView?.findViewById(R.id.fdGroup)
         pdGroup = mContentView?.findViewById(R.id.pdGroup)
         setupTextWatchers()
+        setStaticTextToUI()
         percentageDiscountTextView?.callOnClick()
         fdCouponCodeEditText?.allowOnlyAlphaNumericCharacters()
         pdCouponCodeEditText?.allowOnlyAlphaNumericCharacters()
+    }
+
+    private fun setStaticTextToUI() {
+        mStaticText?.let {text ->
+            percentageDiscountTextView?.text = text.text_percent_discount
+            createCouponsTextView?.text = text.text_create_coupon
+            val selectDiscountTypeTextView: TextView? = mContentView?.findViewById(R.id.selectDiscountTypeTextView)
+            val couponSettingHeadingTextView: TextView? = mContentView?.findViewById(R.id.couponSettingHeadingTextView)
+            val setting1Heading: TextView? = mContentView?.findViewById(R.id.setting1Heading)
+            val setting2Heading: TextView? = mContentView?.findViewById(R.id.setting2Heading)
+            val setting1Message: TextView? = mContentView?.findViewById(R.id.setting1Message)
+            val setting2Message: TextView? = mContentView?.findViewById(R.id.setting2Message)
+            val pdPercentageInputLayout: TextInputLayout? = mContentView?.findViewById(R.id.pdPercentageInputLayout)
+            val pdMaxDiscountInputLayout: TextInputLayout? = mContentView?.findViewById(R.id.pdMaxDiscountInputLayout)
+            val pdMinOrderAmountInputLayout: TextInputLayout? = mContentView?.findViewById(R.id.pdMinOrderAmountInputLayout)
+            val pdCouponCodeInputLayout: TextInputLayout? = mContentView?.findViewById(R.id.pdCouponCodeInputLayout)
+            val fdDiscountInputLayout: TextInputLayout? = mContentView?.findViewById(R.id.fdDiscountInputLayout)
+            val fdMinOrderAmountInputLayout: TextInputLayout? = mContentView?.findViewById(R.id.fdMinOrderAmountInputLayout)
+            val fdCouponCodeInputLayout: TextInputLayout? = mContentView?.findViewById(R.id.fdCouponCodeInputLayout)
+            pdPercentageInputLayout?.hint = text.text_enter_percentage
+            pdMaxDiscountInputLayout?.hint = text.text_enter_max_discount
+            pdMinOrderAmountInputLayout?.hint = text.text_enter_min_discount
+            pdCouponCodeInputLayout?.hint = text.text_coupon_code
+            fdDiscountInputLayout?.hint = text.text_discount
+            fdMinOrderAmountInputLayout?.hint = text.text_enter_min_discount
+            fdCouponCodeInputLayout?.hint = text.text_coupon_code
+            couponSettingHeadingTextView?.text = text.text_coupon_settings
+            setting1Heading?.text = text.heading_applicable_once_per_customer
+            setting2Heading?.text = text.heading_show_this_coupon_website
+            setting1Message?.text = text.message_select_this_coupon
+            setting2Message?.text = text.message_allow_customer_see_coupon
+            selectDiscountTypeTextView?.text = text.heading_select_discount_type
+        }
     }
 
     private fun setupTextWatchers() {
@@ -94,8 +143,8 @@ class CustomCouponsFragment : BaseFragment() {
                 pdMaxDiscountStr = pdMaxDiscountStr.trim()
                 if (!isEmpty(pdPercentageStr) && !isEmpty(pdMaxDiscountStr)) {
                     pdDiscountPreviewLayout?.visibility = View.VISIBLE
-                    pdDiscountUpToTextView?.text = "Upto ${getString(R.string.rupee_symbol)}$pdMaxDiscountStr"
-                    pdDiscountOffTextView?.text = "$pdPercentageStr% OFF"
+                    pdDiscountUpToTextView?.text = "${mStaticText?.text_upto_capital} ${getString(R.string.rupee_symbol)}$pdMaxDiscountStr"
+                    pdDiscountOffTextView?.text = "$pdPercentageStr% ${mStaticText?.text_off_all_caps}"
                 } else pdDiscountPreviewLayout?.visibility = View.GONE
             }
 
@@ -114,7 +163,7 @@ class CustomCouponsFragment : BaseFragment() {
                 fdDiscountStr = fdDiscountStr.trim()
                 if (!isEmpty(fdDiscountStr)) {
                     fdDiscountPreviewLayout?.visibility = View.VISIBLE
-                    fdDiscountUpToTextView?.text = "$fdDiscountStr OFF"
+                    fdDiscountUpToTextView?.text = "$fdDiscountStr ${mStaticText?.text_off_all_caps}"
                     fdDiscountOffTextView?.text = mActivity?.getString(R.string.flat)
                 } else fdDiscountPreviewLayout?.visibility = View.GONE
             }
@@ -134,8 +183,8 @@ class CustomCouponsFragment : BaseFragment() {
                 pdPercentageStr = pdPercentageStr.trim()
                 if (!isEmpty(pdPercentageStr) && !isEmpty(pdMaxDiscountStr)) {
                     pdDiscountPreviewLayout?.visibility = View.VISIBLE
-                    pdDiscountOffTextView?.text = "$pdPercentageStr% OFF"
-                    pdDiscountUpToTextView?.text = "Upto ${getString(R.string.rupee_symbol)}$pdMaxDiscountStr"
+                    pdDiscountOffTextView?.text = "$pdPercentageStr% ${mStaticText?.text_off_all_caps}"
+                    pdDiscountUpToTextView?.text = "${mStaticText?.text_upto_capital} ${getString(R.string.rupee_symbol)}$pdMaxDiscountStr"
                 } else pdDiscountPreviewLayout?.visibility = View.GONE
             }
 
@@ -153,17 +202,15 @@ class CustomCouponsFragment : BaseFragment() {
     override fun onClick(view: View?) {
         when (view?.id) {
             createCouponsTextView?.id -> {
-                if (mIsFlatDiscountSelected) {
-                    checkFlatDiscountValidation()
-                } else checkPercentageDiscountValidation()
+                if (mIsFlatDiscountSelected) checkFlatDiscountValidation() else checkPercentageDiscountValidation()
             }
             percentageDiscountTextView?.id -> {
                 mIsFlatDiscountSelected = false
                 mActivity?.let { context ->
                     percentageDiscountTextView?.isSelected = true
-                    percentageDiscountTextView?.setTextColor(ContextCompat.getColor(context, R.color.black))
+                    percentageDiscountTextView?.setTextColor(ContextCompat.getColor(context, R.color.white))
                     flatDiscountTextView?.isSelected = false
-                    flatDiscountTextView?.setTextColor(ContextCompat.getColor(context, R.color.white))
+                    flatDiscountTextView?.setTextColor(ContextCompat.getColor(context, R.color.black))
                     pdGroup?.visibility = View.VISIBLE
                     fdGroup?.visibility = View.GONE
                 }
@@ -172,9 +219,9 @@ class CustomCouponsFragment : BaseFragment() {
                 mIsFlatDiscountSelected = true
                 mActivity?.let { context ->
                     percentageDiscountTextView?.isSelected = false
-                    percentageDiscountTextView?.setTextColor(ContextCompat.getColor(context, R.color.white))
+                    percentageDiscountTextView?.setTextColor(ContextCompat.getColor(context, R.color.black))
                     flatDiscountTextView?.isSelected = true
-                    flatDiscountTextView?.setTextColor(ContextCompat.getColor(context, R.color.black))
+                    flatDiscountTextView?.setTextColor(ContextCompat.getColor(context, R.color.white))
                     pdGroup?.visibility = View.GONE
                     fdGroup?.visibility = View.VISIBLE
                 }
@@ -183,6 +230,8 @@ class CustomCouponsFragment : BaseFragment() {
     }
 
     private fun checkPercentageDiscountValidation() {
+        val setting1CheckBox: CheckBox? = mContentView?.findViewById(R.id.setting1CheckBox)
+        val setting2CheckBox: CheckBox? = mContentView?.findViewById(R.id.setting2CheckBox)
         val percentage = pdPercentageEditText?.text?.toString() ?: ""
         val maxAmount = pdMaxDiscountEditText?.text?.toString() ?: ""
         val minOrderAmount = pdMinOrderAmountEditText?.text?.toString() ?: ""
@@ -215,10 +264,21 @@ class CustomCouponsFragment : BaseFragment() {
             }
             return
         }
+        mCreateCouponsRequest = CreateCouponsRequest(
+            discountType =  Constants.MODE_COUPON_TYPE_PERCENTAGE,
+            promoCode =     code,
+            discount =      percentage.toDouble(),
+            minOrderPrice = minOrderAmount.toDouble(),
+            maxDiscount =   maxAmount.toDouble(),
+            isOneTime =     setting1CheckBox?.isChecked ?: false,
+            isHidden =      setting2CheckBox?.isChecked ?: false
+        )
         showCreateCouponConfirmationBottomSheet()
     }
 
     private fun checkFlatDiscountValidation() {
+        val setting1CheckBox: CheckBox? = mContentView?.findViewById(R.id.setting1CheckBox)
+        val setting2CheckBox: CheckBox? = mContentView?.findViewById(R.id.setting2CheckBox)
         val discount = fdDiscountEditText?.text?.toString() ?: ""
         val code = fdCouponCodeEditText?.text?.toString() ?: ""
         val fdMinOrderAmountEditText: EditText? = mContentView?.findViewById(R.id.fdMinOrderAmountEditText)
@@ -244,6 +304,15 @@ class CustomCouponsFragment : BaseFragment() {
             }
             return
         }
+        mCreateCouponsRequest = CreateCouponsRequest(
+            discountType =  Constants.MODE_COUPON_TYPE_FLAT,
+            promoCode =     code,
+            discount =      discount.toDouble(),
+            minOrderPrice = minOrderAmount.toDouble(),
+            maxDiscount =   discount.toDouble(),
+            isOneTime =     setting1CheckBox?.isChecked ?: false,
+            isHidden =      setting2CheckBox?.isChecked ?: false
+        )
         showCreateCouponConfirmationBottomSheet()
     }
 
@@ -255,12 +324,45 @@ class CustomCouponsFragment : BaseFragment() {
                 setContentView(view)
                 behavior.state = BottomSheetBehavior.STATE_EXPANDED
                 view.run {
+                    val applicablePerCustomerCheckBox: CheckBox = findViewById(R.id.setting1CheckBox)
+                    val showOnWebsiteCheckBox: CheckBox = findViewById(R.id.setting2CheckBox)
+                    val createCouponsTextView: TextView = findViewById(R.id.createCouponsTextView)
                     val bottomSheetHeadingTextView: TextView = findViewById(R.id.bottomSheetHeadingTextView)
                     val bottomSheetClose: ImageView = findViewById(R.id.bottomSheetClose)
                     bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
-                    bottomSheetHeadingTextView.text = "Please Confirm"
+                    bottomSheetHeadingTextView.text = mStaticText?.heading_please_confirm
+                    applicablePerCustomerCheckBox.isChecked = mCreateCouponsRequest?.isOneTime ?: false
+                    applicablePerCustomerCheckBox.setOnCheckedChangeListener { _, isChecked -> mCreateCouponsRequest?.isOneTime = isChecked }
+                    showOnWebsiteCheckBox.isChecked = mCreateCouponsRequest?.isHidden ?: false
+                    showOnWebsiteCheckBox.setOnCheckedChangeListener { _, isChecked -> mCreateCouponsRequest?.isHidden = isChecked }
+                    createCouponsTextView.setOnClickListener {
+                        createCoupon()
+                    }
                 }
             }.show()
+        }
+    }
+
+    private fun createCoupon() {
+        if (!isInternetConnectionAvailable(mActivity)) {
+            showNoInternetConnectionDialog()
+            return
+        }
+        showProgressDialog(mActivity)
+        mService.getCreatePromoCode(mCreateCouponsRequest)
+    }
+
+    override fun onCustomCouponsErrorResponse(e: Exception) = exceptionHandlingForAPIResponse(e)
+
+    override fun onCustomCouponsResponse(response: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            if (response.mIsSuccessStatus) mActivity?.onBackPressed()
+            showShortSnackBar(
+                response.mMessage,
+                true,
+                if (response.mIsSuccessStatus) R.drawable.ic_check_circle else R.drawable.ic_close_red
+            )
         }
     }
 

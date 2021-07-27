@@ -232,6 +232,13 @@ interface Apis {
     @POST("api/dotk/vm1/premium/setStoreThemeBanner")
     suspend fun setStoreThemeBanner(@Body request: StoreThemeBannerRequest): Response<CommonApiResponse>
 
+    /* ----------------------       Coupons & Promos         ---------------------- */
+    @POST("api/dotk/vm1/promo/createPromoCode")
+    suspend fun createPromoCode(@Body request: CreateCouponsRequest): Response<CommonApiResponse>
+
+    @GET("api/dotk/vm1/promo/getPromoCodePageInfo")
+    suspend fun getPromoCodePageInfo(): Response<CommonApiResponse>
+
     /* ----------------------       Others         ---------------------- */
     @POST("api/dotanalytics/push/androidEventLog")
     suspend fun androidEventLog(@Body request: AndroidEventLogRequest): Response<CommonApiResponse>

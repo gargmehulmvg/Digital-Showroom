@@ -268,11 +268,11 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     }
 
     fun TextView.setHtmlData(string: String?) {
-        string?.let {
+        string?.let {it ->
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                this.text = Html.fromHtml(string, Html.FROM_HTML_MODE_COMPACT)
+                this.text = Html.fromHtml(it, Html.FROM_HTML_MODE_COMPACT)
             } else {
-                this.text = Html.fromHtml(string)
+                this.text = Html.fromHtml(it)
             }
         }
     }

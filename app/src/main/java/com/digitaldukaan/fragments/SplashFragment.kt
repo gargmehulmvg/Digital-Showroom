@@ -104,11 +104,8 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
 
     private fun launchHomeFragment() {
         when {
-            mIntentUri != null -> switchToFragmentByDeepLink()
-            "" == getStringDataFromSharedPref(Constants.STORE_ID) -> launchFragment(
-                OnBoardHelpScreenFragment.newInstance(),
-                true
-            )
+            null != mIntentUri -> switchToFragmentByDeepLink()
+            "" == getStringDataFromSharedPref(Constants.STORE_ID) -> launchFragment(OnBoardHelpScreenFragment.newInstance(), true)
             else -> launchFragment(HomeFragment.newInstance(), true)
         }
     }
@@ -121,7 +118,7 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
 
     private fun showVersionUpdateDialog() {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            if (appUpdateDialog?.isShowing == true) return@runTaskOnCoroutineMain
+            if (true == appUpdateDialog?.isShowing) return@runTaskOnCoroutineMain
             mActivity?.let {
                 appUpdateDialog = Dialog(it)
                 val view = LayoutInflater.from(mActivity).inflate(R.layout.dialog_app_update, null)
