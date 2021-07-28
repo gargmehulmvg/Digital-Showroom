@@ -59,7 +59,7 @@ class PromoCodeAdapter(
             shareCouponsTextView.text = mStaticText?.text_share_coupon
             detailsTextView.text = mStaticText?.text_details
             descriptionTextView.text = descriptionStr
-            val codeStr = "${mStaticText?.text_use_code} ${item?.promoCode}"
+            val codeStr = "${mStaticText?.text_use_code} ${item?.promoCode} (${position + 1})"
             useCodeTextView.text = codeStr
             mContext?.let { context ->
                 if (Constants.MODE_PROMO_CODE_ACTIVE == item?.status) {

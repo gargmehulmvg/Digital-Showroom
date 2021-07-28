@@ -32,6 +32,7 @@ import kotlinx.android.synthetic.main.layout_promo_code_page_info_fragment.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
+
 class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInterface {
 
     companion object {
@@ -50,6 +51,8 @@ class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInter
     private var mPromoCodeMode = Constants.MODE_ACTIVE
     private var mPromoCodePageNumber = 1
     private var mPromoCodeList: ArrayList<PromoCodeListItemResponse> = ArrayList()
+    private var mAdapter: PromoCodeAdapter? = null
+    private var mIsNextPage = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.layout_promo_code_page_info_fragment, container, false)
@@ -57,6 +60,7 @@ class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInter
         ToolBarManager.getInstance()?.hideToolBar(mActivity, true)
         mService.setPromoPageInfoServiceListener(this)
         showProgressDialog(mActivity)
+        mPromoCodeMode = Constants.MODE_ACTIVE
         mService.getPromoCodePageInfo()
         return mContentView
     }
@@ -135,6 +139,7 @@ class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInter
                     val heading: TextView? = mContentView?.findViewById(R.id.heading)
                     val createCouponTextView: TextView? = mContentView?.findViewById(R.id.createCouponTextView)
                     couponsListRecyclerView = mContentView?.findViewById(R.id.couponsListRecyclerView)
+                    setupRecyclerView()
                     inActiveBottomSelectedView = mContentView?.findViewById(R.id.inActiveBottomSelectedView)
                     activeBottomSelectedView = mContentView?.findViewById(R.id.activeBottomSelectedView)
                     mStaticText?.let { staticText ->
@@ -238,25 +243,42 @@ class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInter
             stopProgress()
             if (response.mIsSuccessStatus) {
                 val promoCodeListResponse = Gson().fromJson<PromoCodeListResponse>(response.mCommonDataStr, PromoCodeListResponse::class.java)
+                mIsNextPage = promoCodeListResponse?.mIsNextPage ?: false
                 if (1 == mPromoCodePageNumber)
                     mPromoCodeList.clear()
                 mPromoCodeList.addAll(promoCodeListResponse?.mPromoCodeList ?: ArrayList())
-                couponsListRecyclerView?.apply {
-                    mLayoutManager = LinearLayoutManager(mActivity)
-                    layoutManager = mLayoutManager
-                    adapter = PromoCodeAdapter(mStaticText, mActivity, mPromoCodeList, object : IAdapterItemClickListener{
-
-                        override fun onAdapterItemClickListener(position: Int) {
-                            if (position < 0) return
-                            if (position >= mPromoCodeList.size) return
-                            val item = mPromoCodeList[position]
-                            showProgressDialog(mActivity)
-                            mService.getCouponDetails(item.promoCode)
-                        }
-
-                    })
-                }
+                mAdapter?.setList(mPromoCodeList)
             }
+        }
+    }
+
+    private fun setupRecyclerView() {
+        mAdapter = PromoCodeAdapter(mStaticText, mActivity, mPromoCodeList, object : IAdapterItemClickListener{
+            override fun onAdapterItemClickListener(position: Int) {
+                if (position < 0) return
+                if (position >= mPromoCodeList.size) return
+                val item = mPromoCodeList[position]
+                showProgressDialog(mActivity)
+                mService.getCouponDetails(item.promoCode)
+            }
+        })
+        couponsListRecyclerView?.apply {
+            mLayoutManager = LinearLayoutManager(mActivity)
+            layoutManager = mLayoutManager
+            adapter = mAdapter
+
+            addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                    super.onScrollStateChanged(recyclerView, newState)
+                    if (!recyclerView.canScrollVertically(1) && RecyclerView.SCROLL_STATE_IDLE == newState) {
+                        if (mIsNextPage) {
+                            mPromoCodePageNumber++
+                            onReloadPage()
+                        }
+                    }
+                }
+            })
+
         }
     }
 
