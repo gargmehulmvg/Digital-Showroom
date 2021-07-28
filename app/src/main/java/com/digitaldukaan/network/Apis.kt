@@ -242,6 +242,9 @@ interface Apis {
     @GET("api/dotk/vm1/promo/getPromoCodePageInfo")
     suspend fun getPromoCodePageInfo(): Response<CommonApiResponse>
 
+    @GET("api/dotk/vm1/promo/getCouponDetails")
+    suspend fun getCouponDetails(@Query("promo_code") promoCode: String) : Response<CommonApiResponse>
+
     /* ----------------------       Others         ---------------------- */
     @POST("api/dotanalytics/push/androidEventLog")
     suspend fun androidEventLog(@Body request: AndroidEventLogRequest): Response<CommonApiResponse>

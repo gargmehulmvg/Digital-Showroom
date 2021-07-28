@@ -16,10 +16,14 @@ import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.PrefsManager
 import com.digitaldukaan.constants.ToolBarManager
+import com.digitaldukaan.interfaces.IAdapterItemClickListener
 import com.digitaldukaan.models.request.GetPromoCodeRequest
 import com.digitaldukaan.models.response.*
 import com.digitaldukaan.services.CustomCouponsService
 import com.digitaldukaan.services.serviceinterface.IPromoCodePageInfoServiceInterface
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.layout_promo_code_page_info_fragment.*
 
@@ -134,6 +138,65 @@ class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInter
         }
     }
 
+    override fun onPromoCodeDetailResponse(response: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            if (response.mIsSuccessStatus) {
+                val promoCodeDetailResponse = Gson().fromJson<PromoCodeDetailResponse>(response.mCommonDataStr, PromoCodeDetailResponse::class.java)
+                showPromoCouponDetailBottomSheet(promoCodeDetailResponse)
+            } else showShortSnackBar(response.mMessage, true, R.drawable.ic_close_red)
+        }
+    }
+
+    private fun showPromoCouponDetailBottomSheet(promoCodeDetailResponse: PromoCodeDetailResponse?) {
+        mActivity?.run {
+            val bottomSheetDialog = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
+            val view = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_promo_coupon_detail, findViewById(R.id.bottomSheetContainer))
+            bottomSheetDialog.apply {
+                setContentView(view)
+                behavior.state = BottomSheetBehavior.STATE_EXPANDED
+                view.run {
+                    val salesGeneratedValueTextView: TextView = findViewById(R.id.salesGeneratedValueTextView)
+                    val timeUsedValueTextView: TextView = findViewById(R.id.timeUsedValueTextView)
+                    val descriptionTextView: TextView = findViewById(R.id.descriptionTextView)
+                    val minOrderValueTextView: TextView = findViewById(R.id.minOrderValueTextView)
+                    val useCodeTextView: TextView = findViewById(R.id.useCodeTextView)
+                    val setting2Message: TextView = findViewById(R.id.setting2Message)
+                    val setting2Heading: TextView = findViewById(R.id.setting2Heading)
+                    val setting1Heading: TextView = findViewById(R.id.setting1Heading)
+                    val salesGeneratedHeadingTextView: TextView = findViewById(R.id.salesGeneratedHeadingTextView)
+                    val timeUsedHeadingTextView: TextView = findViewById(R.id.timeUsedHeadingTextView)
+                    val couponSettingHeadingTextView: TextView = findViewById(R.id.couponSettingHeadingTextView)
+                    val bottomSheetClose: View = findViewById(R.id.bottomSheetClose)
+                    val activeCouponSwitch: SwitchMaterial = findViewById(R.id.activeCouponSwitch)
+                    bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
+                    promoCodeDetailResponse?.let { response ->
+                        couponSettingHeadingTextView.text = response.mStaticText?.text_coupon_settings
+                        timeUsedHeadingTextView.text = response.mStaticText?.text_times_uesed
+                        salesGeneratedHeadingTextView.text = response.mStaticText?.text_sales_generated
+                        setting1Heading.text = response.mStaticText?.text_active_coupon
+                        setting2Heading.text = response.mStaticText?.text_show_this_coupon_my_website
+                        setting2Message.text = response.mStaticText?.message_allow_customer_see_coupon
+                        timeUsedValueTextView.text = "${response.mAnalytics?.timesUsed}"
+                        salesGeneratedValueTextView.text = "${response.mAnalytics?.salesGenerated}"
+                        val promoCode = "${response.mStaticText?.text_use_code} ${response.mPromoCoupon?.promoCode}"
+                        useCodeTextView.text = promoCode
+                        val minOrderAmount =  "${mStaticText?.text_min_order_amount} ${response.mPromoCoupon?.minOrderPrice?.toInt()}"
+                        minOrderValueTextView.text = minOrderAmount
+                        activeCouponSwitch.isChecked = (Constants.MODE_PROMO_CODE_VISIBLE == response.mPromoCoupon?.status)
+                        activeCouponSwitch.isSelected = (Constants.MODE_PROMO_CODE_VISIBLE == response.mPromoCoupon?.status)
+                        val discountStr = if (Constants.MODE_COUPON_TYPE_FLAT == response.mPromoCoupon?.discountType) {
+                            "${mStaticText?.text_flat} ₹${response.mPromoCoupon?.discount?.toInt()} ${mStaticText?.text_off_all_caps}"
+                        } else {
+                            "${response.mPromoCoupon?.discount?.toInt()}% ${mStaticText?.text_off_all_caps} ${mStaticText?.text_upto_capital} ₹${response.mPromoCoupon?.maxDiscount?.toInt()}"
+                        }
+                        descriptionTextView.text = discountStr
+                    }
+                }
+            }.show()
+        }
+    }
+
     override fun onGetPromoCodeListResponse(response: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
@@ -145,7 +208,17 @@ class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInter
                 couponsListRecyclerView?.apply {
                     mLayoutManager = LinearLayoutManager(mActivity)
                     layoutManager = mLayoutManager
-                    adapter = PromoCodeAdapter(mStaticText, mActivity, mPromoCodeList, null)
+                    adapter = PromoCodeAdapter(mStaticText, mActivity, mPromoCodeList, object : IAdapterItemClickListener{
+
+                        override fun onAdapterItemClickListener(position: Int) {
+                            if (position < 0) return
+                            if (position >= mPromoCodeList.size) return
+                            val item = mPromoCodeList[position]
+                            showProgressDialog(mActivity)
+                            mService.getCouponDetails(item.promoCode)
+                        }
+
+                    })
                 }
             }
         }

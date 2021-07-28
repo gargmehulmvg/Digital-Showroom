@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/bottomSheetContainer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/upper_curve_white_background"
+    android:padding="@dimen/_10sdp">
+
+    <ImageView
+        android:id="@+id/bottomSheetClose"
+        android:layout_width="@dimen/_22sdp"
+        android:layout_height="@dimen/_22sdp"
+        android:layout_marginEnd="@dimen/_5sdp"
+        android:contentDescription="@string/image_view_content_description"
+        android:elevation="@dimen/_4sdp"
+        android:src="@drawable/ic_black_close"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/discountContainer"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/_70sdp"
+        android:layout_marginTop="@dimen/_15sdp"
+        android:background="@drawable/ic_coupon_green_zigzag"
+        android:padding="@dimen/_10sdp"
+        app:layout_constraintEnd_toEndOf="@id/bottomSheetClose"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/bottomSheetClose">
+
+        <TextView
+            android:id="@+id/descriptionTextView"
+            tools:text="30% OFF upto ₹50"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:fontFamily="@font/roboto_medium"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_14sdp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/useCodeTextView"
+            tools:text="Use Code : ABC20"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/slight_curve_white_border"
+            android:fontFamily="@font/roboto"
+            android:paddingStart="@dimen/_5sdp"
+            android:paddingTop="@dimen/_2sdp"
+            android:paddingEnd="@dimen/_5sdp"
+            android:paddingBottom="@dimen/_2sdp"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_9sdp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/descriptionTextView"
+            app:layout_constraintTop_toBottomOf="@+id/descriptionTextView" />
+
+        <TextView
+            android:id="@+id/minOrderValueTextView"
+            tools:text="Min. Order Amount: ₹150"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/_10sdp"
+            android:fontFamily="@font/roboto"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_10sdp"
+            app:layout_constraintBaseline_toBaselineOf="@+id/useCodeTextView"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/timeUsedHeadingTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_15sdp"
+        android:fontFamily="@font/roboto"
+        tools:text="Times used"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_10sdp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.15"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/discountContainer" />
+
+    <TextView
+        android:id="@+id/timeUsedValueTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/roboto_bold"
+        android:textColor="@color/black"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:textSize="@dimen/_19sdp"
+        app:layout_constraintStart_toStartOf="@+id/timeUsedHeadingTextView"
+        app:layout_constraintTop_toBottomOf="@+id/timeUsedHeadingTextView"
+        tools:text="0" />
+
+    <TextView
+        android:id="@+id/salesGeneratedRupeeTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/roboto_bold"
+        android:textColor="@color/black"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:textSize="@dimen/_19sdp"
+        app:layout_constraintStart_toStartOf="@+id/salesGeneratedHeadingTextView"
+        app:layout_constraintTop_toBottomOf="@+id/salesGeneratedHeadingTextView"
+        android:text="@string/rupee_symbol" />
+
+    <TextView
+        android:id="@+id/salesGeneratedValueTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_5sdp"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:fontFamily="@font/roboto_bold"
+        tools:text="0"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_19sdp"
+        app:layout_constraintBottom_toBottomOf="@+id/salesGeneratedRupeeTextView"
+        app:layout_constraintStart_toEndOf="@+id/salesGeneratedRupeeTextView"
+        app:layout_constraintTop_toBottomOf="@+id/salesGeneratedHeadingTextView" />
+
+    <TextView
+        android:id="@+id/salesGeneratedHeadingTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_15sdp"
+        android:fontFamily="@font/roboto"
+        tools:text="Sales Generated"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_10sdp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.75"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/discountContainer" />
+
+    <View
+        android:id="@+id/separator"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_1sdp"
+        android:layout_marginTop="@dimen/_15sdp"
+        android:background="@color/curve_grey_border"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/salesGeneratedValueTextView" />
+
+    <TextView
+        android:id="@+id/couponSettingHeadingTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/_15sdp"
+        android:fontFamily="@font/roboto_medium"
+        android:textColor="@color/default_text_light_grey"
+        android:textSize="@dimen/_11sdp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/separator"
+        tools:text="Coupon Settings" />
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/activeCouponSwitch"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/_25sdp"
+        android:layout_marginTop="@dimen/_15sdp"
+        android:gravity="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/couponSettingHeadingTextView" />
+
+    <TextView
+        android:id="@+id/setting1Heading"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/roboto_medium"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_14sdp"
+        app:layout_constraintBaseline_toBaselineOf="@+id/activeCouponSwitch"
+        app:layout_constraintEnd_toStartOf="@+id/activeCouponSwitch"
+        app:layout_constraintStart_toStartOf="@+id/couponSettingHeadingTextView"
+        tools:text="Active Coupon" />
+
+    <TextView
+        android:id="@+id/setting2Heading"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/roboto_medium"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_14sdp"
+        android:layout_marginTop="@dimen/_15sdp"
+        app:layout_constraintEnd_toStartOf="@+id/setting2CheckBox"
+        app:layout_constraintStart_toStartOf="@+id/couponSettingHeadingTextView"
+        app:layout_constraintTop_toBottomOf="@+id/activeCouponSwitch"
+        tools:text="Show this Coupon on Website" />
+
+    <CheckBox
+        android:id="@+id/setting2CheckBox"
+        android:layout_width="@dimen/_20sdp"
+        android:layout_height="@dimen/_20sdp"
+        app:layout_constraintBottom_toBottomOf="@+id/setting2Heading"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/setting2Heading" />
+
+    <TextView
+        android:id="@+id/setting2Message"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_8sdp"
+        android:drawablePadding="@dimen/_5sdp"
+        android:textSize="@dimen/_10sdp"
+        android:paddingBottom="@dimen/_20sdp"
+        app:drawableStartCompat="@drawable/ic_coupon_light_bulb"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/setting2Heading"
+        app:layout_constraintStart_toStartOf="@+id/setting2Heading"
+        app:layout_constraintTop_toBottomOf="@+id/setting2Heading"
+        tools:text="This will allow customers to see this coupon on your website" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

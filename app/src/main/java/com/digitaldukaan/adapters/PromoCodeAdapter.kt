@@ -9,7 +9,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
-import com.digitaldukaan.interfaces.IVariantItemClickListener
+import com.digitaldukaan.interfaces.IAdapterItemClickListener
 import com.digitaldukaan.models.response.PromoCodeListItemResponse
 import com.digitaldukaan.models.response.PromoCodePageStaticTextResponse
 
@@ -17,15 +17,10 @@ class PromoCodeAdapter(
     private var mStaticText: PromoCodePageStaticTextResponse? = null,
     private var mContext: Context?,
     private var mPromoCodeList: ArrayList<PromoCodeListItemResponse>?,
-    private var mListener: IVariantItemClickListener?
-) : RecyclerView.Adapter<PromoCodeAdapter.ReferAndEarnViewHolder>() {
+    private var mListener: IAdapterItemClickListener?
+) : RecyclerView.Adapter<PromoCodeAdapter.PromoCodeViewHolder>() {
 
-    private companion object {
-        private const val STATUS_VISIBLE = "A"
-        private const val STATUS_HIDDEN = "H"
-    }
-
-    inner class ReferAndEarnViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class PromoCodeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val descriptionTextView: TextView = itemView.findViewById(R.id.descriptionTextView)
         val visibleStatusTextView: TextView = itemView.findViewById(R.id.visibleStatusTextView)
         val useCodeTextView: TextView = itemView.findViewById(R.id.useCodeTextView)
@@ -38,16 +33,20 @@ class PromoCodeAdapter(
         notifyDataSetChanged()
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReferAndEarnViewHolder {
-        return ReferAndEarnViewHolder(
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PromoCodeViewHolder {
+        val view = PromoCodeViewHolder(
             LayoutInflater.from(parent.context).inflate(R.layout.layout_promo_code_item, parent, false)
         )
+        view.detailsTextView.setOnClickListener {
+            mListener?.onAdapterItemClickListener(view.adapterPosition)
+        }
+        return view
     }
 
     override fun getItemCount(): Int = mPromoCodeList?.size ?: 0
 
     override fun onBindViewHolder(
-        holder: ReferAndEarnViewHolder,
+        holder: PromoCodeViewHolder,
         position: Int
     ) {
         val item = mPromoCodeList?.get(position)
@@ -63,7 +62,7 @@ class PromoCodeAdapter(
             val codeStr = "${mStaticText?.text_use_code} ${item?.promoCode}"
             useCodeTextView.text = codeStr
             mContext?.let { context ->
-                if (STATUS_VISIBLE == item?.status) {
+                if (Constants.MODE_PROMO_CODE_VISIBLE == item?.status) {
                     visibleStatusTextView.apply {
                         text = mStaticText?.text_visible_on_website
                         background = ContextCompat.getDrawable(context, R.drawable.slight_curve_green_dotted_border_green_background)

@@ -34,6 +34,12 @@ class CustomCouponsService {
         }
     }
 
+    fun getCouponDetails(promoCode: String?) {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            promoCode?.let { str -> mNetworkService.getCouponDetailsServerCall(str, mPromoPageInfoServiceInterface) }
+        }
+    }
+
     fun getPromoCodePageInfo() {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
             mNetworkService.getPromoCodePageInfoServerCall(mPromoPageInfoServiceInterface)
