@@ -7,17 +7,17 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.digitaldukaan.R
+import com.digitaldukaan.adapters.PromoCodeAdapter
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.PrefsManager
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.models.request.GetPromoCodeRequest
-import com.digitaldukaan.models.response.CommonApiResponse
-import com.digitaldukaan.models.response.PromoCodePageInfoResponse
-import com.digitaldukaan.models.response.PromoCodePageStaticTextResponse
+import com.digitaldukaan.models.response.*
 import com.digitaldukaan.services.CustomCouponsService
 import com.digitaldukaan.services.serviceinterface.IPromoCodePageInfoServiceInterface
 import com.google.gson.Gson
@@ -36,9 +36,11 @@ class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInter
     private var couponsListLayout: View? = null
     private var inActiveBottomSelectedView: View? = null
     private var activeBottomSelectedView: View? = null
+    private var mLayoutManager: LinearLayoutManager? = null
     private var mStaticText: PromoCodePageStaticTextResponse? = null
     private var mPromoCodeMode = Constants.MODE_ACTIVE
     private var mPromoCodePageNumber = 1
+    private var mPromoCodeList: ArrayList<PromoCodeListItemResponse> = ArrayList()
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.layout_promo_code_page_info_fragment, container, false)
@@ -54,6 +56,7 @@ class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInter
         when (view?.id) {
             backButtonToolbar?.id -> mActivity?.onBackPressed()
             createCouponsTextView?.id -> launchFragment(CustomCouponsFragment.newInstance(mStaticText), true)
+            createCouponTextView?.id -> launchFragment(CustomCouponsFragment.newInstance(mStaticText), true)
             activeTextView?.id -> {
                 if (Constants.MODE_ACTIVE == mPromoCodeMode && 1 == mPromoCodePageNumber) {
                     // TODO
@@ -132,7 +135,18 @@ class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInter
     }
 
     override fun onGetPromoCodeListResponse(response: CommonApiResponse) {
-
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            if (response.mIsSuccessStatus) {
+                val promoCodeListResponse = Gson().fromJson<PromoCodeListResponse>(response.mCommonDataStr, PromoCodeListResponse::class.java)
+                mPromoCodeList.addAll(promoCodeListResponse?.mPromoCodeList ?: ArrayList())
+                couponsListRecyclerView?.apply {
+                    mLayoutManager = LinearLayoutManager(mActivity)
+                    layoutManager = mLayoutManager
+                    adapter = PromoCodeAdapter(mActivity, mPromoCodeList, null)
+                }
+            }
+        }
     }
 
 }
