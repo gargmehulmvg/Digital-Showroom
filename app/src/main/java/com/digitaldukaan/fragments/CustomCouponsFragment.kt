@@ -106,6 +106,7 @@ class CustomCouponsFragment : BaseFragment(), ICustomCouponsServiceInterface {
     private fun setStaticTextToUI() {
         mStaticText?.let {text ->
             percentageDiscountTextView?.text = text.text_percent_discount
+            flatDiscountTextView?.text = text.text_flat_discount
             createCouponsTextView?.text = text.text_create_coupon
             val selectDiscountTypeTextView: TextView? = mContentView?.findViewById(R.id.selectDiscountTypeTextView)
             val couponSettingHeadingTextView: TextView? = mContentView?.findViewById(R.id.couponSettingHeadingTextView)
@@ -225,10 +226,16 @@ class CustomCouponsFragment : BaseFragment(), ICustomCouponsServiceInterface {
             percentageDiscountTextView?.id -> {
                 mIsFlatDiscountSelected = false
                 mActivity?.let { context ->
-                    percentageDiscountTextView?.isSelected = true
-                    percentageDiscountTextView?.setTextColor(ContextCompat.getColor(context, R.color.white))
-                    flatDiscountTextView?.isSelected = false
-                    flatDiscountTextView?.setTextColor(ContextCompat.getColor(context, R.color.black))
+                    percentageDiscountTextView?.apply {
+                        isSelected = true
+                        setTextColor(ContextCompat.getColor(context, R.color.white))
+                        setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_percentage_discount_white, 0, 0, 0)
+                    }
+                    flatDiscountTextView?.apply {
+                        isSelected = false
+                        setTextColor(ContextCompat.getColor(context, R.color.black))
+                        setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_flat_discount_black, 0, 0, 0)
+                    }
                     pdGroup?.visibility = View.VISIBLE
                     fdGroup?.visibility = View.GONE
                 }
@@ -236,10 +243,16 @@ class CustomCouponsFragment : BaseFragment(), ICustomCouponsServiceInterface {
             flatDiscountTextView?.id -> {
                 mIsFlatDiscountSelected = true
                 mActivity?.let { context ->
-                    percentageDiscountTextView?.isSelected = false
-                    percentageDiscountTextView?.setTextColor(ContextCompat.getColor(context, R.color.black))
-                    flatDiscountTextView?.isSelected = true
-                    flatDiscountTextView?.setTextColor(ContextCompat.getColor(context, R.color.white))
+                    percentageDiscountTextView?.apply {
+                        isSelected = false
+                        setTextColor(ContextCompat.getColor(context, R.color.black))
+                        setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_percentage_discount_black, 0, 0, 0)
+                    }
+                    flatDiscountTextView?.apply {
+                        isSelected = true
+                        setTextColor(ContextCompat.getColor(context, R.color.white))
+                        setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_flat_discount_white, 0, 0, 0)
+                    }
                     pdGroup?.visibility = View.GONE
                     fdGroup?.visibility = View.VISIBLE
                 }
@@ -389,6 +402,7 @@ class CustomCouponsFragment : BaseFragment(), ICustomCouponsServiceInterface {
             showNoInternetConnectionDialog()
             return
         }
+        mCreateCouponsRequest?.isHidden = !(mCreateCouponsRequest?.isHidden ?: false)
         showProgressDialog(mActivity)
         mService.getCreatePromoCode(mCreateCouponsRequest)
     }

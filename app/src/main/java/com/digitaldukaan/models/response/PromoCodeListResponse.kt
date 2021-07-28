@@ -10,10 +10,10 @@ data class PromoCodeListResponse(
 
 data class PromoCodeListItemResponse(
     @SerializedName("status")                   var status: String?,
-    @SerializedName("discount_type")            var discount_type: String?,
-    @SerializedName("promo_code")               var promo_code: String?,
+    @SerializedName("discount_type")            var discountType: String?,
+    @SerializedName("promo_code")               var promoCode: String?,
     @SerializedName("discount")                 var discount: Double?,
-    @SerializedName("max_discount")             var max_discount: Double?,
-    @SerializedName("min_order_price")          var min_order_price: Double?,
-    @SerializedName("once_per_user_flag")       var once_per_user_flag: Boolean
+    @SerializedName("max_discount")             var maxDiscount: Double?,
+    @SerializedName("min_order_price")          var minOrderPrice: Double?,
+    @SerializedName("once_per_user_flag")       var isOncePerUserFlag: Boolean
 )

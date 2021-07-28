@@ -139,11 +139,13 @@ class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInter
             stopProgress()
             if (response.mIsSuccessStatus) {
                 val promoCodeListResponse = Gson().fromJson<PromoCodeListResponse>(response.mCommonDataStr, PromoCodeListResponse::class.java)
+                if (1 == mPromoCodePageNumber)
+                    mPromoCodeList.clear()
                 mPromoCodeList.addAll(promoCodeListResponse?.mPromoCodeList ?: ArrayList())
                 couponsListRecyclerView?.apply {
                     mLayoutManager = LinearLayoutManager(mActivity)
                     layoutManager = mLayoutManager
-                    adapter = PromoCodeAdapter(mActivity, mPromoCodeList, null)
+                    adapter = PromoCodeAdapter(mStaticText, mActivity, mPromoCodeList, null)
                 }
             }
         }

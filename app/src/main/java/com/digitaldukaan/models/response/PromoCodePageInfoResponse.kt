@@ -16,11 +16,14 @@ data class ZeroPromoCodePageResponse(
 data class PromoCodePageStaticTextResponse(
     @SerializedName("active_text")                              var active_text: String?,
     @SerializedName("inactive_text")                            var inactive_text: String?,
+    @SerializedName("text_details")                             var text_details: String?,
+    @SerializedName("text_share_coupon")                        var text_share_coupon: String?,
     @SerializedName("text_create_coupon")                       var text_create_coupon: String?,
     @SerializedName("heading_create_and_share")                 var heading_create_and_share: String?,
     @SerializedName("heading_custom_coupon")                    var heading_custom_coupon: String?,
     @SerializedName("heading_discount_coupon")                  var heading_discount_coupon: String?,
     @SerializedName("text_percent_discount")                    var text_percent_discount: String?,
+    @SerializedName("text_flat_discount")                       var text_flat_discount: String?,
     @SerializedName("text_enter_percentage")                    var text_enter_percentage: String?,
     @SerializedName("text_coupon_code")                         var text_coupon_code: String?,
     @SerializedName("text_coupon_settings")                     var text_coupon_settings: String?,
@@ -38,5 +41,7 @@ data class PromoCodePageStaticTextResponse(
     @SerializedName("heading_please_confirm")                   var heading_please_confirm: String?,
     @SerializedName("text_min_order_amount")                    var text_min_order_amount: String?,
     @SerializedName("heading_applicable_once_per_customer")     var heading_applicable_once_per_customer: String?,
+    @SerializedName("text_visible_on_website")                  var text_visible_on_website: String?,
+    @SerializedName("text_hidden_from_website")                 var text_hidden_from_website: String?,
     @SerializedName("heading_bold_create_and_share")            var heading_bold_create_and_share: String?
 )

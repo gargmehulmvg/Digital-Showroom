@@ -8,6 +8,6 @@ data class CreateCouponsRequest(
     @SerializedName("discount") var discount: Double,
     @SerializedName("max_discount") var maxDiscount: Double,
     @SerializedName("min_order_price") var minOrderPrice: Double,
-    @SerializedName("hidden") var isHidden: Boolean,
-    @SerializedName("one_time") var isOneTime: Boolean
+    @SerializedName("is_hidden") var isHidden: Boolean,
+    @SerializedName("is_one_time") var isOneTime: Boolean
 )

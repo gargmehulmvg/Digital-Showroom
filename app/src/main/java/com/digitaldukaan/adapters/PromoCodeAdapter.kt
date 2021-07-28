@@ -4,24 +4,33 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
+import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.interfaces.IVariantItemClickListener
 import com.digitaldukaan.models.response.PromoCodeListItemResponse
+import com.digitaldukaan.models.response.PromoCodePageStaticTextResponse
 
 class PromoCodeAdapter(
+    private var mStaticText: PromoCodePageStaticTextResponse? = null,
     private var mContext: Context?,
     private var mPromoCodeList: ArrayList<PromoCodeListItemResponse>?,
     private var mListener: IVariantItemClickListener?
-) :
-    RecyclerView.Adapter<PromoCodeAdapter.ReferAndEarnViewHolder>() {
+) : RecyclerView.Adapter<PromoCodeAdapter.ReferAndEarnViewHolder>() {
+
+    private companion object {
+        private const val STATUS_VISIBLE = "A"
+        private const val STATUS_HIDDEN = "H"
+    }
 
     inner class ReferAndEarnViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-//        val inStockTextView: TextView = itemView.findViewById(R.id.inStockTextView)
-//        val variantNameTextView: TextView = itemView.findViewById(R.id.variantNameTextView)
-//        val optionsMenuImageView: View = itemView.findViewById(R.id.optionsMenuImageView)
-//        val variantSwitch: SwitchMaterial = itemView.findViewById(R.id.variantSwitch)
-//        val variantView: ConstraintLayout = itemView.findViewById(R.id.constraintLayout8)
+        val descriptionTextView: TextView = itemView.findViewById(R.id.descriptionTextView)
+        val visibleStatusTextView: TextView = itemView.findViewById(R.id.visibleStatusTextView)
+        val useCodeTextView: TextView = itemView.findViewById(R.id.useCodeTextView)
+        val detailsTextView: TextView = itemView.findViewById(R.id.detailsTextView)
+        val shareCouponsTextView: TextView = itemView.findViewById(R.id.shareCouponsTextView)
     }
 
     fun setList(list: ArrayList<PromoCodeListItemResponse>?) {
@@ -43,7 +52,33 @@ class PromoCodeAdapter(
     ) {
         val item = mPromoCodeList?.get(position)
         holder.apply {
-
+            val descriptionStr = if (Constants.MODE_COUPON_TYPE_FLAT == item?.discountType) {
+                "${mStaticText?.text_flat} ₹${item.discount?.toInt()} ${mStaticText?.text_off_all_caps}"
+            } else {
+                "${item?.discount?.toInt()}% ${mStaticText?.text_off_all_caps} ${mStaticText?.text_upto_capital} ₹${item?.maxDiscount?.toInt()}"
+            }
+            shareCouponsTextView.text = mStaticText?.text_share_coupon
+            detailsTextView.text = mStaticText?.text_details
+            descriptionTextView.text = descriptionStr
+            val codeStr = "${mStaticText?.text_use_code} ${item?.promoCode}"
+            useCodeTextView.text = codeStr
+            mContext?.let { context ->
+                if (STATUS_VISIBLE == item?.status) {
+                    visibleStatusTextView.apply {
+                        text = mStaticText?.text_visible_on_website
+                        background = ContextCompat.getDrawable(context, R.drawable.slight_curve_green_dotted_border_green_background)
+                        setTextColor(ContextCompat.getColor(context, R.color.open_green))
+                        setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_eye_on, 0, 0, 0)
+                    }
+                } else {
+                    visibleStatusTextView.apply {
+                        text = mStaticText?.text_hidden_from_website
+                        background = ContextCompat.getDrawable(context, R.drawable.slight_curve_red_dotted_border_green_background)
+                        setTextColor(ContextCompat.getColor(context, R.color.red_switch_off))
+                        setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_eye_off, 0, 0, 0)
+                    }
+                }
+            }
         }
     }
 
