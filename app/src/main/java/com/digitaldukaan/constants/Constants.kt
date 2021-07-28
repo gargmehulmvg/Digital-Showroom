@@ -113,7 +113,8 @@ class Constants {
         const val MODE_COUPON_TYPE_FLAT                         = "flat"
         const val MODE_ACTIVE                                   = "active"
         const val MODE_INACTIVE                                 = "inactive"
-        const val MODE_PROMO_CODE_VISIBLE                       = "A"
+        const val MODE_PROMO_CODE_ACTIVE                        = "A"
+        const val MODE_PROMO_CODE_DE_ACTIVE                     = "D"
         //ORDER_STATUS
         const val StatusCustomerUpdated                         = 1
         const val StatusMerchantUpdated                         = 2

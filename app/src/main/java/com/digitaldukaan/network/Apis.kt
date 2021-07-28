@@ -236,6 +236,9 @@ interface Apis {
     @POST("api/dotk/vm1/promo/createPromoCode")
     suspend fun createPromoCode(@Body request: CreateCouponsRequest): Response<CommonApiResponse>
 
+    @POST("api/dotk/vm1/promo/updatePromoCodeStatus")
+    suspend fun updatePromoCodeStatus(@Body request: UpdatePromoCodeRequest): Response<CommonApiResponse>
+
     @POST("api/dotk/vm1/promo/getAllMerchantPromoCodes")
     suspend fun getAllMerchantPromoCodes(@Body request: GetPromoCodeRequest): Response<CommonApiResponse>
 

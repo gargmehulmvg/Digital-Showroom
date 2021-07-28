@@ -18,14 +18,19 @@ import com.digitaldukaan.constants.PrefsManager
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.interfaces.IAdapterItemClickListener
 import com.digitaldukaan.models.request.GetPromoCodeRequest
+import com.digitaldukaan.models.request.UpdatePromoCodeRequest
 import com.digitaldukaan.models.response.*
+import com.digitaldukaan.network.RetrofitApi
 import com.digitaldukaan.services.CustomCouponsService
 import com.digitaldukaan.services.serviceinterface.IPromoCodePageInfoServiceInterface
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.gson.Gson
+import io.sentry.Sentry
 import kotlinx.android.synthetic.main.layout_promo_code_page_info_fragment.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInterface {
 
@@ -94,6 +99,11 @@ class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInter
         }
     }
 
+    private fun onReloadPage() {
+        showProgressDialog(mActivity)
+        mService.getAllMerchantPromoCodes(GetPromoCodeRequest(mPromoCodeMode, mPromoCodePageNumber))
+    }
+
     override fun onPromoCodePageInfoException(e: Exception) = exceptionHandlingForAPIResponse(e)
 
     override fun onPromoCodePageInfoResponse(response: CommonApiResponse) {
@@ -155,6 +165,7 @@ class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInter
             bottomSheetDialog.apply {
                 setContentView(view)
                 behavior.state = BottomSheetBehavior.STATE_EXPANDED
+                setCancelable(false)
                 view.run {
                     val salesGeneratedValueTextView: TextView = findViewById(R.id.salesGeneratedValueTextView)
                     val timeUsedValueTextView: TextView = findViewById(R.id.timeUsedValueTextView)
@@ -169,7 +180,10 @@ class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInter
                     val couponSettingHeadingTextView: TextView = findViewById(R.id.couponSettingHeadingTextView)
                     val bottomSheetClose: View = findViewById(R.id.bottomSheetClose)
                     val activeCouponSwitch: SwitchMaterial = findViewById(R.id.activeCouponSwitch)
-                    bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
+                    bottomSheetClose.setOnClickListener {
+                        onReloadPage()
+                        bottomSheetDialog.dismiss()
+                    }
                     promoCodeDetailResponse?.let { response ->
                         couponSettingHeadingTextView.text = response.mStaticText?.text_coupon_settings
                         timeUsedHeadingTextView.text = response.mStaticText?.text_times_uesed
@@ -181,16 +195,38 @@ class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInter
                         salesGeneratedValueTextView.text = "${response.mAnalytics?.salesGenerated}"
                         val promoCode = "${response.mStaticText?.text_use_code} ${response.mPromoCoupon?.promoCode}"
                         useCodeTextView.text = promoCode
-                        val minOrderAmount =  "${mStaticText?.text_min_order_amount} ${response.mPromoCoupon?.minOrderPrice?.toInt()}"
+                        val minOrderAmount =  "${mStaticText?.text_min_order_amount} ₹${response.mPromoCoupon?.minOrderPrice?.toInt()}"
                         minOrderValueTextView.text = minOrderAmount
-                        activeCouponSwitch.isChecked = (Constants.MODE_PROMO_CODE_VISIBLE == response.mPromoCoupon?.status)
-                        activeCouponSwitch.isSelected = (Constants.MODE_PROMO_CODE_VISIBLE == response.mPromoCoupon?.status)
+                        activeCouponSwitch.isChecked = (Constants.MODE_PROMO_CODE_ACTIVE == response.mPromoCoupon?.status)
+                        activeCouponSwitch.isSelected = (Constants.MODE_PROMO_CODE_ACTIVE == response.mPromoCoupon?.status)
                         val discountStr = if (Constants.MODE_COUPON_TYPE_FLAT == response.mPromoCoupon?.discountType) {
                             "${mStaticText?.text_flat} ₹${response.mPromoCoupon?.discount?.toInt()} ${mStaticText?.text_off_all_caps}"
                         } else {
                             "${response.mPromoCoupon?.discount?.toInt()}% ${mStaticText?.text_off_all_caps} ${mStaticText?.text_upto_capital} ₹${response.mPromoCoupon?.maxDiscount?.toInt()}"
                         }
                         descriptionTextView.text = discountStr
+                        activeCouponSwitch.setOnClickListener {
+                            val isActive = activeCouponSwitch.isSelected
+                            CoroutineScopeUtils().runTaskOnCoroutineBackground {
+                                try {
+                                    val activeCouponResponse = RetrofitApi().getServerCallObject()?.updatePromoCodeStatus(UpdatePromoCodeRequest(promoCodeDetailResponse.mPromoCoupon?.promoCode ?: "", if (isActive) Constants.MODE_PROMO_CODE_DE_ACTIVE else Constants.MODE_PROMO_CODE_ACTIVE))
+                                    activeCouponResponse?.let {
+                                        if (it.isSuccessful) {
+                                            it.body()?.let {
+                                                withContext(Dispatchers.Main) {
+                                                    stopProgress()
+
+                                                }
+                                            }
+
+                                        }
+                                    }
+                                } catch (e: Exception) {
+                                    Sentry.captureException(e, "showImagePickerBottomSheet: exception")
+                                    exceptionHandlingForAPIResponse(e)
+                                }
+                            }
+                        }
                     }
                 }
             }.show()
