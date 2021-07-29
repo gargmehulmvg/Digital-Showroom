@@ -178,7 +178,7 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
             val image64 = getBase64FromImageURL(imageUrl)
             Log.d(mTagName, "image BASE64 :: $image64")
             CoroutineScopeUtils().runTaskOnCoroutineMain {
-                if (jsonData.optString("sharePage") == "social") {
+                if ("social" == jsonData.optString("sharePage")) {
                     commonWebView?.loadUrl("javascript: receiveAndroidSocialData('$image64')")
                 } else {
                     commonWebView?.loadUrl("javascript: receiveAndroidData('$image64')")

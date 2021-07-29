@@ -34,7 +34,6 @@
         android:id="@+id/setting1CheckBox"
         android:layout_width="@dimen/_20sdp"
         android:layout_height="@dimen/_20sdp"
-        android:checked="true"
         app:layout_constraintBottom_toBottomOf="@+id/setting1Heading"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/setting1Heading" />
@@ -69,6 +68,7 @@
         android:id="@+id/setting2CheckBox"
         android:layout_width="@dimen/_20sdp"
         android:layout_height="@dimen/_20sdp"
+        android:checked="true"
         app:layout_constraintBottom_toBottomOf="@+id/setting2Heading"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/setting2Heading" />

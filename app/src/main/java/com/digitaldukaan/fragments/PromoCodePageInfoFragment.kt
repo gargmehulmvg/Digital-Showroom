@@ -16,7 +16,7 @@ import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.PrefsManager
 import com.digitaldukaan.constants.ToolBarManager
-import com.digitaldukaan.interfaces.IAdapterItemClickListener
+import com.digitaldukaan.interfaces.IPromoCodeItemClickListener
 import com.digitaldukaan.models.request.GetPromoCodeRequest
 import com.digitaldukaan.models.request.UpdatePromoCodeRequest
 import com.digitaldukaan.models.response.*
@@ -126,7 +126,7 @@ class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInter
                     val imageBackground: ImageView? = mContentView?.findViewById(R.id.imageBackground)
                     PrefsManager.storeStringDataInSharedPref(Constants.STORE_NAME, pageInfoResponse.mStoreName)
                     mStaticText?.let { staticText ->
-                        headingTextView?.setHtmlData(staticText.heading_create_and_share)
+                        headingTextView?.setHtmlData(staticText.heading_bold_create_and_share)
                         createCouponsTextView?.text = staticText.text_create_coupon
                         mActivity?.let { context -> imageBackground?.let { view -> Glide.with(context).load(pageInfoResponse.mZeroPromoCodePageResponse?.mCdnLink).into(view) } }
                     }
@@ -247,14 +247,15 @@ class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInter
                 if (1 == mPromoCodePageNumber)
                     mPromoCodeList.clear()
                 mPromoCodeList.addAll(promoCodeListResponse?.mPromoCodeList ?: ArrayList())
-                mAdapter?.setList(mPromoCodeList)
+                mAdapter?.setList(mPromoCodeList, mPromoCodeMode)
             }
         }
     }
 
     private fun setupRecyclerView() {
-        mAdapter = PromoCodeAdapter(mStaticText, mActivity, mPromoCodeList, object : IAdapterItemClickListener{
-            override fun onAdapterItemClickListener(position: Int) {
+        mAdapter = PromoCodeAdapter(mStaticText, mActivity, mPromoCodeList, object : IPromoCodeItemClickListener {
+
+            override fun onPromoCodeDetailClickListener(position: Int) {
                 if (position < 0) return
                 if (position >= mPromoCodeList.size) return
                 val item = mPromoCodeList[position]

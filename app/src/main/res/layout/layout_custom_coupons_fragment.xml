@@ -26,7 +26,7 @@
         <TextView
             android:id="@+id/percentageDiscountTextView"
             android:layout_width="0dp"
-            android:layout_height="@dimen/_70sdp"
+            android:layout_height="@dimen/_65sdp"
             android:layout_marginTop="@dimen/_15sdp"
             android:layout_marginEnd="@dimen/_5sdp"
             android:background="@drawable/slight_curve_white_background_selector_v2"
@@ -45,7 +45,7 @@
         <TextView
             android:id="@+id/flatDiscountTextView"
             android:layout_width="0dp"
-            android:layout_height="@dimen/_70sdp"
+            android:layout_height="@dimen/_65sdp"
             android:layout_marginStart="@dimen/_5sdp"
             android:layout_marginEnd="@dimen/_15sdp"
             android:background="@drawable/slight_curve_white_background_selector_v2"

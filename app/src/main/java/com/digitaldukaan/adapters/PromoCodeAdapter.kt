@@ -9,7 +9,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
-import com.digitaldukaan.interfaces.IAdapterItemClickListener
+import com.digitaldukaan.interfaces.IPromoCodeItemClickListener
 import com.digitaldukaan.models.response.PromoCodeListItemResponse
 import com.digitaldukaan.models.response.PromoCodePageStaticTextResponse
 
@@ -17,8 +17,10 @@ class PromoCodeAdapter(
     private var mStaticText: PromoCodePageStaticTextResponse? = null,
     private var mContext: Context?,
     private var mPromoCodeList: ArrayList<PromoCodeListItemResponse>?,
-    private var mListener: IAdapterItemClickListener?
+    private var mListener: IPromoCodeItemClickListener?
 ) : RecyclerView.Adapter<PromoCodeAdapter.PromoCodeViewHolder>() {
+
+    private var mPromoCodeMode: String = ""
 
     inner class PromoCodeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val descriptionTextView: TextView = itemView.findViewById(R.id.descriptionTextView)
@@ -28,8 +30,9 @@ class PromoCodeAdapter(
         val shareCouponsTextView: TextView = itemView.findViewById(R.id.shareCouponsTextView)
     }
 
-    fun setList(list: ArrayList<PromoCodeListItemResponse>?) {
+    fun setList(list: ArrayList<PromoCodeListItemResponse>?, mode: String) {
         this.mPromoCodeList = list
+        this.mPromoCodeMode = mode
         notifyDataSetChanged()
     }
 
@@ -37,9 +40,10 @@ class PromoCodeAdapter(
         val view = PromoCodeViewHolder(
             LayoutInflater.from(parent.context).inflate(R.layout.layout_promo_code_item, parent, false)
         )
-        view.detailsTextView.setOnClickListener {
-            mListener?.onAdapterItemClickListener(view.adapterPosition)
-        }
+        view.detailsTextView.setOnClickListener { mListener?.onPromoCodeDetailClickListener(view.adapterPosition) }
+        view.descriptionTextView.setOnClickListener { mListener?.onPromoCodeDetailClickListener(view.adapterPosition) }
+        view.useCodeTextView.setOnClickListener { mListener?.onPromoCodeDetailClickListener(view.adapterPosition) }
+        view.visibleStatusTextView.setOnClickListener { mListener?.onPromoCodeDetailClickListener(view.adapterPosition) }
         return view
     }
 
@@ -56,10 +60,21 @@ class PromoCodeAdapter(
             } else {
                 "${item?.discount?.toInt()}% ${mStaticText?.text_off_all_caps} ${mStaticText?.text_upto_capital} ₹${item?.maxDiscount?.toInt()}"
             }
+            if (Constants.MODE_INACTIVE == mPromoCodeMode) {
+                shareCouponsTextView.apply {
+                    alpha = 0.2f
+                    isEnabled = false
+                }
+            } else {
+                shareCouponsTextView.apply {
+                    alpha = 1f
+                    isEnabled = true
+                }
+            }
             shareCouponsTextView.text = mStaticText?.text_share_coupon
             detailsTextView.text = mStaticText?.text_details
             descriptionTextView.text = descriptionStr
-            val codeStr = "${mStaticText?.text_use_code} ${item?.promoCode} (${position + 1})"
+            val codeStr = "${mStaticText?.text_use_code} ${item?.promoCode}"
             useCodeTextView.text = codeStr
             mContext?.let { context ->
                 if (Constants.MODE_PROMO_CODE_ACTIVE == item?.status) {
