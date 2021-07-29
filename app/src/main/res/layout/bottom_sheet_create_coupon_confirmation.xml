@@ -59,30 +59,32 @@
             android:id="@+id/useCodeTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/roboto"
-            android:paddingTop="@dimen/_2sdp"
-            android:paddingBottom="@dimen/_2sdp"
-            android:paddingStart="@dimen/_5sdp"
-            android:paddingEnd="@dimen/_5sdp"
             android:background="@drawable/slight_curve_white_border"
-            tools:text="Use Code : ABC20"
+            android:fontFamily="@font/roboto"
+            android:paddingStart="@dimen/_5sdp"
+            android:paddingTop="@dimen/_2sdp"
+            android:paddingEnd="@dimen/_5sdp"
+            android:paddingBottom="@dimen/_2sdp"
             android:textColor="@color/white"
             android:textSize="@dimen/_9sdp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/descriptionTextView"
-            app:layout_constraintTop_toBottomOf="@+id/descriptionTextView" />
+            app:layout_constraintStart_toStartOf="@id/descriptionTextView"
+            app:layout_constraintTop_toBottomOf="@id/descriptionTextView"
+            tools:text="Use Code : ABC20" />
 
         <TextView
             android:id="@+id/minOrderValueTextView"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/roboto"
-            tools:text="Min. Order Amount: ₹150"
             android:layout_marginEnd="@dimen/_10sdp"
+            android:fontFamily="@font/roboto"
+            android:gravity="end"
             android:textColor="@color/white"
             android:textSize="@dimen/_10sdp"
-            app:layout_constraintBaseline_toBaselineOf="@+id/useCodeTextView"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintBaseline_toBaselineOf="@id/useCodeTextView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/useCodeTextView"
+            tools:text="Min. Order Amount: ₹150" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

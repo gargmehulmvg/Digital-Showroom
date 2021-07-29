@@ -375,7 +375,7 @@ class CustomCouponsFragment : BaseFragment(), ICustomCouponsServiceInterface {
                     setting1Message?.text = mStaticText?.message_select_this_coupon
                     setting2Message?.text = mStaticText?.message_allow_customer_see_coupon
                     useCodeTextView?.text = "${mStaticText?.text_use_code} ${mCreateCouponsRequest?.promoCode}"
-                    minOrderValueTextView?.text = "${mStaticText?.text_min_order_amount} ${mCreateCouponsRequest?.minOrderPrice}"
+                    minOrderValueTextView?.text = "${mStaticText?.text_min_order_amount} ₹${mCreateCouponsRequest?.minOrderPrice?.toInt()}"
                     val discountStr = if (mIsFlatDiscountSelected) {
                         "${mStaticText?.text_flat} ₹${mCreateCouponsRequest?.discount?.toInt()} ${mStaticText?.text_off_all_caps}"
                     } else {
