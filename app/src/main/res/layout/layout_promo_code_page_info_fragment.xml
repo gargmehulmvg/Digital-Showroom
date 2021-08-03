@@ -192,6 +192,42 @@
             tools:listitem="@layout/layout_promo_code_item" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/zeroCouponAvailableLayout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:visibility="gone"
+            android:padding="@dimen/_5sdp"
+            android:background="@color/default_bg"
+            app:layout_constraintBottom_toTopOf="@id/constraintLayout"
+            app:layout_constraintTop_toBottomOf="@id/couponsListCardView">
+
+            <ImageView
+                android:id="@+id/zeroCouponAvailableImageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/image_view_content_description"
+                android:src="@drawable/ic_zero_coupon_search"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.4" />
+
+            <TextView
+                android:id="@+id/zeroCouponAvailableTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto_medium"
+                android:gravity="center"
+                android:textColor="@color/black"
+                android:layout_marginTop="@dimen/_14sdp"
+                android:textSize="@dimen/_14sdp"
+                app:layout_constraintTop_toBottomOf="@id/zeroCouponAvailableImageView"
+                tools:text="No Coupons are Inactive" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

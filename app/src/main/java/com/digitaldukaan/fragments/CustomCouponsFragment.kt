@@ -348,6 +348,23 @@ class CustomCouponsFragment : BaseFragment(), ICustomCouponsServiceInterface {
     }
 
     private fun showCreateCouponConfirmationBottomSheet() {
+        AppEventsManager.pushAppEvents(
+            eventName = AFInAppEventType.EVENT_SHOW_COUPON,
+            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+            data = mapOf(
+                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                AFInAppEventParameterName.COUPON_ID to mCreateCouponsRequest?.promoCode,
+                AFInAppEventParameterName.PATH to AFInAppEventParameterName.COUPON_ADD_DETAILS_SCREEN
+            )
+        )
+        AppEventsManager.pushAppEvents(
+            eventName = AFInAppEventType.EVENT_CREATE_COUPON,
+            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+            data = mapOf(
+                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                AFInAppEventParameterName.PATH to AFInAppEventParameterName.COUPON_ADD_DETAILS_SCREEN
+            )
+        )
         mActivity?.run {
             val bottomSheetDialog = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
             val view = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_create_coupon_confirmation, findViewById(R.id.bottomSheetContainer))
@@ -398,6 +415,23 @@ class CustomCouponsFragment : BaseFragment(), ICustomCouponsServiceInterface {
     }
 
     private fun createCoupon() {
+        AppEventsManager.pushAppEvents(
+            eventName = AFInAppEventType.EVENT_SHOW_COUPON,
+            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+            data = mapOf(
+                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                AFInAppEventParameterName.COUPON_ID to mCreateCouponsRequest?.promoCode,
+                AFInAppEventParameterName.PATH to AFInAppEventParameterName.COUPON_CONFIRMS_SCREEN
+            )
+        )
+        AppEventsManager.pushAppEvents(
+            eventName = AFInAppEventType.EVENT_CREATE_COUPON,
+            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+            data = mapOf(
+                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                AFInAppEventParameterName.PATH to AFInAppEventParameterName.COUPON_CONFIRMS_SCREEN
+            )
+        )
         if (!isInternetConnectionAvailable(mActivity)) {
             showNoInternetConnectionDialog()
             return

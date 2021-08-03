@@ -12,10 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.PromoCodeAdapter
-import com.digitaldukaan.constants.Constants
-import com.digitaldukaan.constants.CoroutineScopeUtils
-import com.digitaldukaan.constants.PrefsManager
-import com.digitaldukaan.constants.ToolBarManager
+import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.IPromoCodeItemClickListener
 import com.digitaldukaan.models.request.GetPromoCodeRequest
 import com.digitaldukaan.models.request.UpdatePromoCodeRequest
@@ -68,8 +65,30 @@ class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInter
     override fun onClick(view: View?) {
         when (view?.id) {
             backButtonToolbar?.id -> mActivity?.onBackPressed()
-            createCouponsTextView?.id -> launchFragment(CustomCouponsFragment.newInstance(mStaticText), true)
-            createCouponTextView?.id -> launchFragment(CustomCouponsFragment.newInstance(mStaticText), true)
+            createCouponsTextView?.id -> {
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_CREATE_COUPON,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(
+                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                        AFInAppEventParameterName.PATH to AFInAppEventParameterName.COUPON_LIST_SCREEN,
+                        AFInAppEventParameterName.IS_ZERO_COUPON_SCREEN to "1"
+                    )
+                )
+                launchFragment(CustomCouponsFragment.newInstance(mStaticText), true)
+            }
+            createCouponTextView?.id -> {
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_CREATE_COUPON,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(
+                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                        AFInAppEventParameterName.PATH to AFInAppEventParameterName.COUPON_LIST_SCREEN,
+                        AFInAppEventParameterName.IS_ZERO_COUPON_SCREEN to "0"
+                    )
+                )
+                launchFragment(CustomCouponsFragment.newInstance(mStaticText), true)
+            }
             activeTextView?.id -> {
                 if (Constants.MODE_ACTIVE == mPromoCodeMode && 1 == mPromoCodePageNumber) {
                     // TODO
@@ -214,6 +233,25 @@ class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInter
                             val isActive = activeCouponSwitch.isSelected
                             CoroutineScopeUtils().runTaskOnCoroutineBackground {
                                 try {
+                                    AppEventsManager.pushAppEvents(
+                                        eventName = AFInAppEventType.EVENT_SHOW_COUPON,
+                                        isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                                        data = mapOf(
+                                            AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                                            AFInAppEventParameterName.COUPON_ID to promoCodeDetailResponse.mPromoCoupon?.promoCode,
+                                            AFInAppEventParameterName.STATUS to if (isActive) "1" else "0",
+                                            AFInAppEventParameterName.PATH to AFInAppEventParameterName.COUPON_DETAIL_SCREEN
+                                        )
+                                    )
+                                    AppEventsManager.pushAppEvents(
+                                        eventName = AFInAppEventType.EVENT_ACTIVE_COUPON,
+                                        isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                                        data = mapOf(
+                                            AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                                            AFInAppEventParameterName.COUPON_ID to promoCodeDetailResponse.mPromoCoupon?.promoCode,
+                                            AFInAppEventParameterName.STATUS to if (isActive) "1" else "0"
+                                        )
+                                    )
                                     val activeCouponResponse = RetrofitApi().getServerCallObject()?.updatePromoCodeStatus(UpdatePromoCodeRequest(promoCodeDetailResponse.mPromoCoupon?.promoCode ?: "", if (isActive) Constants.MODE_PROMO_CODE_DE_ACTIVE else Constants.MODE_PROMO_CODE_ACTIVE))
                                     activeCouponResponse?.let {
                                         if (it.isSuccessful) {
@@ -248,6 +286,10 @@ class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInter
                     mPromoCodeList.clear()
                 mPromoCodeList.addAll(promoCodeListResponse?.mPromoCodeList ?: ArrayList())
                 mAdapter?.setList(mPromoCodeList, mPromoCodeMode)
+                if (isEmpty(mPromoCodeList)) {
+                    zeroCouponAvailableLayout?.visibility = View.VISIBLE
+                    zeroCouponAvailableTextView?.text = if (Constants.MODE_PROMO_CODE_ACTIVE == mPromoCodeMode) mStaticText?.text_no_coupons_are_active else mStaticText?.text_no_coupons_are_inactive
+                } else zeroCouponAvailableLayout?.visibility = View.GONE
             }
         }
     }

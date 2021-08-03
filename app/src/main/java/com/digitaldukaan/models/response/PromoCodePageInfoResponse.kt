@@ -43,5 +43,7 @@ data class PromoCodePageStaticTextResponse(
     @SerializedName("heading_applicable_once_per_customer")     var heading_applicable_once_per_customer: String?,
     @SerializedName("text_visible_on_website")                  var text_visible_on_website: String?,
     @SerializedName("text_hidden_from_website")                 var text_hidden_from_website: String?,
+    @SerializedName("text_no_coupons_are_inactive")             var text_no_coupons_are_inactive: String?,
+    @SerializedName("text_no_coupons_are_active")               var text_no_coupons_are_active: String?,
     @SerializedName("heading_bold_create_and_share")            var heading_bold_create_and_share: String?
 )

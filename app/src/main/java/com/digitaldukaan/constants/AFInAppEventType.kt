@@ -97,5 +97,8 @@ interface AFInAppEventType {
         const val EVENT_SEND_PAYMENT_LINK                           =   "Send_payment_link"
         const val EVENT_SEND_LINK                                   =   "Send_link"
         const val EVENT_PAYMENT_LINK_SENT                           =   "Payment_link_sent"
+        const val EVENT_CREATE_COUPON                               =   "Create_Coupon"
+        const val EVENT_ACTIVE_COUPON                               =   "Active_Coupon"
+        const val EVENT_SHOW_COUPON                                 =   "Show_Coupon"
     }
 }
