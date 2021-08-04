@@ -1,12 +1,17 @@
 package com.digitaldukaan.fragments
 
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -24,6 +29,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.gson.Gson
+import com.squareup.picasso.Picasso
 import io.sentry.Sentry
 import kotlinx.android.synthetic.main.layout_promo_code_page_info_fragment.*
 import kotlinx.coroutines.Dispatchers
@@ -50,6 +56,8 @@ class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInter
     private var mPromoCodeList: ArrayList<PromoCodeListItemResponse> = ArrayList()
     private var mAdapter: PromoCodeAdapter? = null
     private var mIsNextPage = false
+    private var mShareText = ""
+    private var mShareCdn = ""
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.layout_promo_code_page_info_fragment, container, false)
@@ -91,7 +99,7 @@ class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInter
             }
             activeTextView?.id -> {
                 if (Constants.MODE_ACTIVE == mPromoCodeMode && 1 == mPromoCodePageNumber) {
-                    // TODO
+                    couponsListRecyclerView?.smoothSnapToPosition(0)
                 } else {
                     mPromoCodePageNumber = 1
                     mPromoCodeMode = Constants.MODE_ACTIVE
@@ -106,7 +114,7 @@ class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInter
             }
             inActiveTextView?.id -> {
                 if (Constants.MODE_INACTIVE == mPromoCodeMode && 1 == mPromoCodePageNumber) {
-                    // TODO
+                    couponsListRecyclerView?.smoothSnapToPosition(0)
                 } else {
                     mPromoCodePageNumber = 1
                     mPromoCodeMode = Constants.MODE_INACTIVE
@@ -182,6 +190,45 @@ class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInter
         }
     }
 
+    override fun onPromoCodeShareResponse(response: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            if (response.mIsSuccessStatus) {
+                val promoCodeShareResponse = Gson().fromJson<PromoCodeShareResponse>(response.mCommonDataStr, PromoCodeShareResponse::class.java)
+                promoCodeShareResponse?.let { response ->
+                    mShareText = response.mCouponText ?: ""
+                    mShareCdn = response.mCouponCdn ?: ""
+                    shareCouponsWithImage(mShareText, mShareCdn)
+                }
+            } else showShortSnackBar(response.mMessage, true, R.drawable.ic_close_red)
+        }
+    }
+
+    private fun shareCouponsWithImage(str: String?, url: String?) {
+        if (isEmpty(url)) return
+        Picasso.get().load(url).into(object : com.squareup.picasso.Target {
+            override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
+                stopProgress()
+                Log.d(TAG, "onBitmapLoaded: called")
+                try {
+                    bitmap?.let { shareOnWhatsApp(str, bitmap) }
+                } catch (e: Exception) {
+                    Log.e(TAG, "onBitmapLoaded: ${e.message}", e)
+                }
+            }
+
+            override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
+                stopProgress()
+                Log.d(TAG, "onPrepareLoad: ")
+            }
+
+            override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
+                stopProgress()
+                Log.d(TAG, "onBitmapFailed: ")
+            }
+        })
+    }
+    
     private fun showPromoCouponDetailBottomSheet(promoCodeDetailResponse: PromoCodeDetailResponse?) {
         mActivity?.run {
             val bottomSheetDialog = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
@@ -304,8 +351,17 @@ class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInter
                 showProgressDialog(mActivity)
                 mService.getCouponDetails(item.promoCode)
             }
+
+            override fun onPromoCodeShareClickListener(position: Int) {
+                if (position < 0) return
+                if (position >= mPromoCodeList.size) return
+                val item = mPromoCodeList[position]
+                showProgressDialog(mActivity)
+                mService.shareCoupon(item.promoCode)
+            }
         })
         couponsListRecyclerView?.apply {
+            itemAnimator = DefaultItemAnimator()
             mLayoutManager = LinearLayoutManager(mActivity)
             layoutManager = mLayoutManager
             adapter = mAdapter
@@ -325,4 +381,15 @@ class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInter
         }
     }
 
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        Log.i(TAG, "onRequestPermissionResult")
+        if (requestCode == Constants.STORAGE_REQUEST_CODE) {
+            when {
+                grantResults.isEmpty() -> Log.d(TAG, "User interaction was cancelled.")
+                grantResults[0] == PackageManager.PERMISSION_GRANTED -> shareCouponsWithImage(mShareText, mShareCdn)
+                else -> showShortSnackBar("Permission was denied", true, R.drawable.ic_close_red)
+            }
+        }
+    }
+    
 }

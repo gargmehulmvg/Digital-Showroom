@@ -37,22 +37,18 @@ class PromoCodeAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PromoCodeViewHolder {
-        val view = PromoCodeViewHolder(
-            LayoutInflater.from(parent.context).inflate(R.layout.layout_promo_code_item, parent, false)
-        )
+        val view = PromoCodeViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.layout_promo_code_item, parent, false))
         view.detailsTextView.setOnClickListener { mListener?.onPromoCodeDetailClickListener(view.adapterPosition) }
         view.descriptionTextView.setOnClickListener { mListener?.onPromoCodeDetailClickListener(view.adapterPosition) }
         view.useCodeTextView.setOnClickListener { mListener?.onPromoCodeDetailClickListener(view.adapterPosition) }
         view.visibleStatusTextView.setOnClickListener { mListener?.onPromoCodeDetailClickListener(view.adapterPosition) }
+        view.shareCouponsTextView.setOnClickListener { mListener?.onPromoCodeShareClickListener(view.adapterPosition) }
         return view
     }
 
     override fun getItemCount(): Int = mPromoCodeList?.size ?: 0
 
-    override fun onBindViewHolder(
-        holder: PromoCodeViewHolder,
-        position: Int
-    ) {
+    override fun onBindViewHolder(holder: PromoCodeViewHolder, position: Int) {
         val item = mPromoCodeList?.get(position)
         holder.apply {
             val descriptionStr = if (Constants.MODE_COUPON_TYPE_FLAT == item?.discountType) {

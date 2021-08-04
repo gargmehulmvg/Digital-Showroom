@@ -36,10 +36,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.DefaultItemAnimator
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.*
 import com.bumptech.glide.Glide
 import com.digitaldukaan.MainActivity
 import com.digitaldukaan.MyFcmMessageListenerService
@@ -109,9 +106,9 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                     mProgressDialog = Dialog(it)
                     mProgressDialog?.apply {
                         val view = LayoutInflater.from(context).inflate(R.layout.progress_dialog, null)
-                        message?.let {
+                        message?.let { msg ->
                             val messageTextView : TextView = view.findViewById(R.id.progressDialogTextView)
-                            messageTextView.text = it
+                            messageTextView.text = msg
                         }
                         setContentView(view)
                         setCancelable(false)
@@ -269,11 +266,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
 
     fun TextView.setHtmlData(string: String?) {
         string?.let {it ->
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                this.text = Html.fromHtml(it, Html.FROM_HTML_MODE_COMPACT)
-            } else {
-                this.text = Html.fromHtml(it)
-            }
+            this.text = Html.fromHtml(it, Html.FROM_HTML_MODE_COMPACT)
         }
     }
 
@@ -327,8 +320,8 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             try {
                 mActivity?.let {
-                    val builder: AlertDialog.Builder? = AlertDialog.Builder(it)
-                    builder?.apply {
+                    val builder: AlertDialog.Builder = AlertDialog.Builder(it)
+                    builder.apply {
                         setTitle(getString(R.string.no_internet_connection))
                         setMessage(getString(R.string.turn_on_internet_message))
                         setCancelable(false)
@@ -336,7 +329,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                             onNoInternetButtonClick(true)
                             dialog.dismiss()
                         }
-                    }?.create()?.show()
+                    }.create().show()
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "showNoInternetConnectionDialog: ${e.message}", e)
@@ -683,9 +676,9 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                         CoroutineScopeUtils().runTaskOnCoroutineBackground {
                             try {
                                 val response = RetrofitApi().getServerCallObject()?.searchImagesFromBing(searchImageEditText.text.trim().toString(), getStringDataFromSharedPref(Constants.STORE_ID))
-                                response?.let {
-                                    if (it.isSuccessful) {
-                                        it.body()?.let {
+                                response?.let { res ->
+                                    if (res.isSuccessful) {
+                                        res.body()?.let {
                                             withContext(Dispatchers.Main) {
                                                 stopProgress()
                                                 val list = it.mImagesList
@@ -955,7 +948,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                             var file = getImageFileFromBitmap(it, mActivity)
                             file?.let {f ->
                                 Log.d(TAG, "ORIGINAL :: ${f.length() / (1024)} KB")
-                                mActivity?.let { file = Compressor.compress(it, f) }
+                                mActivity?.let { context -> file = Compressor.compress(context, f) }
                                 Log.d(TAG, "COMPRESSED :: ${f.length() / (1024)} KB")
                                 if (f.length() / (1024 * 1024) >= mActivity?.resources?.getInteger(R.integer.image_mb_size) ?: 0) {
                                     showToast("Images more than ${mActivity?.resources?.getInteger(R.integer.image_mb_size)} are not allowed")
@@ -965,7 +958,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                             stopProgress()
                             mImagePickBottomSheet?.dismiss()
                             val imageUri = it.getImageUri(mActivity)
-                            imageUri?.let {uri -> startCropping(bitmap) }
+                            imageUri?.let { startCropping(bitmap) }
                         }
                     }
                 }
@@ -1187,9 +1180,9 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                 setCancelable(true)
                 setContentView(R.layout.image_dialog)
                 val imageView: ImageView = findViewById(R.id.imageView)
-                imageStr?.let {
+                imageStr?.let { str ->
                     try {
-                        Picasso.get().load(it).into(imageView)
+                        Picasso.get().load(str).into(imageView)
                     } catch (e: Exception) {
                         Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
                         AppEventsManager.pushAppEvents(
@@ -1386,7 +1379,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     }
 
     fun logoutFromApplication() {
-        mActivity?.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE)?.edit()?.clear()?.apply()
+        mActivity?.getSharedPreferences(Constants.SHARED_PREF_NAME, MODE_PRIVATE)?.edit()?.clear()?.apply()
         clearFragmentBackStack()
         storeStringDataInSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN, "")
         storeStringDataInSharedPref(Constants.USER_AUTH_TOKEN, "")
@@ -1621,9 +1614,9 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     open fun showContactPickerBottomSheet(amount: String, imageCdn: String = "") {
         if (!askContactPermission()) {
             mActivity?.let {
-                val mContactPickerBottomSheet: BottomSheetDialog? = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
+                val mContactPickerBottomSheet: BottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
                 val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_contact_pick, it.findViewById(R.id.bottomSheetContainer))
-                mContactPickerBottomSheet?.apply {
+                mContactPickerBottomSheet.apply {
                     val staticText = StaticInstances.sOrderPageInfoStaticData
                     setContentView(view)
                     setBottomSheetCommonProperty()
@@ -1679,7 +1672,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                             adapter = contactAdapter
                         }
                     }
-                }?.show()
+                }.show()
             }
         }
     }
@@ -1802,6 +1795,15 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
 
     override fun onProviderDisabled(p0: String?) {
         Log.d(TAG, "onProviderDisabled :: $p0")
+    }
+
+    open fun RecyclerView.smoothSnapToPosition(position: Int, snapMode: Int = LinearSmoothScroller.SNAP_TO_START) {
+        val smoothScroller = object : LinearSmoothScroller(this.context) {
+            override fun getVerticalSnapPreference(): Int = snapMode
+            override fun getHorizontalSnapPreference(): Int = snapMode
+        }
+        smoothScroller.targetPosition = position
+        layoutManager?.startSmoothScroll(smoothScroller)
     }
 
 }

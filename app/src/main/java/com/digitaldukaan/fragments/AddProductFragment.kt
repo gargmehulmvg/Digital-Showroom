@@ -578,9 +578,9 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                         CoroutineScopeUtils().runTaskOnCoroutineBackground {
                             try {
                                 val response = RetrofitApi().getServerCallObject()?.searchImagesFromBing(searchImageEditText.text.trim().toString(), getStringDataFromSharedPref(Constants.STORE_ID))
-                                response?.let {
-                                    if (it.isSuccessful) {
-                                        it.body()?.let {
+                                response?.let { res ->
+                                    if (res.isSuccessful) {
+                                        res.body()?.let {
                                             withContext(Dispatchers.Main) {
                                                 stopProgress()
                                                 val list = it.mImagesList
@@ -638,8 +638,8 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
 
     private fun showImageCropDialog(file: File?) {
         mActivity?.run {
-            val imageCropDialog: Dialog? = Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen)
-            imageCropDialog?.apply {
+            val imageCropDialog = Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen)
+            imageCropDialog.apply {
                 val view = LayoutInflater.from(mActivity).inflate(R.layout.layout_crop_photo, null)
                 setContentView(view)
                 window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -659,7 +659,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     }
                     imageCropDialog.dismiss()
                 }
-            }?.show()
+            }.show()
         }
     }
 
@@ -1015,8 +1015,8 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             try {
                 mActivity?.let {
-                    val builder: AlertDialog.Builder? = AlertDialog.Builder(it)
-                    builder?.apply {
+                    val builder: AlertDialog.Builder = AlertDialog.Builder(it)
+                    builder.apply {
                         setTitle(addProductStaticData?.text_go_back)
                         setMessage(addProductStaticData?.text_go_back_message)
                         setCancelable(true)
@@ -1027,7 +1027,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                             fragmentManager?.popBackStack()
                             dialog.dismiss()
                         }
-                    }?.create()?.show()
+                    }.create().show()
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "showGoBackDialog: ${e.message}", e)
@@ -1038,8 +1038,8 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     private fun showDeleteConfirmationDialog() {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             mActivity?.let {
-                val builder: AlertDialog.Builder? = AlertDialog.Builder(it)
-                builder?.apply {
+                val builder: AlertDialog.Builder = AlertDialog.Builder(it)
+                builder.apply {
                     setTitle(getString(R.string.delete_product))
                     setMessage(getString(R.string.are_you_sure_to_delete))
                     setCancelable(false)
@@ -1058,7 +1058,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                         mService?.deleteItemServerCall(DeleteItemRequest(mItemId))
                     }
                     setNegativeButton(getString(R.string.text_no)) { dialog, _ -> dialog.dismiss() }
-                }?.create()?.show()
+                }.create().show()
             }
         }
     }

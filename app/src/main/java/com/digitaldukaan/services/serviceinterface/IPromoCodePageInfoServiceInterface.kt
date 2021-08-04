@@ -10,6 +10,8 @@ interface IPromoCodePageInfoServiceInterface {
 
     fun onPromoCodeDetailResponse(response: CommonApiResponse)
 
+    fun onPromoCodeShareResponse(response: CommonApiResponse)
+
     fun onGetPromoCodeListResponse(response: CommonApiResponse)
 
 }

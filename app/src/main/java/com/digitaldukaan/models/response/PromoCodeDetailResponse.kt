@@ -3,7 +3,7 @@ package com.digitaldukaan.models.response
 import com.google.gson.annotations.SerializedName
 
 data class PromoCodeDetailResponse(
-    @SerializedName("coupon")              var mPromoCoupon: PromoCodeListItemResponse?,
+    @SerializedName("coupon")               var mPromoCoupon: PromoCodeListItemResponse?,
     @SerializedName("analytics")            var mAnalytics: PromoCodeAnalyticsResponse?,
     @SerializedName("static_text")          var mStaticText: PromoCodeDetailStaticTextResponse?
 )

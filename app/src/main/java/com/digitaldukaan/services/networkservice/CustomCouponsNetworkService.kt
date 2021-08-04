@@ -108,4 +108,28 @@ class CustomCouponsNetworkService {
         }
     }
 
+    suspend fun shareCouponServerCall(
+        promoCode: String,
+        serviceInterface: IPromoCodePageInfoServiceInterface
+    ) {
+        try {
+            val response = RetrofitApi().getServerCallObject()?.shareCoupon(promoCode)
+            response?.let {
+                if (it.isSuccessful) {
+                    it.body()?.let { generateOtpResponse -> serviceInterface.onPromoCodeShareResponse(generateOtpResponse) }
+                } else {
+                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    val errorResponseBody = it.errorBody()
+                    errorResponseBody?.let {
+                        val errorResponse = Gson().fromJson(errorResponseBody.string(), CommonApiResponse::class.java)
+                        serviceInterface.onPromoCodeShareResponse(errorResponse)
+                    }
+                }
+            }
+        } catch (e : Exception) {
+            Log.e(CustomCouponsNetworkService::class.java.simpleName, "shareCouponServerCall: ", e)
+            serviceInterface.onPromoCodePageInfoException(e)
+        }
+    }
+
 }

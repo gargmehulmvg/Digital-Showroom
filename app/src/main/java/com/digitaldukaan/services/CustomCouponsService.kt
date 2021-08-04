@@ -40,6 +40,12 @@ class CustomCouponsService {
         }
     }
 
+    fun shareCoupon(promoCode: String?) {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            promoCode?.let { str -> mNetworkService.shareCouponServerCall(str, mPromoPageInfoServiceInterface) }
+        }
+    }
+
     fun getPromoCodePageInfo() {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
             mNetworkService.getPromoCodePageInfoServerCall(mPromoPageInfoServiceInterface)
