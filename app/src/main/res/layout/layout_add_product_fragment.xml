@@ -33,11 +33,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/_5sdp"
-                    android:fontFamily="sans-serif-medium"
+                    android:fontFamily="@font/roboto_medium"
                     android:lineSpacingMultiplier="1.2"
                     android:maxWidth="@dimen/_175sdp"
                     android:minLines="@integer/min_lines_two"
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
@@ -48,10 +48,14 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="@dimen/_5sdp"
-                    android:background="@drawable/curve_green_border"
-                    android:fontFamily="@font/roboto_medium"
+                    android:background="@drawable/curve_white_border"
+                    android:fontFamily="@font/roboto"
                     android:onClick="onClick"
-                    android:textColor="@color/open_green"
+                    android:paddingStart="@dimen/_10sdp"
+                    android:paddingEnd="@dimen/_10sdp"
+                    android:paddingTop="@dimen/_4sdp"
+                    android:paddingBottom="@dimen/_4sdp"
+                    android:textColor="@color/white"
                     android:textSize="@dimen/_12sdp"
                     app:layout_constraintBottom_toBottomOf="@+id/textView2"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -141,33 +145,48 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/nameInputLayout"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_20sdp"
-                android:layout_marginTop="@dimen/_20sdp"
-                android:layout_marginEnd="@dimen/_20sdp"
-                app:layout_constraintEnd_toEndOf="@+id/smsImageView"
-                app:layout_constraintStart_toStartOf="@+id/enterMobileNumberHeading"
-                app:layout_constraintTop_toBottomOf="@+id/send4DigitOtpHeading"
-                tools:hint="Enter Item Name">
+                android:layout_marginStart="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                app:cardCornerRadius="@dimen/_5sdp"
+                android:layout_marginEnd="@dimen/_10sdp" >
 
-                <EditText
-                    android:id="@+id/nameEditText"
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:importantForAutofill="no"
-                    android:inputType="textCapWords"
-                    android:maxLength="@integer/description_name_length"
-                    android:textColor="@color/black"
-                    android:textColorHint="@color/default_text_light_grey"
-                    android:textSize="@dimen/_12sdp" />
+                    android:background="@color/white"
+                    android:padding="@dimen/_14sdp">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/nameInputLayout"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintEnd_toEndOf="@+id/smsImageView"
+                        app:layout_constraintStart_toStartOf="@+id/enterMobileNumberHeading"
+                        app:layout_constraintTop_toBottomOf="@+id/send4DigitOtpHeading"
+                        tools:hint="Enter Item Name">
+
+                        <EditText
+                            android:id="@+id/nameEditText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:importantForAutofill="no"
+                            android:inputType="textCapWords"
+                            android:maxLength="@integer/description_name_length"
+                            android:textColor="@color/black"
+                            android:textColorHint="@color/default_text_light_grey"
+                            android:textSize="@dimen/_12sdp" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/priceInputLayout"
