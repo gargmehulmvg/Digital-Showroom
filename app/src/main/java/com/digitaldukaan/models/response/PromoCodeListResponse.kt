@@ -15,5 +15,6 @@ data class PromoCodeListItemResponse(
     @SerializedName("discount")                 var discount: Double?,
     @SerializedName("max_discount")             var maxDiscount: Double?,
     @SerializedName("min_order_price")          var minOrderPrice: Double?,
-    @SerializedName("once_per_user_flag")       var isOncePerUserFlag: Boolean
+    @SerializedName("once_per_user_flag")       var isOncePerUserFlag: Boolean,
+    @SerializedName("is_website_visible")       var isWebsiteVisible: Boolean
 )

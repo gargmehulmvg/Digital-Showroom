@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
@@ -32,8 +33,6 @@ import com.google.gson.Gson
 import com.squareup.picasso.Picasso
 import io.sentry.Sentry
 import kotlinx.android.synthetic.main.layout_promo_code_page_info_fragment.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 
 class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInterface {
@@ -240,6 +239,7 @@ class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInter
                 view.run {
                     val salesGeneratedValueTextView: TextView = findViewById(R.id.salesGeneratedValueTextView)
                     val timeUsedValueTextView: TextView = findViewById(R.id.timeUsedValueTextView)
+                    val checkBox: CheckBox = findViewById(R.id.setting2CheckBox)
                     val descriptionTextView: TextView = findViewById(R.id.descriptionTextView)
                     val minOrderValueTextView: TextView = findViewById(R.id.minOrderValueTextView)
                     val useCodeTextView: TextView = findViewById(R.id.useCodeTextView)
@@ -276,8 +276,34 @@ class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInter
                             "${response.mPromoCoupon?.discount?.toInt()}% ${mStaticText?.text_off_all_caps} ${mStaticText?.text_upto_capital} ₹${response.mPromoCoupon?.maxDiscount?.toInt()}"
                         }
                         descriptionTextView.text = discountStr
+                        checkBox.isChecked = response.mPromoCoupon?.isWebsiteVisible ?: false
+                        checkBox.setOnCheckedChangeListener { _, isChecked ->
+                            showCancellableProgressDialog(mActivity)
+                            CoroutineScopeUtils().runTaskOnCoroutineBackground {
+                                try {
+                                    val activeCouponResponse = RetrofitApi().getServerCallObject()?.updatePromoCodeStatus(
+                                        UpdatePromoCodeRequest(
+                                            promoCode = promoCodeDetailResponse.mPromoCoupon?.promoCode ?: "",
+                                            status = if (activeCouponSwitch.isChecked) Constants.MODE_PROMO_CODE_ACTIVE else Constants.MODE_PROMO_CODE_DE_ACTIVE,
+                                            isWebsiteVisible = isChecked
+                                        )
+                                    )
+                                    activeCouponResponse?.let {
+                                        if (it.isSuccessful) {
+                                            it.body()?.let {
+                                                stopProgress()
+                                            }
+                                        }
+                                    }
+                                } catch (e: Exception) {
+                                    Sentry.captureException(e, "showPromoCouponDetailBottomSheet: exception")
+                                    exceptionHandlingForAPIResponse(e)
+                                }
+                            }
+                        }
                         activeCouponSwitch.setOnClickListener {
                             val isActive = activeCouponSwitch.isSelected
+                            showCancellableProgressDialog(mActivity)
                             CoroutineScopeUtils().runTaskOnCoroutineBackground {
                                 try {
                                     AppEventsManager.pushAppEvents(
@@ -299,20 +325,22 @@ class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInter
                                             AFInAppEventParameterName.STATUS to if (isActive) "1" else "0"
                                         )
                                     )
-                                    val activeCouponResponse = RetrofitApi().getServerCallObject()?.updatePromoCodeStatus(UpdatePromoCodeRequest(promoCodeDetailResponse.mPromoCoupon?.promoCode ?: "", if (isActive) Constants.MODE_PROMO_CODE_DE_ACTIVE else Constants.MODE_PROMO_CODE_ACTIVE))
+                                    val activeCouponResponse = RetrofitApi().getServerCallObject()?.updatePromoCodeStatus(
+                                            UpdatePromoCodeRequest(
+                                                promoCode = promoCodeDetailResponse.mPromoCoupon?.promoCode ?: "",
+                                                status = if (isActive) Constants.MODE_PROMO_CODE_DE_ACTIVE else Constants.MODE_PROMO_CODE_ACTIVE,
+                                                isWebsiteVisible = checkBox.isChecked
+                                            )
+                                        )
                                     activeCouponResponse?.let {
                                         if (it.isSuccessful) {
                                             it.body()?.let {
-                                                withContext(Dispatchers.Main) {
-                                                    stopProgress()
-
-                                                }
+                                                stopProgress()
                                             }
-
                                         }
                                     }
                                 } catch (e: Exception) {
-                                    Sentry.captureException(e, "showImagePickerBottomSheet: exception")
+                                    Sentry.captureException(e, "showPromoCouponDetailBottomSheet: exception")
                                     exceptionHandlingForAPIResponse(e)
                                 }
                             }
