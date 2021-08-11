@@ -67,6 +67,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
     private var mDeliveryChargeAmount = 0.0
     private var mOtherChargeAmount = 0.0
     private var mDiscountAmount = 0.0
+    private var mPromoDiscount = 0.0
     private var mIsPickUpOrder = false
 
     companion object {
@@ -335,6 +336,25 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
             mMobileNumber = orderDetailResponse?.phone ?: ""
             sideIcon2Toolbar?.visibility = if (getString(R.string.default_mobile) == mMobileNumber) View.GONE else View.VISIBLE
             sideIconToolbar?.visibility = if (true == orderDetailMainResponse?.optionMenuList?.isEmpty()) View.GONE else View.VISIBLE
+            if (null == orderDetailMainResponse?.promoCodeDetails) {
+                promoLayout?.visibility = View.GONE
+            } else {
+                mPromoDiscount = orderDetailMainResponse?.promoCodeDetails?.coupon?.discount ?: 0.0
+                promoLayout?.visibility = View.VISIBLE
+                promoCodeTextView?.text = orderDetailMainResponse?.promoCodeDetails?.coupon?.promoCode
+                val descriptionStr = if (Constants.MODE_COUPON_TYPE_FLAT == orderDetailMainResponse?.promoCodeDetails?.coupon?.discountType) {
+                    "Flat ₹${orderDetailMainResponse?.promoCodeDetails?.coupon?.discount?.toInt()} OFF"
+                } else {
+                    "${orderDetailMainResponse?.promoCodeDetails?.coupon?.discount?.toInt()}% OFF Upto ₹${orderDetailMainResponse?.promoCodeDetails?.coupon?.maxDiscount?.toInt()}"
+                }
+                promoCodeMessageTextView?.text = descriptionStr
+                val amount = "- ₹${orderDetailMainResponse?.promoCodeDetails?.coupon?.discount}"
+                promoCodeAmountTextView?.text = amount
+                mActivity?.let { context ->
+                    promoPercentageImageView?.let { it -> Glide.with(context).load(orderDetailMainResponse?.promoCodeDetails?.percentageCdn).into(it) }
+                }
+                setAmountToEditText()
+            }
         }
     }
 
@@ -567,7 +587,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
     }
 
     private fun setAmountToEditText() {
-        val amount = mTotalPayAmount + mDeliveryChargeAmount + mOtherChargeAmount - mDiscountAmount
+        val amount = mTotalPayAmount + mDeliveryChargeAmount + mOtherChargeAmount - mDiscountAmount - mPromoDiscount
         amountEditText?.setText("$amount")
     }
 

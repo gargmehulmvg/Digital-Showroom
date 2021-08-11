@@ -145,6 +145,9 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
         }
         Log.d(TAG, "onMarketingItemClick: ${response?.action}")
         when (response?.action) {
+            Constants.ACTION_PROMO_CODE -> {
+                launchFragment(PromoCodePageInfoFragment.newInstance(), true)
+            }
             Constants.NEW_RELEASE_TYPE_GOOGLE_ADS -> {
                 mMarketingItemClickResponse = response
                 getLocationForGoogleAds()

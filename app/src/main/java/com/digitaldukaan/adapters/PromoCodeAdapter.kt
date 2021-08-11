@@ -73,7 +73,7 @@ class PromoCodeAdapter(
             val codeStr = "${mStaticText?.text_use_code} ${item?.promoCode}"
             useCodeTextView.text = codeStr
             mContext?.let { context ->
-                if (Constants.MODE_PROMO_CODE_ACTIVE == item?.status) {
+                if (true == item?.isWebsiteVisible) {
                     visibleStatusTextView.apply {
                         text = mStaticText?.text_visible_on_website
                         background = ContextCompat.getDrawable(context, R.drawable.slight_curve_green_dotted_border_green_background)

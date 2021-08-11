@@ -75,6 +75,8 @@ class CustomCouponsFragment : BaseFragment(), ICustomCouponsServiceInterface {
     private fun initializeUI() {
         hideBottomNavigationView(true)
         ToolBarManager.getInstance()?.apply {
+            setSideIconVisibility(false)
+            setSecondSideIconVisibility(false)
             setHeaderTitle(mStaticText?.heading_custom_coupon)
             hideToolBar(mActivity, false)
             onBackPressed(this@CustomCouponsFragment)

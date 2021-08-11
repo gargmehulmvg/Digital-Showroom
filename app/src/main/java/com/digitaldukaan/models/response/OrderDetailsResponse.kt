@@ -59,7 +59,14 @@ data class OrderDetailMainResponse(
     @SerializedName("order")                    var orders: OrderDetailsResponse?,
     @SerializedName("static_text")              var staticText: OrderDetailsStaticTextResponse?,
     @SerializedName("options_menu")             var optionMenuList: ArrayList<TrendingListResponse>,
+    @SerializedName("promo_code_details")       var promoCodeDetails: OrderDetailPromoCodeResponse?,
     @SerializedName("store_services")           var storeServices: StoreServicesResponse?
+)
+
+data class OrderDetailPromoCodeResponse(
+    @SerializedName("coupon")                   var coupon: PromoCodeListItemResponse?,
+    @SerializedName("percentage_cdn")           var percentageCdn: String?,
+    @SerializedName("background_cdn")           var backgroundCdn: String?
 )
 
 data class OrderDetailsStaticTextResponse(

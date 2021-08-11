@@ -293,6 +293,14 @@ class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInter
                                             it.body()?.let {
                                                 stopProgress()
                                             }
+                                        } else {
+                                            stopProgress()
+                                            val errorResponseBody = it.errorBody()
+                                            errorResponseBody?.let {
+                                                val errorResponse = Gson().fromJson(errorResponseBody.string(), CommonApiResponse::class.java)
+                                                showToast(errorResponse.mMessage)
+                                                bottomSheetDialog.dismiss()
+                                            }
                                         }
                                     }
                                 } catch (e: Exception) {
@@ -337,6 +345,14 @@ class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInter
                                             it.body()?.let {
                                                 stopProgress()
                                             }
+                                        } else {
+                                            stopProgress()
+                                            val errorResponseBody = it.errorBody()
+                                            errorResponseBody?.let {
+                                                val errorResponse = Gson().fromJson(errorResponseBody.string(), CommonApiResponse::class.java)
+                                                showToast(errorResponse.mMessage)
+                                            }
+                                            bottomSheetDialog.dismiss()
                                         }
                                     }
                                 } catch (e: Exception) {
