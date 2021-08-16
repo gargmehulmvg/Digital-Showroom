@@ -73,19 +73,30 @@ class PromoCodeAdapter(
             val codeStr = "${mStaticText?.text_use_code} ${item?.promoCode}"
             useCodeTextView.text = codeStr
             mContext?.let { context ->
-                if (true == item?.isWebsiteVisible) {
-                    visibleStatusTextView.apply {
-                        text = mStaticText?.text_visible_on_website
-                        background = ContextCompat.getDrawable(context, R.drawable.slight_curve_green_dotted_border_green_background)
-                        setTextColor(ContextCompat.getColor(context, R.color.open_green))
-                        setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_eye_on, 0, 0, 0)
+                when {
+                    Constants.MODE_INACTIVE == mPromoCodeMode -> {
+                        visibleStatusTextView.apply {
+                            text = mStaticText?.text_inactive_coupon
+                            background = ContextCompat.getDrawable(context, R.drawable.slight_curve_black_dotted_border_grey_background)
+                            setTextColor(ContextCompat.getColor(context, R.color.dark_blackish))
+                            setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
+                        }
                     }
-                } else {
-                    visibleStatusTextView.apply {
-                        text = mStaticText?.text_hidden_from_website
-                        background = ContextCompat.getDrawable(context, R.drawable.slight_curve_red_dotted_border_green_background)
-                        setTextColor(ContextCompat.getColor(context, R.color.red_switch_off))
-                        setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_eye_off, 0, 0, 0)
+                    true == item?.isWebsiteVisible -> {
+                        visibleStatusTextView.apply {
+                            text = mStaticText?.text_visible_on_website
+                            background = ContextCompat.getDrawable(context, R.drawable.slight_curve_green_dotted_border_green_background)
+                            setTextColor(ContextCompat.getColor(context, R.color.open_green))
+                            setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_eye_on, 0, 0, 0)
+                        }
+                    }
+                    else -> {
+                        visibleStatusTextView.apply {
+                            text = mStaticText?.text_hidden_from_website
+                            background = ContextCompat.getDrawable(context, R.drawable.slight_curve_red_dotted_border_green_background)
+                            setTextColor(ContextCompat.getColor(context, R.color.red_switch_off))
+                            setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_eye_off, 0, 0, 0)
+                        }
                     }
                 }
             }

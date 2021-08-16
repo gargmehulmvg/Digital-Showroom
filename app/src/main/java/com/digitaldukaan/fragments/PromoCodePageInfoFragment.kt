@@ -262,7 +262,7 @@ class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInter
                         setting1Heading.text = response.mStaticText?.text_active_coupon
                         setting2Heading.text = response.mStaticText?.text_show_this_coupon_my_website
                         setting2Message.text = response.mStaticText?.message_allow_customer_see_coupon
-                        timeUsedValueTextView.text = "${response.mAnalytics?.timesUsed}"
+                        timeUsedValueTextView.text = "${response.mAnalytics?.timesUsed?.toInt()}"
                         salesGeneratedValueTextView.text = "${response.mAnalytics?.salesGenerated}"
                         val promoCode = "${response.mStaticText?.text_use_code} ${response.mPromoCoupon?.promoCode}"
                         useCodeTextView.text = promoCode

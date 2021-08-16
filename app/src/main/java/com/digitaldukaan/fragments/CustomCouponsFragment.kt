@@ -276,10 +276,24 @@ class CustomCouponsFragment : BaseFragment(), ICustomCouponsServiceInterface {
             }
             return
         }
+        if (0 == percentage.toInt()) {
+            pdPercentageEditText?.apply {
+                requestFocus()
+                error = mActivity?.getString(R.string.please_enter_valid_input)
+            }
+            return
+        }
         if (isEmpty(maxAmount.trim())) {
             pdMaxDiscountEditText?.apply {
                 requestFocus()
                 error = mActivity?.getString(R.string.mandatory_field_message)
+            }
+            return
+        }
+        if (0 == maxAmount.toInt()) {
+            pdMaxDiscountEditText?.apply {
+                requestFocus()
+                error = mActivity?.getString(R.string.please_enter_valid_input)
             }
             return
         }
@@ -299,7 +313,7 @@ class CustomCouponsFragment : BaseFragment(), ICustomCouponsServiceInterface {
         }
         mCreateCouponsRequest = CreateCouponsRequest(
             discountType =  Constants.MODE_COUPON_TYPE_PERCENTAGE,
-            promoCode =     code,
+            promoCode =     code.toUpperCase(Locale.getDefault()),
             discount =      percentage.toDouble(),
             minOrderPrice = minOrderAmount.toDouble(),
             maxDiscount =   maxAmount.toDouble(),
@@ -323,6 +337,13 @@ class CustomCouponsFragment : BaseFragment(), ICustomCouponsServiceInterface {
             }
             return
         }
+        if (0 == discount.toInt()) {
+            fdDiscountEditText?.apply {
+                requestFocus()
+                error = mActivity?.getString(R.string.please_enter_valid_input)
+            }
+            return
+        }
         if (isEmpty(minOrderAmount.trim())) {
             fdMinOrderAmountEditText?.apply {
                 requestFocus()
@@ -339,7 +360,7 @@ class CustomCouponsFragment : BaseFragment(), ICustomCouponsServiceInterface {
         }
         mCreateCouponsRequest = CreateCouponsRequest(
             discountType =  Constants.MODE_COUPON_TYPE_FLAT,
-            promoCode =     code,
+            promoCode =     code.toUpperCase(Locale.getDefault()),
             discount =      discount.toDouble(),
             minOrderPrice = minOrderAmount.toDouble(),
             maxDiscount =   discount.toDouble(),

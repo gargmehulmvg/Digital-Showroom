@@ -42,6 +42,7 @@ data class PromoCodePageStaticTextResponse(
     @SerializedName("text_min_order_amount")                    var text_min_order_amount: String?,
     @SerializedName("heading_applicable_once_per_customer")     var heading_applicable_once_per_customer: String?,
     @SerializedName("text_visible_on_website")                  var text_visible_on_website: String?,
+    @SerializedName("text_inactive_coupon")                     var text_inactive_coupon: String?,
     @SerializedName("text_hidden_from_website")                 var text_hidden_from_website: String?,
     @SerializedName("text_no_coupons_are_inactive")             var text_no_coupons_are_inactive: String?,
     @SerializedName("text_no_coupons_are_active")               var text_no_coupons_are_active: String?,

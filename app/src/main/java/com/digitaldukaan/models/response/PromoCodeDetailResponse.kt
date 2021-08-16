@@ -9,8 +9,8 @@ data class PromoCodeDetailResponse(
 )
 
 data class PromoCodeAnalyticsResponse(
-    @SerializedName("times_used")           var timesUsed: Int,
-    @SerializedName("sales_generated")      var salesGenerated: Int
+    @SerializedName("times_used")           var timesUsed: Double,
+    @SerializedName("sales_generated")      var salesGenerated: Double
 )
 
 data class PromoCodeDetailStaticTextResponse(
