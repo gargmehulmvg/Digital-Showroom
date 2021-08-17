@@ -20,15 +20,12 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import androidx.recyclerview.widget.*
 import com.digitaldukaan.R
+import com.digitaldukaan.adapters.ActiveVariantAdapterV2
 import com.digitaldukaan.adapters.AddProductsChipsAdapter
 import com.digitaldukaan.adapters.AddProductsImagesAdapter
 import com.digitaldukaan.adapters.ImagesSearchAdapter
-import com.digitaldukaan.adapters.MasterVariantsAdapter
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.IAdapterItemClickListener
 import com.digitaldukaan.interfaces.IChipItemClickListener
@@ -98,11 +95,11 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     private var shareProductContainer: View? = null
     private var noImagesLayout: View? = null
     private var discountContainer: View? = null
-    private var variantContainer: View? = null
     private var variantRecyclerView: RecyclerView? = null
     private var imagesRecyclerView: RecyclerView? = null
     private var chipGroupRecyclerView: RecyclerView? = null
     private var productDescriptionInputLayout: TextInputLayout? = null
+    private var mActiveVariantAdapter: ActiveVariantAdapterV2? = null
 
     companion object {
         private const val TAG = "AddProductFragment"
@@ -146,7 +143,6 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         }
         hideBottomNavigationView(true)
         addVariantsTextView = mContentView?.findViewById(R.id.addVariantsTextView)
-        variantContainer = mContentView?.findViewById(R.id.variantContainer)
         addItemTextView = mContentView?.findViewById(R.id.addItemTextView)
         discountContainer = mContentView?.findViewById(R.id.discountContainer)
         noImagesLayout = mContentView?.findViewById(R.id.noImagesLayout)
@@ -294,24 +290,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         }
     }
 
-    private fun setupVariantContainer() {
-        try {
-            if (View.GONE == variantContainer?.visibility) {
-                if (!isEmpty(mAddProductResponse?.storeItem?.variantsList)) {
-                    variantContainer?.visibility = View.VISIBLE
-                    variantsHeading?.visibility = View.VISIBLE
-                    variantsHeading?.text = addProductStaticData?.text_variants
-                    addVariantsTextView?.visibility = View.GONE
-                    variantRecyclerView?.apply {
-                        layoutManager = LinearLayoutManager(mActivity)
-                        adapter = MasterVariantsAdapter(mActivity, mAddProductResponse?.storeItem?.variantsList, null)
-                    }
-                }
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "setupVariantContainer: ${e.message}", e)
-        }
-    }
+    private fun setupVariantContainer() = Unit
 
     private fun handleVisibilityTextWatcher() {
         priceEditText?.addTextChangedListener(object : TextWatcher {
@@ -494,15 +473,25 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             updateCameraImageView?.id -> showAddProductImagePickerBottomSheet(0)
             updateCameraTextView?.id -> showAddProductImagePickerBottomSheet(0)
             addVariantsTextView?.id -> {
-                mAddProductResponse?.deletedVariants = HashMap()
-                launchFragment(AddVariantFragment.newInstance(mAddProductResponse, mProductNameStr), true)
+                variantHeadingTextView?.apply {
+                    visibility = View.VISIBLE
+                    text = addProductStaticData?.text_variants
+                }
+                priceCardView?.visibility = View.GONE
+                addVariantsTextView?.text = addProductStaticData?.text_add_variant
+                mActiveVariantAdapter = ActiveVariantAdapterV2(mActivity, addProductStaticData, null, null)
+                variantRecyclerView?.apply {
+                    itemAnimator = DefaultItemAnimator()
+                    layoutManager = LinearLayoutManager(mActivity)
+                    visibility = View.VISIBLE
+                    adapter = mActiveVariantAdapter
+                }
             }
-            editVariantImageView?.id -> launchFragment(AddVariantFragment.newInstance(mAddProductResponse, mProductNameStr), true)
         }
     }
 
     private fun showAddProductImagePickerBottomSheet(position: Int) {
-        mActivity?.let {
+        mActivity?.let { it ->
             if (ActivityCompat.checkSelfPermission(it, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(it, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(it, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
@@ -578,7 +567,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                         CoroutineScopeUtils().runTaskOnCoroutineBackground {
                             try {
                                 val response = RetrofitApi().getServerCallObject()?.searchImagesFromBing(searchImageEditText.text.trim().toString(), getStringDataFromSharedPref(Constants.STORE_ID))
-                                response?.let {
+                                response?.let { it ->
                                     if (it.isSuccessful) {
                                         it.body()?.let {
                                             withContext(Dispatchers.Main) {
@@ -638,8 +627,8 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
 
     private fun showImageCropDialog(file: File?) {
         mActivity?.run {
-            val imageCropDialog: Dialog? = Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen)
-            imageCropDialog?.apply {
+            val imageCropDialog = Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen)
+            imageCropDialog.apply {
                 val view = LayoutInflater.from(mActivity).inflate(R.layout.layout_crop_photo, null)
                 setContentView(view)
                 window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -659,7 +648,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     }
                     imageCropDialog.dismiss()
                 }
-            }?.show()
+            }.show()
         }
     }
 
@@ -1038,8 +1027,8 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     private fun showDeleteConfirmationDialog() {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             mActivity?.let {
-                val builder: AlertDialog.Builder? = AlertDialog.Builder(it)
-                builder?.apply {
+                val builder: AlertDialog.Builder = AlertDialog.Builder(it)
+                builder.apply {
                     setTitle(getString(R.string.delete_product))
                     setMessage(getString(R.string.are_you_sure_to_delete))
                     setCancelable(false)
@@ -1058,7 +1047,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                         mService?.deleteItemServerCall(DeleteItemRequest(mItemId))
                     }
                     setNegativeButton(getString(R.string.text_no)) { dialog, _ -> dialog.dismiss() }
-                }?.create()?.show()
+                }.create().show()
             }
         }
     }
