@@ -13,9 +13,11 @@
         android:padding="@dimen/_10sdp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constraintLayout2"
+            android:id="@+id/imageViewContainer"
             android:layout_width="@dimen/_75sdp"
             android:layout_height="@dimen/_85sdp"
+            android:background="?selectableItemBackgroundBorderless"
+            android:padding="@dimen/_2sdp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
@@ -43,7 +45,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_15sdp"
             android:layout_marginEnd="@dimen/_10sdp"
-            app:layout_constraintEnd_toStartOf="@+id/constraintLayout2"
+            app:layout_constraintEnd_toStartOf="@id/imageViewContainer"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:hint="Enter Variant Name">
@@ -70,10 +72,10 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/_5sdp"
             android:layout_marginTop="@dimen/_10sdp"
-            app:layout_constraintEnd_toStartOf="@+id/variantDiscountPriceInputLayout"
+            app:layout_constraintEnd_toStartOf="@id/variantDiscountPriceInputLayout"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/constraintLayout2"
+            app:layout_constraintTop_toBottomOf="@id/imageViewContainer"
             tools:hint="Price (₹)">
 
             <EditText
@@ -102,8 +104,8 @@
             app:suffixTextColor="@color/dark_blackish"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/variantPriceInputLayout"
-            app:layout_constraintTop_toTopOf="@+id/variantPriceInputLayout"
+            app:layout_constraintStart_toEndOf="@id/variantPriceInputLayout"
+            app:layout_constraintTop_toTopOf="@id/variantPriceInputLayout"
             tools:hint="Discount Price (₹)">
 
             <EditText
@@ -128,7 +130,7 @@
             android:layout_marginTop="@dimen/_15sdp"
             android:alpha="0.25"
             android:background="@drawable/dotted_line_view_black"
-            app:layout_constraintTop_toBottomOf="@+id/variantDiscountPriceInputLayout"
+            app:layout_constraintTop_toBottomOf="@id/variantDiscountPriceInputLayout"
             tools:layout_editor_absoluteX="13dp" />
 
         <TextView
@@ -145,8 +147,8 @@
             android:textSize="@dimen/_12sdp"
             app:drawableStartCompat="@drawable/ic_delete"
             app:drawableTint="@color/red"
-            app:layout_constraintStart_toStartOf="@+id/variantPriceInputLayout"
-            app:layout_constraintTop_toBottomOf="@+id/view8" />
+            app:layout_constraintStart_toStartOf="@id/variantPriceInputLayout"
+            app:layout_constraintTop_toBottomOf="@id/view8" />
 
         <TextView
             android:id="@+id/inStockTextView"
@@ -155,7 +157,7 @@
             android:padding="@dimen/_5sdp"
             android:textColor="@color/default_text_light_grey"
             android:textSize="@dimen/_9sdp"
-            app:layout_constraintBaseline_toBaselineOf="@+id/deleteTextView"
+            app:layout_constraintBaseline_toBaselineOf="@id/deleteTextView"
             app:layout_constraintEnd_toStartOf="@id/variantSwitch"
             tools:text="(in-stock)" />
 
@@ -165,9 +167,9 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/_5sdp"
             android:theme="@style/CustomAppSwitch"
-            app:layout_constraintBottom_toBottomOf="@+id/inStockTextView"
+            app:layout_constraintBottom_toBottomOf="@id/inStockTextView"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/inStockTextView" />
+            app:layout_constraintTop_toTopOf="@id/inStockTextView" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

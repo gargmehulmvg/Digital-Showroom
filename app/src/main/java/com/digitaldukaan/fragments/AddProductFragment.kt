@@ -27,10 +27,7 @@ import com.digitaldukaan.adapters.AddProductsChipsAdapter
 import com.digitaldukaan.adapters.AddProductsImagesAdapter
 import com.digitaldukaan.adapters.ImagesSearchAdapter
 import com.digitaldukaan.constants.*
-import com.digitaldukaan.interfaces.IAdapterItemClickListener
-import com.digitaldukaan.interfaces.IChipItemClickListener
-import com.digitaldukaan.interfaces.IOnToolbarIconClick
-import com.digitaldukaan.interfaces.IOnToolbarSecondIconClick
+import com.digitaldukaan.interfaces.*
 import com.digitaldukaan.models.request.AddProductImageItem
 import com.digitaldukaan.models.request.AddProductItemCategory
 import com.digitaldukaan.models.request.AddProductRequest
@@ -100,6 +97,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     private var chipGroupRecyclerView: RecyclerView? = null
     private var productDescriptionInputLayout: TextInputLayout? = null
     private var mActiveVariantAdapter: ActiveVariantAdapterV2? = null
+    private var mActiveVariantList: ArrayList<VariantItemResponse>? = null
 
     companion object {
         private const val TAG = "AddProductFragment"
@@ -284,13 +282,11 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     discountContainer?.visibility = View.VISIBLE
                 }
             }
-            setupVariantContainer()
+            mActiveVariantList = ArrayList()
         } catch (e: Exception) {
             Log.e(TAG, "onViewCreated: ${e.message}", e)
         }
     }
-
-    private fun setupVariantContainer() = Unit
 
     private fun handleVisibilityTextWatcher() {
         priceEditText?.addTextChangedListener(object : TextWatcher {
@@ -473,20 +469,84 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             updateCameraImageView?.id -> showAddProductImagePickerBottomSheet(0)
             updateCameraTextView?.id -> showAddProductImagePickerBottomSheet(0)
             addVariantsTextView?.id -> {
-                variantHeadingTextView?.apply {
-                    visibility = View.VISIBLE
-                    text = addProductStaticData?.text_variants
-                }
-                priceCardView?.visibility = View.GONE
-                addVariantsTextView?.text = addProductStaticData?.text_add_variant
-                mActiveVariantAdapter = ActiveVariantAdapterV2(mActivity, addProductStaticData, null, null)
-                variantRecyclerView?.apply {
-                    itemAnimator = DefaultItemAnimator()
-                    layoutManager = LinearLayoutManager(mActivity)
-                    visibility = View.VISIBLE
-                    adapter = mActiveVariantAdapter
+                if (isEmpty(mActiveVariantList)) {
+                    addNewVariantInList()
+                    setupVariantRecyclerView()
+                } else {
+                    addNewVariantInList()
+                    mActiveVariantAdapter?.notifyDataSetChanged()
                 }
             }
+        }
+    }
+
+    private fun addNewVariantInList() {
+        mActiveVariantList?.add(
+            VariantItemResponse(
+                0,
+                "",
+                if (isEmpty(priceEditText?.text?.toString())) 0.0 else priceEditText?.text?.toString()?.toDouble() ?: 0.0,
+                if (isEmpty(discountPriceEditText?.text?.toString())) 0.0 else discountPriceEditText?.text?.toString()?.toDouble() ?: 0.0,
+                1,
+                0,
+                1,
+                null
+            )
+        )
+    }
+
+    private fun setupVariantRecyclerView() {
+        variantHeadingTextView?.apply {
+            visibility = View.VISIBLE
+            text = addProductStaticData?.text_variants
+        }
+        priceCardView?.visibility = View.GONE
+        addVariantsTextView?.text = addProductStaticData?.text_add_variant
+        mActiveVariantAdapter = ActiveVariantAdapterV2(mActivity, addProductStaticData, mActiveVariantList, object : IVariantItemClickListener {
+            override fun onVariantEditNameClicked(variant: VariantItemResponse?, position: Int) {
+
+            }
+
+            override fun onVariantDeleteClicked(position: Int) = showDeleteVariantConfirmationDialog(position)
+
+            override fun onVariantImageClicked(position: Int) = showToast("$position")
+
+            override fun onVariantListEmpty() {
+                variantHeadingTextView?.apply {
+                    visibility = View.GONE
+                }
+                priceCardView?.visibility = View.VISIBLE
+                addVariantsTextView?.text = mActivity?.getString(R.string.add_variants_optional)
+            }
+
+        })
+        variantRecyclerView?.apply {
+            itemAnimator = DefaultItemAnimator()
+            layoutManager = LinearLayoutManager(mActivity)
+            visibility = View.VISIBLE
+            adapter = mActiveVariantAdapter
+        }
+    }
+
+    private fun showDeleteVariantConfirmationDialog(position: Int) {
+        mActivity?.let {
+            val dialog = Dialog(it)
+            dialog.apply {
+                requestWindowFeature(Window.FEATURE_NO_TITLE)
+                setCancelable(true)
+                setContentView(R.layout.dialog_delete_variant_confirmation)
+                val deleteVariantMessageTextView: TextView = dialog.findViewById(R.id.deleteVariantMessageTextView)
+                val deleteVariantTextView: TextView = dialog.findViewById(R.id.deleteVariantTextView)
+                val deleteVariantCancelTextView: TextView = dialog.findViewById(R.id.deleteVariantCancelTextView)
+                deleteVariantMessageTextView.text = addProductStaticData?.dialog_delete_variant_message
+                deleteVariantTextView.text = addProductStaticData?.text_delete
+                deleteVariantCancelTextView.text = addProductStaticData?.text_cancel
+                deleteVariantTextView.setOnClickListener {
+                    dialog.dismiss()
+                    mActiveVariantAdapter?.deleteItemFromActiveVariantList(position)
+                }
+                deleteVariantCancelTextView.setOnClickListener { dialog.dismiss() }
+            }.show()
         }
     }
 
@@ -749,7 +809,6 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                         productDescriptionEditText?.setText(description)
                     }
                 }
-                setupVariantContainer()
                 setupCategoryChipRecyclerView()
                 setStaticDataFromResponse()
                 setupOptionsMenu()
