@@ -38,18 +38,37 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/setting1Heading" />
 
+    <ImageView
+        android:contentDescription="@string/image_view_content_description"
+        android:id="@+id/bulbImageView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:src="@drawable/ic_coupon_light_bulb"
+        app:layout_constraintStart_toStartOf="@+id/setting1Heading"
+        app:layout_constraintTop_toBottomOf="@+id/setting1Heading" />
+
+    <ImageView
+        android:contentDescription="@string/image_view_content_description"
+        android:id="@+id/bulbImageView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:src="@drawable/ic_coupon_light_bulb"
+        app:layout_constraintStart_toStartOf="@+id/setting2Heading"
+        app:layout_constraintTop_toBottomOf="@+id/setting2Heading" />
+
     <TextView
         android:id="@+id/setting1Message"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_8sdp"
-        tools:text="Select this option if you want your customers to use this coupon only once"
         android:textSize="@dimen/_10sdp"
+        android:layout_marginStart="@dimen/_5sdp"
         app:layout_constraintEnd_toEndOf="@+id/setting1Heading"
-        app:layout_constraintStart_toStartOf="@+id/setting1Heading"
+        app:layout_constraintStart_toEndOf="@+id/bulbImageView1"
         app:layout_constraintTop_toBottomOf="@+id/setting1Heading"
-        android:drawablePadding="@dimen/_5sdp"
-        app:drawableStartCompat="@drawable/ic_coupon_light_bulb" />
+        tools:text="Select this option if you want your customers to use this coupon only once" />
 
     <TextView
         android:id="@+id/setting2Heading"
@@ -78,12 +97,11 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_8sdp"
-        tools:text="This will allow customers to see this coupon on your website"
+        android:layout_marginStart="@dimen/_5sdp"
         android:textSize="@dimen/_10sdp"
-        android:drawablePadding="@dimen/_5sdp"
-        app:drawableStartCompat="@drawable/ic_coupon_light_bulb"
         app:layout_constraintEnd_toEndOf="@+id/setting2Heading"
-        app:layout_constraintStart_toStartOf="@+id/setting2Heading"
-        app:layout_constraintTop_toBottomOf="@+id/setting2Heading" />
+        app:layout_constraintStart_toEndOf="@+id/bulbImageView2"
+        app:layout_constraintTop_toBottomOf="@+id/setting2Heading"
+        tools:text="This will allow customers to see this coupon on your website" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

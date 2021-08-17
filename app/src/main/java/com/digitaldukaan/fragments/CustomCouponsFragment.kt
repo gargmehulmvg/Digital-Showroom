@@ -419,7 +419,7 @@ class CustomCouponsFragment : BaseFragment(), ICustomCouponsServiceInterface {
                     val discountStr = if (mIsFlatDiscountSelected) {
                         "${mStaticText?.text_flat} ₹${mCreateCouponsRequest?.discount?.toInt()} ${mStaticText?.text_off_all_caps}"
                     } else {
-                        "${mCreateCouponsRequest?.discount?.toInt()}% ${mStaticText?.text_off_all_caps} ${mStaticText?.text_upto_capital} ₹${mCreateCouponsRequest?.maxDiscount}"
+                        "${mCreateCouponsRequest?.discount?.toInt()}% ${mStaticText?.text_off_all_caps} ${mStaticText?.text_upto_capital} ₹${mCreateCouponsRequest?.maxDiscount?.toInt()}"
                     }
                     descriptionTextView?.text = discountStr
                     bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
