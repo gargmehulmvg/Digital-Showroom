@@ -96,10 +96,8 @@
             android:textColor="@color/dark_blackish"
             android:textSize="@dimen/_12sdp"
             app:drawableEndCompat="@drawable/ic_share_forward_arrow"
-            app:layout_constraintBottom_toBottomOf="@+id/detailsTextView"
+            app:layout_constraintBaseline_toBaselineOf="@+id/detailsTextView"
             app:layout_constraintEnd_toEndOf="@+id/visibleStatusTextView"
-            app:layout_constraintTop_toTopOf="@+id/detailsTextView"
-            app:layout_constraintVertical_bias="0.75"
             tools:text="Share Coupons" />
 
         <TextView

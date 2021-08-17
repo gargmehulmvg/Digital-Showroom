@@ -8,6 +8,7 @@
         <entry key="app/src/main/res/drawable/ic_coupon_white_zigzag.xml" value="0.2765625" />
         <entry key="app/src/main/res/drawable/ic_coupon_white_zigzag2.xml" value="0.2765625" />
         <entry key="app/src/main/res/drawable/slight_curve_black_dotted_border_grey_background.xml" value="0.2388888888888889" />
+        <entry key="app/src/main/res/drawable/slight_curve_green_background_without_padding.xml" value="0.2765625" />
         <entry key="app/src/main/res/drawable/slight_curve_green_dotted_border_green_background.xml" value="0.2765625" />
         <entry key="app/src/main/res/layout/bottom_sheet_create_coupon_confirmation.xml" value="0.264453125" />
         <entry key="app/src/main/res/layout/bottom_sheet_image_pick.xml" value="0.264453125" />
