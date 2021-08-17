@@ -22,8 +22,10 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <LinearLayout
+                android:id="@+id/noImagesLayout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:visibility="gone"
                 android:background="@drawable/curve_green_dotted_border_green_background"
                 android:gravity="center">
 
@@ -35,6 +37,13 @@
                     android:src="@drawable/ic_camera_plus" />
 
             </LinearLayout>
+
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="match_parent"
+                android:visibility="gone"
+                android:layout_height="match_parent"
+                android:contentDescription="@string/image_view_content_description" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

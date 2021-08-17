@@ -964,7 +964,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                             stopProgress()
                             mImagePickBottomSheet?.dismiss()
                             val imageUri = it.getImageUri(mActivity)
-                            imageUri?.let {uri -> startCropping(bitmap) }
+                            imageUri?.let { startCropping(bitmap) }
                         }
                     }
                 }

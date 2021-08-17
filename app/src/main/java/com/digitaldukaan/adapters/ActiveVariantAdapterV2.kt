@@ -8,8 +8,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.isDouble
 import com.digitaldukaan.constants.isEmpty
@@ -31,18 +33,15 @@ class ActiveVariantAdapterV2(
     }
 
     inner class ActiveVariantViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val imageView: ImageView = itemView.findViewById(R.id.imageView)
         val imageViewContainer: View = itemView.findViewById(R.id.imageViewContainer)
+        val noImagesLayout: View = itemView.findViewById(R.id.noImagesLayout)
         val priceEditText: EditText = itemView.findViewById(R.id.priceEditText)
         val discountPriceEditText: EditText = itemView.findViewById(R.id.discountPriceEditText)
         val variantNameInputLayout: TextInputLayout = itemView.findViewById(R.id.variantNameInputLayout)
         val variantPriceInputLayout: TextInputLayout = itemView.findViewById(R.id.variantPriceInputLayout)
         val deleteTextView: TextView = itemView.findViewById(R.id.deleteTextView)
         val variantDiscountPriceInputLayout: TextInputLayout = itemView.findViewById(R.id.variantDiscountPriceInputLayout)
-    }
-
-    fun setActiveVariantList(activeVariantList: ArrayList<VariantItemResponse>?) {
-        this.mActiveVariantList = activeVariantList
-        notifyDataSetChanged()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ActiveVariantViewHolder {
@@ -112,6 +111,14 @@ class ActiveVariantAdapterV2(
                 }
 
             })
+            if (isEmpty(item?.variantImagesList)) {
+                noImagesLayout.visibility = View.VISIBLE
+                imageView.visibility = View.GONE
+            } else {
+                imageView.visibility = View.VISIBLE
+                noImagesLayout.visibility = View.GONE
+                mContext?.let { context -> Glide.with(context).load(item?.variantImagesList?.get(0)?.imageUrl).into(imageView) }
+            }
         }
     }
 

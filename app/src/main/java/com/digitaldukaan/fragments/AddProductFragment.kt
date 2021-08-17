@@ -100,6 +100,8 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     private var mActiveVariantList: ArrayList<VariantItemResponse>? = null
 
     companion object {
+        private var sIsVariantImageClicked = false
+        private var sVariantImageClickedPosition = 0
         private const val TAG = "AddProductFragment"
         fun newInstance(itemId:Int, isAddNewProduct: Boolean): AddProductFragment {
             val fragment = AddProductFragment()
@@ -509,7 +511,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
 
             override fun onVariantDeleteClicked(position: Int) = showDeleteVariantConfirmationDialog(position)
 
-            override fun onVariantImageClicked(position: Int) = showToast("$position")
+            override fun onVariantImageClicked(position: Int) = showAddProductImagePickerBottomSheet(position, true)
 
             override fun onVariantListEmpty() {
                 variantHeadingTextView?.apply {
@@ -550,7 +552,9 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         }
     }
 
-    private fun showAddProductImagePickerBottomSheet(position: Int) {
+    private fun showAddProductImagePickerBottomSheet(position: Int, isVariantImageClicked: Boolean = false) {
+        sIsVariantImageClicked = isVariantImageClicked
+        if (sIsVariantImageClicked) sVariantImageClickedPosition = position
         mActivity?.let { it ->
             if (ActivityCompat.checkSelfPermission(it, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(it, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED &&
@@ -563,21 +567,18 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         mIsOrderEdited = true
         mActivity?.let {
             imagePickBottomSheet = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
-            val view = LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet_image_pick, it.findViewById(R.id.bottomSheetContainer))
+            val view = LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet_image_pick_v2, it.findViewById(R.id.bottomSheetContainer))
             imagePickBottomSheet?.apply {
                 setContentView(view)
                 view?.run {
                     val bottomSheetUploadImageCloseImageView: ImageView = findViewById(R.id.bottomSheetUploadImageCloseImageView)
                     val bottomSheetUploadImageHeading: TextView = findViewById(R.id.bottomSheetUploadImageHeading)
                     val bottomSheetUploadImageCameraTextView: TextView = findViewById(R.id.bottomSheetUploadImageCameraTextView)
-                    val bottomSheetUploadImageCamera: View = findViewById(R.id.bottomSheetUploadImageCamera)
                     val bottomSheetUploadImageGalleryTextView: TextView = findViewById(R.id.bottomSheetUploadImageGalleryTextView)
-                    val bottomSheetUploadImageGallery: View = findViewById(R.id.bottomSheetUploadImageGallery)
                     val bottomSheetUploadImageSearchHeading: TextView = findViewById(R.id.bottomSheetUploadImageSearchHeading)
                     val bottomSheetUploadImageRemovePhotoTextView: TextView = findViewById(R.id.bottomSheetUploadImageRemovePhotoTextView)
                     val searchImageEditText: EditText = findViewById(R.id.searchImageEditText)
                     val searchImageImageView: View = findViewById(R.id.searchImageImageView)
-                    val bottomSheetUploadImageRemovePhoto: View = findViewById(R.id.bottomSheetUploadImageRemovePhoto)
                     val searchImageRecyclerView: RecyclerView = findViewById(R.id.searchImageRecyclerView)
                     bottomSheetUploadImageGalleryTextView.text = addProductStaticData?.bottom_sheet_add_from_gallery
                     bottomSheetUploadImageSearchHeading.text = addProductStaticData?.bottom_sheet_you_can_add_upto_4_images
@@ -588,32 +589,22 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     mProductNameStr?.run { searchImageEditText.setText(mProductNameStr) }
                     bottomSheetUploadImageCloseImageView.setOnClickListener { if (true == imagePickBottomSheet?.isShowing) imagePickBottomSheet?.dismiss() }
                     bottomSheetUploadImageRemovePhotoTextView.visibility = if (0 == position) View.GONE else View.VISIBLE
-                    bottomSheetUploadImageRemovePhoto.visibility = if (0 == position) View.GONE else View.VISIBLE
-                    bottomSheetUploadImageCamera.setOnClickListener {
-                        imagePickBottomSheet?.dismiss()
-                        openCameraWithCrop()
-                    }
                     bottomSheetUploadImageCameraTextView.setOnClickListener {
                         imagePickBottomSheet?.dismiss()
                         openCameraWithCrop()
-                    }
-                    bottomSheetUploadImageGallery.setOnClickListener {
-                        imagePickBottomSheet?.dismiss()
-                        openMobileGalleryWithCrop()
                     }
                     bottomSheetUploadImageGalleryTextView.setOnClickListener {
                         imagePickBottomSheet?.dismiss()
                         openMobileGalleryWithCrop()
                     }
-                    bottomSheetUploadImageRemovePhoto.setOnClickListener {
-                        imagePickBottomSheet?.dismiss()
-                        mImagesStrList.removeAt(mImageChangePosition)
-                        mImageAddAdapter?.setListToAdapter(mImagesStrList)
-                    }
                     bottomSheetUploadImageRemovePhotoTextView.setOnClickListener {
                         imagePickBottomSheet?.dismiss()
-                        mImagesStrList.removeAt(mImageChangePosition)
-                        mImageAddAdapter?.setListToAdapter(mImagesStrList)
+                        if (isVariantImageClicked) {
+
+                        } else {
+                            mImagesStrList.removeAt(mImageChangePosition)
+                            mImageAddAdapter?.setListToAdapter(mImagesStrList)
+                        }
                     }
                     imageAdapter.setSearchImageListener(this@AddProductFragment)
                     imageAdapter.setContext(mActivity)
@@ -943,7 +934,16 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 if (commonResponse.mIsSuccessStatus) {
                     showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_check_circle)
                     val base64Str = Gson().fromJson<String>(commonResponse.mCommonDataStr, String::class.java)
-                    if (1 == mImagesStrList.size || 0 == mImageChangePosition) {
+                    if (sIsVariantImageClicked) {
+                        val imageItem = VariantItemImageResponse(
+                            0,
+                            base64Str,
+                            1
+                        )
+                        mActiveVariantList?.get(sVariantImageClickedPosition)?.variantImagesList = ArrayList()
+                        mActiveVariantList?.get(sVariantImageClickedPosition)?.variantImagesList?.add(imageItem)
+                        mActiveVariantAdapter?.notifyItemChanged(sVariantImageClickedPosition)
+                    } else if (1 == mImagesStrList.size || 0 == mImageChangePosition) {
                         mImagesStrList.add(AddProductImagesResponse(0, base64Str, 1))
                     } else if (0 != mImageChangePosition) {
                         val imageResponse = mImagesStrList[mImageChangePosition]
