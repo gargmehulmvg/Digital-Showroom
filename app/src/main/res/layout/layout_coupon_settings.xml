@@ -26,17 +26,17 @@
         tools:text="Applicable once per customer"
         android:textColor="@color/black"
         android:textSize="@dimen/_14sdp"
-        app:layout_constraintEnd_toStartOf="@+id/setting1CheckBox"
-        app:layout_constraintStart_toStartOf="@+id/couponSettingHeadingTextView"
-        app:layout_constraintTop_toBottomOf="@+id/couponSettingHeadingTextView" />
+        app:layout_constraintEnd_toStartOf="@id/setting1CheckBox"
+        app:layout_constraintStart_toStartOf="@id/couponSettingHeadingTextView"
+        app:layout_constraintTop_toBottomOf="@id/couponSettingHeadingTextView" />
 
     <CheckBox
         android:id="@+id/setting1CheckBox"
         android:layout_width="@dimen/_20sdp"
         android:layout_height="@dimen/_20sdp"
-        app:layout_constraintBottom_toBottomOf="@+id/setting1Heading"
+        app:layout_constraintBottom_toBottomOf="@id/setting1Heading"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/setting1Heading" />
+        app:layout_constraintTop_toTopOf="@id/setting1Heading" />
 
     <ImageView
         android:contentDescription="@string/image_view_content_description"
@@ -45,8 +45,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_10sdp"
         android:src="@drawable/ic_coupon_light_bulb"
-        app:layout_constraintStart_toStartOf="@+id/setting1Heading"
-        app:layout_constraintTop_toBottomOf="@+id/setting1Heading" />
+        app:layout_constraintStart_toStartOf="@id/setting1Heading"
+        app:layout_constraintTop_toBottomOf="@id/setting1Heading" />
 
     <ImageView
         android:contentDescription="@string/image_view_content_description"
@@ -55,8 +55,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_10sdp"
         android:src="@drawable/ic_coupon_light_bulb"
-        app:layout_constraintStart_toStartOf="@+id/setting2Heading"
-        app:layout_constraintTop_toBottomOf="@+id/setting2Heading" />
+        app:layout_constraintStart_toStartOf="@id/setting2Heading"
+        app:layout_constraintTop_toBottomOf="@id/setting2Heading" />
 
     <TextView
         android:id="@+id/setting1Message"
@@ -65,9 +65,9 @@
         android:layout_marginTop="@dimen/_8sdp"
         android:textSize="@dimen/_10sdp"
         android:layout_marginStart="@dimen/_5sdp"
-        app:layout_constraintEnd_toEndOf="@+id/setting1Heading"
-        app:layout_constraintStart_toEndOf="@+id/bulbImageView1"
-        app:layout_constraintTop_toBottomOf="@+id/setting1Heading"
+        app:layout_constraintEnd_toEndOf="@id/setting1Heading"
+        app:layout_constraintStart_toEndOf="@id/bulbImageView1"
+        app:layout_constraintTop_toBottomOf="@id/setting1Heading"
         tools:text="Select this option if you want your customers to use this coupon only once" />
 
     <TextView
@@ -79,18 +79,18 @@
         tools:text="Show this Coupon on Website"
         android:textColor="@color/black"
         android:textSize="@dimen/_14sdp"
-        app:layout_constraintEnd_toStartOf="@+id/setting2CheckBox"
-        app:layout_constraintStart_toStartOf="@+id/couponSettingHeadingTextView"
-        app:layout_constraintTop_toBottomOf="@+id/setting1Message" />
+        app:layout_constraintEnd_toStartOf="@id/setting2CheckBox"
+        app:layout_constraintStart_toStartOf="@id/couponSettingHeadingTextView"
+        app:layout_constraintTop_toBottomOf="@id/setting1Message" />
 
     <CheckBox
         android:id="@+id/setting2CheckBox"
         android:layout_width="@dimen/_20sdp"
         android:layout_height="@dimen/_20sdp"
         android:checked="true"
-        app:layout_constraintBottom_toBottomOf="@+id/setting2Heading"
+        app:layout_constraintBottom_toBottomOf="@id/setting2Heading"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/setting2Heading" />
+        app:layout_constraintTop_toTopOf="@id/setting2Heading" />
 
     <TextView
         android:id="@+id/setting2Message"
@@ -99,9 +99,9 @@
         android:layout_marginTop="@dimen/_8sdp"
         android:layout_marginStart="@dimen/_5sdp"
         android:textSize="@dimen/_10sdp"
-        app:layout_constraintEnd_toEndOf="@+id/setting2Heading"
-        app:layout_constraintStart_toEndOf="@+id/bulbImageView2"
-        app:layout_constraintTop_toBottomOf="@+id/setting2Heading"
+        app:layout_constraintEnd_toEndOf="@id/setting2Heading"
+        app:layout_constraintStart_toEndOf="@id/bulbImageView2"
+        app:layout_constraintTop_toBottomOf="@id/setting2Heading"
         tools:text="This will allow customers to see this coupon on your website" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

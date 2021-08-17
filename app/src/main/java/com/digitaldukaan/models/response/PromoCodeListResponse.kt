@@ -5,6 +5,8 @@ import java.util.*
 
 data class PromoCodeListResponse(
     @SerializedName("coupons")                  var mPromoCodeList: ArrayList<PromoCodeListItemResponse>?,
+    @SerializedName("total_active_count")       var mTotalActiveCount: Int,
+    @SerializedName("total_inactive_count")     var mTotalInActiveCount: Int,
     @SerializedName("is_next_page")             var mIsNextPage: Boolean
 )
 

@@ -20,7 +20,6 @@ import com.digitaldukaan.models.response.PromoCodePageStaticTextResponse
 import com.digitaldukaan.services.CustomCouponsService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.ICustomCouponsServiceInterface
-import com.digitaldukaan.views.allowOnlyAlphaNumericCharacters
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.textfield.TextInputLayout
@@ -101,8 +100,6 @@ class CustomCouponsFragment : BaseFragment(), ICustomCouponsServiceInterface {
         setupTextWatchers()
         setStaticTextToUI()
         percentageDiscountTextView?.callOnClick()
-        fdCouponCodeEditText?.allowOnlyAlphaNumericCharacters()
-        pdCouponCodeEditText?.allowOnlyAlphaNumericCharacters()
     }
 
     private fun setStaticTextToUI() {

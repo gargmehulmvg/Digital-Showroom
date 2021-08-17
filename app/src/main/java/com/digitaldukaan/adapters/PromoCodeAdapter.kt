@@ -23,6 +23,7 @@ class PromoCodeAdapter(
     private var mPromoCodeMode: String = ""
 
     inner class PromoCodeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val clickEvent: View = itemView.findViewById(R.id.clickEvent)
         val descriptionTextView: TextView = itemView.findViewById(R.id.descriptionTextView)
         val visibleStatusTextView: TextView = itemView.findViewById(R.id.visibleStatusTextView)
         val useCodeTextView: TextView = itemView.findViewById(R.id.useCodeTextView)
@@ -39,9 +40,7 @@ class PromoCodeAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PromoCodeViewHolder {
         val view = PromoCodeViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.layout_promo_code_item, parent, false))
         view.detailsTextView.setOnClickListener { mListener?.onPromoCodeDetailClickListener(view.adapterPosition) }
-        view.descriptionTextView.setOnClickListener { mListener?.onPromoCodeDetailClickListener(view.adapterPosition) }
-        view.useCodeTextView.setOnClickListener { mListener?.onPromoCodeDetailClickListener(view.adapterPosition) }
-        view.visibleStatusTextView.setOnClickListener { mListener?.onPromoCodeDetailClickListener(view.adapterPosition) }
+        view.clickEvent.setOnClickListener { mListener?.onPromoCodeDetailClickListener(view.adapterPosition) }
         view.shareCouponsTextView.setOnClickListener { mListener?.onPromoCodeShareClickListener(view.adapterPosition) }
         return view
     }

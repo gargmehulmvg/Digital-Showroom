@@ -28,7 +28,6 @@ import com.digitaldukaan.services.CustomCouponsService
 import com.digitaldukaan.services.serviceinterface.IPromoCodePageInfoServiceInterface
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.gson.Gson
 import com.squareup.picasso.Picasso
 import io.sentry.Sentry
@@ -250,7 +249,7 @@ class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInter
                     val timeUsedHeadingTextView: TextView = findViewById(R.id.timeUsedHeadingTextView)
                     val couponSettingHeadingTextView: TextView = findViewById(R.id.couponSettingHeadingTextView)
                     val bottomSheetClose: View = findViewById(R.id.bottomSheetClose)
-                    val activeCouponSwitch: SwitchMaterial = findViewById(R.id.activeCouponSwitch)
+                    val activeCouponSwitch: CheckBox = findViewById(R.id.activeCouponSwitch)
                     bottomSheetClose.setOnClickListener {
                         onReloadPage()
                         bottomSheetDialog.dismiss()
@@ -263,7 +262,7 @@ class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInter
                         setting2Heading.text = response.mStaticText?.text_show_this_coupon_my_website
                         setting2Message.text = response.mStaticText?.message_allow_customer_see_coupon
                         timeUsedValueTextView.text = "${response.mAnalytics?.timesUsed?.toInt()}"
-                        salesGeneratedValueTextView.text = "${response.mAnalytics?.salesGenerated}"
+                        salesGeneratedValueTextView.text = "${response.mAnalytics?.salesGenerated?.toInt()}"
                         val promoCode = "${response.mStaticText?.text_use_code} ${response.mPromoCoupon?.promoCode}"
                         useCodeTextView.text = promoCode
                         val minOrderAmount =  "${mStaticText?.text_min_order_amount} ₹${response.mPromoCoupon?.minOrderPrice?.toInt()}"
@@ -380,7 +379,11 @@ class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInter
                 if (isEmpty(mPromoCodeList)) {
                     zeroCouponAvailableLayout?.visibility = View.VISIBLE
                     zeroCouponAvailableTextView?.text = if (Constants.MODE_PROMO_CODE_ACTIVE == mPromoCodeMode) mStaticText?.text_no_coupons_are_active else mStaticText?.text_no_coupons_are_inactive
-                } else zeroCouponAvailableLayout?.visibility = View.GONE
+                } else {
+                    zeroCouponAvailableLayout?.visibility = View.GONE
+                    activeTextView?.text = "${mStaticText?.active_text} (${promoCodeListResponse?.mTotalActiveCount})"
+                    inActiveTextView?.text = "${mStaticText?.inactive_text} (${promoCodeListResponse?.mTotalInActiveCount})"
+                }
             }
         }
     }
