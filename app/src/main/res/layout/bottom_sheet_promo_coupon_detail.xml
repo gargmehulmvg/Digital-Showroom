@@ -57,8 +57,8 @@
             android:textColor="@color/white"
             android:textSize="@dimen/_9sdp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/descriptionTextView"
-            app:layout_constraintTop_toBottomOf="@+id/descriptionTextView" />
+            app:layout_constraintStart_toStartOf="@id/descriptionTextView"
+            app:layout_constraintTop_toBottomOf="@id/descriptionTextView" />
 
         <TextView
             android:id="@+id/minOrderValueTextView"
@@ -69,9 +69,9 @@
             android:gravity="end"
             android:textColor="@color/white"
             android:textSize="@dimen/_10sdp"
-            app:layout_constraintBaseline_toBaselineOf="@+id/useCodeTextView"
+            app:layout_constraintBaseline_toBaselineOf="@id/useCodeTextView"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/useCodeTextView"
+            app:layout_constraintStart_toEndOf="@id/useCodeTextView"
             tools:text="Min. Order Amount: ₹150" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -88,7 +88,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.15"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/discountContainer" />
+        app:layout_constraintTop_toBottomOf="@id/discountContainer" />
 
     <TextView
         android:id="@+id/timeUsedValueTextView"
@@ -98,8 +98,8 @@
         android:textColor="@color/black"
         android:layout_marginTop="@dimen/_5sdp"
         android:textSize="@dimen/_19sdp"
-        app:layout_constraintStart_toStartOf="@+id/timeUsedHeadingTextView"
-        app:layout_constraintTop_toBottomOf="@+id/timeUsedHeadingTextView"
+        app:layout_constraintStart_toStartOf="@id/timeUsedHeadingTextView"
+        app:layout_constraintTop_toBottomOf="@id/timeUsedHeadingTextView"
         tools:text="0" />
 
     <TextView
@@ -110,8 +110,8 @@
         android:textColor="@color/black"
         android:layout_marginTop="@dimen/_5sdp"
         android:textSize="@dimen/_19sdp"
-        app:layout_constraintStart_toStartOf="@+id/salesGeneratedHeadingTextView"
-        app:layout_constraintTop_toBottomOf="@+id/salesGeneratedHeadingTextView"
+        app:layout_constraintStart_toStartOf="@id/salesGeneratedHeadingTextView"
+        app:layout_constraintTop_toBottomOf="@id/salesGeneratedHeadingTextView"
         android:text="@string/rupee_symbol" />
 
     <TextView
@@ -124,9 +124,9 @@
         tools:text="0"
         android:textColor="@color/black"
         android:textSize="@dimen/_19sdp"
-        app:layout_constraintBottom_toBottomOf="@+id/salesGeneratedRupeeTextView"
-        app:layout_constraintStart_toEndOf="@+id/salesGeneratedRupeeTextView"
-        app:layout_constraintTop_toBottomOf="@+id/salesGeneratedHeadingTextView" />
+        app:layout_constraintBottom_toBottomOf="@id/salesGeneratedRupeeTextView"
+        app:layout_constraintStart_toEndOf="@id/salesGeneratedRupeeTextView"
+        app:layout_constraintTop_toBottomOf="@id/salesGeneratedHeadingTextView" />
 
     <TextView
         android:id="@+id/salesGeneratedHeadingTextView"
@@ -140,7 +140,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.75"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/discountContainer" />
+        app:layout_constraintTop_toBottomOf="@id/discountContainer" />
 
     <View
         android:id="@+id/separator"
@@ -150,7 +150,7 @@
         android:background="@color/curve_grey_border"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/salesGeneratedValueTextView" />
+        app:layout_constraintTop_toBottomOf="@id/salesGeneratedValueTextView" />
 
     <TextView
         android:id="@+id/couponSettingHeadingTextView"
@@ -160,8 +160,8 @@
         android:fontFamily="@font/roboto_medium"
         android:textColor="@color/default_text_light_grey"
         android:textSize="@dimen/_11sdp"
-        app:layout_constraintStart_toStartOf="@+id/discountContainer"
-        app:layout_constraintTop_toBottomOf="@+id/separator"
+        app:layout_constraintStart_toStartOf="@id/discountContainer"
+        app:layout_constraintTop_toBottomOf="@id/separator"
         tools:text="Coupon Settings" />
 
     <CheckBox
@@ -172,7 +172,7 @@
         android:layout_marginEnd="@dimen/_10sdp"
         android:gravity="center"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/couponSettingHeadingTextView" />
+        app:layout_constraintTop_toBottomOf="@id/couponSettingHeadingTextView" />
 
     <TextView
         android:id="@+id/setting1Heading"
@@ -181,9 +181,9 @@
         android:fontFamily="@font/roboto_medium"
         android:textColor="@color/black"
         android:textSize="@dimen/_14sdp"
-        app:layout_constraintBaseline_toBaselineOf="@+id/activeCouponSwitch"
-        app:layout_constraintEnd_toStartOf="@+id/activeCouponSwitch"
-        app:layout_constraintStart_toStartOf="@+id/couponSettingHeadingTextView"
+        app:layout_constraintBaseline_toBaselineOf="@id/activeCouponSwitch"
+        app:layout_constraintEnd_toStartOf="@id/activeCouponSwitch"
+        app:layout_constraintStart_toStartOf="@id/couponSettingHeadingTextView"
         tools:text="Active Coupon" />
 
     <TextView
@@ -194,18 +194,18 @@
         android:textColor="@color/black"
         android:textSize="@dimen/_14sdp"
         android:layout_marginTop="@dimen/_12sdp"
-        app:layout_constraintEnd_toStartOf="@+id/setting2CheckBox"
-        app:layout_constraintStart_toStartOf="@+id/couponSettingHeadingTextView"
-        app:layout_constraintTop_toBottomOf="@+id/activeCouponSwitch"
+        app:layout_constraintEnd_toStartOf="@id/setting2CheckBox"
+        app:layout_constraintStart_toStartOf="@id/couponSettingHeadingTextView"
+        app:layout_constraintTop_toBottomOf="@id/activeCouponSwitch"
         tools:text="Show this Coupon on Website" />
 
     <CheckBox
         android:id="@+id/setting2CheckBox"
         android:layout_width="@dimen/_25sdp"
         android:layout_height="@dimen/_25sdp"
-        app:layout_constraintBottom_toBottomOf="@+id/setting2Heading"
-        app:layout_constraintEnd_toEndOf="@+id/activeCouponSwitch"
-        app:layout_constraintTop_toTopOf="@+id/setting2Heading" />
+        app:layout_constraintBottom_toBottomOf="@id/setting2Heading"
+        app:layout_constraintEnd_toEndOf="@id/activeCouponSwitch"
+        app:layout_constraintTop_toTopOf="@id/setting2Heading" />
 
     <ImageView
         android:id="@+id/bulbImageView2"
@@ -226,9 +226,9 @@
         android:textSize="@dimen/_10sdp"
         android:layout_marginStart="@dimen/_5sdp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/setting2Heading"
-        app:layout_constraintStart_toEndOf="@+id/bulbImageView2"
-        app:layout_constraintTop_toBottomOf="@+id/setting2Heading"
+        app:layout_constraintEnd_toEndOf="@id/setting2Heading"
+        app:layout_constraintStart_toEndOf="@id/bulbImageView2"
+        app:layout_constraintTop_toBottomOf="@id/setting2Heading"
         tools:text="This will allow customers to see this coupon on your website" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
