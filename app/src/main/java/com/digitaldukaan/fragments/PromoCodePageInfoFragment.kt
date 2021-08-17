@@ -404,6 +404,14 @@ class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInter
                 if (position >= mPromoCodeList.size) return
                 val item = mPromoCodeList[position]
                 showProgressDialog(mActivity)
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_SHARE_COUPON,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(
+                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                        AFInAppEventParameterName.COUPON_ID to item.promoCode
+                    )
+                )
                 mService.shareCoupon(item.promoCode)
             }
         })
