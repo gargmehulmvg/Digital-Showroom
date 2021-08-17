@@ -15,6 +15,7 @@ import com.bumptech.glide.Glide
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.isDouble
 import com.digitaldukaan.constants.isEmpty
+import com.digitaldukaan.constants.isNotEmpty
 import com.digitaldukaan.interfaces.IVariantItemClickListener
 import com.digitaldukaan.models.response.AddProductStaticText
 import com.digitaldukaan.models.response.VariantItemResponse
@@ -37,6 +38,7 @@ class ActiveVariantAdapterV2(
         val imageViewContainer: View = itemView.findViewById(R.id.imageViewContainer)
         val noImagesLayout: View = itemView.findViewById(R.id.noImagesLayout)
         val priceEditText: EditText = itemView.findViewById(R.id.priceEditText)
+        val nameEditText: EditText = itemView.findViewById(R.id.nameEditText)
         val discountPriceEditText: EditText = itemView.findViewById(R.id.discountPriceEditText)
         val variantNameInputLayout: TextInputLayout = itemView.findViewById(R.id.variantNameInputLayout)
         val variantPriceInputLayout: TextInputLayout = itemView.findViewById(R.id.variantPriceInputLayout)
@@ -65,8 +67,39 @@ class ActiveVariantAdapterV2(
             variantNameInputLayout.hint = mStaticText?.hint_variant_name
             variantPriceInputLayout.hint = mStaticText?.hint_price
             variantDiscountPriceInputLayout.hint = mStaticText?.hint_discounted_price
-            if (0.0 != item?.price) priceEditText.setText("${item?.price}")
-            if (0.0 != item?.discountedPrice) discountPriceEditText.setText("${item?.discountedPrice}")
+            if (isNotEmpty(item?.variantName)) nameEditText.setText(item?.variantName)
+            if (0.0 != item?.price) priceEditText.setText("${item?.price?.toInt()}")
+            if (0.0 != item?.discountedPrice) discountPriceEditText.setText("${item?.discountedPrice?.toInt()}")
+            priceEditText.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                    Log.d(TAG, "beforeTextChanged: ")
+                }
+
+                override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                    Log.d(TAG, "onTextChanged: ")
+                }
+
+                override fun afterTextChanged(editable: Editable?) {
+                    val str = editable?.toString()
+                    item?.price = if (isNotEmpty(str)) str?.toDouble() ?: 0.0 else 0.0
+                }
+
+            })
+            nameEditText.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                    Log.d(TAG, "beforeTextChanged: ")
+                }
+
+                override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                    Log.d(TAG, "onTextChanged: ")
+                }
+
+                override fun afterTextChanged(editable: Editable?) {
+                    val str = editable?.toString()
+                    item?.variantName = str
+                }
+
+            })
             discountPriceEditText.addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                     Log.d(TAG, "beforeTextChanged: ")
@@ -106,6 +139,7 @@ class ActiveVariantAdapterV2(
                                     requestFocus()
                                 }
                             }
+                            else -> item?.discountedPrice = str?.toDouble() ?: 0.0
                         }
                     }
                 }
@@ -117,7 +151,9 @@ class ActiveVariantAdapterV2(
             } else {
                 imageView.visibility = View.VISIBLE
                 noImagesLayout.visibility = View.GONE
-                mContext?.let { context -> Glide.with(context).load(item?.variantImagesList?.get(0)?.imageUrl).into(imageView) }
+                mContext?.let { context ->
+                    Glide.with(context).load(item?.variantImagesList?.get(0)?.imageUrl).into(imageView)
+                }
             }
         }
     }

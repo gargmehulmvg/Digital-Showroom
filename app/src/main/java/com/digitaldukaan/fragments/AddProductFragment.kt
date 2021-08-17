@@ -449,7 +449,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                             if (categoryStr.trim().isEmpty()) AddProductItemCategory(0, "") else AddProductItemCategory(0, categoryStr),
                             imageListRequest,
                             nameStr,
-                            mAddProductResponse?.storeItem?.variantsList
+                            mActiveVariantList
                         )
                         AppEventsManager.pushAppEvents(
                             eventName = AFInAppEventType.EVENT_SAVE_ITEM,
@@ -586,9 +586,19 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     bottomSheetUploadImageHeading.text = addProductStaticData?.bottom_sheet_add_image
                     bottomSheetUploadImageCameraTextView.text = addProductStaticData?.bottom_sheet_take_a_photo
                     searchImageEditText.hint = addProductStaticData?.bottom_sheet_hint_search_for_images_here
-                    mProductNameStr?.run { searchImageEditText.setText(mProductNameStr) }
+                    mProductNameStr?.let { str ->
+                        if (isVariantImageClicked) {
+                            val name = str + " " + mActiveVariantList?.get(position)?.variantName
+                            searchImageEditText.setText(name)
+                        } else searchImageEditText.setText(str)
+                    }
                     bottomSheetUploadImageCloseImageView.setOnClickListener { if (true == imagePickBottomSheet?.isShowing) imagePickBottomSheet?.dismiss() }
-                    bottomSheetUploadImageRemovePhotoTextView.visibility = if (0 == position) View.GONE else View.VISIBLE
+                    if (!isVariantImageClicked) {
+                        bottomSheetUploadImageRemovePhotoTextView.visibility = if (0 == position) View.GONE else View.VISIBLE
+                    } else {
+                        val variantImageEmpty = isEmpty(mActiveVariantList?.get(position)?.variantImagesList)
+                        bottomSheetUploadImageRemovePhotoTextView.visibility = if (variantImageEmpty) View.GONE else View.VISIBLE
+                    }
                     bottomSheetUploadImageCameraTextView.setOnClickListener {
                         imagePickBottomSheet?.dismiss()
                         openCameraWithCrop()
@@ -600,7 +610,8 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     bottomSheetUploadImageRemovePhotoTextView.setOnClickListener {
                         imagePickBottomSheet?.dismiss()
                         if (isVariantImageClicked) {
-
+                            mActiveVariantList?.get(position)?.variantImagesList = null
+                            mActiveVariantAdapter?.notifyItemChanged(position)
                         } else {
                             mImagesStrList.removeAt(mImageChangePosition)
                             mImageAddAdapter?.setListToAdapter(mImagesStrList)
