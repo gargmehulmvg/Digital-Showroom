@@ -381,6 +381,8 @@ fun isEmpty(string: String?): Boolean = string == null || string.isEmpty()
 
 fun isNotEmpty(string: String?): Boolean = !isEmpty(string)
 
+fun isNotEmpty(list: List<Any>?): Boolean = !isEmpty(list)
+
 fun getDayOfTheWeek(count: Int): String {
     when(count) {
         0   ->  return "Sun"

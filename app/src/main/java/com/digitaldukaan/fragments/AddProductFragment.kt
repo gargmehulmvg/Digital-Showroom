@@ -435,16 +435,17 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                             Log.e(TAG, "AddProductFragment onClick request: ", e)
                             Sentry.captureException(e, "AddProductFragment onClick request: ")
                         }
+                        val discountPrice = if (discountedStr.isNotEmpty()) {
+                            if (discountedStr.startsWith(".")) {
+                                discountedStr = "0$discountedStr"
+                            }
+                            discountedStr.toDouble()
+                        } else 0.0
                         val request = AddProductRequest(
                             mItemId,
                             1,
-                            price,
-                            if (discountedStr.isNotEmpty()) {
-                                if (discountedStr.startsWith(".")) {
-                                    discountedStr = "0$discountedStr"
-                                }
-                                discountedStr.toDouble()
-                            } else 0.0,
+                            if (isNotEmpty(mActiveVariantList)) 0.0 else price,
+                            if (isNotEmpty(mActiveVariantList)) 0.0 else discountPrice,
                             descriptionStr,
                             if (categoryStr.trim().isEmpty()) AddProductItemCategory(0, "") else AddProductItemCategory(0, categoryStr),
                             imageListRequest,
@@ -814,6 +815,11 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 setupCategoryChipRecyclerView()
                 setStaticDataFromResponse()
                 setupOptionsMenu()
+                if (isNotEmpty(mAddProductResponse?.storeItem?.variantsList)) {
+                    mActiveVariantList = ArrayList()
+                    mActiveVariantList = mAddProductResponse?.storeItem?.variantsList
+                    setupVariantRecyclerView()
+                }
                 shareProductContainer?.setOnClickListener {
                     val productNameStr = mAddProductResponse?.storeItem?.name?.trim()
                     val newProductName = replaceTemplateString(productNameStr)
