@@ -12,4 +12,6 @@ interface IVariantItemClickListener {
 
     fun onVariantListEmpty()
 
+    fun onVariantItemChanged()
+
 }

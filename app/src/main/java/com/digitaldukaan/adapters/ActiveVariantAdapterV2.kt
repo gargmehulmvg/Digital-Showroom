@@ -19,6 +19,7 @@ import com.digitaldukaan.constants.isNotEmpty
 import com.digitaldukaan.interfaces.IVariantItemClickListener
 import com.digitaldukaan.models.response.AddProductStaticText
 import com.digitaldukaan.models.response.VariantItemResponse
+import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textfield.TextInputLayout
 
 class ActiveVariantAdapterV2(
@@ -43,6 +44,8 @@ class ActiveVariantAdapterV2(
         val variantNameInputLayout: TextInputLayout = itemView.findViewById(R.id.variantNameInputLayout)
         val variantPriceInputLayout: TextInputLayout = itemView.findViewById(R.id.variantPriceInputLayout)
         val deleteTextView: TextView = itemView.findViewById(R.id.deleteTextView)
+        val inStockTextView: TextView = itemView.findViewById(R.id.inStockTextView)
+        val variantSwitch: SwitchMaterial = itemView.findViewById(R.id.variantSwitch)
         val variantDiscountPriceInputLayout: TextInputLayout = itemView.findViewById(R.id.variantDiscountPriceInputLayout)
     }
 
@@ -63,6 +66,13 @@ class ActiveVariantAdapterV2(
     ) {
         val item = mActiveVariantList?.get(position)
         holder.apply {
+            if (item?.available == 1) {
+                variantSwitch.isChecked = true
+                inStockTextView.text = mStaticText?.text_in_stock
+            } else {
+                variantSwitch.isChecked = false
+                inStockTextView.text = mContext?.getString(R.string.out_of_stock)
+            }
             deleteTextView.text = mStaticText?.text_delete
             variantNameInputLayout.hint = mStaticText?.hint_variant_name
             variantPriceInputLayout.hint = mStaticText?.hint_price
@@ -82,6 +92,7 @@ class ActiveVariantAdapterV2(
                 override fun afterTextChanged(editable: Editable?) {
                     val str = editable?.toString()
                     item?.price = if (isNotEmpty(str)) str?.toDouble() ?: 0.0 else 0.0
+                    mListener?.onVariantItemChanged()
                 }
 
             })
@@ -97,6 +108,7 @@ class ActiveVariantAdapterV2(
                 override fun afterTextChanged(editable: Editable?) {
                     val str = editable?.toString()
                     item?.variantName = str
+                    mListener?.onVariantItemChanged()
                 }
 
             })
@@ -142,6 +154,7 @@ class ActiveVariantAdapterV2(
                             else -> item?.discountedPrice = str?.toDouble() ?: 0.0
                         }
                     }
+                    mListener?.onVariantItemChanged()
                 }
 
             })
@@ -155,6 +168,16 @@ class ActiveVariantAdapterV2(
                     Glide.with(context).load(item?.variantImagesList?.get(0)?.imageUrl).into(imageView)
                 }
             }
+            variantSwitch.setOnCheckedChangeListener { _, isChecked ->
+                mListener?.onVariantItemChanged()
+                if (isChecked) {
+                    item?.available = 1
+                    inStockTextView.text = mStaticText?.text_in_stock
+                } else {
+                    item?.available = 0
+                    inStockTextView.text = mContext?.getString(R.string.out_of_stock)
+                }
+            }
         }
     }
 
@@ -163,6 +186,7 @@ class ActiveVariantAdapterV2(
         notifyItemRemoved(position)
         notifyItemRangeChanged(position, mActiveVariantList?.size ?: 0)
         if (isEmpty(mActiveVariantList)) mListener?.onVariantListEmpty()
+        mListener?.onVariantItemChanged()
     }
 
 }

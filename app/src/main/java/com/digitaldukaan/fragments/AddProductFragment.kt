@@ -479,6 +479,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     addNewVariantInList()
                     mActiveVariantAdapter?.notifyDataSetChanged()
                 }
+                showAddProductContainer()
             }
         }
     }
@@ -521,6 +522,8 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 priceCardView?.visibility = View.VISIBLE
                 addVariantsTextView?.text = mActivity?.getString(R.string.add_variants_optional)
             }
+
+            override fun onVariantItemChanged() = showAddProductContainer()
 
         })
         variantRecyclerView?.apply {
