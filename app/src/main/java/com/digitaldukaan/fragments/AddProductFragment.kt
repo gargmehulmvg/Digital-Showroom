@@ -98,6 +98,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     private var productDescriptionInputLayout: TextInputLayout? = null
     private var mActiveVariantAdapter: ActiveVariantAdapterV2? = null
     private var mActiveVariantList: ArrayList<VariantItemResponse>? = null
+    private var mDeletedVariantList: ArrayList<VariantItemResponse>? = null
 
     companion object {
         private var sIsVariantImageClicked = false
@@ -285,6 +286,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 }
             }
             mActiveVariantList = ArrayList()
+            mDeletedVariantList = ArrayList()
         } catch (e: Exception) {
             Log.e(TAG, "onViewCreated: ${e.message}", e)
         }
@@ -441,16 +443,23 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                             }
                             discountedStr.toDouble()
                         } else 0.0
+                        val finalList: ArrayList<VariantItemResponse> = ArrayList()
+                        mActiveVariantList?.let { list ->
+                            finalList.addAll(list)
+                        }
+                        mDeletedVariantList?.let { list ->
+                            finalList.addAll(list)
+                        }
                         val request = AddProductRequest(
                             mItemId,
                             1,
-                            if (isNotEmpty(mActiveVariantList)) 0.0 else price,
-                            if (isNotEmpty(mActiveVariantList)) 0.0 else discountPrice,
+                            if (isNotEmpty(mActiveVariantList)) mActiveVariantList?.get(0)?.price else price,
+                            if (isNotEmpty(mActiveVariantList)) mActiveVariantList?.get(0)?.discountedPrice ?: 0.0 else discountPrice,
                             descriptionStr,
                             if (categoryStr.trim().isEmpty()) AddProductItemCategory(0, "") else AddProductItemCategory(0, categoryStr),
                             imageListRequest,
                             nameStr,
-                            mActiveVariantList
+                            finalList
                         )
                         AppEventsManager.pushAppEvents(
                             eventName = AFInAppEventType.EVENT_SAVE_ITEM,
@@ -549,6 +558,11 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 deleteVariantCancelTextView.text = addProductStaticData?.text_cancel
                 deleteVariantTextView.setOnClickListener {
                     dialog.dismiss()
+                    val variantItem = mActiveVariantList?.get(position)
+                    variantItem?.let { item ->
+                        item.status = 0
+                        mDeletedVariantList?.add(item)
+                    }
                     mActiveVariantAdapter?.deleteItemFromActiveVariantList(position)
                 }
                 deleteVariantCancelTextView.setOnClickListener { dialog.dismiss() }
