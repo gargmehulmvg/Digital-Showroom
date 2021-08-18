@@ -91,7 +91,25 @@ class ActiveVariantAdapterV2(
 
                 override fun afterTextChanged(editable: Editable?) {
                     val str = editable?.toString()
-                    item?.price = if (isNotEmpty(str)) str?.toDouble() ?: 0.0 else 0.0
+                    if (!isEmpty(str)) {
+                        val discountPriceStr = discountPriceEditText.text.toString()
+                        when {
+                            "." == str -> {}
+                            !isDouble(str) -> {
+                                discountPriceEditText.apply {
+                                    text = null
+                                    error = mStaticText?.error_mandatory_field
+                                    requestFocus()
+                                }
+                            }
+                            (if (isEmpty(discountPriceStr)) 0.0 else discountPriceStr.toDouble()) > str?.toDouble() ?: 0.0 -> {
+                                discountPriceEditText.apply {
+                                    text = null
+                                }
+                            }
+                            else -> item?.price = str?.toDouble() ?: 0.0
+                        }
+                    }
                     mListener?.onVariantItemChanged()
                 }
 
