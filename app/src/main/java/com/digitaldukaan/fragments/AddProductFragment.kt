@@ -969,13 +969,17 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_check_circle)
                     val base64Str = Gson().fromJson<String>(commonResponse.mCommonDataStr, String::class.java)
                     if (sIsVariantImageClicked) {
-                        val imageItem = VariantItemImageResponse(
-                            0,
-                            base64Str,
-                            1
-                        )
-                        mActiveVariantList?.get(sVariantImageClickedPosition)?.variantImagesList = ArrayList()
-                        mActiveVariantList?.get(sVariantImageClickedPosition)?.variantImagesList?.add(imageItem)
+                        if (isEmpty(mActiveVariantList?.get(sVariantImageClickedPosition)?.variantImagesList))
+                            mActiveVariantList?.get(sVariantImageClickedPosition)?.variantImagesList = ArrayList()
+                        if (isNotEmpty(mActiveVariantList?.get(sVariantImageClickedPosition)?.variantImagesList)) {
+                            val item = mActiveVariantList?.get(sVariantImageClickedPosition)?.variantImagesList?.get(0)
+                            val imageItem = VariantItemImageResponse(
+                                if (0 != item?.imageId) item?.imageId ?: 0 else 0,
+                                base64Str,
+                                1
+                            )
+                            mActiveVariantList?.get(sVariantImageClickedPosition)?.variantImagesList?.add(imageItem)
+                        }
                         mActiveVariantAdapter?.notifyItemChanged(sVariantImageClickedPosition)
                     } else if (1 == mImagesStrList.size || 0 == mImageChangePosition) {
                         mImagesStrList.add(AddProductImagesResponse(0, base64Str, 1))
