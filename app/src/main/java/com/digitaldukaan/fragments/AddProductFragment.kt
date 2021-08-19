@@ -60,6 +60,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     private var addProductBannerStaticDataResponse: AddProductBannerTextResponse? = null
     private var addProductStaticData: AddProductStaticText? = null
     private var mItemId = 0
+    private var mItemCategoryId = 0
     private val mImagesStrList: ArrayList<AddProductImagesResponse> = ArrayList()
     private var imagePickBottomSheet: BottomSheetDialog? = null
     private var imageAdapter = ImagesSearchAdapter()
@@ -456,7 +457,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                             if (isNotEmpty(mActiveVariantList)) mActiveVariantList?.get(0)?.price else price,
                             if (isNotEmpty(mActiveVariantList)) mActiveVariantList?.get(0)?.discountedPrice ?: 0.0 else discountPrice,
                             descriptionStr,
-                            if (categoryStr.trim().isEmpty()) AddProductItemCategory(0, "") else AddProductItemCategory(0, categoryStr),
+                            if (categoryStr.trim().isEmpty()) AddProductItemCategory(0, "") else AddProductItemCategory(mItemCategoryId, categoryStr),
                             imageListRequest,
                             nameStr,
                             finalList
@@ -516,13 +517,13 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         priceCardView?.visibility = View.GONE
         addVariantsTextView?.text = addProductStaticData?.text_add_variant
         mActiveVariantAdapter = ActiveVariantAdapterV2(mActivity, addProductStaticData, mActiveVariantList, object : IVariantItemClickListener {
-            override fun onVariantEditNameClicked(variant: VariantItemResponse?, position: Int) {
-
-            }
 
             override fun onVariantDeleteClicked(position: Int) = showDeleteVariantConfirmationDialog(position)
 
-            override fun onVariantImageClicked(position: Int) = showAddProductImagePickerBottomSheet(position, true)
+            override fun onVariantImageClicked(position: Int) {
+                showAddProductContainer()
+                showAddProductImagePickerBottomSheet(position, true)
+            }
 
             override fun onVariantListEmpty() {
                 variantHeadingTextView?.apply {
@@ -871,6 +872,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                         mTempProductCategoryList.forEachIndexed { _, categoryItem ->
                             if (categoryItem.id == mAddProductResponse?.storeItem?.category?.id) {
                                 enterCategoryEditText?.setText(categoryItem.name)
+                                mItemCategoryId = mAddProductResponse?.storeItem?.category?.id ?: 0
                                 categoryItem.isSelected = true
                             } else categoryItem.isSelected = false
                         }
@@ -975,9 +977,14 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                             val item = mActiveVariantList?.get(sVariantImageClickedPosition)?.variantImagesList?.get(0)
                             val imageItem = VariantItemImageResponse(
                                 if (0 != item?.imageId) item?.imageId ?: 0 else 0,
-                                base64Str,
-                                1
+                                item?.imageUrl ?: "",
+                                0
                             )
+                            val newImageItem = VariantItemImageResponse(0, base64Str, 1)
+                            mActiveVariantList?.get(sVariantImageClickedPosition)?.variantImagesList?.set(0, newImageItem)
+                            mActiveVariantList?.get(sVariantImageClickedPosition)?.variantImagesList?.add(imageItem)
+                        } else {
+                            val imageItem = VariantItemImageResponse(0, base64Str, 1)
                             mActiveVariantList?.get(sVariantImageClickedPosition)?.variantImagesList?.add(imageItem)
                         }
                         mActiveVariantAdapter?.notifyItemChanged(sVariantImageClickedPosition)
@@ -1048,6 +1055,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             mTempProductCategoryList.forEachIndexed { _, categoryItem -> categoryItem.isSelected = false }
             mTempProductCategoryList[position].isSelected = true
             enterCategoryEditText?.setText(mTempProductCategoryList[position].name)
+            mItemCategoryId = mTempProductCategoryList[position].id ?: 0
             enterCategoryEditText?.setSelection(mTempProductCategoryList[position].name?.length ?: 0)
             addProductChipsAdapter?.setAddProductStoreCategoryList(mTempProductCategoryList)
         } catch (e: Exception) {
