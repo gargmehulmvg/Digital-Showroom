@@ -7,9 +7,11 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.appcompat.widget.AppCompatAutoCompleteTextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.digitaldukaan.R
@@ -25,6 +27,7 @@ import com.google.android.material.textfield.TextInputLayout
 class ActiveVariantAdapterV2(
     private var mContext:           Context?,
     private var mStaticText:        AddProductStaticText?,
+    private var mRecentVariantsList: ArrayList<VariantItemResponse>?,
     private var mActiveVariantList: ArrayList<VariantItemResponse>?,
     private var mListener:          IVariantItemClickListener?
 ) :
@@ -39,7 +42,7 @@ class ActiveVariantAdapterV2(
         val imageViewContainer: View = itemView.findViewById(R.id.imageViewContainer)
         val noImagesLayout: View = itemView.findViewById(R.id.noImagesLayout)
         val priceEditText: EditText = itemView.findViewById(R.id.priceEditText)
-        val nameEditText: EditText = itemView.findViewById(R.id.nameEditText)
+        val nameEditText: AppCompatAutoCompleteTextView = itemView.findViewById(R.id.nameEditText)
         val discountPriceEditText: EditText = itemView.findViewById(R.id.discountPriceEditText)
         val variantNameInputLayout: TextInputLayout = itemView.findViewById(R.id.variantNameInputLayout)
         val variantPriceInputLayout: TextInputLayout = itemView.findViewById(R.id.variantPriceInputLayout)
@@ -196,6 +199,11 @@ class ActiveVariantAdapterV2(
                     inStockTextView.text = mContext?.getString(R.string.out_of_stock)
                 }
             }
+            mContext?.let { context ->
+                val adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1, getRecentVariantList())
+                nameEditText.setAdapter(adapter)
+                nameEditText.threshold = 3
+            }
         }
     }
 
@@ -213,6 +221,16 @@ class ActiveVariantAdapterV2(
         notifyItemRangeChanged(position, mActiveVariantList?.size ?: 0)
         if (isEmpty(mActiveVariantList)) mListener?.onVariantListEmpty()
         mListener?.onVariantItemChanged()
+    }
+
+    private val mRecentVariantNameListStr = ArrayList<String>()
+
+    private fun getRecentVariantList(): ArrayList<String> {
+        if (isNotEmpty(mRecentVariantNameListStr)) return mRecentVariantNameListStr
+        mRecentVariantsList?.forEachIndexed { _, itemResponse ->
+            mRecentVariantNameListStr.add(itemResponse.variantName ?: "")
+        }
+        return mRecentVariantNameListStr
     }
 
 }

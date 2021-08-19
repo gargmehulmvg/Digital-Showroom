@@ -49,17 +49,18 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/variantNameInputLayout"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_15sdp"
             android:layout_marginEnd="@dimen/_10sdp"
+            app:endIconMode="none"
             app:layout_constraintEnd_toStartOf="@id/imageViewContainer"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:hint="Enter Variant Name">
 
-            <EditText
+            <androidx.appcompat.widget.AppCompatAutoCompleteTextView
                 android:id="@+id/nameEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

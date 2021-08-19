@@ -516,7 +516,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         }
         priceCardView?.visibility = View.GONE
         addVariantsTextView?.text = addProductStaticData?.text_add_variant
-        mActiveVariantAdapter = ActiveVariantAdapterV2(mActivity, addProductStaticData, mActiveVariantList, object : IVariantItemClickListener {
+        mActiveVariantAdapter = ActiveVariantAdapterV2(mActivity, addProductStaticData, mAddProductResponse?.recentVariantsList, mActiveVariantList, object : IVariantItemClickListener {
 
             override fun onVariantDeleteClicked(position: Int) = showDeleteVariantConfirmationDialog(position)
 
