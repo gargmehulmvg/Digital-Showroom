@@ -199,6 +199,14 @@ class ActiveVariantAdapterV2(
         }
     }
 
+    override fun getItemId(position: Int): Long {
+        return position.toLong()
+    }
+
+    override fun getItemViewType(position: Int): Int {
+        return position
+    }
+
     fun deleteItemFromActiveVariantList(position: Int) {
         mActiveVariantList?.removeAt(position)
         notifyItemRemoved(position)
