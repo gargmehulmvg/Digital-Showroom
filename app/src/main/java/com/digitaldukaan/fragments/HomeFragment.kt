@@ -678,6 +678,9 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                         val domain = jsonData.optString("data")
                         openUrlInBrowser(domain)
                     }
+                    jsonData.optBoolean("unauthorizedAccess") -> {
+                        logoutFromApplication()
+                    }
                     jsonData.optBoolean("trackEventData") -> {
                         val eventName = jsonData.optString("eventName")
                         val additionalData = jsonData.optString("additionalData")

@@ -150,6 +150,8 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
             launchFragment(HomeFragment.newInstance(), true)
         } else if (jsonData.optBoolean("startLoader")) {
             showProgressDialog(mActivity)
+        } else if (jsonData.optBoolean("unauthorizedAccess")) {
+            logoutFromApplication()
         } else if (jsonData.optBoolean("openUPIIntent")) {
             val intent = Intent()
             intent.data = Uri.parse(jsonData.optString("data"))

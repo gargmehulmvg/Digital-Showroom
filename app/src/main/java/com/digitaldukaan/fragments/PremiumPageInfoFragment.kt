@@ -137,6 +137,7 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
         when {
             jsonData.optBoolean("redirectNative") -> launchFragment(EditPremiumFragment.newInstance(mStaticText, premiumPageInfoResponse), true)
             jsonData.optBoolean("redirectBrowser") -> openUrlInBrowser(jsonData.optString("data"))
+            jsonData.optBoolean("unauthorizedAccess") -> logoutFromApplication()
             jsonData.optBoolean("openUPIIntent") -> {
                 val intent = Intent()
                 intent.data = Uri.parse(jsonData.optString("data"))
