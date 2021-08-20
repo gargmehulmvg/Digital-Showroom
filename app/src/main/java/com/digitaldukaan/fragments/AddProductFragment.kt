@@ -629,7 +629,11 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     bottomSheetUploadImageRemovePhotoTextView.setOnClickListener {
                         imagePickBottomSheet?.dismiss()
                         if (isVariantImageClicked) {
-                            mActiveVariantList?.get(position)?.variantImagesList = null
+                            val item = mActiveVariantList?.get(position)?.variantImagesList?.get(0)
+                            item?.let { deleteItem ->
+                                deleteItem.status = 0
+                                mActiveVariantList?.get(position)?.variantImagesList?.set(0, deleteItem)
+                            }
                             mActiveVariantAdapter?.notifyItemChanged(position)
                         } else {
                             mImagesStrList.removeAt(mImageChangePosition)

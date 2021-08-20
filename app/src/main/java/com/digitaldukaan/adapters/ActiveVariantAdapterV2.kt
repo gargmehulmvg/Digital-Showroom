@@ -183,10 +183,16 @@ class ActiveVariantAdapterV2(
                 noImagesLayout.visibility = View.VISIBLE
                 imageView.visibility = View.GONE
             } else {
-                imageView.visibility = View.VISIBLE
-                noImagesLayout.visibility = View.GONE
-                mContext?.let { context ->
-                    Glide.with(context).load(item?.variantImagesList?.get(0)?.imageUrl).into(imageView)
+                val imageItem = item?.variantImagesList?.get(0)
+                if (0 == imageItem?.status || isEmpty(imageItem?.imageUrl ?: "")) {
+                    noImagesLayout.visibility = View.VISIBLE
+                    imageView.visibility = View.GONE
+                } else {
+                    imageView.visibility = View.VISIBLE
+                    noImagesLayout.visibility = View.GONE
+                    mContext?.let { context ->
+                        Glide.with(context).load(imageItem?.imageUrl).into(imageView)
+                    }
                 }
             }
             variantSwitch.setOnCheckedChangeListener { _, isChecked ->
