@@ -445,6 +445,9 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                             discountedStr.toDouble()
                         } else 0.0
                         val finalList: ArrayList<VariantItemResponse> = ArrayList()
+                        mActiveVariantList?.forEachIndexed { _, itemResponse ->
+                            if (isEmpty(itemResponse.variantName)) itemResponse.status = 0
+                        }
                         mActiveVariantList?.let { list ->
                             finalList.addAll(list)
                         }
