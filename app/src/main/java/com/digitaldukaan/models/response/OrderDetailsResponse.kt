@@ -9,9 +9,10 @@ data class OrderDetailsResponse (
     @SerializedName("payment_status")           var paymentStatus: Int?,
     @SerializedName("status")                   var status: Int?,
     @SerializedName("order_type")               var orderType: Int?,
-    @SerializedName("amount")                   var amount: Double?,                      // Original Amount
-    @SerializedName("pay_amount")               var payAmount: Double?,               // Amount to be paid to server (Discounted Price)
+    @SerializedName("amount")                   var amount: Double?,                    // Original Amount
+    @SerializedName("pay_amount")               var payAmount: Double?,                 // Amount to be paid to server (Discounted Price)
     @SerializedName("discount")                 var discount: Double?,
+    @SerializedName("promo_discount")           var promoDiscount: Double?,
     @SerializedName("delivery_charge")          var deliveryCharge: Double?,
     @SerializedName("extra_charges")            var extraCharges: Double?,
     @SerializedName("extra_charge_name")        var extraChargesName: String?,

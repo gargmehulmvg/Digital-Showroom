@@ -339,7 +339,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
             if (null == orderDetailMainResponse?.promoCodeDetails) {
                 promoLayout?.visibility = View.GONE
             } else {
-                mPromoDiscount = orderDetailMainResponse?.promoCodeDetails?.coupon?.discount ?: 0.0
+                mPromoDiscount = orderDetailMainResponse?.orders?.promoDiscount ?: 0.0
                 promoLayout?.visibility = View.VISIBLE
                 promoCodeTextView?.text = orderDetailMainResponse?.promoCodeDetails?.coupon?.promoCode
                 val descriptionStr = if (Constants.MODE_COUPON_TYPE_FLAT == orderDetailMainResponse?.promoCodeDetails?.coupon?.discountType) {
@@ -348,7 +348,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                     "${orderDetailMainResponse?.promoCodeDetails?.coupon?.discount?.toInt()}% OFF Upto ₹${orderDetailMainResponse?.promoCodeDetails?.coupon?.maxDiscount?.toInt()}"
                 }
                 promoCodeMessageTextView?.text = descriptionStr
-                val amount = "- ₹${orderDetailMainResponse?.promoCodeDetails?.coupon?.discount}"
+                val amount = "- ₹${mPromoDiscount}"
                 promoCodeAmountTextView?.text = amount
                 mActivity?.let { context ->
                     promoPercentageImageView?.let { it -> Glide.with(context).load(orderDetailMainResponse?.promoCodeDetails?.percentageCdn).into(it) }
