@@ -23,7 +23,7 @@ class OtpVerificationNetworkService {
                 if (it.isSuccessful) {
                     it.body()?.let { validateOtpSuccessResponse -> otpVerificationServiceInterface.onOTPVerificationSuccessResponse(validateOtpSuccessResponse) }
                 } else {
-                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) throw UnAuthorizedAccessException(
+                    if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(
                         Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
                     val validateOtpError = it.errorBody()
                     validateOtpError?.let {

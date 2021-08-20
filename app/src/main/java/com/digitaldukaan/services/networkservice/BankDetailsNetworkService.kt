@@ -22,7 +22,7 @@ class BankDetailsNetworkService {
                 if (it.isSuccessful) {
                     it.body()?.let { responseBody -> serviceInterface.onBankDetailsResponse(responseBody) }
                 } else {
-                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) throw UnAuthorizedAccessException(
+                    if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(
                         Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
                     val errorResponseBody = it.errorBody()
                     errorResponseBody?.let {
@@ -46,7 +46,7 @@ class BankDetailsNetworkService {
                 if (it.isSuccessful) {
                     it.body()?.let { responseBody -> serviceInterface.onBankDetailsPageInfoResponse(responseBody) }
                 } else {
-                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
                     val errorResponseBody = it.errorBody()
                     errorResponseBody?.let {
                         val validateOtpErrorResponse = Gson().fromJson(errorResponseBody.string(), CommonApiResponse::class.java)
