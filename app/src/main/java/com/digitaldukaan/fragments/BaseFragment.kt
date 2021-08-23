@@ -1381,8 +1381,8 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         }
     }
 
-    fun logoutFromApplication() {
-        showToast("Message to be given by Product Manager")
+    fun logoutFromApplication(isAppLogout: Boolean = false) {
+        if (!isAppLogout) showToast(mActivity?.getString(R.string.logout_message))
         mActivity?.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE)?.edit()?.clear()?.apply()
         clearFragmentBackStack()
         storeStringDataInSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN, "")
