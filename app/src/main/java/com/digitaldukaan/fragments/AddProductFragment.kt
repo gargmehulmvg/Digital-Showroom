@@ -417,7 +417,6 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     val descriptionStr = productDescriptionEditText?.text.toString().trim()
                     val categoryStr = enterCategoryEditText?.text.toString()
                     if (!isInternetConnectionAvailable(mActivity)) return else {
-                        showProgressDialog(mActivity)
                         val imageListRequest: ArrayList<AddProductImageItem> = ArrayList()
                         mImagesStrList.forEachIndexed { _, imageItem ->
                             if (imageItem.imageUrl.isNotEmpty()) {
@@ -445,8 +444,26 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                             discountedStr.toDouble()
                         } else 0.0
                         val finalList: ArrayList<VariantItemResponse> = ArrayList()
+                        var isErrorInVariantList = false
+                        var isVariantNameSameAsItemName = false
                         mActiveVariantList?.forEachIndexed { _, itemResponse ->
-                            if (isEmpty(itemResponse.variantName)) itemResponse.status = 0
+                            if (isEmpty(itemResponse.variantName)) {
+                                itemResponse.isVariantNameEmptyError = true
+                                isErrorInVariantList = true
+                                return@forEachIndexed
+                            } else {
+                                isVariantNameSameAsItemName = (itemResponse.variantName ?: "").equals(nameStr, true)
+                                itemResponse.isVariantNameEmptyError = false
+                                if (isVariantNameSameAsItemName) return@forEachIndexed
+                            }
+                        }
+                        if (isVariantNameSameAsItemName) {
+                            showShortSnackBar("Variant Name can't be same with Item's name", true, R.drawable.ic_close_red_small)
+                            return
+                        }
+                        if (isErrorInVariantList) {
+                            mActiveVariantAdapter?.notifyDataSetChanged()
+                            return
                         }
                         mActiveVariantList?.let { list ->
                             finalList.addAll(list)
@@ -465,6 +482,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                             nameStr,
                             finalList
                         )
+                        showProgressDialog(mActivity)
                         AppEventsManager.pushAppEvents(
                             eventName = AFInAppEventType.EVENT_SAVE_ITEM,
                             isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
@@ -507,7 +525,8 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 1,
                 0,
                 1,
-                null
+                null,
+                false
             )
         )
     }

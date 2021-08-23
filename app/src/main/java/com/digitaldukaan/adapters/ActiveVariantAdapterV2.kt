@@ -94,6 +94,8 @@ class ActiveVariantAdapterV2(
 
                 override fun afterTextChanged(editable: Editable?) {
                     val str = editable?.toString()
+                    variantPriceInputLayout.error = null
+                    variantDiscountPriceInputLayout.error = null
                     if (!isEmpty(str)) {
                         val discountPriceStr = discountPriceEditText.text.toString()
                         when {
@@ -101,9 +103,9 @@ class ActiveVariantAdapterV2(
                             !isDouble(str) -> {
                                 discountPriceEditText.apply {
                                     text = null
-                                    error = mStaticText?.error_mandatory_field
                                     requestFocus()
                                 }
+                                variantDiscountPriceInputLayout.error = mStaticText?.error_mandatory_field
                             }
                             (if (isEmpty(discountPriceStr)) 0.0 else discountPriceStr.toDouble()) > str?.toDouble() ?: 0.0 -> {
                                 discountPriceEditText.apply {
@@ -129,6 +131,8 @@ class ActiveVariantAdapterV2(
                 override fun afterTextChanged(editable: Editable?) {
                     val str = editable?.toString()
                     item?.variantName = str
+                    variantNameInputLayout.error = null
+                    item?.isVariantNameEmptyError = false
                     mListener?.onVariantItemChanged()
                 }
 
@@ -144,13 +148,15 @@ class ActiveVariantAdapterV2(
 
                 override fun afterTextChanged(editable: Editable?) {
                     val str = editable?.toString()
+                    variantPriceInputLayout.error = null
+                    variantDiscountPriceInputLayout.error = null
                     if (!isEmpty(str)) {
                         val priceStr = priceEditText.text.toString()
                         when {
                             isEmpty(priceStr) -> {
-                                if (str != "0.0") {
+                                if ("0.0" != str) {
+                                    variantPriceInputLayout.error = mStaticText?.error_mandatory_field
                                     priceEditText.apply {
-                                        error = mStaticText?.error_mandatory_field
                                         requestFocus()
                                     }
                                     discountPriceEditText.text = null
@@ -159,18 +165,18 @@ class ActiveVariantAdapterV2(
                             }
                             "." == str -> {}
                             !isDouble(str) -> {
+                                variantDiscountPriceInputLayout.error = mStaticText?.error_mandatory_field
                                 discountPriceEditText.apply {
                                     text = null
-                                    error = mStaticText?.error_mandatory_field
                                     requestFocus()
                                 }
                             }
                             priceStr.toDouble() < str?.toDouble() ?: 0.0 -> {
                                 discountPriceEditText.apply {
-                                    error = mStaticText?.error_discount_price_less_then_original_price
                                     text = null
                                     requestFocus()
                                 }
+                                variantDiscountPriceInputLayout.error = mStaticText?.error_discount_price_less_then_original_price
                             }
                             else -> item?.discountedPrice = str?.toDouble() ?: 0.0
                         }
@@ -205,6 +211,7 @@ class ActiveVariantAdapterV2(
                     inStockTextView.text = mContext?.getString(R.string.out_of_stock)
                 }
             }
+            variantNameInputLayout.error = if (item?.isVariantNameEmptyError == true) mContext?.getString(R.string.mandatory_field_message) else null
             mContext?.let { context ->
                 val adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1, getRecentVariantList())
                 nameEditText.setAdapter(adapter)

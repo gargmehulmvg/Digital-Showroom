@@ -10,7 +10,8 @@ data class VariantItemResponse(
     @SerializedName("status")           var status: Int,
     @SerializedName("master_id")        var masterId: Int?,
     @SerializedName("available")        var available: Int,
-    @SerializedName("images")           var variantImagesList: ArrayList<VariantItemImageResponse>?
+    @SerializedName("images")           var variantImagesList: ArrayList<VariantItemImageResponse>?,
+    var isVariantNameEmptyError: Boolean
 )
 
 data class VariantItemImageResponse(
