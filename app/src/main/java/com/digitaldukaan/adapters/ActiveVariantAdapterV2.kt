@@ -69,7 +69,7 @@ class ActiveVariantAdapterV2(
     ) {
         val item = mActiveVariantList?.get(position)
         holder.apply {
-            if (item?.available == 1) {
+            if (1 == item?.available) {
                 variantSwitch.isChecked = true
                 inStockTextView.text = mStaticText?.text_in_stock
             } else {
@@ -81,8 +81,9 @@ class ActiveVariantAdapterV2(
             variantPriceInputLayout.hint = mStaticText?.hint_price
             variantDiscountPriceInputLayout.hint = mStaticText?.hint_discounted_price
             if (isNotEmpty(item?.variantName)) nameEditText.setText(item?.variantName)
-            if (0.0 != item?.price) priceEditText.setText("${item?.price?.toInt()}")
-            if (0.0 != item?.discountedPrice) discountPriceEditText.setText("${item?.discountedPrice?.toInt()}")
+            if (0.0 != item?.price) priceEditText.setText("${item?.price}")
+            if (0.0 != item?.discountedPrice) discountPriceEditText.setText("${item?.discountedPrice}")
+            variantNameInputLayout.error = if (item?.isVariantNameEmptyError == true) mContext?.getString(R.string.mandatory_field_message) else null
             priceEditText.addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                     Log.d(TAG, "beforeTextChanged: ")
@@ -129,10 +130,12 @@ class ActiveVariantAdapterV2(
                 }
 
                 override fun afterTextChanged(editable: Editable?) {
-                    val str = editable?.toString()
+                    val str = editable?.toString()?.trim()
                     item?.variantName = str
-                    variantNameInputLayout.error = null
-                    item?.isVariantNameEmptyError = false
+                    if (isNotEmpty(str)) {
+                        variantNameInputLayout.error = null
+                        item?.isVariantNameEmptyError = false
+                    }
                     mListener?.onVariantItemChanged()
                 }
 
@@ -211,7 +214,6 @@ class ActiveVariantAdapterV2(
                     inStockTextView.text = mContext?.getString(R.string.out_of_stock)
                 }
             }
-            variantNameInputLayout.error = if (item?.isVariantNameEmptyError == true) mContext?.getString(R.string.mandatory_field_message) else null
             mContext?.let { context ->
                 val adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1, getRecentVariantList())
                 nameEditText.setAdapter(adapter)

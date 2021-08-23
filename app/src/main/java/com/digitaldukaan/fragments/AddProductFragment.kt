@@ -447,7 +447,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                         var isErrorInVariantList = false
                         var isVariantNameSameAsItemName = false
                         mActiveVariantList?.forEachIndexed { _, itemResponse ->
-                            if (isEmpty(itemResponse.variantName)) {
+                            if (isEmpty(itemResponse.variantName?.trim())) {
                                 itemResponse.isVariantNameEmptyError = true
                                 isErrorInVariantList = true
                                 return@forEachIndexed
@@ -476,10 +476,10 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                             1,
                             if (isNotEmpty(mActiveVariantList)) mActiveVariantList?.get(0)?.price else price,
                             if (isNotEmpty(mActiveVariantList)) mActiveVariantList?.get(0)?.discountedPrice ?: 0.0 else discountPrice,
-                            descriptionStr,
+                            descriptionStr.trim(),
                             if (categoryStr.trim().isEmpty()) AddProductItemCategory(0, "") else AddProductItemCategory(mItemCategoryId, categoryStr),
                             imageListRequest,
-                            nameStr,
+                            nameStr.trim(),
                             finalList
                         )
                         showProgressDialog(mActivity)
