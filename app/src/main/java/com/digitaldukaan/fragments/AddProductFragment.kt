@@ -50,6 +50,9 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.File
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashSet
 
 
 class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapterItemClickListener,
@@ -446,19 +449,30 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                         val finalList: ArrayList<VariantItemResponse> = ArrayList()
                         var isErrorInVariantList = false
                         var isVariantNameSameAsItemName = false
+                        var isVariantNameCommon = false
+                        val uniqueVariantList: MutableSet<String> = HashSet()
+                        mActiveVariantList?.forEachIndexed { _, itemResponse ->
+                            uniqueVariantList.add(itemResponse.variantName?.toLowerCase(Locale.getDefault())?.trim() ?: "")
+                        }
                         mActiveVariantList?.forEachIndexed { _, itemResponse ->
                             if (isEmpty(itemResponse.variantName?.trim())) {
                                 itemResponse.isVariantNameEmptyError = true
                                 isErrorInVariantList = true
                                 return@forEachIndexed
                             } else {
+                                if (uniqueVariantList.contains(itemResponse.variantName?.toLowerCase(Locale.getDefault())?.trim())) isVariantNameCommon = true
+                                if (isVariantNameCommon) return@forEachIndexed
                                 isVariantNameSameAsItemName = (itemResponse.variantName ?: "").equals(nameStr, true)
                                 itemResponse.isVariantNameEmptyError = false
                                 if (isVariantNameSameAsItemName) return@forEachIndexed
                             }
                         }
+                        if (isVariantNameCommon) {
+                            showShortSnackBar(addProductStaticData?.error_variant_already_exist, true, R.drawable.ic_close_red_small)
+                            return
+                        }
                         if (isVariantNameSameAsItemName) {
-                            showShortSnackBar("Variant Name can't be same with Item's name", true, R.drawable.ic_close_red_small)
+                            showShortSnackBar(addProductStaticData?.error_variant_name_same_with_item_name, true, R.drawable.ic_close_red_small)
                             return
                         }
                         if (isErrorInVariantList) {

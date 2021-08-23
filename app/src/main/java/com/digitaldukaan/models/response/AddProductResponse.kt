@@ -14,8 +14,6 @@ data class AddProductResponse(
     var isVariantSaved: Boolean
 )
 
-//private var mSelectedProductsHashMap: HashMap<Int?, MasterCatalogItemResponse?>? = HashMap()
-
 data class AddProductStoreCategory(
     @SerializedName("store_categories") val storeCategoriesList:ArrayList<AddStoreCategoryItem>?,
     @SerializedName("suggested_categories") val suggestedCategories:String?
@@ -81,7 +79,6 @@ data class AddProductStaticText(
     @SerializedName("text_share_product") var text_share_product: String?,
     @SerializedName("text_go_back_message") var text_go_back_message: String?,
     @SerializedName("text_go_back") var text_go_back: String?,
-
     @SerializedName("text_plus_add") var text_plus_add: String?,
     @SerializedName("text_suggestions") var text_suggestions: String?,
     @SerializedName("text_variants") var text_variants: String?,
@@ -94,5 +91,7 @@ data class AddProductStaticText(
     @SerializedName("text_recently_created") var text_recently_created: String?,
     @SerializedName("text_active_variants") var text_active_variants: String?,
     @SerializedName("hint_variant_name") var hint_variant_name: String?,
-    @SerializedName("text_add_variant") var text_add_variant: String?
+    @SerializedName("text_add_variant") var text_add_variant: String?,
+    @SerializedName("error_variant_name_same_with_item_name") var error_variant_name_same_with_item_name: String?,
+    @SerializedName("error_variant_already_exist") var error_variant_already_exist: String?
 )

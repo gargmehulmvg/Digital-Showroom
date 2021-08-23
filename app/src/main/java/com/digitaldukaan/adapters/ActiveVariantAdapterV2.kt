@@ -60,7 +60,6 @@ class ActiveVariantAdapterV2(
         view.imageViewContainer.setOnClickListener { mListener?.onVariantImageClicked(view.adapterPosition) }
         return view
     }
-
     override fun getItemCount(): Int = mActiveVariantList?.size ?: 0
 
     override fun onBindViewHolder(
@@ -217,7 +216,7 @@ class ActiveVariantAdapterV2(
             mContext?.let { context ->
                 val adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1, getRecentVariantList())
                 nameEditText.setAdapter(adapter)
-                nameEditText.threshold = 3
+                nameEditText.threshold = 1
             }
         }
     }
