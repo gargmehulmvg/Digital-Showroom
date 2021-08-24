@@ -58,6 +58,7 @@ class Constants {
         const val ACTION_DELIVERY_CHARGES                       = "delivery-charges"
         const val ACTION_BOTTOM_SHEET                           = "bottom-sheet"
         const val ACTION_PROMO_CODE                             = "promo-code"
+        const val ACTION_EMAIL_AUTHENTICATION                   = "email-authentication"
         //Incomplete profile actions
         const val ACTION_LOGO                                   = "logo"
         const val ACTION_DESCRIPTION                            = "description"

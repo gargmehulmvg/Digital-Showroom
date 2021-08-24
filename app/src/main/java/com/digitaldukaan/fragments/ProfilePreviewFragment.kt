@@ -323,6 +323,9 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                 )
                 mService.initiateKyc(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
             }
+            Constants.ACTION_EMAIL_AUTHENTICATION -> {
+                showToast(profilePreviewResponse.mValue)
+            }
         }
     }
 
