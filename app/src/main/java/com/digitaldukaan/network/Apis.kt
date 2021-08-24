@@ -95,6 +95,9 @@ interface Apis {
     @GET("api/dotk/vm1/settings/getStoreUserPageInfo")
     suspend fun getStoreUserPageInfo(): Response<CommonApiResponse>
 
+    @GET("api/dotk/vm1/settings/setStoreUserInfo")
+    suspend fun setStoreUserInfo(@Body request: StoreUserMailDetailsRequest): Response<CommonApiResponse>
+
     @POST("api/dotk/vm1/settings/setPaymentOptions")
     suspend fun setPaymentOptions(@Body request: PaymentModeRequest): Response<CommonApiResponse>
 

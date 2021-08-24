@@ -33,6 +33,7 @@ import com.digitaldukaan.interfaces.IProfilePreviewItemClicked
 import com.digitaldukaan.models.request.StoreLinkRequest
 import com.digitaldukaan.models.request.StoreLogoRequest
 import com.digitaldukaan.models.request.StoreNameRequest
+import com.digitaldukaan.models.request.StoreUserMailDetailsRequest
 import com.digitaldukaan.models.response.*
 import com.digitaldukaan.services.ProfilePreviewService
 import com.digitaldukaan.services.isInternetConnectionAvailable
@@ -313,6 +314,15 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         }
     }
 
+    override fun onSetStoreUserDetailsResponse(apiResponse: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            if (apiResponse.mIsSuccessStatus) {
+                onRefresh()
+            } else showShortSnackBar(apiResponse.mMessage, true, R.drawable.ic_close_red)
+        }
+    }
+
     override fun onProfilePreviewItemClicked(profilePreviewResponse: ProfilePreviewSettingsKeyResponse, position: Int) {
         Log.d(TAG, "onProfilePreviewItemClicked: $profilePreviewResponse")
         mProfileInfoSettingKeyResponse = profilePreviewResponse
@@ -351,7 +361,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         }
     }
 
-    private fun showUserEmailDialog(isLogout: Boolean = false) {
+    private fun showUserEmailDialog(isLogout: Boolean = false, isServerCall: Boolean = false) {
         mActivity?.let { context ->
             val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build()
             val googleSignInClient = GoogleSignIn.getClient(context, gso)
@@ -363,7 +373,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                     val signInIntent: Intent = googleSignInClient.signInIntent
                     startActivityForResult(signInIntent, Constants.EMAIL_REQUEST_CODE)
                 } else {
-                    updateUserAccountInfo(account)
+                    updateUserAccountInfo(account, isServerCall)
                     Log.d(TAG, "showUserEmailDialog: $account")
                 }
             }
@@ -372,18 +382,28 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
 
     private fun signOut(googleSignInClient: GoogleSignInClient) {
             googleSignInClient.signOut().addOnCompleteListener {
-                showUserEmailDialog()
+                showUserEmailDialog(isServerCall = false)
             }
     }
 
-    private fun updateUserAccountInfo(acct: GoogleSignInAccount?) {
+    private fun updateUserAccountInfo(acct: GoogleSignInAccount?, isServerCall: Boolean = false) {
         val personName = acct?.displayName
         val personGivenName = acct?.givenName
         val personFamilyName = acct?.familyName
         val personEmail = acct?.email
         val personId = acct?.id
         val personPhoto: Uri? = acct?.photoUrl
-
+        if (isServerCall) {
+            showProgressDialog(mActivity)
+            val request= StoreUserMailDetailsRequest(
+                firstName = personName,
+                lastName = personFamilyName,
+                emailId = personEmail,
+                photo = "$personPhoto",
+                signInId = personId
+            )
+            mService.setStoreUserGmailDetails(request)
+        }
     }
 
     private fun showEditStoreWarningDialog(profilePreviewResponse: ProfilePreviewSettingsKeyResponse) {
@@ -716,11 +736,9 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
     private fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {
         try {
             val account: GoogleSignInAccount = completedTask.getResult(ApiException::class.java)
-            // Signed in successfully, show authenticated UI.
+            updateUserAccountInfo(account, true)
             Log.d(TAG, "handleSignInResult: $account")
         } catch (e: ApiException) {
-            // The ApiException status code indicates the detailed failure reason.
-            // Please refer to the GoogleSignInStatusCodes class reference for more information.
             Log.d(TAG, "signInResult:failed code=" + e.statusCode)
         }
     }
@@ -789,7 +807,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                 }
                 openGmailDialogTextView.setOnClickListener {
                     shareStoreBottomSheet.dismiss()
-                    showUserEmailDialog()
+                    showUserEmailDialog(true)
                 }
                 signInWithAnotherAccountTextView.setOnClickListener {
                     shareStoreBottomSheet.dismiss()
