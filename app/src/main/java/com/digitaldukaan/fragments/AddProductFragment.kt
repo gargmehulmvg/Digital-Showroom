@@ -52,7 +52,7 @@ import okhttp3.RequestBody
 import java.io.File
 import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.collections.HashSet
+import kotlin.collections.HashMap
 
 
 class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapterItemClickListener,
@@ -450,9 +450,9 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                         var isErrorInVariantList = false
                         var isVariantNameSameAsItemName = false
                         var isVariantNameCommon = false
-                        val uniqueVariantList: MutableSet<String> = HashSet()
+                        val uniqueVariantMap: HashMap<String, Int> = HashMap()
                         mActiveVariantList?.forEachIndexed { _, itemResponse ->
-                            uniqueVariantList.add(itemResponse.variantName?.toLowerCase(Locale.getDefault())?.trim() ?: "")
+                            uniqueVariantMap[itemResponse.variantName?.toLowerCase(Locale.getDefault())?.trim() ?: ""] = 1
                         }
                         mActiveVariantList?.forEachIndexed { _, itemResponse ->
                             if (isEmpty(itemResponse.variantName?.trim())) {
@@ -460,7 +460,12 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                                 isErrorInVariantList = true
                                 return@forEachIndexed
                             } else {
-                                if (uniqueVariantList.contains(itemResponse.variantName?.toLowerCase(Locale.getDefault())?.trim())) isVariantNameCommon = true
+                                if (uniqueVariantMap.containsKey(itemResponse.variantName?.toLowerCase(Locale.getDefault())?.trim())) {
+                                    if (uniqueVariantMap[itemResponse.variantName?.toLowerCase(Locale.getDefault())?.trim()] == 1) {
+                                        uniqueVariantMap[itemResponse.variantName?.toLowerCase(Locale.getDefault())?.trim() ?: ""] = 2
+                                        isVariantNameCommon = false
+                                    } else isVariantNameCommon = true
+                                }
                                 if (isVariantNameCommon) return@forEachIndexed
                                 isVariantNameSameAsItemName = (itemResponse.variantName ?: "").equals(nameStr, true)
                                 itemResponse.isVariantNameEmptyError = false
