@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 data class StoreUserPageInfoResponse(
     @SerializedName("gmail_cdn")                var gmailCdn: String,
     @SerializedName("gmail_guide_line_list")    var gmailGuideLineList: ArrayList<String>?,
-    @SerializedName("user_details")             var gmailUserDetails: ArrayList<GmailUserDetailResponse>?,
+    @SerializedName("user_details")             var gmailUserDetailsList: ArrayList<GmailUserDetailResponse>?,
     @SerializedName("static_text")              var staticText: StoreUserPageInfoStaticTextResponse?
 )
 

@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -39,6 +40,8 @@ import com.digitaldukaan.services.serviceinterface.IProfilePreviewServiceInterfa
 import com.digitaldukaan.views.allowOnlyAlphaNumericCharacters
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -342,30 +345,45 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                 mService.initiateKyc(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
             }
             Constants.ACTION_EMAIL_AUTHENTICATION -> {
-                showUserEmailDialog()
+                showProgressDialog(mActivity)
+                mService.getStoreUserPageInfo()
             }
         }
     }
 
-    private fun showUserEmailDialog() {
+    private fun showUserEmailDialog(isLogout: Boolean = false) {
         mActivity?.let { context ->
-            // Configure sign-in to request the user's ID, email address, and basic
-            // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
-            // Configure sign-in to request the user's ID, email address, and basic
-            // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
-//            val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build()
-//            // Build a GoogleSignInClient with the options specified by gso.
-//            val googleSignInClient = GoogleSignIn.getClient(context, gso)
-//            val account = GoogleSignIn.getLastSignedInAccount(context)
-//            if (null == account) {
-//                val signInIntent: Intent = googleSignInClient.signInIntent
-//                startActivityForResult(signInIntent, Constants.EMAIL_REQUEST_CODE)
-//            } else {
-//                Log.d(TAG, "showUserEmailDialog: $account")
-//            }
-            showProgressDialog(mActivity)
-            mService.getStoreUserPageInfo()
+            val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build()
+            val googleSignInClient = GoogleSignIn.getClient(context, gso)
+            if (isLogout) {
+                signOut(googleSignInClient)
+            } else {
+                val account = GoogleSignIn.getLastSignedInAccount(context)
+                if (null == account) {
+                    val signInIntent: Intent = googleSignInClient.signInIntent
+                    startActivityForResult(signInIntent, Constants.EMAIL_REQUEST_CODE)
+                } else {
+                    updateUserAccountInfo(account)
+                    Log.d(TAG, "showUserEmailDialog: $account")
+                }
+            }
         }
+    }
+
+    private fun signOut(googleSignInClient: GoogleSignInClient) {
+            googleSignInClient.signOut().addOnCompleteListener {
+                showUserEmailDialog()
+            }
+    }
+
+    private fun updateUserAccountInfo(acct: GoogleSignInAccount?) {
+        val personName = acct?.displayName
+        val personGivenName = acct?.givenName
+        val personFamilyName = acct?.familyName
+        val personEmail = acct?.email
+        val personId = acct?.id
+        val personPhoto: Uri? = acct?.photoUrl
+
     }
 
     private fun showEditStoreWarningDialog(profilePreviewResponse: ProfilePreviewSettingsKeyResponse) {
@@ -688,8 +706,8 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
             Constants.EMAIL_REQUEST_CODE -> {
                 // The Task returned from this call is always completed, no need to attach
                 // a listener.
-                val task = GoogleSignIn.getSignedInAccountFromIntent(data);
-                handleSignInResult(task);
+                val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+                handleSignInResult(task)
             }
             else -> super.onActivityResult(requestCode, resultCode, data)
         }
@@ -737,14 +755,28 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
             shareStoreBottomSheet.apply {
                 setContentView(view)
                 setBottomSheetCommonProperty()
-                val closeImageView: ImageView = view.findViewById(R.id.closeImageView)
+                val closeImageView: View = view.findViewById(R.id.closeImageView)
+                val noGoogleUserLayout: View = view.findViewById(R.id.noGoogleUserLayout)
+                val googleUserLayout: View = view.findViewById(R.id.googleUserLayout)
                 val imageView: ImageView = view.findViewById(R.id.imageView)
                 val recyclerView: RecyclerView = view.findViewById(R.id.guidelineRecyclerView)
-                val openGmailDialogTextView: TextView =
-                    view.findViewById(R.id.openGmailDialogTextView)
+                val openGmailDialogTextView: TextView = view.findViewById(R.id.openGmailDialogTextView)
                 val headingTextView: TextView = view.findViewById(R.id.headingTextView)
+                val gmailAccountTextView: TextView = view.findViewById(R.id.gmailAccountTextView)
+                val signInWithAnotherAccountTextView: TextView = view.findViewById(R.id.signInWithAnotherAccountTextView)
+                val youLinkGmailAccountTextView: TextView = view.findViewById(R.id.youLinkGmailAccountTextView)
+                if (isEmpty(response?.gmailUserDetailsList)) {
+                    noGoogleUserLayout.visibility =  View.VISIBLE
+                    googleUserLayout.visibility =  View.GONE
+                } else {
+                    noGoogleUserLayout.visibility =  View.GONE
+                    googleUserLayout.visibility =  View.VISIBLE
+                }
+                youLinkGmailAccountTextView.text = mStoreUserPageInfoStaticTextResponse?.header_linked_gmail_account
                 openGmailDialogTextView.text = mStoreUserPageInfoStaticTextResponse?.button_sign_in_with_google
                 headingTextView.text = mStoreUserPageInfoStaticTextResponse?.header_add_gmail_account
+                gmailAccountTextView.text = response?.gmailUserDetailsList?.get(0)?.email_id
+                signInWithAnotherAccountTextView.text = mStoreUserPageInfoStaticTextResponse?.button_sign_in_with_another_account
                 recyclerView.apply {
                     layoutManager = LinearLayoutManager(mActivity)
                     adapter = GmailGuideLineAdapter(response?.gmailGuideLineList)
@@ -756,7 +788,12 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                     shareStoreBottomSheet.dismiss()
                 }
                 openGmailDialogTextView.setOnClickListener {
-                    //shareStoreBottomSheet.dismiss()
+                    shareStoreBottomSheet.dismiss()
+                    showUserEmailDialog()
+                }
+                signInWithAnotherAccountTextView.setOnClickListener {
+                    shareStoreBottomSheet.dismiss()
+                    showUserEmailDialog(true)
                 }
             }.show()
         }

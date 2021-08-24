@@ -3,13 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:padding="@dimen/_10sdp"
+    android:padding="@dimen/_5sdp"
     android:layout_height="wrap_content">
 
     <ImageView
         android:id="@+id/imageView6"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/_15sdp"
+        android:layout_height="@dimen/_15sdp"
         android:contentDescription="@string/image_view_content_description"
         android:src="@drawable/ic_order_detail_green_tick"
         app:layout_constraintStart_toStartOf="parent"

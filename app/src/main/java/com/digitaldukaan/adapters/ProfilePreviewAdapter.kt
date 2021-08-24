@@ -67,6 +67,7 @@ class ProfilePreviewAdapter(
                 }
                 when (settingKeyItem.mAction) {
                     Constants.ACTION_STORE_LOCATION -> addSettingKeyDataTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_location_color, 0, R.drawable.ic_edit, 0)
+                    Constants.ACTION_EMAIL_AUTHENTICATION -> addSettingKeyDataTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_google_g, 0, R.drawable.ic_edit, 0)
                     Constants.ACTION_DOMAIN_SUCCESS -> addSettingKeyDataTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_round_green_arrow_small, 0)
                     Constants.ACTION_BUSINESS_TYPE -> {
                         profilePreviewBusinessTypeRecyclerView.visibility = View.VISIBLE
