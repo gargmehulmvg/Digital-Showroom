@@ -184,4 +184,31 @@ class ProfilePreviewNetworkService {
         }
     }
 
+    suspend fun getStoreUserPageInfoServerCall(
+        serviceInterface: IProfilePreviewServiceInterface
+    ) {
+        try {
+            val response = RetrofitApi().getServerCallObject()?.getStoreUserPageInfo()
+            response?.let {
+                if (it.isSuccessful) {
+                    it.body()?.let { commonApiResponse -> serviceInterface.onStoreUserPageInfoResponse(commonApiResponse)
+                    }
+                } else {
+                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    val responseBody = it.errorBody()
+                    responseBody?.let {
+                        val errorResponse = Gson().fromJson(
+                            responseBody.string(),
+                            CommonApiResponse::class.java
+                        )
+                        serviceInterface.onStoreUserPageInfoResponse(errorResponse)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(ProductNetworkService::class.java.simpleName, "getStoreUserPageInfoServerCall: ", e)
+            serviceInterface.onProfilePreviewServerException(e)
+        }
+    }
+
 }

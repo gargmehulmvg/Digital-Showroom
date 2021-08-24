@@ -19,4 +19,6 @@ interface IProfilePreviewServiceInterface {
     fun onProfilePreviewServerException(e: Exception)
 
     fun onAppShareDataResponse(apiResponse: CommonApiResponse)
+
+    fun onStoreUserPageInfoResponse(apiResponse: CommonApiResponse)
 }

@@ -60,4 +60,10 @@ class ProfilePreviewService {
         }
     }
 
+    fun getStoreUserPageInfo() {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.getStoreUserPageInfoServerCall(mServiceInterface)
+        }
+    }
+
 }

@@ -7,13 +7,21 @@
         <entry key="app/src/main/res/drawable/curve_green_dotted_border_green_background.xml" value="0.2388888888888889" />
         <entry key="app/src/main/res/drawable/ic_coupon_white_zigzag.xml" value="0.2765625" />
         <entry key="app/src/main/res/drawable/ic_coupon_white_zigzag2.xml" value="0.2765625" />
+        <entry key="app/src/main/res/drawable/ripple_curve_gmail_background.xml" value="0.2388888888888889" />
+        <entry key="app/src/main/res/drawable/ripple_curve_grey_black_background.xml" value="0.2765625" />
+        <entry key="app/src/main/res/drawable/ripple_slight_curve_grey_black_background.xml" value="0.2388888888888889" />
+        <entry key="app/src/main/res/drawable/ripple_slight_curve_grey_white_background.xml" value="0.2765625" />
         <entry key="app/src/main/res/drawable/slight_curve_black_dotted_border_grey_background.xml" value="0.2388888888888889" />
         <entry key="app/src/main/res/drawable/slight_curve_green_background_without_padding.xml" value="0.2765625" />
         <entry key="app/src/main/res/drawable/slight_curve_green_dotted_border_green_background.xml" value="0.2765625" />
+        <entry key="app/src/main/res/layout/bottom_sheet_add_products_catalog_builder.xml" value="0.264453125" />
         <entry key="app/src/main/res/layout/bottom_sheet_create_coupon_confirmation.xml" value="0.264453125" />
         <entry key="app/src/main/res/layout/bottom_sheet_image_pick.xml" value="0.264453125" />
         <entry key="app/src/main/res/layout/bottom_sheet_image_pick_v2.xml" value="0.264453125" />
         <entry key="app/src/main/res/layout/bottom_sheet_promo_coupon_detail.xml" value="0.264453125" />
+        <entry key="app/src/main/res/layout/bottom_sheet_share_store.xml" value="0.264453125" />
+        <entry key="app/src/main/res/layout/bottom_sheet_store_user_gmail.xml" value="0.264453125" />
+        <entry key="app/src/main/res/layout/gmail_guideline_item.xml" value="0.264453125" />
         <entry key="app/src/main/res/layout/layout_active_variant_item.xml" value="0.20833333333333334" />
         <entry key="app/src/main/res/layout/layout_active_variant_item_v2.xml" value="0.264453125" />
         <entry key="app/src/main/res/layout/layout_add_product_fragment.xml" value="0.25" />
@@ -21,9 +29,12 @@
         <entry key="app/src/main/res/layout/layout_bank_account_fragment.xml" value="0.264453125" />
         <entry key="app/src/main/res/layout/layout_coupon_settings.xml" value="0.264453125" />
         <entry key="app/src/main/res/layout/layout_custom_coupons_fragment.xml" value="0.264453125" />
+        <entry key="app/src/main/res/layout/layout_on_board_help_screen.xml" value="0.264453125" />
         <entry key="app/src/main/res/layout/layout_order_detail_fragment.xml" value="0.264453125" />
+        <entry key="app/src/main/res/layout/layout_profile_preview_fragment.xml" value="0.264453125" />
         <entry key="app/src/main/res/layout/layout_promo_code_item.xml" value="0.335" />
         <entry key="app/src/main/res/layout/layout_promo_code_page_info_fragment.xml" value="0.264453125" />
+        <entry key="app/src/main/res/layout/layout_settings_fragment.xml" value="0.264453125" />
       </map>
     </option>
   </component>
