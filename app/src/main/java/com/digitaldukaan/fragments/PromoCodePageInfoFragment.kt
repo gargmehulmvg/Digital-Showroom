@@ -249,6 +249,7 @@ class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInter
                     val timeUsedHeadingTextView: TextView = findViewById(R.id.timeUsedHeadingTextView)
                     val couponSettingHeadingTextView: TextView = findViewById(R.id.couponSettingHeadingTextView)
                     val bottomSheetClose: View = findViewById(R.id.bottomSheetClose)
+                    val bulbImageView: View = findViewById(R.id.bulbImageView2)
                     val activeCouponSwitch: CheckBox = findViewById(R.id.activeCouponSwitch)
                     bottomSheetClose.setOnClickListener {
                         onReloadPage()
@@ -276,6 +277,7 @@ class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInter
                         }
                         descriptionTextView.text = discountStr
                         checkBox.isChecked = response.mPromoCoupon?.isWebsiteVisible ?: false
+                        checkActiveCouponUI(activeCouponSwitch, setting2Heading, setting2Message, checkBox, bulbImageView)
                         checkBox.setOnCheckedChangeListener { _, isChecked ->
                             showCancellableProgressDialog(mActivity)
                             CoroutineScopeUtils().runTaskOnCoroutineBackground {
@@ -289,9 +291,8 @@ class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInter
                                     )
                                     activeCouponResponse?.let {
                                         if (it.isSuccessful) {
-                                            it.body()?.let {
-                                                stopProgress()
-                                            }
+                                            it.body()?.let { stopProgress() }
+                                            checkActiveCouponUI(activeCouponSwitch, setting2Heading, setting2Message, checkBox, bulbImageView)
                                         } else {
                                             stopProgress()
                                             val errorResponseBody = it.errorBody()
@@ -344,6 +345,7 @@ class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInter
                                             it.body()?.let {
                                                 stopProgress()
                                             }
+                                            checkActiveCouponUI(activeCouponSwitch, setting2Heading, setting2Message, checkBox, bulbImageView)
                                         } else {
                                             stopProgress()
                                             val errorResponseBody = it.errorBody()
@@ -363,6 +365,20 @@ class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInter
                     }
                 }
             }.show()
+        }
+    }
+
+    private fun checkActiveCouponUI(activeCouponSwitch: CheckBox, setting2Heading: TextView, setting2Message: TextView, checkBox: CheckBox, bulbImageView: View) = CoroutineScopeUtils().runTaskOnCoroutineMain {
+        if (activeCouponSwitch.isChecked) {
+            setting2Heading.alpha   = 1f
+            setting2Message.alpha   = 1f
+            bulbImageView.alpha     = 1f
+            checkBox.isEnabled      = true
+        } else {
+            setting2Heading.alpha   = 0.2f
+            setting2Message.alpha   = 0.4f
+            bulbImageView.alpha     = 0.2f
+            checkBox.isEnabled      = false
         }
     }
 
