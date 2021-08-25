@@ -223,12 +223,17 @@
                 android:layout_height="wrap_content"
                 android:overScrollMode="never"
                 tools:itemCount="5"
-                android:paddingBottom="@dimen/_20sdp"
+                android:paddingBottom="@dimen/_1sdp"
                 android:background="@color/light_grey_background"
                 android:paddingStart="@dimen/_5sdp"
                 android:paddingEnd="@dimen/_5sdp"
                 app:layout_constraintTop_toBottomOf="@id/constraintLayout3"
                 tools:listitem="@layout/profile_preview_item" />
+
+            <View
+                android:layout_width="match_parent"
+                app:layout_constraintTop_toBottomOf="@id/profilePreviewRecyclerView"
+                android:layout_height="@dimen/_50sdp" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

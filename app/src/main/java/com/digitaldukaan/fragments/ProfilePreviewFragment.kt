@@ -318,6 +318,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             if (apiResponse.mIsSuccessStatus) {
+                showShortSnackBar(apiResponse.mMessage, true, R.drawable.ic_check_circle)
                 onRefresh()
             } else showShortSnackBar(apiResponse.mMessage, true, R.drawable.ic_close_red)
         }
@@ -387,7 +388,6 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
     }
 
     private fun updateUserAccountInfo(acct: GoogleSignInAccount?, isServerCall: Boolean = false) {
-        val personName = acct?.displayName
         val personGivenName = acct?.givenName
         val personFamilyName = acct?.familyName
         val personEmail = acct?.email
@@ -396,7 +396,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         if (isServerCall) {
             showProgressDialog(mActivity)
             val request= StoreUserMailDetailsRequest(
-                firstName = personName,
+                firstName = personGivenName,
                 lastName = personFamilyName,
                 emailId = personEmail,
                 photo = "$personPhoto",

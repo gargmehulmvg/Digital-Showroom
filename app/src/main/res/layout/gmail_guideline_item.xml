@@ -8,24 +8,25 @@
 
     <ImageView
         android:id="@+id/imageView6"
-        android:layout_width="@dimen/_15sdp"
-        android:layout_height="@dimen/_15sdp"
+        android:layout_width="@dimen/_10sdp"
+        android:layout_height="@dimen/_10sdp"
+        android:layout_marginTop="@dimen/_4sdp"
         android:contentDescription="@string/image_view_content_description"
         android:src="@drawable/ic_order_detail_green_tick"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@+id/textView" />
 
     <TextView
         android:id="@+id/textView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:textColor="@color/black"
         android:fontFamily="@font/roboto"
-        android:paddingStart="@dimen/_10sdp"
+        android:paddingStart="@dimen/_8sdp"
         android:paddingEnd="@dimen/_1sdp"
+        android:textColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/imageView6"
-        app:layout_constraintTop_toTopOf="@+id/imageView6"
+        app:layout_constraintTop_toTopOf="parent"
         tools:text="Get all communications from Digital Showroom to your Email" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
