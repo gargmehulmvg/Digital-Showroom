@@ -8,8 +8,8 @@
 
     <ImageView
         android:id="@+id/imageView6"
-        android:layout_width="@dimen/_10sdp"
-        android:layout_height="@dimen/_10sdp"
+        android:layout_width="@dimen/_12sdp"
+        android:layout_height="@dimen/_12sdp"
         android:layout_marginTop="@dimen/_4sdp"
         android:contentDescription="@string/image_view_content_description"
         android:src="@drawable/ic_order_detail_green_tick"
@@ -19,6 +19,7 @@
     <TextView
         android:id="@+id/textView"
         android:layout_width="0dp"
+        android:textSize="@dimen/_12sdp"
         android:layout_height="wrap_content"
         android:fontFamily="@font/roboto"
         android:paddingStart="@dimen/_8sdp"
