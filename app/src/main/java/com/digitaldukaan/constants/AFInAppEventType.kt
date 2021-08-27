@@ -101,5 +101,7 @@ interface AFInAppEventType {
         const val EVENT_ACTIVE_COUPON                               =   "Active_Coupon"
         const val EVENT_SHOW_COUPON                                 =   "Show_Coupon"
         const val EVENT_SHARE_COUPON                                =   "Share_coupon"
+        const val EVENT_ADD_EMAIL                                   =   "Add_email"
+        const val EVENT_EMAIL_SIGN_IN                               =   "Email_sign_in"
     }
 }

@@ -21,6 +21,7 @@ interface AFInAppEventParameterName {
         const val DISCOUNTED_PRICE = "discounted_price"
         const val IS_MERCHANT = "isMerchant"
         const val IS_EDIT_STORE_LINK = "iseditstorelink"
+        const val IS_EDIT = "is_edit"
         const val IS_CONSENT = "isConsent"
         const val IS_CATALOG = "isCatalog"
         const val IS_SETTINGS = "isSettings"

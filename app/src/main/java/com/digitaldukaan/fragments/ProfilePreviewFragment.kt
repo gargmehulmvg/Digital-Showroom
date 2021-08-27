@@ -69,6 +69,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
     private var mStoreLogo: String? = ""
     private var mStoreLinkLastEntered = ""
     private var mIsCompleteProfileImageInitiated = false
+    private var mIsEmailAdded = false
     private var mStoreUserPageInfoStaticTextResponse: StoreUserPageInfoStaticTextResponse? = null
 
     companion object {
@@ -363,6 +364,12 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
     }
 
     private fun showUserEmailDialog(isLogout: Boolean = false, isServerCall: Boolean = false) {
+        AppEventsManager.pushAppEvents(
+            eventName = AFInAppEventType.EVENT_EMAIL_SIGN_IN,
+            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+            data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                AFInAppEventParameterName.IS_EDIT to if (mIsEmailAdded) "1" else "0")
+        )
         mActivity?.let { context ->
             val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build()
             val googleSignInClient = GoogleSignIn.getClient(context, gso)
@@ -784,12 +791,20 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                 val signInWithAnotherAccountTextView: TextView = view.findViewById(R.id.signInWithAnotherAccountTextView)
                 val youLinkGmailAccountTextView: TextView = view.findViewById(R.id.youLinkGmailAccountTextView)
                 if (isEmpty(response?.gmailUserDetailsList)) {
+                    mIsEmailAdded = false
                     noGoogleUserLayout.visibility =  View.VISIBLE
                     googleUserLayout.visibility =  View.GONE
                 } else {
+                    mIsEmailAdded = true
                     noGoogleUserLayout.visibility =  View.GONE
                     googleUserLayout.visibility =  View.VISIBLE
                 }
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_ADD_EMAIL,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                        AFInAppEventParameterName.IS_EDIT to if (mIsEmailAdded) "1" else "0")
+                )
                 youLinkGmailAccountTextView.text = mStoreUserPageInfoStaticTextResponse?.header_linked_gmail_account
                 openGmailDialogTextView.text = mStoreUserPageInfoStaticTextResponse?.button_sign_in_with_google
                 headingTextView.text = mStoreUserPageInfoStaticTextResponse?.header_add_gmail_account
