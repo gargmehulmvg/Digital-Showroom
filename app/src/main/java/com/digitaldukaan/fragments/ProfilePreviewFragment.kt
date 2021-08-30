@@ -406,7 +406,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                 firstName = personGivenName,
                 lastName = personFamilyName,
                 emailId = personEmail,
-                photo = "$personPhoto",
+                photo = if (null == personPhoto) "" else "$personPhoto",
                 signInId = personId
             )
             mService.setStoreUserGmailDetails(request)
