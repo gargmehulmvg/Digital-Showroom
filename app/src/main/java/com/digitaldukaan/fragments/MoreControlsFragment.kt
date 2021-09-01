@@ -1,12 +1,10 @@
 package com.digitaldukaan.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import com.digitaldukaan.R
@@ -19,9 +17,7 @@ import com.digitaldukaan.models.response.StoreServicesResponse
 import com.digitaldukaan.services.MoreControlsService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IMoreControlsServiceInterface
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textfield.TextInputLayout
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.layout_more_control_fragment.*
@@ -39,10 +35,9 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
     private var mIsOrderNotificationOn: Boolean? = false
     private var mIsDeliveryOn: Boolean = false
     private var mIsPickupOn: Boolean = false
+    private var mIsStoreOn: Boolean = false
 
     companion object {
-
-        private const val TAG = "MoreControlsFragment"
 
         fun newInstance(appSettingsResponseStaticData: AccountStaticTextResponse?, isOrderNotificationOn: Boolean?): MoreControlsFragment {
             val fragment = MoreControlsFragment()
@@ -84,47 +79,48 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
             this@MoreControlsFragment.mFreeDeliveryAbove = mFreeDeliveryAbove
             this@MoreControlsFragment.mDeliveryChargeType = mDeliveryChargeType ?: 0
             this@MoreControlsFragment.mPaymentPaymentMethod = StaticInstances.sPaymentMethodStr ?: ""
-            storeSwitch?.setOnCheckedChangeListener { _, isChecked ->
-                Log.d(TAG, "storeSwitch.setOnCheckedChangeListener $isChecked")
-                val storeStatus = "${mMoreControlsStaticData?.mStoreText} :"
-                storeStatusTextView?.text = storeStatus
-                storeStatusTextView2?.text = if (isChecked) mMoreControlsStaticData?.mOpenText else mMoreControlsStaticData?.mClosedText
-                mActivity?.let { context -> storeStatusTextView2?.setTextColor(ContextCompat.getColor(context, if (isChecked) R.color.open_green else R.color.red)) }
-            }
             mActivity?.let { context ->
                 if (1 == mDeliveryFlag) {
                     mIsDeliveryOn = true
-                    deliveryStatusTextView2?.text = mMoreControlsStaticData?.mOnText
-                    deliveryStatusTextView2?.setTextColor(ContextCompat.getColor(context, R.color.open_green))
-                    deliverySwitchImageView?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_delivery_green_grey_border))
+                    deliveryStatusValueTextView?.text = mMoreControlsStaticData?.mOnText
+                    deliveryStatusValueTextView?.setTextColor(ContextCompat.getColor(context, R.color.open_green))
+                    deliveryImageView?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_delivery_on))
                 } else {
                     mIsDeliveryOn = false
-                    deliveryStatusTextView2?.text = mMoreControlsStaticData?.mOffText
-                    deliveryStatusTextView2?.setTextColor(ContextCompat.getColor(context, R.color.red))
-                    deliverySwitchImageView?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_delivery_red_grey_border))
+                    deliveryStatusValueTextView?.text = mMoreControlsStaticData?.mOffText
+                    deliveryStatusValueTextView?.setTextColor(ContextCompat.getColor(context, R.color.red))
+                    deliveryImageView?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_delivery_off))
                 }
                 if (1 == mPickupFlag) {
                     mIsPickupOn = true
-                    pickupStatusTextView2?.text = mMoreControlsStaticData?.mOnText
-                    pickupStatusTextView2?.setTextColor(ContextCompat.getColor(context, R.color.open_green))
+                    pickupStatusValueTextView?.text = mMoreControlsStaticData?.mOnText
+                    pickupStatusValueTextView?.setTextColor(ContextCompat.getColor(context, R.color.open_green))
                     pickupImageView?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_pickup_green_grey_border))
                 } else {
                     mIsPickupOn = false
-                    pickupStatusTextView2?.text = mMoreControlsStaticData?.mOffText
-                    pickupStatusTextView2?.setTextColor(ContextCompat.getColor(context, R.color.red))
+                    pickupStatusValueTextView?.text = mMoreControlsStaticData?.mOffText
+                    pickupStatusValueTextView?.setTextColor(ContextCompat.getColor(context, R.color.red))
                     pickupImageView?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_pickup_red_grey_border))
                 }
-
+                val storeStatus = "${mMoreControlsStaticData?.mStoreText} :"
+                storeStatusTextView?.text = storeStatus
+                if (1 == mStoreFlag) {
+                    mIsStoreOn = true
+                    storeStatusTextView2?.text = mMoreControlsStaticData?.mOpenText
+                    storeStatusTextView2?.setTextColor(ContextCompat.getColor(context, R.color.open_green))
+                    storeImageView?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_open))
+                } else {
+                    mIsStoreOn = false
+                    storeStatusTextView2?.text = mMoreControlsStaticData?.mClosedText
+                    storeStatusTextView2?.setTextColor(ContextCompat.getColor(context, R.color.red))
+                    storeImageView?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_closed))
+                }
                 val deliveryStatus = "${mMoreControlsStaticData?.mDeliveryText} :"
                 val pickUpStr = "${mMoreControlsStaticData?.text_pickup} :"
                 deliveryStatusTextView?.text = deliveryStatus
                 pickupStatusTextView?.text = pickUpStr
-                deliveryStatusTextView2?.text = if (1 == mDeliveryFlag) mMoreControlsStaticData?.mOnText else mMoreControlsStaticData?.mOffText
-                storeSwitch?.isChecked = (1 == mStoreFlag)
-                val storeStatus = "${mMoreControlsStaticData?.mStoreText} :"
-                storeStatusTextView?.text = storeStatus
-                storeStatusTextView2?.text = if (1 == mStoreFlag) mMoreControlsStaticData?.mOpenText else mMoreControlsStaticData?.mClosedText
-                deliveryStatusTextView2?.setTextColor(ContextCompat.getColor(context, if (mDeliveryFlag == 1) R.color.open_green else R.color.red))
+                deliveryStatusValueTextView?.text = if (1 == mDeliveryFlag) mMoreControlsStaticData?.mOnText else mMoreControlsStaticData?.mOffText
+                deliveryStatusValueTextView?.setTextColor(ContextCompat.getColor(context, if (mDeliveryFlag == 1) R.color.open_green else R.color.red))
                 storeStatusTextView2?.setTextColor(ContextCompat.getColor(context, if (mStoreFlag == 1) R.color.open_green else R.color.red))
             }
         }
@@ -150,6 +146,7 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
         notificationsOptionalTextView?.text = mMoreControlsStaticData?.mMessageSetOrderNotifications
         paymentModesNewTextView?.text = mMoreControlsStaticData?.mNewText
         notificationsNewTextView?.text = mMoreControlsStaticData?.mNewText
+        storeServiceContainerHeading?.text = mMoreControlsStaticData?.heading_tap_the_icon
         if (0 != mDeliveryChargeType) {
             deliveryChargeTypeTextView?.text = mMoreControlsStaticData?.sub_heading_success_set_delivery_charge
             if (1 == mDeliveryChargeType) {
@@ -196,10 +193,17 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
                 )
                 launchFragment(SetOrderTypeFragment.newInstance(), true)
             }
-            paymentModesContainer?.id -> { launchFragment(PaymentModesFragment.newInstance(), true) }
+            paymentModesContainer?.id -> launchFragment(PaymentModesFragment.newInstance(), true)
             notificationsContainer?.id -> getOrderNotificationBottomSheet(AFInAppEventParameterName.STORE_CONTROLS)
-            storeSwitch?.id -> changeStoreDeliveryStatus()
-            switchLayout?.id -> showDeliveryPickupBottomSheet()
+            storeImageView?.id -> changeStoreDeliveryPickUpStatus(isStoreClicked = true)
+            storeStatusTextView?.id -> changeStoreDeliveryPickUpStatus(isStoreClicked = true)
+            storeStatusTextView2?.id -> changeStoreDeliveryPickUpStatus(isStoreClicked = true)
+            deliveryImageView?.id -> changeStoreDeliveryPickUpStatus(isStoreClicked = false, isDeliveryClicked = true)
+            deliveryStatusTextView?.id -> changeStoreDeliveryPickUpStatus(isStoreClicked = false, isDeliveryClicked = true)
+            deliveryStatusValueTextView?.id -> changeStoreDeliveryPickUpStatus(isStoreClicked = false, isDeliveryClicked = true)
+            pickupImageView?.id -> changeStoreDeliveryPickUpStatus(isStoreClicked = false, isDeliveryClicked = false, isPickUpClicked = true)
+            pickupStatusTextView?.id -> changeStoreDeliveryPickUpStatus(isStoreClicked = false, isDeliveryClicked = false, isPickUpClicked = true)
+            pickupStatusValueTextView?.id -> changeStoreDeliveryPickUpStatus(isStoreClicked = false, isDeliveryClicked = false, isPickUpClicked = true)
         }
     }
 
@@ -271,47 +275,19 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
 
     override fun onMoreControlsServerException(e: Exception) = exceptionHandlingForAPIResponse(e)
 
-    private fun changeStoreDeliveryStatus() {
+    private fun changeStoreDeliveryPickUpStatus(isStoreClicked: Boolean = false, isDeliveryClicked: Boolean = false, isPickUpClicked: Boolean = false) {
         if (!isInternetConnectionAvailable(mActivity)) {
             showNoInternetConnectionDialog()
             return
         }
         showCancellableProgressDialog(mActivity)
-        val isStoreOpen = (true == storeSwitch?.isChecked)
+        val isStoreOpen = if (isStoreClicked) { StaticInstances.sAppStoreServicesResponse?.mStoreFlag != 1 } else StaticInstances.sAppStoreServicesResponse?.mStoreFlag == 1
+        val isDeliveryOpen = if (isDeliveryClicked) { StaticInstances.sAppStoreServicesResponse?.mDeliveryFlag != 1 } else StaticInstances.sAppStoreServicesResponse?.mDeliveryFlag == 1
+        val isPickUpOpen = if (isPickUpClicked) { StaticInstances.sAppStoreServicesResponse?.mPickupFlag != 1 } else StaticInstances.sAppStoreServicesResponse?.mPickupFlag == 1
         val request = StoreDeliveryStatusChangeRequest(
             if (isStoreOpen) 1 else 0,
-            if (isStoreOpen) { if (!mIsDeliveryOn && !mIsPickupOn) 1 else { if (mIsDeliveryOn) 1 else 0 } } else if (mIsDeliveryOn) 1 else 0,
-            if (isStoreOpen) { if (!mIsDeliveryOn && !mIsPickupOn) 1 else { if (mIsPickupOn) 1 else 0 } } else if (mIsPickupOn) 1 else 0
-        )
-        mMoreControlsService?.changeStoreAndDeliveryStatus(request)
-    }
-
-    private fun changeStoreDeliveryStatusByDeliveryClicked() {
-        if (!isInternetConnectionAvailable(mActivity)) {
-            showNoInternetConnectionDialog()
-            return
-        }
-        showCancellableProgressDialog(mActivity)
-        val isStoreOpen = (true == storeSwitch?.isChecked)
-        val request = StoreDeliveryStatusChangeRequest(
-            if (!mIsPickupOn && !mIsDeliveryOn && isStoreOpen) 0 else if (mIsPickupOn && !mIsDeliveryOn && !isStoreOpen) 0 else if (!mIsPickupOn && !mIsDeliveryOn && !isStoreOpen) 0 else 1,
-            if (mIsDeliveryOn) 1 else 0,
-            if (mIsPickupOn) 1 else 0
-        )
-        mMoreControlsService?.changeStoreAndDeliveryStatus(request)
-    }
-
-    private fun changeStoreDeliveryStatusByPickupClicked() {
-        if (!isInternetConnectionAvailable(mActivity)) {
-            showNoInternetConnectionDialog()
-            return
-        }
-        showCancellableProgressDialog(mActivity)
-        val isStoreOpen = (true == storeSwitch?.isChecked)
-        val request = StoreDeliveryStatusChangeRequest(
-            if (!mIsPickupOn && !mIsDeliveryOn && isStoreOpen) 0 else if (!mIsPickupOn && mIsDeliveryOn && !isStoreOpen) 0 else if (!mIsPickupOn && !mIsDeliveryOn && !isStoreOpen) 0 else 1,
-            if (mIsDeliveryOn) 1 else 0,
-            if (mIsPickupOn) 1 else 0
+            if (isDeliveryOpen) 1 else 0,
+            if (isPickUpOpen) 1 else 0
         )
         mMoreControlsService?.changeStoreAndDeliveryStatus(request)
     }
@@ -330,108 +306,36 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
         }
     }
 
-    private fun showDeliveryPickupBottomSheet() {
-        mActivity?.run {
-            val bottomSheetDialog = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
-            val view = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_delivery_pickup, findViewById(R.id.bottomSheetContainer))
-            bottomSheetDialog.apply {
-                setContentView(view)
-                behavior.state = BottomSheetBehavior.STATE_EXPANDED
-                view.run {
-                    val deliveryHeadingTextView: TextView = findViewById(R.id.deliveryHeadingTextView)
-                    val deliverySubHeadingTextView: TextView = findViewById(R.id.deliverySubHeadingTextView)
-                    val pickupSubHeadingTextView: TextView = findViewById(R.id.pickupSubHeadingTextView)
-                    val pickupHeadingTextView: TextView = findViewById(R.id.pickupHeadingTextView)
-                    val bottomSheetHeadingTextView: TextView = findViewById(R.id.bottomSheetHeadingTextView)
-                    val deliverySwitch: SwitchMaterial = findViewById(R.id.deliverySwitch)
-                    val pickupSwitch: SwitchMaterial = findViewById(R.id.pickupSwitch)
-                    val pickupContainer: View = findViewById(R.id.pickupContainer)
-                    val deliveryContainer: View = findViewById(R.id.deliveryContainer)
-                    val deliveryImageView: ImageView = findViewById(R.id.deliveryImageView)
-                    val pickupImageView: ImageView = findViewById(R.id.pickupImageView)
-                    val closeImageView: ImageView = findViewById(R.id.closeImageView)
-                    deliverySubHeadingTextView.text = mMoreControlsStaticData?.message_bottom_sheet_delivery
-                    pickupSubHeadingTextView.text = mMoreControlsStaticData?.message_bottom_sheet_pickup
-                    pickupHeadingTextView.text = mMoreControlsStaticData?.text_pickup
-                    deliveryHeadingTextView.text = mMoreControlsStaticData?.mDeliveryText
-                    bottomSheetHeadingTextView.text = mMoreControlsStaticData?.heading_bottom_sheet_set_delivery_pickup
-                    setupBottomSheetDeliveryUI(deliverySwitch, deliveryHeadingTextView, deliveryContainer, deliveryImageView)
-                    setupBottomSheetPickupUI(pickupContainer, pickupSwitch, pickupHeadingTextView, pickupImageView)
-                    deliverySwitch.setOnCheckedChangeListener { _, isChecked ->
-                        mIsDeliveryOn = isChecked
-                        changeStoreDeliveryStatusByDeliveryClicked()
-                        setupBottomSheetDeliveryUI(deliverySwitch, deliveryHeadingTextView, deliveryContainer, deliveryImageView)
-                    }
-                    pickupSwitch.setOnCheckedChangeListener { _, isChecked ->
-                        mIsPickupOn = isChecked
-                        changeStoreDeliveryStatusByPickupClicked()
-                        setupBottomSheetPickupUI(pickupContainer, pickupSwitch, pickupHeadingTextView, pickupImageView)
-                    }
-                    closeImageView.setOnClickListener { bottomSheetDialog.dismiss() }
-                }
-            }.show()
-        }
-    }
-
-    private fun setupBottomSheetPickupUI(pickupContainer: View, pickupSwitch: SwitchMaterial, pickupHeadingTextView: TextView, pickupImageView: ImageView) {
-        mActivity?.let { context ->
-            if (mIsPickupOn) {
-                pickupSwitch.isSelected = true
-                pickupSwitch.isChecked = true
-                pickupHeadingTextView.setTextColor(ContextCompat.getColor(context, R.color.open_green))
-                pickupImageView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_pickup_green_grey_border))
-                pickupContainer.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_white_background_green_border)
-                pickupContainer.elevation = 1f
-            } else {
-                pickupSwitch.isSelected = false
-                pickupSwitch.isChecked = false
-                pickupImageView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_pickup_grey_grey_border))
-                pickupHeadingTextView.setTextColor(ContextCompat.getColor(context, R.color.default_text_light_grey))
-                pickupContainer.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_white_background)
-                pickupContainer.elevation = 5f
-            }
-        }
-    }
-
-    private fun setupBottomSheetDeliveryUI(deliverySwitch: SwitchMaterial, deliveryHeadingTextView: TextView, deliveryContainer: View, deliveryImageView: ImageView) {
-        mActivity?.let { context ->
-            if (mIsDeliveryOn) {
-                deliverySwitch.isSelected = true
-                deliverySwitch.isChecked = true
-                deliveryHeadingTextView.setTextColor(ContextCompat.getColor(context, R.color.open_green))
-                deliveryImageView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_delivery_green_grey_border))
-                deliveryContainer.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_white_background_green_border)
-                deliveryContainer.elevation = 1f
-            } else {
-                deliverySwitch.isSelected = false
-                deliverySwitch.isChecked = false
-                deliveryHeadingTextView.setTextColor(ContextCompat.getColor(context, R.color.default_text_light_grey))
-                deliveryContainer.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_white_background)
-                deliveryImageView.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_delivery_grey_grey_border))
-                deliveryContainer.elevation = 5f
-            }
-        }
-    }
-
     private fun setupPickupDeliveryUI() {
         mActivity?.let { context ->
             if (mIsDeliveryOn) {
-                deliveryStatusTextView2?.text = mMoreControlsStaticData?.mOnText
-                deliveryStatusTextView2?.setTextColor(ContextCompat.getColor(context, R.color.open_green))
-                deliverySwitchImageView?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_delivery_green_grey_border))
+                deliveryStatusValueTextView?.text = mMoreControlsStaticData?.mOnText
+                deliveryStatusValueTextView?.setTextColor(ContextCompat.getColor(context, R.color.open_green))
+                deliveryImageView?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_delivery_on))
             } else {
-                deliveryStatusTextView2?.text = mMoreControlsStaticData?.mOffText
-                deliveryStatusTextView2?.setTextColor(ContextCompat.getColor(context, R.color.red))
-                deliverySwitchImageView?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_delivery_red_grey_border))
+                deliveryStatusValueTextView?.text = mMoreControlsStaticData?.mOffText
+                deliveryStatusValueTextView?.setTextColor(ContextCompat.getColor(context, R.color.red))
+                deliveryImageView?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_delivery_off))
             }
             if (mIsPickupOn) {
-                pickupStatusTextView2?.text = mMoreControlsStaticData?.mOnText
-                pickupStatusTextView2?.setTextColor(ContextCompat.getColor(context, R.color.open_green))
+                pickupStatusValueTextView?.text = mMoreControlsStaticData?.mOnText
+                pickupStatusValueTextView?.setTextColor(ContextCompat.getColor(context, R.color.open_green))
                 pickupImageView?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_pickup_green_grey_border))
             } else {
-                pickupStatusTextView2?.text = mMoreControlsStaticData?.mOffText
-                pickupStatusTextView2?.setTextColor(ContextCompat.getColor(context, R.color.red))
+                pickupStatusValueTextView?.text = mMoreControlsStaticData?.mOffText
+                pickupStatusValueTextView?.setTextColor(ContextCompat.getColor(context, R.color.red))
                 pickupImageView?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_pickup_red_grey_border))
+            }
+            val storeStatus = "${mMoreControlsStaticData?.mStoreText} :"
+            storeStatusTextView?.text = storeStatus
+            if (mIsStoreOn) {
+                storeStatusTextView2?.text = mMoreControlsStaticData?.mOpenText
+                storeStatusTextView2?.setTextColor(ContextCompat.getColor(context, R.color.open_green))
+                storeImageView?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_open))
+            } else {
+                storeStatusTextView2?.text = mMoreControlsStaticData?.mClosedText
+                storeStatusTextView2?.setTextColor(ContextCompat.getColor(context, R.color.red))
+                storeImageView?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_closed))
             }
         }
     }
