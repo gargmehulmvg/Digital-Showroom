@@ -95,12 +95,12 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
                     mIsPickupOn = true
                     pickupStatusValueTextView?.text = mMoreControlsStaticData?.mOnText
                     pickupStatusValueTextView?.setTextColor(ContextCompat.getColor(context, R.color.open_green))
-                    pickupImageView?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_pickup_green_grey_border))
+                    pickupImageView?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_pickup_green))
                 } else {
                     mIsPickupOn = false
                     pickupStatusValueTextView?.text = mMoreControlsStaticData?.mOffText
                     pickupStatusValueTextView?.setTextColor(ContextCompat.getColor(context, R.color.red))
-                    pickupImageView?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_pickup_red_grey_border))
+                    pickupImageView?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_pickup_red))
                 }
                 val storeStatus = "${mMoreControlsStaticData?.mStoreText} :"
                 storeStatusTextView?.text = storeStatus
@@ -173,7 +173,11 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_SET_MIN_ORDER_VALUE,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
+                    data = mapOf(
+                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(
+                            Constants.STORE_ID
+                        )
+                    )
                 )
                 showMinimumDeliveryOrderBottomSheet()
             }
@@ -181,29 +185,70 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_SET_DELIVERY_CHARGE,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
+                    data = mapOf(
+                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(
+                            Constants.STORE_ID
+                        )
+                    )
                 )
-                mMoreControlsStaticData?.let { launchFragment(SetDeliveryChargeFragment.newInstance(it), true) }
+                mMoreControlsStaticData?.let {
+                    launchFragment(
+                        SetDeliveryChargeFragment.newInstance(
+                            it
+                        ), true
+                    )
+                }
             }
             onlinePaymentsContainer?.id -> {
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_SET_PREPAID_ORDER,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.PATH to AFInAppEventParameterName.MORE_CONTROLS)
+                    data = mapOf(
+                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(
+                            Constants.STORE_ID
+                        ), AFInAppEventParameterName.PATH to AFInAppEventParameterName.MORE_CONTROLS
+                    )
                 )
                 launchFragment(SetOrderTypeFragment.newInstance(), true)
             }
             paymentModesContainer?.id -> launchFragment(PaymentModesFragment.newInstance(), true)
             notificationsContainer?.id -> getOrderNotificationBottomSheet(AFInAppEventParameterName.STORE_CONTROLS)
-            storeImageView?.id -> changeStoreDeliveryPickUpStatus(isStoreClicked = true)
-            storeStatusTextView?.id -> changeStoreDeliveryPickUpStatus(isStoreClicked = true)
-            storeStatusTextView2?.id -> changeStoreDeliveryPickUpStatus(isStoreClicked = true)
-            deliveryImageView?.id -> changeStoreDeliveryPickUpStatus(isStoreClicked = false, isDeliveryClicked = true)
-            deliveryStatusTextView?.id -> changeStoreDeliveryPickUpStatus(isStoreClicked = false, isDeliveryClicked = true)
-            deliveryStatusValueTextView?.id -> changeStoreDeliveryPickUpStatus(isStoreClicked = false, isDeliveryClicked = true)
-            pickupImageView?.id -> changeStoreDeliveryPickUpStatus(isStoreClicked = false, isDeliveryClicked = false, isPickUpClicked = true)
-            pickupStatusTextView?.id -> changeStoreDeliveryPickUpStatus(isStoreClicked = false, isDeliveryClicked = false, isPickUpClicked = true)
-            pickupStatusValueTextView?.id -> changeStoreDeliveryPickUpStatus(isStoreClicked = false, isDeliveryClicked = false, isPickUpClicked = true)
+            storeImageView?.id -> {
+                startViewAnimation(storeImageView)
+                changeStoreDeliveryPickUpStatus(isStoreClicked = true)
+            }
+            storeStatusTextView?.id -> {
+                startViewAnimation(storeImageView)
+                changeStoreDeliveryPickUpStatus(isStoreClicked = true)
+            }
+            storeStatusTextView2?.id -> {
+                startViewAnimation(storeImageView)
+                changeStoreDeliveryPickUpStatus(isStoreClicked = true)
+            }
+            deliveryImageView?.id -> {
+                startViewAnimation(deliveryImageView)
+                changeStoreDeliveryPickUpStatus(isStoreClicked = false, isDeliveryClicked = true)
+            }
+            deliveryStatusTextView?.id -> {
+                startViewAnimation(deliveryImageView)
+                changeStoreDeliveryPickUpStatus(isStoreClicked = false, isDeliveryClicked = true)
+            }
+            deliveryStatusValueTextView?.id -> {
+                startViewAnimation(deliveryImageView)
+                changeStoreDeliveryPickUpStatus(isStoreClicked = false, isDeliveryClicked = true)
+            }
+            pickupImageView?.id -> {
+                startViewAnimation(pickupImageView)
+                changeStoreDeliveryPickUpStatus(isStoreClicked = false, isDeliveryClicked = false, isPickUpClicked = true)
+            }
+            pickupStatusTextView?.id -> {
+                startViewAnimation(pickupImageView)
+                changeStoreDeliveryPickUpStatus(isStoreClicked = false, isDeliveryClicked = false, isPickUpClicked = true)
+            }
+            pickupStatusValueTextView?.id -> {
+                startViewAnimation(pickupImageView)
+                changeStoreDeliveryPickUpStatus(isStoreClicked = false, isDeliveryClicked = false, isPickUpClicked = true)
+            }
         }
     }
 
@@ -320,11 +365,11 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
             if (mIsPickupOn) {
                 pickupStatusValueTextView?.text = mMoreControlsStaticData?.mOnText
                 pickupStatusValueTextView?.setTextColor(ContextCompat.getColor(context, R.color.open_green))
-                pickupImageView?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_pickup_green_grey_border))
+                pickupImageView?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_pickup_green))
             } else {
                 pickupStatusValueTextView?.text = mMoreControlsStaticData?.mOffText
                 pickupStatusValueTextView?.setTextColor(ContextCompat.getColor(context, R.color.red))
-                pickupImageView?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_pickup_red_grey_border))
+                pickupImageView?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_pickup_red))
             }
             val storeStatus = "${mMoreControlsStaticData?.mStoreText} :"
             storeStatusTextView?.text = storeStatus

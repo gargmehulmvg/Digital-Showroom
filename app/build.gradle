@@ -167,4 +167,6 @@ dependencies {
     //  Google Tag Manager
     implementation 'com.google.android.gms:play-services-tagmanager:17.0.0'
     implementation 'com.google.firebase:firebase-core:17.0.0'
+    //  Animation
+    implementation 'com.daimajia.androidanimations:library:2.4@aar'
 }

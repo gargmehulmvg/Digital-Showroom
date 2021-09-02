@@ -38,6 +38,8 @@ import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.*
 import com.bumptech.glide.Glide
+import com.daimajia.androidanimations.library.Techniques
+import com.daimajia.androidanimations.library.YoYo
 import com.digitaldukaan.MainActivity
 import com.digitaldukaan.MyFcmMessageListenerService
 import com.digitaldukaan.R
@@ -533,6 +535,13 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                 view.startAnimation(animation)
             }
         },Constants.SHINE_ANIMATION_INTERVAL, Constants.SHINE_ANIMATION_INTERVAL, TimeUnit.MILLISECONDS)
+    }
+
+    open fun startViewAnimation(view: View?, technique: Techniques = Techniques.Tada, duration: Long = 300) {
+        view?.let { v ->
+            YoYo.with(technique)
+            .duration(duration)
+            .playOn(v) }
     }
 
     open fun openPlayStore() {
