@@ -18,7 +18,6 @@ import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.services.BankDetailsService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IBankDetailsServiceInterface
-import com.digitaldukaan.views.allowOnlyAlphaNumericCharacters
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.layout_bank_account_fragment.*
@@ -81,8 +80,6 @@ class OnBoardScreenBankDetailsFragment : BaseFragment(), IBankDetailsServiceInte
         }
         mobileNumberEditText?.setText(PrefsManager.getStringDataFromSharedPref(Constants.USER_MOBILE_NUMBER))
         mobileNumberEditText?.isEnabled = false
-        accountHolderNameEditText?.allowOnlyAlphaNumericCharacters()
-        ifscEditText?.allowOnlyAlphaNumericCharacters()
     }
 
     override fun onClick(view: View?) {

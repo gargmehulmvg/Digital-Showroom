@@ -357,11 +357,8 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         })
         enterCategoryEditText?.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
-                val str = s?.toString()
-                if (true == str?.trim()?.isNotEmpty()) {
-                    mIsOrderEdited = true
-                    showAddProductContainer()
-                }
+                mIsOrderEdited = true
+                showAddProductContainer()
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
