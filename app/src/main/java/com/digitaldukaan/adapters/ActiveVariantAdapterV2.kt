@@ -79,7 +79,7 @@ class ActiveVariantAdapterV2(
             variantNameInputLayout.hint = mStaticText?.hint_variant_name
             variantPriceInputLayout.hint = mStaticText?.hint_price
             variantDiscountPriceInputLayout.hint = mStaticText?.hint_discounted_price
-            if (isNotEmpty(item?.variantName)) nameEditText.setText(item?.variantName)
+            if (isNotEmpty(item?.variantName)) nameEditText.setText(item?.variantName) else nameEditText.text = null
             if (0.0 != item?.price) priceEditText.setText("${item?.price}")
             if (0.0 != item?.discountedPrice) discountPriceEditText.setText("${item?.discountedPrice}")
             variantNameInputLayout.error = if (item?.isVariantNameEmptyError == true) mContext?.getString(R.string.mandatory_field_message) else null
