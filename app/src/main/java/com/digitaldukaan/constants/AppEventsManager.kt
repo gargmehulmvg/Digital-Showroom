@@ -75,7 +75,7 @@ class AppEventsManager {
             try {
                 Log.d(TAG, "pushAppFlyerEvent: event name :: $eventName && map :: $data")
                 val appFlyerInstance = AppsFlyerLib.getInstance()
-                appFlyerInstance?.logEvent(mActivityInstance,  eventName, data)
+                mActivityInstance?.let { context -> appFlyerInstance?.logEvent(context,  eventName, data) }
                 Log.d(TAG, "pushAppFlyerEvent: DONE")
             } catch (e: Exception) {
                 Sentry.captureException(e, "pushAppFlyerEvent: exception")
@@ -83,8 +83,10 @@ class AppEventsManager {
             }
             try {
                 val bundle = Bundle()
-                for (entry in data.entries)
-                    bundle.putString(entry.key, entry.value)
+                for (entry in data.entries) {
+                    val value = "" + entry.value
+                    bundle.putString(entry.key, value)
+                }
                 Log.d(TAG, "FIREBASE ANALYTICS: event name :: $eventName && bundle :: $bundle")
                 mFirebaseAnalytics?.logEvent(eventName ?: "", bundle)
                 Log.d(TAG, "FIREBASE ANALYTICS: DONE")

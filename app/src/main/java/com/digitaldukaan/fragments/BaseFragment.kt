@@ -203,10 +203,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
             is IllegalStateException -> showToast("System Error :: IllegalStateException :: Unable to reach Server")
             is IOException -> Log.e(TAG, "$TAG exceptionHandlingForAPIResponse: ${e.message}", e)
             is UnknownHostException -> showToast(e.message)
-            is UnAuthorizedAccessException -> {
-                showToast(e.message)
-                logoutFromApplication()
-            }
+            is UnAuthorizedAccessException -> logoutFromApplication()
             else -> showToast("Something went wrong")
         }
     }
@@ -1387,8 +1384,9 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         }
     }
 
-    fun logoutFromApplication() {
-        mActivity?.getSharedPreferences(Constants.SHARED_PREF_NAME, MODE_PRIVATE)?.edit()?.clear()?.apply()
+    fun logoutFromApplication(isAppLogout: Boolean = false) {
+        if (!isAppLogout) showToast(mActivity?.getString(R.string.logout_message))
+        mActivity?.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE)?.edit()?.clear()?.apply()
         clearFragmentBackStack()
         storeStringDataInSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN, "")
         storeStringDataInSharedPref(Constants.USER_AUTH_TOKEN, "")

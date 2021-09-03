@@ -3,7 +3,6 @@ package com.digitaldukaan.services.networkservice
 import android.util.Log
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.exceptions.UnAuthorizedAccessException
-import com.digitaldukaan.models.request.StoreDeliveryStatusChangeRequest
 import com.digitaldukaan.models.request.StoreLogoRequest
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.network.RetrofitApi
@@ -23,41 +22,12 @@ class ProfileNetworkService {
                         serviceInterface.onProfileResponse(staticTextResponse)
                     }
                 } else {
-                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
                     serviceInterface.onProfileDataException(Exception(response.message()))
                 }
             }
         } catch (e: Exception) {
             Log.e(ProfileNetworkService::class.java.simpleName, "getProfileServerCall: ", e)
-            serviceInterface.onProfileDataException(e)
-        }
-    }
-
-    suspend fun changeStoreAndDeliveryStatusServerCall(
-        request: StoreDeliveryStatusChangeRequest,
-        serviceInterface: IProfileServiceInterface
-    ) {
-        try {
-            val response = RetrofitApi().getServerCallObject()?.changeStoreAndDeliveryStatus(request)
-            response?.let {
-                if (it.isSuccessful) {
-                    it.body()?.let { responseBody ->
-                        serviceInterface.onChangeStoreAndDeliveryStatusResponse(responseBody)
-                    }
-                } else {
-                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
-                    val responseBody = it.errorBody()
-                    responseBody?.let {
-                        val errorResponse = Gson().fromJson(
-                            responseBody.string(),
-                            CommonApiResponse::class.java
-                        )
-                        serviceInterface.onChangeStoreAndDeliveryStatusResponse(errorResponse)
-                    }
-                }
-            }
-        } catch (e: Exception) {
-            Log.e(ProfileNetworkService::class.java.simpleName, "changeStoreAndDeliveryStatusServerCall: ", e)
             serviceInterface.onProfileDataException(e)
         }
     }
@@ -72,7 +42,7 @@ class ProfileNetworkService {
                         serviceInterface.onReferAndEarnResponse(responseBody)
                     }
                 } else {
-                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
                     val responseBody = it.errorBody()
                     responseBody?.let {
                         val errorResponse = Gson().fromJson(
@@ -99,7 +69,7 @@ class ProfileNetworkService {
                         serviceInterface.onReferAndEarnOverWhatsAppResponse(responseBody)
                     }
                 } else {
-                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
                     serviceInterface.onProfileDataException(Exception(response.message()))
                 }
             }
@@ -142,7 +112,7 @@ class ProfileNetworkService {
                         serviceInterface.onStoreLogoResponse(storeLinkResponse)
                     }
                 } else {
-                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
                     throw Exception(response.message())
                 }
             }
@@ -162,7 +132,7 @@ class ProfileNetworkService {
                     it.body()?.let { commonApiResponse -> serviceInterface.onProductShareStoreWAResponse(commonApiResponse)
                     }
                 } else {
-                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
                     val responseBody = it.errorBody()
                     responseBody?.let {
                         val errorResponse = Gson().fromJson(

@@ -20,20 +20,14 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import androidx.recyclerview.widget.*
 import com.digitaldukaan.R
+import com.digitaldukaan.adapters.ActiveVariantAdapterV2
 import com.digitaldukaan.adapters.AddProductsChipsAdapter
 import com.digitaldukaan.adapters.AddProductsImagesAdapter
 import com.digitaldukaan.adapters.ImagesSearchAdapter
-import com.digitaldukaan.adapters.MasterVariantsAdapter
 import com.digitaldukaan.constants.*
-import com.digitaldukaan.interfaces.IAdapterItemClickListener
-import com.digitaldukaan.interfaces.IChipItemClickListener
-import com.digitaldukaan.interfaces.IOnToolbarIconClick
-import com.digitaldukaan.interfaces.IOnToolbarSecondIconClick
+import com.digitaldukaan.interfaces.*
 import com.digitaldukaan.models.request.AddProductImageItem
 import com.digitaldukaan.models.request.AddProductItemCategory
 import com.digitaldukaan.models.request.AddProductRequest
@@ -56,6 +50,9 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.File
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 
 class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapterItemClickListener,
@@ -66,6 +63,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     private var addProductBannerStaticDataResponse: AddProductBannerTextResponse? = null
     private var addProductStaticData: AddProductStaticText? = null
     private var mItemId = 0
+    private var mItemCategoryId = 0
     private val mImagesStrList: ArrayList<AddProductImagesResponse> = ArrayList()
     private var imagePickBottomSheet: BottomSheetDialog? = null
     private var imageAdapter = ImagesSearchAdapter()
@@ -98,13 +96,17 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     private var shareProductContainer: View? = null
     private var noImagesLayout: View? = null
     private var discountContainer: View? = null
-    private var variantContainer: View? = null
     private var variantRecyclerView: RecyclerView? = null
     private var imagesRecyclerView: RecyclerView? = null
     private var chipGroupRecyclerView: RecyclerView? = null
     private var productDescriptionInputLayout: TextInputLayout? = null
+    private var mActiveVariantAdapter: ActiveVariantAdapterV2? = null
+    private var mActiveVariantList: ArrayList<VariantItemResponse>? = null
+    private var mDeletedVariantList: ArrayList<VariantItemResponse>? = null
 
     companion object {
+        private var sIsVariantImageClicked = false
+        private var sVariantImageClickedPosition = 0
         private const val TAG = "AddProductFragment"
         fun newInstance(itemId:Int, isAddNewProduct: Boolean): AddProductFragment {
             val fragment = AddProductFragment()
@@ -146,7 +148,6 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         }
         hideBottomNavigationView(true)
         addVariantsTextView = mContentView?.findViewById(R.id.addVariantsTextView)
-        variantContainer = mContentView?.findViewById(R.id.variantContainer)
         addItemTextView = mContentView?.findViewById(R.id.addItemTextView)
         discountContainer = mContentView?.findViewById(R.id.discountContainer)
         noImagesLayout = mContentView?.findViewById(R.id.noImagesLayout)
@@ -288,28 +289,10 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     discountContainer?.visibility = View.VISIBLE
                 }
             }
-            setupVariantContainer()
+            mActiveVariantList = ArrayList()
+            mDeletedVariantList = ArrayList()
         } catch (e: Exception) {
             Log.e(TAG, "onViewCreated: ${e.message}", e)
-        }
-    }
-
-    private fun setupVariantContainer() {
-        try {
-            if (View.GONE == variantContainer?.visibility) {
-                if (!isEmpty(mAddProductResponse?.storeItem?.variantsList)) {
-                    variantContainer?.visibility = View.VISIBLE
-                    variantsHeading?.visibility = View.VISIBLE
-                    variantsHeading?.text = addProductStaticData?.text_variants
-                    addVariantsTextView?.visibility = View.GONE
-                    variantRecyclerView?.apply {
-                        layoutManager = LinearLayoutManager(mActivity)
-                        adapter = MasterVariantsAdapter(mActivity, mAddProductResponse?.storeItem?.variantsList, null)
-                    }
-                }
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "setupVariantContainer: ${e.message}", e)
         }
     }
 
@@ -437,7 +420,6 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     val descriptionStr = productDescriptionEditText?.text.toString().trim()
                     val categoryStr = enterCategoryEditText?.text.toString()
                     if (!isInternetConnectionAvailable(mActivity)) return else {
-                        showProgressDialog(mActivity)
                         val imageListRequest: ArrayList<AddProductImageItem> = ArrayList()
                         mImagesStrList.forEachIndexed { _, imageItem ->
                             if (imageItem.imageUrl.isNotEmpty()) {
@@ -458,22 +440,68 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                             Log.e(TAG, "AddProductFragment onClick request: ", e)
                             Sentry.captureException(e, "AddProductFragment onClick request: ")
                         }
+                        val discountPrice = if (discountedStr.isNotEmpty()) {
+                            if (discountedStr.startsWith(".")) {
+                                discountedStr = "0$discountedStr"
+                            }
+                            discountedStr.toDouble()
+                        } else 0.0
+                        val finalList: ArrayList<VariantItemResponse> = ArrayList()
+                        var isErrorInVariantList = false
+                        var isVariantNameSameAsItemName = false
+                        var isVariantNameCommon = false
+                        val uniqueVariantMap: HashMap<String, Int> = HashMap()
+                        mActiveVariantList?.forEachIndexed { _, itemResponse ->
+                            uniqueVariantMap[itemResponse.variantName?.toLowerCase(Locale.getDefault())?.trim() ?: ""] = 1
+                        }
+                        mActiveVariantList?.forEachIndexed { _, itemResponse ->
+                            if (isEmpty(itemResponse.variantName?.trim())) {
+                                itemResponse.isVariantNameEmptyError = true
+                                isErrorInVariantList = true
+                                return@forEachIndexed
+                            } else {
+                                if (uniqueVariantMap.containsKey(itemResponse.variantName?.toLowerCase(Locale.getDefault())?.trim())) {
+                                    if (uniqueVariantMap[itemResponse.variantName?.toLowerCase(Locale.getDefault())?.trim()] == 1) {
+                                        uniqueVariantMap[itemResponse.variantName?.toLowerCase(Locale.getDefault())?.trim() ?: ""] = 2
+                                        isVariantNameCommon = false
+                                    } else isVariantNameCommon = true
+                                }
+                                if (isVariantNameCommon) return@forEachIndexed
+                                isVariantNameSameAsItemName = (itemResponse.variantName ?: "").equals(nameStr, true)
+                                itemResponse.isVariantNameEmptyError = false
+                                if (isVariantNameSameAsItemName) return@forEachIndexed
+                            }
+                        }
+                        if (isVariantNameCommon) {
+                            showShortSnackBar(addProductStaticData?.error_variant_already_exist, true, R.drawable.ic_close_red_small)
+                            return
+                        }
+                        if (isVariantNameSameAsItemName) {
+                            showShortSnackBar(addProductStaticData?.error_variant_name_same_with_item_name, true, R.drawable.ic_close_red_small)
+                            return
+                        }
+                        if (isErrorInVariantList) {
+                            mActiveVariantAdapter?.notifyDataSetChanged()
+                            return
+                        }
+                        mActiveVariantList?.let { list ->
+                            finalList.addAll(list)
+                        }
+                        mDeletedVariantList?.let { list ->
+                            finalList.addAll(list)
+                        }
                         val request = AddProductRequest(
                             mItemId,
                             1,
-                            price,
-                            if (discountedStr.isNotEmpty()) {
-                                if (discountedStr.startsWith(".")) {
-                                    discountedStr = "0$discountedStr"
-                                }
-                                discountedStr.toDouble()
-                            } else 0.0,
-                            descriptionStr,
-                            if (categoryStr.trim().isEmpty()) AddProductItemCategory(0, "") else AddProductItemCategory(0, categoryStr),
+                            if (isNotEmpty(mActiveVariantList)) mActiveVariantList?.get(0)?.price else price,
+                            if (isNotEmpty(mActiveVariantList)) mActiveVariantList?.get(0)?.discountedPrice ?: 0.0 else discountPrice,
+                            descriptionStr.trim(),
+                            if (categoryStr.trim().isEmpty()) AddProductItemCategory(0, "") else AddProductItemCategory(mItemCategoryId, categoryStr),
                             imageListRequest,
-                            nameStr,
-                            mAddProductResponse?.storeItem?.variantsList
+                            nameStr.trim(),
+                            finalList
                         )
+                        showProgressDialog(mActivity)
                         AppEventsManager.pushAppEvents(
                             eventName = AFInAppEventType.EVENT_SAVE_ITEM,
                             isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
@@ -494,15 +522,100 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             updateCameraImageView?.id -> showAddProductImagePickerBottomSheet(0)
             updateCameraTextView?.id -> showAddProductImagePickerBottomSheet(0)
             addVariantsTextView?.id -> {
-                mAddProductResponse?.deletedVariants = HashMap()
-                launchFragment(AddVariantFragment.newInstance(mAddProductResponse, mProductNameStr), true)
+                if (isEmpty(mActiveVariantList)) {
+                    addNewVariantInList()
+                    setupVariantRecyclerView()
+                } else {
+                    addNewVariantInList()
+                    mActiveVariantAdapter?.notifyDataSetChanged()
+                }
+                showAddProductContainer()
             }
-            editVariantImageView?.id -> launchFragment(AddVariantFragment.newInstance(mAddProductResponse, mProductNameStr), true)
         }
     }
 
-    private fun showAddProductImagePickerBottomSheet(position: Int) {
+    private fun addNewVariantInList() {
+        mActiveVariantList?.add(
+            VariantItemResponse(
+                0,
+                "",
+                if (isEmpty(priceEditText?.text?.toString())) 0.0 else priceEditText?.text?.toString()?.toDouble() ?: 0.0,
+                if (isEmpty(discountPriceEditText?.text?.toString())) 0.0 else discountPriceEditText?.text?.toString()?.toDouble() ?: 0.0,
+                1,
+                0,
+                1,
+                null,
+                false
+            )
+        )
+    }
+
+    private fun setupVariantRecyclerView() {
+        variantHeadingTextView?.apply {
+            visibility = View.VISIBLE
+            text = addProductStaticData?.text_variants
+        }
+        priceCardView?.visibility = View.GONE
+        addVariantsTextView?.text = addProductStaticData?.text_add_variant
+        mActiveVariantAdapter = ActiveVariantAdapterV2(mActivity, addProductStaticData, mAddProductResponse?.recentVariantsList, mActiveVariantList, object : IVariantItemClickListener {
+
+            override fun onVariantDeleteClicked(position: Int) = showDeleteVariantConfirmationDialog(position)
+
+            override fun onVariantImageClicked(position: Int) {
+                showAddProductContainer()
+                showAddProductImagePickerBottomSheet(position, true)
+            }
+
+            override fun onVariantListEmpty() {
+                variantHeadingTextView?.apply {
+                    visibility = View.GONE
+                }
+                priceCardView?.visibility = View.VISIBLE
+                addVariantsTextView?.text = mActivity?.getString(R.string.add_variants_optional)
+            }
+
+            override fun onVariantItemChanged() = showAddProductContainer()
+
+        })
+        variantRecyclerView?.apply {
+            itemAnimator = DefaultItemAnimator()
+            layoutManager = LinearLayoutManager(mActivity)
+            visibility = View.VISIBLE
+            adapter = mActiveVariantAdapter
+        }
+    }
+
+    private fun showDeleteVariantConfirmationDialog(position: Int) {
         mActivity?.let {
+            val dialog = Dialog(it)
+            dialog.apply {
+                requestWindowFeature(Window.FEATURE_NO_TITLE)
+                setCancelable(true)
+                setContentView(R.layout.dialog_delete_variant_confirmation)
+                val deleteVariantMessageTextView: TextView = dialog.findViewById(R.id.deleteVariantMessageTextView)
+                val deleteVariantTextView: TextView = dialog.findViewById(R.id.deleteVariantTextView)
+                val deleteVariantCancelTextView: TextView = dialog.findViewById(R.id.deleteVariantCancelTextView)
+                deleteVariantMessageTextView.text = addProductStaticData?.dialog_delete_variant_message
+                deleteVariantTextView.text = addProductStaticData?.text_delete
+                deleteVariantCancelTextView.text = addProductStaticData?.text_cancel
+                deleteVariantTextView.setOnClickListener {
+                    dialog.dismiss()
+                    val variantItem = mActiveVariantList?.get(position)
+                    variantItem?.let { item ->
+                        item.status = 0
+                        mDeletedVariantList?.add(item)
+                    }
+                    mActiveVariantAdapter?.deleteItemFromActiveVariantList(position)
+                }
+                deleteVariantCancelTextView.setOnClickListener { dialog.dismiss() }
+            }.show()
+        }
+    }
+
+    private fun showAddProductImagePickerBottomSheet(position: Int, isVariantImageClicked: Boolean = false) {
+        sIsVariantImageClicked = isVariantImageClicked
+        if (sIsVariantImageClicked) sVariantImageClickedPosition = position
+        mActivity?.let { it ->
             if (ActivityCompat.checkSelfPermission(it, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(it, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(it, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
@@ -514,21 +627,18 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         mIsOrderEdited = true
         mActivity?.let {
             imagePickBottomSheet = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
-            val view = LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet_image_pick, it.findViewById(R.id.bottomSheetContainer))
+            val view = LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet_image_pick_v2, it.findViewById(R.id.bottomSheetContainer))
             imagePickBottomSheet?.apply {
                 setContentView(view)
                 view?.run {
                     val bottomSheetUploadImageCloseImageView: ImageView = findViewById(R.id.bottomSheetUploadImageCloseImageView)
                     val bottomSheetUploadImageHeading: TextView = findViewById(R.id.bottomSheetUploadImageHeading)
                     val bottomSheetUploadImageCameraTextView: TextView = findViewById(R.id.bottomSheetUploadImageCameraTextView)
-                    val bottomSheetUploadImageCamera: View = findViewById(R.id.bottomSheetUploadImageCamera)
                     val bottomSheetUploadImageGalleryTextView: TextView = findViewById(R.id.bottomSheetUploadImageGalleryTextView)
-                    val bottomSheetUploadImageGallery: View = findViewById(R.id.bottomSheetUploadImageGallery)
                     val bottomSheetUploadImageSearchHeading: TextView = findViewById(R.id.bottomSheetUploadImageSearchHeading)
                     val bottomSheetUploadImageRemovePhotoTextView: TextView = findViewById(R.id.bottomSheetUploadImageRemovePhotoTextView)
                     val searchImageEditText: EditText = findViewById(R.id.searchImageEditText)
                     val searchImageImageView: View = findViewById(R.id.searchImageImageView)
-                    val bottomSheetUploadImageRemovePhoto: View = findViewById(R.id.bottomSheetUploadImageRemovePhoto)
                     val searchImageRecyclerView: RecyclerView = findViewById(R.id.searchImageRecyclerView)
                     bottomSheetUploadImageGalleryTextView.text = addProductStaticData?.bottom_sheet_add_from_gallery
                     bottomSheetUploadImageSearchHeading.text = addProductStaticData?.bottom_sheet_you_can_add_upto_4_images
@@ -536,35 +646,40 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     bottomSheetUploadImageHeading.text = addProductStaticData?.bottom_sheet_add_image
                     bottomSheetUploadImageCameraTextView.text = addProductStaticData?.bottom_sheet_take_a_photo
                     searchImageEditText.hint = addProductStaticData?.bottom_sheet_hint_search_for_images_here
-                    mProductNameStr?.run { searchImageEditText.setText(mProductNameStr) }
+                    mProductNameStr?.let { str ->
+                        if (isVariantImageClicked) {
+                            val name = str + " " + mActiveVariantList?.get(position)?.variantName
+                            searchImageEditText.setText(name)
+                        } else searchImageEditText.setText(str)
+                    }
                     bottomSheetUploadImageCloseImageView.setOnClickListener { if (true == imagePickBottomSheet?.isShowing) imagePickBottomSheet?.dismiss() }
-                    bottomSheetUploadImageRemovePhotoTextView.visibility = if (0 == position) View.GONE else View.VISIBLE
-                    bottomSheetUploadImageRemovePhoto.visibility = if (0 == position) View.GONE else View.VISIBLE
-                    bottomSheetUploadImageCamera.setOnClickListener {
-                        imagePickBottomSheet?.dismiss()
-                        openCameraWithCrop()
+                    if (!isVariantImageClicked) {
+                        bottomSheetUploadImageRemovePhotoTextView.visibility = if (0 == position) View.GONE else View.VISIBLE
+                    } else {
+                        val variantImageEmpty = isEmpty(mActiveVariantList?.get(position)?.variantImagesList)
+                        bottomSheetUploadImageRemovePhotoTextView.visibility = if (variantImageEmpty) View.GONE else View.VISIBLE
                     }
                     bottomSheetUploadImageCameraTextView.setOnClickListener {
                         imagePickBottomSheet?.dismiss()
                         openCameraWithCrop()
                     }
-                    bottomSheetUploadImageGallery.setOnClickListener {
-                        imagePickBottomSheet?.dismiss()
-                        openMobileGalleryWithCrop()
-                    }
                     bottomSheetUploadImageGalleryTextView.setOnClickListener {
                         imagePickBottomSheet?.dismiss()
                         openMobileGalleryWithCrop()
                     }
-                    bottomSheetUploadImageRemovePhoto.setOnClickListener {
-                        imagePickBottomSheet?.dismiss()
-                        mImagesStrList.removeAt(mImageChangePosition)
-                        mImageAddAdapter?.setListToAdapter(mImagesStrList)
-                    }
                     bottomSheetUploadImageRemovePhotoTextView.setOnClickListener {
                         imagePickBottomSheet?.dismiss()
-                        mImagesStrList.removeAt(mImageChangePosition)
-                        mImageAddAdapter?.setListToAdapter(mImagesStrList)
+                        if (isVariantImageClicked) {
+                            val item = mActiveVariantList?.get(position)?.variantImagesList?.get(0)
+                            item?.let { deleteItem ->
+                                deleteItem.status = 0
+                                mActiveVariantList?.get(position)?.variantImagesList?.set(0, deleteItem)
+                            }
+                            mActiveVariantAdapter?.notifyItemChanged(position)
+                        } else {
+                            mImagesStrList.removeAt(mImageChangePosition)
+                            mImageAddAdapter?.setListToAdapter(mImagesStrList)
+                        }
                     }
                     imageAdapter.setSearchImageListener(this@AddProductFragment)
                     imageAdapter.setContext(mActivity)
@@ -578,9 +693,9 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                         CoroutineScopeUtils().runTaskOnCoroutineBackground {
                             try {
                                 val response = RetrofitApi().getServerCallObject()?.searchImagesFromBing(searchImageEditText.text.trim().toString(), getStringDataFromSharedPref(Constants.STORE_ID))
-                                response?.let { res ->
-                                    if (res.isSuccessful) {
-                                        res.body()?.let {
+                                response?.let { it ->
+                                    if (it.isSuccessful) {
+                                        it.body()?.let {
                                             withContext(Dispatchers.Main) {
                                                 stopProgress()
                                                 val list = it.mImagesList
@@ -760,10 +875,14 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                         productDescriptionEditText?.setText(description)
                     }
                 }
-                setupVariantContainer()
                 setupCategoryChipRecyclerView()
                 setStaticDataFromResponse()
                 setupOptionsMenu()
+                if (isNotEmpty(mAddProductResponse?.storeItem?.variantsList)) {
+                    mActiveVariantList = ArrayList()
+                    mActiveVariantList = mAddProductResponse?.storeItem?.variantsList
+                    setupVariantRecyclerView()
+                }
                 shareProductContainer?.setOnClickListener {
                     val productNameStr = mAddProductResponse?.storeItem?.name?.trim()
                     val newProductName = replaceTemplateString(productNameStr)
@@ -798,6 +917,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                         mTempProductCategoryList.forEachIndexed { _, categoryItem ->
                             if (categoryItem.id == mAddProductResponse?.storeItem?.category?.id) {
                                 enterCategoryEditText?.setText(categoryItem.name)
+                                mItemCategoryId = mAddProductResponse?.storeItem?.category?.id ?: 0
                                 categoryItem.isSelected = true
                             } else categoryItem.isSelected = false
                         }
@@ -895,7 +1015,25 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 if (commonResponse.mIsSuccessStatus) {
                     showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_check_circle)
                     val base64Str = Gson().fromJson<String>(commonResponse.mCommonDataStr, String::class.java)
-                    if (1 == mImagesStrList.size || 0 == mImageChangePosition) {
+                    if (sIsVariantImageClicked) {
+                        if (isEmpty(mActiveVariantList?.get(sVariantImageClickedPosition)?.variantImagesList))
+                            mActiveVariantList?.get(sVariantImageClickedPosition)?.variantImagesList = ArrayList()
+                        if (isNotEmpty(mActiveVariantList?.get(sVariantImageClickedPosition)?.variantImagesList)) {
+                            val item = mActiveVariantList?.get(sVariantImageClickedPosition)?.variantImagesList?.get(0)
+                            val imageItem = VariantItemImageResponse(
+                                if (0 != item?.imageId) item?.imageId ?: 0 else 0,
+                                item?.imageUrl ?: "",
+                                0
+                            )
+                            val newImageItem = VariantItemImageResponse(0, base64Str, 1)
+                            mActiveVariantList?.get(sVariantImageClickedPosition)?.variantImagesList?.set(0, newImageItem)
+                            mActiveVariantList?.get(sVariantImageClickedPosition)?.variantImagesList?.add(imageItem)
+                        } else {
+                            val imageItem = VariantItemImageResponse(0, base64Str, 1)
+                            mActiveVariantList?.get(sVariantImageClickedPosition)?.variantImagesList?.add(imageItem)
+                        }
+                        mActiveVariantAdapter?.notifyItemChanged(sVariantImageClickedPosition)
+                    } else if (1 == mImagesStrList.size || 0 == mImageChangePosition) {
                         mImagesStrList.add(AddProductImagesResponse(0, base64Str, 1))
                     } else if (0 != mImageChangePosition) {
                         val imageResponse = mImagesStrList[mImageChangePosition]
@@ -962,6 +1100,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             mTempProductCategoryList.forEachIndexed { _, categoryItem -> categoryItem.isSelected = false }
             mTempProductCategoryList[position].isSelected = true
             enterCategoryEditText?.setText(mTempProductCategoryList[position].name)
+            mItemCategoryId = mTempProductCategoryList[position].id ?: 0
             enterCategoryEditText?.setSelection(mTempProductCategoryList[position].name?.length ?: 0)
             addProductChipsAdapter?.setAddProductStoreCategoryList(mTempProductCategoryList)
         } catch (e: Exception) {
@@ -1015,8 +1154,8 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             try {
                 mActivity?.let {
-                    val builder: AlertDialog.Builder = AlertDialog.Builder(it)
-                    builder.apply {
+                    val builder: AlertDialog.Builder? = AlertDialog.Builder(it)
+                    builder?.apply {
                         setTitle(addProductStaticData?.text_go_back)
                         setMessage(addProductStaticData?.text_go_back_message)
                         setCancelable(true)
@@ -1027,7 +1166,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                             fragmentManager?.popBackStack()
                             dialog.dismiss()
                         }
-                    }.create().show()
+                    }?.create()?.show()
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "showGoBackDialog: ${e.message}", e)

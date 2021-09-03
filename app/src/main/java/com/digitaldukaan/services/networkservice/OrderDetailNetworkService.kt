@@ -25,7 +25,7 @@ class OrderDetailNetworkService {
                     it.body()?.let { commonApiResponse -> serviceInterface.onOrderDetailResponse(commonApiResponse)
                     }
                 } else {
-                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
                     val responseBody = it.errorBody()
                     responseBody?.let {
                         val errorResponse = Gson().fromJson(responseBody.string(), CommonApiResponse::class.java)
@@ -49,7 +49,7 @@ class OrderDetailNetworkService {
                     it.body()?.let { commonApiResponse -> serviceInterface.onDeliveryTimeResponse(commonApiResponse)
                     }
                 } else {
-                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
                     val responseBody = it.errorBody()
                     responseBody?.let {
                         val errorResponse = Gson().fromJson(
@@ -79,7 +79,7 @@ class OrderDetailNetworkService {
                     it.body()?.let { commonApiResponse -> serviceInterface.onUpdateOrderResponse(commonApiResponse)
                     }
                 } else {
-                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
                     val responseBody = it.errorBody()
                     responseBody?.let {
                         val errorResponse = Gson().fromJson(
@@ -110,7 +110,7 @@ class OrderDetailNetworkService {
                 if (it.isSuccessful) {
                     it.body()?.let { commonApiResponse -> serviceInterface.onPrepaidOrderUpdateStatusResponse(commonApiResponse) }
                 } else {
-                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
                     val responseBody = it.errorBody()
                     responseBody?.let {
                         val errorResponse = Gson().fromJson(responseBody.string(), CommonApiResponse::class.java)
@@ -135,7 +135,7 @@ class OrderDetailNetworkService {
                     it.body()?.let { commonApiResponse -> serviceInterface.onUpdateStatusResponse(commonApiResponse)
                     }
                 } else {
-                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
                     val responseBody = it.errorBody()
                     responseBody?.let {
                         val errorResponse = Gson().fromJson(responseBody.string(), CommonApiResponse::class.java)
@@ -160,7 +160,7 @@ class OrderDetailNetworkService {
                     it.body()?.let { commonApiResponse -> serviceInterface.onShareBillResponse(commonApiResponse)
                     }
                 } else {
-                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
                     val responseBody = it.errorBody()
                     responseBody?.let {
                         val errorResponse = Gson().fromJson(responseBody.string(), CommonApiResponse::class.java)
@@ -183,7 +183,7 @@ class OrderDetailNetworkService {
             response?.let {
                 if (it.isSuccessful) it.body()?.let { commonApiResponse -> serviceInterface.onCompleteOrderStatusResponse(commonApiResponse) }
                 else {
-                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
                     val responseBody = it.errorBody()
                     responseBody?.let {
                         val errorResponse = Gson().fromJson(responseBody.string(), CommonApiResponse::class.java)
@@ -206,7 +206,7 @@ class OrderDetailNetworkService {
             response?.let {
                 if (it.isSuccessful) it.body()?.let { commonApiResponse -> serviceInterface.onSharePaymentLinkResponse(commonApiResponse) }
                 else {
-                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
                     val responseBody = it.errorBody()
                     responseBody?.let {
                         val errorResponse = Gson().fromJson(responseBody.string(), CommonApiResponse::class.java)
