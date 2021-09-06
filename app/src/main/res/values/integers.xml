@@ -18,4 +18,5 @@
     <integer name="business_type_count">3</integer>
     <integer name="store_name_min_length">4</integer>
     <integer name="image_mb_size">20</integer>
+    <integer name="variant_count">20</integer>
 </resources>

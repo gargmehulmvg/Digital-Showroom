@@ -532,19 +532,21 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     }
 
     private fun addNewVariantInList() {
-        mActiveVariantList?.add(
-            VariantItemResponse(
-                0,
-                "",
-                if (isEmpty(priceEditText?.text?.toString())) 0.0 else priceEditText?.text?.toString()?.toDouble() ?: 0.0,
-                if (isEmpty(discountPriceEditText?.text?.toString())) 0.0 else discountPriceEditText?.text?.toString()?.toDouble() ?: 0.0,
-                1,
-                0,
-                1,
-                null,
-                false
+        if (mActivity?.resources?.getInteger(R.integer.variant_count) ?: 0 > mActiveVariantList?.size ?: 0) {
+            mActiveVariantList?.add(
+                VariantItemResponse(
+                    0,
+                    "",
+                    if (isEmpty(priceEditText?.text?.toString())) 0.0 else priceEditText?.text?.toString()?.toDouble() ?: 0.0,
+                    if (isEmpty(discountPriceEditText?.text?.toString())) 0.0 else discountPriceEditText?.text?.toString()?.toDouble() ?: 0.0,
+                    1,
+                    0,
+                    1,
+                    null,
+                    false
+                )
             )
-        )
+        } else showToast("Only ${mActivity?.resources?.getInteger(R.integer.variant_count)} Variants are allowed.")
     }
 
     private fun setupVariantRecyclerView() {
