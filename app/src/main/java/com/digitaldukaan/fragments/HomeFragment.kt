@@ -681,6 +681,11 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                     jsonData.optBoolean("unauthorizedAccess") -> {
                         logoutFromApplication()
                     }
+                    jsonData.optBoolean("shareTextOnWhatsApp") -> {
+                        val text = jsonData.optString("data")
+                        val mobileNumber = jsonData.optString("mobileNumber")
+                        shareDataOnWhatsAppByNumber(mobileNumber, text)
+                    }
                     jsonData.optBoolean("trackEventData") -> {
                         val eventName = jsonData.optString("eventName")
                         val additionalData = jsonData.optString("additionalData")

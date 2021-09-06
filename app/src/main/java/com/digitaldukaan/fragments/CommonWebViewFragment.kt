@@ -133,6 +133,10 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
             }
         } else if (jsonData.optBoolean("redirectBrowser")) {
             openUrlInBrowser(jsonData.optString("data"))
+        } else if (jsonData.optBoolean("shareTextOnWhatsApp")) {
+            val text = jsonData.optString("data")
+            val mobileNumber = jsonData.optString("mobileNumber")
+            shareDataOnWhatsAppByNumber(mobileNumber, text)
         } else if (jsonData.optBoolean("scratchClaimed")) {
             mActivity?.launchInAppReviewDialog()
         } else if (jsonData.optBoolean("shareQRCode")) {

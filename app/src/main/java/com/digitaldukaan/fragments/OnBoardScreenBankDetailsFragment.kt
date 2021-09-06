@@ -79,7 +79,6 @@ class OnBoardScreenBankDetailsFragment : BaseFragment(), IBankDetailsServiceInte
             mobileNumberEditText?.setText(registeredPhone)
         }
         mobileNumberEditText?.setText(PrefsManager.getStringDataFromSharedPref(Constants.USER_MOBILE_NUMBER))
-        mobileNumberEditText?.isEnabled = false
     }
 
     override fun onClick(view: View?) {

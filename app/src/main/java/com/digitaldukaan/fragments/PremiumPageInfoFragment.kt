@@ -171,6 +171,11 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
             jsonData.optBoolean("refreshToken") -> {
                 //mService.getPremiumPageInfo()
             }
+            jsonData.optBoolean("shareTextOnWhatsApp") -> {
+                val text = jsonData.optString("data")
+                val mobileNumber = jsonData.optString("mobileNumber")
+                shareDataOnWhatsAppByNumber(mobileNumber, text)
+            }
         }
     }
 
