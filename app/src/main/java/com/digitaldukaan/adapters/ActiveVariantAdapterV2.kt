@@ -80,8 +80,8 @@ class ActiveVariantAdapterV2(
             variantPriceInputLayout.hint = mStaticText?.hint_price
             variantDiscountPriceInputLayout.hint = mStaticText?.hint_discounted_price
             if (isNotEmpty(item?.variantName)) nameEditText.setText(item?.variantName) else nameEditText.text = null
-            if (0.0 != item?.price) priceEditText.setText("${item?.price}")
-            if (0.0 != item?.discountedPrice) discountPriceEditText.setText("${item?.discountedPrice}")
+            if (0.0 != item?.price) priceEditText.setText("${item?.price}") else if (0.0 == item.price && 0.0 == mActiveVariantList?.get(0)?.price) { priceEditText.text = null } else priceEditText.setText("${mActiveVariantList?.get(0)?.price}")
+            if (0.0 != item?.discountedPrice) discountPriceEditText.setText("${item?.discountedPrice}") else if (0.0 == item.discountedPrice && 0.0 == mActiveVariantList?.get(0)?.discountedPrice) { discountPriceEditText.text = null } else discountPriceEditText.setText("${mActiveVariantList?.get(0)?.discountedPrice}")
             variantNameInputLayout.error = if (item?.isVariantNameEmptyError == true) mContext?.getString(R.string.mandatory_field_message) else null
             priceEditText.addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
