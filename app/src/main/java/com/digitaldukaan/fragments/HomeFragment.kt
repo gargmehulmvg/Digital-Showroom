@@ -681,6 +681,9 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                     jsonData.optBoolean("unauthorizedAccess") -> {
                         logoutFromApplication()
                     }
+                    jsonData.optBoolean("stopLoader") -> {
+                        stopProgress()
+                    }
                     jsonData.optBoolean("shareTextOnWhatsApp") -> {
                         val text = jsonData.optString("data")
                         val mobileNumber = jsonData.optString("mobileNumber")

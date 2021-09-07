@@ -154,6 +154,8 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
             launchFragment(HomeFragment.newInstance(), true)
         } else if (jsonData.optBoolean("startLoader")) {
             showProgressDialog(mActivity)
+        } else if (jsonData.optBoolean("stopLoader")) {
+            stopProgress()
         } else if (jsonData.optBoolean("unauthorizedAccess")) {
             logoutFromApplication()
         } else if (jsonData.optBoolean("openUPIIntent")) {
