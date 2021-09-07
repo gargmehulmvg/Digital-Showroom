@@ -7,6 +7,8 @@
         <entry key="app/src/main/res/drawable/curve_green_dotted_border_green_background.xml" value="0.2388888888888889" />
         <entry key="app/src/main/res/drawable/ic_coupon_white_zigzag.xml" value="0.2765625" />
         <entry key="app/src/main/res/drawable/ic_coupon_white_zigzag2.xml" value="0.2765625" />
+        <entry key="app/src/main/res/drawable/ic_order_status_paid.xml" value="0.2765625" />
+        <entry key="app/src/main/res/drawable/ic_prepaid.xml" value="0.2765625" />
         <entry key="app/src/main/res/drawable/ripple_curve_grey_black_background.xml" value="0.2765625" />
         <entry key="app/src/main/res/drawable/ripple_slight_curve_grey_black_background.xml" value="0.2388888888888889" />
         <entry key="app/src/main/res/drawable/ripple_slight_curve_grey_white_background.xml" value="0.2765625" />
@@ -29,6 +31,7 @@
         <entry key="app/src/main/res/layout/layout_order_detail_fragment.xml" value="0.264453125" />
         <entry key="app/src/main/res/layout/layout_promo_code_item.xml" value="0.335" />
         <entry key="app/src/main/res/layout/layout_promo_code_page_info_fragment.xml" value="0.264453125" />
+        <entry key="app/src/main/res/layout/order_item.xml" value="0.264453125" />
       </map>
     </option>
   </component>
