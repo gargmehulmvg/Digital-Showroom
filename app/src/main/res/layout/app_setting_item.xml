@@ -7,7 +7,7 @@
     android:layout_height="wrap_content"
     android:onClick="onClick"
     android:paddingStart="@dimen/_12sdp"
-    android:paddingEnd="@dimen/_10sdp"
+    android:paddingEnd="@dimen/_1sdp"
     android:background="?android:selectableItemBackground"
     android:gravity="center_vertical">
 
@@ -17,9 +17,9 @@
         android:layout_height="@dimen/_25sdp"
         android:padding="@dimen/_2sdp"
         android:src="@drawable/ic_refer_earn"
-        app:layout_constraintBottom_toBottomOf="@+id/appSettingTextView"
+        app:layout_constraintBottom_toBottomOf="@id/appSettingTextView"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/appSettingTextView"
+        app:layout_constraintTop_toTopOf="@id/appSettingTextView"
         android:contentDescription="@string/image_view_content_description" />
 
     <com.google.android.material.textview.MaterialTextView
@@ -44,7 +44,7 @@
         android:background="@color/curve_grey_border"
         android:layout_marginStart="@dimen/_11sdp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/appSettingImageView"
+        app:layout_constraintStart_toEndOf="@id/appSettingImageView"
         app:layout_constraintTop_toBottomOf="@id/appSettingTextView" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
