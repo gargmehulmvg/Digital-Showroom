@@ -15,7 +15,9 @@ class Constants {
         const val CROP_IMAGE_REQUEST_CODE                       = 1004
         const val EXTERNAL_STORAGE_REQUEST_CODE                 = 1005
         const val STORAGE_REQUEST_CODE                          = 1006
+        const val EMAIL_REQUEST_CODE                            = 1007
         const val ERROR_CODE_UN_AUTHORIZED_ACCESS               = 401
+        const val ERROR_CODE_FORBIDDEN_ACCESS                   = 403
         const val ERROR_MESSAGE_UN_AUTHORIZED_ACCESS            = "unauthorized access"
         const val SHARED_PREF_NAME                              = "DigitalDukaanPrefs"
         const val USER_AUTH_TOKEN                               = "USER_AUTH_TOKEN"
@@ -57,6 +59,8 @@ class Constants {
         const val ACTION_KYC                                    = "kyc"
         const val ACTION_DELIVERY_CHARGES                       = "delivery-charges"
         const val ACTION_BOTTOM_SHEET                           = "bottom-sheet"
+        const val ACTION_PROMO_CODE                             = "promo-code"
+        const val ACTION_EMAIL_AUTHENTICATION                   = "email-authentication"
         //Incomplete profile actions
         const val ACTION_LOGO                                   = "logo"
         const val ACTION_DESCRIPTION                            = "description"
@@ -84,21 +88,21 @@ class Constants {
         const val ORDER_TYPE_POSTPAID                           = 0
         const val ORDER_TYPE_PREPAID                            = 1
         //DISPLAY_STATUS
-        const val DS_NEW                                        = "new"                   // When order comes but not opened by merchant
-        const val DS_SEND_BILL                                  = "sendBill"              // When order comes opened the order but didn't send bill and exit
-        const val DS_BILL_SENT                                  = "billSent"              // When order comes and send bill but payment is due
-        const val DS_CASH_MARKED                                = "cashMarked"            // When order comes & marked as cash
-        const val DS_PAID_ONLINE                                = "paidOnline"            // When order comes & order is paid online by customer
-        const val DS_REJECTED                                   = "rejected"              // Order rejected byt customer
-        const val DS_COMPLETED_CASH                             = "completedCash"         // When order comes & marked as cash
-        const val DS_COMPLETED_ONLINE                           = "completedOnline"       // Order self checklist by merchant :: Paid Online
-        const val DS_PENDING_PAYMENT_LINK                       = "pendingPaymentLink"       // Order self checklist by merchant :: Paid Online
-        const val DS_MARK_READY                                 = "markReady"             // Merchant seen & start making the order for customer
+        const val DS_NEW                                        = "new"                         // When order comes but not opened by merchant
+        const val DS_SEND_BILL                                  = "sendBill"                    // When order comes opened the order but didn't send bill and exit
+        const val DS_BILL_SENT                                  = "billSent"                    // When order comes and send bill but payment is due
+        const val DS_CASH_MARKED                                = "cashMarked"                  // When order comes & marked as cash
+        const val DS_PAID_ONLINE                                = "paidOnline"                  // When order comes & order is paid online by customer
+        const val DS_REJECTED                                   = "rejected"                    // Order rejected byt customer
+        const val DS_COMPLETED_CASH                             = "completedCash"               // When order comes & marked as cash
+        const val DS_COMPLETED_ONLINE                           = "completedOnline"             // Order self checklist by merchant :: Paid Online
+        const val DS_PENDING_PAYMENT_LINK                       = "pendingPaymentLink"          // Order self checklist by merchant :: Paid Online
+        const val DS_MARK_READY                                 = "markReady"                   // Merchant seen & start making the order for customer
         const val DS_PREPAID_PICKUP_READY                       = "prepaidPickupReady"
         const val DS_PREPAID_DELIVERY_READY                     = "prepaidDeliveryReady"
         const val DS_PREPAID_PICKUP_COMPLETED                   = "prepaidPickupCompleted"
         const val DS_PREPAID_DELIVERY_COMPLETED                 = "prepaidDeliveryCompleted"
-        const val DS_OUT_FOR_DELIVERY                           = "outForDelivery"        // Order out for delivery
+        const val DS_OUT_FOR_DELIVERY                           = "outForDelivery"              // Order out for delivery
         //MODES
         const val MODE_PENDING                                  = "mode_pending"
         const val MODE_COMPLETED                                = "mode_completed"
@@ -108,7 +112,13 @@ class Constants {
         const val MODE_ORDERS                                   = "orders"
         const val MODE_SETTLED                                  = "Settled"
         const val MODE_SMS                                      = "sms"
-        const val MODE_WHATS_APP                                 = "whatsapp"
+        const val MODE_WHATS_APP                                = "whatsapp"
+        const val MODE_COUPON_TYPE_PERCENTAGE                   = "percentage"
+        const val MODE_COUPON_TYPE_FLAT                         = "flat"
+        const val MODE_ACTIVE                                   = "active"
+        const val MODE_INACTIVE                                 = "inactive"
+        const val MODE_PROMO_CODE_ACTIVE                        = "A"
+        const val MODE_PROMO_CODE_DE_ACTIVE                     = "D"
         //ORDER_STATUS
         const val StatusCustomerUpdated                         = 1
         const val StatusMerchantUpdated                         = 2

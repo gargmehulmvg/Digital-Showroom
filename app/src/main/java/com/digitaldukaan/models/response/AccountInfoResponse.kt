@@ -126,6 +126,7 @@ data class AccountStaticTextResponse(
     @SerializedName("text_pickup")                                              var text_pickup: String?,
     @SerializedName("heading_bottom_sheet_set_delivery_pickup")                 var heading_bottom_sheet_set_delivery_pickup: String?,
     @SerializedName("message_bottom_sheet_delivery")                            var message_bottom_sheet_delivery: String?,
+    @SerializedName("heading_tap_the_icon")                                     var heading_tap_the_icon: String?,
     @SerializedName("message_bottom_sheet_pickup")                              var message_bottom_sheet_pickup: String?
 )
 

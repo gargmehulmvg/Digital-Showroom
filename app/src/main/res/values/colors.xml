@@ -20,6 +20,7 @@
     <color name="red_switch_off">#D93716</color>
     <color name="open_green">#1E9848</color>
     <color name="open_green_darker">#2BD36D</color>
+    <color name="open_green_lighter">#F0F9F3</color>
     <color name="orange">#F69647</color>
     <color name="dark_yellow">#FAA722</color>
     <color name="order_detail_in_progress">#F47D07</color>
@@ -29,11 +30,12 @@
     <color name="snack_bar_background">#434D4D</color>
     <color name="curve_new_banner_background">#009688</color>
     <color name="profile_preview_banner_background">#DBF8E5</color>
-    <color name="add_product_banner_background">#FCF2BF</color>
+    <color name="add_product_banner_background">#1E9848</color>
     <color name="premium_text_color">#C39230</color>
     <color name="premium_light_color">#FCDDC8</color>
     <color name="non_premium_icons_color">#797979</color>
     <color name="ucrop_color_toolbar">@color/open_green</color>
     <color name="ucrop_color_statusbar">@color/open_green</color>
     <color name="ucrop_color_widget_active">@color/open_green</color>
+    <color name="gmail_color">#F44336</color>
 </resources>

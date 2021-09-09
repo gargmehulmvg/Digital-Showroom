@@ -128,6 +128,7 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
             mobileNumberInputLayout?.visibility = View.VISIBLE
             mobileNumberTextView?.visibility = View.GONE
         }
+        mobileNumberEditText?.text = null
         hideBottomNavigationView(true)
     }
 
@@ -156,6 +157,8 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
                 mobileNumberTextView?.visibility = View.GONE
                 mobileNumberInputLayout?.visibility = View.VISIBLE
                 initiateAutoDetectMobileNumber()
+                mobileNumberEditText?.text = null
+                mActivity?.let { context -> UIUtil.showKeyboard(context, mobileNumberEditText) }
             }
             getOtpTextView?.id -> {
                 if (mobileNumberInputLayout?.visibility == View.GONE) return

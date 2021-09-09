@@ -11,7 +11,6 @@ import com.digitaldukaan.models.response.*
 import com.digitaldukaan.services.BankDetailsService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IBankDetailsServiceInterface
-import com.digitaldukaan.views.allowOnlyAlphaNumericCharacters
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.layout_bank_account_fragment.*
 
@@ -81,9 +80,6 @@ class BankAccountFragment : BaseFragment(), IBankDetailsServiceInterface {
             mobileNumberEditText?.setText(registeredPhone)
         }
         mobileNumberEditText?.setText(if (bankDetail == null || (bankDetail.registeredPhone?.isEmpty() == true)) PrefsManager.getStringDataFromSharedPref(Constants.USER_MOBILE_NUMBER) else bankDetail.registeredPhone)
-        mobileNumberEditText?.isEnabled = false
-        accountHolderNameEditText?.allowOnlyAlphaNumericCharacters()
-        ifscEditText?.allowOnlyAlphaNumericCharacters()
         saveTextView?.setOnClickListener { initiateServerCall() }
     }
 

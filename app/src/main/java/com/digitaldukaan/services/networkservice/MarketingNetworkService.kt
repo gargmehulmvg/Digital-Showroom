@@ -17,7 +17,7 @@ class MarketingNetworkService {
                 if (it.isSuccessful) {
                     it.body()?.let { generateOtpResponse -> serviceInterface.onMarketingResponse(generateOtpResponse) }
                 } else {
-                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
                     serviceInterface.onMarketingErrorResponse(Exception(response.message()))
                 }
             }
@@ -36,7 +36,7 @@ class MarketingNetworkService {
                 if (it.isSuccessful) {
                     it.body()?.let { responseBody -> serviceInterface.onAppShareDataResponse(responseBody) }
                 } else {
-                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
                     serviceInterface.onMarketingErrorResponse(Exception(response.message()))
                 }
             }
@@ -55,7 +55,7 @@ class MarketingNetworkService {
                 if (it.isSuccessful) {
                     it.body()?.let { responseBody -> serviceInterface.onGenerateStorePdfResponse(responseBody) }
                 } else {
-                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
                     serviceInterface.onMarketingErrorResponse(Exception(response.message()))
                 }
             }
@@ -74,7 +74,7 @@ class MarketingNetworkService {
                 if (it.isSuccessful) {
                     it.body()?.let { responseBody -> serviceInterface.onShareStorePdfDataResponse(responseBody) }
                 } else {
-                    if (it.code() == Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
                     serviceInterface.onMarketingErrorResponse(Exception(response.message()))
                 }
             }

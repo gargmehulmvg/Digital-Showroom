@@ -30,7 +30,7 @@
                     android:id="@+id/backButtonToolbar"
                     android:layout_width="@dimen/_35sdp"
                     android:layout_height="@dimen/_30sdp"
-                    android:layout_marginStart="@dimen/_2sdp"
+                    android:layout_marginStart="@dimen/_12sdp"
                     android:onClick="onClick"
                     android:padding="@dimen/_4sdp"
                     android:rotation="180"
