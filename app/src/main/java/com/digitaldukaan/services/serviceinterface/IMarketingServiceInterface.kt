@@ -9,6 +9,8 @@ interface IMarketingServiceInterface {
 
     fun onMarketingResponse(response: CommonApiResponse)
 
+    fun onMarketingPageInfoResponse(response: CommonApiResponse)
+
     fun onAppShareDataResponse(response: CommonApiResponse)
 
     fun onGenerateStorePdfResponse(response: CommonApiResponse)

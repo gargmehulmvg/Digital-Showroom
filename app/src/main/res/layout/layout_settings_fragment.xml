@@ -220,7 +220,7 @@
                     android:id="@+id/storeControlNewTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/slight_curve_red_background_without_padding"
+                    android:background="@drawable/slight_curve_red_background_with_padding"
                     android:clickable="false"
                     android:layout_marginStart="@dimen/_10sdp"
                     android:fontFamily="@font/roboto_medium"

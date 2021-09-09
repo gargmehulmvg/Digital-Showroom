@@ -10,14 +10,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
-import com.digitaldukaan.constants.isEmpty
+import com.digitaldukaan.constants.isNotEmpty
 import com.digitaldukaan.fragments.BaseFragment
 import com.digitaldukaan.models.response.MarketingCardsItemResponse
 import com.digitaldukaan.services.serviceinterface.IMarketingServiceInterface
 
 class MarketingCardAdapter(
     private var mContext: BaseFragment?,
-    private var mMarketingItemList: ArrayList<MarketingCardsItemResponse>?,
+    private var mMarketingItemList: ArrayList<MarketingCardsItemResponse?>?,
     private var mMarketItemClickListener: IMarketingServiceInterface
 ) :
     RecyclerView.Adapter<MarketingCardAdapter.MarketingCardViewHolder>() {
@@ -26,20 +26,16 @@ class MarketingCardAdapter(
         val marketingCardParentContainer: View = itemView.findViewById(R.id.marketingCardParentContainer)
         val singleSpanContainer: View = itemView.findViewById(R.id.singleSpanContainer)
         val singleSpanBackgroundView: View = itemView.findViewById(R.id.singleSpanBackgroundView)
+        val doubleSpanBackgroundImage: ImageView = itemView.findViewById(R.id.doubleSpanBackgroundImage)
         val doubleSpanBackgroundView: View = itemView.findViewById(R.id.doubleSpanBackgroundView)
         val singleSpanImageView: ImageView = itemView.findViewById(R.id.singleSpanImageView)
-        val doubleSpanImageView: ImageView = itemView.findViewById(R.id.doubleSpanImageView)
-        val singleSpanVerticalImageView: ImageView = itemView.findViewById(R.id.singleSpanVerticalImageView)
-        val stripTextView: TextView = itemView.findViewById(R.id.stripTextView)
+        val doubleSpanImageView: ImageView = itemView.findViewById(R.id.doubleSpanLeftImageView)
+        val singleSpanInfoText: TextView = itemView.findViewById(R.id.singleSpanInfoText)
         val singleSpanTextView: TextView = itemView.findViewById(R.id.singleSpanTextView)
-        val singleSpanVerticalTextView: TextView = itemView.findViewById(R.id.singleSpanVerticalTextView)
-        val singleSpanVerticalContinueTextView: TextView = itemView.findViewById(R.id.singleSpanVerticalContinueTextView)
-        val doubleSpanTextView: TextView = itemView.findViewById(R.id.doubleSpanHeadingTextView)
-        val betaTextView: TextView = itemView.findViewById(R.id.betaTextView)
         val doubleSpanContinueTextView: TextView = itemView.findViewById(R.id.doubleSpanContinueTextView)
+        val doubleSpanHeadingTextView: TextView = itemView.findViewById(R.id.doubleSpanHeadingTextView)
+        val doubleSpanSubHeadingTextView: TextView = itemView.findViewById(R.id.doubleSpanSubHeadingTextView)
         val doubleSpanContainer: View = itemView.findViewById(R.id.doubleSpanContainer)
-        val singleSpanVerticalBackgroundView: View = itemView.findViewById(R.id.singleSpanVerticalBackgroundView)
-        val singleSpanVerticalContainer: View = itemView.findViewById(R.id.singleSpanVerticalContainer)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MarketingCardViewHolder {
@@ -56,31 +52,39 @@ class MarketingCardAdapter(
     ) {
         val item = mMarketingItemList?.get(position)
         holder.run {
-            if (item?.type == Constants.SPAN_TYPE_FULL_WIDTH) {
-                doubleSpanContainer.visibility = View.VISIBLE
-                doubleSpanImageView.let { mContext?.let { context -> Glide.with(context).load(item.logo).into(it) } }
-                doubleSpanTextView.text = item.text
-                doubleSpanContinueTextView.text = item.viewNow
-                doubleSpanBackgroundView.setBackgroundColor(Color.parseColor(item.color))
-                if (!isEmpty(item.infoText)) {
-                    betaTextView.visibility = View.VISIBLE
-                    betaTextView.text = item.infoText
+            when (item?.type) {
+                Constants.SPAN_TYPE_FULL_WIDTH -> {
+                    doubleSpanContainer.visibility = View.VISIBLE
+                    singleSpanContainer.visibility = View.GONE
+                    doubleSpanHeadingTextView.text = item.heading
+                    doubleSpanSubHeadingTextView.text = item.subHeading
+                    doubleSpanContinueTextView.text = item.marketingCta?.text
+                    doubleSpanContinueTextView.setTextColor(Color.parseColor(item.marketingCta?.text_color))
+                    doubleSpanContinueTextView.setBackgroundColor(Color.parseColor(item.marketingCta?.bg_color))
+                    doubleSpanHeadingTextView.setTextColor(Color.parseColor(item.headingColor))
+                    doubleSpanSubHeadingTextView.setTextColor(Color.parseColor(item.subHeadingColor))
+                    doubleSpanImageView.let { mContext?.let { context -> Glide.with(context).load(item.logo).into(it) } }
+                    if (isNotEmpty(item.background)) {
+                        mContext?.let { context -> Glide.with(context).load(item.background).into(doubleSpanBackgroundImage) }
+                    } else doubleSpanBackgroundView.setBackgroundColor(Color.parseColor(item.bgColor))
                 }
-                if (item.stripText?.isNotEmpty() == true) {
-                    stripTextView.visibility = View.VISIBLE
-                    stripTextView.text = item.stripText
-                } else stripTextView.visibility = View.GONE
-            } else if (item?.type == Constants.SPAN_TYPE_FULL_HEIGHT) {
-                singleSpanVerticalContainer.visibility = View.VISIBLE
-                singleSpanVerticalBackgroundView.setBackgroundColor(Color.parseColor(item.color))
-                singleSpanVerticalImageView.let { mContext?.let { context -> Glide.with(context).load(item.logo).into(it) } }
-                singleSpanVerticalTextView.text = item.text
-                singleSpanVerticalContinueTextView.text = item.viewNow
-            } else {
-                singleSpanContainer.visibility = View.VISIBLE
-                singleSpanImageView.let { mContext?.let { context -> Glide.with(context).load(item?.logo).into(it) } }
-                singleSpanTextView.text = item?.heading
-                singleSpanBackgroundView.setBackgroundColor(Color.parseColor(item?.color))
+                else -> {
+                    singleSpanContainer.visibility = View.VISIBLE
+                    doubleSpanContainer.visibility = View.GONE
+                    singleSpanImageView.let { mContext?.let { context -> Glide.with(context).load(item?.logo).into(it) } }
+                    singleSpanTextView.text = item?.heading
+                    singleSpanInfoText.text = item?.infoText
+                    if (isNotEmpty(item?.bgColor)) { singleSpanBackgroundView.setBackgroundColor(Color.parseColor(item?.bgColor)) }
+                    if (isNotEmpty(item?.infoTextBgColor)) {
+                        singleSpanInfoText.setBackgroundColor(Color.parseColor(item?.infoTextBgColor))
+                    }
+                    if (isNotEmpty(item?.infoTextColor)) {
+                        singleSpanInfoText.visibility = View.VISIBLE
+                        singleSpanInfoText.setTextColor(Color.parseColor(item?.infoTextColor))
+                    } else {
+                        singleSpanInfoText.visibility = View.GONE
+                    }
+                }
             }
         }
     }

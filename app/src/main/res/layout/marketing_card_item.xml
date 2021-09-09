@@ -14,6 +14,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/_6sdp"
         android:clickable="false"
+        android:gravity="center"
         android:visibility="gone"
         app:cardCornerRadius="@dimen/_5sdp"
         app:cardElevation="@dimen/_2sdp"
@@ -22,38 +23,66 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/singleSpanBackgroundView"
-            android:layout_width="match_parent"
+            android:layout_width="@dimen/_135sdp"
             android:layout_height="match_parent"
-            android:gravity="center_horizontal"
-            android:minWidth="@dimen/_143sdp"
-            android:minHeight="@dimen/_125sdp"
+            android:gravity="center"
+            android:background="@drawable/edit_premium_background_gradient"
+            android:minHeight="@dimen/_115sdp"
             android:orientation="vertical"
             android:padding="@dimen/_10sdp">
 
             <ImageView
                 android:id="@+id/singleSpanImageView"
-                android:layout_width="@dimen/_50sdp"
-                android:layout_height="@dimen/_50sdp"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:contentDescription="@string/image_view_content_description" />
+                android:layout_width="@dimen/_48sdp"
+                android:layout_height="@dimen/_48sdp"
+                android:contentDescription="@string/image_view_content_description"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                app:cardCornerRadius="@dimen/_10sdp"
+                app:layout_constraintBottom_toBottomOf="@+id/singleSpanImageView"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/singleSpanImageView">
+
+                <TextView
+                    android:id="@+id/singleSpanInfoText"
+                    android:layout_width="wrap_content"
+                    android:paddingTop="@dimen/_2sdp"
+                    android:textSize="@dimen/_10sdp"
+                    android:fontFamily="@font/roboto_medium"
+                    android:paddingBottom="@dimen/_2sdp"
+                    android:paddingStart="@dimen/_8sdp"
+                    android:paddingEnd="@dimen/_8sdp"
+                    android:layout_height="wrap_content"
+                    tools:text="BETA" />
+
+            </androidx.cardview.widget.CardView>
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/singleSpanTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:gravity="center"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:gravity="start"
                 android:lineSpacingMultiplier="1.2"
                 android:minLines="@integer/min_lines_two"
                 android:padding="@dimen/_4sdp"
                 android:textColor="@color/white"
-                android:textSize="@dimen/_14sdp"
+                android:textSize="@dimen/_12sdp"
                 android:textStyle="bold"
-                tools:text="@string/image_view_content_description" />
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/singleSpanImageView"
+                app:layout_constraintTop_toBottomOf="@+id/singleSpanImageView"
+                tools:text="Create And Run Google Ads" />
 
-        </LinearLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.cardview.widget.CardView>
 
@@ -74,7 +103,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/doubleSpanBackgroundView"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="@dimen/_80sdp"
             android:background="@drawable/slight_curve_premium_background"
             android:clickable="false"
             android:elevation="@dimen/_2sdp"
@@ -86,15 +115,10 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
-                android:id="@+id/doubleSpanImageView"
-                android:layout_width="@dimen/_65sdp"
-                android:layout_height="@dimen/_65sdp"
-                android:layout_marginEnd="@dimen/_20sdp"
                 android:contentDescription="@string/image_view_content_description"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:src="@drawable/ic_catalog_new" />
+                android:id="@+id/doubleSpanBackgroundImage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
 
             <TextView
                 android:id="@+id/betaTextView"
@@ -115,146 +139,76 @@
                 app:layout_constraintBottom_toTopOf="@+id/doubleSpanHeadingTextView"
                 app:layout_constraintStart_toStartOf="@+id/doubleSpanHeadingTextView" />
 
+            <ImageView
+                android:id="@+id/doubleSpanLeftImageView"
+                android:layout_width="@dimen/_15sdp"
+                android:layout_height="@dimen/_15sdp"
+                android:layout_marginTop="@dimen/_20sdp"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:contentDescription="@string/image_view_content_description"
+                android:src="@drawable/ic_crown_small"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/doubleSpanHeadingTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_10sdp"
+                android:fontFamily="@font/roboto_medium"
                 android:gravity="start"
-                android:lineSpacingMultiplier="1.2"
-                android:maxWidth="@dimen/_150sdp"
-                android:minWidth="@dimen/_150sdp"
-                android:minLines="@integer/min_lines_two"
                 android:paddingStart="@dimen/_10sdp"
                 android:paddingEnd="@dimen/_10sdp"
-                android:paddingBottom="@dimen/_10sdp"
-                android:textColor="@color/white"
-                android:textSize="@dimen/_15sdp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toStartOf="@+id/doubleSpanImageView"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/doubleSpanImageView"
-                tools:text="@string/app_name" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/doubleSpanContinueTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_10sdp"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:layout_marginBottom="@dimen/_25sdp"
-                android:background="@drawable/curve_white_background"
-                android:drawableEnd="@drawable/ic_arrow_small"
-                android:drawablePadding="@dimen/_5sdp"
-                android:elevation="@dimen/_4sdp"
-                android:gravity="center"
-                android:paddingStart="@dimen/_8sdp"
-                android:paddingTop="@dimen/_2sdp"
-                android:paddingEnd="@dimen/_8sdp"
-                android:paddingBottom="@dimen/_2sdp"
-                android:textColor="@color/black"
-                android:textSize="@dimen/_12sdp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/doubleSpanHeadingTextView"
-                app:layout_constraintTop_toBottomOf="@+id/doubleSpanHeadingTextView"
-                app:layout_constraintVertical_bias="0.0"
-                tools:targetApi="lollipop"
-                tools:text="@string/app_name" />
-
-            <TextView
-                android:id="@+id/stripTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_10sdp"
-                android:layout_marginEnd="@dimen/_9sdp"
-                android:background="@drawable/ic_marketing_strip_background"
-                android:gravity="end|center_vertical"
-                android:paddingStart="@dimen/_25sdp"
-                android:paddingEnd="@dimen/_10sdp"
-                android:text="@string/nav_app_bar_navigate_up_description"
-                android:textColor="@color/white"
-                android:textSize="@dimen/_9sdp"
-                android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/doubleSpanImageView" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-    </androidx.cardview.widget.CardView>
-
-    <androidx.cardview.widget.CardView
-        android:id="@+id/singleSpanVerticalContainer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/_6sdp"
-        android:clickable="false"
-        android:visibility="gone"
-        app:cardCornerRadius="@dimen/_5sdp"
-        app:cardElevation="@dimen/_2sdp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <LinearLayout
-            android:id="@+id/singleSpanVerticalBackgroundView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@drawable/slight_curve_premium_background"
-            android:gravity="center_horizontal"
-            android:minWidth="@dimen/_143sdp"
-            android:minHeight="@dimen/_125sdp"
-            android:orientation="vertical"
-            android:padding="@dimen/_10sdp">
-
-            <ImageView
-                android:id="@+id/singleSpanVerticalImageView"
-                android:layout_width="@dimen/_85sdp"
-                android:layout_height="@dimen/_100sdp"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:contentDescription="@string/image_view_content_description" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/singleSpanVerticalTextView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_2sdp"
-                android:gravity="center"
-                android:lineSpacingMultiplier="1.2"
-                android:minLines="@integer/min_lines_two"
-                android:padding="@dimen/_2sdp"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_13sdp"
-                android:textStyle="bold"
-                tools:text="Send Offers,Deals And Promos" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/singleSpanVerticalContinueTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_10sdp"
-                android:layout_marginBottom="@dimen/_5sdp"
-                android:background="@drawable/curve_white_background"
-                android:drawableEnd="@drawable/ic_arrow_small"
-                android:drawablePadding="@dimen/_5sdp"
-                android:elevation="@dimen/_4sdp"
-                android:gravity="center"
-                android:paddingStart="@dimen/_8sdp"
-                android:paddingTop="@dimen/_2sdp"
-                android:paddingEnd="@dimen/_8sdp"
-                android:paddingBottom="@dimen/_2sdp"
-                android:textColor="@color/black"
-                android:textSize="@dimen/_12sdp"
-                android:textStyle="bold"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="@+id/doubleSpanHeadingTextView"
-                app:layout_constraintTop_toBottomOf="@+id/doubleSpanHeadingTextView"
-                app:layout_constraintVertical_bias="0.0"
-                tools:targetApi="lollipop"
+                app:layout_constraintEnd_toStartOf="@+id/doubleSpanContinueContainer"
+                app:layout_constraintStart_toEndOf="@+id/doubleSpanLeftImageView"
+                app:layout_constraintTop_toTopOf="@+id/doubleSpanLeftImageView"
                 tools:text="@string/app_name" />
 
-        </LinearLayout>
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/doubleSpanSubHeadingTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto_medium"
+                android:gravity="start"
+                android:paddingStart="@dimen/_1sdp"
+                android:paddingEnd="@dimen/_1sdp"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_13sdp"
+                app:layout_constraintEnd_toStartOf="@+id/doubleSpanContinueContainer"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/doubleSpanLeftImageView"
+                app:layout_constraintTop_toBottomOf="@+id/doubleSpanHeadingTextView"
+                tools:text="@string/app_name" />
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/doubleSpanContinueContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/_10sdp"
+                app:cardCornerRadius="@dimen/_15sdp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/doubleSpanContinueTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:paddingTop="@dimen/_5sdp"
+                    android:paddingBottom="@dimen/_5sdp"
+                    android:paddingStart="@dimen/_12sdp"
+                    android:paddingEnd="@dimen/_12sdp"
+                    android:fontFamily="@font/roboto_medium"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_12sdp"
+                    tools:targetApi="lollipop"
+                    tools:text="Get Now" />
+
+            </androidx.cardview.widget.CardView>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.cardview.widget.CardView>
 

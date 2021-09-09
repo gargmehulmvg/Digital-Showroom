@@ -20,6 +20,12 @@ class MarketingService {
         }
     }
 
+    fun getMarketingPageInfo() {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.getMarketingPageInfoServerCall(mServiceInterface)
+        }
+    }
+
     fun getShareStoreData() {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
             mNetworkService.getShareStoreDataServerCall(mServiceInterface)

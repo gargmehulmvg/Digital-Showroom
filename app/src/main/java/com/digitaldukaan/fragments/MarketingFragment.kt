@@ -20,31 +20,31 @@ import com.bumptech.glide.Glide
 import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.MarketingCardAdapter
+import com.digitaldukaan.adapters.MarketingMoreOptionsAdapter
 import com.digitaldukaan.adapters.SharePDFAdapter
 import com.digitaldukaan.constants.*
+import com.digitaldukaan.interfaces.IAppSettingsItemClicked
+import com.digitaldukaan.interfaces.IMarketingMoreOptionsItemClicked
 import com.digitaldukaan.interfaces.IOnToolbarIconClick
-import com.digitaldukaan.models.response.CommonApiResponse
-import com.digitaldukaan.models.response.MarketingCardsItemResponse
-import com.digitaldukaan.models.response.ShareStorePDFDataItemResponse
+import com.digitaldukaan.models.response.*
 import com.digitaldukaan.services.MarketingService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IMarketingServiceInterface
 import com.digitaldukaan.webviews.WebViewBridge
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import io.sentry.Sentry
 import kotlinx.android.synthetic.main.layout_marketing_fragment.*
 
-
-class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingServiceInterface, LocationListener {
+class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingServiceInterface, LocationListener,
+    IAppSettingsItemClicked, IMarketingMoreOptionsItemClicked {
 
     private var mMarketingItemClickResponse: MarketingCardsItemResponse? = null
     private var mCurrentLatitude = 0.0
     private var mCurrentLongitude = 0.0
 
     companion object {
-        private lateinit var service: MarketingService
+        private var mService: MarketingService? = null
         private var mShareStorePDFResponse: ShareStorePDFDataItemResponse? = null
         private const val TAG = "MarketingFragment"
 
@@ -58,8 +58,8 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        service = MarketingService()
-        service.setMarketingServiceListener(this)
+        mService = MarketingService()
+        mService?.setMarketingServiceListener(this)
         mContentView = inflater.inflate(R.layout.layout_marketing_fragment, container, false)
         return mContentView
     }
@@ -68,13 +68,10 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
         updateNavigationBarState(R.id.menuMarketing)
         ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, false)
-            setHeaderTitle(getString(R.string.marketing_page_heading))
-            setSideIconVisibility(true)
             hideBackPressFromToolBar(mActivity, false)
             onBackPressed(this@MarketingFragment)
             setSecondSideIconVisibility(false)
-            setSideIconVisibility(true)
-            mActivity?.let { setSideIcon(ContextCompat.getDrawable(it, R.drawable.ic_setting_toolbar), this@MarketingFragment) }
+            setSideIconVisibility(false)
         }
         hideBottomNavigationView(false)
         if (!isInternetConnectionAvailable(mActivity)) {
@@ -82,7 +79,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
             return
         }
         showProgressDialog(mActivity)
-        service.getMarketingCardsData()
+        mService?.getMarketingPageInfo()
         WebViewBridge.mWebViewListener = this
     }
 
@@ -92,23 +89,76 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
 
     override fun onMarketingResponse(response: CommonApiResponse) {
         stopProgress()
+    }
+
+    override fun onMarketingPageInfoResponse(response: CommonApiResponse) {
+        stopProgress()
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (response.mIsSuccessStatus) {
-                val listType = object : TypeToken<List<MarketingCardsItemResponse>>() {}.type
-                val list = Gson().fromJson<ArrayList<MarketingCardsItemResponse>>(response.mCommonDataStr, listType)
+                val marketingPageInfoResponse = Gson().fromJson<MarketingPageInfoResponse>(response.mCommonDataStr, MarketingPageInfoResponse::class.java)
+                setupMarketingShareUI(marketingPageInfoResponse?.marketingStoreShare)
+                setupMarketingHelpPageUI(marketingPageInfoResponse?.marketingHelpPage)
+                ToolBarManager.getInstance()?.apply {
+                    setHeaderTitle(marketingPageInfoResponse?.marketingStaticTextResponse?.heading_marketing)
+                    moreOptionsHeadingTextView?.text = marketingPageInfoResponse?.marketingStaticTextResponse?.text_more_options
+                }
+                val optionMenuAdapterAdapter = MarketingMoreOptionsAdapter(this, marketingPageInfoResponse?.marketingMoreOptionsList)
+                marketingMoreOptionsRecyclerView?.apply {
+                    layoutManager = LinearLayoutManager(mActivity)
+                    adapter = optionMenuAdapterAdapter
+                }
                 marketingCardRecyclerView?.apply {
-                    val gridLayoutManager = GridLayoutManager(mActivity, 2)
-                    layoutManager = gridLayoutManager
-                    gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
-                        override fun getSpanSize(position: Int): Int {
-                            return if (list[position].type == Constants.SPAN_TYPE_FULL_WIDTH) 2 else 1
+                    marketingCardRecyclerView?.apply {
+                        val gridLayoutManager = GridLayoutManager(mActivity, 2)
+                        layoutManager = gridLayoutManager
+                        gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
+                            override fun getSpanSize(position: Int): Int {
+                                return if (marketingPageInfoResponse?.marketingItemList?.get(position)?.type == Constants.SPAN_TYPE_FULL_WIDTH) 2 else 1
+                            }
                         }
+                        layoutManager = gridLayoutManager
+                        adapter = MarketingCardAdapter(this@MarketingFragment, marketingPageInfoResponse?.marketingItemList, this@MarketingFragment)
                     }
-                    layoutManager = gridLayoutManager
-                    adapter = MarketingCardAdapter(this@MarketingFragment, list, this@MarketingFragment)
+                }
+            } else {
+                showShortSnackBar(response.mMessage, true, R.drawable.ic_close_red)
+            }
+        }
+    }
+
+    private fun setupMarketingHelpPageUI(marketingHelpPage: HelpPageResponse?) {
+        ToolBarManager.getInstance()?.apply {
+            if (marketingHelpPage?.mIsActive == true) {
+                setSideIconVisibility(true)
+                mActivity?.let { setSideIcon(ContextCompat.getDrawable(it, R.drawable.ic_setting_toolbar), this@MarketingFragment) }
+            } else {
+                setSideIconVisibility(false)
+            }
+        }
+    }
+
+    private fun setupMarketingShareUI(shareResponse: MarketingStoreShareResponse?) {
+        shareResponse?.let { response ->
+            shareHeadingTextView?.text = response.heading
+            domainTextView?.text = response.domain
+            shareTextView?.text = response.right_icon_text
+            val shareLeftImageView: ImageView? = mContentView?.findViewById(R.id.shareLeftImageView)
+            val shareRightImageView: ImageView? = mContentView?.findViewById(R.id.shareRightImageView)
+            val expiryLeftImageView: ImageView? = mContentView?.findViewById(R.id.expiryLeftImageView)
+            mActivity?.let { context ->
+                shareLeftImageView?.let { view -> Glide.with(context).load(response.left_icon_cdn).into(view) }
+                shareRightImageView?.let { view -> Glide.with(context).load(response.right_icon_cdn).into(view) }
+                if (isEmpty(response.domain_expiry_message)) {
+                    separator?.visibility = View.GONE
+                    expiryContainer?.visibility = View.GONE
+                } else {
+                    separator?.visibility = View.VISIBLE
+                    expiryContainer?.visibility = View.VISIBLE
+                    expiryTextView?.text = response.domain_expiry_message
+                    knowMoreTextView?.text = response.heading_know_more
+                    expiryLeftImageView?.let { view -> Glide.with(context).load(response.domain_expiry_cdn).into(view) }
                 }
             }
-
         }
     }
 
@@ -167,7 +217,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                     data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
                         AFInAppEventParameterName.CHANNEL to AFInAppEventParameterName.IS_MARKETING_PAGE)
                 )
-                openWebViewFragment(this, "", BuildConfig.WEB_VIEW_URL + response.pageUrl)
+                openWebViewFragment(this, "", BuildConfig.WEB_VIEW_URL + response.url)
             }
             Constants.ACTION_SOCIAL_CREATIVE -> {
                 AppEventsManager.pushAppEvents(
@@ -220,7 +270,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                     )
                 )
                 showProgressDialog(mActivity)
-                service.getShareStoreData()
+                mService?.getShareStoreData()
             }
             Constants.ACTION_CATALOG_WHATSAPP -> {
                 AppEventsManager.pushAppEvents(
@@ -233,7 +283,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                 )
                 if (mShareStorePDFResponse == null) {
                     showProgressDialog(mActivity)
-                    service.getShareStorePdfText()
+                    mService?.getShareStorePdfText()
                 } else {
                     showPDFShareBottomSheet(mShareStorePDFResponse)
                 }
@@ -276,7 +326,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                         verifyTextView.text = response?.subHeading
                         verifyTextView.setOnClickListener{
                             showProgressDialog(mActivity)
-                            service.generateStorePdf()
+                            mService?.generateStorePdf()
                             AppEventsManager.pushAppEvents(
                                 eventName = AFInAppEventType.EVENT_GET_PDF_CATALOG,
                                 isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
@@ -353,7 +403,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                 AFInAppEventParameterName.CHANNEL to AFInAppEventParameterName.MARKETING
             )
         )
-        openWebViewFragmentWithLocation(this, "", BuildConfig.WEB_VIEW_URL + mMarketingItemClickResponse?.pageUrl + "?storeid=${PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)}&token=${PrefsManager.getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&lat=$mCurrentLatitude&lng=$mCurrentLongitude")
+        openWebViewFragmentWithLocation(this, "", BuildConfig.WEB_VIEW_URL + mMarketingItemClickResponse?.url + "?storeid=${PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)}&token=${PrefsManager.getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&lat=$mCurrentLatitude&lng=$mCurrentLongitude")
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
@@ -376,5 +426,58 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
         mCurrentLatitude = lat
         mCurrentLongitude = lng
         openGoogleAds()
+    }
+
+    override fun onMarketingMoreOptionsItemClicked(itemResponse: MarketingMoreOptionsItemResponse?) {
+        if (!isInternetConnectionAvailable(mActivity)) {
+            showNoInternetConnectionDialog()
+            return
+        }
+        Log.d(TAG, "onMarketingMoreOptionsItemClicked: ${itemResponse?.action}")
+        when (itemResponse?.action) {
+            Constants.ACTION_QR_DOWNLOAD -> {
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_QR_DOWNLOAD,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(
+                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                        AFInAppEventParameterName.IS_MARKETING_PAGE to AFInAppEventParameterName.TRUE
+                    )
+                )
+                openWebViewFragment(this, "", WebViewUrls.WEB_VIEW_QR_DOWNLOAD, Constants.SETTINGS)
+            }
+            Constants.ACTION_SHARE_DATA -> {
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_STORE_SHARE,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(
+                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                        AFInAppEventParameterName.IS_MARKETING_PAGE to AFInAppEventParameterName.TRUE
+                    )
+                )
+                showProgressDialog(mActivity)
+                mService?.getShareStoreData()
+            }
+            Constants.ACTION_CATALOG_WHATSAPP -> {
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_SHARE_PDF_CATALOG,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(
+                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                        AFInAppEventParameterName.PATH to AFInAppEventParameterName.MARKETING
+                    )
+                )
+                if (mShareStorePDFResponse == null) {
+                    showProgressDialog(mActivity)
+                    mService?.getShareStorePdfText()
+                } else {
+                    showPDFShareBottomSheet(mShareStorePDFResponse)
+                }
+            }
+        }
+    }
+
+    override fun onAppSettingItemClicked(subPagesResponse: SubPagesResponse) {
+        Log.d(TAG, "onAppSettingItemClicked: ${subPagesResponse.mAction}")
     }
 }

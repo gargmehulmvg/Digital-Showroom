@@ -4,9 +4,12 @@ import android.app.DownloadManager
 import android.content.ContentValues
 import android.content.Context
 import android.content.pm.PackageManager
+import android.content.res.Resources
 import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
@@ -29,6 +32,7 @@ import com.digitaldukaan.models.response.ProfilePreviewSettingsKeyResponse
 import io.sentry.Sentry
 import org.shadow.apache.commons.lang3.StringUtils
 import java.io.*
+import java.net.HttpURLConnection
 import java.net.URL
 import java.net.URLConnection
 import java.text.DateFormat
@@ -420,3 +424,16 @@ fun isDouble(str: String?): Boolean {
 }
 
 fun greatestCommonFactor(width: Int, height: Int): Int = if (0 == height) width else greatestCommonFactor(height, width % height)
+
+fun getDrawableFromUrl(url: String?): Drawable? {
+    return try {
+        val x: Bitmap
+        val connection: HttpURLConnection = URL(url).openConnection() as HttpURLConnection
+        connection.connect()
+        val input: InputStream = connection.inputStream
+        x = BitmapFactory.decodeStream(input)
+        BitmapDrawable(Resources.getSystem(), x)
+    } catch (e: Exception) {
+        null
+    }
+}

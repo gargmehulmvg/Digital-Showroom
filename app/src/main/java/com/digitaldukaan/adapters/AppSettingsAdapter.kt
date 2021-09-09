@@ -13,14 +13,15 @@ import com.digitaldukaan.interfaces.IAppSettingsItemClicked
 import com.digitaldukaan.models.response.SubPagesResponse
 import com.squareup.picasso.Picasso
 
-class AppSettingsAdapter(private val mAppSettingsItemClicked: IAppSettingsItemClicked) : RecyclerView.Adapter<AppSettingsAdapter.AppSettingsViewHolder>() {
+class AppSettingsAdapter(private val mAppSettingsItemClicked: IAppSettingsItemClicked) :
+    RecyclerView.Adapter<AppSettingsAdapter.AppSettingsViewHolder>() {
 
     private var mAppSettingsList: ArrayList<SubPagesResponse> = ArrayList()
 
     fun setAppSettingsList(list: ArrayList<SubPagesResponse>?) {
         list?.let {
             CoroutineScopeUtils().runTaskOnCoroutineMain {
-                mAppSettingsList = list
+                mAppSettingsList = it
                 notifyDataSetChanged()
             }
         }
