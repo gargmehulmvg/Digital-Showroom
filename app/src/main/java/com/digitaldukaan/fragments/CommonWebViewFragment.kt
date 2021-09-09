@@ -133,6 +133,10 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
             }
         } else if (jsonData.optBoolean("redirectBrowser")) {
             openUrlInBrowser(jsonData.optString("data"))
+        } else if (jsonData.optBoolean("shareTextOnWhatsApp")) {
+            val text = jsonData.optString("data")
+            val mobileNumber = jsonData.optString("mobileNumber")
+            shareDataOnWhatsAppByNumber(mobileNumber, text)
         } else if (jsonData.optBoolean("scratchClaimed")) {
             mActivity?.launchInAppReviewDialog()
         } else if (jsonData.optBoolean("shareQRCode")) {
@@ -150,6 +154,10 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
             launchFragment(HomeFragment.newInstance(), true)
         } else if (jsonData.optBoolean("startLoader")) {
             showProgressDialog(mActivity)
+        } else if (jsonData.optBoolean("stopLoader")) {
+            stopProgress()
+        } else if (jsonData.optBoolean("unauthorizedAccess")) {
+            logoutFromApplication()
         } else if (jsonData.optBoolean("openUPIIntent")) {
             val intent = Intent()
             intent.data = Uri.parse(jsonData.optString("data"))
@@ -178,7 +186,7 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
             val image64 = getBase64FromImageURL(imageUrl)
             Log.d(mTagName, "image BASE64 :: $image64")
             CoroutineScopeUtils().runTaskOnCoroutineMain {
-                if (jsonData.optString("sharePage") == "social") {
+                if ("social" == jsonData.optString("sharePage")) {
                     commonWebView?.loadUrl("javascript: receiveAndroidSocialData('$image64')")
                 } else {
                     commonWebView?.loadUrl("javascript: receiveAndroidData('$image64')")

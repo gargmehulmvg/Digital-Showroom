@@ -370,6 +370,14 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
             launchFragment(AddProductFragment.newInstance(jsonDataObject.optInt("id"), false), true)
         } else if (jsonData.optBoolean("catalogAddItem")) {
             launchFragment(AddProductFragment.newInstance(0, true), true)
+        } else if (jsonData.optBoolean("unauthorizedAccess")) {
+                logoutFromApplication()
+        } else if (jsonData.optBoolean("stopLoader")) {
+                stopProgress()
+        } else if (jsonData.optBoolean("shareTextOnWhatsApp")) {
+            val text = jsonData.optString("data")
+            val mobileNumber = jsonData.optString("mobileNumber")
+            shareDataOnWhatsAppByNumber(mobileNumber, text)
         } else if (jsonData.optBoolean("viewShopAsCustomer")) {
             AppEventsManager.pushAppEvents(
                 eventName = AFInAppEventType.EVENT_VIEW_AS_CUSTOMER,

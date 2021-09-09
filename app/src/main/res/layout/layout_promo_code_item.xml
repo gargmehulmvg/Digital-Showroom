@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:padding="@dimen/_5sdp"
+    android:layout_height="wrap_content">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_130sdp"
+        android:background="@drawable/ic_coupon_white_zigzag2"
+        android:elevation="@dimen/_5sdp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <View
+            android:id="@+id/clickEvent"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_80sdp"
+            android:background="?selectableItemBackgroundBorderless"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/descriptionTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/_5sdp"
+            android:layout_marginEnd="@dimen/_5sdp"
+            android:paddingEnd="@dimen/_5sdp"
+            android:clickable="false"
+            android:paddingStart="@dimen/_1sdp"
+            android:fontFamily="@font/roboto_medium"
+            android:textColor="@color/black"
+            android:singleLine="true"
+            android:ellipsize="marquee"
+            android:textSize="@dimen/_14sdp"
+            app:layout_constraintBottom_toTopOf="@+id/useCodeTextView"
+            app:layout_constraintEnd_toStartOf="@+id/visibleStatusTextView"
+            app:layout_constraintStart_toStartOf="@+id/useCodeTextView"
+            tools:text="30% OFF upto ₹50 30% OFF upto ₹50" />
+
+        <TextView
+            android:id="@+id/useCodeTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/slight_curve_light_grey_border_without_padding"
+            android:clickable="false"
+            android:fontFamily="@font/roboto"
+            android:paddingStart="@dimen/_5sdp"
+            android:paddingTop="@dimen/_2sdp"
+            android:paddingEnd="@dimen/_5sdp"
+            android:paddingBottom="@dimen/_2sdp"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_9sdp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.09"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.4"
+            tools:text="Use Code : ABC20" />
+
+        <TextView
+            android:id="@+id/detailsTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ripple_curve_grey_border_white_background"
+            android:fontFamily="@font/roboto_medium"
+            android:paddingStart="@dimen/_12sdp"
+            android:paddingTop="@dimen/_4sdp"
+            android:paddingEnd="@dimen/_12sdp"
+            android:paddingBottom="@dimen/_4sdp"
+            android:textColor="@color/dark_blackish"
+            android:textSize="@dimen/_12sdp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/useCodeTextView"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.88"
+            tools:text="Details" />
+
+        <TextView
+            android:id="@+id/shareCouponsTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ripple_curve_grey_border_white_background"
+            android:drawablePadding="@dimen/_5sdp"
+            android:fontFamily="@font/roboto_medium"
+            android:paddingStart="@dimen/_10sdp"
+            android:paddingTop="@dimen/_4sdp"
+            android:paddingEnd="@dimen/_10sdp"
+            android:paddingBottom="@dimen/_4sdp"
+            android:textColor="@color/dark_blackish"
+            android:textSize="@dimen/_12sdp"
+            app:drawableEndCompat="@drawable/ic_share_forward_arrow"
+            app:layout_constraintBaseline_toBaselineOf="@+id/detailsTextView"
+            app:layout_constraintEnd_toEndOf="@+id/visibleStatusTextView"
+            tools:text="Share Coupons" />
+
+        <TextView
+            android:id="@+id/visibleStatusTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/slight_curve_green_dotted_border_green_background"
+            android:drawablePadding="@dimen/_2sdp"
+            android:fontFamily="@font/roboto"
+            android:paddingStart="@dimen/_4sdp"
+            android:paddingTop="@dimen/_2sdp"
+            android:clickable="false"
+            android:paddingEnd="@dimen/_4sdp"
+            android:paddingBottom="@dimen/_2sdp"
+            android:textColor="@color/open_green"
+            android:textSize="@dimen/_8sdp"
+            app:drawableStartCompat="@drawable/ic_eye_on"
+            app:layout_constraintBottom_toTopOf="@+id/useCodeTextView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.92"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Visible on Website" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

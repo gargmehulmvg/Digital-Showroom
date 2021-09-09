@@ -92,6 +92,12 @@ interface Apis {
     @GET("api/dotk/vm1/settings/getOrderNotificationPageInfo")
     suspend fun getOrderNotificationPageInfo(): Response<CommonApiResponse>
 
+    @GET("api/dotk/vm1/settings/getStoreUserPageInfo")
+    suspend fun getStoreUserPageInfo(): Response<CommonApiResponse>
+
+    @POST("api/dotk/vm1/settings/setStoreUserInfo")
+    suspend fun setStoreUserInfo(@Body request: StoreUserMailDetailsRequest): Response<CommonApiResponse>
+
     @POST("api/dotk/vm1/settings/setPaymentOptions")
     suspend fun setPaymentOptions(@Body request: PaymentModeRequest): Response<CommonApiResponse>
 
@@ -231,6 +237,25 @@ interface Apis {
 
     @POST("api/dotk/vm1/premium/setStoreThemeBanner")
     suspend fun setStoreThemeBanner(@Body request: StoreThemeBannerRequest): Response<CommonApiResponse>
+
+    /* ----------------------       Coupons & Promos         ---------------------- */
+    @POST("api/dotk/vm1/promo/createPromoCode")
+    suspend fun createPromoCode(@Body request: CreateCouponsRequest): Response<CommonApiResponse>
+
+    @POST("api/dotk/vm1/promo/updatePromoCodeStatus")
+    suspend fun updatePromoCodeStatus(@Body request: UpdatePromoCodeRequest): Response<CommonApiResponse>
+
+    @POST("api/dotk/vm1/promo/getAllMerchantPromoCodes")
+    suspend fun getAllMerchantPromoCodes(@Body request: GetPromoCodeRequest): Response<CommonApiResponse>
+
+    @GET("api/dotk/vm1/promo/getPromoCodePageInfo")
+    suspend fun getPromoCodePageInfo(): Response<CommonApiResponse>
+
+    @GET("api/dotk/vm1/promo/getCouponDetails")
+    suspend fun getCouponDetails(@Query("promo_code") promoCode: String) : Response<CommonApiResponse>
+
+    @GET("api/dotk/vm1/promo/shareCoupon")
+    suspend fun shareCoupon(@Query("promo_code") promoCode: String) : Response<CommonApiResponse>
 
     /* ----------------------       Others         ---------------------- */
     @POST("api/dotanalytics/push/androidEventLog")

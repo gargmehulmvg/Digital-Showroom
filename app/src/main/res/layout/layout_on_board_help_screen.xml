@@ -51,7 +51,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/_12sdp"
-                android:background="@drawable/slight_curve_black_background"
+                android:background="@drawable/ripple_slight_curve_grey_black_background"
                 android:gravity="center"
                 android:fontFamily="@font/roboto_medium"
                 android:clickable="false"

@@ -31,8 +31,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textColor="@color/default_text_light_grey"
-            app:layout_constraintStart_toStartOf="@+id/bankHeadingTextView"
-            app:layout_constraintTop_toBottomOf="@+id/bankHeadingTextView"
+            app:layout_constraintStart_toStartOf="@id/bankHeadingTextView"
+            app:layout_constraintTop_toBottomOf="@id/bankHeadingTextView"
             tools:text="And Get Instant Settlements" />
 
         <com.google.android.material.textfield.TextInputLayout
@@ -41,9 +41,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_15sdp"
-            app:layout_constraintEnd_toEndOf="@+id/bankHeadingTextView"
-            app:layout_constraintStart_toStartOf="@+id/bankHeadingTextView"
-            app:layout_constraintTop_toBottomOf="@+id/materialTextView3"
+            app:layout_constraintEnd_toEndOf="@id/bankHeadingTextView"
+            app:layout_constraintStart_toStartOf="@id/bankHeadingTextView"
+            app:layout_constraintTop_toBottomOf="@id/materialTextView3"
             tools:hint="Account Holder Name">
 
             <EditText
@@ -51,6 +51,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clickable="true"
+                android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890 "
                 android:focusable="true"
                 android:importantForAutofill="no"
                 android:inputType="text"
@@ -67,9 +68,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_10sdp"
-            app:layout_constraintEnd_toEndOf="@+id/bankHeadingTextView"
-            app:layout_constraintStart_toStartOf="@+id/bankHeadingTextView"
-            app:layout_constraintTop_toBottomOf="@+id/accountHolderNameLayout"
+            app:layout_constraintEnd_toEndOf="@id/bankHeadingTextView"
+            app:layout_constraintStart_toStartOf="@id/bankHeadingTextView"
+            app:layout_constraintTop_toBottomOf="@id/accountHolderNameLayout"
             tools:hint="Account Number">
 
             <EditText
@@ -92,9 +93,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_10sdp"
-            app:layout_constraintEnd_toEndOf="@+id/bankHeadingTextView"
-            app:layout_constraintStart_toStartOf="@+id/bankHeadingTextView"
-            app:layout_constraintTop_toBottomOf="@+id/accountNumberLayout"
+            app:layout_constraintEnd_toEndOf="@id/bankHeadingTextView"
+            app:layout_constraintStart_toStartOf="@id/bankHeadingTextView"
+            app:layout_constraintTop_toBottomOf="@id/accountNumberLayout"
             tools:hint="Verify Account Number">
 
             <EditText
@@ -117,18 +118,18 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_10sdp"
-            app:layout_constraintEnd_toEndOf="@+id/bankHeadingTextView"
-            app:layout_constraintStart_toStartOf="@+id/bankHeadingTextView"
-            app:layout_constraintTop_toBottomOf="@+id/verifyAccountNumberLayout"
+            app:layout_constraintEnd_toEndOf="@id/bankHeadingTextView"
+            app:layout_constraintStart_toStartOf="@id/bankHeadingTextView"
+            app:layout_constraintTop_toBottomOf="@id/verifyAccountNumberLayout"
             tools:hint="IFSC CODE">
 
             <EditText
                 android:id="@+id/ifscEditText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:digits="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890 "
                 android:clickable="true"
                 android:focusable="true"
-                android:inputType="text"
                 android:importantForAutofill="no"
                 android:maxLength="@integer/ifsc_length"
                 android:textColor="@color/black"
@@ -143,9 +144,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_10sdp"
-            app:layout_constraintEnd_toEndOf="@+id/bankHeadingTextView"
-            app:layout_constraintStart_toStartOf="@+id/bankHeadingTextView"
-            app:layout_constraintTop_toBottomOf="@+id/ifscLayout"
+            app:layout_constraintEnd_toEndOf="@id/bankHeadingTextView"
+            app:layout_constraintStart_toStartOf="@id/bankHeadingTextView"
+            app:layout_constraintTop_toBottomOf="@id/ifscLayout"
             tools:hint="Registered Mobile Number">
 
             <EditText
@@ -175,9 +176,9 @@
             android:textColor="@color/black"
             android:textSize="@dimen/_16sdp"
             android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@+id/saveTextView"
-            app:layout_constraintStart_toStartOf="@+id/mobileNumberLayout"
-            app:layout_constraintTop_toTopOf="@+id/saveTextView" />
+            app:layout_constraintBottom_toBottomOf="@id/saveTextView"
+            app:layout_constraintStart_toStartOf="@id/mobileNumberLayout"
+            app:layout_constraintTop_toTopOf="@id/saveTextView" />
 
         <com.google.android.material.textview.MaterialTextView
             android:id="@+id/saveTextView"
@@ -189,7 +190,7 @@
             android:onClick="onClick"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/mobileNumberLayout"
+            app:layout_constraintTop_toBottomOf="@id/mobileNumberLayout"
             app:layout_constraintVertical_bias="1.0"
             tools:text="@string/verify" />
 

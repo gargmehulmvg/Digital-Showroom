@@ -4,6 +4,7 @@ import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.models.request.StoreLinkRequest
 import com.digitaldukaan.models.request.StoreLogoRequest
 import com.digitaldukaan.models.request.StoreNameRequest
+import com.digitaldukaan.models.request.StoreUserMailDetailsRequest
 import com.digitaldukaan.services.networkservice.ProfilePreviewNetworkService
 import com.digitaldukaan.services.serviceinterface.IProfilePreviewServiceInterface
 import okhttp3.MultipartBody
@@ -57,6 +58,18 @@ class ProfilePreviewService {
     fun getShareStoreData() {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
             mNetworkService.getShareStoreDataServerCall(mServiceInterface)
+        }
+    }
+
+    fun getStoreUserPageInfo() {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.getStoreUserPageInfoServerCall(mServiceInterface)
+        }
+    }
+
+    fun setStoreUserGmailDetails(request: StoreUserMailDetailsRequest) {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.setStoreUserGmailDetailsServerCall(request, mServiceInterface)
         }
     }
 

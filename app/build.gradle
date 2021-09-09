@@ -15,8 +15,8 @@ android {
         applicationId "com.digitaldukaan"
         minSdkVersion 24
         targetSdkVersion 29
-        versionCode 73
-        versionName "4.2.1"
+        versionCode 74
+        versionName "4.2.2"
         multiDexEnabled true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -66,7 +66,7 @@ android {
     flavorDimensions "default"
     productFlavors {
         local {
-            buildConfigField('String', 'BASE_URL', '"https://api.digitaldukaan.store/"')
+            buildConfigField('String', 'BASE_URL', '"https://api.digitaldukaan.app/"')
             buildConfigField('String', 'WEB_VIEW_URL', '"https://digitaldukaanwebview.dotq.in/"')
             buildConfigField('String', 'WEB_VIEW_SHOW_ROOM_URL', '"https://showroom.dotq.in/"')
             buildConfigField('String', 'WEB_VIEW_PREVIEW_URL', '"https://showroom-preview2.dotq.in/"')
@@ -167,4 +167,6 @@ dependencies {
     //  Google Tag Manager
     implementation 'com.google.android.gms:play-services-tagmanager:17.0.0'
     implementation 'com.google.firebase:firebase-core:17.0.0'
+    //  Animation
+    implementation 'com.daimajia.androidanimations:library:2.4@aar'
 }

@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/bottomSheetContainer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/upper_curve_white_background"
+    android:gravity="center_vertical"
+    android:animateLayoutChanges="true"
+    android:orientation="vertical"
+    android:padding="@dimen/_5sdp">
+
+    <ImageView
+        android:id="@+id/closeImageView"
+        android:layout_width="@dimen/_30sdp"
+        android:layout_height="@dimen/_30sdp"
+        android:layout_gravity="end"
+        android:paddingStart="@dimen/_5sdp"
+        android:paddingEnd="@dimen/_1sdp"
+        android:paddingTop="@dimen/_5sdp"
+        android:paddingBottom="@dimen/_5sdp"
+        android:contentDescription="@string/image_view_content_description"
+        android:src="@drawable/ic_black_close" />
+
+    <LinearLayout
+        android:id="@+id/noGoogleUserLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        android:animateLayoutChanges="true"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="@dimen/_70sdp"
+            android:layout_height="@dimen/_50sdp"
+            android:layout_marginStart="@dimen/_15sdp"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:contentDescription="@string/image_view_content_description"
+            android:src="@drawable/ic_order_detail_green_tick" />
+
+        <TextView
+            android:id="@+id/headingTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_18sdp"
+            android:layout_marginStart="@dimen/_15sdp"
+            android:layout_marginEnd="@dimen/_15sdp"
+            android:fontFamily="@font/roboto_bold"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_24sdp"
+            tools:text="Add your Gmail\nAccount" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_18sdp"
+            tools:itemCount="4"
+            android:layout_marginStart="@dimen/_8sdp"
+            tools:listitem="@layout/gmail_guideline_item"
+            android:id="@+id/guidelineRecyclerView" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/openGmailDialogTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/_15sdp"
+            android:textColor="@color/white"
+            android:fontFamily="@font/roboto_medium"
+            android:drawablePadding="@dimen/_10sdp"
+            android:elevation="@dimen/_2sdp"
+            android:paddingStart="@dimen/_40sdp"
+            android:paddingEnd="@dimen/_10sdp"
+            android:drawableStart="@drawable/ic_gmail"
+            android:paddingTop="@dimen/_5sdp"
+            android:paddingBottom="@dimen/_5sdp"
+            android:background="@drawable/ripple_curve_gmail_background"
+            android:layout_marginStart="@dimen/_15sdp"
+            android:layout_marginTop="@dimen/_30sdp"
+            android:layout_marginBottom="@dimen/_15sdp"
+            android:layout_marginEnd="@dimen/_15sdp"
+            android:gravity="center_vertical"
+            android:onClick="onClick"
+            tools:text="@string/share_store_link" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/googleUserLayout"
+        android:layout_width="match_parent"
+        android:visibility="gone"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/youLinkGmailAccountTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_marginStart="@dimen/_15sdp"
+            android:layout_marginEnd="@dimen/_15sdp"
+            android:fontFamily="@font/roboto_bold"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_22sdp"
+            tools:text="Your Linked Gmail\nAccount" />
+
+        <TextView
+            android:id="@+id/gmailAccountTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/light_grey_background"
+            android:layout_marginTop="@dimen/_22sdp"
+            android:layout_marginStart="@dimen/_15sdp"
+            android:layout_marginEnd="@dimen/_15sdp"
+            android:paddingStart="@dimen/_10sdp"
+            android:paddingEnd="@dimen/_10sdp"
+            android:paddingTop="@dimen/_10sdp"
+            android:paddingBottom="@dimen/_10sdp"
+            android:fontFamily="@font/roboto"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_14sdp"
+            tools:text="Your Linked Gmail Account" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/signInWithAnotherAccountTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/_14sdp"
+            android:textColor="@color/white"
+            android:fontFamily="@font/roboto_medium"
+            android:drawablePadding="@dimen/_10sdp"
+            android:maxLines="1"
+            android:paddingStart="@dimen/_15sdp"
+            android:paddingEnd="@dimen/_5sdp"
+            android:elevation="@dimen/_2sdp"
+            android:drawableStart="@drawable/ic_gmail"
+            android:paddingTop="@dimen/_5sdp"
+            android:paddingBottom="@dimen/_5sdp"
+            android:background="@drawable/ripple_curve_gmail_background"
+            android:layout_marginStart="@dimen/_15sdp"
+            android:layout_marginTop="@dimen/_30sdp"
+            android:layout_marginBottom="@dimen/_15sdp"
+            android:layout_marginEnd="@dimen/_15sdp"
+            android:gravity="center_vertical"
+            android:onClick="onClick"
+            tools:text="Sign in with another account" />
+
+    </LinearLayout>
+
+</LinearLayout>

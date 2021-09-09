@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -14,6 +15,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.net.toUri
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -22,6 +24,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.bumptech.glide.Glide
 import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
+import com.digitaldukaan.adapters.GmailGuideLineAdapter
 import com.digitaldukaan.adapters.ProfilePageBannerAdapter
 import com.digitaldukaan.adapters.ProfilePreviewAdapter
 import com.digitaldukaan.constants.*
@@ -30,11 +33,18 @@ import com.digitaldukaan.interfaces.IProfilePreviewItemClicked
 import com.digitaldukaan.models.request.StoreLinkRequest
 import com.digitaldukaan.models.request.StoreLogoRequest
 import com.digitaldukaan.models.request.StoreNameRequest
+import com.digitaldukaan.models.request.StoreUserMailDetailsRequest
 import com.digitaldukaan.models.response.*
 import com.digitaldukaan.services.ProfilePreviewService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IProfilePreviewServiceInterface
 import com.digitaldukaan.views.allowOnlyAlphaNumericCharacters
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.tasks.Task
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.layout_profile_preview_fragment.*
@@ -59,6 +69,8 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
     private var mStoreLogo: String? = ""
     private var mStoreLinkLastEntered = ""
     private var mIsCompleteProfileImageInitiated = false
+    private var mIsEmailAdded = false
+    private var mStoreUserPageInfoStaticTextResponse: StoreUserPageInfoStaticTextResponse? = null
 
     companion object {
         private const val TAG = "ProfilePreviewFragment"
@@ -292,6 +304,27 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         }
     }
 
+    override fun onStoreUserPageInfoResponse(apiResponse: CommonApiResponse) {
+        stopProgress()
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            val storeUserPageInfoResponse = Gson().fromJson<StoreUserPageInfoResponse>(apiResponse.mCommonDataStr, StoreUserPageInfoResponse::class.java)
+            if (apiResponse.mIsSuccessStatus) {
+                mStoreUserPageInfoStaticTextResponse = storeUserPageInfoResponse?.staticText
+                showStoreUserGmailGuidelineBottomSheet(storeUserPageInfoResponse)
+            }
+        }
+    }
+
+    override fun onSetStoreUserDetailsResponse(apiResponse: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            if (apiResponse.mIsSuccessStatus) {
+                showShortSnackBar(apiResponse.mMessage, true, R.drawable.ic_check_circle)
+                onRefresh()
+            } else showShortSnackBar(apiResponse.mMessage, true, R.drawable.ic_close_red)
+        }
+    }
+
     override fun onProfilePreviewItemClicked(profilePreviewResponse: ProfilePreviewSettingsKeyResponse, position: Int) {
         Log.d(TAG, "onProfilePreviewItemClicked: $profilePreviewResponse")
         mProfileInfoSettingKeyResponse = profilePreviewResponse
@@ -323,6 +356,60 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                 )
                 mService.initiateKyc(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
             }
+            Constants.ACTION_EMAIL_AUTHENTICATION -> {
+                showProgressDialog(mActivity)
+                mService.getStoreUserPageInfo()
+            }
+        }
+    }
+
+    private fun showUserEmailDialog(isLogout: Boolean = false, isServerCall: Boolean = false) {
+        AppEventsManager.pushAppEvents(
+            eventName = AFInAppEventType.EVENT_EMAIL_SIGN_IN,
+            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+            data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                AFInAppEventParameterName.IS_EDIT to if (mIsEmailAdded) "1" else "0")
+        )
+        mActivity?.let { context ->
+            val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build()
+            val googleSignInClient = GoogleSignIn.getClient(context, gso)
+            if (isLogout) {
+                signOut(googleSignInClient)
+            } else {
+                val account = GoogleSignIn.getLastSignedInAccount(context)
+                if (null == account) {
+                    val signInIntent: Intent = googleSignInClient.signInIntent
+                    startActivityForResult(signInIntent, Constants.EMAIL_REQUEST_CODE)
+                } else {
+                    updateUserAccountInfo(account, isServerCall)
+                    Log.d(TAG, "showUserEmailDialog: $account")
+                }
+            }
+        }
+    }
+
+    private fun signOut(googleSignInClient: GoogleSignInClient) {
+            googleSignInClient.signOut().addOnCompleteListener {
+                showUserEmailDialog(isServerCall = false)
+            }
+    }
+
+    private fun updateUserAccountInfo(acct: GoogleSignInAccount?, isServerCall: Boolean = false) {
+        val personGivenName = acct?.givenName
+        val personFamilyName = acct?.familyName
+        val personEmail = acct?.email
+        val personId = acct?.id
+        val personPhoto: Uri? = acct?.photoUrl
+        if (isServerCall) {
+            showProgressDialog(mActivity)
+            val request= StoreUserMailDetailsRequest(
+                firstName = personGivenName,
+                lastName = personFamilyName,
+                emailId = personEmail,
+                photo = if (null == personPhoto) "" else "$personPhoto",
+                signInId = personId
+            )
+            mService.setStoreUserGmailDetails(request)
         }
     }
 
@@ -636,18 +723,37 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == Constants.CROP_IMAGE_REQUEST_CODE) {
-            val file = data?.getSerializableExtra(Constants.MODE_CROP) as File
-            CoroutineScopeUtils().runTaskOnCoroutineMain {
-                onImageSelectionResultFile(file, "")
+        when (requestCode) {
+            Constants.CROP_IMAGE_REQUEST_CODE -> {
+                val file = data?.getSerializableExtra(Constants.MODE_CROP) as File
+                CoroutineScopeUtils().runTaskOnCoroutineMain {
+                    onImageSelectionResultFile(file, "")
+                }
             }
-        } else super.onActivityResult(requestCode, resultCode, data)
+            Constants.EMAIL_REQUEST_CODE -> {
+                // The Task returned from this call is always completed, no need to attach
+                // a listener.
+                val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+                handleSignInResult(task)
+            }
+            else -> super.onActivityResult(requestCode, resultCode, data)
+        }
+    }
+
+    private fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {
+        try {
+            val account: GoogleSignInAccount = completedTask.getResult(ApiException::class.java)
+            updateUserAccountInfo(account, true)
+            Log.d(TAG, "handleSignInResult: $account")
+        } catch (e: ApiException) {
+            Log.d(TAG, "signInResult:failed code=" + e.statusCode)
+        }
     }
 
     private fun showShareStoreLinkBottomSheet(storeDomain: String?) {
         mActivity?.let {
             val shareStoreBottomSheet = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
-            val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_shre_store, it.findViewById(R.id.bottomSheetContainer))
+            val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_share_store, it.findViewById(R.id.bottomSheetContainer))
             shareStoreBottomSheet.apply {
                 setContentView(view)
                 setBottomSheetCommonProperty()
@@ -662,6 +768,65 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                     showProgressDialog(mActivity)
                     mService.getShareStoreData()
                     shareStoreBottomSheet.dismiss()
+                }
+            }.show()
+        }
+    }
+
+    private fun showStoreUserGmailGuidelineBottomSheet(response: StoreUserPageInfoResponse?) {
+        mActivity?.let {
+            val shareStoreBottomSheet = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
+            val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_store_user_gmail, it.findViewById(R.id.bottomSheetContainer))
+            shareStoreBottomSheet.apply {
+                setContentView(view)
+                setBottomSheetCommonProperty()
+                val closeImageView: View = view.findViewById(R.id.closeImageView)
+                val noGoogleUserLayout: View = view.findViewById(R.id.noGoogleUserLayout)
+                val googleUserLayout: View = view.findViewById(R.id.googleUserLayout)
+                val imageView: ImageView = view.findViewById(R.id.imageView)
+                val recyclerView: RecyclerView = view.findViewById(R.id.guidelineRecyclerView)
+                val openGmailDialogTextView: TextView = view.findViewById(R.id.openGmailDialogTextView)
+                val headingTextView: TextView = view.findViewById(R.id.headingTextView)
+                val gmailAccountTextView: TextView = view.findViewById(R.id.gmailAccountTextView)
+                val signInWithAnotherAccountTextView: TextView = view.findViewById(R.id.signInWithAnotherAccountTextView)
+                val youLinkGmailAccountTextView: TextView = view.findViewById(R.id.youLinkGmailAccountTextView)
+                if (isEmpty(response?.gmailUserDetailsList)) {
+                    mIsEmailAdded = false
+                    noGoogleUserLayout.visibility =  View.VISIBLE
+                    googleUserLayout.visibility =  View.GONE
+                } else {
+                    mIsEmailAdded = true
+                    noGoogleUserLayout.visibility =  View.GONE
+                    googleUserLayout.visibility =  View.VISIBLE
+                }
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_ADD_EMAIL,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                        AFInAppEventParameterName.IS_EDIT to if (mIsEmailAdded) "1" else "0")
+                )
+                youLinkGmailAccountTextView.text = mStoreUserPageInfoStaticTextResponse?.header_linked_gmail_account
+                openGmailDialogTextView.text = mStoreUserPageInfoStaticTextResponse?.button_sign_in_with_google
+                headingTextView.text = mStoreUserPageInfoStaticTextResponse?.header_add_gmail_account
+                gmailAccountTextView.text = response?.gmailUserDetailsList?.get(0)?.email_id
+                signInWithAnotherAccountTextView.text = mStoreUserPageInfoStaticTextResponse?.button_sign_in_with_another_account
+                recyclerView.apply {
+                    layoutManager = LinearLayoutManager(mActivity)
+                    adapter = GmailGuideLineAdapter(response?.gmailGuideLineList)
+                }
+                activity?.let { context ->
+                    Glide.with(context).load(response?.gmailCdn).into(imageView)
+                }
+                closeImageView.setOnClickListener {
+                    shareStoreBottomSheet.dismiss()
+                }
+                openGmailDialogTextView.setOnClickListener {
+                    shareStoreBottomSheet.dismiss()
+                    showUserEmailDialog(true)
+                }
+                signInWithAnotherAccountTextView.setOnClickListener {
+                    shareStoreBottomSheet.dismiss()
+                    showUserEmailDialog(true)
                 }
             }.show()
         }

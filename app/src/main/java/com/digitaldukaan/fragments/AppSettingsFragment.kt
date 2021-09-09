@@ -68,7 +68,7 @@ class AppSettingsFragment : BaseFragment(), IAppSettingsItemClicked {
                     setCancelable(false)
                     setPositiveButton(mAppSettingsResponseStaticData?.text_yes) { dialog, _ ->
                         dialog.dismiss()
-                        logoutFromApplication()
+                        logoutFromApplication(isAppLogout = true)
                     }
                     setNegativeButton(getString(R.string.text_no)) { dialog, _ -> dialog.dismiss() }
                 }.create().show()

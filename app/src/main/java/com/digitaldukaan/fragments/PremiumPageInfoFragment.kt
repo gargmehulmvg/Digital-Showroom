@@ -137,6 +137,7 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
         when {
             jsonData.optBoolean("redirectNative") -> launchFragment(EditPremiumFragment.newInstance(mStaticText, premiumPageInfoResponse), true)
             jsonData.optBoolean("redirectBrowser") -> openUrlInBrowser(jsonData.optString("data"))
+            jsonData.optBoolean("unauthorizedAccess") -> logoutFromApplication()
             jsonData.optBoolean("openUPIIntent") -> {
                 val intent = Intent()
                 intent.data = Uri.parse(jsonData.optString("data"))
@@ -169,6 +170,14 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
             }
             jsonData.optBoolean("refreshToken") -> {
                 //mService.getPremiumPageInfo()
+            }
+            jsonData.optBoolean("stopLoader") -> {
+                stopProgress()
+            }
+            jsonData.optBoolean("shareTextOnWhatsApp") -> {
+                val text = jsonData.optString("data")
+                val mobileNumber = jsonData.optString("mobileNumber")
+                shareDataOnWhatsAppByNumber(mobileNumber, text)
             }
         }
     }
