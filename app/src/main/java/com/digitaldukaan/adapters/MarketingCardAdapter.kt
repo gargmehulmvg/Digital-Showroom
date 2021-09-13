@@ -61,8 +61,8 @@ class MarketingCardAdapter(
                     doubleSpanHeadingTextView.text = item.heading
                     doubleSpanSubHeadingTextView.text = item.subHeading
                     doubleSpanContinueTextView.text = item.marketingCta?.text
-                    doubleSpanContinueTextView.setTextColor(Color.parseColor(item.marketingCta?.text_color))
-                    doubleSpanContinueTextView.setBackgroundColor(Color.parseColor(item.marketingCta?.bg_color))
+                    doubleSpanContinueTextView.setTextColor(Color.parseColor(item.marketingCta?.textColor))
+                    doubleSpanContinueTextView.setBackgroundColor(Color.parseColor(item.marketingCta?.bgColor))
                     doubleSpanHeadingTextView.setTextColor(Color.parseColor(item.headingColor))
                     doubleSpanSubHeadingTextView.setTextColor(Color.parseColor(item.subHeadingColor))
                     doubleSpanImageView.let { mContext?.let { context -> Glide.with(context).load(item.logo).into(it) } }

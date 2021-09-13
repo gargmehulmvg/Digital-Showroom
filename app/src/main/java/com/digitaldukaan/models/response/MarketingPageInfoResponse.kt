@@ -64,14 +64,14 @@ data class MarketingExpandableItemResponse(
 )
 
 data class MarketingSuggestedDomainItemResponse(
-    @SerializedName("offer_message")                  var offerMessage: String,
-    @SerializedName("offer_text_color")                  var offerTextColor: String,
-    @SerializedName("offer_bg_color")                  var offerBgColor: String,
-    @SerializedName("name")                  var name: String,
-    @SerializedName("cta")                  var cta: MarketingItemCtaResponse,
-    @SerializedName("promo_code")                  var promoCode: String,
-    @SerializedName("original_price")                  var originalPrice: String,
-    @SerializedName("discounted_price")                  var discountedPrice: String,
-    @SerializedName("message_domain_offer")                  var messageDomainOffer: String,
-    @SerializedName("cta_cdn")                  var cta_cdn: String
+    @SerializedName("offer_message")            var offerMessage: String,
+    @SerializedName("offer_text_color")         var offerTextColor: String,
+    @SerializedName("offer_bg_color")           var offerBgColor: String,
+    @SerializedName("name")                     var name: String,
+    @SerializedName("cta")                      var cta: MarketingItemCtaResponse,
+    @SerializedName("promo_code")               var promoCode: String,
+    @SerializedName("original_price")           var originalPrice: String,
+    @SerializedName("discounted_price")         var discountedPrice: String,
+    @SerializedName("message_domain_offer")     var messageDomainOffer: String,
+    @SerializedName("cta_cdn")                  var ctaCdn: String
 )

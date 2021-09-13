@@ -9,12 +9,10 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.isNotEmpty
-import com.digitaldukaan.fragments.BaseFragment
 import com.digitaldukaan.interfaces.IAdapterItemClickListener
 import com.digitaldukaan.models.response.MarketingSuggestedDomainItemResponse
 
 class MarketingKnowMoreItemAdapter(
-    private var mContext: BaseFragment?,
     private var mMarketingItemList: ArrayList<MarketingSuggestedDomainItemResponse?>?,
     private var mInterface: IAdapterItemClickListener?
 ) :
@@ -35,7 +33,6 @@ class MarketingKnowMoreItemAdapter(
         view.buyNowTextView.setOnClickListener {
             val position = view.adapterPosition
             if (position < 0 || position >= (mMarketingItemList?.size ?: 0)) return@setOnClickListener
-            val item = mMarketingItemList?.get(position)
             mInterface?.onAdapterItemClickListener(position)
         }
         return view

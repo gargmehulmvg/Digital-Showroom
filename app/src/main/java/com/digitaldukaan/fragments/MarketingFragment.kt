@@ -555,9 +555,14 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                         offerMessageTextView.text = itemResponse?.messageGetBestDomain
                         recyclerView.apply {
                             layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
-                            adapter = MarketingKnowMoreItemAdapter(this@MarketingFragment, itemResponse?.suggestedDomainsList, object : IAdapterItemClickListener {
+                            adapter = MarketingKnowMoreItemAdapter(itemResponse?.suggestedDomainsList, object : IAdapterItemClickListener {
                                 override fun onAdapterItemClickListener(position: Int) {
-
+                                    val item = itemResponse?.suggestedDomainsList?.get(position)
+                                    when(item?.cta?.action) {
+                                        Constants.NEW_RELEASE_TYPE_WEBVIEW -> {
+                                            openWebViewFragment(this@MarketingFragment, "", BuildConfig.WEB_VIEW_URL + item.cta.url)
+                                        }
+                                    }
                                 }
                             })
                         }
