@@ -19,6 +19,7 @@ data class MarketingStoreShareResponse(
     @SerializedName("domain_expiry_cdn")        var domain_expiry_cdn: String?,
     @SerializedName("heading_know_more")        var heading_know_more: String?,
     @SerializedName("domain")                   var domain: String?,
+    @SerializedName("domain_know_more")         var knowMore: MarketingDomainKnowMoreResponse?,
     @SerializedName("is_enabled")               var isEnabled: Boolean,
     @SerializedName("is_clickable")             var isClickable: Boolean
 )
@@ -28,14 +29,49 @@ data class MarketingStaticTextResponse(
     @SerializedName("text_more_options")        var text_more_options: String
 )
 
+data class MarketingDomainKnowMoreResponse(
+    @SerializedName("heading_your_domain")      var headingYourDomain: String?,
+    @SerializedName("message_get_best_domain")  var messageGetBestDomain: String?,
+    @SerializedName("domain_expiry_message")    var domainExpiryMessage: String?,
+    @SerializedName("suggested_domains")        var suggestedDomainsList: ArrayList<MarketingSuggestedDomainItemResponse?>?,
+    @SerializedName("domain_name")              var domainName: String
+)
+
 data class MarketingMoreOptionsItemResponse(
     @SerializedName("info_text")                var info_text: String?,
     @SerializedName("heading")                  var heading: String,
     @SerializedName("right_cdn")                var right_cdn: String,
     @SerializedName("is_clickable")             var is_clickable: Boolean,
     @SerializedName("is_enabled")               var is_enabled: Boolean,
-    @SerializedName("is_expandable")            var is_expandable: Boolean,
     @SerializedName("action")                   var action: String?,
     @SerializedName("expandable_data_heading")  var expandable_data_heading: String?,
+    @SerializedName("expandable_data")          var expandableData: ArrayList<MarketingExpandableItemResponse?>?,
     @SerializedName("left_cdn")                 var left_cdn: String
+)
+
+data class MarketingExpandableItemResponse(
+    @SerializedName("heading")                  var heading: String,
+    @SerializedName("logo")                     var logo: String,
+    @SerializedName("action")                   var action: String?,
+    @SerializedName("color")                    var color: String?,
+    @SerializedName("info_text")                var infoText: String?,
+    @SerializedName("info_text_color")          var infoTextColor: String?,
+    @SerializedName("info_text_bg_color")       var infoTextBgColor: String?,
+    @SerializedName("is_clickable")             var is_clickable: Boolean,
+    @SerializedName("is_enabled")               var is_enabled: Boolean,
+    @SerializedName("url")                      var url: String?,
+    @SerializedName("cta_cdn")                  var cta_cdn: String
+)
+
+data class MarketingSuggestedDomainItemResponse(
+    @SerializedName("offer_message")                  var offerMessage: String,
+    @SerializedName("offer_text_color")                  var offerTextColor: String,
+    @SerializedName("offer_bg_color")                  var offerBgColor: String,
+    @SerializedName("name")                  var name: String,
+    @SerializedName("cta")                  var cta: MarketingItemCtaResponse,
+    @SerializedName("promo_code")                  var promoCode: String,
+    @SerializedName("original_price")                  var originalPrice: String,
+    @SerializedName("discounted_price")                  var discountedPrice: String,
+    @SerializedName("message_domain_offer")                  var messageDomainOffer: String,
+    @SerializedName("cta_cdn")                  var cta_cdn: String
 )

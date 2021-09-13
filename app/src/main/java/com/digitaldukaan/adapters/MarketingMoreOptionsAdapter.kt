@@ -13,7 +13,7 @@ import com.digitaldukaan.models.response.MarketingMoreOptionsItemResponse
 import com.squareup.picasso.Picasso
 
 class MarketingMoreOptionsAdapter(
-    private val mIMarketingMoreOptionsItemClicked: IMarketingMoreOptionsItemClicked,
+    private val mMarketingMoreOptionsItemClicked: IMarketingMoreOptionsItemClicked,
     private var mOptionsList: ArrayList<MarketingMoreOptionsItemResponse?>?
 ) :
     RecyclerView.Adapter<MarketingMoreOptionsAdapter.AppSettingsViewHolder>() {
@@ -28,7 +28,7 @@ class MarketingMoreOptionsAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AppSettingsViewHolder {
         val view = AppSettingsViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.app_setting_item, parent, false))
         view.mAppSettingLayout.setOnClickListener {
-            mIMarketingMoreOptionsItemClicked.onMarketingMoreOptionsItemClicked(mOptionsList?.get(view.adapterPosition))
+            mMarketingMoreOptionsItemClicked.onMarketingMoreOptionsItemClicked(mOptionsList?.get(view.adapterPosition))
         }
         return view
     }

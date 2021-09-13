@@ -91,7 +91,7 @@
                 android:layout_height="wrap_content"
                 android:paddingStart="@dimen/_5sdp"
                 android:paddingEnd="@dimen/_5sdp"
-                android:paddingBottom="@dimen/_5sdp"
+                android:paddingBottom="@dimen/_15sdp"
                 android:textSize="@dimen/_8sdp"
                 android:onClick="onClick"
                 android:background="?selectableItemBackgroundBorderless"
@@ -128,6 +128,7 @@
                 android:layout_width="@dimen/_12sdp"
                 android:layout_height="@dimen/_12sdp"
                 android:padding="@dimen/_1sdp"
+                android:clickable="false"
                 android:layout_marginStart="@dimen/_10sdp"
                 android:contentDescription="@string/image_view_content_description"
                 tools:src="@drawable/ic_exclamation_small"
@@ -142,6 +143,7 @@
                 android:layout_marginStart="@dimen/_5sdp"
                 android:fontFamily="@font/roboto"
                 android:textColor="@color/red_switch_off"
+                android:clickable="false"
                 android:textSize="@dimen/_9sdp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/knowMoreTextView"
@@ -157,11 +159,11 @@
                 android:fontFamily="@font/roboto_bold"
                 android:textColor="@color/red_switch_off"
                 android:textSize="@dimen/_9sdp"
+                android:clickable="false"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="Know More" />
-
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -173,7 +175,7 @@
             app:spanCount="2"
             app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
             tools:listitem="@layout/marketing_card_item"
-            android:layout_marginTop="@dimen/_35sdp"
+            android:layout_marginTop="@dimen/_22sdp"
             app:layout_constraintTop_toBottomOf="@id/constraintLayout2" />
 
         <TextView

@@ -25,10 +25,9 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/singleSpanBackgroundView"
-            android:layout_width="@dimen/_135sdp"
+            android:layout_width="@dimen/_145sdp"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:background="@drawable/edit_premium_background_gradient"
             android:minHeight="@dimen/_115sdp"
             android:orientation="vertical"
             android:padding="@dimen/_10sdp">
@@ -53,13 +52,13 @@
                 <TextView
                     android:id="@+id/singleSpanInfoText"
                     android:layout_width="wrap_content"
-                    android:paddingTop="@dimen/_2sdp"
-                    android:textSize="@dimen/_10sdp"
-                    android:fontFamily="@font/roboto_medium"
-                    android:paddingBottom="@dimen/_2sdp"
-                    android:paddingStart="@dimen/_8sdp"
-                    android:paddingEnd="@dimen/_8sdp"
                     android:layout_height="wrap_content"
+                    android:fontFamily="@font/roboto_medium"
+                    android:paddingStart="@dimen/_8sdp"
+                    android:paddingTop="@dimen/_2sdp"
+                    android:paddingEnd="@dimen/_8sdp"
+                    android:paddingBottom="@dimen/_2sdp"
+                    android:textSize="@dimen/_10sdp"
                     tools:text="BETA" />
 
             </androidx.cardview.widget.CardView>
@@ -90,9 +89,9 @@
         android:id="@+id/doubleSpanContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="@dimen/_8sdp"
         android:clickable="false"
         android:visibility="gone"
-        android:layout_margin="@dimen/_8sdp"
         app:cardCornerRadius="@dimen/_5sdp"
         app:cardElevation="@dimen/_2sdp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -104,7 +103,6 @@
             android:id="@+id/doubleSpanBackgroundView"
             android:layout_width="match_parent"
             android:layout_height="@dimen/_70sdp"
-            android:background="@drawable/slight_curve_premium_background"
             android:clickable="false"
             android:elevation="@dimen/_2sdp"
             android:gravity="center_horizontal"
@@ -115,36 +113,49 @@
             app:layout_constraintTop_toTopOf="parent">
 
             <ImageView
-                android:contentDescription="@string/image_view_content_description"
                 android:id="@+id/doubleSpanBackgroundImage"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent"
+                android:scaleType="fitXY"
+                android:contentDescription="@string/image_view_content_description" />
+
+            <ImageView
+                android:id="@+id/doubleSpanShimmerEffectView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="visible"
+                android:alpha="0.5"
+                android:src="@drawable/ic_shimmer_full_width"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:contentDescription="@string/image_view_content_description" />
 
             <TextView
                 android:id="@+id/betaTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:alpha="0.75"
-                android:background="@drawable/curve_white_border"
-                tools:text="Beta"
-                android:visibility="gone"
                 android:layout_marginStart="@dimen/_8sdp"
                 android:layout_marginBottom="@dimen/_5sdp"
-                android:textSize="@dimen/_9sdp"
+                android:alpha="0.75"
+                android:background="@drawable/curve_white_border"
                 android:paddingStart="@dimen/_6sdp"
                 android:paddingTop="@dimen/_1sdp"
-                android:paddingBottom="@dimen/_1sdp"
                 android:paddingEnd="@dimen/_6sdp"
+                android:paddingBottom="@dimen/_1sdp"
                 android:textColor="@color/white"
+                android:textSize="@dimen/_9sdp"
+                android:visibility="gone"
                 app:layout_constraintBottom_toTopOf="@+id/doubleSpanHeadingTextView"
-                app:layout_constraintStart_toStartOf="@+id/doubleSpanHeadingTextView" />
+                app:layout_constraintStart_toStartOf="@+id/doubleSpanHeadingTextView"
+                tools:text="Beta" />
 
             <ImageView
                 android:id="@+id/doubleSpanLeftImageView"
                 android:layout_width="@dimen/_16sdp"
                 android:layout_height="@dimen/_16sdp"
-                android:layout_marginTop="@dimen/_20sdp"
                 android:layout_marginStart="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_20sdp"
                 android:contentDescription="@string/image_view_content_description"
                 android:src="@drawable/ic_crown_small"
                 app:layout_constraintStart_toStartOf="parent"
@@ -156,10 +167,10 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/roboto_medium"
                 android:gravity="start"
-                android:textSize="@dimen/_13sdp"
                 android:paddingStart="@dimen/_4sdp"
                 android:paddingEnd="@dimen/_4sdp"
                 android:textColor="@color/white"
+                android:textSize="@dimen/_13sdp"
                 app:layout_constraintBottom_toBottomOf="@+id/doubleSpanLeftImageView"
                 app:layout_constraintEnd_toStartOf="@+id/doubleSpanContinueContainer"
                 app:layout_constraintStart_toEndOf="@+id/doubleSpanLeftImageView"
@@ -197,11 +208,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@color/white"
-                    android:paddingTop="@dimen/_5sdp"
-                    android:paddingBottom="@dimen/_5sdp"
-                    android:paddingStart="@dimen/_12sdp"
-                    android:paddingEnd="@dimen/_12sdp"
                     android:fontFamily="@font/roboto_medium"
+                    android:paddingStart="@dimen/_12sdp"
+                    android:paddingTop="@dimen/_5sdp"
+                    android:paddingEnd="@dimen/_12sdp"
+                    android:paddingBottom="@dimen/_5sdp"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_12sdp"
                     tools:targetApi="lollipop"

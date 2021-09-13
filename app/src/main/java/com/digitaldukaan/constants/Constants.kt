@@ -45,7 +45,7 @@ class Constants {
         const val ACTION_BUSINESS_CREATIVE                      = "business_creatives"
         const val ACTION_SOCIAL_CREATIVE                        = "social_creatives"
         const val ACTION_QR_DOWNLOAD                            = "qr-download"
-        const val ACTION_SHARE_DATA                             = "share_text"
+        const val ACTION_SHARE_DATA                             = "share-store"
         const val ACTION_CATALOG_WHATSAPP                       = "catalog-whatsapp"
         const val ACTION_THEME_DISCOVER                         = "theme-discover"
         const val ACTION_THEME_EXPLORE                          = "theme-explore"
@@ -61,7 +61,6 @@ class Constants {
         const val ACTION_BOTTOM_SHEET                           = "bottom-sheet"
         const val ACTION_PROMO_CODE                             = "promo-code"
         const val ACTION_EMAIL_AUTHENTICATION                   = "email-authentication"
-        const val ACTION_SHARE_PRODUCT_WITH_CUSTOMER            = "share-product-with-customer"
         //Incomplete profile actions
         const val ACTION_LOGO                                   = "logo"
         const val ACTION_DESCRIPTION                            = "description"

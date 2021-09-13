@@ -3,28 +3,37 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="app/src/main/res/drawable/contact_background.xml" value="0.2765625" />
         <entry key="app/src/main/res/drawable/curve_green_dotted_border.xml" value="0.2765625" />
         <entry key="app/src/main/res/drawable/curve_green_dotted_border_green_background.xml" value="0.2388888888888889" />
         <entry key="app/src/main/res/drawable/curve_grey_border.xml" value="0.32664092664092664" />
         <entry key="app/src/main/res/drawable/ic_coupon_white_zigzag.xml" value="0.2765625" />
         <entry key="app/src/main/res/drawable/ic_coupon_white_zigzag2.xml" value="0.2765625" />
+        <entry key="app/src/main/res/drawable/ic_full_width_shimmer.xml" value="0.2765625" />
         <entry key="app/src/main/res/drawable/ic_order_status_paid.xml" value="0.2765625" />
         <entry key="app/src/main/res/drawable/ic_prepaid.xml" value="0.2765625" />
+        <entry key="app/src/main/res/drawable/ic_shimmer_full_width.xml" value="0.2765625" />
         <entry key="app/src/main/res/drawable/ripple_curve_grey_black_background.xml" value="0.2765625" />
         <entry key="app/src/main/res/drawable/ripple_slight_curve_grey_black_background.xml" value="0.2388888888888889" />
         <entry key="app/src/main/res/drawable/ripple_slight_curve_grey_white_background.xml" value="0.2765625" />
+        <entry key="app/src/main/res/drawable/shimmer_effect_gradient.xml" value="0.2388888888888889" />
         <entry key="app/src/main/res/drawable/slight_curve_black_dotted_border_grey_background.xml" value="0.2388888888888889" />
         <entry key="app/src/main/res/drawable/slight_curve_green_background_without_padding.xml" value="0.2765625" />
         <entry key="app/src/main/res/drawable/slight_curve_green_dotted_border_green_background.xml" value="0.2765625" />
+        <entry key="app/src/main/res/drawable/slight_curve_light_green_background.xml" value="0.2388888888888889" />
         <entry key="app/src/main/res/drawable/slight_curve_light_red_background.xml" value="0.2388888888888889" />
         <entry key="app/src/main/res/drawable/slight_curve_red_background_without_padding.xml" value="0.32664092664092664" />
         <entry key="app/src/main/res/drawable/slight_curve_white_background_green_border.xml" value="0.32664092664092664" />
         <entry key="app/src/main/res/drawable/slight_curve_white_background_grey_border.xml" value="0.2388888888888889" />
+        <entry key="app/src/main/res/drawable/upper_curve_white_background.xml" value="0.2388888888888889" />
         <entry key="app/src/main/res/layout/app_setting_item.xml" value="0.264453125" />
         <entry key="app/src/main/res/layout/bottom_sheet_create_coupon_confirmation.xml" value="0.264453125" />
         <entry key="app/src/main/res/layout/bottom_sheet_image_pick.xml" value="0.264453125" />
         <entry key="app/src/main/res/layout/bottom_sheet_image_pick_v2.xml" value="0.264453125" />
+        <entry key="app/src/main/res/layout/bottom_sheet_marketing_know_more.xml" value="0.264453125" />
+        <entry key="app/src/main/res/layout/bottom_sheet_marketing_more_options.xml" value="0.264453125" />
         <entry key="app/src/main/res/layout/bottom_sheet_promo_coupon_detail.xml" value="0.264453125" />
+        <entry key="app/src/main/res/layout/bottom_sheet_refer_and_earn.xml" value="0.264453125" />
         <entry key="app/src/main/res/layout/layout_active_variant_item.xml" value="0.20833333333333334" />
         <entry key="app/src/main/res/layout/layout_active_variant_item_v2.xml" value="0.264453125" />
         <entry key="app/src/main/res/layout/layout_add_product_fragment.xml" value="0.25" />
@@ -37,10 +46,14 @@
         <entry key="app/src/main/res/layout/layout_marketing_fragment.xml" value="0.25" />
         <entry key="app/src/main/res/layout/layout_more_control_fragment.xml" value="0.264453125" />
         <entry key="app/src/main/res/layout/layout_on_board_help_screen.xml" value="0.264453125" />
+        <entry key="app/src/main/res/layout/layout_on_board_screen_dukaan_location_fragment.xml" value="0.20833333333333334" />
         <entry key="app/src/main/res/layout/layout_order_detail_fragment.xml" value="0.264453125" />
+        <entry key="app/src/main/res/layout/layout_order_notification_item.xml" value="0.20833333333333334" />
         <entry key="app/src/main/res/layout/layout_promo_code_item.xml" value="0.335" />
         <entry key="app/src/main/res/layout/layout_promo_code_page_info_fragment.xml" value="0.264453125" />
         <entry key="app/src/main/res/layout/marketing_card_item.xml" value="0.264453125" />
+        <entry key="app/src/main/res/layout/marketing_know_more_item.xml" value="0.335" />
+        <entry key="app/src/main/res/layout/marketing_more_options_bottom_sheet_item.xml" value="0.264453125" />
         <entry key="app/src/main/res/layout/order_item.xml" value="0.264453125" />
       </map>
     </option>

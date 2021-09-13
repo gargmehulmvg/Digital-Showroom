@@ -21,6 +21,9 @@ import android.text.TextUtils
 import android.util.Base64
 import android.util.Base64OutputStream
 import android.util.Log
+import android.view.View
+import android.view.animation.AccelerateDecelerateInterpolator
+import android.view.animation.TranslateAnimation
 import android.widget.Toast
 import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.MainActivity
@@ -38,6 +41,9 @@ import java.net.URLConnection
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledExecutorService
+import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
 
 
@@ -222,9 +228,9 @@ fun openWebViewFragmentV2(fragment: BaseFragment, title: String, webViewType: St
     }
 }
 
-fun openWebViewFragment(fragment: BaseFragment, title: String, webViewType: String?) {
+fun openWebViewFragment(fragment: BaseFragment, title: String, webViewUrl: String?) {
     try {
-        fragment.launchFragment(CommonWebViewFragment().newInstance(title, webViewType + "?storeid=${fragment.getStringDataFromSharedPref(Constants.STORE_ID)}&token=${fragment.getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"), true)
+        fragment.launchFragment(CommonWebViewFragment().newInstance(title, webViewUrl + "?storeid=${fragment.getStringDataFromSharedPref(Constants.STORE_ID)}&token=${fragment.getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"), true)
     } catch (e: Exception) {
         Sentry.captureException(e, "openWebViewFragment :: fragment: BaseFragment, title: String, webViewType: String?")
     }
@@ -436,4 +442,19 @@ fun getDrawableFromUrl(url: String?): Drawable? {
     } catch (e: Exception) {
         null
     }
+}
+
+fun startShinningAnimation(view: View) {
+    val service: ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor()
+    service.scheduleAtFixedRate({
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            val animation = TranslateAnimation(0f, view.width.toFloat(), 0f, 0f)
+            animation.apply {
+                duration = 650
+                fillAfter = true
+                interpolator = AccelerateDecelerateInterpolator()
+            }
+            view.startAnimation(animation)
+        }
+    },Constants.SHINE_ANIMATION_INTERVAL, Constants.SHINE_ANIMATION_INTERVAL, TimeUnit.MILLISECONDS)
 }

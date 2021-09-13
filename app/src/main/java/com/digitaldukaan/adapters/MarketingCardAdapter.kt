@@ -11,6 +11,7 @@ import com.bumptech.glide.Glide
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.isNotEmpty
+import com.digitaldukaan.constants.startShinningAnimation
 import com.digitaldukaan.fragments.BaseFragment
 import com.digitaldukaan.models.response.MarketingCardsItemResponse
 import com.digitaldukaan.services.serviceinterface.IMarketingServiceInterface
@@ -24,6 +25,7 @@ class MarketingCardAdapter(
 
     inner class MarketingCardViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val marketingCardParentContainer: View = itemView.findViewById(R.id.marketingCardParentContainer)
+        val doubleSpanShimmerEffectView: View = itemView.findViewById(R.id.doubleSpanShimmerEffectView)
         val singleSpanContainer: View = itemView.findViewById(R.id.singleSpanContainer)
         val singleSpanBackgroundView: View = itemView.findViewById(R.id.singleSpanBackgroundView)
         val doubleSpanBackgroundImage: ImageView = itemView.findViewById(R.id.doubleSpanBackgroundImage)
@@ -67,6 +69,10 @@ class MarketingCardAdapter(
                     if (isNotEmpty(item.background)) {
                         mContext?.let { context -> Glide.with(context).load(item.background).into(doubleSpanBackgroundImage) }
                     } else doubleSpanBackgroundView.setBackgroundColor(Color.parseColor(item.bgColor))
+                    if (true == item.isShimmer) {
+                        doubleSpanShimmerEffectView.visibility = View.VISIBLE
+                        startShinningAnimation(doubleSpanShimmerEffectView)
+                    } else doubleSpanShimmerEffectView.visibility = View.GONE
                 }
                 else -> {
                     singleSpanContainer.visibility = View.VISIBLE

@@ -25,8 +25,6 @@ import android.text.Html
 import android.text.TextWatcher
 import android.util.Log
 import android.view.*
-import android.view.animation.AccelerateDecelerateInterpolator
-import android.view.animation.TranslateAnimation
 import android.view.inputmethod.InputMethodManager
 import android.widget.*
 import androidx.activity.result.ActivityResult
@@ -76,9 +74,6 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.net.UnknownHostException
 import java.util.*
-import java.util.concurrent.Executors
-import java.util.concurrent.ScheduledExecutorService
-import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
 
 
@@ -517,21 +512,6 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                 }
             })
         }
-    }
-
-    open fun startShinningAnimation(view: View) {
-        val service:ScheduledExecutorService = Executors.newSingleThreadScheduledExecutor()
-        service.scheduleAtFixedRate({
-            CoroutineScopeUtils().runTaskOnCoroutineMain {
-                val animation = TranslateAnimation(0f, view.width.toFloat(), 0f, 0f)
-                animation.apply {
-                    duration = 650
-                    fillAfter = true
-                    interpolator = AccelerateDecelerateInterpolator()
-                }
-                view.startAnimation(animation)
-            }
-        },Constants.SHINE_ANIMATION_INTERVAL, Constants.SHINE_ANIMATION_INTERVAL, TimeUnit.MILLISECONDS)
     }
 
     open fun startViewAnimation(view: View?, technique: Techniques = Techniques.Tada, duration: Long = 300) {

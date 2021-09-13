@@ -19,10 +19,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
-import com.digitaldukaan.adapters.MarketingCardAdapter
-import com.digitaldukaan.adapters.MarketingMoreOptionsAdapter
-import com.digitaldukaan.adapters.SharePDFAdapter
+import com.digitaldukaan.adapters.*
 import com.digitaldukaan.constants.*
+import com.digitaldukaan.interfaces.IAdapterItemClickListener
 import com.digitaldukaan.interfaces.IAppSettingsItemClicked
 import com.digitaldukaan.interfaces.IMarketingMoreOptionsItemClicked
 import com.digitaldukaan.interfaces.IOnToolbarIconClick
@@ -81,6 +80,16 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
         showProgressDialog(mActivity)
         mService?.getMarketingPageInfo()
         WebViewBridge.mWebViewListener = this
+    }
+
+    override fun onClick(view: View?) {
+        when(view?.id) {
+            shareHeadingTextView?.id -> shareStoreOverWhatsAppServerCall()
+            shareRightImageView?.id -> shareStoreOverWhatsAppServerCall()
+            shareTextView?.id -> shareStoreOverWhatsAppServerCall()
+            shareLeftImageView?.id -> shareStoreOverWhatsAppServerCall()
+            domainTextView?.id -> shareStoreOverWhatsAppServerCall()
+        }
     }
 
     override fun onToolbarSideIconClicked() = openWebViewFragment(this, getString(R.string.help), WebViewUrls.WEB_VIEW_HELP, Constants.SETTINGS)
@@ -156,6 +165,10 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                     expiryContainer?.visibility = View.VISIBLE
                     expiryTextView?.text = response.domain_expiry_message
                     knowMoreTextView?.text = response.heading_know_more
+                    knowMoreTextView?.text = "Know More"
+                    expiryContainer?.setOnClickListener {
+                        showKnowMoreBottomSheet(response.knowMore)
+                    }
                     expiryLeftImageView?.let { view -> Glide.with(context).load(response.domain_expiry_cdn).into(view) }
                 }
             }
@@ -474,6 +487,85 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                     showPDFShareBottomSheet(mShareStorePDFResponse)
                 }
             }
+            Constants.ACTION_BOTTOM_SHEET -> {
+                showMoreOptionsBottomSheet(itemResponse)
+            }
+        }
+    }
+
+    private fun showMoreOptionsBottomSheet(itemResponse: MarketingMoreOptionsItemResponse) {
+        try {
+            mActivity?.let {
+                val bottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
+                val view = LayoutInflater.from(it).inflate(
+                    R.layout.bottom_sheet_marketing_more_options,
+                    it.findViewById(R.id.bottomSheetContainer)
+                )
+                bottomSheetDialog.apply {
+                    setContentView(view)
+                    view.run {
+                        val headingTextView: TextView = findViewById(R.id.headingTextView)
+                        val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
+                        headingTextView.text = itemResponse.expandable_data_heading
+                        recyclerView.apply {
+                            layoutManager = GridLayoutManager(mActivity, 2)
+                            adapter = MarketingMoreOptionsBottomSheetItemAdapter(this@MarketingFragment, itemResponse.expandableData, object : IAdapterItemClickListener {
+
+                                override fun onAdapterItemClickListener(position: Int) {
+                                    val item = itemResponse.expandableData?.get(position)
+                                    item?.let { responseItem ->
+                                        bottomSheetDialog.dismiss()
+                                        openWebViewFragment(this@MarketingFragment, "", "${BuildConfig.WEB_VIEW_URL}${responseItem.url}")
+                                    }
+                                }
+
+                            })
+                        }
+                    }
+                }.show()
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "showMoreOptionsBottomSheet: ${e.message}", e)
+        }
+    }
+
+    private fun showKnowMoreBottomSheet(itemResponse: MarketingDomainKnowMoreResponse?) {
+        try {
+            mActivity?.let {
+                val bottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
+                val view = LayoutInflater.from(it).inflate(
+                    R.layout.bottom_sheet_marketing_know_more,
+                    it.findViewById(R.id.bottomSheetContainer)
+                )
+                bottomSheetDialog.apply {
+                    setContentView(view)
+                    view.run {
+                        val bottomSheetClose: View = findViewById(R.id.bottomSheetClose)
+                        val headingTextView: TextView = findViewById(R.id.headingTextView)
+                        val domainTextView: TextView = findViewById(R.id.domainTextView)
+                        val offerMessageTextView: TextView = findViewById(R.id.offerMessageTextView)
+                        val expiryMessageTextView: TextView = findViewById(R.id.expiryMessageTextView)
+                        val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
+                        bottomSheetClose.setOnClickListener {
+                            bottomSheetDialog.dismiss()
+                        }
+                        headingTextView.text = itemResponse?.headingYourDomain
+                        domainTextView.text = itemResponse?.domainName
+                        expiryMessageTextView.text = itemResponse?.domainExpiryMessage
+                        offerMessageTextView.text = itemResponse?.messageGetBestDomain
+                        recyclerView.apply {
+                            layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
+                            adapter = MarketingKnowMoreItemAdapter(this@MarketingFragment, itemResponse?.suggestedDomainsList, object : IAdapterItemClickListener {
+                                override fun onAdapterItemClickListener(position: Int) {
+
+                                }
+                            })
+                        }
+                    }
+                }.show()
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "showMoreOptionsBottomSheet: ${e.message}", e)
         }
     }
 
