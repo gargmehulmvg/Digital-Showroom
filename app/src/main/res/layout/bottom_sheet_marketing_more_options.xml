@@ -30,8 +30,7 @@
         app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         app:layout_constraintTop_toBottomOf="@id/headingTextView"
         app:spanCount="2"
-        tools:itemCount="40"
-        tools:layout_editor_absoluteX="13dp"
+        tools:itemCount="4"
         tools:listitem="@layout/marketing_more_options_bottom_sheet_item" />
 
 </LinearLayout>

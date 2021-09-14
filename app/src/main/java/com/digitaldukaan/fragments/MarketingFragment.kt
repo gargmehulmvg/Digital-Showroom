@@ -241,7 +241,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                     data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.TYPE to AFInAppEventParameterName.SOCIAL)
                 )
-                openWebViewFragment(this, "", WebViewUrls.WEB_VIEW_SOCIAL_CREATIVE_LIST, Constants.SETTINGS)
+                openWebViewFragment(this, "", response.url, Constants.SETTINGS)
             }
             Constants.ACTION_THEME_DISCOVER -> {
                 AppEventsManager.pushAppEvents(
@@ -274,7 +274,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                         AFInAppEventParameterName.IS_MARKETING_PAGE to AFInAppEventParameterName.TRUE
                     )
                 )
-                openWebViewFragment(this, "", WebViewUrls.WEB_VIEW_QR_DOWNLOAD, Constants.SETTINGS)
+                openWebViewFragment(this, "", response.url, Constants.SETTINGS)
             }
             Constants.ACTION_SHARE_DATA -> {
                 AppEventsManager.pushAppEvents(
