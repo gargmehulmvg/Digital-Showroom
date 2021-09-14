@@ -35,7 +35,6 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.sentry.Sentry
 import kotlinx.android.synthetic.main.layout_marketing_fragment.*
-import java.net.URLEncoder
 
 class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingServiceInterface, LocationListener,
     IAppSettingsItemClicked, IMarketingMoreOptionsItemClicked {
@@ -548,8 +547,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                                     Log.d(TAG, "showMoreOptionsBottomSheet :: item clicked :: $item")
                                     item?.let { responseItem ->
                                         bottomSheetDialog.dismiss()
-                                        val url = URLEncoder.encode(responseItem.url, "utf-8")
-                                        openWebViewFragment(this@MarketingFragment, "", "${BuildConfig.WEB_VIEW_URL}$url")
+                                        openWebViewFragment(this@MarketingFragment, "", "${BuildConfig.WEB_VIEW_URL}${responseItem.url}")
                                     }
                                 }
 
