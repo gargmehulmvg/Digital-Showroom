@@ -10,9 +10,12 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/singleSpanContainer"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/_6sdp"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:layout_marginBottom="@dimen/_5sdp"
+        android:layout_marginStart="@dimen/_10sdp"
+        android:layout_marginEnd="@dimen/_5sdp"
         android:clickable="false"
         android:gravity="center"
         android:visibility="gone"
@@ -25,7 +28,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/singleSpanBackgroundView"
-            android:layout_width="@dimen/_145sdp"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
             android:minHeight="@dimen/_115sdp"
@@ -69,9 +72,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_10sdp"
                 android:gravity="start"
-                android:lineSpacingMultiplier="1.2"
                 android:minLines="@integer/min_lines_two"
-                android:padding="@dimen/_4sdp"
+                android:paddingTop="@dimen/_4sdp"
+                android:paddingBottom="@dimen/_4sdp"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_12sdp"
                 android:textStyle="bold"
@@ -89,7 +92,10 @@
         android:id="@+id/doubleSpanContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/_8sdp"
+        android:layout_marginTop="@dimen/_8sdp"
+        android:layout_marginBottom="@dimen/_8sdp"
+        android:layout_marginStart="@dimen/_10sdp"
+        android:layout_marginEnd="@dimen/_10sdp"
         android:clickable="false"
         android:visibility="gone"
         app:cardCornerRadius="@dimen/_5sdp"
@@ -117,6 +123,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:scaleType="fitXY"
+                android:background="@color/black"
                 android:contentDescription="@string/image_view_content_description" />
 
             <ImageView

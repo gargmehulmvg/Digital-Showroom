@@ -32,8 +32,10 @@ import com.digitaldukaan.services.serviceinterface.IMarketingServiceInterface
 import com.digitaldukaan.webviews.WebViewBridge
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import io.sentry.Sentry
 import kotlinx.android.synthetic.main.layout_marketing_fragment.*
+import java.net.URLEncoder
 
 class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingServiceInterface, LocationListener,
     IAppSettingsItemClicked, IMarketingMoreOptionsItemClicked {
@@ -41,6 +43,9 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
     private var mMarketingItemClickResponse: MarketingCardsItemResponse? = null
     private var mCurrentLatitude = 0.0
     private var mCurrentLongitude = 0.0
+    private var mKnowMoreCustomDomainRecyclerView: RecyclerView? = null
+    private var mKnowMoreBottomSheetDialog: BottomSheetDialog? = null
+    private var mProgressBarView: View? = null
 
     companion object {
         private var mService: MarketingService? = null
@@ -165,7 +170,6 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                     expiryContainer?.visibility = View.VISIBLE
                     expiryTextView?.text = response.domain_expiry_message
                     knowMoreTextView?.text = response.heading_know_more
-                    knowMoreTextView?.text = "Know More"
                     expiryContainer?.setOnClickListener {
                         showKnowMoreBottomSheet(response.knowMore)
                     }
@@ -300,6 +304,34 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                 } else {
                     showPDFShareBottomSheet(mShareStorePDFResponse)
                 }
+            }
+        }
+    }
+
+    override fun onMarketingSuggestedDomainsResponse(response: CommonApiResponse) {
+        stopProgress()
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            mProgressBarView?.visibility = View.GONE
+            if (response.mIsSuccessStatus) {
+                val listType = object : TypeToken<ArrayList<MarketingSuggestedDomainItemResponse?>>() {}.type
+                val list = Gson().fromJson<ArrayList<MarketingSuggestedDomainItemResponse?>>(response.mCommonDataStr, listType)
+                mKnowMoreCustomDomainRecyclerView?.visibility = View.VISIBLE
+                mKnowMoreCustomDomainRecyclerView?.apply {
+                    layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
+                    adapter = MarketingKnowMoreItemAdapter(list, object : IAdapterItemClickListener {
+                        override fun onAdapterItemClickListener(position: Int) {
+                            mKnowMoreBottomSheetDialog?.dismiss()
+                            val item = list?.get(position)
+                            when(item?.cta?.action) {
+                                Constants.NEW_RELEASE_TYPE_WEBVIEW -> {
+                                    openWebViewFragment(this@MarketingFragment, "", BuildConfig.WEB_VIEW_URL + item.cta.url)
+                                }
+                            }
+                        }
+                    })
+                }
+            } else {
+                showShortSnackBar(response.mMessage, true, R.drawable.ic_close_red)
             }
         }
     }
@@ -513,9 +545,11 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
 
                                 override fun onAdapterItemClickListener(position: Int) {
                                     val item = itemResponse.expandableData?.get(position)
+                                    Log.d(TAG, "showMoreOptionsBottomSheet :: item clicked :: $item")
                                     item?.let { responseItem ->
                                         bottomSheetDialog.dismiss()
-                                        openWebViewFragment(this@MarketingFragment, "", "${BuildConfig.WEB_VIEW_URL}${responseItem.url}")
+                                        val url = URLEncoder.encode(responseItem.url, "utf-8")
+                                        openWebViewFragment(this@MarketingFragment, "", "${BuildConfig.WEB_VIEW_URL}$url")
                                     }
                                 }
 
@@ -532,42 +566,32 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
     private fun showKnowMoreBottomSheet(itemResponse: MarketingDomainKnowMoreResponse?) {
         try {
             mActivity?.let {
-                val bottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
+                mKnowMoreBottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
                 val view = LayoutInflater.from(it).inflate(
                     R.layout.bottom_sheet_marketing_know_more,
                     it.findViewById(R.id.bottomSheetContainer)
                 )
-                bottomSheetDialog.apply {
+                mKnowMoreBottomSheetDialog?.apply {
                     setContentView(view)
                     view.run {
                         val bottomSheetClose: View = findViewById(R.id.bottomSheetClose)
+                        mProgressBarView = findViewById(R.id.progressBar)
                         val headingTextView: TextView = findViewById(R.id.headingTextView)
                         val domainTextView: TextView = findViewById(R.id.domainTextView)
                         val offerMessageTextView: TextView = findViewById(R.id.offerMessageTextView)
                         val expiryMessageTextView: TextView = findViewById(R.id.expiryMessageTextView)
-                        val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
+                        mKnowMoreCustomDomainRecyclerView = findViewById(R.id.recyclerView)
                         bottomSheetClose.setOnClickListener {
-                            bottomSheetDialog.dismiss()
+                            mKnowMoreBottomSheetDialog?.dismiss()
                         }
+                        mProgressBarView?.visibility = View.VISIBLE
+                        mService?.getMarketingSuggestedDomains()
                         headingTextView.text = itemResponse?.headingYourDomain
                         domainTextView.text = itemResponse?.domainName
                         expiryMessageTextView.text = itemResponse?.domainExpiryMessage
                         offerMessageTextView.text = itemResponse?.messageGetBestDomain
-                        recyclerView.apply {
-                            layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
-                            adapter = MarketingKnowMoreItemAdapter(itemResponse?.suggestedDomainsList, object : IAdapterItemClickListener {
-                                override fun onAdapterItemClickListener(position: Int) {
-                                    val item = itemResponse?.suggestedDomainsList?.get(position)
-                                    when(item?.cta?.action) {
-                                        Constants.NEW_RELEASE_TYPE_WEBVIEW -> {
-                                            openWebViewFragment(this@MarketingFragment, "", BuildConfig.WEB_VIEW_URL + item.cta.url)
-                                        }
-                                    }
-                                }
-                            })
-                        }
                     }
-                }.show()
+                }?.show()
             }
         } catch (e: Exception) {
             Log.e(TAG, "showMoreOptionsBottomSheet: ${e.message}", e)

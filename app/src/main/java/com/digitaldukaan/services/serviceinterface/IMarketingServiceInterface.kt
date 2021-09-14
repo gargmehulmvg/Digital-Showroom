@@ -19,4 +19,6 @@ interface IMarketingServiceInterface {
 
     fun onMarketingItemClick(response: MarketingCardsItemResponse?)
 
+    fun onMarketingSuggestedDomainsResponse(response: CommonApiResponse)
+
 }

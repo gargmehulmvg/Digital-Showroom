@@ -14,9 +14,9 @@ class MarketingService {
         mServiceInterface = listener
     }
 
-    fun getMarketingCardsData() {
+    fun getMarketingSuggestedDomains() {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.getMarketingCardsDataServerCall(mServiceInterface)
+            mNetworkService.getMarketingSuggestedDomainsServerCall(mServiceInterface)
         }
     }
 

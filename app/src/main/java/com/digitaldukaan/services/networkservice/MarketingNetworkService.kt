@@ -8,21 +8,21 @@ import com.digitaldukaan.services.serviceinterface.IMarketingServiceInterface
 
 class MarketingNetworkService {
 
-    suspend fun getMarketingCardsDataServerCall(
+    suspend fun getMarketingSuggestedDomainsServerCall(
         serviceInterface: IMarketingServiceInterface
     ) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.getMarketingCardsData()
+            val response = RetrofitApi().getServerCallObject()?.getMarketingSuggestedDomains()
             response?.let {
                 if (it.isSuccessful) {
-                    it.body()?.let { generateOtpResponse -> serviceInterface.onMarketingResponse(generateOtpResponse) }
+                    it.body()?.let { generateOtpResponse -> serviceInterface.onMarketingSuggestedDomainsResponse(generateOtpResponse) }
                 } else {
                     if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
                     serviceInterface.onMarketingErrorResponse(Exception(response.message()))
                 }
             }
         } catch (e : Exception) {
-            Log.e(MarketingNetworkService::class.java.simpleName, "getMarketingCardsDataServerCall: ", e)
+            Log.e(MarketingNetworkService::class.java.simpleName, "getMarketingSuggestedDomainsServerCall: ", e)
             serviceInterface.onMarketingErrorResponse(e)
         }
     }

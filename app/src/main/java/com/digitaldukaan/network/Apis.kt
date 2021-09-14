@@ -116,8 +116,8 @@ interface Apis {
     suspend fun searchImagesFromBing(@Query("search_text") searchText: String, @Query("store_id") storeId: String) : Response<ImagesSearchResponse>
 
     /* ----------------------       Marketing         ---------------------- */
-    @GET("api/dotk/vm1/marketing/getStoreMarketingText")
-    suspend fun getMarketingCardsData(): Response<CommonApiResponse>
+    @GET("api/dotk/vm1/marketing/getSuggestedDomainsInfo")
+    suspend fun getMarketingSuggestedDomains(): Response<CommonApiResponse>
 
     @GET("api/dotk/vm1/marketing/getMarketingPageInfo")
     suspend fun getStoreMarketingPageInfo(): Response<CommonApiResponse>

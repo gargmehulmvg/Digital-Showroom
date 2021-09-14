@@ -7,9 +7,12 @@
 
     <androidx.cardview.widget.CardView
         android:id="@+id/singleSpanContainer"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/_6sdp"
+        android:layout_marginStart="@dimen/_12sdp"
+        android:layout_marginEnd="@dimen/_5sdp"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:layout_marginBottom="@dimen/_5sdp"
         android:gravity="center"
         android:onClick="onClick"
         android:background="?selectableItemBackgroundBorderless"
@@ -22,7 +25,7 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/singleSpanBackgroundView"
-            android:layout_width="@dimen/_135sdp"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
             android:clickable="false"
@@ -44,7 +47,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_10sdp"
                 android:gravity="start"
-                android:lineSpacingMultiplier="1.2"
+                android:lineSpacingMultiplier="1.1"
                 android:fontFamily="@font/roboto_medium"
                 android:minLines="@integer/min_lines_two"
                 android:paddingTop="@dimen/_4sdp"

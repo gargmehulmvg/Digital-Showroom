@@ -3,6 +3,8 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="app/src/main/res/drawable/circle_shape.xml" value="0.2388888888888889" />
+        <entry key="app/src/main/res/drawable/circular_progress_bar.xml" value="0.2388888888888889" />
         <entry key="app/src/main/res/drawable/contact_background.xml" value="0.2765625" />
         <entry key="app/src/main/res/drawable/curve_green_dotted_border.xml" value="0.2765625" />
         <entry key="app/src/main/res/drawable/curve_green_dotted_border_green_background.xml" value="0.2388888888888889" />

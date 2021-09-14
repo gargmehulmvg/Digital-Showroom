@@ -39,7 +39,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_15sdp"
-                    android:fontFamily="@font/roboto_medium"
+                    android:fontFamily="@font/roboto_bold"
                     android:gravity="center"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_14sdp"
@@ -52,7 +52,7 @@
                     android:id="@+id/promoCodeTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/_10sdp"
+                    android:layout_marginEnd="@dimen/_6sdp"
                     android:background="@drawable/slight_curve_light_green_background"
                     android:fontFamily="@font/roboto_bold"
                     android:gravity="center"
@@ -81,7 +81,7 @@
                     android:textColor="@color/black"
                     android:textSize="@dimen/_10sdp"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="0.6"
+                    app:layout_constraintHorizontal_bias="0.55"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/domainTextView"
                     tools:text="₹1500" />
@@ -134,22 +134,29 @@
 
     </LinearLayout>
 
-    <TextView
-        android:id="@+id/offerMessageTextView"
+    <androidx.cardview.widget.CardView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_15sdp"
-        android:background="@color/red"
-        android:fontFamily="@font/roboto_medium"
-        android:paddingStart="@dimen/_8sdp"
-        android:paddingTop="@dimen/_2sdp"
-        android:paddingEnd="@dimen/_8sdp"
-        android:paddingBottom="@dimen/_2sdp"
-        android:textColor="@color/white"
-        android:textSize="@dimen/_10sdp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:cardCornerRadius="@dimen/_3sdp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="Best Pick for You" />
+        app:layout_constraintTop_toTopOf="parent" >
+
+        <TextView
+            android:id="@+id/offerMessageTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/red"
+            android:fontFamily="@font/roboto_medium"
+            android:paddingStart="@dimen/_8sdp"
+            android:paddingTop="@dimen/_2sdp"
+            android:paddingEnd="@dimen/_8sdp"
+            android:paddingBottom="@dimen/_2sdp"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_10sdp"
+            tools:text="Best Pick for You" />
+
+    </androidx.cardview.widget.CardView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

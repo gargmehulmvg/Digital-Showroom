@@ -53,7 +53,7 @@ class MarketingKnowMoreItemAdapter(
             messageTextView.text = item?.messageDomainOffer
             buyNowTextView.text = item?.cta?.text
             priceTextView.text = item?.discountedPrice
-            priceTextView.paintFlags = (priceTextView.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG)
+            originalPriceTextView.paintFlags = (priceTextView.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG)
             if (isNotEmpty(item?.offerTextColor)) {
                 offerMessageTextView.setTextColor(Color.parseColor(item?.offerTextColor))
             }

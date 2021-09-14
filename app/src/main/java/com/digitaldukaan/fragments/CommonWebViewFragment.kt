@@ -31,11 +31,12 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
     private val mTagName = "CommonWebViewFragment"
     private var mDomainName = ""
 
-    fun newInstance(headerText: String, loadUrl:String): CommonWebViewFragment {
+    fun newInstance(headerText: String, loadUrl: String): CommonWebViewFragment {
         val fragment = CommonWebViewFragment()
         fragment.mHeaderText = headerText
         fragment.mLoadUrl = loadUrl
-        fragment.mLoadUrl ="${fragment.mLoadUrl}&app_version=${BuildConfig.VERSION_NAME}"
+        fragment.mLoadUrl = "${fragment.mLoadUrl}&app_version=${BuildConfig.VERSION_NAME}"
+        Log.d(mTagName, "CommonWebViewFragment :: URL :: $mLoadUrl")
         return fragment
     }
 
