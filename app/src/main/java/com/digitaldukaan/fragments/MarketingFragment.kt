@@ -317,7 +317,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                 mKnowMoreCustomDomainRecyclerView?.visibility = View.VISIBLE
                 mKnowMoreCustomDomainRecyclerView?.apply {
                     layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
-                    adapter = MarketingKnowMoreItemAdapter(list, object : IAdapterItemClickListener {
+                    adapter = MarketingKnowMoreItemAdapter(mActivity, list, object : IAdapterItemClickListener {
                         override fun onAdapterItemClickListener(position: Int) {
                             mKnowMoreBottomSheetDialog?.dismiss()
                             val item = list?.get(position)

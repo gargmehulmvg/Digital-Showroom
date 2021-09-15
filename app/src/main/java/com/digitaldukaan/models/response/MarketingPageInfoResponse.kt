@@ -67,6 +67,7 @@ data class MarketingSuggestedDomainItemResponse(
     @SerializedName("offer_message")            var offerMessage: String,
     @SerializedName("offer_text_color")         var offerTextColor: String,
     @SerializedName("offer_bg_color")           var offerBgColor: String,
+    @SerializedName("is_free")                  var isFree: Boolean,
     @SerializedName("name")                     var name: String,
     @SerializedName("cta")                      var cta: MarketingItemCtaResponse,
     @SerializedName("promo_code")               var promoCode: String,

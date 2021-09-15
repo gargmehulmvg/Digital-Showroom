@@ -1,11 +1,13 @@
 package com.digitaldukaan.adapters
 
+import android.content.Context
 import android.graphics.Color
 import android.graphics.Paint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.isNotEmpty
@@ -13,6 +15,7 @@ import com.digitaldukaan.interfaces.IAdapterItemClickListener
 import com.digitaldukaan.models.response.MarketingSuggestedDomainItemResponse
 
 class MarketingKnowMoreItemAdapter(
+    private var mContext: Context?,
     private var mMarketingItemList: ArrayList<MarketingSuggestedDomainItemResponse?>?,
     private var mInterface: IAdapterItemClickListener?
 ) :
@@ -54,6 +57,17 @@ class MarketingKnowMoreItemAdapter(
             originalPriceTextView.text = item?.originalPrice
             priceTextView.text = item?.discountedPrice
             originalPriceTextView.paintFlags = (priceTextView.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG)
+            if (item?.isFree == true) {
+                mContext?.let { context ->
+                    promoCodeTextView.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_green_background_without_padding)
+                    offerMessageTextView.setTextColor(ContextCompat.getColor(context, R.color.white))
+                }
+            } else {
+                mContext?.let { context ->
+                    promoCodeTextView.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_light_green_background)
+                    offerMessageTextView.setTextColor(ContextCompat.getColor(context, R.color.open_green))
+                }
+            }
             if (isNotEmpty(item?.offerTextColor)) {
                 offerMessageTextView.setTextColor(Color.parseColor(item?.offerTextColor))
             }
