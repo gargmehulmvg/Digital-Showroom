@@ -59,7 +59,7 @@ class MarketingKnowMoreItemAdapter(
             originalPriceTextView.paintFlags = (priceTextView.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG)
             mContext?.let { context ->
                 if (item?.isFree == true) {
-                    promoCodeTextView.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_green_background_without_padding)
+                    promoCodeTextView.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_green_background_without_padding_v2)
                     promoCodeTextView.setTextColor(ContextCompat.getColor(context, R.color.white))
                 } else {
                     promoCodeTextView.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_light_green_background)
