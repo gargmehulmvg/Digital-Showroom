@@ -57,15 +57,13 @@ class MarketingKnowMoreItemAdapter(
             originalPriceTextView.text = item?.originalPrice
             priceTextView.text = item?.discountedPrice
             originalPriceTextView.paintFlags = (priceTextView.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG)
-            if (item?.isFree == true) {
-                mContext?.let { context ->
+            mContext?.let { context ->
+                if (item?.isFree == true) {
                     promoCodeTextView.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_green_background_without_padding)
-                    offerMessageTextView.setTextColor(ContextCompat.getColor(context, R.color.white))
-                }
-            } else {
-                mContext?.let { context ->
+                    promoCodeTextView.setTextColor(ContextCompat.getColor(context, R.color.white))
+                } else {
                     promoCodeTextView.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_light_green_background)
-                    offerMessageTextView.setTextColor(ContextCompat.getColor(context, R.color.open_green))
+                    promoCodeTextView.setTextColor(ContextCompat.getColor(context, R.color.open_green))
                 }
             }
             if (isNotEmpty(item?.offerTextColor)) {
