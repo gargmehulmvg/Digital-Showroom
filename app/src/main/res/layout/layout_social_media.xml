@@ -36,10 +36,19 @@
                 android:fontFamily="@font/roboto"
                 android:background="@drawable/slight_curve_black_border_without_padding"
                 android:gravity="center"
-                android:layout_marginBottom="@dimen/_50sdp"
+                android:layout_marginBottom="@dimen/_15sdp"
                 android:paddingTop="@dimen/_5sdp"
                 android:paddingBottom="@dimen/_5sdp"
                 tools:text="Show More Categories" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/templateRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="@dimen/_10sdp"
+                android:background="@color/white"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/social_media_template_item_layout" />
 
         </LinearLayout>
 

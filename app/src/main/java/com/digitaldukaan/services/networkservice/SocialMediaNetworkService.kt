@@ -3,6 +3,7 @@ package com.digitaldukaan.services.networkservice
 import android.util.Log
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.exceptions.UnAuthorizedAccessException
+import com.digitaldukaan.models.request.SocialMediaTemplateFavouriteRequest
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.network.RetrofitApi
 import com.digitaldukaan.services.serviceinterface.ISocialMediaServiceInterface
@@ -31,6 +32,57 @@ class SocialMediaNetworkService {
         } catch (e : Exception) {
             Log.e(SocialMediaNetworkService::class.java.simpleName, "getSocialMediaPageInfoServerCall: ", e)
             loginServiceInterface.onSocialMediaException(e)
+        }
+    }
+
+    suspend fun getSocialMediaTemplateListServerCall(
+        id: String,
+        page: Int,
+        serviceInterface: ISocialMediaServiceInterface
+    ) {
+        try {
+            val response = RetrofitApi().getServerCallObject()?.getSocialMediaTemplateList(id = id, page = page)
+            response?.let {
+                if (it.isSuccessful) {
+                    it.body()?.let { commonResponse -> serviceInterface.onSocialMediaTemplateListResponse(commonResponse) }
+                } else {
+                    if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(
+                        Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    val errorResponseBody = it.errorBody()
+                    errorResponseBody?.let {
+                        val errorResponse = Gson().fromJson(errorResponseBody.string(), CommonApiResponse::class.java)
+                        serviceInterface.onSocialMediaTemplateListResponse(errorResponse)
+                    }
+                }
+            }
+        } catch (e : Exception) {
+            Log.e(SocialMediaNetworkService::class.java.simpleName, "getSocialMediaTemplateListServerCall: ", e)
+            serviceInterface.onSocialMediaException(e)
+        }
+    }
+
+    suspend fun setSocialMediaFavouriteServerCall(
+        request: SocialMediaTemplateFavouriteRequest,
+        serviceInterface: ISocialMediaServiceInterface
+    ) {
+        try {
+            val response = RetrofitApi().getServerCallObject()?.setSocialMediaFavourite(request)
+            response?.let {
+                if (it.isSuccessful) {
+                    it.body()?.let { commonResponse -> serviceInterface.onSocialMediaTemplateFavouriteResponse(commonResponse) }
+                } else {
+                    if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(
+                        Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    val errorResponseBody = it.errorBody()
+                    errorResponseBody?.let {
+                        val errorResponse = Gson().fromJson(errorResponseBody.string(), CommonApiResponse::class.java)
+                        serviceInterface.onSocialMediaTemplateFavouriteResponse(errorResponse)
+                    }
+                }
+            }
+        } catch (e : Exception) {
+            Log.e(SocialMediaNetworkService::class.java.simpleName, "setSocialMediaFavouriteServerCall: ", e)
+            serviceInterface.onSocialMediaException(e)
         }
     }
 

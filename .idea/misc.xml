@@ -11,10 +11,14 @@
         <entry key="app/src/main/res/drawable/curve_grey_border.xml" value="0.32664092664092664" />
         <entry key="app/src/main/res/drawable/ic_coupon_white_zigzag.xml" value="0.2765625" />
         <entry key="app/src/main/res/drawable/ic_coupon_white_zigzag2.xml" value="0.2765625" />
+        <entry key="app/src/main/res/drawable/ic_edit_pencil.xml" value="0.2765625" />
+        <entry key="app/src/main/res/drawable/ic_favourite.xml" value="0.2765625" />
         <entry key="app/src/main/res/drawable/ic_full_width_shimmer.xml" value="0.2765625" />
         <entry key="app/src/main/res/drawable/ic_order_status_paid.xml" value="0.2765625" />
         <entry key="app/src/main/res/drawable/ic_prepaid.xml" value="0.2765625" />
+        <entry key="app/src/main/res/drawable/ic_share_black.xml" value="0.2765625" />
         <entry key="app/src/main/res/drawable/ic_shimmer_full_width.xml" value="0.2765625" />
+        <entry key="app/src/main/res/drawable/ic_un_favourite.xml" value="0.2765625" />
         <entry key="app/src/main/res/drawable/ripple_curve_grey_black_background.xml" value="0.2765625" />
         <entry key="app/src/main/res/drawable/ripple_slight_curve_grey_black_background.xml" value="0.2388888888888889" />
         <entry key="app/src/main/res/drawable/ripple_slight_curve_grey_white_background.xml" value="0.2765625" />
@@ -60,6 +64,7 @@
         <entry key="app/src/main/res/layout/marketing_more_options_bottom_sheet_item.xml" value="0.264453125" />
         <entry key="app/src/main/res/layout/order_item.xml" value="0.264453125" />
         <entry key="app/src/main/res/layout/social_media_category_item_layout.xml" value="0.264453125" />
+        <entry key="app/src/main/res/layout/social_media_template_item_layout.xml" value="0.264453125" />
       </map>
     </option>
   </component>

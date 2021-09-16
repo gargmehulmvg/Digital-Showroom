@@ -7,13 +7,15 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.SocialMediaCategoryAdapter
+import com.digitaldukaan.adapters.SocialMediaTemplateAdapter
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.IOnToolbarIconClick
-import com.digitaldukaan.models.response.CommonApiResponse
-import com.digitaldukaan.models.response.HelpPageResponse
-import com.digitaldukaan.models.response.SocialMediaPageInfoResponse
+import com.digitaldukaan.interfaces.ISocialMediaTemplateItemClickListener
+import com.digitaldukaan.models.request.SocialMediaTemplateFavouriteRequest
+import com.digitaldukaan.models.response.*
 import com.digitaldukaan.services.SocialMediaService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.ISocialMediaServiceInterface
@@ -21,13 +23,17 @@ import com.google.gson.Gson
 import kotlinx.android.synthetic.main.layout_on_board_help_screen.*
 import kotlinx.android.synthetic.main.layout_social_media.*
 
-class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToolbarIconClick {
+class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToolbarIconClick,
+    ISocialMediaTemplateItemClickListener {
 
     private var mService: SocialMediaService? = null
     private var mSocialMediaPageInfoResponse: SocialMediaPageInfoResponse? = null
     private var socialMediaCategoryAdapter: SocialMediaCategoryAdapter? = null
+    private var socialMediaTemplateAdapter: SocialMediaTemplateAdapter? = null
+    private var mSocialMediaTemplateList: ArrayList<SocialMediaTemplateListItemResponse?>? = ArrayList()
 
     companion object {
+        private const val TAG = "SocialMediaFragment"
         fun newInstance(): SocialMediaFragment {
             return SocialMediaFragment()
         }
@@ -53,6 +59,12 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
         }
         showProgressDialog(mActivity)
         mService?.getSocialMediaPageInfo()
+        mService?.getSocialMediaTemplateList("0", 1)
+        templateRecyclerView?.apply {
+            socialMediaTemplateAdapter = SocialMediaTemplateAdapter(this@SocialMediaFragment, null, this@SocialMediaFragment)
+            layoutManager = LinearLayoutManager(mActivity)
+            adapter = socialMediaTemplateAdapter
+        }
     }
 
     override fun onClick(view: View?) {
@@ -89,6 +101,24 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
         }
     }
 
+    override fun onSocialMediaTemplateListResponse(commonApiResponse: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            if (commonApiResponse.mIsSuccessStatus) {
+                val response = Gson().fromJson<SocialMediaTemplateListResponse>(commonApiResponse.mCommonDataStr, SocialMediaTemplateListResponse::class.java)
+                setupTemplateListRecyclerView(response?.templateList)
+            }
+        }
+    }
+
+    override fun onSocialMediaTemplateFavouriteResponse(commonApiResponse: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            if (commonApiResponse.mIsSuccessStatus) {
+//                val response = Gson().fromJson<SocialMediaTemplateListResponse>(commonApiResponse.mCommonDataStr, SocialMediaTemplateListResponse::class.java)
+//                setupTemplateListRecyclerView(response?.templateList)
+            }
+        }
+    }
+
     private fun setupHelpPageUI(marketingHelpPage: HelpPageResponse?) {
         ToolBarManager.getInstance()?.apply {
             if (marketingHelpPage?.mIsActive == true) {
@@ -100,8 +130,47 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
         }
     }
 
+    private fun setupTemplateListRecyclerView(templateList: ArrayList<SocialMediaTemplateListItemResponse?>?) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            mSocialMediaTemplateList = ArrayList()
+            mSocialMediaTemplateList = templateList
+            socialMediaTemplateAdapter?.setListToAdapter(mSocialMediaTemplateList)
+        }
+    }
+
     override fun onSocialMediaException(e: Exception) = exceptionHandlingForAPIResponse(e)
 
     override fun onToolbarSideIconClicked() = openWebViewFragment(this, getString(R.string.help), WebViewUrls.WEB_VIEW_HELP, Constants.SETTINGS)
+
+    override fun onSocialMediaTemplateFavItemClickListener(position: Int, item: SocialMediaTemplateListItemResponse?) {
+        val request = SocialMediaTemplateFavouriteRequest(
+            templateId = item?.id?.toInt() ?: 0,
+            isFavourite = !(item?.isFavourite ?: false)
+        )
+        mService?.setSocialMediaFavourite(request)
+        item?.isFavourite = !(item?.isFavourite ?: false)
+        socialMediaTemplateAdapter?.notifyItemChanged(position)
+    }
+
+    override fun onSocialMediaTemplateEditItemClickListener(
+        position: Int,
+        item: SocialMediaTemplateListItemResponse?
+    ) {
+        showToast("Edit $position")
+    }
+
+    override fun onSocialMediaTemplateShareItemClickListener(
+        position: Int,
+        item: SocialMediaTemplateListItemResponse?
+    ) {
+        showToast("Share $position")
+    }
+
+    override fun onSocialMediaTemplateWhatsappItemClickListener(
+        position: Int,
+        item: SocialMediaTemplateListItemResponse?
+    ) {
+        showToast("Whatsapp $position")
+    }
 
 }

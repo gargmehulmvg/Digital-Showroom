@@ -20,17 +20,18 @@
             android:layout_width="match_parent"
             android:layout_height="@dimen/_85sdp"
             android:clickable="false"
-            android:contentDescription="@string/image_view_content_description" />
+            android:contentDescription="@string/image_view_content_description"
+            android:scaleType="fitXY" />
 
         <TextView
             android:id="@+id/textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/white"
-            android:minLines="@integer/min_lines_two"
             android:clickable="false"
             android:fontFamily="@font/roboto"
             android:gravity="center"
+            android:minLines="@integer/min_lines_two"
             android:padding="@dimen/_2sdp"
             android:textColor="@color/black"
             android:textSize="@dimen/_11sdp"

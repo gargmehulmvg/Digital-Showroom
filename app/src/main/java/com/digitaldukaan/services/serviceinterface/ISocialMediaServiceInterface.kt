@@ -6,5 +6,9 @@ interface ISocialMediaServiceInterface {
 
     fun onSocialMediaPageInfoResponse(commonApiResponse: CommonApiResponse)
 
+    fun onSocialMediaTemplateListResponse(commonApiResponse: CommonApiResponse)
+
+    fun onSocialMediaTemplateFavouriteResponse(commonApiResponse: CommonApiResponse)
+
     fun onSocialMediaException(e: Exception)
 }

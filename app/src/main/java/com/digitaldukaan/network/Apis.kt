@@ -125,8 +125,14 @@ interface Apis {
     @GET("api/dotk/vm1/marketing/getSocialMediaPageInfo")
     suspend fun getSocialMediaPageInfo(): Response<CommonApiResponse>
 
+    @GET("api/dotk/vm1/marketing/getSocialMediaTemplateList/{id}")
+    suspend fun getSocialMediaTemplateList(@Path("id") id: String, @Query("page") page: Int): Response<CommonApiResponse>
+
     @POST("api/dotk/vm1/marketing/shareStore")
     suspend fun getShareStore(): Response<CommonApiResponse>
+
+    @POST("api/dotk/vm1/marketing/setSocialMediaFavourite")
+    suspend fun setSocialMediaFavourite(@Body request: SocialMediaTemplateFavouriteRequest): Response<CommonApiResponse>
 
     @GET("api/dotk/vm1/marketing/shareStorePdfText")
     suspend fun getShareStorePdfText(): Response<CommonApiResponse>
