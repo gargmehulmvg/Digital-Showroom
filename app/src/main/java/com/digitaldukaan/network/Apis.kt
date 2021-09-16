@@ -122,6 +122,9 @@ interface Apis {
     @GET("api/dotk/vm1/marketing/getMarketingPageInfo")
     suspend fun getStoreMarketingPageInfo(): Response<CommonApiResponse>
 
+    @GET("api/dotk/vm1/marketing/getSocialMediaPageInfo")
+    suspend fun getSocialMediaPageInfo(): Response<CommonApiResponse>
+
     @POST("api/dotk/vm1/marketing/shareStore")
     suspend fun getShareStore(): Response<CommonApiResponse>
 

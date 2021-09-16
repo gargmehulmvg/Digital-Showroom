@@ -4,11 +4,28 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.GridLayoutManager
 import com.digitaldukaan.R
-import com.digitaldukaan.constants.ToolBarManager
+import com.digitaldukaan.adapters.SocialMediaCategoryAdapter
+import com.digitaldukaan.constants.*
+import com.digitaldukaan.interfaces.IOnToolbarIconClick
+import com.digitaldukaan.models.response.CommonApiResponse
+import com.digitaldukaan.models.response.HelpPageResponse
+import com.digitaldukaan.models.response.SocialMediaPageInfoResponse
+import com.digitaldukaan.services.SocialMediaService
+import com.digitaldukaan.services.isInternetConnectionAvailable
+import com.digitaldukaan.services.serviceinterface.ISocialMediaServiceInterface
+import com.google.gson.Gson
 import kotlinx.android.synthetic.main.layout_on_board_help_screen.*
+import kotlinx.android.synthetic.main.layout_social_media.*
 
-class SocialMediaFragment : BaseFragment() {
+class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToolbarIconClick {
+
+    private var mService: SocialMediaService? = null
+    private var mSocialMediaPageInfoResponse: SocialMediaPageInfoResponse? = null
+    private var socialMediaCategoryAdapter: SocialMediaCategoryAdapter? = null
 
     companion object {
         fun newInstance(): SocialMediaFragment {
@@ -21,17 +38,70 @@ class SocialMediaFragment : BaseFragment() {
         hideBottomNavigationView(true)
         ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, false)
-            setHeaderTitle("Social Media Posts")
             setSideIconVisibility(false)
             onBackPressed(this@SocialMediaFragment)
         }
+        mService = SocialMediaService()
+        mService?.setSocialMediaServiceInterface(this)
         return mContentView
     }
 
-    override fun onClick(view: View?) {
-        if (view?.id == startNowLayout.id) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        if (!isInternetConnectionAvailable(mActivity)) {
+            showNoInternetConnectionDialog()
+            return
+        }
+        showProgressDialog(mActivity)
+        mService?.getSocialMediaPageInfo()
+    }
 
+    override fun onClick(view: View?) {
+        when (view?.id) {
+            showMoreCategoryTextView?.id -> {
+                if (showMoreCategoryTextView?.text == mSocialMediaPageInfoResponse?.socialMediaStaticTextResponse?.text_show_more_categories) {
+                    showMoreCategoryTextView?.text = mSocialMediaPageInfoResponse?.socialMediaStaticTextResponse?.text_hide
+                    socialMediaCategoryAdapter?.setListSize(mSocialMediaPageInfoResponse?.socialMediaCategoriesList?.size ?: 0)
+                } else {
+                    showMoreCategoryTextView?.text = mSocialMediaPageInfoResponse?.socialMediaStaticTextResponse?.text_show_more_categories
+                    socialMediaCategoryAdapter?.setListSize(mSocialMediaPageInfoResponse?.categoryShowCount ?: 0)
+                }
+            }
         }
     }
+
+    override fun onSocialMediaPageInfoResponse(commonApiResponse: CommonApiResponse) {
+        stopProgress()
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            if (commonApiResponse.mIsSuccessStatus) {
+                mSocialMediaPageInfoResponse = Gson().fromJson<SocialMediaPageInfoResponse>(commonApiResponse.mCommonDataStr, SocialMediaPageInfoResponse::class.java)
+                ToolBarManager.getInstance()?.apply {
+                    setHeaderTitle(mSocialMediaPageInfoResponse?.socialMediaStaticTextResponse?.heading_social_media)
+                    setupHelpPageUI(mSocialMediaPageInfoResponse?.socialMediaHelpPage)
+                }
+                showMoreCategoryTextView?.text = mSocialMediaPageInfoResponse?.socialMediaStaticTextResponse?.text_show_more_categories
+                categoryRecyclerView?.apply {
+                    itemAnimator = DefaultItemAnimator()
+                    socialMediaCategoryAdapter = SocialMediaCategoryAdapter(mActivity, mSocialMediaPageInfoResponse?.socialMediaCategoriesList, mSocialMediaPageInfoResponse?.categoryShowCount ?: 0, null)
+                    layoutManager = GridLayoutManager(mActivity, 3)
+                    adapter = socialMediaCategoryAdapter
+                }
+            }
+        }
+    }
+
+    private fun setupHelpPageUI(marketingHelpPage: HelpPageResponse?) {
+        ToolBarManager.getInstance()?.apply {
+            if (marketingHelpPage?.mIsActive == true) {
+                setSideIconVisibility(true)
+                mActivity?.let { setSideIcon(ContextCompat.getDrawable(it, R.drawable.ic_setting_toolbar), this@SocialMediaFragment) }
+            } else {
+                setSideIconVisibility(false)
+            }
+        }
+    }
+
+    override fun onSocialMediaException(e: Exception) = exceptionHandlingForAPIResponse(e)
+
+    override fun onToolbarSideIconClicked() = openWebViewFragment(this, getString(R.string.help), WebViewUrls.WEB_VIEW_HELP, Constants.SETTINGS)
 
 }
