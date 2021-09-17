@@ -526,6 +526,11 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
 
     private fun showMoreOptionsBottomSheet(itemResponse: MarketingMoreOptionsItemResponse) {
         try {
+            AppEventsManager.pushAppEvents(
+                eventName = AFInAppEventType.EVENT_SHARE_PRODUCT_MARKETING,
+                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
+            )
             mActivity?.let {
                 val bottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
                 val view = LayoutInflater.from(it).inflate(
