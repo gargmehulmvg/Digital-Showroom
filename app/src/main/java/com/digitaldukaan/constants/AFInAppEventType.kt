@@ -103,5 +103,6 @@ interface AFInAppEventType {
         const val EVENT_SHARE_COUPON                                =   "Share_coupon"
         const val EVENT_ADD_EMAIL                                   =   "Add_email"
         const val EVENT_EMAIL_SIGN_IN                               =   "Email_sign_in"
+        const val EVENT_SHARE_PRODUCT_MARKETING                     =   "Share_product_marketing"
     }
 }
