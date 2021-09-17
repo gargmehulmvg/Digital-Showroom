@@ -75,7 +75,7 @@ class SocialMediaTemplateAdapter(
                     .skipMemoryCache(false)
                     .dontAnimate()
                     .dontTransform()
-                    .override(950,950)
+                    .override(500,500)
                     .into(imageView)
             }
         }

@@ -6,6 +6,7 @@ data class SocialMediaPageInfoResponse(
     @SerializedName("static_text")                  var socialMediaStaticTextResponse: SocialMediaStaticTextResponse?,
     @SerializedName("social_media_categories_list") var socialMediaCategoriesList: ArrayList<SocialMediaCategoryItemResponse?>?,
     @SerializedName("category_show_count")          var categoryShowCount: Int,
+    @SerializedName("favourite_category_id")        var favouriteCategoryId: Int,
     @SerializedName("help_page")                    var socialMediaHelpPage: HelpPageResponse?
 )
 
@@ -20,5 +21,6 @@ data class SocialMediaCategoryItemResponse(
     @SerializedName("text")                 var text: String?,
     @SerializedName("logo")                 var logo: String?,
     @SerializedName("text_bg_color")        var textBgColor: String?,
-    @SerializedName("text_color")           var textColor: String
+    @SerializedName("text_color")           var textColor: String,
+    var isSelected: Boolean
 )

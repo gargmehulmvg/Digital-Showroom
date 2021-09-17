@@ -45,14 +45,6 @@ class SocialMediaCategoryAdapter(
             LayoutInflater.from(parent.context).inflate(R.layout.social_media_category_item_layout, parent, false)
         )
         view.container.setOnClickListener {
-            view.containerView.cardElevation = 15f
-            mContext?.let { context ->
-                val param = view.imageViewParent.layoutParams as ViewGroup.MarginLayoutParams
-                param.setMargins(12,12,12,0)
-                view.imageViewParent.layoutParams = param
-                view.imageViewParent.radius = 25f
-                view.container.background = ContextCompat.getDrawable(context, R.drawable.curve_black_border_10)
-            }
             mListener?.onSocialMediaTemplateCategoryItemClickListener(view.adapterPosition, mList?.get(view.adapterPosition))
         }
         return view
@@ -70,6 +62,29 @@ class SocialMediaCategoryAdapter(
             if (isNotEmpty(item?.textColor)) textView.setTextColor(Color.parseColor(item?.textColor))
             if (isNotEmpty(item?.textBgColor)) textView.setBackgroundColor(Color.parseColor(item?.textBgColor))
             mContext?.let { context -> Glide.with(context).load(item?.logo).into(imageView) }
+            setHighlightedView(item?.isSelected ?: false, holder)
+        }
+    }
+
+    private fun setHighlightedView(isSelected: Boolean, holder: SocialMediaCategoryViewHolder) {
+        holder.apply {
+            if (isSelected) {
+                containerView.cardElevation = 15f
+                mContext?.let { context ->
+                    val param = imageViewParent.layoutParams as ViewGroup.MarginLayoutParams
+                    param.setMargins(12,12,12,0)
+                    imageViewParent.layoutParams = param
+                    imageViewParent.radius = 25f
+                    container.background = ContextCompat.getDrawable(context, R.drawable.curve_black_border_10)
+                }
+            } else {
+                containerView.cardElevation = 1f
+                val param = imageViewParent.layoutParams as ViewGroup.MarginLayoutParams
+                param.setMargins(0, 0, 0, 0)
+                imageViewParent.layoutParams = param
+                imageViewParent.radius = 1f
+                container.background = null
+            }
         }
     }
 
