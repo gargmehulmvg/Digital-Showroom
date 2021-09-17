@@ -23,20 +23,21 @@
                 android:padding="@dimen/_10sdp"
                 app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                 app:spanCount="3"
+                tools:itemCount="6"
                 tools:listitem="@layout/social_media_category_item_layout" />
 
             <TextView
                 android:id="@+id/showMoreCategoryTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_10sdp"
-                android:layout_marginEnd="@dimen/_10sdp"
+                android:layout_marginStart="@dimen/_15sdp"
+                android:layout_marginEnd="@dimen/_15sdp"
                 android:textColor="@color/black"
                 android:onClick="onClick"
                 android:fontFamily="@font/roboto"
                 android:background="@drawable/slight_curve_black_border_without_padding"
                 android:gravity="center"
-                android:layout_marginBottom="@dimen/_15sdp"
+                android:layout_marginBottom="@dimen/_25sdp"
                 android:paddingTop="@dimen/_5sdp"
                 android:paddingBottom="@dimen/_5sdp"
                 tools:text="Show More Categories" />

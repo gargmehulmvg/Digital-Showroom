@@ -7,6 +7,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.digitaldukaan.R
 import com.digitaldukaan.fragments.BaseFragment
 import com.digitaldukaan.interfaces.ISocialMediaTemplateItemClickListener
@@ -45,8 +46,7 @@ class SocialMediaTemplateAdapter(
         return view
     }
 
-//    override fun getItemCount(): Int = mList?.size ?: 0
-    override fun getItemCount(): Int = 10
+    override fun getItemCount(): Int = mList?.size ?: 0
 
     override fun onBindViewHolder(holder: SocialMediaTemplateViewHolder, position: Int) {
         holder.apply {
@@ -68,7 +68,16 @@ class SocialMediaTemplateAdapter(
                 whatsappTextView.text = item.whatsapp?.text
             } else whatsappTextView.visibility = View.GONE
             favouriteTextView.setCompoundDrawablesWithIntrinsicBounds(0, if (true == item?.isFavourite) R.drawable.ic_favourite else R.drawable.ic_un_favourite, 0, 0)
-            mContext?.let { context -> Glide.with(context).load(item?.coverImage).into(imageView) }
+            mContext?.let { context ->
+                Glide.with(context)
+                    .load(item?.coverImage)
+                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                    .skipMemoryCache(false)
+                    .dontAnimate()
+                    .dontTransform()
+                    .override(950,950)
+                    .into(imageView)
+            }
         }
     }
 

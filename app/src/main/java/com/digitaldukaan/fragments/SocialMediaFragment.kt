@@ -31,6 +31,7 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
     private var socialMediaCategoryAdapter: SocialMediaCategoryAdapter? = null
     private var socialMediaTemplateAdapter: SocialMediaTemplateAdapter? = null
     private var mSocialMediaTemplateList: ArrayList<SocialMediaTemplateListItemResponse?>? = ArrayList()
+    private var mPageNumber: Int = 1
 
     companion object {
         private const val TAG = "SocialMediaFragment"
@@ -59,8 +60,9 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
         }
         showProgressDialog(mActivity)
         mService?.getSocialMediaPageInfo()
-        mService?.getSocialMediaTemplateList("0", 1)
+        mService?.getSocialMediaTemplateList("0", mPageNumber)
         templateRecyclerView?.apply {
+            setHasFixedSize(true)
             socialMediaTemplateAdapter = SocialMediaTemplateAdapter(this@SocialMediaFragment, null, this@SocialMediaFragment)
             layoutManager = LinearLayoutManager(mActivity)
             adapter = socialMediaTemplateAdapter
@@ -93,7 +95,7 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
                 showMoreCategoryTextView?.text = mSocialMediaPageInfoResponse?.socialMediaStaticTextResponse?.text_show_more_categories
                 categoryRecyclerView?.apply {
                     itemAnimator = DefaultItemAnimator()
-                    socialMediaCategoryAdapter = SocialMediaCategoryAdapter(mActivity, mSocialMediaPageInfoResponse?.socialMediaCategoriesList, mSocialMediaPageInfoResponse?.categoryShowCount ?: 0, null)
+                    socialMediaCategoryAdapter = SocialMediaCategoryAdapter(mActivity, mSocialMediaPageInfoResponse?.socialMediaCategoriesList, mSocialMediaPageInfoResponse?.categoryShowCount ?: 0, this@SocialMediaFragment)
                     layoutManager = GridLayoutManager(mActivity, 3)
                     adapter = socialMediaCategoryAdapter
                 }
@@ -103,6 +105,7 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
 
     override fun onSocialMediaTemplateListResponse(commonApiResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
             if (commonApiResponse.mIsSuccessStatus) {
                 val response = Gson().fromJson<SocialMediaTemplateListResponse>(commonApiResponse.mCommonDataStr, SocialMediaTemplateListResponse::class.java)
                 setupTemplateListRecyclerView(response?.templateList)
@@ -138,6 +141,14 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
     override fun onSocialMediaException(e: Exception) = exceptionHandlingForAPIResponse(e)
 
     override fun onToolbarSideIconClicked() = openWebViewFragment(this, getString(R.string.help), WebViewUrls.WEB_VIEW_HELP, Constants.SETTINGS)
+
+    override fun onSocialMediaTemplateCategoryItemClickListener(position: Int, item: SocialMediaCategoryItemResponse?) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            showProgressDialog(mActivity)
+            mPageNumber = 1
+            mService?.getSocialMediaTemplateList(item?.id ?: "0", mPageNumber)
+        }
+    }
 
     override fun onSocialMediaTemplateFavItemClickListener(position: Int, item: SocialMediaTemplateListItemResponse?) {
         val request = SocialMediaTemplateFavouriteRequest(

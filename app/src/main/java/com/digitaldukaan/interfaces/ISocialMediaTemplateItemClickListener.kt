@@ -1,8 +1,11 @@
 package com.digitaldukaan.interfaces
 
+import com.digitaldukaan.models.response.SocialMediaCategoryItemResponse
 import com.digitaldukaan.models.response.SocialMediaTemplateListItemResponse
 
 interface ISocialMediaTemplateItemClickListener {
+
+    fun onSocialMediaTemplateCategoryItemClickListener(position: Int, item: SocialMediaCategoryItemResponse?)
 
     fun onSocialMediaTemplateFavItemClickListener(position: Int, item: SocialMediaTemplateListItemResponse?)
 

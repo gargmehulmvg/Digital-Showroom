@@ -7,19 +7,21 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.cardview.widget.CardView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.isNotEmpty
-import com.digitaldukaan.interfaces.IAdapterItemClickListener
+import com.digitaldukaan.interfaces.ISocialMediaTemplateItemClickListener
 import com.digitaldukaan.models.response.SocialMediaCategoryItemResponse
 
 class SocialMediaCategoryAdapter(
     private var mContext: Context?,
     private var mList: ArrayList<SocialMediaCategoryItemResponse?>?,
     private var mItemCount: Int,
-    private var mListener: IAdapterItemClickListener?
+    private var mListener: ISocialMediaTemplateItemClickListener?
 ) :
     RecyclerView.Adapter<SocialMediaCategoryAdapter.SocialMediaCategoryViewHolder>() {
 
@@ -27,6 +29,8 @@ class SocialMediaCategoryAdapter(
         val textView: TextView = itemView.findViewById(R.id.textView)
         val imageView: ImageView = itemView.findViewById(R.id.imageView)
         val container: View = itemView.findViewById(R.id.container)
+        val containerView: CardView = itemView.findViewById(R.id.containerView)
+        val imageViewParent: CardView = itemView.findViewById(R.id.imageViewParent)
     }
 
     fun setListSize(count: Int) {
@@ -41,7 +45,15 @@ class SocialMediaCategoryAdapter(
             LayoutInflater.from(parent.context).inflate(R.layout.social_media_category_item_layout, parent, false)
         )
         view.container.setOnClickListener {
-            mListener?.onAdapterItemClickListener(view.adapterPosition)
+            view.containerView.cardElevation = 15f
+            mContext?.let { context ->
+                val param = view.imageViewParent.layoutParams as ViewGroup.MarginLayoutParams
+                param.setMargins(12,12,12,0)
+                view.imageViewParent.layoutParams = param
+                view.imageViewParent.radius = 25f
+                view.container.background = ContextCompat.getDrawable(context, R.drawable.curve_black_border_10)
+            }
+            mListener?.onSocialMediaTemplateCategoryItemClickListener(view.adapterPosition, mList?.get(view.adapterPosition))
         }
         return view
     }
