@@ -6,25 +6,18 @@
         <entry key="app/src/main/res/drawable/circle_shape.xml" value="0.2388888888888889" />
         <entry key="app/src/main/res/drawable/circular_progress_bar.xml" value="0.2388888888888889" />
         <entry key="app/src/main/res/drawable/contact_background.xml" value="0.2765625" />
-        <entry key="app/src/main/res/drawable/curve_black_border.xml" value="0.2765625" />
-        <entry key="app/src/main/res/drawable/curve_black_border_10.xml" value="0.2388888888888889" />
         <entry key="app/src/main/res/drawable/curve_green_dotted_border.xml" value="0.2765625" />
         <entry key="app/src/main/res/drawable/curve_green_dotted_border_green_background.xml" value="0.2388888888888889" />
         <entry key="app/src/main/res/drawable/curve_grey_border.xml" value="0.32664092664092664" />
         <entry key="app/src/main/res/drawable/ic_coupon_white_zigzag.xml" value="0.2765625" />
         <entry key="app/src/main/res/drawable/ic_coupon_white_zigzag2.xml" value="0.2765625" />
-        <entry key="app/src/main/res/drawable/ic_edit_pencil.xml" value="0.2765625" />
-        <entry key="app/src/main/res/drawable/ic_favourite.xml" value="0.2765625" />
         <entry key="app/src/main/res/drawable/ic_full_width_shimmer.xml" value="0.2765625" />
         <entry key="app/src/main/res/drawable/ic_order_status_paid.xml" value="0.2765625" />
         <entry key="app/src/main/res/drawable/ic_prepaid.xml" value="0.2765625" />
-        <entry key="app/src/main/res/drawable/ic_share_black.xml" value="0.2765625" />
         <entry key="app/src/main/res/drawable/ic_shimmer_full_width.xml" value="0.2765625" />
-        <entry key="app/src/main/res/drawable/ic_un_favourite.xml" value="0.2765625" />
         <entry key="app/src/main/res/drawable/ripple_curve_grey_black_background.xml" value="0.2765625" />
         <entry key="app/src/main/res/drawable/ripple_slight_curve_grey_black_background.xml" value="0.2388888888888889" />
         <entry key="app/src/main/res/drawable/ripple_slight_curve_grey_white_background.xml" value="0.2765625" />
-        <entry key="app/src/main/res/drawable/round_outline_test.xml" value="0.2388888888888889" />
         <entry key="app/src/main/res/drawable/shimmer_effect_gradient.xml" value="0.2388888888888889" />
         <entry key="app/src/main/res/drawable/slight_curve_black_dotted_border_grey_background.xml" value="0.2388888888888889" />
         <entry key="app/src/main/res/drawable/slight_curve_green_background_without_padding.xml" value="0.2765625" />
@@ -52,6 +45,7 @@
         <entry key="app/src/main/res/layout/layout_bank_account_fragment.xml" value="0.264453125" />
         <entry key="app/src/main/res/layout/layout_coupon_settings.xml" value="0.264453125" />
         <entry key="app/src/main/res/layout/layout_custom_coupons_fragment.xml" value="0.264453125" />
+        <entry key="app/src/main/res/layout/layout_home_fragment.xml" value="0.3020833333333333" />
         <entry key="app/src/main/res/layout/layout_login_fragment.xml" value="0.264453125" />
         <entry key="app/src/main/res/layout/layout_marketing_fragment.xml" value="0.25" />
         <entry key="app/src/main/res/layout/layout_more_control_fragment.xml" value="0.264453125" />
@@ -61,7 +55,7 @@
         <entry key="app/src/main/res/layout/layout_order_notification_item.xml" value="0.20833333333333334" />
         <entry key="app/src/main/res/layout/layout_promo_code_item.xml" value="0.335" />
         <entry key="app/src/main/res/layout/layout_promo_code_page_info_fragment.xml" value="0.264453125" />
-        <entry key="app/src/main/res/layout/layout_social_media.xml" value="0.1916761041902605" />
+        <entry key="app/src/main/res/layout/layout_social_media.xml" value="0.264453125" />
         <entry key="app/src/main/res/layout/marketing_card_item.xml" value="0.264453125" />
         <entry key="app/src/main/res/layout/marketing_know_more_item.xml" value="0.25" />
         <entry key="app/src/main/res/layout/marketing_more_options_bottom_sheet_item.xml" value="0.264453125" />

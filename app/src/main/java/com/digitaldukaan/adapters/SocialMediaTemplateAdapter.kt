@@ -7,7 +7,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.digitaldukaan.R
 import com.digitaldukaan.fragments.BaseFragment
 import com.digitaldukaan.interfaces.ISocialMediaTemplateItemClickListener
@@ -71,11 +70,9 @@ class SocialMediaTemplateAdapter(
             mContext?.let { context ->
                 Glide.with(context)
                     .load(item?.coverImage)
-                    .diskCacheStrategy(DiskCacheStrategy.NONE)
-                    .skipMemoryCache(false)
                     .dontAnimate()
                     .dontTransform()
-                    .override(500,500)
+                    .override(350,350)
                     .into(imageView)
             }
         }

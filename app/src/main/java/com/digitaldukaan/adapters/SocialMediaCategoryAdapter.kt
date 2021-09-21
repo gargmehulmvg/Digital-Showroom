@@ -82,7 +82,7 @@ class SocialMediaCategoryAdapter(
                 val param = imageViewParent.layoutParams as ViewGroup.MarginLayoutParams
                 param.setMargins(0, 0, 0, 0)
                 imageViewParent.layoutParams = param
-                imageViewParent.radius = 1f
+                imageViewParent.radius = 25f
                 container.background = null
             }
         }
