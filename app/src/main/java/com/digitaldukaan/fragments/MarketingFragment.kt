@@ -3,6 +3,7 @@ package com.digitaldukaan.fragments
 import android.Manifest
 import android.app.AlertDialog
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.location.LocationListener
 import android.os.Bundle
 import android.util.Log
@@ -37,7 +38,7 @@ import io.sentry.Sentry
 import kotlinx.android.synthetic.main.layout_marketing_fragment.*
 
 class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingServiceInterface, LocationListener,
-    IAppSettingsItemClicked, IMarketingMoreOptionsItemClicked {
+    IAppSettingsItemClicked, IMarketingMoreOptionsItemClicked, (Bitmap) -> Unit {
 
     private var mMarketingItemClickResponse: MarketingCardsItemResponse? = null
     private var mCurrentLatitude = 0.0
@@ -84,6 +85,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
         showProgressDialog(mActivity)
         mService?.getMarketingPageInfo()
         WebViewBridge.mWebViewListener = this
+        singleSpanContainer?.let { v -> getBitmapFromView(v, mActivity, this) }
     }
 
     override fun onClick(view: View?) {
@@ -607,5 +609,9 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
 
     override fun onAppSettingItemClicked(subPagesResponse: SubPagesResponse) {
         Log.d(TAG, "onAppSettingItemClicked: ${subPagesResponse.mAction}")
+    }
+
+    override fun invoke(p1: Bitmap) {
+
     }
 }

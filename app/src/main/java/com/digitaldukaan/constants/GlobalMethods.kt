@@ -1,18 +1,20 @@
 package com.digitaldukaan.constants
 
+import android.app.Activity
 import android.app.DownloadManager
 import android.content.ContentValues
 import android.content.Context
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.database.Cursor
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
+import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
+import android.os.Handler
+import android.os.Looper
 import android.provider.ContactsContract
 import android.provider.MediaStore
 import android.provider.Settings
@@ -21,6 +23,7 @@ import android.text.TextUtils
 import android.util.Base64
 import android.util.Base64OutputStream
 import android.util.Log
+import android.view.PixelCopy
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.TranslateAnimation
@@ -457,4 +460,47 @@ fun startShinningAnimation(view: View) {
             view.startAnimation(animation)
         }
     },Constants.SHINE_ANIMATION_INTERVAL, Constants.SHINE_ANIMATION_INTERVAL, TimeUnit.MILLISECONDS)
+}
+
+fun drawScreenShotBitmap(v: View) {
+    val viewBitmap = Bitmap.createBitmap(v.width, v.height, Bitmap.Config.RGB_565)
+    val viewCanvas = Canvas(viewBitmap)
+    val backgroundDrawable = v.background
+    if (backgroundDrawable != null) {
+        backgroundDrawable.draw(viewCanvas);
+    } else {
+        viewCanvas.drawColor(Color.GREEN);
+        v.draw(viewCanvas)
+    }
+    val fileStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+    val outputStream: OutputStream?
+    try {
+        val imgFile = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "$fileStamp.png")
+        outputStream = FileOutputStream(imgFile)
+        viewBitmap.compress(Bitmap.CompressFormat.PNG, 40, outputStream)
+        outputStream.close()
+    } catch (e: java.lang.Exception) {
+        e.printStackTrace()
+    }
+}
+
+fun getBitmapFromView(view: View, activity: Activity?, callback: (Bitmap) -> Unit) {
+    activity?.window?.let { window ->
+        try {
+            val bitmap = Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
+            val locationOfViewInWindow = IntArray(2)
+            view.getLocationInWindow(locationOfViewInWindow)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                PixelCopy.request(window, Rect(locationOfViewInWindow[0], locationOfViewInWindow[1], locationOfViewInWindow[0] + view.width, locationOfViewInWindow[1] + view.height), bitmap, { copyResult ->
+                    if (copyResult == PixelCopy.SUCCESS) {
+                        callback(bitmap)
+                    }
+                    // possible to handle other result codes ...
+                }, Handler(Looper.getMainLooper()))
+            }
+        } catch (e: Exception) {
+            // PixelCopy may throw IllegalArgumentException, make sure to handle it
+            e.printStackTrace()
+        }
+    }
 }
