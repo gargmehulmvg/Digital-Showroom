@@ -59,6 +59,8 @@ data class MarketingExpandableItemResponse(
     @SerializedName("info_text_bg_color")       var infoTextBgColor: String?,
     @SerializedName("is_clickable")             var is_clickable: Boolean,
     @SerializedName("is_enabled")               var is_enabled: Boolean,
+    @SerializedName("event_name")               var eventName: String?,
+    @SerializedName("event_parameter")          var eventParameter: Map<String, String>,
     @SerializedName("url")                      var url: String?,
     @SerializedName("cta_cdn")                  var cta_cdn: String
 )

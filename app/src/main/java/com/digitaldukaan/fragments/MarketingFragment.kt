@@ -549,6 +549,10 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
 
                                 override fun onAdapterItemClickListener(position: Int) {
                                     val item = itemResponse.expandableData?.get(position)
+                                    AppEventsManager.pushAppEvents(
+                                        eventName = item?.eventName, isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                                        data = item?.eventParameter ?: HashMap()
+                                    )
                                     Log.d(TAG, "showMoreOptionsBottomSheet :: item clicked :: $item")
                                     item?.let { responseItem ->
                                         bottomSheetDialog.dismiss()
