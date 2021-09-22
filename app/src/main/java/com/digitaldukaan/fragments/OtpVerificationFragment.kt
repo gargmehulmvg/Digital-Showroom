@@ -42,6 +42,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
     private var mIsConsentTakenFromUser = true
     private var mIsServerCallInitiated: Boolean = false
     private var mOtpStaticResponseData: VerifyOtpStaticResponseData? = null
+    private var mTimerCompleted = false
 
     companion object {
         private const val TAG = "OtpVerificationFragment"
@@ -93,7 +94,8 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
     }
 
     private fun setupUIFromStaticResponse() {
-        enterMobileNumberHeading?.text = mOtpStaticResponseData?.mHeadingText
+        val headingStr = "${mOtpStaticResponseData?.mHeadingText}\n$mMobileNumberStr"
+        enterMobileNumberHeading?.text = headingStr
         verifyTextView?.text = mOtpStaticResponseData?.mVerifyText
         readMoreTextView?.setHtmlData(mOtpStaticResponseData?.mReadMore)
         consentCheckBox?.text = mOtpStaticResponseData?.mHeadingMessage
@@ -112,20 +114,29 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
                 val otpInt: Int
                 try {
                     otpInt = mEnteredOtpStr.toInt()
-                    mOtpVerificationService?.verifyOTP(mMobileNumberStr, otpInt)
+                    //mOtpVerificationService?.verifyOTP(mMobileNumberStr, otpInt)
                 } catch (e: Exception) {
                     Log.e(TAG, "onClick: ${e.message}", e)
                 }
             }
-            resendOtpTextView.id -> {
-                if (resendOtpTextView?.text == mOtpStaticResponseData?.mResendButtonText) {
-                    startCountDownTimer()
-                    if (!isInternetConnectionAvailable(mActivity)) {
-                        showNoInternetConnectionDialog()
-                        return
-                    }
-                    mLoginService?.generateOTP(mMobileNumberStr)
+            resendOtpTextView?.id -> if (mTimerCompleted) {
+                resendOtpText?.text = null
+                startCountDownTimer()
+                if (!isInternetConnectionAvailable(mActivity)) {
+                    showNoInternetConnectionDialog()
+                    return
                 }
+                mLoginService?.generateOTP(mMobileNumberStr)
+            }
+            changeTextView?.id -> mActivity?.onBackPressed()
+            resendOtpText?.id -> if (mTimerCompleted) {
+                resendOtpText?.text = null
+                startCountDownTimer()
+                if (!isInternetConnectionAvailable(mActivity)) {
+                    showNoInternetConnectionDialog()
+                    return
+                }
+                mLoginService?.generateOTP(mMobileNumberStr)
             }
             readMoreTextView?.id -> showConsentDialog()
         }
@@ -161,17 +172,19 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
     private fun startCountDownTimer() {
         mCountDownTimer = object: CountDownTimer(Constants.RESEND_OTP_TIMER, Constants.TIMER_INTERVAL) {
             override fun onTick(millisUntilFinished: Long) {
+                mTimerCompleted = false
                 CoroutineScopeUtils().runTaskOnCoroutineMain {
-                    resendOtpText?.text = getString(R.string.otp_auto_resend_in)
-                    val secRemaining = "${(millisUntilFinished / 1000)} ${mOtpStaticResponseData?.mSecondText}"
+                    val secRemaining = "00:${(millisUntilFinished / 1000)}"
                     resendOtpTextView?.text = secRemaining
                 }
             }
 
             override fun onFinish() {
                 CoroutineScopeUtils().runTaskOnCoroutineMain {
-                    resendOtpText?.text = ""
-                    resendOtpTextView?.text = mOtpStaticResponseData?.mResendButtonText
+                    mTimerCompleted = true
+//                    resendOtpTextView?.text = mOtpStaticResponseData?.mResendButtonText
+                    resendOtpTextView?.text = "Did not receive OTP?"
+                    resendOtpText?.text = "Send Again"
                 }
             }
         }

@@ -16,6 +16,7 @@
         <entry key="app/src/main/res/layout/layout_login_fragment_v2.xml" value="0.318359375" />
         <entry key="app/src/main/res/layout/layout_on_board_help_screen.xml" value="0.3020833333333333" />
         <entry key="app/src/main/res/layout/layout_splash_fragment.xml" value="0.3020833333333333" />
+        <entry key="app/src/main/res/layout/otp_verification_fragment.xml" value="0.35260416666666666" />
       </map>
     </option>
   </component>

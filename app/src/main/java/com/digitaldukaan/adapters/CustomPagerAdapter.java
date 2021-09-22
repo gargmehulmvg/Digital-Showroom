@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.viewpager.widget.PagerAdapter;
@@ -13,6 +14,7 @@ import androidx.viewpager.widget.PagerAdapter;
 import com.bumptech.glide.Glide;
 import com.digitaldukaan.R;
 import com.digitaldukaan.constants.StaticInstances;
+import com.digitaldukaan.models.response.HelpScreenItemResponse;
 
 public class CustomPagerAdapter extends PagerAdapter {
 
@@ -40,7 +42,14 @@ public class CustomPagerAdapter extends PagerAdapter {
         View imageLayout = inflater.inflate(R.layout.layout_help_screen_item, view, false);
         if (mContext != null) {
             final ImageView imageView = imageLayout.findViewById(R.id.image);
-            Glide.with(mContext).load(StaticInstances.INSTANCE.getSHelpScreenList().get(position).getUrl()).into(imageView);
+            final TextView headingOneTextView = imageLayout.findViewById(R.id.headingOneTextView);
+            final TextView headingTwoTextView = imageLayout.findViewById(R.id.headingTwoTextView);
+            final TextView headingThreeTextView = imageLayout.findViewById(R.id.headingThreeTextView);
+            final HelpScreenItemResponse helpScreenItemResponse = StaticInstances.INSTANCE.getSHelpScreenList().get(position);
+            headingOneTextView.setText(helpScreenItemResponse.getHeading1());
+            headingTwoTextView.setText(helpScreenItemResponse.getHeading2());
+            headingThreeTextView.setText(helpScreenItemResponse.getHeading3());
+            Glide.with(mContext).load(helpScreenItemResponse.getUrl()).into(imageView);
         }
         view.addView(imageLayout, 0);
         return imageLayout;

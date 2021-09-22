@@ -130,6 +130,7 @@
     <string name="logout_message">You have been logged out for system maintenance activity. Please login again.</string>
     <string name="or">or</string>
     <string name="login_using_true_caller">Login using TrueCaller</string>
+    <string name="made_in_india">Made in India</string>
     <string-array name="state_array">
         <item >Andhra Pradesh</item>
         <item >Arunachal Pradesh</item>

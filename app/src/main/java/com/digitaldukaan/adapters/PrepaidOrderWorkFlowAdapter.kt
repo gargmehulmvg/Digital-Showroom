@@ -9,12 +9,12 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.isEmpty
-import com.digitaldukaan.models.response.HelpScreenItemResponse
+import com.digitaldukaan.models.response.HowItWorksItemResponse
 import com.squareup.picasso.Picasso
 import io.sentry.Sentry
 
 class PrepaidOrderWorkFlowAdapter(
-    private var mHowItGoesList: ArrayList<HelpScreenItemResponse>?
+    private var mHowItGoesList: ArrayList<HowItWorksItemResponse>?
 ) :
     RecyclerView.Adapter<PrepaidOrderWorkFlowAdapter.ReferAndEarnViewHolder>() {
 

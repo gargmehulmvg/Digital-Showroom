@@ -21,17 +21,16 @@ import com.digitaldukaan.adapters.CustomPagerAdapter
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.constants.StaticInstances.sHelpScreenList
 import com.digitaldukaan.models.request.ValidateUserRequest
+import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.google.android.gms.auth.api.credentials.Credential
 import com.google.android.gms.auth.api.credentials.Credentials
 import com.google.android.gms.auth.api.credentials.HintRequest
 import com.tbuonomo.viewpagerdotsindicator.WormDotsIndicator
 import com.truecaller.android.sdk.*
-import kotlinx.android.synthetic.main.layout_login_fragment.*
 import kotlinx.android.synthetic.main.layout_login_fragment_v2.*
-import kotlinx.android.synthetic.main.layout_login_fragment_v2.mobileNumberEditText
-import kotlinx.android.synthetic.main.layout_login_fragment_v2.mobileNumberTextView
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
+import net.yslibrary.android.keyboardvisibilityevent.util.UIUtil
 import java.util.*
 
 class LoginFragmentV2 : BaseFragment() {
@@ -116,6 +115,9 @@ class LoginFragmentV2 : BaseFragment() {
                     hideSoftKeyboard()
                     clearFocus()
                 }
+                val mobileNumber = mobileNumberEditText?.text?.trim().toString()
+                val validationFailed = isMobileNumberValidationNotCorrect(mobileNumber)
+                performOTPServerCall(validationFailed, mobileNumber)
             }
             mobileNumberTextView?.id -> {
                 mobileNumberTextView?.visibility = View.GONE
@@ -128,6 +130,20 @@ class LoginFragmentV2 : BaseFragment() {
                 }
                 initiateAutoDetectMobileNumber()
             }
+        }
+    }
+
+    private fun isMobileNumberValidationNotCorrect(mobileNumber: String): Boolean {
+        return when {
+            mobileNumber.isEmpty() -> {
+                mobileNumberEditText?.error = getString(R.string.mandatory_field_message)
+                true
+            }
+            resources.getInteger(R.integer.mobile_number_length) != mobileNumber.length -> {
+                mobileNumberEditText?.error = getString(R.string.mobile_number_length_validation_message)
+                true
+            }
+            else -> false
         }
     }
 
@@ -215,16 +231,15 @@ class LoginFragmentV2 : BaseFragment() {
     private val phonePickIntentResultLauncher = registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
                 val credentials: Credential? = result.data?.getParcelableExtra(Credential.EXTRA_KEY)
-                credentials?.let {
+                credentials?.let { credential ->
                     CoroutineScopeUtils().runTaskOnCoroutineMain {
                         try {
                             mobileNumberEditText?.apply {
-                                text = null
-                                mMobileNumber = it.id.substring(3)
+                                mMobileNumber = credential.id.substring(3)
                                 setText(mMobileNumber)
                                 setSelection(mobileNumberEditText?.text?.trim()?.length ?: 0)
                             }
-                            getOtpTextView?.callOnClick()
+                            otpTextView?.callOnClick()
                         } catch (e: Exception) {
                             Log.e(TAG, "onActivityResult: ${e.message}", e)
                         }
@@ -236,5 +251,25 @@ class LoginFragmentV2 : BaseFragment() {
     override fun onDestroy() {
         mViewPagerTimer?.cancel()
         super.onDestroy()
+    }
+
+    private fun performOTPServerCall(validationFailed: Boolean, mobileNumber: String) {
+        if (validationFailed) {
+            mobileNumberEditText?.requestFocus()
+        } else {
+            if (!isInternetConnectionAvailable(mActivity)) {
+                showNoInternetConnectionDialog()
+                return
+            }
+            AppEventsManager.pushAppEvents(
+                eventName = AFInAppEventType.EVENT_GET_OTP,
+                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                data = mapOf(AFInAppEventParameterName.PHONE to mobileNumber, AFInAppEventParameterName.IS_MERCHANT to "1")
+            )
+//            showProgressDialog(mActivity)
+//            mLoginService.generateOTP(mobileNumber)
+            mActivity?.let { context -> UIUtil.hideKeyboard(context) }
+            launchFragment(OtpVerificationFragment.newInstance(mobileNumberEditText?.text?.trim().toString()), true)
+        }
     }
 }

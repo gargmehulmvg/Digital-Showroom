@@ -4,32 +4,33 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
     android:padding="@dimen/_20sdp">
 
-    <com.google.android.material.textview.MaterialTextView
+    <TextView
         android:id="@+id/enterMobileNumberHeading"
-        style="@style/common_bold_text_view"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_40sdp"
-        app:layout_constraintEnd_toStartOf="@id/smsImageView"
+        android:fontFamily="@font/roboto_bold"
+        android:textColor="@color/dark_blackish"
+        android:textSize="@dimen/_22sdp"
+        app:layout_constraintEnd_toStartOf="@id/changeTextView"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="@string/enter_4_digit_otp_you_received" />
+        tools:text="OTP sent to\n98635 65654" />
 
-    <com.google.android.material.imageview.ShapeableImageView
-        android:id="@+id/smsImageView"
+    <TextView
+        android:id="@+id/changeTextView"
         android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:src="@drawable/ic_otp_sms"
-        android:transitionName="@string/transition_name"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/roboto_medium"
+        android:textColor="@color/dark_blackish"
+        android:textSize="@dimen/_12sdp"
         app:layout_constraintBottom_toBottomOf="@id/enterMobileNumberHeading"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/enterMobileNumberHeading"
-        tools:targetApi="lollipop" />
+        tools:text="CHANGE?" />
 
-    <com.google.android.material.textview.MaterialTextView
+    <TextView
         android:id="@+id/verifyTextView"
         style="@style/common_text_view_background"
         android:drawableEnd="@drawable/ic_arrow_forward_white"
@@ -78,33 +79,37 @@
         android:maxLength="4"
         android:textIsSelectable="false"
         android:textSize="20sp"
-        app:layout_constraintEnd_toStartOf="@id/smsImageView"
+        app:layout_constraintEnd_toEndOf="@id/changeTextView"
         app:layout_constraintStart_toStartOf="@id/enterMobileNumberHeading"
         app:layout_constraintTop_toBottomOf="@id/enterMobileNumberHeading" />
 
-    <com.google.android.material.textview.MaterialTextView
+    <TextView
         android:id="@+id/resendOtpText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_10sdp"
-        android:padding="@dimen/_3sdp"
-        android:text="@string/otp_auto_resend_in"
+        tools:text="@string/otp_auto_resend_in"
         android:textColor="@color/black"
+        android:onClick="onClick"
+        android:background="?selectableItemBackgroundBorderless"
+        android:padding="@dimen/_2sdp"
+        android:fontFamily="@font/roboto_medium"
         android:textSize="@dimen/_14sdp"
-        app:layout_constraintStart_toStartOf="@id/otpEditText"
-        app:layout_constraintTop_toBottomOf="@id/otpEditText" />
+        app:layout_constraintEnd_toEndOf="@id/resendOtpTextView"
+        app:layout_constraintTop_toBottomOf="@id/resendOtpTextView" />
 
-    <com.google.android.material.textview.MaterialTextView
+    <TextView
         android:id="@+id/resendOtpTextView"
-        style="@style/common_bold_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="?selectableItemBackground"
+        android:background="?selectableItemBackgroundBorderless"
+        android:fontFamily="@font/roboto"
         android:onClick="onClick"
-        android:padding="@dimen/_3sdp"
-        android:textSize="@dimen/_13sdp"
-        app:layout_constraintBaseline_toBaselineOf="@id/resendOtpText"
-        app:layout_constraintStart_toEndOf="@id/resendOtpText"
+        android:padding="@dimen/_2sdp"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:textColor="@color/dark_blackish"
+        android:textSize="@dimen/_11sdp"
+        app:layout_constraintEnd_toEndOf="@id/otpEditText"
+        app:layout_constraintTop_toBottomOf="@id/otpEditText"
         tools:text="30 sec" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
