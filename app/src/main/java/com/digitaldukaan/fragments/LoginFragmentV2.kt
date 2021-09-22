@@ -2,10 +2,11 @@ package com.digitaldukaan.fragments
 
 import android.app.Activity
 import android.app.PendingIntent
-import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -15,15 +16,15 @@ import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.viewpager.widget.ViewPager
-import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.CustomPagerAdapter
 import com.digitaldukaan.constants.*
+import com.digitaldukaan.constants.StaticInstances.sHelpScreenList
 import com.digitaldukaan.models.request.ValidateUserRequest
 import com.google.android.gms.auth.api.credentials.Credential
 import com.google.android.gms.auth.api.credentials.Credentials
 import com.google.android.gms.auth.api.credentials.HintRequest
-import com.tbuonomo.viewpagerdotsindicator.DotsIndicator
+import com.tbuonomo.viewpagerdotsindicator.WormDotsIndicator
 import com.truecaller.android.sdk.*
 import kotlinx.android.synthetic.main.layout_login_fragment.*
 import kotlinx.android.synthetic.main.layout_login_fragment_v2.*
@@ -31,22 +32,21 @@ import kotlinx.android.synthetic.main.layout_login_fragment_v2.mobileNumberEditT
 import kotlinx.android.synthetic.main.layout_login_fragment_v2.mobileNumberTextView
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
+import java.util.*
 
 class LoginFragmentV2 : BaseFragment() {
 
-    private var mIntentUri: Uri? = null
     private var mIsDoublePressToExit = false
     private var mMobileNumber = ""
     private var mIsMobileNumberSearchingDone = false
+    private var mViewPagerTimer: Timer? = null
 
     companion object {
         private val TAG = LoginFragmentV2::class.simpleName
         private const val USE_ANOTHER_NUMBER = 14
 
-        fun newInstance(intentUri: Uri?): LoginFragmentV2 {
-            val fragment = LoginFragmentV2()
-            fragment.mIntentUri = intentUri
-            return fragment
+        fun newInstance(): LoginFragmentV2 {
+            return LoginFragmentV2()
         }
     }
 
@@ -72,11 +72,41 @@ class LoginFragmentV2 : BaseFragment() {
 
             })
         }
+        setupViewPager()
+        mobileNumberEditText?.apply {
+            addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                    Log.d(TAG, "beforeTextChanged: mobileNumberEditText")
+                }
+
+                override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                    Log.d(TAG, "onTextChanged: mobileNumberEditText")
+                }
+
+                override fun afterTextChanged(editable: Editable?) {
+                    val str = editable?.toString() ?: ""
+                    otpTextView?.isEnabled = isNotEmpty(str)
+                }
+
+            })
+        }
+    }
+
+    private fun setupViewPager() {
         val pagerAdapter = CustomPagerAdapter(mActivity)
-        val viewpager: ViewPager? = mContentView?.findViewById(R.id.viewpager)
-        val indicator: DotsIndicator? = mContentView?.findViewById(R.id.indicator)
-        viewpager?.adapter = pagerAdapter
-        viewpager?.let { indicator?.setViewPager(it) }
+        val viewPager: ViewPager? = mContentView?.findViewById(R.id.viewpager)
+        val indicator: WormDotsIndicator? = mContentView?.findViewById(R.id.indicator)
+        viewPager?.adapter = pagerAdapter
+        viewPager?.let { indicator?.setViewPager(it) }
+        val timerTask = object : TimerTask() {
+            override fun run() {
+                viewPager?.post {
+                    viewPager.currentItem = ((viewPager.currentItem + 1) % (sHelpScreenList.size))
+                }
+            }
+        }
+        mViewPagerTimer = Timer()
+        mViewPagerTimer?.schedule(timerTask, 3000,3000)
     }
 
     override fun onClick(view: View?) {
@@ -110,71 +140,6 @@ class LoginFragmentV2 : BaseFragment() {
             Constants.BACK_PRESS_INTERVAL
         )
         return true
-    }
-
-    private fun launchHomeFragment() {
-        when {
-            null != mIntentUri -> switchToFragmentByDeepLink()
-            "" == getStringDataFromSharedPref(Constants.STORE_ID) -> launchFragment(
-                OnBoardHelpScreenFragment.newInstance(),
-                true
-            )
-            else -> launchFragment(HomeFragment.newInstance(), true)
-        }
-    }
-
-    private fun switchToFragmentByDeepLink() {
-        val intentUriStr = mIntentUri.toString()
-        Log.d(TAG, "switchToFragmentByDeepLink:: $intentUriStr")
-        val deepLinkStr = "digitaldukaan://"
-        clearFragmentBackStack()
-        when {
-            intentUriStr.contains("${deepLinkStr}Settings") -> launchFragment(
-                SettingsFragment.newInstance(),
-                true
-            )
-            intentUriStr.contains("${deepLinkStr}ProfilePage") -> launchFragment(
-                ProfilePreviewFragment.newInstance(),
-                true
-            )
-            intentUriStr.contains("${deepLinkStr}ProductList") -> launchFragment(
-                HomeFragment.newInstance(),
-                true
-            )
-            intentUriStr.contains("${deepLinkStr}OrderList") -> launchFragment(
-                HomeFragment.newInstance(),
-                true
-            )
-            intentUriStr.contains("${deepLinkStr}ProductAdd") -> launchFragment(
-                ProductFragment.newInstance(),
-                true
-            )
-            intentUriStr.contains("${deepLinkStr}MarketingBroadCast") -> launchFragment(
-                MarketingFragment.newInstance(),
-                true
-            )
-            intentUriStr.contains("${deepLinkStr}OTP") -> launchFragment(
-                LoginFragment.newInstance(),
-                true
-            )
-            intentUriStr.contains("${deepLinkStr}PaymentOptions") -> launchFragment(
-                PaymentModesFragment.newInstance(),
-                true
-            )
-            intentUriStr.contains("${deepLinkStr}Webview") -> {
-                try {
-                    var webViewUrl = intentUriStr.split("${deepLinkStr}Webview?webURL=")[1]
-                    if (webViewUrl.contains("&")) webViewUrl = webViewUrl.split("&")[0]
-                    openWebViewFragment(this, "", "${BuildConfig.WEB_VIEW_URL}$webViewUrl")
-                } catch (e: Exception) {
-                    Log.e(TAG, "switchToFragmentByDeepLink: ${e.message}", e)
-                }
-            }
-            else -> {
-                mIntentUri = null
-                launchHomeFragment()
-            }
-        }
     }
 
     private fun initializeTrueCaller() {
@@ -267,4 +232,9 @@ class LoginFragmentV2 : BaseFragment() {
                 }
             }
         }
+
+    override fun onDestroy() {
+        mViewPagerTimer?.cancel()
+        super.onDestroy()
+    }
 }

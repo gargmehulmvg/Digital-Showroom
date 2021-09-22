@@ -105,7 +105,8 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
     private fun launchHomeFragment() {
         when {
             null != mIntentUri -> switchToFragmentByDeepLink()
-            "" == getStringDataFromSharedPref(Constants.STORE_ID) -> launchFragment(OnBoardHelpScreenFragment.newInstance(), true)
+//            "" == getStringDataFromSharedPref(Constants.STORE_ID) -> launchFragment(OnBoardHelpScreenFragment.newInstance(), true)
+            "" == getStringDataFromSharedPref(Constants.STORE_ID) -> launchFragment(LoginFragmentV2.newInstance(), true)
             else -> launchFragment(HomeFragment.newInstance(), true)
         }
     }

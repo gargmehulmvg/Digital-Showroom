@@ -12,6 +12,7 @@ import androidx.viewpager.widget.PagerAdapter;
 
 import com.bumptech.glide.Glide;
 import com.digitaldukaan.R;
+import com.digitaldukaan.constants.StaticInstances;
 
 public class CustomPagerAdapter extends PagerAdapter {
 
@@ -30,16 +31,16 @@ public class CustomPagerAdapter extends PagerAdapter {
 
     @Override
     public int getCount() {
-        return 3;
+        return StaticInstances.INSTANCE.getSHelpScreenList().size();
     }
 
     @NonNull
     @Override
     public Object instantiateItem(@NonNull ViewGroup view, int position) {
         View imageLayout = inflater.inflate(R.layout.layout_help_screen_item, view, false);
-        if (null != mContext) {
+        if (mContext != null) {
             final ImageView imageView = imageLayout.findViewById(R.id.image);
-            Glide.with(mContext).load(R.drawable.ic_laptop).into(imageView);
+            Glide.with(mContext).load(StaticInstances.INSTANCE.getSHelpScreenList().get(position).getUrl()).into(imageView);
         }
         view.addView(imageLayout, 0);
         return imageLayout;

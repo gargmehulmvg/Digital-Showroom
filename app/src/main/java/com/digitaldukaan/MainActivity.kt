@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         Log.d(TAG, "appInstanceID :: ${PrefsManager.getStringDataFromSharedPref(PrefsManager.APP_INSTANCE_ID)}")
         Log.d(TAG, "userMobileNumber :: ${PrefsManager.getStringDataFromSharedPref(Constants.USER_MOBILE_NUMBER)}")
         val intentUri = intent?.data
-        launchFragment(LoginFragmentV2.newInstance(intentUri), true)
+        launchFragment(SplashFragment.newInstance(intentUri), true)
         handlingFirebaseToken()
         AppsFlyerLib.getInstance().setCustomerUserId(PrefsManager.getStringDataFromSharedPref(Constants.USER_MOBILE_NUMBER))
         CleverTapAPI.getDefaultInstance(this)?.apply {
