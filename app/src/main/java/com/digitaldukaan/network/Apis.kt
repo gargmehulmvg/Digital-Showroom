@@ -19,8 +19,7 @@ interface Apis {
     @POST("api/dotk/vc1/onboard/createStore")
     suspend fun createStore(@Body request: CreateStoreRequest?): Response<CommonApiResponse>
 
-//    @GET("api/dotk/vo1/onboard/getLoginHelpScreen")
-    @GET("api/dotk/vo1/onboard/getHelpScreens")
+    @GET("api/dotk/vo1/onboard/getLoginHelpScreen")
     suspend fun getHelpScreens(): Response<CommonApiResponse>
 
     @POST("api/dotk/vo1/onboard/validateUser")

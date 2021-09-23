@@ -88,7 +88,7 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
             if (commonResponse.mIsSuccessStatus) {
                 val listType = object : TypeToken<List<HelpScreenItemResponse>>() {}.type
                 StaticInstances.sHelpScreenList = Gson().fromJson<ArrayList<HelpScreenItemResponse>>(commonResponse.mCommonDataStr, listType)
-//                launchHomeFragment()
+                launchHomeFragment()
             } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
         }
     }
