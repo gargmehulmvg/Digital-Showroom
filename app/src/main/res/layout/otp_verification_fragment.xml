@@ -3,13 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="@dimen/_20sdp">
+    android:layout_height="match_parent">
 
     <TextView
         android:id="@+id/enterMobileNumberHeading"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_20sdp"
         android:layout_marginTop="@dimen/_40sdp"
         android:fontFamily="@font/roboto_bold"
         android:textColor="@color/dark_blackish"
@@ -23,6 +23,7 @@
         android:id="@+id/changeTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/_20sdp"
         android:fontFamily="@font/roboto_medium"
         android:textColor="@color/dark_blackish"
         android:textSize="@dimen/_12sdp"
@@ -30,43 +31,114 @@
         app:layout_constraintEnd_toEndOf="parent"
         tools:text="CHANGE?" />
 
-    <TextView
-        android:id="@+id/verifyTextView"
-        style="@style/common_text_view_background"
-        android:drawableEnd="@drawable/ic_arrow_forward_white"
-        android:drawablePadding="@dimen/_10sdp"
-        android:enabled="false"
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/verifiedOtpGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        app:constraint_referenced_ids="verifyTextViewContainer,consentCheckBox,readMoreTextView"
+        tools:layout_editor_absoluteX="26dp"
+        tools:layout_editor_absoluteY="26dp" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/verifiedTextViewContainer"
+        android:layout_width="match_parent"
+        android:visibility="gone"
+        android:layout_height="@dimen/_75sdp"
+        android:background="@color/open_green_darker"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:drawablePadding="@dimen/_10sdp"
+            android:fontFamily="@font/roboto_bold"
+            android:gravity="center"
+            android:paddingStart="@dimen/_5sdp"
+            android:paddingEnd="@dimen/_5sdp"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_16sdp"
+            app:drawableStartCompat="@drawable/ic_white_tick_small"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:text="Verified" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/verifyTextViewContainer"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/ripple_curve_grey_black_background"
         android:onClick="onClick"
+        android:paddingTop="@dimen/_10sdp"
+        android:paddingBottom="@dimen/_10sdp"
         app:layout_constraintBottom_toTopOf="@id/consentCheckBox"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:text="@string/verify" />
+        app:layout_constraintEnd_toEndOf="@+id/changeTextView"
+        app:layout_constraintStart_toStartOf="@+id/enterMobileNumberHeading">
+
+        <ProgressBar
+            android:id="@+id/verifyProgressBar"
+            android:layout_width="@dimen/_18sdp"
+            android:layout_height="@dimen/_18sdp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/verifyTextView"
+            app:layout_constraintEnd_toStartOf="@+id/verifyTextView"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/verifyTextView" />
+
+        <TextView
+            android:id="@+id/verifyTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:drawablePadding="@dimen/_10sdp"
+            android:gravity="center"
+            android:paddingStart="@dimen/_10sdp"
+            android:paddingEnd="@dimen/_10sdp"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_14sdp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/verifyProgressBar"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="@string/verify" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <CheckBox
         android:id="@+id/consentCheckBox"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp"
         android:checked="true"
-        tools:text="I consent to receive communication from Dotpe."
         android:textSize="@dimen/_9sdp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintEnd_toStartOf="@+id/readMoreTextView"
+        app:layout_constraintStart_toStartOf="@+id/verifyTextViewContainer"
+        tools:text="I consent to receive communication from Dotpe." />
 
     <TextView
         android:id="@+id/readMoreTextView"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="0dp"
-        tools:text="@string/read_more"
-        android:gravity="center_vertical"
-        android:textSize="@dimen/_9sdp"
-        android:onClick="onClick"
         android:background="?selectableItemBackground"
-        android:textColor="@color/black"
-        android:layout_marginStart="@dimen/_5sdp"
         android:fontFamily="@font/roboto_bold"
+        android:gravity="center_vertical"
+        android:onClick="onClick"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_9sdp"
         app:layout_constraintBottom_toBottomOf="@id/consentCheckBox"
-        app:layout_constraintEnd_toEndOf="@id/verifyTextView"
-        app:layout_constraintStart_toEndOf="@id/consentCheckBox"
-        app:layout_constraintTop_toTopOf="@id/consentCheckBox" />
+        app:layout_constraintEnd_toEndOf="@id/verifyTextViewContainer"
+        app:layout_constraintTop_toTopOf="@id/consentCheckBox"
+        tools:text="@string/read_more" />
 
     <com.digitaldukaan.views.OtpEditText
         android:id="@+id/otpEditText"
@@ -81,21 +153,24 @@
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="@id/changeTextView"
         app:layout_constraintStart_toStartOf="@id/enterMobileNumberHeading"
-        app:layout_constraintTop_toBottomOf="@id/enterMobileNumberHeading" />
+        app:layout_constraintTop_toBottomOf="@id/enterMobileNumberHeading"
+        tools:ignore="SpeakableTextPresentCheck" />
 
     <TextView
         android:id="@+id/resendOtpText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:text="@string/otp_auto_resend_in"
-        android:textColor="@color/black"
-        android:onClick="onClick"
         android:background="?selectableItemBackgroundBorderless"
-        android:padding="@dimen/_2sdp"
         android:fontFamily="@font/roboto_medium"
+        android:onClick="onClick"
+        android:paddingStart="@dimen/_2sdp"
+        android:paddingEnd="@dimen/_2sdp"
+        android:paddingBottom="@dimen/_20sdp"
+        android:textColor="@color/black"
         android:textSize="@dimen/_14sdp"
         app:layout_constraintEnd_toEndOf="@id/resendOtpTextView"
-        app:layout_constraintTop_toBottomOf="@id/resendOtpTextView" />
+        app:layout_constraintTop_toBottomOf="@id/resendOtpTextView"
+        tools:text="@string/otp_auto_resend_in" />
 
     <TextView
         android:id="@+id/resendOtpTextView"
@@ -104,12 +179,14 @@
         android:background="?selectableItemBackgroundBorderless"
         android:fontFamily="@font/roboto"
         android:onClick="onClick"
-        android:padding="@dimen/_2sdp"
-        android:layout_marginTop="@dimen/_10sdp"
+        android:paddingStart="@dimen/_20sdp"
+        android:paddingTop="@dimen/_20sdp"
+        android:paddingEnd="@dimen/_2sdp"
         android:textColor="@color/dark_blackish"
         android:textSize="@dimen/_11sdp"
         app:layout_constraintEnd_toEndOf="@id/otpEditText"
         app:layout_constraintTop_toBottomOf="@id/otpEditText"
+        tools:ignore="TouchTargetSizeCheck"
         tools:text="30 sec" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

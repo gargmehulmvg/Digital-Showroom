@@ -22,14 +22,14 @@ import com.google.gson.Gson
 import kotlinx.android.synthetic.main.layout_on_board_screen_dukaan_fragment.*
 
 
-class OnBoardScreenDukaanNameFragment : BaseFragment(), ICreateStoreServiceInterface {
+class DukaanNameFragment : BaseFragment(), ICreateStoreServiceInterface {
 
     private var mDukaanNameStaticData: OnBoardStep1StaticResponseData? = null
 
     companion object {
-        private val TAG = OnBoardScreenDukaanNameFragment::class.simpleName
+        private val TAG = DukaanNameFragment::class.simpleName
 
-        fun newInstance(): OnBoardScreenDukaanNameFragment = OnBoardScreenDukaanNameFragment()
+        fun newInstance(): DukaanNameFragment = DukaanNameFragment()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,7 +62,7 @@ class OnBoardScreenDukaanNameFragment : BaseFragment(), ICreateStoreServiceInter
     }
 
     private fun setupUIFromStaticData() {
-        stepOneTextView?.text = mDukaanNameStaticData?.mStepCount
+//        stepOneTextView?.text = mDukaanNameStaticData?.mStepCount
         enterDukaanNameHeading?.text = mDukaanNameStaticData?.mDukaanName
         dukaanNameEditText?.hint = mDukaanNameStaticData?.mTitleHinText
         nextTextView?.text = mDukaanNameStaticData?.mNextButton
@@ -70,9 +70,6 @@ class OnBoardScreenDukaanNameFragment : BaseFragment(), ICreateStoreServiceInter
 
     override fun onClick(view: View?) {
         when(view?.id) {
-            backImageView?.id -> {
-                mActivity?.onBackPressed()
-            }
             nextTextView?.id -> {
                 val dukanName = dukaanNameEditText?.text?.trim().toString()
                 if (dukanName.isEmpty()) {

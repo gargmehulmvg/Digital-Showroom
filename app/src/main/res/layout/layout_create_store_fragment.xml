@@ -4,16 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <ImageView
-        android:layout_width="@dimen/_400sdp"
-        android:layout_height="@dimen/_400sdp"
-        android:layout_marginBottom="54dp"
-        android:src="@drawable/circle_green_banner"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout5"
         android:layout_width="match_parent"
@@ -48,13 +38,13 @@
             android:id="@+id/progressBarStyleHorizontal"
             style="?android:progressBarStyleHorizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/_4sdp"
             android:layout_margin="@dimen/_30sdp"
             android:indeterminate="true"
             android:indeterminateDrawable="@drawable/custom_green_horizontal_progress_bar"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/materialTextView4" />
+            app:layout_constraintTop_toBottomOf="@id/materialTextView4" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

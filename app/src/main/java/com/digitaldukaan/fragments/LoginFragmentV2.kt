@@ -36,24 +36,20 @@ import java.util.*
 class LoginFragmentV2 : BaseFragment() {
 
     private var mIsDoublePressToExit = false
-    private var mMobileNumber = ""
     private var mIsMobileNumberSearchingDone = false
     private var mViewPagerTimer: Timer? = null
 
     companion object {
         private val TAG = LoginFragmentV2::class.simpleName
         private const val USE_ANOTHER_NUMBER = 14
+        private var mMobileNumber = ""
 
         fun newInstance(): LoginFragmentV2 {
             return LoginFragmentV2()
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.layout_login_fragment_v2, container, false)
         hideBottomNavigationView(true)
         return mContentView
@@ -83,11 +79,23 @@ class LoginFragmentV2 : BaseFragment() {
                 }
 
                 override fun afterTextChanged(editable: Editable?) {
-                    val str = editable?.toString() ?: ""
-                    otpTextView?.isEnabled = isNotEmpty(str)
+                    mMobileNumber = editable?.toString() ?: ""
+                    otpTextView?.isEnabled = isNotEmpty(mMobileNumber)
                 }
 
             })
+        }
+        Log.d(TAG, "onViewCreated: mMobileNumber :: $mMobileNumber")
+        if (isNotEmpty(mMobileNumber)) {
+            mobileNumberTextView?.visibility = View.GONE
+            mobileNumberEditText?.apply {
+                visibility = View.VISIBLE
+                setText(mMobileNumber)
+                setOnEditorActionListener { _, actionId, _ ->
+                    if (EditorInfo.IME_ACTION_DONE == actionId) otpTextView?.callOnClick()
+                    true
+                }
+            }
         }
     }
 
@@ -122,6 +130,7 @@ class LoginFragmentV2 : BaseFragment() {
             mobileNumberTextView?.id -> {
                 mobileNumberTextView?.visibility = View.GONE
                 mobileNumberEditText?.apply {
+                    text = null
                     visibility = View.VISIBLE
                     setOnEditorActionListener { _, actionId, _ ->
                         if (EditorInfo.IME_ACTION_DONE == actionId) otpTextView?.callOnClick()

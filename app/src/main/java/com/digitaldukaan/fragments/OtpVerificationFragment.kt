@@ -5,6 +5,8 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -103,18 +105,28 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
 
     override fun onClick(view: View?) {
         when (view?.id) {
-            verifyTextView?.id -> {
+            verifyTextViewContainer?.id -> {
                 if (!isInternetConnectionAvailable(mActivity)) {
                     showNoInternetConnectionDialog()
                     return
                 }
                 Log.d(OtpVerificationFragment::class.simpleName, "onClick: clicked")
                 mIsServerCallInitiated = true
-                showProgressDialog(mActivity, mOtpStaticResponseData?.mVerifyingText)
-                val otpInt: Int
                 try {
-                    otpInt = mEnteredOtpStr.toInt()
-                    //mOtpVerificationService?.verifyOTP(mMobileNumberStr, otpInt)
+                    val otpInt: Int = if (isEmpty(mEnteredOtpStr)) 0 else mEnteredOtpStr.toInt()
+//                    showProgressDialog(mActivity, mOtpStaticResponseData?.mVerifyingText)
+//                    mOtpVerificationService?.verifyOTP(mMobileNumberStr, otpInt)
+                    verifyTextView?.text = "Verifying"
+                    verifyProgressBar?.visibility = View.VISIBLE
+                    verifyProgressBar?.indeterminateDrawable?.setColorFilter(Color.WHITE, android.graphics.PorterDuff.Mode.MULTIPLY)
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        verifiedOtpGroup?.visibility = View.GONE
+                        verifiedTextViewContainer?.visibility = View.VISIBLE
+                    }, 3000L)
+                    Handler(Looper.getMainLooper()).postDelayed({
+//                        launchFragment(DukaanNameFragment.newInstance(), true)
+                        launchFragment(CreateStoreFragment.newInstance(), true)
+                    }, 3000L)
                 } catch (e: Exception) {
                     Log.e(TAG, "onClick: ${e.message}", e)
                 }
@@ -167,6 +179,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
         setupUIFromStaticResponse()
         otpEditText?.setOtpFilledListener(this)
         startCountDownTimer()
+        verifyProgressBar?.visibility = View.GONE
     }
 
     private fun startCountDownTimer() {
@@ -242,7 +255,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
                         AFInAppEventParameterName.PHONE to mMobileNumberStr,
                         AFInAppEventParameterName.IS_CONSENT to if (mIsConsentTakenFromUser) "1" else "0")
                 )
-                if (null == validateOtpResponse.mStore && mIsNewUser) launchFragment(OnBoardScreenDukaanNameFragment.newInstance(), true) else launchFragment(HomeFragment(), true)
+                if (null == validateOtpResponse.mStore && mIsNewUser) launchFragment(DukaanNameFragment.newInstance(), true) else launchFragment(HomeFragment(), true)
             }
         }
     }

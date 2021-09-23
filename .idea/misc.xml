@@ -4,6 +4,12 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="app/src/main/res/drawable/curve_black_background_selector.xml" value="0.4338461538461538" />
+        <entry key="app/src/main/res/drawable/curve_green_dotted_border_green_background.xml" value="0.36875" />
+        <entry key="app/src/main/res/drawable/curve_grey_background.xml" value="0.31851851851851853" />
+        <entry key="app/src/main/res/drawable/curve_light_green_background.xml" value="0.31851851851851853" />
+        <entry key="app/src/main/res/drawable/custom_green_horizontal_progress_bar.xml" value="0.36875" />
+        <entry key="app/src/main/res/drawable/ic_on_board_dukaan_name.xml" value="0.36875" />
+        <entry key="app/src/main/res/drawable/ic_white_tick.xml" value="0.36875" />
         <entry key="app/src/main/res/drawable/ripple_curve_grey_black_background.xml" value="0.4338461538461538" />
         <entry key="app/src/main/res/drawable/ripple_slight_curve_grey_black_background.xml" value="0.32664092664092664" />
         <entry key="app/src/main/res/drawable/ripple_slight_curve_grey_white_background.xml" value="0.32664092664092664" />
@@ -11,14 +17,22 @@
         <entry key="app/src/main/res/drawable/ripple_slight_curve_white_background_black_border.xml" value="0.4338461538461538" />
         <entry key="app/src/main/res/drawable/ripple_slight_curve_white_background_grey_border.xml" value="0.2388888888888889" />
         <entry key="app/src/main/res/drawable/slight_curve_black_border.xml" value="0.32664092664092664" />
+        <entry key="app/src/main/res/layout/dialog_user_consent.xml" value="0.35260416666666666" />
+        <entry key="app/src/main/res/layout/layout_create_store_fragment.xml" value="0.35260416666666666" />
         <entry key="app/src/main/res/layout/layout_help_screen_item.xml" value="0.35260416666666666" />
         <entry key="app/src/main/res/layout/layout_login_fragment.xml" value="0.3020833333333333" />
         <entry key="app/src/main/res/layout/layout_login_fragment_v2.xml" value="0.318359375" />
         <entry key="app/src/main/res/layout/layout_on_board_help_screen.xml" value="0.3020833333333333" />
+        <entry key="app/src/main/res/layout/layout_on_board_screen_dukaan_fragment.xml" value="0.35260416666666666" />
         <entry key="app/src/main/res/layout/layout_splash_fragment.xml" value="0.3020833333333333" />
         <entry key="app/src/main/res/layout/otp_verification_fragment.xml" value="0.35260416666666666" />
       </map>
     </option>
+  </component>
+  <component name="EntryPointsManager">
+    <list size="1">
+      <item index="0" class="java.lang.String" itemvalue="retrofit2.http.GET" />
+    </list>
   </component>
   <component name="MavenImportPreferences">
     <option name="generalSettings">
