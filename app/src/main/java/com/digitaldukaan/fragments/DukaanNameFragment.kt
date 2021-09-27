@@ -105,12 +105,12 @@ class DukaanNameFragment : BaseFragment(), ICreateStoreServiceInterface {
         }
     }
 
-    override fun onCreateStoreResponse(response: CommonApiResponse) {
+    override fun onCreateStoreResponse(commonApiResponse: CommonApiResponse) {
         stopProgress()
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            if (response.mIsSuccessStatus) {
-                showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
-                val createStoreResponse = Gson().fromJson<CreateStoreResponse>(response.mCommonDataStr, CreateStoreResponse::class.java)
+            if (commonApiResponse.mIsSuccessStatus) {
+                showShortSnackBar(commonApiResponse.mMessage, true, R.drawable.ic_check_circle)
+                val createStoreResponse = Gson().fromJson<CreateStoreResponse>(commonApiResponse.mCommonDataStr, CreateStoreResponse::class.java)
                 PrefsManager.storeStringDataInSharedPref(Constants.STORE_ID, "${createStoreResponse.storeId}")
                 PrefsManager.storeStringDataInSharedPref(Constants.STORE_NAME, "${createStoreResponse.storeInfo?.name}")
                 AppEventsManager.pushAppEvents(
@@ -127,7 +127,7 @@ class DukaanNameFragment : BaseFragment(), ICreateStoreServiceInterface {
                     )
                 )
                 launchFragment(CreateStoreFragment.newInstance(), true)
-            } else showShortSnackBar(response.mMessage, true, R.drawable.ic_close_red)
+            } else showShortSnackBar(commonApiResponse.mMessage, true, R.drawable.ic_close_red)
         }
     }
 
