@@ -3,47 +3,57 @@ package com.digitaldukaan.models.response
 import com.google.gson.annotations.SerializedName
 
 data class StaticTextResponse(
-    @SerializedName("auth_new")                 var mAuthNew: AuthNewResponseData,
-    @SerializedName("login")                    var mLoginStaticText: LoginStaticText,
-    @SerializedName("business_name")            var mBusinessNameStaticText: BusinessNameStaticText,
-    @SerializedName("profile")                  var mProfileStaticData: ProfileStaticData,
-    @SerializedName("verify_otp")               var mVerifyOtpStaticData: VerifyOtpStaticResponseData,
-    @SerializedName("onbording_step_one")       var mOnBoardStep1StaticData: OnBoardStep1StaticResponseData,
-    @SerializedName("onboarding_step_two")      var mOnBoardStep2StaticData: OnBoardStep2StaticResponseData,
-    @SerializedName("merchant_address")         var mMapStaticData: MapLocationStaticResponseData
+    @SerializedName("auth_new")                         var mAuthNew: AuthNewResponseData,
+    @SerializedName("login")                            var mLoginStaticText: LoginStaticText,
+    @SerializedName("business_name")                    var mBusinessNameStaticText: BusinessNameStaticText,
+    @SerializedName("profile")                          var mProfileStaticData: ProfileStaticData,
+    @SerializedName("verify_otp")                       var mVerifyOtpStaticData: VerifyOtpStaticResponseData,
+    @SerializedName("onbording_step_one")               var mOnBoardStep1StaticData: OnBoardStep1StaticResponseData,
+    @SerializedName("onboarding_step_two")              var mOnBoardStep2StaticData: OnBoardStep2StaticResponseData,
+    @SerializedName("merchant_address")                 var mMapStaticData: MapLocationStaticResponseData,
+    @SerializedName("catalog_add")                      var mCatalogStaticData: CatalogStaticData
 )
 
 data class ProfileStaticData(
-    @SerializedName("save_changes_text")            var saveChanges: String?,
-    @SerializedName("store_description_hint_text")  var storeDescriptionHint: String?
+    @SerializedName("save_changes_text")                var saveChanges: String?,
+    @SerializedName("store_description_hint_text")      var storeDescriptionHint: String?
+)
+
+data class CatalogStaticData(
+    @SerializedName("upload_img_heading")               var uploadImageHeading: String?,
+    @SerializedName("take_photo")                       var takePhoto: String?,
+    @SerializedName("search_img")                       var searchImageSubTitle: String?,
+    @SerializedName("remove_image")                     var removeImageText: String?,
+    @SerializedName("search_img_placeholder")           var searchImageHint: String?,
+    @SerializedName("add_gallery")                      var addGallery: String?
 )
 
 data class MapLocationStaticResponseData(
-    @SerializedName("address_error")                var addressError: String?,
-    @SerializedName("city_text_hint")               var cityTextHint: String?,
-    @SerializedName("complete_address_text_hint")   var completeAddressHint: String?,
-    @SerializedName("enable_location")              var enableLocation: String?,
-    @SerializedName("pin_drag_text")                var pinDragText: String?,
-    @SerializedName("pincode_text_hint")            var pinCodeTextHint: String?,
-    @SerializedName("save_changes_text")            var saveChangesText: String?,
-    @SerializedName("set_location_text")            var setLocationText: String?,
-    @SerializedName("store_location_text")          var storeLocationText: String?
+    @SerializedName("address_error")                    var addressError: String?,
+    @SerializedName("city_text_hint")                   var cityTextHint: String?,
+    @SerializedName("complete_address_text_hint")       var completeAddressHint: String?,
+    @SerializedName("enable_location")                  var enableLocation: String?,
+    @SerializedName("pin_drag_text")                    var pinDragText: String?,
+    @SerializedName("pincode_text_hint")                var pinCodeTextHint: String?,
+    @SerializedName("save_changes_text")                var saveChangesText: String?,
+    @SerializedName("set_location_text")                var setLocationText: String?,
+    @SerializedName("store_location_text")              var storeLocationText: String?
 )
 
 data class AuthNewResponseData(
-    @SerializedName("btn_txt")                      var mButtonText: String?,
-    @SerializedName("input_txt")                    var mInputText: String?,
-    @SerializedName("sub_heading")                  var mSubHeadingText: String?,
-    @SerializedName("heading")                      var mHeadingText: String?
+    @SerializedName("btn_txt")                          var mButtonText: String?,
+    @SerializedName("input_txt")                        var mInputText: String?,
+    @SerializedName("sub_heading")                      var mSubHeadingText: String?,
+    @SerializedName("heading")                          var mHeadingText: String?
 )
 
 data class BusinessNameStaticText(
-    @SerializedName("heading_page")                 var heading_page: String?,
-    @SerializedName("hint_enter_here")              var hint_enter_here: String?,
-    @SerializedName("cta_text")                     var cta_text: String?,
-    @SerializedName("error_mandatory_field")        var error_mandatory_field: String?,
-    @SerializedName("message_create_store_success") var message_create_store_success: String?,
-    @SerializedName("sub_heading_page")             var sub_heading_page: String?
+    @SerializedName("heading_page")                     var heading_page: String?,
+    @SerializedName("hint_enter_here")                  var hint_enter_here: String?,
+    @SerializedName("cta_text")                         var cta_text: String?,
+    @SerializedName("error_mandatory_field")            var error_mandatory_field: String?,
+    @SerializedName("message_create_store_success")     var message_create_store_success: String?,
+    @SerializedName("sub_heading_page")                 var sub_heading_page: String?
 )
 
 data class LoginStaticText(

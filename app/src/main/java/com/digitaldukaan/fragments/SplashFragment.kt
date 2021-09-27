@@ -102,7 +102,6 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
     private fun launchHomeFragment() {
         when {
             null != mIntentUri -> switchToFragmentByDeepLink()
-//            "" == getStringDataFromSharedPref(Constants.STORE_ID) -> launchFragment(OnBoardHelpScreenFragment.newInstance(), true)
             "" == getStringDataFromSharedPref(Constants.STORE_ID) -> launchFragment(LoginFragmentV2.newInstance(), true)
             else -> launchFragment(HomeFragment.newInstance(), true)
         }
@@ -148,7 +147,7 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
             intentUriStr.contains("${deepLinkStr}OrderList") -> launchFragment(HomeFragment.newInstance(), true)
             intentUriStr.contains("${deepLinkStr}ProductAdd") -> launchFragment(ProductFragment.newInstance(), true)
             intentUriStr.contains("${deepLinkStr}MarketingBroadCast") -> launchFragment(MarketingFragment.newInstance(), true)
-            intentUriStr.contains("${deepLinkStr}OTP") -> launchFragment(LoginFragment.newInstance(), true)
+            intentUriStr.contains("${deepLinkStr}OTP") -> launchFragment(LoginFragmentV2.newInstance(), true)
             intentUriStr.contains("${deepLinkStr}PaymentOptions") -> launchFragment(PaymentModesFragment.newInstance(), true)
             intentUriStr.contains("${deepLinkStr}Webview") -> {
                 try {

@@ -168,12 +168,12 @@
         android:paddingBottom="@dimen/_20sdp"
         android:textColor="@color/black"
         android:textSize="@dimen/_14sdp"
-        app:layout_constraintEnd_toEndOf="@id/resendOtpTextView"
-        app:layout_constraintTop_toBottomOf="@id/resendOtpTextView"
+        app:layout_constraintEnd_toEndOf="@id/counterTextView"
+        app:layout_constraintTop_toBottomOf="@id/counterTextView"
         tools:text="@string/otp_auto_resend_in" />
 
     <TextView
-        android:id="@+id/resendOtpTextView"
+        android:id="@+id/counterTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="?selectableItemBackgroundBorderless"

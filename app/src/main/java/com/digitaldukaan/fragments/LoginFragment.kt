@@ -184,7 +184,7 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
             )
             showProgressDialog(mActivity)
             mActivity?.let { context -> UIUtil.hideKeyboard(context) }
-//            mLoginService.generateOTP(mobileNumber)
+            mLoginService.generateOTP(mobileNumber)
             launchFragment(OtpVerificationFragment.newInstance(mobileNumberEditText?.text?.trim().toString()), true)
         }
     }
@@ -316,7 +316,5 @@ class LoginFragment : BaseFragment(), ILoginServiceInterface {
         }
     }
 
-    override fun onGenerateOTPException(e: Exception) {
-        exceptionHandlingForAPIResponse(e)
-    }
+    override fun onGenerateOTPException(e: Exception) = exceptionHandlingForAPIResponse(e)
 }

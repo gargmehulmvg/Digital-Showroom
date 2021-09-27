@@ -96,11 +96,15 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
     }
 
     private fun setupUIFromStaticResponse() {
-        val headingStr = "${mOtpStaticResponseData?.mHeadingText}\n$mMobileNumberStr"
-        enterMobileNumberHeading?.text = headingStr
-        verifyTextView?.text = mOtpStaticResponseData?.mVerifyText
-        readMoreTextView?.setHtmlData(mOtpStaticResponseData?.mReadMore)
-        consentCheckBox?.text = mOtpStaticResponseData?.mHeadingMessage
+        mOtpStaticResponseData?.let { data ->
+            val headingStr = "${data.heading_otp_sent_to}\n$mMobileNumberStr"
+            enterMobileNumberHeading?.text = headingStr
+            changeTextView?.text = data.text_change_caps
+            resendOtpText?.text = data.text_send_again
+            verifyTextView?.text = data.mVerifyText
+            readMoreTextView?.setHtmlData(data.mReadMore)
+            consentCheckBox?.text = data.mHeadingMessage
+        }
     }
 
     override fun onClick(view: View?) {
@@ -124,14 +128,14 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
                         verifiedTextViewContainer?.visibility = View.VISIBLE
                     }, 3000L)
                     Handler(Looper.getMainLooper()).postDelayed({
-//                        launchFragment(DukaanNameFragment.newInstance(), true)
-                        launchFragment(CreateStoreFragment.newInstance(), true)
+                        launchFragment(DukaanNameFragment.newInstance(), true)
+//                        launchFragment(CreateStoreFragment.newInstance(), true)
                     }, 3000L)
                 } catch (e: Exception) {
                     Log.e(TAG, "onClick: ${e.message}", e)
                 }
             }
-            resendOtpTextView?.id -> if (mTimerCompleted) {
+            counterTextView?.id -> if (mTimerCompleted) {
                 resendOtpText?.text = null
                 startCountDownTimer()
                 if (!isInternetConnectionAvailable(mActivity)) {
@@ -188,15 +192,15 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
                 mTimerCompleted = false
                 CoroutineScopeUtils().runTaskOnCoroutineMain {
                     val secRemaining = "00:${(millisUntilFinished / 1000)}"
-                    resendOtpTextView?.text = secRemaining
+                    counterTextView?.text = secRemaining
                 }
             }
 
             override fun onFinish() {
                 CoroutineScopeUtils().runTaskOnCoroutineMain {
                     mTimerCompleted = true
-//                    resendOtpTextView?.text = mOtpStaticResponseData?.mResendButtonText
-                    resendOtpTextView?.text = "Did not receive OTP?"
+//                    counterTextView?.text = mOtpStaticResponseData?.mResendButtonText
+                    counterTextView?.text = "Did not receive OTP?"
                     resendOtpText?.text = "Send Again"
                 }
             }
