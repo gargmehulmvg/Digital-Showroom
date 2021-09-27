@@ -205,9 +205,9 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
             }
 
             override fun afterTextChanged(editable: Editable?) {
-                val str = editable?.toString() ?: ""
-                if (isNotEmpty(str) && str.length == mActivity?.resources?.getInteger(R.integer.otp_length)) {
-                    onOTPFilledListener(str)
+                mEnteredOtpStr = editable?.toString() ?: ""
+                if (isNotEmpty(mEnteredOtpStr) && mActivity?.resources?.getInteger(R.integer.otp_length) == mEnteredOtpStr.length) {
+                    onOTPFilledListener(mEnteredOtpStr)
                 }
             }
 
@@ -312,6 +312,8 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             otpEditText?.text = null
+            verifyTextView?.text = mOtpStaticResponseData?.mVerifyText
+            verifyProgressBar?.visibility = View.GONE
             showShortSnackBar(validateOtpErrorResponse.mMessage, true, R.drawable.ic_close_red)
         }
     }
@@ -327,15 +329,11 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
         }
     }
 
-    override fun onGenerateOTPResponse(generateOtpResponse: GenerateOtpResponse) {
-        stopProgress()
-    }
+    override fun onGenerateOTPResponse(generateOtpResponse: GenerateOtpResponse) = stopProgress()
 
     override fun onValidateUserResponse(validateUserResponse: CommonApiResponse) {
         Log.d(TAG, "onValidateUserResponse: do nothing")
     }
 
-    override fun onGenerateOTPException(e: Exception) {
-        exceptionHandlingForAPIResponse(e)
-    }
+    override fun onGenerateOTPException(e: Exception) = exceptionHandlingForAPIResponse(e)
 }

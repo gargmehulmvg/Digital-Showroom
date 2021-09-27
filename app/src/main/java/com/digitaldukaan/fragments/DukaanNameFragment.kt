@@ -94,8 +94,8 @@ class DukaanNameFragment : BaseFragment(), ICreateStoreServiceInterface {
                             referencePhone = StaticInstances.sAppFlyerRefMobileNumber,
                             appsflyerId = AppsFlyerLib.getInstance().getAttributionId(mActivity),
                             cleverTapId = StaticInstances.sCleverTapId,
-                            latitude = 0,
-                            longitude = 0
+                            latitude = 0.0,
+                            longitude = 0.0
                         )
                         showProgressDialog(mActivity)
                         service.createStore(request)
@@ -126,7 +126,6 @@ class DukaanNameFragment : BaseFragment(), ICreateStoreServiceInterface {
                         AFInAppEventParameterName.REFERENCE_PHONE   to ""
                     )
                 )
-//                launchFragment(OnBoardScreenDukaanLocationFragment(), true)
                 launchFragment(CreateStoreFragment.newInstance(), true)
             } else showShortSnackBar(response.mMessage, true, R.drawable.ic_close_red)
         }

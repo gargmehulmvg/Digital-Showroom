@@ -11,6 +11,6 @@ data class CreateStoreRequest(
     @SerializedName("reference_phone")  var referencePhone: String?,
     @SerializedName("appsflyer_id")     var appsflyerId: String?,
     @SerializedName("clevertap_id")     var cleverTapId: String?,
-    @SerializedName("lng")              var longitude: Long,
-    @SerializedName("lat")              var latitude: Long
+    @SerializedName("longitude")        var longitude: Double,
+    @SerializedName("latitude")         var latitude: Double
 )
