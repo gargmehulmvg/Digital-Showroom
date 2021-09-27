@@ -97,11 +97,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.layout_home_fragment, container, false)
         if (!askContactPermission()) if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else {
             if (orderPageInfoResponse == null) {
@@ -158,9 +154,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         })
         ordersRecyclerView?.apply {
             isNestedScrollingEnabled = false
-            mActivity?.run {
-                orderAdapter = OrderAdapterV2(this, mOrderList)
-            }
+            mActivity?.let { context -> orderAdapter = OrderAdapterV2(context, mOrderList) }
             orderAdapter.setCheckBoxListener(this@HomeFragment)
             linearLayoutManager = LinearLayoutManager(mActivity)
             layoutManager = linearLayoutManager
@@ -169,9 +163,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         }
         completedOrdersRecyclerView?.apply {
             isNestedScrollingEnabled = false
-            mActivity?.run {
-                completedOrderAdapter = OrderAdapterV2(this, mCompletedOrderList)
-            }
+            mActivity?.let { context -> completedOrderAdapter = OrderAdapterV2(context, mCompletedOrderList) }
             completedOrderAdapter.setCheckBoxListener(this@HomeFragment)
             linearLayoutManager = LinearLayoutManager(mActivity)
             layoutManager = linearLayoutManager
@@ -764,6 +756,24 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                             ), true
                         )
                     }
+                }
+            }.show()
+        }
+    }
+
+    private fun showCustomDomainBottomSheet() {
+        mActivity?.let {
+            val bottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
+            val view = LayoutInflater.from(it).inflate(
+                R.layout.bottom_sheet_custom_domain_selection,
+                it.findViewById(R.id.bottomSheetContainer)
+            )
+            bottomSheetDialog.apply {
+                setContentView(view)
+                behavior.state = BottomSheetBehavior.STATE_EXPANDED
+                view?.run {
+                    val bottomSheetClose: View = findViewById(R.id.bottomSheetClose)
+
                 }
             }.show()
         }
