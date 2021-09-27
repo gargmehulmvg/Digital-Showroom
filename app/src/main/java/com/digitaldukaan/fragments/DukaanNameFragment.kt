@@ -12,19 +12,19 @@ import com.appsflyer.AppsFlyerLib
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.models.request.CreateStoreRequest
+import com.digitaldukaan.models.response.BusinessNameStaticText
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.CreateStoreResponse
-import com.digitaldukaan.models.response.OnBoardStep1StaticResponseData
 import com.digitaldukaan.services.CreateStoreService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.ICreateStoreServiceInterface
 import com.google.gson.Gson
-import kotlinx.android.synthetic.main.layout_on_board_screen_dukaan_fragment.*
+import kotlinx.android.synthetic.main.layout_dukaan_name_fragment.*
 
 
 class DukaanNameFragment : BaseFragment(), ICreateStoreServiceInterface {
 
-    private var mDukaanNameStaticData: OnBoardStep1StaticResponseData? = null
+    private var mDukaanNameStaticData: BusinessNameStaticText? = null
 
     companion object {
         private val TAG = DukaanNameFragment::class.simpleName
@@ -38,8 +38,8 @@ class DukaanNameFragment : BaseFragment(), ICreateStoreServiceInterface {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        mContentView = inflater.inflate(R.layout.layout_on_board_screen_dukaan_fragment, container, false)
-        mDukaanNameStaticData = StaticInstances.sStaticData?.mOnBoardStep1StaticData
+        mContentView = inflater.inflate(R.layout.layout_dukaan_name_fragment, container, false)
+        mDukaanNameStaticData = StaticInstances.sStaticData?.mBusinessNameStaticText
         return mContentView
     }
 
@@ -62,10 +62,10 @@ class DukaanNameFragment : BaseFragment(), ICreateStoreServiceInterface {
     }
 
     private fun setupUIFromStaticData() {
-//        stepOneTextView?.text = mDukaanNameStaticData?.mStepCount
-        enterDukaanNameHeading?.text = mDukaanNameStaticData?.mDukaanName
-        dukaanNameEditText?.hint = mDukaanNameStaticData?.mTitleHinText
-        nextTextView?.text = mDukaanNameStaticData?.mNextButton
+        enterDukaanNameHeading?.text = mDukaanNameStaticData?.heading_page
+        subHeadingTextView?.text = mDukaanNameStaticData?.sub_heading_page
+        dukaanNameEditText?.hint = mDukaanNameStaticData?.hint_enter_here
+        nextTextView?.text = mDukaanNameStaticData?.cta_text
     }
 
     override fun onClick(view: View?) {
@@ -86,14 +86,16 @@ class DukaanNameFragment : BaseFragment(), ICreateStoreServiceInterface {
                         service.setServiceInterface(this)
                         val storeIdStr = PrefsManager.getStringDataFromSharedPref(Constants.USER_ID)
                         val request = CreateStoreRequest(
-                            PrefsManager.getStringDataFromSharedPref(Constants.USER_MOBILE_NUMBER),
-                            if (storeIdStr.isNotEmpty()) storeIdStr.toInt() else 0,
-                            dukanName,
-                            Constants.APP_SECRET_KEY,
-                            1,
-                            StaticInstances.sAppFlyerRefMobileNumber,
-                            AppsFlyerLib.getInstance().getAttributionId(mActivity),
-                            StaticInstances.sCleverTapId
+                            phone = PrefsManager.getStringDataFromSharedPref(Constants.USER_MOBILE_NUMBER),
+                            userId = if (storeIdStr.isNotEmpty()) storeIdStr.toInt() else 0,
+                            storeName = dukanName,
+                            secretKey = Constants.APP_SECRET_KEY,
+                            languageId = 1,
+                            referencePhone = StaticInstances.sAppFlyerRefMobileNumber,
+                            appsflyerId = AppsFlyerLib.getInstance().getAttributionId(mActivity),
+                            cleverTapId = StaticInstances.sCleverTapId,
+                            latitude = 0,
+                            longitude = 0
                         )
                         showProgressDialog(mActivity)
                         service.createStore(request)
@@ -124,7 +126,8 @@ class DukaanNameFragment : BaseFragment(), ICreateStoreServiceInterface {
                         AFInAppEventParameterName.REFERENCE_PHONE   to ""
                     )
                 )
-                launchFragment(OnBoardScreenDukaanLocationFragment(), true)
+//                launchFragment(OnBoardScreenDukaanLocationFragment(), true)
+                launchFragment(CreateStoreFragment.newInstance(), true)
             } else showShortSnackBar(response.mMessage, true, R.drawable.ic_close_red)
         }
     }

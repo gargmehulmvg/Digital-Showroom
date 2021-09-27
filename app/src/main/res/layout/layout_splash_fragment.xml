@@ -28,7 +28,7 @@
         android:textColor="@color/black"
         android:padding="@dimen/_2sdp"
         android:textSize="@dimen/_16sdp"
-        app:layout_constraintBottom_toTopOf="@+id/splashBottomImageView"
+        app:layout_constraintBottom_toTopOf="@id/splashBottomImageView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.45"
         app:layout_constraintStart_toStartOf="parent" />
@@ -38,9 +38,9 @@
         android:layout_height="@dimen/_25sdp"
         android:padding="@dimen/_2sdp"
         android:src="@drawable/indian_flag"
-        app:layout_constraintBottom_toBottomOf="@+id/madeInIndiaTextView"
-        app:layout_constraintStart_toEndOf="@+id/madeInIndiaTextView"
-        app:layout_constraintTop_toTopOf="@+id/madeInIndiaTextView"
+        app:layout_constraintBottom_toBottomOf="@id/madeInIndiaTextView"
+        app:layout_constraintStart_toEndOf="@id/madeInIndiaTextView"
+        app:layout_constraintTop_toTopOf="@id/madeInIndiaTextView"
         android:contentDescription="@string/image_view_content_description" />
 
     <com.google.android.material.imageview.ShapeableImageView

@@ -7,6 +7,8 @@ import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Handler
 import android.os.Looper
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -99,8 +101,8 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
         mOtpStaticResponseData?.let { data ->
             val headingStr = "${data.heading_otp_sent_to}\n$mMobileNumberStr"
             enterMobileNumberHeading?.text = headingStr
+            otpEditText?.hint = data.hint_enter_4_digit_otp
             changeTextView?.text = data.text_change_caps
-            resendOtpText?.text = data.text_send_again
             verifyTextView?.text = data.mVerifyText
             readMoreTextView?.setHtmlData(data.mReadMore)
             consentCheckBox?.text = data.mHeadingMessage
@@ -117,20 +119,30 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
                 Log.d(OtpVerificationFragment::class.simpleName, "onClick: clicked")
                 mIsServerCallInitiated = true
                 try {
+                    if (isEmpty(mEnteredOtpStr)) {
+                        otpEditText?.apply {
+                            text = null
+                            requestFocus()
+                            showKeyboard()
+                            error = mOtpStaticResponseData?.error_mandatory_field
+                        }
+                        return
+                    }
+                    if (mActivity?.resources?.getInteger(R.integer.otp_length) != mEnteredOtpStr.length) {
+                        otpEditText?.apply {
+                            text = null
+                            requestFocus()
+                            showKeyboard()
+                            error = mOtpStaticResponseData?.error_otp_not_valid
+                        }
+                        return
+                    }
                     val otpInt: Int = if (isEmpty(mEnteredOtpStr)) 0 else mEnteredOtpStr.toInt()
-//                    showProgressDialog(mActivity, mOtpStaticResponseData?.mVerifyingText)
-//                    mOtpVerificationService?.verifyOTP(mMobileNumberStr, otpInt)
-                    verifyTextView?.text = "Verifying"
+                    showProgressDialog(mActivity, mOtpStaticResponseData?.mVerifyingText)
+                    mOtpVerificationService?.verifyOTP(mMobileNumberStr, otpInt)
+                    verifyTextView?.text = mOtpStaticResponseData?.mVerifyingText
                     verifyProgressBar?.visibility = View.VISIBLE
                     verifyProgressBar?.indeterminateDrawable?.setColorFilter(Color.WHITE, android.graphics.PorterDuff.Mode.MULTIPLY)
-                    Handler(Looper.getMainLooper()).postDelayed({
-                        verifiedOtpGroup?.visibility = View.GONE
-                        verifiedTextViewContainer?.visibility = View.VISIBLE
-                    }, 3000L)
-                    Handler(Looper.getMainLooper()).postDelayed({
-                        launchFragment(DukaanNameFragment.newInstance(), true)
-//                        launchFragment(CreateStoreFragment.newInstance(), true)
-                    }, 3000L)
                 } catch (e: Exception) {
                     Log.e(TAG, "onClick: ${e.message}", e)
                 }
@@ -181,9 +193,25 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         setupUIFromStaticResponse()
-        otpEditText?.setOtpFilledListener(this)
         startCountDownTimer()
         verifyProgressBar?.visibility = View.GONE
+        otpEditText?.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                Log.d(TAG, "beforeTextChanged: do nothing")
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                Log.d(TAG, "onTextChanged: do nothing")
+            }
+
+            override fun afterTextChanged(editable: Editable?) {
+                val str = editable?.toString() ?: ""
+                if (isNotEmpty(str) && str.length == mActivity?.resources?.getInteger(R.integer.otp_length)) {
+                    onOTPFilledListener(str)
+                }
+            }
+
+        })
     }
 
     private fun startCountDownTimer() {
@@ -199,9 +227,8 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
             override fun onFinish() {
                 CoroutineScopeUtils().runTaskOnCoroutineMain {
                     mTimerCompleted = true
-//                    counterTextView?.text = mOtpStaticResponseData?.mResendButtonText
-                    counterTextView?.text = "Did not receive OTP?"
-                    resendOtpText?.text = "Send Again"
+                    counterTextView?.text = mOtpStaticResponseData?.text_did_not_receive_otp
+                    resendOtpText?.text = mOtpStaticResponseData?.text_send_again
                 }
             }
         }
@@ -210,7 +237,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
 
     override fun onStart() {
         super.onStart()
-        otpEditText?.clearOTP()
+        otpEditText?.text = null
     }
 
     override fun onDestroy() {
@@ -221,8 +248,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
     override fun onOTPFilledListener(otpStr: String) {
         mEnteredOtpStr = otpStr
         otpEditText?.hideKeyboard()
-        verifyTextView?.isEnabled = true
-        if (!mIsServerCallInitiated) verifyTextView?.callOnClick()
+        verifyTextViewContainer?.callOnClick()
     }
 
     override fun onOTPVerificationSuccessResponse(validateOtpResponse: ValidateOtpResponse) {
@@ -231,12 +257,13 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
             mCountDownTimer?.cancel()
             if (!validateOtpResponse.mIsSuccessStatus) {
                 stopProgress()
-                otpEditText?.clearOTP()
+                otpEditText?.text = null
+                verifyProgressBar?.visibility = View.GONE
+                verifyTextView?.text = mOtpStaticResponseData?.mVerifyText
                 showShortSnackBar(validateOtpResponse.mMessage, true, R.drawable.ic_close_red)
             } else {
                 mIsNewUser = validateOtpResponse.mIsNewUser
                 stopProgress()
-                showToast(validateOtpResponse.mMessage)
                 saveUserDetailsInPref(validateOtpResponse)
                 val cleverTapProfile = CleverTapProfile()
                 cleverTapProfile.mShopName = validateOtpResponse.mStore?.storeInfo?.name
@@ -247,8 +274,8 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
                 cleverTapProfile.mIdentity = validateOtpResponse.mUserPhoneNumber
                 cleverTapProfile.mLat = validateOtpResponse.mStore?.storeAddress?.latitude
                 cleverTapProfile.mLong = validateOtpResponse.mStore?.storeAddress?.longitude
-                cleverTapProfile.mAddress = validateOtpResponse.mStore?.storeAddress?.let {
-                    "${it.address1}, ${it.googleAddress}, ${it.pinCode}"
+                cleverTapProfile.mAddress = validateOtpResponse.mStore?.storeAddress?.let { address ->
+                    "${address.address1}, ${address.googleAddress}, ${address.pinCode}"
                 }
                 AppsFlyerLib.getInstance()?.setCustomerUserId(validateOtpResponse.mUserPhoneNumber)
                 AppEventsManager.pushCleverTapProfile(cleverTapProfile)
@@ -259,7 +286,12 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
                         AFInAppEventParameterName.PHONE to mMobileNumberStr,
                         AFInAppEventParameterName.IS_CONSENT to if (mIsConsentTakenFromUser) "1" else "0")
                 )
-                if (null == validateOtpResponse.mStore && mIsNewUser) launchFragment(DukaanNameFragment.newInstance(), true) else launchFragment(HomeFragment(), true)
+                Handler(Looper.getMainLooper()).postDelayed({
+                    if (null == validateOtpResponse.mStore && mIsNewUser) launchFragment(DukaanNameFragment.newInstance(), true) else launchFragment(HomeFragment(), true)
+                }, Constants.OTP_SUCCESS_TIMER)
+                verifiedOtpGroup?.visibility = View.GONE
+                verifiedTextViewContainer?.visibility = View.VISIBLE
+                verifiedTextView?.text = mOtpStaticResponseData?.text_verified
             }
         }
     }
@@ -279,7 +311,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
         stopProgress()
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
-            otpEditText?.clearOTP()
+            otpEditText?.text = null
             showShortSnackBar(validateOtpErrorResponse.mMessage, true, R.drawable.ic_close_red)
         }
     }

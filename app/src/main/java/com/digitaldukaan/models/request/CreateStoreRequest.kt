@@ -10,5 +10,7 @@ data class CreateStoreRequest(
     @SerializedName("language_id")      var languageId: Int,
     @SerializedName("reference_phone")  var referencePhone: String?,
     @SerializedName("appsflyer_id")     var appsflyerId: String?,
-    @SerializedName("clevertap_id")     var cleverTapId: String?
+    @SerializedName("clevertap_id")     var cleverTapId: String?,
+    @SerializedName("lng")              var longitude: Long,
+    @SerializedName("lat")              var latitude: Long
 )

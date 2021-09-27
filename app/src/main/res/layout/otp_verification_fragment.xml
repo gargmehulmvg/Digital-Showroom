@@ -22,13 +22,17 @@
     <TextView
         android:id="@+id/changeTextView"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_marginEnd="@dimen/_20sdp"
+        android:background="?selectableItemBackgroundBorderless"
         android:fontFamily="@font/roboto_medium"
+        android:onClick="onClick"
+        android:gravity="end|bottom"
         android:textColor="@color/dark_blackish"
         android:textSize="@dimen/_12sdp"
         app:layout_constraintBottom_toBottomOf="@id/enterMobileNumberHeading"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/enterMobileNumberHeading"
         tools:text="CHANGE?" />
 
     <androidx.constraintlayout.widget.Group
@@ -49,6 +53,7 @@
         app:layout_constraintBottom_toBottomOf="parent">
 
         <TextView
+            android:id="@+id/verifiedTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:clickable="false"
@@ -65,7 +70,7 @@
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:text="Verified" />
+            tools:text="Verified" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -78,20 +83,20 @@
         android:paddingTop="@dimen/_10sdp"
         android:paddingBottom="@dimen/_10sdp"
         app:layout_constraintBottom_toTopOf="@id/consentCheckBox"
-        app:layout_constraintEnd_toEndOf="@+id/changeTextView"
-        app:layout_constraintStart_toStartOf="@+id/enterMobileNumberHeading">
+        app:layout_constraintEnd_toEndOf="@id/changeTextView"
+        app:layout_constraintStart_toStartOf="@id/enterMobileNumberHeading">
 
         <ProgressBar
             android:id="@+id/verifyProgressBar"
             android:layout_width="@dimen/_18sdp"
             android:layout_height="@dimen/_18sdp"
             android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="@+id/verifyTextView"
-            app:layout_constraintEnd_toStartOf="@+id/verifyTextView"
+            app:layout_constraintBottom_toBottomOf="@id/verifyTextView"
+            app:layout_constraintEnd_toStartOf="@id/verifyTextView"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/verifyTextView" />
+            app:layout_constraintTop_toTopOf="@id/verifyTextView" />
 
         <TextView
             android:id="@+id/verifyTextView"
@@ -107,7 +112,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@+id/verifyProgressBar"
+            app:layout_constraintStart_toEndOf="@id/verifyProgressBar"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="@string/verify" />
 
@@ -117,12 +122,12 @@
         android:id="@+id/consentCheckBox"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="24dp"
+        android:layout_marginBottom="@dimen/_20sdp"
         android:checked="true"
         android:textSize="@dimen/_9sdp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/readMoreTextView"
-        app:layout_constraintStart_toStartOf="@+id/verifyTextViewContainer"
+        app:layout_constraintEnd_toStartOf="@id/readMoreTextView"
+        app:layout_constraintStart_toStartOf="@id/verifyTextViewContainer"
         tools:text="I consent to receive communication from Dotpe." />
 
     <TextView
@@ -132,6 +137,7 @@
         android:background="?selectableItemBackground"
         android:fontFamily="@font/roboto_bold"
         android:gravity="center_vertical"
+        android:padding="@dimen/_4sdp"
         android:onClick="onClick"
         android:textColor="@color/black"
         android:textSize="@dimen/_9sdp"
@@ -140,21 +146,22 @@
         app:layout_constraintTop_toTopOf="@id/consentCheckBox"
         tools:text="@string/read_more" />
 
-    <com.digitaldukaan.views.OtpEditText
+    <EditText
         android:id="@+id/otpEditText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_25sdp"
-        android:cursorVisible="false"
         android:digits="1234567890"
         android:inputType="number"
         android:maxLength="4"
-        android:textIsSelectable="false"
-        android:textSize="20sp"
+        android:imeOptions="actionDone"
+        tools:hint="Enter 4 digit OTP"
+        style="@style/common_edit_text_black_border"
+        android:textSize="@dimen/_14sdp"
         app:layout_constraintEnd_toEndOf="@id/changeTextView"
         app:layout_constraintStart_toStartOf="@id/enterMobileNumberHeading"
         app:layout_constraintTop_toBottomOf="@id/enterMobileNumberHeading"
-        tools:ignore="SpeakableTextPresentCheck" />
+        android:importantForAutofill="no" />
 
     <TextView
         android:id="@+id/resendOtpText"
