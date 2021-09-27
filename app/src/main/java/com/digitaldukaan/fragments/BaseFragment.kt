@@ -1328,14 +1328,14 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     }
 
     protected fun openLocationSettings(isBackRequired: Boolean) {
-        mActivity?.let {
-            AlertDialog.Builder(it).apply {
+        mActivity?.let { context ->
+            AlertDialog.Builder(context).apply {
                 setTitle("Permission")
                 setMessage("Please allow Location permission")
                 setPositiveButton(getString(R.string.txt_yes)) { dialogInterface, _ ->
                     dialogInterface?.dismiss()
-                    if (isBackRequired) it.onBackPressed()
-                    it.startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+                    if (isBackRequired) context.onBackPressed()
+                    context.startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
                 }
                 setNegativeButton(getString(R.string.text_no)) { dialogInterface, _ -> dialogInterface?.dismiss() }
             }.create().show()

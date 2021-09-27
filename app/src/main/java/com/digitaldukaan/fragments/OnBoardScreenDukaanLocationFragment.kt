@@ -32,11 +32,11 @@ import kotlinx.android.synthetic.main.layout_on_board_screen_dukaan_location_fra
 class OnBoardScreenDukaanLocationFragment : BaseFragment(), IStoreAddressServiceInterface, LocationListener {
 
     private var mDukaanLocationStaticData: OnBoardStep2StaticResponseData? = null
-    private var mCurrentLatitude = 0.0
-    private var mCurrentLongitude = 0.0
     private lateinit var locationManager: LocationManager
 
     private var fusedLocationClient: FusedLocationProviderClient? = null
+    private var mCurrentLatitude = 0.0
+    private var mCurrentLongitude = 0.0
     private var lastLocation: Location? = null
 
     companion object {
@@ -75,31 +75,18 @@ class OnBoardScreenDukaanLocationFragment : BaseFragment(), IStoreAddressService
         }
     }
 
-    private fun requestPermissions() {
-        mActivity?.let {
-            ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION), Constants.LOCATION_REQUEST_CODE)
-        }
+    private fun requestPermissions() = mActivity?.let {
+        ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION), Constants.LOCATION_REQUEST_CODE)
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int, permissions: Array<String>,
-        grantResults: IntArray
-    ) {
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         Log.i(TAG, "onRequestPermissionResult")
         if (requestCode == Constants.LOCATION_REQUEST_CODE) {
             when {
-                grantResults.isEmpty() -> {
-                    // If user interaction was interrupted, the permission request is cancelled and you
-                    // receive empty arrays.
-                    Log.i(TAG, "User interaction was cancelled.")
-                }
-                grantResults[0] == PackageManager.PERMISSION_GRANTED -> {
-                    // Permission granted.
-                    getLastLocation()
-                }
-                else -> {
-                    showToast("Permission was denied")
-                }
+                grantResults.isEmpty() -> Log.i(TAG, "User interaction was cancelled.")
+                grantResults[0] == PackageManager.PERMISSION_GRANTED -> getLastLocation()
+                else -> showToast("Permission was denied")
             }
         }
     }
@@ -110,19 +97,11 @@ class OnBoardScreenDukaanLocationFragment : BaseFragment(), IStoreAddressService
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.layout_on_board_screen_dukaan_location_fragment, container, false)
         mDukaanLocationStaticData = StaticInstances.sStaticData?.mOnBoardStep2StaticData
-        if (checkLocationPermissionWithDialog()) {
-            getLastLocation()
-        }
-        if (!isLocationEnabledInSettings(mActivity)) {
-            openLocationSettings(false)
-        }
+        if (checkLocationPermissionWithDialog()) getLastLocation()
+        if (!isLocationEnabledInSettings(mActivity)) openLocationSettings(false)
         return mContentView
     }
 
@@ -235,7 +214,5 @@ class OnBoardScreenDukaanLocationFragment : BaseFragment(), IStoreAddressService
         }
     }
 
-    override fun onStoreAddressServerException(e: Exception) {
-        exceptionHandlingForAPIResponse(e)
-    }
+    override fun onStoreAddressServerException(e: Exception) = exceptionHandlingForAPIResponse(e)
 }

@@ -1,5 +1,11 @@
 package com.digitaldukaan.fragments
 
+import android.Manifest
+import android.app.AlertDialog
+import android.content.Context
+import android.content.pm.PackageManager
+import android.location.Location
+import android.location.LocationManager
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -7,6 +13,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.transition.TransitionInflater
 import com.appsflyer.AppsFlyerLib
 import com.digitaldukaan.R
@@ -18,13 +26,19 @@ import com.digitaldukaan.models.response.CreateStoreResponse
 import com.digitaldukaan.services.CreateStoreService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.ICreateStoreServiceInterface
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.layout_dukaan_name_fragment.*
-
 
 class DukaanNameFragment : BaseFragment(), ICreateStoreServiceInterface {
 
     private var mDukaanNameStaticData: BusinessNameStaticText? = null
+    private lateinit var locationManager: LocationManager
+    private var fusedLocationClient: FusedLocationProviderClient? = null
+    private var mCurrentLatitude = 0.0
+    private var mCurrentLongitude = 0.0
+    private var lastLocation: Location? = null
 
     companion object {
         private val TAG = DukaanNameFragment::class.simpleName
@@ -35,12 +49,32 @@ class DukaanNameFragment : BaseFragment(), ICreateStoreServiceInterface {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         sharedElementEnterTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.move)
+        locationManager = mActivity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        mActivity?.let { context -> fusedLocationClient = LocationServices.getFusedLocationProviderClient(context) }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.layout_dukaan_name_fragment, container, false)
         mDukaanNameStaticData = StaticInstances.sStaticData?.mBusinessNameStaticText
+        if (checkLocationPermissionWithDialog()) getLastLocation()
+        if (!isLocationEnabledInSettings(mActivity)) openLocationSettings(false)
         return mContentView
+    }
+
+    private fun checkLocationPermissionWithDialog(): Boolean {
+        mActivity?.let {
+            return if (ContextCompat.checkSelfPermission(it, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(it, Manifest.permission.ACCESS_FINE_LOCATION)) {
+                    AlertDialog.Builder(mActivity).apply {
+                        setTitle("Location Permission")
+                        setMessage("Please allow Location permission to continue")
+                        setPositiveButton(R.string.ok) { _, _ -> ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), Constants.LOCATION_REQUEST_CODE) }
+                    }.create().show()
+                } else ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), Constants.LOCATION_REQUEST_CODE)
+                true
+            } else false
+        }
+        return false
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -94,8 +128,8 @@ class DukaanNameFragment : BaseFragment(), ICreateStoreServiceInterface {
                             referencePhone = StaticInstances.sAppFlyerRefMobileNumber,
                             appsflyerId = AppsFlyerLib.getInstance().getAttributionId(mActivity),
                             cleverTapId = StaticInstances.sCleverTapId,
-                            latitude = 0.0,
-                            longitude = 0.0
+                            latitude = mCurrentLatitude,
+                            longitude = mCurrentLongitude
                         )
                         showProgressDialog(mActivity)
                         service.createStore(request)
@@ -133,6 +167,50 @@ class DukaanNameFragment : BaseFragment(), ICreateStoreServiceInterface {
 
     override fun onCreateStoreServerException(e: Exception) {
         exceptionHandlingForAPIResponse(e)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        getLastLocation()
+    }
+
+    private fun getLastLocation() {
+        mActivity?.let { context ->
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(context, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION), Constants.LOCATION_REQUEST_CODE)
+                return
+            }
+        }
+        val lastKnownLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
+        lastKnownLocation?.let { location ->
+            Log.d(TAG, "getLocation() Latitude: ${location.latitude} , Longitude: ${location.longitude}")
+        }
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 1f, this)
+        mActivity?.let {
+            fusedLocationClient?.lastLocation?.addOnCompleteListener(it) { task ->
+                if (task.isSuccessful && null != task.result) {
+                    lastLocation = task.result
+                    mCurrentLatitude = lastLocation?.latitude ?: 0.0
+                    mCurrentLongitude = lastLocation?.longitude ?: 0.0
+                }
+            }
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        Log.i(TAG, "onRequestPermissionResult")
+        if (requestCode == Constants.LOCATION_REQUEST_CODE) {
+            when {
+                grantResults.isEmpty() -> Log.i(TAG, "User interaction was cancelled.")
+                grantResults[0] == PackageManager.PERMISSION_GRANTED -> getLastLocation()
+                else -> showToast("Permission was denied")
+            }
+        }
+    }
+
+    override fun onBackPressed(): Boolean {
+        logoutFromApplication(true)
+        return true
     }
 
 }
