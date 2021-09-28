@@ -109,7 +109,6 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.layout_home_fragment, container, false)
-        mHomeFragmentService?.getCustomDomainBottomSheetData()
         if (!askContactPermission()) if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else {
             if (orderPageInfoResponse == null) {
                 mHomeFragmentService?.getOrderPageInfo()
