@@ -41,6 +41,7 @@ import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
+import com.skydoves.balloon.showAlignTop
 import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration
 import kotlinx.android.synthetic.main.layout_analytics.*
 import kotlinx.android.synthetic.main.layout_common_webview_fragment.*
@@ -108,6 +109,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.layout_home_fragment, container, false)
+        mHomeFragmentService?.getCustomDomainBottomSheetData()
         if (!askContactPermission()) if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else {
             if (orderPageInfoResponse == null) {
                 mHomeFragmentService?.getOrderPageInfo()
@@ -792,10 +794,10 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                         val messageTextView: TextView = findViewById(R.id.messageTextView)
                         val originalPriceTextView: TextView = findViewById(R.id.originalPriceTextView)
                         val buyNowTextView: TextView = findViewById(R.id.buyNowTextView)
+                        val tooltipView: TextView = findViewById(R.id.tooltipView)
                         premiumHeadingTextView.text = primaryDomain.heading
                         domainTextView.text = primaryDomain.domainName
                         promoCodeTextView.text = primaryDomain.promo
-                        messageTextView.text = primaryDomain.validity
                         priceTextView.text = "₹${primaryDomain.discountedPrice}"
                         originalPriceTextView.text = "₹${primaryDomain.originalPrice}"
                         originalPriceTextView.showStrikeOffText()
@@ -810,11 +812,19 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                                 }
                             }
                         }
+                        messageTextView.apply {
+                            text = primaryDomain.validity
+                            setOnClickListener {
+                                val infoText = "${primaryDomain.info_data.firstYearText}\n${primaryDomain.info_data.renewsText}"
+                                val balloon = getToolTipBalloon(mActivity, infoText)
+                                balloon?.let { b -> tooltipView.showAlignTop(b) }
+                            }
+                        }
                     }
                     val suggestedDomainRecyclerView = findViewById<RecyclerView>(R.id.suggestedDomainRecyclerView)
                     suggestedDomainRecyclerView.apply {
                         layoutManager = LinearLayoutManager(mActivity)
-                        adapter = CustomDomainSelectionAdapter(customDomainBottomSheetResponse.suggestedDomainsList, object : IAdapterItemClickListener {
+                        adapter = CustomDomainSelectionAdapter(mActivity, customDomainBottomSheetResponse.suggestedDomainsList, object : IAdapterItemClickListener {
 
                             override fun onAdapterItemClickListener(position: Int) {
                                 bottomSheetDialog.dismiss()

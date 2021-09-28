@@ -4,104 +4,127 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:id="@+id/container"
-    android:onClick="onClick"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="@dimen/_10sdp"
-    android:background="@drawable/ripple_slight_curve_white_background_grey_border"
-    android:padding="@dimen/_12sdp">
+    android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/domainTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:clickable="false"
-        android:fontFamily="@font/roboto_medium"
-        android:textColor="@color/black"
-        android:textSize="@dimen/_13sdp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="storename.co.in" />
-
-    <TextView
-        android:id="@+id/priceTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_5sdp"
-        android:clickable="false"
-        android:fontFamily="@font/roboto"
-        android:gravity="center"
-        android:paddingStart="@dimen/_2sdp"
-        android:paddingTop="@dimen/_2sdp"
-        android:paddingEnd="@dimen/_2sdp"
-        android:paddingBottom="@dimen/_2sdp"
-        android:textColor="@color/black"
-        android:textSize="@dimen/_11sdp"
-        app:layout_constraintHorizontal_chainStyle="packed"
-        app:layout_constraintStart_toStartOf="@+id/domainTextView"
-        app:layout_constraintTop_toBottomOf="@id/domainTextView"
-        tools:text="₹1500" />
-
-    <TextView
-        android:id="@+id/originalPriceTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:clickable="false"
-        android:fontFamily="@font/roboto_light"
-        android:gravity="center"
-        android:paddingStart="@dimen/_2sdp"
-        android:paddingEnd="@dimen/_2sdp"
-        android:textSize="@dimen/_11sdp"
-        app:layout_constraintStart_toStartOf="@+id/priceTextView"
-        app:layout_constraintTop_toBottomOf="@+id/priceTextView"
-        tools:text="₹1500" />
-
-    <TextView
-        android:id="@+id/promoCodeTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_5sdp"
-        android:background="@drawable/slight_curve_green_background_without_padding_v2"
-        android:clickable="false"
-        android:fontFamily="@font/roboto_medium"
-        android:gravity="center"
-        android:paddingStart="@dimen/_5sdp"
-        android:paddingTop="@dimen/_1sdp"
-        android:paddingEnd="@dimen/_5sdp"
-        android:paddingBottom="@dimen/_1sdp"
-        android:textColor="@color/white"
-        android:textSize="@dimen/_10sdp"
-        app:layout_constraintBaseline_toBaselineOf="@+id/priceTextView"
-        app:layout_constraintStart_toEndOf="@+id/priceTextView"
-        tools:text="FREE" />
-
-    <TextView
-        android:id="@+id/messageTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_5sdp"
-        android:clickable="false"
-        android:drawablePadding="@dimen/_3sdp"
-        android:fontFamily="@font/roboto"
-        android:gravity="center"
-        android:textSize="@dimen/_9sdp"
-        app:drawableEndCompat="@drawable/ic_exclamation_circle_black_small"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/_8sdp"
+        android:layout_marginBottom="@dimen/_8sdp"
+        android:background="@drawable/ripple_slight_curve_white_background_grey_border"
+        android:padding="@dimen/_12sdp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/originalPriceTextView"
-        tools:text="for one year" />
+        app:layout_constraintTop_toTopOf="parent">
 
-    <TextView
-        android:id="@+id/buyNowTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:clickable="false"
-        android:fontFamily="@font/roboto_medium"
-        android:gravity="center"
-        android:textColor="@color/purple_dark"
-        android:textSize="@dimen/_12sdp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="APPLY" />
+        <TextView
+            android:id="@+id/domainTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?selectableItemBackgroundBorderless"
+            android:fontFamily="@font/roboto_medium"
+            android:onClick="onClick"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_13sdp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="storename.co.in" />
+
+        <TextView
+            android:id="@+id/priceTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:background="?selectableItemBackgroundBorderless"
+            android:fontFamily="@font/roboto"
+            android:gravity="center"
+            android:onClick="onClick"
+            android:paddingStart="@dimen/_2sdp"
+            android:paddingTop="@dimen/_2sdp"
+            android:paddingEnd="@dimen/_2sdp"
+            android:paddingBottom="@dimen/_2sdp"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_11sdp"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="@+id/domainTextView"
+            app:layout_constraintTop_toBottomOf="@id/domainTextView"
+            tools:text="₹1500" />
+
+        <TextView
+            android:id="@+id/originalPriceTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?selectableItemBackgroundBorderless"
+            android:fontFamily="@font/roboto_light"
+            android:gravity="center"
+            android:onClick="onClick"
+            android:paddingStart="@dimen/_2sdp"
+            android:paddingEnd="@dimen/_2sdp"
+            android:textSize="@dimen/_11sdp"
+            app:layout_constraintStart_toStartOf="@+id/priceTextView"
+            app:layout_constraintTop_toBottomOf="@+id/priceTextView"
+            tools:text="₹1500" />
+
+        <TextView
+            android:id="@+id/promoCodeTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_5sdp"
+            android:background="@drawable/slight_curve_green_background_without_padding_v2"
+            android:fontFamily="@font/roboto_medium"
+            android:gravity="center"
+            android:onClick="onClick"
+            android:paddingStart="@dimen/_5sdp"
+            android:paddingTop="@dimen/_1sdp"
+            android:paddingEnd="@dimen/_5sdp"
+            android:paddingBottom="@dimen/_1sdp"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_10sdp"
+            app:layout_constraintBaseline_toBaselineOf="@+id/priceTextView"
+            app:layout_constraintStart_toEndOf="@+id/priceTextView"
+            tools:text="FREE" />
+
+        <TextView
+            android:id="@+id/messageTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:background="?selectableItemBackgroundBorderless"
+            android:drawablePadding="@dimen/_3sdp"
+            android:fontFamily="@font/roboto"
+            android:gravity="center"
+            android:onClick="onClick"
+            android:textSize="@dimen/_9sdp"
+            app:drawableEndCompat="@drawable/ic_exclamation_circle_black_small"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/originalPriceTextView"
+            tools:text="for one year" />
+
+        <TextView
+            android:id="@+id/tooltipView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@color/black"
+            app:layout_constraintBottom_toTopOf="@+id/messageTextView"
+            app:layout_constraintEnd_toEndOf="@+id/messageTextView"
+            app:layout_constraintStart_toEndOf="@+id/messageTextView"
+            app:layout_constraintTop_toTopOf="@+id/messageTextView" />
+
+        <TextView
+            android:id="@+id/buyNowTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="?selectableItemBackgroundBorderless"
+            android:fontFamily="@font/roboto_medium"
+            android:gravity="center"
+            android:onClick="onClick"
+            android:textColor="@color/purple_dark"
+            android:textSize="@dimen/_12sdp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="APPLY" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
