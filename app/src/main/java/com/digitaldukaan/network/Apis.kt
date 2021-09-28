@@ -215,6 +215,9 @@ interface Apis {
     @GET("api/dotk/vm1/orders/getDeliveryTime")
     suspend fun getDeliveryTime(): Response<CommonApiResponse>
 
+    @GET("api/dotk/vm1/onboard/getOnboardingPageInfo")
+    suspend fun getCustomDomainBottomSheetData(): Response<CommonApiResponse>
+
     @POST("api/dotk/vm1/orders/updateOrderV2")
     suspend fun updateOrder(@Body statusRequest: UpdateOrderRequest): Response<CommonApiResponse>
 

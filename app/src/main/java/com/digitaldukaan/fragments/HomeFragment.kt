@@ -1,6 +1,7 @@
 package com.digitaldukaan.fragments
 
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -18,6 +19,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.appsflyer.AppsFlyerLib
 import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
+import com.digitaldukaan.adapters.CustomDomainSelectionAdapter
 import com.digitaldukaan.adapters.OrderAdapterV2
 import com.digitaldukaan.adapters.OrderPageBannerAdapter
 import com.digitaldukaan.constants.*
@@ -52,6 +54,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
     PopupMenu.OnMenuItemClickListener {
 
     private var paymentLinkBottomSheet: BottomSheetDialog? = null
+    private var mIsNewUserLogin = false
 
     companion object {
         private val TAG = HomeFragment::class.simpleName
@@ -76,8 +79,10 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         private var analyticsResponse: AnalyticsResponse? = null
         private var mPaymentLinkAmountStr: String? = null
 
-        fun newInstance(): HomeFragment {
-            return HomeFragment()
+        fun newInstance(isNewUserLogin: Boolean = false): HomeFragment {
+            val fragment = HomeFragment()
+            fragment.mIsNewUserLogin = isNewUserLogin
+            return fragment
         }
     }
 
@@ -94,6 +99,10 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
             setCustomKey("store_id", PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
             setCustomKey("store_name", PrefsManager.getStringDataFromSharedPref(Constants.STORE_NAME))
             setCustomKey("mobile_number", PrefsManager.getStringDataFromSharedPref(Constants.USER_MOBILE_NUMBER))
+        }
+        if (mIsNewUserLogin) {
+            mIsNewUserLogin = false
+            mHomeFragmentService?.getCustomDomainBottomSheetData()
         }
     }
 
@@ -482,18 +491,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                 val wrapper = ContextThemeWrapper(mActivity, R.style.popupMenuStyle)
                 val optionsMenu = PopupMenu(wrapper, helpImageView)
                 optionsMenu.inflate(R.menu.menu_product_fragment)
-                orderPageInfoResponse?.optionMenuList?.forEachIndexed { position, response ->
-                    Log.d(TAG, "setupSideOptionMenu: $response")
-                    val menuItem = optionsMenu.menu?.add(Menu.NONE, position, Menu.NONE, response.mText)
-                    /*val icon = when(response.mPage) {
-                        Constants.PAGE_ORDER_NOTIFICATIONS -> R.drawable.ic_order_notification2
-                        Constants.PAGE_HELP -> R.drawable.ic_help
-                        else -> 0
-                    }*/
-                    //menuItem?.setIcon(icon)
-                }
                 optionsMenu.setOnMenuItemClickListener(this)
-                //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) optionsMenu.setForceShowIcon(true)
                 optionsMenu.show()
             }
         }
@@ -504,10 +502,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
             stopProgress()
             if (mSwipeRefreshLayout?.isRefreshing == true) mSwipeRefreshLayout?.isRefreshing = false
             if (commonResponse.mIsSuccessStatus) {
-                val ordersResponse = Gson().fromJson<OrdersResponse>(
-                    commonResponse.mCommonDataStr,
-                    OrdersResponse::class.java
-                )
+                val ordersResponse = Gson().fromJson<OrdersResponse>(commonResponse.mCommonDataStr, OrdersResponse::class.java)
                 if (ordersResponse?.mOrdersList?.isNotEmpty() == true) launchFragment(SearchOrdersFragment.newInstance(mOrderIdString, mMobileNumberString, ordersResponse.mOrdersList), true) else {
                     showSearchDialog(StaticInstances.sOrderPageInfoStaticData, mMobileNumberString, mOrderIdString, true)
                 }
@@ -536,6 +531,15 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                     mActivity?.launchInAppReviewDialog()
                 }
             } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
+        }
+    }
+
+    override fun onCustomDomainBottomSheetDataResponse(commonResponse: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            if (commonResponse.mIsSuccessStatus) {
+                val customDomainBottomSheetResponse = Gson().fromJson<CustomDomainBottomSheetResponse>(commonResponse.mCommonDataStr, CustomDomainBottomSheetResponse::class.java)
+                showCustomDomainBottomSheet(customDomainBottomSheetResponse)
+            }
         }
     }
 
@@ -761,19 +765,66 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         }
     }
 
-    private fun showCustomDomainBottomSheet() {
+    private fun showCustomDomainBottomSheet(customDomainBottomSheetResponse: CustomDomainBottomSheetResponse) {
         mActivity?.let {
             val bottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
-            val view = LayoutInflater.from(it).inflate(
-                R.layout.bottom_sheet_custom_domain_selection,
-                it.findViewById(R.id.bottomSheetContainer)
-            )
+            val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_custom_domain_selection, it.findViewById(R.id.bottomSheetContainer))
             bottomSheetDialog.apply {
                 setContentView(view)
-                behavior.state = BottomSheetBehavior.STATE_EXPANDED
                 view?.run {
-                    val bottomSheetClose: View = findViewById(R.id.bottomSheetClose)
+                    customDomainBottomSheetResponse.staticText?.let { staticText ->
+                        val searchTextView: TextView = findViewById(R.id.searchTextView)
+                        val headingTextView: TextView = findViewById(R.id.headingTextView)
+                        val subHeadingTextView: TextView = findViewById(R.id.subHeadingTextView)
+                        val searchMessageTextView: TextView = findViewById(R.id.searchMessageTextView)
+                        val moreSuggestionsTextView: TextView = findViewById(R.id.moreSuggestionsTextView)
+                        subHeadingTextView.text = staticText.subheading_budiness_needs_domain
+                        headingTextView.text = staticText.heading_last_step
+                        moreSuggestionsTextView.text = staticText.text_more_suggestions
+                        searchMessageTextView.text = staticText.text_cant_find
+                        searchTextView.text = staticText.text_search
+                    }
+                    customDomainBottomSheetResponse.primaryDomain?.let { primaryDomain ->
+                        val premiumHeadingTextView: TextView = findViewById(R.id.premiumHeadingTextView)
+                        val domainTextView: TextView = findViewById(R.id.domainTextView)
+                        val priceTextView: TextView = findViewById(R.id.priceTextView)
+                        val promoCodeTextView: TextView = findViewById(R.id.promoCodeTextView)
+                        val messageTextView: TextView = findViewById(R.id.messageTextView)
+                        val originalPriceTextView: TextView = findViewById(R.id.originalPriceTextView)
+                        val buyNowTextView: TextView = findViewById(R.id.buyNowTextView)
+                        premiumHeadingTextView.text = primaryDomain.heading
+                        domainTextView.text = primaryDomain.domainName
+                        promoCodeTextView.text = primaryDomain.promo
+                        messageTextView.text = primaryDomain.validity
+                        priceTextView.text = "₹${primaryDomain.discountedPrice}"
+                        originalPriceTextView.text = "₹${primaryDomain.originalPrice}"
+                        originalPriceTextView.showStrikeOffText()
+                        buyNowTextView.apply {
+                            text = primaryDomain.cta?.text
+                            setTextColor(Color.parseColor(primaryDomain.cta?.textColor))
+                            setBackgroundColor(Color.parseColor(primaryDomain.cta?.textBg))
+                            setOnClickListener {
+                                bottomSheetDialog.dismiss()
+                                if (Constants.NEW_RELEASE_TYPE_WEBVIEW == primaryDomain.cta?.action) {
+                                    openWebViewFragment(this@HomeFragment, "", BuildConfig.WEB_VIEW_URL + primaryDomain.cta?.pageUrl)
+                                }
+                            }
+                        }
+                    }
+                    val suggestedDomainRecyclerView = findViewById<RecyclerView>(R.id.suggestedDomainRecyclerView)
+                    suggestedDomainRecyclerView.apply {
+                        layoutManager = LinearLayoutManager(mActivity)
+                        adapter = CustomDomainSelectionAdapter(customDomainBottomSheetResponse.suggestedDomainsList, object : IAdapterItemClickListener {
 
+                            override fun onAdapterItemClickListener(position: Int) {
+                                bottomSheetDialog.dismiss()
+                                val item = customDomainBottomSheetResponse.suggestedDomainsList?.get(position)
+                                if (Constants.NEW_RELEASE_TYPE_WEBVIEW == item?.cta?.action) {
+                                    openWebViewFragment(this@HomeFragment, "", BuildConfig.WEB_VIEW_URL + item.cta?.pageUrl)
+                                }
+                            }
+                        })
+                    }
                 }
             }.show()
         }

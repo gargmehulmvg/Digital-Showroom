@@ -45,7 +45,7 @@ class CreateStoreFragment : BaseFragment() {
             override fun onAnimationEnd(animation: Animator?) {
                 try {
                     clearFragmentBackStack()
-                    launchFragment(HomeFragment.newInstance(), true)
+                    launchFragment(HomeFragment.newInstance(true), true)
                 } catch (e: Exception) {
                     Log.e(TAG, "onAnimationEnd: ${e.message}", e)
                 }

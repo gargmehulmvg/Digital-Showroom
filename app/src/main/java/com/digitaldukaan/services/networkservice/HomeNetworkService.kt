@@ -47,9 +47,7 @@ class HomeNetworkService {
         }
     }
 
-    suspend fun getAnalyticsDataServerCall(
-        serviceInterface: IHomeServiceInterface
-    ) {
+    suspend fun getAnalyticsDataServerCall(serviceInterface: IHomeServiceInterface) {
         try {
             val response = RetrofitApi().getServerCallObject()?.getAnalyticsData()
             response?.let {
@@ -69,9 +67,7 @@ class HomeNetworkService {
         }
     }
 
-    suspend fun getOrderPageInfoServerCall(
-        serviceInterface: IHomeServiceInterface
-    ) {
+    suspend fun getOrderPageInfoServerCall(serviceInterface: IHomeServiceInterface) {
         try {
             val response = RetrofitApi().getServerCallObject()?.getOrderPageInfo()
             response?.let {
@@ -160,4 +156,23 @@ class HomeNetworkService {
         }
     }
 
+    suspend fun getCustomDomainBottomSheetDataServerCall(serviceInterface: IHomeServiceInterface) {
+        try {
+            val response = RetrofitApi().getServerCallObject()?.getCustomDomainBottomSheetData()
+            response?.let {
+                if (it.isSuccessful) it.body()?.let { commonApiResponse -> serviceInterface.onCustomDomainBottomSheetDataResponse(commonApiResponse) }
+                else {
+                    if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    val responseBody = it.errorBody()
+                    responseBody?.let {
+                        val errorResponse = Gson().fromJson(responseBody.string(), CommonApiResponse::class.java)
+                        serviceInterface.onCustomDomainBottomSheetDataResponse(errorResponse)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(HomeNetworkService::class.java.simpleName, "getCustomDomainBottomSheetDataServerCall: ", e)
+            serviceInterface.onHomePageException(e)
+        }
+    }
 }

@@ -11,15 +11,19 @@
         <entry key="app/src/main/res/drawable/curve_purple_background.xml" value="0.31851851851851853" />
         <entry key="app/src/main/res/drawable/custom_green_horizontal_progress_bar.xml" value="0.36875" />
         <entry key="app/src/main/res/drawable/ic_on_board_dukaan_name.xml" value="0.36875" />
+        <entry key="app/src/main/res/drawable/ic_search.xml" value="0.4338461538461538" />
         <entry key="app/src/main/res/drawable/ic_white_tick.xml" value="0.36875" />
         <entry key="app/src/main/res/drawable/ripple_curve_grey_black_background.xml" value="0.4338461538461538" />
+        <entry key="app/src/main/res/drawable/ripple_curve_grey_purple_background.xml" value="0.31851851851851853" />
         <entry key="app/src/main/res/drawable/ripple_slight_curve_grey_black_background.xml" value="0.32664092664092664" />
         <entry key="app/src/main/res/drawable/ripple_slight_curve_grey_white_background.xml" value="0.32664092664092664" />
         <entry key="app/src/main/res/drawable/ripple_slight_curve_grey_white_background_green_border.xml" value="0.2388888888888889" />
         <entry key="app/src/main/res/drawable/ripple_slight_curve_white_background_black_border.xml" value="0.4338461538461538" />
         <entry key="app/src/main/res/drawable/ripple_slight_curve_white_background_grey_border.xml" value="0.2388888888888889" />
         <entry key="app/src/main/res/drawable/slight_curve_black_border.xml" value="0.32664092664092664" />
+        <entry key="app/src/main/res/layout/add_bank_bottom_sheet_item.xml" value="0.4027777777777778" />
         <entry key="app/src/main/res/layout/bottom_sheet_custom_domain_selection.xml" value="0.4244791666666667" />
+        <entry key="app/src/main/res/layout/custom_domain_selection_item.xml" value="0.4244791666666667" />
         <entry key="app/src/main/res/layout/dialog_payment_link_success.xml" value="0.4027777777777778" />
         <entry key="app/src/main/res/layout/dialog_user_consent.xml" value="0.35260416666666666" />
         <entry key="app/src/main/res/layout/layout_create_store_fragment.xml" value="0.35260416666666666" />
