@@ -26,6 +26,7 @@
         <entry key="app/src/main/res/layout/custom_domain_selection_item.xml" value="0.4244791666666667" />
         <entry key="app/src/main/res/layout/dialog_payment_link_success.xml" value="0.4027777777777778" />
         <entry key="app/src/main/res/layout/dialog_user_consent.xml" value="0.35260416666666666" />
+        <entry key="app/src/main/res/layout/layout_add_product_fragment.xml" value="0.335" />
         <entry key="app/src/main/res/layout/layout_create_store_fragment.xml" value="0.35260416666666666" />
         <entry key="app/src/main/res/layout/layout_dukaan_name_fragment.xml" value="0.4244791666666667" />
         <entry key="app/src/main/res/layout/layout_help_screen_item.xml" value="0.35260416666666666" />
