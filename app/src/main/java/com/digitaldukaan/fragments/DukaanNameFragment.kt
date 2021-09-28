@@ -106,7 +106,7 @@ class DukaanNameFragment : BaseFragment(), ICreateStoreServiceInterface {
         when(view?.id) {
             nextTextView?.id -> {
                 val dukanName = dukaanNameEditText?.text?.trim().toString()
-                if (dukanName.isEmpty()) {
+                if (isEmpty(dukanName)) {
                     dukaanNameEditText?.apply {
                         requestFocus()
                         showKeyboard()

@@ -54,7 +54,8 @@ class LoginFragmentV2 : BaseFragment(), ILoginServiceInterface {
         private const val USE_ANOTHER_NUMBER = 14
         private var mMobileNumber = ""
 
-        fun newInstance(): LoginFragmentV2 {
+        fun newInstance(isLogoutDone: Boolean = false): LoginFragmentV2 {
+            if (isLogoutDone) mMobileNumber = ""
             return LoginFragmentV2()
         }
     }

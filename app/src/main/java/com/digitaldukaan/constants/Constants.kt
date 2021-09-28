@@ -2,7 +2,7 @@ package com.digitaldukaan.constants
 
 class Constants {
     companion object {
-        const val OTP_SUCCESS_TIMER                             = 1_000L
+        const val OTP_SUCCESS_TIMER                             = 500L
         const val LOCATION_REQUEST_CODE                         = 1001
         const val BACK_PRESS_INTERVAL                           = 2_000L
         const val SHINE_ANIMATION_INTERVAL                      = 2_000L

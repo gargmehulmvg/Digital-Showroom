@@ -1373,7 +1373,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         storeStringDataInSharedPref(Constants.STORE_NAME, "")
         storeStringDataInSharedPref(Constants.USER_MOBILE_NUMBER, "")
         storeStringDataInSharedPref(Constants.STORE_ID, "")
-        launchFragment(LoginFragmentV2.newInstance(), true)
+        launchFragment(LoginFragmentV2.newInstance(isAppLogout), true)
     }
 
     fun shareStoreOverWhatsAppServerCall() {
