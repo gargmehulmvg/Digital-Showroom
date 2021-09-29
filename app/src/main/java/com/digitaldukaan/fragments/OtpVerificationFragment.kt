@@ -63,12 +63,8 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
             val client = SmsRetriever.getClient(this)
             val task = client.startSmsRetriever()
             MySMSBroadcastReceiver.mSmsReceiverListener = this@OtpVerificationFragment
-            task?.addOnSuccessListener {
-                Log.d(TAG, "onCreate: Auto read SMS retrieval task success")
-            }
-            task?.addOnFailureListener {
-                Log.d(TAG, "onCreate: Auto read SMS retrieval task failed")
-            }
+            task?.addOnSuccessListener { Log.d(TAG, "onCreate: Auto read SMS retrieval task success") }
+            task?.addOnFailureListener { Log.d(TAG, "onCreate: Auto read SMS retrieval task failed") }
         }
         Log.d(TAG, "App Signature is ${AppSignatureHelper(mActivity).appSignatures[0]}")
         mLoginService = LoginService()
@@ -141,8 +137,10 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
                     showProgressDialog(mActivity, mOtpStaticResponseData?.mVerifyingText)
                     mOtpVerificationService?.verifyOTP(mMobileNumberStr, otpInt)
                     verifyTextView?.text = mOtpStaticResponseData?.mVerifyingText
-                    verifyProgressBar?.visibility = View.VISIBLE
-                    verifyProgressBar?.indeterminateDrawable?.setColorFilter(Color.WHITE, android.graphics.PorterDuff.Mode.MULTIPLY)
+                    verifyProgressBar?.apply {
+                        visibility = View.VISIBLE
+                        indeterminateDrawable?.setColorFilter(Color.WHITE, android.graphics.PorterDuff.Mode.MULTIPLY)
+                    }
                 } catch (e: Exception) {
                     Log.e(TAG, "onClick: ${e.message}", e)
                 }
@@ -219,7 +217,8 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
             override fun onTick(millisUntilFinished: Long) {
                 mTimerCompleted = false
                 CoroutineScopeUtils().runTaskOnCoroutineMain {
-                    val secRemaining = "00:${(millisUntilFinished / 1000)}"
+                    val seconds = (millisUntilFinished / 1000)
+                    val secRemaining = "00:${if (isSingleDigitNumber(seconds)) "0$seconds" else "$seconds"}"
                     counterTextView?.text = secRemaining
                 }
             }

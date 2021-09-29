@@ -243,6 +243,14 @@ fun openWebViewFragment(fragment: BaseFragment, title: String, webViewUrl: Strin
     }
 }
 
+fun openWebViewFragmentV3(fragment: BaseFragment, title: String, webViewUrl: String?) {
+    try {
+        fragment.launchFragment(CommonWebViewFragment().newInstance(title, webViewUrl ?: ""), true)
+    } catch (e: Exception) {
+        Sentry.captureException(e, "openWebViewFragment :: fragment: BaseFragment, title: String, webViewType: String?")
+    }
+}
+
 fun openWebViewFragmentWithLocation(fragment: BaseFragment, title: String, webViewType: String?) {
     try {
         fragment.launchFragment(CommonWebViewFragment().newInstance(title, webViewType ?: ""), true)
@@ -483,4 +491,8 @@ fun getToolTipBalloon(mContext: Context?, text: String? = "Sample Testing"): Bal
         }
     }
     return null
+}
+
+fun isSingleDigitNumber(number: Long): Boolean {
+    return !((number in 10..99) || (number < -9 && number > -100))
 }

@@ -784,6 +784,12 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                         moreSuggestionsTextView.text = staticText.text_more_suggestions
                         searchMessageTextView.text = staticText.text_cant_find
                         searchTextView.text = staticText.text_search
+                        searchTextView.setOnClickListener {
+                            bottomSheetDialog.dismiss()
+                            if (Constants.NEW_RELEASE_TYPE_WEBVIEW == customDomainBottomSheetResponse.searchCta?.action) {
+                                openWebViewFragment(this@HomeFragment, "", BuildConfig.WEB_VIEW_URL + customDomainBottomSheetResponse.searchCta?.pageUrl)
+                            }
+                        }
                     }
                     customDomainBottomSheetResponse.primaryDomain?.let { primaryDomain ->
                         val premiumHeadingTextView: TextView = findViewById(R.id.premiumHeadingTextView)
@@ -807,7 +813,8 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                             setOnClickListener {
                                 bottomSheetDialog.dismiss()
                                 if (Constants.NEW_RELEASE_TYPE_WEBVIEW == primaryDomain.cta?.action) {
-                                    openWebViewFragment(this@HomeFragment, "", BuildConfig.WEB_VIEW_URL + primaryDomain.cta?.pageUrl)
+                                    val url = BuildConfig.WEB_VIEW_URL + "${primaryDomain.cta?.pageUrl}?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&domain_name=${primaryDomain.domainName}&purchase_price=${primaryDomain.originalPrice}&renewal_price=${primaryDomain.renewalPrice}"
+                                    openWebViewFragmentV3(this@HomeFragment, "", url)
                                 }
                             }
                         }
@@ -829,7 +836,8 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                                 bottomSheetDialog.dismiss()
                                 val item = customDomainBottomSheetResponse.suggestedDomainsList?.get(position)
                                 if (Constants.NEW_RELEASE_TYPE_WEBVIEW == item?.cta?.action) {
-                                    openWebViewFragment(this@HomeFragment, "", BuildConfig.WEB_VIEW_URL + item.cta?.pageUrl)
+                                    val url = BuildConfig.WEB_VIEW_URL + "${item.cta?.pageUrl}?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&domain_name=${item.domainName}&purchase_price=${item.originalPrice}&renewal_price=${item.renewalPrice}"
+                                    openWebViewFragment(this@HomeFragment, "", url)
                                 }
                             }
                         })

@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 data class CustomDomainBottomSheetResponse(
     @SerializedName("primary_domain")       var primaryDomain: PrimaryDomainItemResponse?,
     @SerializedName("suggested_domains")    var suggestedDomainsList: ArrayList<PrimaryDomainItemResponse?>?,
-    @SerializedName("search_cta")           var search_cta: CTAItemResponse?,
+    @SerializedName("search_cta")           var searchCta: CTAItemResponse?,
     @SerializedName("static_text")          var staticText: CustomDomainBottomSheetStaticTextResponse?
 )
 
@@ -13,6 +13,7 @@ data class PrimaryDomainItemResponse(
     @SerializedName("heading")              var heading: String,
     @SerializedName("domain_name")          var domainName: String,
     @SerializedName("original_price")       var originalPrice: String,
+    @SerializedName("renewal_price")        var renewalPrice: String,
     @SerializedName("discounted_price")     var discountedPrice: String,
     @SerializedName("promo")                var promo: String,
     @SerializedName("validity")             var validity: String,

@@ -42,7 +42,6 @@ class DukaanNameFragment : BaseFragment(), ICreateStoreServiceInterface {
 
     companion object {
         private val TAG = DukaanNameFragment::class.simpleName
-
         fun newInstance(): DukaanNameFragment = DukaanNameFragment()
     }
 
@@ -80,8 +79,8 @@ class DukaanNameFragment : BaseFragment(), ICreateStoreServiceInterface {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         dukaanNameEditText.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
-             val str = s.toString()
-             nextTextView?.isEnabled = str.isNotBlank()
+                val str = s.toString()
+                nextTextView?.isEnabled = str.isNotBlank()
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -105,8 +104,8 @@ class DukaanNameFragment : BaseFragment(), ICreateStoreServiceInterface {
     override fun onClick(view: View?) {
         when(view?.id) {
             nextTextView?.id -> {
-                val dukanName = dukaanNameEditText?.text?.trim().toString()
-                if (isEmpty(dukanName)) {
+                val dukaanName = dukaanNameEditText?.text?.trim().toString()
+                if (isEmpty(dukaanName)) {
                     dukaanNameEditText?.apply {
                         requestFocus()
                         showKeyboard()
@@ -122,7 +121,7 @@ class DukaanNameFragment : BaseFragment(), ICreateStoreServiceInterface {
                         val request = CreateStoreRequest(
                             phone = PrefsManager.getStringDataFromSharedPref(Constants.USER_MOBILE_NUMBER),
                             userId = if (storeIdStr.isNotEmpty()) storeIdStr.toInt() else 0,
-                            storeName = dukanName,
+                            storeName = dukaanName,
                             secretKey = Constants.APP_SECRET_KEY,
                             languageId = 1,
                             referencePhone = StaticInstances.sAppFlyerRefMobileNumber,
@@ -143,7 +142,6 @@ class DukaanNameFragment : BaseFragment(), ICreateStoreServiceInterface {
         stopProgress()
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (commonApiResponse.mIsSuccessStatus) {
-                showShortSnackBar(commonApiResponse.mMessage, true, R.drawable.ic_check_circle)
                 val createStoreResponse = Gson().fromJson<CreateStoreResponse>(commonApiResponse.mCommonDataStr, CreateStoreResponse::class.java)
                 PrefsManager.storeStringDataInSharedPref(Constants.STORE_ID, "${createStoreResponse.storeId}")
                 PrefsManager.storeStringDataInSharedPref(Constants.STORE_NAME, "${createStoreResponse.storeInfo?.name}")
@@ -165,9 +163,7 @@ class DukaanNameFragment : BaseFragment(), ICreateStoreServiceInterface {
         }
     }
 
-    override fun onCreateStoreServerException(e: Exception) {
-        exceptionHandlingForAPIResponse(e)
-    }
+    override fun onCreateStoreServerException(e: Exception) = exceptionHandlingForAPIResponse(e)
 
     override fun onStart() {
         super.onStart()
