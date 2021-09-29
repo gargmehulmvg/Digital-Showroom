@@ -48,6 +48,7 @@ class LoginFragmentV2 : BaseFragment(), ILoginServiceInterface {
     private var mIsMobileNumberSearchingDone = false
     private var mViewPagerTimer: Timer? = null
     private var mLoginService: LoginService? = null
+    private var mTrueCallerInstance: TruecallerSDK? = null
 
     companion object {
         private val TAG = LoginFragmentV2::class.simpleName
@@ -112,6 +113,11 @@ class LoginFragmentV2 : BaseFragment(), ILoginServiceInterface {
             }
         }
         setStaticText()
+        checkTrueCallerInstalledOnDevice()
+    }
+
+    private fun checkTrueCallerInstalledOnDevice() {
+        trueCallerContainer?.visibility = if (true == mTrueCallerInstance?.isUsable) View.VISIBLE else View.GONE
     }
 
     private fun setStaticText() {
@@ -143,7 +149,7 @@ class LoginFragmentV2 : BaseFragment(), ILoginServiceInterface {
 
     override fun onClick(view: View?) {
         when (view?.id) {
-            trueCallerTextView?.id -> if (TruecallerSDK.getInstance().isUsable) TruecallerSDK.getInstance().getUserProfile(this)
+            trueCallerTextView?.id -> if (true == mTrueCallerInstance?.isUsable) mTrueCallerInstance?.getUserProfile(this)
             otpTextView?.id -> {
                 mobileNumberEditText?.apply {
                     hideSoftKeyboard()
@@ -210,6 +216,7 @@ class LoginFragmentV2 : BaseFragment(), ILoginServiceInterface {
         } catch (e: Exception) {
             Log.e(TAG, "initializeTrueCaller: ${e.message}", e)
         }
+        mTrueCallerInstance = TruecallerSDK.getInstance()
     }
 
     private val sdkCallback = object : ITrueCallback {
@@ -236,8 +243,8 @@ class LoginFragmentV2 : BaseFragment(), ILoginServiceInterface {
             mLoginService?.validateUser(request)
         }
 
-        override fun onVerificationRequired(p0: TrueError?) {
-            Log.d(TAG, "onVerificationRequired: $p0")
+        override fun onVerificationRequired(error: TrueError?) {
+            Log.d(TAG, "onVerificationRequired: $error")
         }
     }
 
@@ -354,7 +361,7 @@ class LoginFragmentV2 : BaseFragment(), ILoginServiceInterface {
             } else if (TruecallerSDK.SHARE_PROFILE_REQUEST_CODE == requestCode) {
                 mActivity?.let { context ->
                     mIsMobileNumberSearchingDone = true
-                    TruecallerSDK.getInstance().onActivityResultObtained(context, requestCode, resultCode, data)
+                    mTrueCallerInstance?.onActivityResultObtained(context, requestCode, resultCode, data)
                 }
             } else if (!mIsMobileNumberSearchingDone) initiateAutoDetectMobileNumber()
         } catch (e: Exception) {
