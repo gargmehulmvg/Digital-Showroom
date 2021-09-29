@@ -188,6 +188,10 @@ class SetOrderTypeFragment: BaseFragment(), ISetOrderTypeServiceInterface, IRecy
     }
 
     private fun payBothContainerClicked() {
+        if (false == mSetOrderTypePageInfoResponse?.mIsSubscriptionPurchased) {
+            showSubscriptionLockedBottomSheet()
+            return
+        }
         mPaymentMethod = mSetOrderTypePageInfoResponse?.mBothPaidResponse?.id ?: 0
         if (payBothRadioButton?.isChecked == true) return
         if (mIsBothCompleted) showConfirmationDialog() else showUnlockOptionBottomSheet()
@@ -213,6 +217,10 @@ class SetOrderTypeFragment: BaseFragment(), ISetOrderTypeServiceInterface, IRecy
     }
 
     private fun prepaidContainerClicked() {
+        if (false == mSetOrderTypePageInfoResponse?.mIsSubscriptionPurchased) {
+            showSubscriptionLockedBottomSheet()
+            return
+        }
         mPaymentMethod = mSetOrderTypePageInfoResponse?.mPrePaidResponse?.id ?: 0
         if (prepaidOrderRadioButton?.isChecked == true) return
         if (mIsPrepaidCompleted) showConfirmationDialog() else showUnlockOptionBottomSheet()

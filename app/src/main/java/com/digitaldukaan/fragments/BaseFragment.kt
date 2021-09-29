@@ -1793,4 +1793,36 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         layoutManager?.startSmoothScroll(smoothScroller)
     }
 
+    open fun showSubscriptionLockedBottomSheet() {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            try {
+                mActivity?.let {
+                    val bottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
+                    val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_subscription_locked, it.findViewById(R.id.bottomSheetContainer))
+                    bottomSheetDialog.apply {
+                        setContentView(view)
+                        setCancelable(true)
+                        view.run {
+                            val lockStaticData = StaticInstances.sStaticData?.mSubscriptionLockStaticData
+                            val bottomSheetHeading: TextView = findViewById(R.id.bottomSheetHeading)
+                            val bottomSheetSubHeading: TextView = findViewById(R.id.bottomSheetSubHeading)
+                            val completeKycTextView: TextView = findViewById(R.id.completeKycTextView)
+                            val bottomSheetClose: View = findViewById(R.id.bottomSheetClose)
+                            bottomSheetHeading.text = lockStaticData?.heading
+                            bottomSheetSubHeading.text = lockStaticData?.message
+                            completeKycTextView.text = lockStaticData?.ctaText
+                            completeKycTextView.setOnClickListener {
+                                this@apply.dismiss()
+                                openWebViewFragment(this@BaseFragment, "", lockStaticData?.pageUrl)
+                            }
+                            bottomSheetClose.setOnClickListener { this@apply.dismiss() }
+                        }
+                    }.show()
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "showCompleteYourKYCBottomSheet: ${e.message}", e)
+            }
+        }
+    }
+
 }

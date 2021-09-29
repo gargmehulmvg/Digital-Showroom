@@ -16,7 +16,8 @@ data class StaticData(
     @SerializedName("onboarding_step_two") var mOnBoardStep2StaticData: OnBoardStep2StaticResponseData,
     @SerializedName("merchant_address") var mMapStaticData: MapLocationStaticResponseData,
     @SerializedName("catalog_add") var mCatalogStaticData: CatalogStaticData,
-    @SerializedName("marketing") var mMarketingStaticData: MarketingStaticData
+    @SerializedName("marketing") var mMarketingStaticData: MarketingStaticData,
+    @SerializedName("subscription_lock") var mSubscriptionLockStaticData: SubscriptionLockStaticData
 )
 
 data class OrderListStaticData(
@@ -119,4 +120,11 @@ data class OnBoardStep2StaticResponseData(
     @SerializedName("next_btn_text") var mNextButton: String?,
     @SerializedName("step_count") var mStepCount: String?,
     @SerializedName("title_and_hint_text") var mTitleHinText: String?
+)
+
+data class SubscriptionLockStaticData(
+    @SerializedName("heading")      var heading: String?,
+    @SerializedName("message")      var message: String?,
+    @SerializedName("cta_text")     var ctaText: String?,
+    @SerializedName("page_url")     var pageUrl: String?
 )

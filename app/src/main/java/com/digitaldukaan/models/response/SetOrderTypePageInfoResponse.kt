@@ -8,6 +8,7 @@ data class SetOrderTypePageInfoResponse(
     @SerializedName("pre_paid")                                 var mPrePaidResponse: PostpaidResponse?,
     @SerializedName("both_paid")                                var mBothPaidResponse: PostpaidResponse?,
     @SerializedName("payment_method")                           var mPaymentMethod: Int,
+    @SerializedName("is_subscription_purchased")                var mIsSubscriptionPurchased: Boolean,
     @SerializedName("how_it_works_list")                        var mHowItWorkList: ArrayList<HelpScreenItemResponse>?,
     @SerializedName("unlock_options_list")                      var mUnlockOptionList: ArrayList<UnlockOptionItemList>?
 )
