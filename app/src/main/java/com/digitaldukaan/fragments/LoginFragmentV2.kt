@@ -300,7 +300,7 @@ class LoginFragmentV2 : BaseFragment(), ILoginServiceInterface {
                 isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                 data = mapOf(AFInAppEventParameterName.PHONE to mobileNumber, AFInAppEventParameterName.IS_MERCHANT to "1")
             )
-            showProgressDialog(mActivity)
+            showCancellableProgressDialog(mActivity)
             mActivity?.let { context -> UIUtil.hideKeyboard(context) }
             mLoginService?.generateOTP(mobileNumber)
         }
