@@ -4,34 +4,34 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/light_grey_background"
-    android:animateLayoutChanges="true">
+    android:animateLayoutChanges="true"
+    android:background="@color/light_grey_background">
 
     <ImageView
         android:id="@+id/billPhotoImageView"
         android:layout_width="match_parent"
-        android:visibility="gone"
-        android:background="@color/black"
-        android:layout_marginTop="@dimen/_50sdp"
         android:layout_height="match_parent"
-        android:contentDescription="@string/image_view_content_description" />
+        android:layout_marginTop="@dimen/_50sdp"
+        android:background="@color/black"
+        android:contentDescription="@string/image_view_content_description"
+        android:visibility="gone" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/toolBarContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
-        android:minHeight="?attr/actionBarSize"
         android:elevation="@dimen/_10sdp"
+        android:minHeight="?attr/actionBarSize"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:id="@+id/backButtonToolbar"
             android:layout_width="@dimen/_35sdp"
             android:layout_height="@dimen/_30sdp"
+            android:onClick="onClick"
             android:padding="@dimen/_4sdp"
             android:rotation="180"
-            android:onClick="onClick"
             android:src="@drawable/ic_arrow_forward_white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -43,6 +43,7 @@
             android:id="@+id/appTitleTextView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto_medium"
             android:gravity="center_vertical"
             android:maxLines="1"
             android:minHeight="@dimen/_25sdp"
@@ -50,7 +51,6 @@
             android:paddingEnd="@dimen/_5sdp"
             android:textColor="@color/black"
             android:textSize="@dimen/_14sdp"
-            android:fontFamily="@font/roboto_medium"
             app:layout_constraintEnd_toStartOf="@id/sideIconWhatsAppToolbar"
             app:layout_constraintStart_toEndOf="@id/backButtonToolbar"
             app:layout_constraintTop_toTopOf="parent"
@@ -79,42 +79,42 @@
             android:layout_height="0dp"
             android:layout_marginEnd="@dimen/_4sdp"
             android:background="?selectableItemBackground"
-            android:padding="@dimen/_4sdp"
+            android:contentDescription="@string/image_view_content_description"
             android:onClick="onClick"
-            tools:src="@drawable/ic_setting_toolbar"
+            android:padding="@dimen/_4sdp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/appTitleTextView"
             app:tint="@color/black"
-            android:contentDescription="@string/image_view_content_description" />
+            tools:src="@drawable/ic_setting_toolbar" />
 
         <ImageView
             android:id="@+id/sideIcon2Toolbar"
             android:layout_width="@dimen/_32sdp"
             android:layout_height="0dp"
             android:background="?selectableItemBackground"
-            android:padding="@dimen/_4sdp"
+            android:contentDescription="@string/image_view_content_description"
             android:onClick="onClick"
-            tools:src="@drawable/ic_setting_toolbar"
+            android:padding="@dimen/_4sdp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/sideIconToolbar"
             app:layout_constraintTop_toTopOf="@id/appTitleTextView"
             app:tint="@color/black"
-            android:contentDescription="@string/image_view_content_description" />
+            tools:src="@drawable/ic_setting_toolbar" />
 
         <ImageView
             android:id="@+id/sideIconWhatsAppToolbar"
             android:layout_width="@dimen/_32sdp"
             android:layout_height="0dp"
             android:background="?selectableItemBackground"
-            android:padding="@dimen/_5sdp"
-            app:layout_goneMarginRight="@dimen/_5sdp"
+            android:contentDescription="@string/image_view_content_description"
             android:onClick="onClick"
+            android:padding="@dimen/_5sdp"
             android:src="@drawable/ic_whatsapp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/sideIcon2Toolbar"
             app:layout_constraintTop_toTopOf="@id/appTitleTextView"
-            android:contentDescription="@string/image_view_content_description" />
+            app:layout_goneMarginRight="@dimen/_5sdp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -123,8 +123,8 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/_1sdp"
         android:alpha="0.1"
-        app:layout_constraintTop_toBottomOf="@id/toolBarContainer"
-        android:background="@color/cardview_dark_background" />
+        android:background="@color/cardview_dark_background"
+        app:layout_constraintTop_toBottomOf="@id/toolBarContainer" />
 
     <androidx.core.widget.NestedScrollView
         android:id="@+id/nestedScrollView"
@@ -237,21 +237,134 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/deliveryPartnerContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/deliveryPartnerLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/_10sdp"
+                    app:cardCornerRadius="@dimen/_8sdp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <ImageView
+                            android:id="@+id/deliveryPartnerImageView"
+                            android:layout_width="@dimen/_50sdp"
+                            android:layout_height="@dimen/_50sdp"
+                            android:layout_margin="@dimen/_10sdp"
+                            android:contentDescription="@string/image_view_content_description"
+                            android:padding="@dimen/_2sdp"
+                            tools:src="@drawable/ic_whatsapp"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:id="@+id/deliveryPartnerStatusTextView"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/roboto_medium"
+                            android:padding="@dimen/_5sdp"
+                            android:textColor="@color/dark_blackish"
+                            android:textSize="@dimen/_12sdp"
+                            app:layout_constraintBottom_toBottomOf="@+id/deliveryPartnerImageView"
+                            app:layout_constraintEnd_toStartOf="@+id/cardView5"
+                            app:layout_constraintStart_toEndOf="@+id/deliveryPartnerImageView"
+                            app:layout_constraintTop_toTopOf="@+id/deliveryPartnerImageView"
+                            tools:text="Pickup scheduled" />
+
+                        <androidx.cardview.widget.CardView
+                            android:id="@+id/cardView5"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="@dimen/_10sdp"
+                            app:cardCornerRadius="@dimen/_15sdp"
+                            app:layout_constraintBottom_toBottomOf="@+id/deliveryPartnerImageView"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="@+id/deliveryPartnerImageView">
+
+                            <TextView
+                                android:id="@+id/deliveryPartnerCtaTextView"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="@color/black"
+                                android:fontFamily="@font/roboto_medium"
+                                android:paddingStart="@dimen/_25sdp"
+                                android:paddingTop="@dimen/_8sdp"
+                                android:paddingEnd="@dimen/_25sdp"
+                                android:paddingBottom="@dimen/_8sdp"
+                                android:textColor="@color/white"
+                                tools:text="Track" />
+
+                        </androidx.cardview.widget.CardView>
+
+                        <View
+                            android:id="@+id/separator"
+                            android:layout_width="match_parent"
+                            android:layout_height="0.75dp"
+                            android:layout_marginTop="@dimen/_8sdp"
+                            android:alpha="0.75"
+                            android:background="@color/curve_grey_border"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/deliveryPartnerImageView" />
+
+                        <TextView
+                            android:id="@+id/deliveryPartnerMessageTextView"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_8sdp"
+                            android:layout_marginBottom="@dimen/_8sdp"
+                            android:fontFamily="@font/roboto"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toStartOf="@+id/deliveryPartnerShareTextView"
+                            app:layout_constraintStart_toStartOf="@+id/deliveryPartnerImageView"
+                            app:layout_constraintTop_toBottomOf="@+id/separator"
+                            tools:text="Package will be delivered by 12/3/21" />
+
+                        <TextView
+                            android:id="@+id/deliveryPartnerShareTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="?android:selectableItemBackgroundBorderless"
+                            android:drawablePadding="@dimen/_2sdp"
+                            android:fontFamily="@font/roboto"
+                            android:padding="@dimen/_2sdp"
+                            android:textSize="@dimen/_10sdp"
+                            app:drawableEndCompat="@drawable/ic_share"
+                            app:layout_constraintBaseline_toBaselineOf="@+id/deliveryPartnerMessageTextView"
+                            app:layout_constraintEnd_toEndOf="@+id/cardView5"
+                            tools:text="Share" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                </androidx.cardview.widget.CardView>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/reminderContainer"
                 android:layout_width="match_parent"
-                android:visibility="gone"
-                android:layout_height="@dimen/_300sdp">
+                android:layout_height="@dimen/_300sdp"
+                android:visibility="gone">
 
                 <ImageView
                     android:id="@+id/bellImageView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:contentDescription="@string/image_view_content_description"
                     android:src="@drawable/ic_bell_large"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    android:contentDescription="@string/image_view_content_description" />
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:id="@+id/shareProductContainer"
@@ -259,11 +372,11 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/_10sdp"
                     android:layout_weight="1"
-                    android:paddingStart="@dimen/_25sdp"
-                    android:paddingEnd="@dimen/_25sdp"
                     android:animateLayoutChanges="true"
                     android:background="@drawable/ripple_curve_grey_black_background"
                     android:onClick="onClick"
+                    android:paddingStart="@dimen/_25sdp"
+                    android:paddingEnd="@dimen/_25sdp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -305,9 +418,9 @@
             <LinearLayout
                 android:id="@+id/transactionDetailLayout"
                 android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:orientation="vertical"
-                android:visibility="gone"
-                android:layout_height="match_parent">
+                android:visibility="gone">
 
                 <TextView
                     android:id="@+id/headerTransactionDetail"
@@ -322,9 +435,9 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <include
+                    layout="@layout/bottom_sheet_transaction_detail_common_layout"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    layout="@layout/bottom_sheet_transaction_detail_common_layout" />
+                    android:layout_height="match_parent" />
 
             </LinearLayout>
 
@@ -341,13 +454,13 @@
                 android:id="@+id/promoLayout"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_35sdp"
+                android:layout_marginStart="@dimen/_12sdp"
+                android:layout_marginTop="@dimen/_15sdp"
+                android:layout_marginEnd="@dimen/_12sdp"
+                android:background="@drawable/ic_order_detail_promo_bg"
                 android:paddingStart="@dimen/_15sdp"
                 android:paddingEnd="@dimen/_15sdp"
-                android:visibility="gone"
-                android:background="@drawable/ic_order_detail_promo_bg"
-                android:layout_marginStart="@dimen/_12sdp"
-                android:layout_marginEnd="@dimen/_12sdp"
-                android:layout_marginTop="@dimen/_15sdp">
+                android:visibility="gone">
 
                 <ImageView
                     android:id="@+id/promoPercentageImageView"
@@ -362,28 +475,28 @@
                     android:id="@+id/promoCodeTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_5sdp"
                     android:background="@drawable/slight_curve_green_background_without_padding"
                     android:fontFamily="@font/roboto_medium"
-                    tools:text="HAPPY20"
-                    android:layout_marginStart="@dimen/_5sdp"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_8sdp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/promoPercentageImageView"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="HAPPY20" />
 
                 <TextView
                     android:id="@+id/promoCodeMessageTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:fontFamily="@font/roboto"
-                    tools:text="20% OFF UPTO ₹50"
                     android:layout_marginStart="@dimen/_5sdp"
+                    android:fontFamily="@font/roboto"
                     android:textColor="@color/open_green"
                     android:textSize="@dimen/_10sdp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/promoCodeTextView"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="20% OFF UPTO ₹50" />
 
                 <TextView
                     android:id="@+id/promoCodeAmountTextView"
@@ -420,8 +533,8 @@
                     android:id="@+id/deliveryChargeValue"
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
-                    android:gravity="center"
                     android:layout_marginEnd="@dimen/_8sdp"
+                    android:gravity="center"
                     android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/deliveryChargeLabel"
@@ -491,8 +604,8 @@
                     android:id="@+id/otherChargesValueEditText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="start"
                     android:layout_marginEnd="@dimen/_8sdp"
+                    android:gravity="start"
                     android:importantForAutofill="no"
                     android:inputType="number"
                     android:maxLength="@integer/amount_length"
@@ -534,13 +647,13 @@
                     android:id="@+id/discountsEditText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:enabled="false"
                     android:importantForAutofill="no"
                     android:inputType="text"
-                    android:enabled="false"
+                    android:minWidth="@dimen/_100sdp"
+                    android:text="@string/discount"
                     android:textColor="@color/black"
                     android:textColorHint="@color/black"
-                    android:text="@string/discount"
-                    android:minWidth="@dimen/_100sdp"
                     android:textSize="@dimen/_10sdp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="@id/addDeliveryChargesLabel"
@@ -612,9 +725,9 @@
 
             <View
                 android:id="@+id/blankSpace"
-                android:background="@color/light_grey_background"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_200sdp" />
+                android:layout_height="@dimen/_200sdp"
+                android:background="@color/light_grey_background" />
 
         </LinearLayout>
 
@@ -624,9 +737,9 @@
         android:id="@+id/prepaidOrderLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:animateLayoutChanges="true"
         android:background="@color/white"
         android:elevation="@dimen/_5sdp"
-        android:animateLayoutChanges="true"
         android:orientation="vertical"
         android:padding="@dimen/_15sdp"
         android:visibility="gone"
@@ -653,9 +766,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
+            android:lineSpacingMultiplier="1.2"
             android:textColor="@color/open_green"
             android:textSize="@dimen/_13sdp"
-            android:lineSpacingMultiplier="1.2"
             android:visibility="gone"
             app:drawableEndCompat="@drawable/ic_success_zigzag_border"
             tools:text="Delivery time is set as:\nJan 26, 2021- Jan 29, 2021" />
@@ -667,8 +780,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:elevation="@dimen/_5sdp"
-        android:visibility="gone"
         android:orientation="vertical"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -694,7 +807,6 @@
         android:background="@drawable/curve_black_background"
         android:drawableStart="@drawable/ic_view_bill_white"
         android:drawablePadding="@dimen/_5sdp"
-        android:visibility="gone"
         android:fontFamily="sans-serif-medium"
         android:paddingStart="@dimen/_10sdp"
         android:paddingTop="@dimen/_5sdp"
@@ -702,6 +814,7 @@
         android:paddingBottom="@dimen/_5sdp"
         android:textColor="@color/white"
         android:textSize="@dimen/_13sdp"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         tools:text="View Bill" />

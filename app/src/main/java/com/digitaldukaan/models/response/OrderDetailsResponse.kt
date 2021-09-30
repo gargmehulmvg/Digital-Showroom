@@ -61,6 +61,7 @@ data class OrderDetailMainResponse(
     @SerializedName("static_text")              var staticText: OrderDetailsStaticTextResponse?,
     @SerializedName("options_menu")             var optionMenuList: ArrayList<TrendingListResponse>,
     @SerializedName("delivery_details")         var deliveryDetails: OrderDetailDeliveryResponse?,
+    @SerializedName("prepaid_delivery_details") var prepaidDeliveryDetails: OrderDetailPrepaidDeliveryResponse?,
     @SerializedName("promo_code_details")       var promoCodeDetails: OrderDetailPromoCodeResponse?,
     @SerializedName("store_services")           var storeServices: StoreServicesResponse?
 )

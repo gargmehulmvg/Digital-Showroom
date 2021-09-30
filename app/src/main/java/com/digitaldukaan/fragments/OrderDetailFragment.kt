@@ -245,6 +245,8 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             orderDetailMainResponse = Gson().fromJson<OrderDetailMainResponse>(commonResponse.mCommonDataStr, OrderDetailMainResponse::class.java)
+            Log.d(TAG, "onOrderDetailResponse: deliveryDetails :: ${orderDetailMainResponse?.deliveryDetails}")
+            Log.d(TAG, "onOrderDetailResponse: prepaidDeliveryDetails :: ${orderDetailMainResponse?.prepaidDeliveryDetails}")
             val orderDetailResponse = orderDetailMainResponse?.orders
             mOrderDetailStaticData = orderDetailMainResponse?.staticText
             newOrderTextView?.visibility = if (mIsNewOrder) View.VISIBLE else View.GONE
