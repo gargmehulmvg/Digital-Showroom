@@ -9,10 +9,7 @@ import android.graphics.Typeface
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
-import android.text.Editable
-import android.text.Spannable
-import android.text.SpannableString
-import android.text.TextWatcher
+import android.text.*
 import android.text.style.StyleSpan
 import android.util.Log
 import android.view.*
@@ -247,14 +244,24 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             orderDetailMainResponse = Gson().fromJson<OrderDetailMainResponse>(commonResponse.mCommonDataStr, OrderDetailMainResponse::class.java)
-            Log.d(TAG, "onOrderDetailResponse: deliveryDetails :: ${orderDetailMainResponse?.deliveryDetails}")
-            Log.d(TAG, "onOrderDetailResponse: prepaidDeliveryDetails :: ${orderDetailMainResponse?.prepaidDeliveryDetails}")
             val orderDetailResponse = orderDetailMainResponse?.orders
             mOrderDetailStaticData = orderDetailMainResponse?.staticText
             newOrderTextView?.visibility = if (mIsNewOrder) View.VISIBLE else View.GONE
             val displayStatus = orderDetailResponse?.displayStatus
             Log.d(TAG, "onOrderDetailResponse: display status :: $displayStatus")
-            sendBillLayout?.visibility = if (Constants.DS_SEND_BILL == displayStatus || Constants.DS_NEW == displayStatus) View.VISIBLE else View.GONE
+            val isShareBillUI = ((Constants.DS_SEND_BILL == displayStatus || Constants.DS_NEW == displayStatus) && (1 == orderDetailResponse.paymentStatus) && (Constants.StatusSeenByMerchant == orderDetailResponse.status || Constants.StatusMerchantUpdated == orderDetailResponse.status) && isNotEmpty(orderDetailResponse.deliveryInfo?.shipmentId))
+            sendBillLayout?.visibility = if ((Constants.DS_SEND_BILL == displayStatus || Constants.DS_NEW == displayStatus) && !isShareBillUI) View.VISIBLE else View.GONE
+            deliveryPartnerShareLinkContainer?.apply {
+                visibility = if (isShareBillUI) View.VISIBLE else View.GONE
+                deliveryPartnerShareLinkHeadingTextView?.apply {
+                    text = mOrderDetailStaticData?.text_delivery_person
+                    setOnClickListener { showCodConfirmationBottomSheet() }
+                }
+                deliveryPartnerShareLinkCtaTextView?.apply {
+                    text = mOrderDetailStaticData?.text_share_bill
+                    setOnClickListener { shareBill() }
+                }
+            }
             orderDetailContainer?.visibility = if (Constants.DS_SEND_BILL == displayStatus || Constants.DS_NEW == displayStatus) View.GONE else View.VISIBLE
             addDeliveryChargesLabel?.visibility = if (Constants.DS_SEND_BILL == displayStatus) View.VISIBLE else View.GONE
             setupPrepaidOrderUI(displayStatus, orderDetailResponse)
@@ -262,14 +269,14 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
             isCreateListItemAdded = setupOrderDetailItemRecyclerView(orderDetailResponse, isCreateListItemAdded, displayStatus)
             amountEditText?.setText("$mTotalPayAmount")
             setStaticDataToUI(orderDetailResponse)
-            setUpOrderDeliveryUI(orderDetailMainResponse)
+            setUpOrderDeliveryPartnerUI(orderDetailMainResponse)
             appSubTitleTextView?.text = getStringDateTimeFromOrderDate(getCompleteDateFromOrderString(orderDetailMainResponse?.orders?.createdAt))
             if (isCreateListItemAdded) orderDetailMainResponse?.storeServices?.mDeliveryChargeType = Constants.CUSTOM_DELIVERY_CHARGE
             setupDeliveryChargeUI(displayStatus, orderDetailMainResponse?.storeServices)
             setupOrderTypeUI(orderDetailResponse, displayStatus)
-            if (true == orderDetailResponse?.instruction?.isNotEmpty()) {
+            if (isNotEmpty(orderDetailResponse?.instruction)) {
                 instructionsValue?.visibility = View.VISIBLE
-                instructionsValue?.text = orderDetailResponse.instruction
+                instructionsValue?.text = orderDetailResponse?.instruction
                 instructionsLabel?.visibility = View.VISIBLE
             }
             mMobileNumber = orderDetailResponse?.phone ?: ""
@@ -297,13 +304,12 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
         }
     }
 
-    private fun setUpOrderDeliveryUI(orderMainResponse: OrderDetailMainResponse?) {
+    private fun setUpOrderDeliveryPartnerUI(orderMainResponse: OrderDetailMainResponse?) {
         mActivity?.let { context ->
             orderMainResponse?.let { response ->
                 deliveryPartnerLayout?.visibility = View.GONE
                 prepaidDeliveryPartnerLayout?.visibility = View.GONE
-                response.prepaidDeliveryDetails?.isEnabled = true
-                response.deliveryDetails?.isEnabled = false
+                visitDotPeLayout?.visibility = View.GONE
                 when {
                     true == response.deliveryDetails?.isEnabled -> {
                         deliveryPartnerLayout?.visibility = View.VISIBLE
@@ -346,9 +352,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                                 text = cta.text
                                 setTextColor(Color.parseColor(if (isEmpty(cta.textColor)) "#000000" else cta.textColor))
                                 background = ContextCompat.getDrawable(context, if (Constants.CTA_TYPE_BORDER == cta.type) R.drawable.curve_black_border else R.drawable.curve_black_background)
-                                setOnClickListener {
-                                    showTrendingOffersBottomSheet(response.prepaidDeliveryDetails)
-                                }
+                                setOnClickListener { showTrendingOffersBottomSheet(response.prepaidDeliveryDetails) }
                             }
                         }
                         response.prepaidDeliveryDetails?.cta2?.let { cta ->
@@ -357,15 +361,27 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                                 setTextColor(Color.parseColor(if (isEmpty(cta.textColor)) "#000000" else cta.textColor))
                                 background = ContextCompat.getDrawable(context, if (Constants.CTA_TYPE_BORDER == cta.type) R.drawable.curve_black_border else R.drawable.curve_black_background)
                                 setOnClickListener {
-                                    if (Constants.ACTION_MARK_OUT_FOR_DELIVERY == cta.action) {
-                                        handleDeliveryTimeBottomSheet(isCallSendBillServerCall = false, isPrepaidOrder = true)
-                                    }
+                                    if (Constants.ACTION_MARK_OUT_FOR_DELIVERY == cta.action) handleDeliveryTimeBottomSheet(isCallSendBillServerCall = false, isPrepaidOrder = true)
                                 }
                             }
                         }
                         deliveryPartnerContainer?.setBackgroundColor(Color.parseColor(if (isEmpty(response.prepaidDeliveryDetails?.outerBgColor)) "#000000" else response.prepaidDeliveryDetails?.outerBgColor))
                         prepaidDeliveryPartnerInnerLayout?.setBackgroundColor(Color.parseColor(if (isEmpty(response.prepaidDeliveryDetails?.innerBgColor)) "#FFFFFF" else response.prepaidDeliveryDetails?.innerBgColor))
                         prepaidDeliveryPartnerImageView?.let { view -> Glide.with(context).load(response.prepaidDeliveryDetails?.deliveryPartnerImageUrl).into(view)}
+                    }
+                    true == response.deliveryPartnerDetails?.isEnabled-> {
+                        visitDotPeLayout?.visibility = View.VISIBLE
+                        visitDotPeTextView?.setHtmlData(response.deliveryPartnerDetails?.deliveryDisplayStatus)
+                        response.deliveryPartnerDetails?.cta?.let { cta ->
+                            visitDotPeCtaTextView?.apply {
+                                cta.text
+                                setTextColor(Color.parseColor(if (isEmpty(cta.textColor)) "#000000" else cta.textColor))
+                                background = ContextCompat.getDrawable(context, if (Constants.CTA_TYPE_BORDER == cta.type) R.drawable.curve_black_border else R.drawable.curve_black_background)
+                                setOnClickListener {
+                                    copyDataToClipboard(Constants.DOTPE_OFFICIAL_URL_CLIPBOARD)
+                                }
+                            }
+                        }
                     }
                     else -> {
 
@@ -376,9 +392,9 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
     }
 
     private fun showTrendingOffersBottomSheet(prepaidDeliveryDetails: OrderDetailPrepaidDeliveryResponse?) {
-        mActivity?.let {
-            val bottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
-            val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_trending_offers, it.findViewById(R.id.bottomSheetContainer))
+        mActivity?.let { context ->
+            val bottomSheetDialog = BottomSheetDialog(context, R.style.BottomSheetDialogTheme)
+            val view = LayoutInflater.from(context).inflate(R.layout.bottom_sheet_trending_offers, context.findViewById(R.id.bottomSheetContainer))
             bottomSheetDialog.apply {
                 setContentView(view)
                 behavior.state = BottomSheetBehavior.STATE_EXPANDED
@@ -389,6 +405,67 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                 bottomSheetUrl.setHtmlData(prepaidDeliveryDetails?.messageGotoWebsite)
                 bottomSheetUrl.setOnClickListener { copyDataToClipboard(Constants.DOTPE_OFFICIAL_URL_CLIPBOARD) }
                 bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
+            }.show()
+        }
+    }
+
+    private fun showCodConfirmationBottomSheet() {
+        mActivity?.let { context ->
+            val bottomSheetDialog = BottomSheetDialog(context, R.style.BottomSheetDialogTheme)
+            val view = LayoutInflater.from(context).inflate(R.layout.bottom_sheet_cod_confirmation, context.findViewById(R.id.bottomSheetContainer))
+            bottomSheetDialog.apply {
+                setContentView(view)
+                val textView: TextView = view.findViewById(R.id.textView)
+                val okayTextView: TextView = view.findViewById(R.id.okayTextView)
+                textView.setHtmlData(mOrderDetailStaticData?.message_cod)
+                okayTextView.setHtmlData(mOrderDetailStaticData?.text_okay)
+                okayTextView.setOnClickListener { bottomSheetDialog.dismiss() }
+            }.show()
+        }
+    }
+
+    private fun showShipmentConfirmationBottomSheet() {
+        mActivity?.let { context ->
+            val bottomSheetDialog = BottomSheetDialog(context, R.style.BottomSheetDialogTheme)
+            val view = LayoutInflater.from(context).inflate(R.layout.bottom_sheet_shipment_confirmation, context.findViewById(R.id.bottomSheetContainer))
+            bottomSheetDialog.apply {
+                setContentView(view)
+                val bottomSheetClose: View = view.findViewById(R.id.bottomSheetClose)
+                val headingTextView: TextView = view.findViewById(R.id.headingTextView)
+                val ctaTextView: TextView = view.findViewById(R.id.ctaTextView)
+                val radioButtonDeliveryPartnerSubHeading: TextView = view.findViewById(R.id.radioButtonDeliveryPartnerSubHeading)
+                val radioButtonShipMyselfSubHeading: TextView = view.findViewById(R.id.radioButtonShipMyselfSubHeading)
+                val radioButtonDeliveryPartner: RadioButton = view.findViewById(R.id.radioButtonDeliveryPartner)
+                val radioButtonShipMyself: RadioButton = view.findViewById(R.id.radioButtonShipMyself)
+                bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
+                headingTextView.text = mOrderDetailStaticData?.bottom_sheet_heading_how_will_you_ship
+                radioButtonShipMyselfSubHeading.text = mOrderDetailStaticData?.bottom_sheet_sub_message2_select_this
+                radioButtonDeliveryPartnerSubHeading.text = mOrderDetailStaticData?.bottom_sheet_sub_message1_select_this
+                radioButtonDeliveryPartner.apply {
+                    text = mOrderDetailStaticData?.bottom_sheet_message1_ship_using_partners
+                    isChecked = true
+                    setOnClickListener {
+                        radioButtonShipMyself.isChecked = false
+                    }
+                }
+                radioButtonShipMyself.apply {
+                    text = mOrderDetailStaticData?.bottom_sheet_message2_i_will_ship
+                    setOnClickListener {
+                        radioButtonDeliveryPartner.isChecked = false
+                    }
+                }
+                radioButtonDeliveryPartnerSubHeading.setOnClickListener {
+                    radioButtonShipMyself.isChecked = false
+                }
+                radioButtonShipMyselfSubHeading.setOnClickListener {
+                    radioButtonDeliveryPartner.isChecked = false
+                }
+                ctaTextView.apply {
+                    text = mOrderDetailStaticData?.text_next
+                    setOnClickListener {
+
+                    }
+                }
             }.show()
         }
     }
@@ -487,7 +564,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                 mTotalActualAmount += ((itemResponse.actualAmount ?: 0.0) * itemResponse.quantity)
             }
             var orderDetailAdapter: OrderDetailsAdapter? = null
-            orderDetailAdapter = OrderDetailsAdapter(list, displayStatus, mOrderDetailStaticData, object : IOrderDetailListener {
+            orderDetailAdapter = OrderDetailsAdapter(list, orderDetailResponse, displayStatus, mOrderDetailStaticData, object : IOrderDetailListener {
 
                     override fun onOrderDetailItemClickListener(position: Int) {
                         if (position < 0) return
@@ -520,8 +597,8 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
 
     private fun setupPrepaidOrderUI(displayStatus: String?, orderDetailResponse: OrderDetailsResponse?) {
         if (Constants.ORDER_TYPE_PREPAID == orderDetailMainResponse?.orders?.prepaidFlag) {
-            prepaidOrderLayout?.visibility = View.VISIBLE
             sendBillLayout?.visibility = View.GONE
+            Log.d(TAG, "setupPrepaidOrderUI: displayStatus :: $displayStatus")
             when (displayStatus) {
                 Constants.DS_MARK_READY -> {
                     markOutForDeliveryTextView?.visibility = View.VISIBLE
@@ -534,6 +611,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                     markOutForDeliveryTextView?.text = mOrderDetailStaticData?.markOutForDeliveryText
                 }
                 Constants.DS_PREPAID_PICKUP_READY -> {
+                    prepaidOrderLayout?.visibility = View.VISIBLE
                     markOutForDeliveryValueTextView?.visibility = View.VISIBLE
                     markOutForDeliveryTextView?.visibility = View.GONE
                     val txtSpannable = SpannableString(mOrderDetailStaticData?.pickUpOrderSuccess)
@@ -542,6 +620,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                     markOutForDeliveryValueTextView?.text = txtSpannable
                 }
                 Constants.DS_PREPAID_DELIVERY_READY -> {
+                    prepaidOrderLayout?.visibility = View.VISIBLE
                     markOutForDeliveryValueTextView?.visibility = View.VISIBLE
                     markOutForDeliveryTextView?.visibility = View.GONE
                     val txtSpannable = SpannableString("${mOrderDetailStaticData?.deliveryTimeIsSetAsText}\n${orderDetailResponse?.deliveryInfo?.customDeliveryTime}")

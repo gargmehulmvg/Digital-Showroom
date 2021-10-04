@@ -248,6 +248,7 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/_10sdp"
                     app:cardCornerRadius="@dimen/_8sdp"
+                    android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -350,6 +351,7 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/_10sdp"
                     app:cardCornerRadius="@dimen/_8sdp"
+                    android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -390,7 +392,7 @@
 
                         <TextView
                             android:id="@+id/prepaidDeliveryPartnerMessageTextView"
-                            android:layout_width="0dp"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/roboto"
                             android:padding="@dimen/_1sdp"
@@ -583,7 +585,7 @@
                     android:background="#F5F5F5"
                     android:fontFamily="@font/roboto_medium"
                     android:padding="@dimen/_10sdp"
-                    android:text="Transaction Details"
+                    android:text="@string/transaction_details"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_12sdp"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -634,6 +636,8 @@
                     android:fontFamily="@font/roboto_medium"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_8sdp"
+                    android:paddingStart="@dimen/_2sdp"
+                    android:paddingEnd="@dimen/_2sdp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@id/promoPercentageImageView"
                     app:layout_constraintTop_toTopOf="parent"
@@ -953,21 +957,33 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/deliveryPartnerShareLinkContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        android:visibility="gone"
+        android:elevation="@dimen/_5sdp"
+        android:background="@color/white"
         app:layout_constraintStart_toStartOf="parent"
         android:orientation="vertical">
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_2sdp"
+            android:alpha="0.2"
+            android:background="@color/cardview_dark_background" />
+
         <TextView
+            android:id="@+id/deliveryPartnerShareLinkHeadingTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:textColor="@color/orange"
             android:onClick="onClick"
+            android:padding="@dimen/_5sdp"
             android:fontFamily="@font/roboto_medium"
-            android:textSize="@dimen/_11sdp"
+            android:textSize="@dimen/_10sdp"
             android:drawablePadding="@dimen/_5sdp"
             android:layout_marginTop="@dimen/_10sdp"
             android:background="?selectableItemBackgroundBorderless"
@@ -975,6 +991,7 @@
             app:drawableEndCompat="@drawable/ic_exclamation_small" />
 
         <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/deliveryPartnerShareLinkCtaTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="@dimen/_15sdp"

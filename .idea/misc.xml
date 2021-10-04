@@ -24,9 +24,11 @@
         <entry key="app/src/main/res/drawable/ripple_slight_curve_white_background_grey_border.xml" value="0.2388888888888889" />
         <entry key="app/src/main/res/drawable/slight_curve_black_border.xml" value="0.32664092664092664" />
         <entry key="app/src/main/res/layout/add_bank_bottom_sheet_item.xml" value="0.4027777777777778" />
+        <entry key="app/src/main/res/layout/bottom_sheet_cod_confirmation.xml" value="0.4244791666666667" />
         <entry key="app/src/main/res/layout/bottom_sheet_complete_your_kyc.xml" value="0.35260416666666666" />
         <entry key="app/src/main/res/layout/bottom_sheet_custom_domain_selection.xml" value="0.4244791666666667" />
         <entry key="app/src/main/res/layout/bottom_sheet_payment_link.xml" value="0.35260416666666666" />
+        <entry key="app/src/main/res/layout/bottom_sheet_shipment_confirmation.xml" value="0.41794871794871796" />
         <entry key="app/src/main/res/layout/bottom_sheet_subscription_locked.xml" value="0.35260416666666666" />
         <entry key="app/src/main/res/layout/bottom_sheet_take_order.xml" value="0.35260416666666666" />
         <entry key="app/src/main/res/layout/bottom_sheet_transaction_detail.xml" value="0.35260416666666666" />
@@ -44,6 +46,7 @@
         <entry key="app/src/main/res/layout/layout_on_board_help_screen.xml" value="0.3020833333333333" />
         <entry key="app/src/main/res/layout/layout_on_board_screen_dukaan_fragment.xml" value="0.35260416666666666" />
         <entry key="app/src/main/res/layout/layout_order_detail_fragment.xml" value="0.35260416666666666" />
+        <entry key="app/src/main/res/layout/layout_order_notification_item.xml" value="0.4027777777777778" />
         <entry key="app/src/main/res/layout/layout_payment_modes.xml" value="0.35260416666666666" />
         <entry key="app/src/main/res/layout/layout_splash_fragment.xml" value="0.3020833333333333" />
         <entry key="app/src/main/res/layout/marketing_know_more_item.xml" value="0.4027777777777778" />
