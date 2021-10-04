@@ -2,13 +2,14 @@ package com.digitaldukaan.constants
 
 class Constants {
     companion object {
-        const val SPLASH_TIMER                                  = 1_000L
+        const val OTP_SUCCESS_TIMER                             = 500L
         const val LOCATION_REQUEST_CODE                         = 1001
         const val BACK_PRESS_INTERVAL                           = 2_000L
         const val SHINE_ANIMATION_INTERVAL                      = 2_000L
         const val STORE_CREATION_PROGRESS_ANIMATION_INTERVAL    = 3_000L
         const val RESEND_OTP_TIMER                              = 30_000L
         const val TIMER_INTERVAL                                = 500L
+        const val TOOL_TIP_TIMER_INTERVAL                       = 3_000L
         const val CREDENTIAL_PICKER_REQUEST                     = 1001
         const val IMAGE_PICK_REQUEST_CODE                       = 1002
         const val CONTACT_REQUEST_CODE                          = 1003
@@ -61,6 +62,7 @@ class Constants {
         const val ACTION_BOTTOM_SHEET                           = "bottom-sheet"
         const val ACTION_PROMO_CODE                             = "promo-code"
         const val ACTION_EMAIL_AUTHENTICATION                   = "email-authentication"
+        const val ACTION_MARK_OUT_FOR_DELIVERY                  = "mark-out-for-delivery"
         //Incomplete profile actions
         const val ACTION_LOGO                                   = "logo"
         const val ACTION_DESCRIPTION                            = "description"
@@ -172,5 +174,8 @@ class Constants {
         const val ITEM_TYPE_LIST                                = "list"
         const val ITEM_TYPE_CATALOG                             = "catalog"
         const val ITEM_TYPE_DISCOUNT                            = "discount"
+        //CTA_TYPES
+        const val CTA_TYPE_BORDER: String                       = "border"
+        const val CTA_TYPE_SOLID: String                        = "solid"
     }
 }

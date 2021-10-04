@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 data class OrderDetailDeliveryResponse(
 
 	@field:SerializedName("is_enabled")
-    val isEnabled: Boolean = false,
+    var isEnabled: Boolean = false,
 
 	@field:SerializedName("delivery_status_sub_heading")
     val deliveryStatusSubHeading: String? = null,
@@ -35,7 +35,7 @@ data class OrderDetailDeliveryResponse(
     val deliveryDisplayStatus: String? = null,
 
 	@field:SerializedName("share_wa_message")
-    val shareWaMessage: String? = null
+    var shareWaMessage: String? = null
 )
 
 data class OrderDetailDeliveryCta(

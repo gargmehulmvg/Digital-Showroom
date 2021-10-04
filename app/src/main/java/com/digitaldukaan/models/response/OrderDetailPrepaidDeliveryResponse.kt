@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 data class OrderDetailPrepaidDeliveryResponse(
 
     @field:SerializedName("is_enabled")
-    val isEnabled: Boolean = false,
+    var isEnabled: Boolean = false,
 
 	@field:SerializedName("delivery_partner_image_url")
     val deliveryPartnerImageUrl: String? = null,
