@@ -119,6 +119,11 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                 handleDeliveryTimeBottomSheet(isCallSendBillServerCall = false, isPrepaidOrder = false)
             }
             sendBillTextView?.id -> {
+                Log.d(TAG, "onClick: orderDetailMainResponse?.sendBillAction :: ${orderDetailMainResponse?.sendBillAction}")
+                if (Constants.ACTION_HOW_TO_SHIP == orderDetailMainResponse?.sendBillAction) {
+                    showShipmentConfirmationBottomSheet(mOrderDetailStaticData)
+                    return
+                }
                 orderDetailMainResponse?.orders?.run {
                     if (mIsPickUpOrder) initiateSendBillServerCall() else handleDeliveryTimeBottomSheet(isCallSendBillServerCall = true, isPrepaidOrder = false)
                 }
@@ -263,7 +268,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                 }
             }
             orderDetailContainer?.visibility = if (Constants.DS_SEND_BILL == displayStatus || Constants.DS_NEW == displayStatus) View.GONE else View.VISIBLE
-            addDeliveryChargesLabel?.visibility = if (Constants.DS_SEND_BILL == displayStatus) View.VISIBLE else View.GONE
+            addDeliveryChargesLabel?.visibility = if ((Constants.DS_SEND_BILL == displayStatus || Constants.DS_NEW == displayStatus) && !isShareBillUI) View.VISIBLE else View.GONE
             setupPrepaidOrderUI(displayStatus, orderDetailResponse)
             var isCreateListItemAdded = false
             isCreateListItemAdded = setupOrderDetailItemRecyclerView(orderDetailResponse, isCreateListItemAdded, displayStatus)
@@ -420,52 +425,6 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                 textView.setHtmlData(mOrderDetailStaticData?.message_cod)
                 okayTextView.setHtmlData(mOrderDetailStaticData?.text_okay)
                 okayTextView.setOnClickListener { bottomSheetDialog.dismiss() }
-            }.show()
-        }
-    }
-
-    private fun showShipmentConfirmationBottomSheet() {
-        mActivity?.let { context ->
-            val bottomSheetDialog = BottomSheetDialog(context, R.style.BottomSheetDialogTheme)
-            val view = LayoutInflater.from(context).inflate(R.layout.bottom_sheet_shipment_confirmation, context.findViewById(R.id.bottomSheetContainer))
-            bottomSheetDialog.apply {
-                setContentView(view)
-                val bottomSheetClose: View = view.findViewById(R.id.bottomSheetClose)
-                val headingTextView: TextView = view.findViewById(R.id.headingTextView)
-                val ctaTextView: TextView = view.findViewById(R.id.ctaTextView)
-                val radioButtonDeliveryPartnerSubHeading: TextView = view.findViewById(R.id.radioButtonDeliveryPartnerSubHeading)
-                val radioButtonShipMyselfSubHeading: TextView = view.findViewById(R.id.radioButtonShipMyselfSubHeading)
-                val radioButtonDeliveryPartner: RadioButton = view.findViewById(R.id.radioButtonDeliveryPartner)
-                val radioButtonShipMyself: RadioButton = view.findViewById(R.id.radioButtonShipMyself)
-                bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
-                headingTextView.text = mOrderDetailStaticData?.bottom_sheet_heading_how_will_you_ship
-                radioButtonShipMyselfSubHeading.text = mOrderDetailStaticData?.bottom_sheet_sub_message2_select_this
-                radioButtonDeliveryPartnerSubHeading.text = mOrderDetailStaticData?.bottom_sheet_sub_message1_select_this
-                radioButtonDeliveryPartner.apply {
-                    text = mOrderDetailStaticData?.bottom_sheet_message1_ship_using_partners
-                    isChecked = true
-                    setOnClickListener {
-                        radioButtonShipMyself.isChecked = false
-                    }
-                }
-                radioButtonShipMyself.apply {
-                    text = mOrderDetailStaticData?.bottom_sheet_message2_i_will_ship
-                    setOnClickListener {
-                        radioButtonDeliveryPartner.isChecked = false
-                    }
-                }
-                radioButtonDeliveryPartnerSubHeading.setOnClickListener {
-                    radioButtonShipMyself.isChecked = false
-                }
-                radioButtonShipMyselfSubHeading.setOnClickListener {
-                    radioButtonDeliveryPartner.isChecked = false
-                }
-                ctaTextView.apply {
-                    text = mOrderDetailStaticData?.text_next
-                    setOnClickListener {
-
-                    }
-                }
             }.show()
         }
     }
@@ -911,7 +870,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
         val discount = if (true == discountsValueEditText.text?.isNotEmpty()) discountsValueEditText.text.toString().toDouble() else 0.0
         val payAmount = if (true == amountEditText.text?.isNotEmpty()) amountEditText.text.toString().toDouble() else orderDetailMainResponse?.orders?.amount
         val deliveryChargesAmount = calculateDeliveryCharge(payAmount)
-        launchFragment(SendBillPhotoFragment.newInstance(orderDetailMainResponse, file, mDeliveryTimeStr, extraChargeName, extraCharge, discount, payAmount, deliveryChargesAmount), true)
+        launchFragment(SendBillPhotoFragment.newInstance(orderDetailMainResponse, file, mDeliveryTimeStr, extraChargeName, extraCharge, discount, payAmount, deliveryChargesAmount, deliveryTimeResponse), true)
     }
 
     override fun onOrderDetailException(e: Exception) = exceptionHandlingForAPIResponse(e)
@@ -938,9 +897,8 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                             layoutManager = StaggeredGridLayoutManager(3, LinearLayoutManager.VERTICAL)
                             mDeliveryTimeAdapter = DeliveryTimeAdapter(deliveryTimeResponse.deliveryTimeList, object : IChipItemClickListener {
 
-                                override fun onChipItemClickListener(position: Int) {
-                                    onDeliveryTimeItemClickListener(deliveryTimeResponse, position, bottomSheetSendBillText)
-                                }
+                                override fun onChipItemClickListener(position: Int) = onDeliveryTimeItemClickListener(deliveryTimeResponse, position, bottomSheetSendBillText)
+
                             })
                             adapter = mDeliveryTimeAdapter
                         }
@@ -1206,4 +1164,6 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
             }
         }
     }
+
+    override fun onShipmentCtaClicked(initiateServerCall: Boolean) = if (initiateServerCall) initiateSendBillServerCall() else handleDeliveryTimeBottomSheet(isCallSendBillServerCall = true, isPrepaidOrder = false)
 }

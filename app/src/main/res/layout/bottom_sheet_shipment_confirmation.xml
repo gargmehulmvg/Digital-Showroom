@@ -31,7 +31,7 @@
         android:textSize="@dimen/_16sdp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/bottomSheetClose"
+        app:layout_constraintTop_toBottomOf="@id/bottomSheetClose"
         tools:text="How will you Ship this order?" />
 
     <RadioButton
@@ -48,9 +48,9 @@
         android:paddingEnd="@dimen/_5sdp"
         android:textColor="@color/black"
         android:textSize="@dimen/_11sdp"
-        app:layout_constraintEnd_toEndOf="@+id/headingTextView"
+        app:layout_constraintEnd_toEndOf="@id/headingTextView"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/headingTextView"
+        app:layout_constraintTop_toBottomOf="@id/headingTextView"
         tools:text="Ship using our Delivery Partners" />
 
     <RadioButton
@@ -65,23 +65,23 @@
         android:paddingEnd="@dimen/_5sdp"
         android:textColor="@color/black"
         android:textSize="@dimen/_11sdp"
-        app:layout_constraintEnd_toEndOf="@+id/headingTextView"
-        app:layout_constraintStart_toStartOf="@+id/radioButtonDeliveryPartner"
-        app:layout_constraintTop_toBottomOf="@+id/separator"
+        app:layout_constraintEnd_toEndOf="@id/headingTextView"
+        app:layout_constraintStart_toStartOf="@id/radioButtonDeliveryPartner"
+        app:layout_constraintTop_toBottomOf="@id/separator"
         tools:text="I will ship myself" />
 
     <TextView
         android:id="@+id/radioButtonDeliveryPartnerSubHeading"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="?selectableItemBackgroundBorderless"
+        android:background="?selectableItemBackground"
         android:onClick="onClick"
         android:paddingStart="@dimen/_30sdp"
         android:paddingEnd="@dimen/_5sdp"
         android:textSize="@dimen/_10sdp"
-        app:layout_constraintEnd_toEndOf="@+id/radioButtonDeliveryPartner"
-        app:layout_constraintStart_toStartOf="@+id/radioButtonDeliveryPartner"
-        app:layout_constraintTop_toBottomOf="@+id/radioButtonDeliveryPartner"
+        app:layout_constraintEnd_toEndOf="@id/radioButtonDeliveryPartner"
+        app:layout_constraintStart_toStartOf="@id/radioButtonDeliveryPartner"
+        app:layout_constraintTop_toBottomOf="@id/radioButtonDeliveryPartner"
         tools:text="Select this if you want to ship using our delivery partners" />
 
     <TextView
@@ -92,10 +92,10 @@
         android:paddingEnd="@dimen/_5sdp"
         android:textSize="@dimen/_10sdp"
         android:onClick="onClick"
-        android:background="?selectableItemBackgroundBorderless"
-        app:layout_constraintEnd_toEndOf="@+id/radioButtonShipMyself"
+        android:background="?selectableItemBackground"
+        app:layout_constraintEnd_toEndOf="@id/radioButtonShipMyself"
         app:layout_constraintStart_toStartOf="@id/radioButtonShipMyself"
-        app:layout_constraintTop_toBottomOf="@+id/radioButtonShipMyself"
+        app:layout_constraintTop_toBottomOf="@id/radioButtonShipMyself"
         tools:text="Select this if you will ship this order yourself or any other delivery modes" />
 
     <View
@@ -107,8 +107,8 @@
         android:alpha="0.9"
         android:background="@color/curve_grey_border"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/radioButtonDeliveryPartnerSubHeading"
-        app:layout_constraintTop_toBottomOf="@+id/radioButtonDeliveryPartnerSubHeading" />
+        app:layout_constraintStart_toStartOf="@id/radioButtonDeliveryPartnerSubHeading"
+        app:layout_constraintTop_toBottomOf="@id/radioButtonDeliveryPartnerSubHeading" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/ctaTextView"
@@ -127,9 +127,9 @@
         android:textColor="@color/white"
         android:textSize="@dimen/_13sdp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/radioButtonShipMyselfSubHeading"
-        app:layout_constraintStart_toStartOf="@+id/radioButtonShipMyselfSubHeading"
-        app:layout_constraintTop_toBottomOf="@+id/radioButtonShipMyselfSubHeading"
+        app:layout_constraintEnd_toEndOf="@id/radioButtonShipMyselfSubHeading"
+        app:layout_constraintStart_toStartOf="@id/radioButtonShipMyselfSubHeading"
+        app:layout_constraintTop_toBottomOf="@id/radioButtonShipMyselfSubHeading"
         tools:text="@string/next" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

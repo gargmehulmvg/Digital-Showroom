@@ -64,6 +64,7 @@ data class OrderDetailMainResponse(
     @SerializedName("prepaid_delivery_details") var prepaidDeliveryDetails: OrderDetailPrepaidDeliveryResponse?,
     @SerializedName("delivery_partner_details") var deliveryPartnerDetails: DeliveryPartnerCopyTextResponse?,
     @SerializedName("promo_code_details")       var promoCodeDetails: OrderDetailPromoCodeResponse?,
+    @SerializedName("send_bill_action")         var sendBillAction: String,
     @SerializedName("store_services")           var storeServices: StoreServicesResponse?
 )
 
