@@ -121,7 +121,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
             sendBillTextView?.id -> {
                 Log.d(TAG, "onClick: orderDetailMainResponse?.sendBillAction :: ${orderDetailMainResponse?.sendBillAction}")
                 if (Constants.ACTION_HOW_TO_SHIP == orderDetailMainResponse?.sendBillAction) {
-                    showShipmentConfirmationBottomSheet(mOrderDetailStaticData)
+                    showShipmentConfirmationBottomSheet(mOrderDetailStaticData, orderDetailMainResponse?.orders?.orderId)
                     return
                 }
                 orderDetailMainResponse?.orders?.run {
@@ -397,6 +397,14 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
     }
 
     private fun showTrendingOffersBottomSheet(prepaidDeliveryDetails: OrderDetailPrepaidDeliveryResponse?) {
+        AppEventsManager.pushAppEvents(
+            eventName = AFInAppEventType.EVENT_DELIVERY_SHIP_USING_PARTNER,
+            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+            data = mapOf(
+                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                AFInAppEventParameterName.ORDER_ID to "${orderDetailMainResponse?.orders?.orderId}"
+            )
+        )
         mActivity?.let { context ->
             val bottomSheetDialog = BottomSheetDialog(context, R.style.BottomSheetDialogTheme)
             val view = LayoutInflater.from(context).inflate(R.layout.bottom_sheet_trending_offers, context.findViewById(R.id.bottomSheetContainer))

@@ -1825,7 +1825,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         }
     }
 
-    open fun showShipmentConfirmationBottomSheet(mOrderDetailStaticData: OrderDetailsStaticTextResponse?) {
+    open fun showShipmentConfirmationBottomSheet(mOrderDetailStaticData: OrderDetailsStaticTextResponse?, orderId: Int?) {
         mActivity?.let { context ->
             val bottomSheetDialog = BottomSheetDialog(context, R.style.BottomSheetDialogTheme)
             val view = LayoutInflater.from(context).inflate(R.layout.bottom_sheet_shipment_confirmation, context.findViewById(R.id.bottomSheetContainer))
@@ -1866,6 +1866,14 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                 ctaTextView.apply {
                     text = mOrderDetailStaticData?.text_next
                     setOnClickListener {
+                        AppEventsManager.pushAppEvents(
+                            eventName = AFInAppEventType.EVENT_DELIVERY_SHIPPING_MODE,
+                            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                            data = mapOf(
+                                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                                AFInAppEventParameterName.ORDER_ID to "${orderId}"
+                            )
+                        )
                         bottomSheetDialog.dismiss()
                         onShipmentCtaClicked(radioButtonDeliveryPartner.isChecked)
                     }

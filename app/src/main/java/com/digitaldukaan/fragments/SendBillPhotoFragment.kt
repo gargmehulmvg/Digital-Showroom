@@ -81,7 +81,7 @@ class SendBillPhotoFragment: BaseFragment(), ISendBillPhotoServiceInterface {
                 }
                 Log.d(TAG, "onClick: orderDetailMainResponse?.sendBillAction :: ${mMainOrderDetailResponse?.sendBillAction}")
                 if (Constants.ACTION_HOW_TO_SHIP == mMainOrderDetailResponse?.sendBillAction) {
-                    showShipmentConfirmationBottomSheet(mMainOrderDetailResponse?.staticText)
+                    showShipmentConfirmationBottomSheet(mMainOrderDetailResponse?.staticText, mMainOrderDetailResponse?.orders?.orderId)
                     return
                 }
                 initiateSendBillServerCall()
