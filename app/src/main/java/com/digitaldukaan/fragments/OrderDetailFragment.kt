@@ -317,6 +317,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                 visitDotPeLayout?.visibility = View.GONE
                 when {
                     true == response.deliveryDetails?.isEnabled -> {
+                        Log.d(TAG, "setUpOrderDeliveryPartnerUI: response.deliveryDetails :: ${response.deliveryDetails}")
                         deliveryPartnerLayout?.visibility = View.VISIBLE
                         deliveryPartnerStatusTextView?.text = response.deliveryDetails?.deliveryDisplayStatus
                         deliveryPartnerMessageTextView?.text = response.deliveryDetails?.deliveryStatusSubHeading
@@ -349,6 +350,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                         deliveryPartnerImageView?.let { view -> Glide.with(context).load(response.deliveryDetails?.deliveryPartnerImageUrl).into(view)}
                     }
                     true == response.prepaidDeliveryDetails?.isEnabled -> {
+                        Log.d(TAG, "setUpOrderDeliveryPartnerUI: response.prepaidDeliveryDetails :: ${response.prepaidDeliveryDetails}")
                         prepaidDeliveryPartnerLayout?.visibility = View.VISIBLE
                         prepaidDeliveryPartnerStatusTextView?.text = response.prepaidDeliveryDetails?.deliveryDisplayStatus
                         prepaidDeliveryPartnerMessageTextView?.text = response.prepaidDeliveryDetails?.deliveryStatusSubHeading
@@ -375,11 +377,14 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                         prepaidDeliveryPartnerImageView?.let { view -> Glide.with(context).load(response.prepaidDeliveryDetails?.deliveryPartnerImageUrl).into(view)}
                     }
                     true == response.deliveryPartnerDetails?.isEnabled-> {
+                        Log.d(TAG, "setUpOrderDeliveryPartnerUI: response.deliveryPartnerDetails :: ${response.deliveryPartnerDetails}")
                         visitDotPeLayout?.visibility = View.VISIBLE
                         visitDotPeTextView?.setHtmlData(response.deliveryPartnerDetails?.deliveryDisplayStatus)
+                        deliveryPartnerContainer?.setBackgroundColor(Color.parseColor(if (isEmpty(response.deliveryPartnerDetails?.outerBgColor)) "#000000" else response.deliveryPartnerDetails?.outerBgColor))
+                        visitDotPeInnerLayout?.setBackgroundColor(Color.parseColor(if (isEmpty(response.deliveryPartnerDetails?.innerBgColor)) "#FFFFFF" else response.deliveryPartnerDetails?.innerBgColor))
                         response.deliveryPartnerDetails?.cta?.let { cta ->
                             visitDotPeCtaTextView?.apply {
-                                cta.text
+                                text = cta.text
                                 setTextColor(Color.parseColor(if (isEmpty(cta.textColor)) "#000000" else cta.textColor))
                                 background = ContextCompat.getDrawable(context, if (Constants.CTA_TYPE_BORDER == cta.type) R.drawable.curve_black_border else R.drawable.curve_black_background)
                                 setOnClickListener {

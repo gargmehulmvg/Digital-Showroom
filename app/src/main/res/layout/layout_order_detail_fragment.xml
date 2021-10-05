@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:animateLayoutChanges="true"
-    android:background="@color/light_grey_background">
+    android:background="@color/white">
 
     <ImageView
         android:id="@+id/billPhotoImageView"
@@ -156,7 +156,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/black"
-                android:padding="@dimen/_10sdp"
+                android:paddingStart="@dimen/_10sdp"
+                android:paddingEnd="@dimen/_10sdp"
+                android:paddingTop="@dimen/_10sdp"
+                android:paddingBottom="@dimen/_8sdp"
                 android:visibility="gone">
 
                 <com.google.android.material.textview.MaterialTextView
@@ -475,7 +478,10 @@
                             android:padding="@dimen/_2sdp"
                             android:textColor="@color/dark_blackish"
                             android:textSize="@dimen/_12sdp"
-                            android:layout_margin="@dimen/_10sdp"
+                            android:layout_marginTop="@dimen/_20sdp"
+                            android:layout_marginBottom="@dimen/_20sdp"
+                            android:layout_marginStart="@dimen/_10sdp"
+                            android:layout_marginEnd="@dimen/_10sdp"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toStartOf="@id/visitDotPeCtaTextView"
                             app:layout_constraintStart_toStartOf="parent"
@@ -491,9 +497,9 @@
                             android:fontFamily="@font/roboto_medium"
                             android:paddingStart="@dimen/_25sdp"
                             android:paddingTop="@dimen/_8sdp"
+                            android:textColor="@color/black"
                             android:paddingEnd="@dimen/_25sdp"
                             android:paddingBottom="@dimen/_8sdp"
-                            android:textColor="@color/white"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
@@ -885,7 +891,7 @@
                 android:id="@+id/blankSpace"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_200sdp"
-                android:background="@color/light_grey_background" />
+                android:background="@color/white" />
 
         </LinearLayout>
 

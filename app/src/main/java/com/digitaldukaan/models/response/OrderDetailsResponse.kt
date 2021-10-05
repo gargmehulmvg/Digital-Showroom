@@ -71,6 +71,8 @@ data class OrderDetailMainResponse(
 data class DeliveryPartnerCopyTextResponse(
     @SerializedName("is_enabled")               var isEnabled: Boolean,
     @SerializedName("delivery_display_status")  var deliveryDisplayStatus: String?,
+    @SerializedName("inner_bg_color")     val innerBgColor: String? = null,
+    @SerializedName("outer_bg_color")     val outerBgColor: String? = null,
     @SerializedName("cta")                      var cta: OrderDetailDeliveryCta?
 )
 
