@@ -749,7 +749,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                         sendPaymentLinkView.setOnClickListener {
                             sendPaymentLinkTextView.isEnabled = false
                             if (false == orderPageInfoResponse?.mIsSubscriptionDone) {
-                                showSubscriptionLockedBottomSheet()
+                                openSubscriptionLockedUrlInBrowser()
                             } else {
                                 showPaymentLinkBottomSheet()
                             }

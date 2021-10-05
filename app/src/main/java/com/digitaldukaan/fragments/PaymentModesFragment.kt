@@ -278,10 +278,6 @@ class PaymentModesFragment: BaseFragment(), IPaymentModesServiceInterface,
 
                     override fun onSwitchCheckChangeListener(switch: CompoundButton?, isChecked: Boolean, paymentType: String?) {
                         switch?.isChecked = !isChecked
-                        if (false == mPaymentModesResponse?.mIsSubscriptionPurchased) {
-                            showSubscriptionLockedBottomSheet()
-                            return
-                        }
                         if (isKycActive == true) {
                             mPaymentType = paymentType
                             if (!isAllListItemDisabled() && !upiSwitch.isChecked && !codSwitch.isChecked) {

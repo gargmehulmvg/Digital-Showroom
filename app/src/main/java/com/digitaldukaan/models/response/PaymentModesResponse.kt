@@ -6,7 +6,6 @@ data class PaymentModesResponse (
     @SerializedName("payment_options")              var paymentOptionsMap: HashMap<String, ArrayList<PaymentModesItemResponse>>?,
     @SerializedName("upi")                          var upi: PaymentModesItemResponse?,
     @SerializedName("cod")                          var cod: PaymentModesItemResponse?,
-    @SerializedName("is_subscription_purchased")    var mIsSubscriptionPurchased: Boolean,
     @SerializedName("IsKYCDone")                    var kycStatus: PaymentModesKYCStatusResponse?,
     @SerializedName("static_text")                  var staticText: PaymentModesStaticData?
 )

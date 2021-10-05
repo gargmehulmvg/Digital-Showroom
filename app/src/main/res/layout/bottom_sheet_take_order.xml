@@ -48,12 +48,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="@string/image_view_content_description"
-            android:src="@drawable/ic_lock_white"
+            android:src="@drawable/ic_subscription_locked_white"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="@id/sendPaymentLinkTextView1"
             app:layout_constraintEnd_toStartOf="@id/sendPaymentLinkTextView1"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/sendPaymentLinkTextView1" />
 
@@ -71,7 +70,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@id/lockImageView"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Send Payment link" />
 
