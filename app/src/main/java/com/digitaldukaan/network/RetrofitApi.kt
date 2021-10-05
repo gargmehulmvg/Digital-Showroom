@@ -16,11 +16,12 @@ import java.util.concurrent.TimeUnit
 class RetrofitApi {
 
     private var mAppService: Apis? = null
+    private var mAppAnalyticsService: Apis? = null
     private val mTag = "RetrofitApi"
 
     fun getServerCallObject(): Apis? {
         return try {
-            if (mAppService == null) {
+            if (null == mAppService) {
                 val retrofit = Retrofit.Builder().apply {
                     baseUrl(BuildConfig.BASE_URL)
                     addConverterFactory(GsonConverterFactory.create())
@@ -29,6 +30,24 @@ class RetrofitApi {
                 mAppService = retrofit.create(Apis::class.java)
             }
             mAppService
+        } catch (e: Exception) {
+            Log.e(mTag, "getServerCallObject: ${e.message}", e)
+            Sentry.captureException(e, "$mTag getServerCallObject")
+            throw IOException(e.message)
+        }
+    }
+
+    fun getAnalyticsServerCallObject(): Apis? {
+        return try {
+            if (null == mAppAnalyticsService) {
+                val retrofit = Retrofit.Builder().apply {
+                    baseUrl(if (BuildConfig.DEBUG) BuildConfig.BASE_URL else Constants.ANALYTICS_PRODUCTION_URL)
+                    addConverterFactory(GsonConverterFactory.create())
+                    client(getHttpClient())
+                }.build()
+                mAppAnalyticsService = retrofit.create(Apis::class.java)
+            }
+            mAppAnalyticsService
         } catch (e: Exception) {
             Log.e(mTag, "getServerCallObject: ${e.message}", e)
             Sentry.captureException(e, "$mTag getServerCallObject")

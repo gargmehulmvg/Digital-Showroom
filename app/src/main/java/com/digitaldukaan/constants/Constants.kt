@@ -35,6 +35,7 @@ class Constants {
         const val TEXT_YES                                      = "yes"
         const val TEXT_NO                                       = "no"
         const val APP_SECRET_KEY                                = "wFqjaY2jR85nMmgI7wqvPHd6mYaEN9a1"
+        const val ANALYTICS_PRODUCTION_URL                      = "https://api.dotshowroom.in/"
         //ACTIONS
         const val ACTION_LOGOUT                                 = "logout"
         const val ACTION_STORE_DESCRIPTION                      = "store_description"
