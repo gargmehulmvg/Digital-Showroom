@@ -22,17 +22,17 @@
     <TextView
         android:id="@+id/changeTextView"
         android:layout_width="wrap_content"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/_20sdp"
+        android:paddingBottom="@dimen/_1sdp"
         android:background="?selectableItemBackgroundBorderless"
         android:fontFamily="@font/roboto_medium"
-        android:onClick="onClick"
         android:gravity="end|bottom"
+        android:onClick="onClick"
         android:textColor="@color/dark_blackish"
         android:textSize="@dimen/_12sdp"
         app:layout_constraintBottom_toBottomOf="@id/enterMobileNumberHeading"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/enterMobileNumberHeading"
         tools:text="CHANGE?" />
 
     <androidx.constraintlayout.widget.Group
@@ -106,6 +106,7 @@
             android:clickable="false"
             android:drawablePadding="@dimen/_10sdp"
             android:gravity="center"
+            android:fontFamily="@font/roboto_medium"
             android:paddingStart="@dimen/_10sdp"
             android:paddingEnd="@dimen/_10sdp"
             android:textColor="@color/white"
@@ -171,14 +172,14 @@
         android:background="?selectableItemBackgroundBorderless"
         android:fontFamily="@font/roboto_medium"
         android:onClick="onClick"
+        android:paddingTop="@dimen/_4sdp"
         android:paddingStart="@dimen/_2sdp"
         android:paddingEnd="@dimen/_2sdp"
-        android:paddingBottom="@dimen/_20sdp"
         android:textColor="@color/black"
         android:textSize="@dimen/_14sdp"
         app:layout_constraintEnd_toEndOf="@id/counterTextView"
         app:layout_constraintTop_toBottomOf="@id/counterTextView"
-        tools:text="@string/otp_auto_resend_in" />
+        tools:text="Send Again" />
 
     <TextView
         android:id="@+id/counterTextView"
@@ -188,7 +189,7 @@
         android:fontFamily="@font/roboto"
         android:onClick="onClick"
         android:paddingStart="@dimen/_20sdp"
-        android:paddingTop="@dimen/_20sdp"
+        android:paddingTop="@dimen/_15sdp"
         android:paddingEnd="@dimen/_2sdp"
         android:textColor="@color/dark_blackish"
         android:textSize="@dimen/_11sdp"

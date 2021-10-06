@@ -78,6 +78,7 @@ class LoginFragmentV2 : BaseFragment(), ILoginServiceInterface {
 
                 override fun onVisibilityChanged(isOpen: Boolean) {
                     trueCallerContainer?.visibility = if (isOpen) View.GONE else View.VISIBLE
+                    if (!isOpen) checkTrueCallerInstalledOnDevice()
                     nestedScrollView?.scrollTo(0, nestedScrollView?.bottom ?: 0)
                 }
 
