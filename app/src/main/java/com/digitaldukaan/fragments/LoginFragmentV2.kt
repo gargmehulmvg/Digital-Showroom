@@ -97,7 +97,7 @@ class LoginFragmentV2 : BaseFragment(), ILoginServiceInterface {
 
                 override fun afterTextChanged(editable: Editable?) {
                     mMobileNumber = editable?.toString() ?: ""
-                    otpTextView?.isEnabled = isNotEmpty(mMobileNumber)
+                    otpTextView?.isEnabled = (mActivity?.resources?.getInteger(R.integer.mobile_number_length) == mMobileNumber.length)
                 }
 
             })

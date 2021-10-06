@@ -21,12 +21,12 @@
             <androidx.viewpager.widget.ViewPager
                 android:id="@+id/viewpager"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_350sdp"
+                android:layout_height="@dimen/_375sdp"
                 app:layout_constraintBottom_toTopOf="@id/indicator"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.9" />
+                app:layout_constraintVertical_bias="0.95" />
 
             <com.tbuonomo.viewpagerdotsindicator.WormDotsIndicator
                 android:id="@+id/indicator"
@@ -57,15 +57,15 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="@dimen/_20sdp"
-                    android:background="@drawable/ripple_slight_curve_white_background_black_border"
+                    android:background="@drawable/slight_curve_black_border"
                     android:drawablePadding="@dimen/_5sdp"
                     android:gravity="center_vertical"
                     android:onClick="onClick"
                     android:fontFamily="@font/roboto"
-                    android:paddingStart="@dimen/_15sdp"
-                    android:paddingTop="@dimen/_12sdp"
+                    android:paddingStart="@dimen/_10sdp"
+                    android:paddingTop="@dimen/_14sdp"
                     android:paddingEnd="@dimen/_15sdp"
-                    android:paddingBottom="@dimen/_12sdp"
+                    android:paddingBottom="@dimen/_14sdp"
                     tools:text="@string/enter_mobile_number"
                     android:textSize="@dimen/_13sdp"
                     android:visibility="visible"
@@ -154,7 +154,7 @@
                         android:fontFamily="@font/roboto_medium"
                         android:gravity="center"
                         android:onClick="onClick"
-                        android:padding="@dimen/_8sdp"
+                        android:padding="@dimen/_9sdp"
                         tools:text="@string/login_using_true_caller"
                         android:textColor="@color/black"
                         android:textSize="@dimen/_12sdp"

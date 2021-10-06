@@ -10,6 +10,7 @@
     <color name="pale_yellow">#FFE18D</color>
     <color name="white">#FFFFFFFF</color>
     <color name="default_text_light_grey">#919191</color>
+    <color name="enable_false_bg">#C8C8C8</color>
     <color name="chip_non_select_color">#F7F5F5</color>
     <color name="light_grey_background">#F6F7F7</color>
     <color name="curve_grey_border">#E0E3E5</color>

@@ -23,6 +23,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_22sdp"
+        android:layout_marginBottom="@dimen/_18sdp"
         android:background="@drawable/ripple_curve_grey_black_background"
         android:fontFamily="@font/roboto_bold"
         android:gravity="center"
