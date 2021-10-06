@@ -119,13 +119,10 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                 handleDeliveryTimeBottomSheet(isCallSendBillServerCall = false, isPrepaidOrder = false)
             }
             sendBillTextView?.id -> {
-                Log.d(TAG, "onClick: orderDetailMainResponse?.sendBillAction :: ${orderDetailMainResponse?.sendBillAction}")
-                if (Constants.ACTION_HOW_TO_SHIP == orderDetailMainResponse?.sendBillAction) {
-                    showShipmentConfirmationBottomSheet(mOrderDetailStaticData, orderDetailMainResponse?.orders?.orderId)
-                    return
-                }
-                orderDetailMainResponse?.orders?.run {
-                    if (mIsPickUpOrder) initiateSendBillServerCall() else handleDeliveryTimeBottomSheet(isCallSendBillServerCall = true, isPrepaidOrder = false)
+                when (orderDetailMainResponse?.sendBillAction) {
+                    Constants.ACTION_HOW_TO_SHIP -> showShipmentConfirmationBottomSheet(mOrderDetailStaticData, orderDetailMainResponse?.orders?.orderId)
+                    Constants.ACTION_SEND_BILL -> initiateSendBillServerCall()
+                    else -> if (mIsPickUpOrder) initiateSendBillServerCall() else handleDeliveryTimeBottomSheet(isCallSendBillServerCall = true, isPrepaidOrder = false)
                 }
             }
             markOutForDeliveryTextView?.id -> {
@@ -254,21 +251,10 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
             newOrderTextView?.visibility = if (mIsNewOrder) View.VISIBLE else View.GONE
             val displayStatus = orderDetailResponse?.displayStatus
             Log.d(TAG, "onOrderDetailResponse: display status :: $displayStatus")
-            val isShareBillUI = ((Constants.DS_SEND_BILL == displayStatus || Constants.DS_NEW == displayStatus) && (1 == orderDetailResponse.paymentStatus) && (Constants.StatusSeenByMerchant == orderDetailResponse.status || Constants.StatusMerchantUpdated == orderDetailResponse.status) && isNotEmpty(orderDetailResponse.deliveryInfo?.shipmentId))
-            sendBillLayout?.visibility = if ((Constants.DS_SEND_BILL == displayStatus || Constants.DS_NEW == displayStatus) && !isShareBillUI) View.VISIBLE else View.GONE
-            deliveryPartnerShareLinkContainer?.apply {
-                visibility = if (isShareBillUI) View.VISIBLE else View.GONE
-                deliveryPartnerShareLinkHeadingTextView?.apply {
-                    text = mOrderDetailStaticData?.text_delivery_person
-                    setOnClickListener { showCodConfirmationBottomSheet() }
-                }
-                deliveryPartnerShareLinkCtaTextView?.apply {
-                    text = mOrderDetailStaticData?.text_share_bill
-                    setOnClickListener { shareBill() }
-                }
-            }
-            orderDetailContainer?.visibility = if (Constants.DS_SEND_BILL == displayStatus || Constants.DS_NEW == displayStatus) View.GONE else View.VISIBLE
-            addDeliveryChargesLabel?.visibility = if ((Constants.DS_SEND_BILL == displayStatus || Constants.DS_NEW == displayStatus) && !isShareBillUI) View.VISIBLE else View.GONE
+            setupFooterLayout()
+            val isUpperLayoutVisible = (true == orderDetailMainResponse?.isHeaderLayoutVisible)
+            orderDetailContainer?.visibility = if (isUpperLayoutVisible) View.VISIBLE else View.GONE
+            addDeliveryChargesLabel?.visibility = if (Constants.ACTION_SHARE_BILL != orderDetailMainResponse?.footerLayout && (Constants.DS_NEW == displayStatus || Constants.DS_SEND_BILL == displayStatus)) View.VISIBLE else View.GONE
             setupPrepaidOrderUI(displayStatus, orderDetailResponse)
             var isCreateListItemAdded = false
             isCreateListItemAdded = setupOrderDetailItemRecyclerView(orderDetailResponse, isCreateListItemAdded, displayStatus)
@@ -307,6 +293,28 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                 setAmountToEditText()
             }
         }
+    }
+
+    private fun setupFooterLayout() {
+        when (orderDetailMainResponse?.footerLayout) {
+            Constants.ACTION_SHARE_BILL -> {
+                deliveryPartnerShareLinkContainer?.apply {
+                    visibility = View.VISIBLE
+                    deliveryPartnerShareLinkHeadingTextView?.apply {
+                        text = mOrderDetailStaticData?.text_delivery_person
+                        setOnClickListener { showCodConfirmationBottomSheet() }
+                    }
+                    deliveryPartnerShareLinkCtaTextView?.apply {
+                        text = mOrderDetailStaticData?.text_share_bill
+                        setOnClickListener { shareBill() }
+                    }
+                }
+            }
+            Constants.ACTION_SEND_BILL -> {
+                sendBillLayout?.visibility = View.VISIBLE
+            }
+        }
+
     }
 
     private fun setUpOrderDeliveryPartnerUI(orderMainResponse: OrderDetailMainResponse?) {

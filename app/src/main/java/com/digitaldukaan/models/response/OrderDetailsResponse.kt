@@ -65,14 +65,16 @@ data class OrderDetailMainResponse(
     @SerializedName("delivery_partner_details") var deliveryPartnerDetails: DeliveryPartnerCopyTextResponse?,
     @SerializedName("promo_code_details")       var promoCodeDetails: OrderDetailPromoCodeResponse?,
     @SerializedName("send_bill_action")         var sendBillAction: String,
+    @SerializedName("footer_layout")            var footerLayout: String,
+    @SerializedName("is_header_layout_visible") var isHeaderLayoutVisible: Boolean,
     @SerializedName("store_services")           var storeServices: StoreServicesResponse?
 )
 
 data class DeliveryPartnerCopyTextResponse(
     @SerializedName("is_enabled")               var isEnabled: Boolean,
     @SerializedName("delivery_display_status")  var deliveryDisplayStatus: String?,
-    @SerializedName("inner_bg_color")     val innerBgColor: String? = null,
-    @SerializedName("outer_bg_color")     val outerBgColor: String? = null,
+    @SerializedName("inner_bg_color")           val innerBgColor: String? = null,
+    @SerializedName("outer_bg_color")           val outerBgColor: String? = null,
     @SerializedName("cta")                      var cta: OrderDetailDeliveryCta?
 )
 
