@@ -19,12 +19,13 @@
 
             <androidx.viewpager.widget.ViewPager
                 android:id="@+id/viewpager"
-                android:layout_height="@dimen/_335sdp"
                 android:layout_width="match_parent"
+                android:layout_height="@dimen/_350sdp"
                 app:layout_constraintBottom_toTopOf="@id/indicator"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.9" />
 
             <com.tbuonomo.viewpagerdotsindicator.WormDotsIndicator
                 android:id="@+id/indicator"

@@ -1,21 +1,18 @@
 package com.digitaldukaan.adapters
 
-import android.content.Context
 import android.graphics.Color
 import android.graphics.Paint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
-import com.digitaldukaan.constants.getToolTipBalloon
 import com.digitaldukaan.interfaces.IAdapterItemClickListener
 import com.digitaldukaan.models.response.PrimaryDomainItemResponse
-import com.skydoves.balloon.showAlignTop
 
 class CustomDomainSelectionAdapter(
-    private var mActivity: Context?,
     private var suggestedDomainsList: ArrayList<PrimaryDomainItemResponse?>?,
     private var listener: IAdapterItemClickListener
 ) :
@@ -27,9 +24,9 @@ class CustomDomainSelectionAdapter(
         val priceTextView: TextView = itemView.findViewById(R.id.priceTextView)
         val promoCodeTextView: TextView = itemView.findViewById(R.id.promoCodeTextView)
         val messageTextView: TextView = itemView.findViewById(R.id.messageTextView)
+        val message2TextView: TextView = itemView.findViewById(R.id.message2TextView)
         val buyNowTextView: TextView = itemView.findViewById(R.id.buyNowTextView)
         val originalPriceTextView: TextView = itemView.findViewById(R.id.originalPriceTextView)
-        val tooltipView: TextView = itemView.findViewById(R.id.tooltipView)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CustomDomainSelectionViewHolder {
@@ -39,14 +36,6 @@ class CustomDomainSelectionAdapter(
             if (position < 0 || position > (suggestedDomainsList?.size ?: 0)) return@setOnClickListener
             listener.onAdapterItemClickListener(position)
         }
-        view.messageTextView.setOnClickListener {
-            val position = view.adapterPosition
-            if (position < 0 || position > (suggestedDomainsList?.size ?: 0)) return@setOnClickListener
-            val item = suggestedDomainsList?.get(position)
-            val infoText = "${item?.info_data?.firstYearText}\n${item?.info_data?.renewsText}"
-            val balloon = getToolTipBalloon(mActivity, infoText)
-            balloon?.let { b -> view.tooltipView.showAlignTop(b) }
-        }
         return view
     }
 
@@ -55,8 +44,10 @@ class CustomDomainSelectionAdapter(
     override fun onBindViewHolder(holder: CustomDomainSelectionViewHolder, position: Int) {
         val item = suggestedDomainsList?.get(position)
         holder.apply {
+            Log.d("CustomDomainSelectionAdapter", "onBindViewHolder: $position :: $item")
             domainTextView.text = item?.domainName
-            messageTextView.text = item?.validity
+            messageTextView.text = item?.info_data?.firstYearText?.trim()
+            message2TextView.text = item?.info_data?.renewsText?.trim()
             promoCodeTextView.text = item?.promo
             buyNowTextView.apply {
                 text = item?.cta?.text

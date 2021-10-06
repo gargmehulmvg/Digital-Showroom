@@ -78,6 +78,7 @@
         android:id="@+id/verifyTextViewContainer"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        app:layout_goneMarginBottom="@dimen/_10sdp"
         android:background="@drawable/ripple_curve_grey_black_background"
         android:onClick="onClick"
         android:paddingTop="@dimen/_10sdp"

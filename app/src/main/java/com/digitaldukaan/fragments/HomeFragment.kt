@@ -41,7 +41,6 @@ import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
-import com.skydoves.balloon.showAlignTop
 import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration
 import kotlinx.android.synthetic.main.layout_analytics.*
 import kotlinx.android.synthetic.main.layout_common_webview_fragment.*
@@ -797,9 +796,9 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                         val priceTextView: TextView = findViewById(R.id.priceTextView)
                         val promoCodeTextView: TextView = findViewById(R.id.promoCodeTextView)
                         val messageTextView: TextView = findViewById(R.id.messageTextView)
+                        val message2TextView: TextView = findViewById(R.id.message2TextView)
                         val originalPriceTextView: TextView = findViewById(R.id.originalPriceTextView)
                         val buyNowTextView: TextView = findViewById(R.id.buyNowTextView)
-                        val tooltipView: TextView = findViewById(R.id.tooltipView)
                         premiumHeadingTextView.text = primaryDomain.heading
                         domainTextView.text = primaryDomain.domainName
                         promoCodeTextView.text = primaryDomain.promo
@@ -818,29 +817,25 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                                 }
                             }
                         }
-                        messageTextView.apply {
-                            text = primaryDomain.validity
-                            setOnClickListener {
-                                val infoText = "${primaryDomain.info_data.firstYearText}\n${primaryDomain.info_data.renewsText}"
-                                val balloon = getToolTipBalloon(mActivity, infoText)
-                                balloon?.let { b -> tooltipView.showAlignTop(b) }
-                            }
-                        }
+                        messageTextView.text = primaryDomain.info_data.firstYearText.trim()
+                        message2TextView.text = primaryDomain.info_data.renewsText.trim()
                     }
                     val suggestedDomainRecyclerView = findViewById<RecyclerView>(R.id.suggestedDomainRecyclerView)
                     suggestedDomainRecyclerView.apply {
                         layoutManager = LinearLayoutManager(mActivity)
-                        adapter = CustomDomainSelectionAdapter(mActivity, customDomainBottomSheetResponse.suggestedDomainsList, object : IAdapterItemClickListener {
+                        adapter = CustomDomainSelectionAdapter(
+                            customDomainBottomSheetResponse.suggestedDomainsList,
+                            object : IAdapterItemClickListener {
 
-                            override fun onAdapterItemClickListener(position: Int) {
-                                bottomSheetDialog.dismiss()
-                                val item = customDomainBottomSheetResponse.suggestedDomainsList?.get(position)
-                                if (Constants.NEW_RELEASE_TYPE_WEBVIEW == item?.cta?.action) {
-                                    val url = BuildConfig.WEB_VIEW_URL + "${item.cta?.pageUrl}?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&domain_name=${item.domainName}&purchase_price=${item.originalPrice}&renewal_price=${item.renewalPrice}&${AFInAppEventParameterName.CHANNEL}=${AFInAppEventParameterName.ON_BOARDING}"
-                                    openWebViewFragment(this@HomeFragment, "", url)
+                                override fun onAdapterItemClickListener(position: Int) {
+                                    bottomSheetDialog.dismiss()
+                                    val item = customDomainBottomSheetResponse.suggestedDomainsList?.get(position)
+                                    if (Constants.NEW_RELEASE_TYPE_WEBVIEW == item?.cta?.action) {
+                                        val url = BuildConfig.WEB_VIEW_URL + "${item.cta?.pageUrl}?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&domain_name=${item.domainName}&purchase_price=${item.originalPrice}&renewal_price=${item.renewalPrice}&${AFInAppEventParameterName.CHANNEL}=${AFInAppEventParameterName.ON_BOARDING}"
+                                        openWebViewFragment(this@HomeFragment, "", url)
+                                    }
                                 }
-                            }
-                        })
+                            })
                     }
                 }
             }.show()
