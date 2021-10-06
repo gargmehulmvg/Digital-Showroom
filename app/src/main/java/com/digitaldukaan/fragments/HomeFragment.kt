@@ -74,7 +74,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         private var mIsMorePendingOrderAvailable = false
         private var mIsMoreCompletedOrderAvailable = false
         private var mSwipeRefreshLayout: SwipeRefreshLayout? = null
-        private var orderPageInfoResponse: OrderPageInfoResponse? = null
+        private var mOrderPageInfoResponse: OrderPageInfoResponse? = null
         private var analyticsResponse: AnalyticsResponse? = null
         private var mPaymentLinkAmountStr: String? = null
 
@@ -111,7 +111,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                 StaticInstances.sCustomDomainBottomSheetResponse?.let { response -> showCustomDomainBottomSheet(response) }
         }
         if (!askContactPermission()) if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else {
-            if (orderPageInfoResponse == null) {
+            if (mOrderPageInfoResponse == null) {
                 mHomeFragmentService?.getOrderPageInfo()
                 mHomeFragmentService?.getAnalyticsData()
             } else {
@@ -364,7 +364,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             if (commonResponse.mIsSuccessStatus) {
-                orderPageInfoResponse = Gson().fromJson<OrderPageInfoResponse>(commonResponse.mCommonDataStr, OrderPageInfoResponse::class.java)
+                mOrderPageInfoResponse = Gson().fromJson<OrderPageInfoResponse>(commonResponse.mCommonDataStr, OrderPageInfoResponse::class.java)
                 setupOrderPageInfoUI()
                 pushProfileToCleverTap()
             }
@@ -373,7 +373,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
 
     private fun pushProfileToCleverTap() {
         try {
-            val storeResponse = orderPageInfoResponse?.mStoreInfo
+            val storeResponse = mOrderPageInfoResponse?.mStoreInfo
             storeResponse?.run {
                 val cleverTapProfile = CleverTapProfile()
                 cleverTapProfile.mShopName = storeInfo?.name
@@ -406,7 +406,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
 
     private fun setupOrderPageInfoUI() {
         try {
-            orderPageInfoResponse?.run {
+            mOrderPageInfoResponse?.run {
                 mOrderPageInfoStaticData = mOrderPageStaticText?.run {
                     val appTitleTextView: TextView? = mContentView?.findViewById(R.id.appTitleTextView)
                     mFetchingOrdersStr = fetching_orders
@@ -441,7 +441,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                     mSwipeRefreshLayout?.isEnabled = true
                     homePageWebViewLayout?.visibility = View.GONE
                     orderLayout?.visibility = View.VISIBLE
-                    val homePageBannerList = orderPageInfoResponse?.mBannerList
+                    val homePageBannerList = mOrderPageInfoResponse?.mBannerList
                     if (isEmpty(homePageBannerList)) {
                         bannerRecyclerView?.visibility = View.GONE
                     } else {
@@ -746,15 +746,15 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                         text = mOrderPageInfoStaticData?.text_send_payment_link
                         sendPaymentLinkView.setOnClickListener {
                             sendPaymentLinkTextView.isEnabled = false
-                            if (false == orderPageInfoResponse?.mIsSubscriptionDone) {
-                                openSubscriptionLockedUrlInBrowser()
+                            if (false == mOrderPageInfoResponse?.mPaymentLinkLocked?.mIsActive) {
+                                openSubscriptionLockedUrlInBrowser(mOrderPageInfoResponse?.mPaymentLinkLocked?.mUrl ?: "")
                             } else {
                                 showPaymentLinkBottomSheet()
                             }
                             bottomSheetDialog.dismiss()
                         }
                     }
-                    lockImageView.visibility = if (false == orderPageInfoResponse?.mIsSubscriptionDone) View.VISIBLE else View.GONE
+                    lockImageView.visibility = if (false == mOrderPageInfoResponse?.mIsSubscriptionDone) View.VISIBLE else View.GONE
                     bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
                     takeOrderMessageTextView.setHtmlData(mOrderPageInfoStaticData?.bottom_sheet_message_payment_link)
                     createNewBillTextView.apply {
@@ -892,9 +892,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                         AppEventsManager.pushAppEvents(
                             eventName = AFInAppEventType.EVENT_SEND_LINK,
                             isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                            data = mapOf(
-                                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
-                        )
+                            data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)))
                         showPaymentLinkSelectionDialog(amountEditText.text.toString())
                     }
                     amountEditText.requestFocus()
@@ -926,11 +924,11 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
 
     override fun onDestroy() {
         super.onDestroy()
-        orderPageInfoResponse = null
+        mOrderPageInfoResponse = null
     }
 
     override fun onMenuItemClick(menuItem: MenuItem?): Boolean {
-        val optionMenuItem = orderPageInfoResponse?.optionMenuList?.get(menuItem?.itemId ?: 0)
+        val optionMenuItem = mOrderPageInfoResponse?.optionMenuList?.get(menuItem?.itemId ?: 0)
         when(optionMenuItem?.mAction) {
             Constants.NEW_RELEASE_TYPE_WEBVIEW -> openWebViewFragment(this, getString(R.string.help), WebViewUrls.WEB_VIEW_HELP, Constants.SETTINGS)
             Constants.ACTION_BOTTOM_SHEET -> if (Constants.PAGE_ORDER_NOTIFICATIONS == optionMenuItem.mPage) getOrderNotificationBottomSheet(AFInAppEventParameterName.IS_ORDER_PAGE)

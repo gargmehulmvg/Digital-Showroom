@@ -322,6 +322,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                         deliveryPartnerStatusTextView?.text = response.deliveryDetails?.deliveryDisplayStatus
                         deliveryPartnerMessageTextView?.text = response.deliveryDetails?.deliveryStatusSubHeading
                         deliveryPartnerShareTextView?.apply {
+                            visibility = if (true == response.deliveryDetails?.cta?.isEnabled) View.VISIBLE else View.GONE
                             text = response.deliveryDetails?.textShare
                             setOnClickListener { shareOnWhatsApp(response.deliveryDetails?.shareWaMessage) }
                         }
