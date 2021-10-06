@@ -746,7 +746,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                         text = mOrderPageInfoStaticData?.text_send_payment_link
                         sendPaymentLinkView.setOnClickListener {
                             sendPaymentLinkTextView.isEnabled = false
-                            if (false == mOrderPageInfoResponse?.mPaymentLinkLocked?.mIsActive) {
+                            if (true == mOrderPageInfoResponse?.mPaymentLinkLocked?.mIsActive) {
                                 openSubscriptionLockedUrlInBrowser(mOrderPageInfoResponse?.mPaymentLinkLocked?.mUrl ?: "")
                             } else {
                                 showPaymentLinkBottomSheet()

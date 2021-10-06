@@ -1793,7 +1793,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         layoutManager?.startSmoothScroll(smoothScroller)
     }
 
-    open fun openSubscriptionLockedUrlInBrowser(url: String = "") = openWebViewFragment(this@BaseFragment, "", StaticInstances.sStaticData?.mSubscriptionLockStaticData?.pageUrl)
+    open fun openSubscriptionLockedUrlInBrowser(url: String) = openWebViewFragment(this@BaseFragment, "", url)
 
     open fun showShipmentConfirmationBottomSheet(mOrderDetailStaticData: OrderDetailsStaticTextResponse?, orderId: Int?) {
         mActivity?.let { context ->
