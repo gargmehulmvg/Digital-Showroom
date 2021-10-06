@@ -813,7 +813,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                             setOnClickListener {
                                 bottomSheetDialog.dismiss()
                                 if (Constants.NEW_RELEASE_TYPE_WEBVIEW == primaryDomain.cta?.action) {
-                                    val url = BuildConfig.WEB_VIEW_URL + "${primaryDomain.cta?.pageUrl}?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&domain_name=${primaryDomain.domainName}&purchase_price=${primaryDomain.originalPrice}&renewal_price=${primaryDomain.renewalPrice}"
+                                    val url = BuildConfig.WEB_VIEW_URL + "${primaryDomain.cta?.pageUrl}?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&domain_name=${primaryDomain.domainName}&purchase_price=${primaryDomain.originalPrice}&renewal_price=${primaryDomain.renewalPrice}&${AFInAppEventParameterName.CHANNEL}=${AFInAppEventParameterName.ON_BOARDING}"
                                     openWebViewFragmentV3(this@HomeFragment, "", url)
                                 }
                             }
@@ -836,7 +836,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                                 bottomSheetDialog.dismiss()
                                 val item = customDomainBottomSheetResponse.suggestedDomainsList?.get(position)
                                 if (Constants.NEW_RELEASE_TYPE_WEBVIEW == item?.cta?.action) {
-                                    val url = BuildConfig.WEB_VIEW_URL + "${item.cta?.pageUrl}?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&domain_name=${item.domainName}&purchase_price=${item.originalPrice}&renewal_price=${item.renewalPrice}"
+                                    val url = BuildConfig.WEB_VIEW_URL + "${item.cta?.pageUrl}?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&domain_name=${item.domainName}&purchase_price=${item.originalPrice}&renewal_price=${item.renewalPrice}&${AFInAppEventParameterName.CHANNEL}=${AFInAppEventParameterName.ON_BOARDING}"
                                     openWebViewFragment(this@HomeFragment, "", url)
                                 }
                             }
