@@ -104,7 +104,7 @@ class OrderDetailNetworkService {
         serviceInterface: IOrderDetailServiceInterface
     ) {
         try {
-            val newRequest: UpdatePrepaidOrderRequest? = request ?: UpdatePrepaidOrderRequest(null, null, null)
+            val newRequest: UpdatePrepaidOrderRequest = request ?: UpdatePrepaidOrderRequest(null, null, null)
             val response = RetrofitApi().getServerCallObject()?.updatePrepaidOrder(orderId, newRequest)
             response?.let {
                 if (it.isSuccessful) {

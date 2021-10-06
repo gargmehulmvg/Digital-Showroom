@@ -731,36 +731,44 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
     private fun showTakeOrderBottomSheet() {
         mActivity?.let {
             val bottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
-            val view = LayoutInflater.from(it).inflate(
-                R.layout.bottom_sheet_take_order,
-                it.findViewById(R.id.bottomSheetContainer)
-            )
+            val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_take_order, it.findViewById(R.id.bottomSheetContainer))
             bottomSheetDialog.apply {
                 setContentView(view)
                 behavior.state = BottomSheetBehavior.STATE_EXPANDED
                 view?.run {
                     val bottomSheetClose: View = findViewById(R.id.bottomSheetClose)
-                    val sendPaymentLinkTextView: TextView = findViewById(R.id.sendPaymentLinkTextView)
+                    val lockImageView: View = findViewById(R.id.lockImageView)
+                    val sendPaymentLinkView: View = findViewById(R.id.sendPaymentLinkTextView)
+                    val sendPaymentLinkTextView: TextView = findViewById(R.id.sendPaymentLinkTextView1)
                     val takeOrderMessageTextView: TextView = findViewById(R.id.takeOrderMessageTextView)
                     val createNewBillTextView: TextView = findViewById(R.id.createNewBillTextView)
-                    sendPaymentLinkTextView.setOnClickListener {
-                        sendPaymentLinkTextView.isEnabled = false
-                        showPaymentLinkBottomSheet()
-                        bottomSheetDialog.dismiss()
+                    sendPaymentLinkTextView.apply {
+                        text = mOrderPageInfoStaticData?.text_send_payment_link
+                        sendPaymentLinkView.setOnClickListener {
+                            sendPaymentLinkTextView.isEnabled = false
+                            if (false == orderPageInfoResponse?.mIsSubscriptionDone) {
+                                openSubscriptionLockedUrlInBrowser()
+                            } else {
+                                showPaymentLinkBottomSheet()
+                            }
+                            bottomSheetDialog.dismiss()
+                        }
                     }
+                    lockImageView.visibility = if (false == orderPageInfoResponse?.mIsSubscriptionDone) View.VISIBLE else View.GONE
                     bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
-                    sendPaymentLinkTextView.text = mOrderPageInfoStaticData?.text_send_payment_link
                     takeOrderMessageTextView.setHtmlData(mOrderPageInfoStaticData?.bottom_sheet_message_payment_link)
-                    createNewBillTextView.text = mOrderPageInfoStaticData?.bottom_sheet_create_a_new_bill
-                    createNewBillTextView.setOnClickListener {
-                        createNewBillTextView.isEnabled = false
-                        bottomSheetDialog.dismiss()
-                        launchFragment(
-                            CommonWebViewFragment().newInstance(
-                                "",
-                                "${BuildConfig.WEB_VIEW_URL}${WebViewUrls.WEB_VIEW_TAKE_A_ORDER}?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"
-                            ), true
-                        )
+                    createNewBillTextView.apply {
+                        text = mOrderPageInfoStaticData?.bottom_sheet_create_a_new_bill
+                        setOnClickListener {
+                            createNewBillTextView.isEnabled = false
+                            bottomSheetDialog.dismiss()
+                            launchFragment(
+                                CommonWebViewFragment().newInstance(
+                                    "",
+                                    "${BuildConfig.WEB_VIEW_URL}${WebViewUrls.WEB_VIEW_TAKE_A_ORDER}?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"
+                                ), true
+                            )
+                        }
                     }
                 }
             }.show()

@@ -51,9 +51,6 @@ import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
 
 
-
-
-
 fun getBitmapFromURL(src: String?): Bitmap? {
     return try {
         BitmapFactory.decodeStream(URL(src).openConnection().getInputStream())
@@ -473,10 +470,11 @@ fun startShinningAnimation(view: View) {
     },Constants.SHINE_ANIMATION_INTERVAL, Constants.SHINE_ANIMATION_INTERVAL, TimeUnit.MILLISECONDS)
 }
 
-fun getToolTipBalloon(mContext: Context?, text: String? = "Sample Testing"): Balloon? {
+fun getToolTipBalloon(mContext: Context?, text: String? = "Sample Testing", arrowPosition: Float = 0.5f): Balloon? {
     mContext?.let { context ->
         return createBalloon(context) {
             setArrowSize(15)
+            setArrowPosition(arrowPosition)
             textSize = 11f
             paddingTop = 12
             paddingLeft = 20

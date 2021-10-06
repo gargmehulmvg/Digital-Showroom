@@ -60,8 +60,20 @@ data class OrderDetailMainResponse(
     @SerializedName("order")                    var orders: OrderDetailsResponse?,
     @SerializedName("static_text")              var staticText: OrderDetailsStaticTextResponse?,
     @SerializedName("options_menu")             var optionMenuList: ArrayList<TrendingListResponse>,
+    @SerializedName("delivery_details")         var deliveryDetails: OrderDetailDeliveryResponse?,
+    @SerializedName("prepaid_delivery_details") var prepaidDeliveryDetails: OrderDetailPrepaidDeliveryResponse?,
+    @SerializedName("delivery_partner_details") var deliveryPartnerDetails: DeliveryPartnerCopyTextResponse?,
     @SerializedName("promo_code_details")       var promoCodeDetails: OrderDetailPromoCodeResponse?,
+    @SerializedName("send_bill_action")         var sendBillAction: String,
     @SerializedName("store_services")           var storeServices: StoreServicesResponse?
+)
+
+data class DeliveryPartnerCopyTextResponse(
+    @SerializedName("is_enabled")               var isEnabled: Boolean,
+    @SerializedName("delivery_display_status")  var deliveryDisplayStatus: String?,
+    @SerializedName("inner_bg_color")     val innerBgColor: String? = null,
+    @SerializedName("outer_bg_color")     val outerBgColor: String? = null,
+    @SerializedName("cta")                      var cta: OrderDetailDeliveryCta?
 )
 
 data class OrderDetailPromoCodeResponse(
@@ -116,5 +128,15 @@ data class OrderDetailsStaticTextResponse(
     @SerializedName("text_delivery_time_is_set_as")             var deliveryTimeIsSetAsText: String?,
     @SerializedName("text_pickup_order_success")                var pickUpOrderSuccess: String?,
     @SerializedName("dialog_message_prepaid_delivery")          var dialog_message_prepaid_delivery: String,
-    @SerializedName("dialog_message_prepaid_pickup")            var dialog_message_prepaid_pickup: String
+    @SerializedName("dialog_message_prepaid_pickup")            var dialog_message_prepaid_pickup: String,
+    @SerializedName("message_cod")                              var message_cod: String,
+    @SerializedName("text_share_bill")                          var text_share_bill: String,
+    @SerializedName("text_next")                                var text_next: String,
+    @SerializedName("text_delivery_person")                     var text_delivery_person: String,
+    @SerializedName("bottom_sheet_heading_how_will_you_ship")   var bottom_sheet_heading_how_will_you_ship: String,
+    @SerializedName("bottom_sheet_message2_i_will_ship")        var bottom_sheet_message2_i_will_ship: String,
+    @SerializedName("bottom_sheet_sub_message1_select_this")    var bottom_sheet_sub_message1_select_this: String,
+    @SerializedName("bottom_sheet_sub_message2_select_this")    var bottom_sheet_sub_message2_select_this: String,
+    @SerializedName("bottom_sheet_message1_ship_using_partners")var bottom_sheet_message1_ship_using_partners: String,
+    @SerializedName("text_okay")                                var text_okay: String
 )

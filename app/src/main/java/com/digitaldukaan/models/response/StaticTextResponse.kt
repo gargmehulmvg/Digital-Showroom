@@ -3,6 +3,33 @@ package com.digitaldukaan.models.response
 import com.google.gson.annotations.SerializedName
 
 data class StaticTextResponse(
+    @SerializedName("status") var mIsSuccessStatus: Boolean,
+    @SerializedName("message") var mMessage: String?,
+    @SerializedName("data") var mStaticData: StaticData
+)
+
+data class StaticData(
+    @SerializedName("auth_new") var mAuthNew: AuthNewResponseData,
+    @SerializedName("profile") var mProfileStaticData: ProfileStaticData,
+    @SerializedName("verify_otp") var mVerifyOtpStaticData: VerifyOtpStaticResponseData,
+    @SerializedName("onbording_step_one") var mOnBoardStep1StaticData: OnBoardStep1StaticResponseData,
+    @SerializedName("onboarding_step_two") var mOnBoardStep2StaticData: OnBoardStep2StaticResponseData,
+    @SerializedName("merchant_address") var mMapStaticData: MapLocationStaticResponseData,
+    @SerializedName("catalog_add") var mCatalogStaticData: CatalogStaticData,
+    @SerializedName("marketing") var mMarketingStaticData: MarketingStaticData,
+    @SerializedName("subscription_lock") var mSubscriptionLockStaticData: SubscriptionLockStaticData
+)
+
+data class OrderListStaticData(
+    @SerializedName("new") var newText: String?,
+    @SerializedName("send_bill_text") var sendBillText: String?,
+    @SerializedName("pending_text") var pendingText: String?,
+    @SerializedName("completed_text") var completedText: String?,
+    @SerializedName("self_billed_text") var selfBilled: String?,
+    @SerializedName("pickup_order_text") var pickUpOrder: String?,
+    @SerializedName("todays_sale_text") var todaySale: String?,
+    @SerializedName("sale_amount_text") var amount: String?,
+    @SerializedName("weeks_sale_text") var weekSale: String?
     @SerializedName("auth_new")                         var mAuthNew: AuthNewResponseData,
     @SerializedName("login")                            var mLoginStaticText: LoginStaticText,
     @SerializedName("business_name")                    var mBusinessNameStaticText: BusinessNameStaticText,
@@ -107,4 +134,11 @@ data class OnBoardStep2StaticResponseData(
     @SerializedName("next_btn_text")                    var mNextButton: String?,
     @SerializedName("step_count")                       var mStepCount: String?,
     @SerializedName("title_and_hint_text")              var mTitleHinText: String?
+)
+
+data class SubscriptionLockStaticData(
+    @SerializedName("heading")      var heading: String?,
+    @SerializedName("message")      var message: String?,
+    @SerializedName("cta_text")     var ctaText: String?,
+    @SerializedName("page_url")     var pageUrl: String?
 )

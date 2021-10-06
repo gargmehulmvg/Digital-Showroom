@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/bottomSheetContainer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/upper_curve_white_background">
+
+    <ImageView
+        android:id="@+id/bottomSheetClose"
+        android:layout_width="@dimen/_22sdp"
+        android:layout_height="@dimen/_22sdp"
+        android:layout_margin="@dimen/_5sdp"
+        android:layout_marginEnd="@dimen/_5sdp"
+        android:contentDescription="@string/image_view_content_description"
+        android:elevation="@dimen/_4sdp"
+        android:padding="@dimen/_2sdp"
+        android:src="@drawable/ic_black_close"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/headingTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_18sdp"
+        android:layout_marginEnd="@dimen/_15sdp"
+        android:fontFamily="@font/roboto_bold"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_16sdp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/bottomSheetClose"
+        tools:text="How will you Ship this order?" />
+
+    <RadioButton
+        android:id="@+id/radioButtonDeliveryPartner"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/_25sdp"
+        android:layout_marginTop="@dimen/_15sdp"
+        android:layout_marginStart="@dimen/_15sdp"
+        android:background="?selectableItemBackgroundBorderless"
+        android:fontFamily="@font/roboto_medium"
+
+        android:onClick="onClick"
+        android:paddingStart="@dimen/_5sdp"
+        android:paddingEnd="@dimen/_5sdp"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_11sdp"
+        app:layout_constraintEnd_toEndOf="@id/headingTextView"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/headingTextView"
+        tools:text="Ship using our Delivery Partners" />
+
+    <RadioButton
+        android:id="@+id/radioButtonShipMyself"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/_25sdp"
+        android:layout_marginTop="@dimen/_15sdp"
+        android:background="?selectableItemBackgroundBorderless"
+        android:fontFamily="@font/roboto_medium"
+        android:onClick="onClick"
+        android:paddingStart="@dimen/_5sdp"
+        android:paddingEnd="@dimen/_5sdp"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_11sdp"
+        app:layout_constraintEnd_toEndOf="@id/headingTextView"
+        app:layout_constraintStart_toStartOf="@id/radioButtonDeliveryPartner"
+        app:layout_constraintTop_toBottomOf="@id/separator"
+        tools:text="I will ship myself" />
+
+    <TextView
+        android:id="@+id/radioButtonDeliveryPartnerSubHeading"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="?selectableItemBackground"
+        android:onClick="onClick"
+        android:paddingStart="@dimen/_30sdp"
+        android:paddingEnd="@dimen/_5sdp"
+        android:textSize="@dimen/_10sdp"
+        app:layout_constraintEnd_toEndOf="@id/radioButtonDeliveryPartner"
+        app:layout_constraintStart_toStartOf="@id/radioButtonDeliveryPartner"
+        app:layout_constraintTop_toBottomOf="@id/radioButtonDeliveryPartner"
+        tools:text="Select this if you want to ship using our delivery partners" />
+
+    <TextView
+        android:id="@+id/radioButtonShipMyselfSubHeading"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/_30sdp"
+        android:paddingEnd="@dimen/_5sdp"
+        android:textSize="@dimen/_10sdp"
+        android:onClick="onClick"
+        android:background="?selectableItemBackground"
+        app:layout_constraintEnd_toEndOf="@id/radioButtonShipMyself"
+        app:layout_constraintStart_toStartOf="@id/radioButtonShipMyself"
+        app:layout_constraintTop_toBottomOf="@id/radioButtonShipMyself"
+        tools:text="Select this if you will ship this order yourself or any other delivery modes" />
+
+    <View
+        android:id="@+id/separator"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginStart="@dimen/_30sdp"
+        android:layout_marginTop="@dimen/_15sdp"
+        android:alpha="0.9"
+        android:background="@color/curve_grey_border"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/radioButtonDeliveryPartnerSubHeading"
+        app:layout_constraintTop_toBottomOf="@id/radioButtonDeliveryPartnerSubHeading" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/ctaTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_10sdp"
+        android:layout_marginTop="@dimen/_25sdp"
+        android:layout_marginEnd="@dimen/_10sdp"
+        android:layout_marginBottom="@dimen/_20sdp"
+        android:onClick="onClick"
+        android:background="@drawable/ripple_curve_grey_black_background"
+        android:fontFamily="@font/roboto_bold"
+        android:gravity="center"
+        android:paddingTop="@dimen/_10sdp"
+        android:paddingBottom="@dimen/_10sdp"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_13sdp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@id/radioButtonShipMyselfSubHeading"
+        app:layout_constraintStart_toStartOf="@id/radioButtonShipMyselfSubHeading"
+        app:layout_constraintTop_toBottomOf="@id/radioButtonShipMyselfSubHeading"
+        tools:text="@string/next" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
