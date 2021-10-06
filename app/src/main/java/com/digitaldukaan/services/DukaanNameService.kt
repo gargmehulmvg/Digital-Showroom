@@ -1,21 +1,23 @@
 package com.digitaldukaan.services
 
 import com.digitaldukaan.constants.CoroutineScopeUtils
-import com.digitaldukaan.services.networkservice.CreateDukaanNetworkService
+import com.digitaldukaan.models.request.CreateStoreRequest
+import com.digitaldukaan.services.networkservice.DukaanNameNetworkService
 import com.digitaldukaan.services.serviceinterface.ICreateStoreServiceInterface
 
-class CreateStoreService {
+class DukaanNameService {
 
-    private val mNetworkService = CreateDukaanNetworkService()
+    private val mNetworkService = DukaanNameNetworkService()
     private lateinit var mServiceInterface: ICreateStoreServiceInterface
 
     fun setServiceInterface(serviceInterface: ICreateStoreServiceInterface) {
         mServiceInterface = serviceInterface
     }
 
-    fun getCustomDomainBottomSheetData() {
+    fun createStore(request: CreateStoreRequest?) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.getCustomDomainBottomSheetDataServerCall(mServiceInterface)
+            mNetworkService.createStoreServerCall(request, mServiceInterface)
         }
     }
+
 }

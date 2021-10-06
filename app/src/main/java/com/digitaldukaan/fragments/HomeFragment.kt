@@ -48,7 +48,6 @@ import kotlinx.android.synthetic.main.layout_home_fragment.*
 import org.json.JSONObject
 import java.io.File
 
-
 class HomeFragment : BaseFragment(), IHomeServiceInterface,
     SwipeRefreshLayout.OnRefreshListener, IOrderListItemListener,
     PopupMenu.OnMenuItemClickListener {
@@ -100,14 +99,17 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
             setCustomKey("store_name", PrefsManager.getStringDataFromSharedPref(Constants.STORE_NAME))
             setCustomKey("mobile_number", PrefsManager.getStringDataFromSharedPref(Constants.USER_MOBILE_NUMBER))
         }
-        if (mIsNewUserLogin) {
-            mIsNewUserLogin = false
-            mHomeFragmentService?.getCustomDomainBottomSheetData()
-        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.layout_home_fragment, container, false)
+        if (mIsNewUserLogin) {
+            mIsNewUserLogin = false
+            if (null == StaticInstances.sCustomDomainBottomSheetResponse)
+                mHomeFragmentService?.getCustomDomainBottomSheetData()
+            else
+                StaticInstances.sCustomDomainBottomSheetResponse?.let { response -> showCustomDomainBottomSheet(response) }
+        }
         if (!askContactPermission()) if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else {
             if (orderPageInfoResponse == null) {
                 mHomeFragmentService?.getOrderPageInfo()

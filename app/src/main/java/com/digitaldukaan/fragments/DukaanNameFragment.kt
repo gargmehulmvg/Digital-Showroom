@@ -23,7 +23,7 @@ import com.digitaldukaan.models.request.CreateStoreRequest
 import com.digitaldukaan.models.response.BusinessNameStaticText
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.CreateStoreResponse
-import com.digitaldukaan.services.CreateStoreService
+import com.digitaldukaan.services.DukaanNameService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.ICreateStoreServiceInterface
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -115,7 +115,7 @@ class DukaanNameFragment : BaseFragment(), ICreateStoreServiceInterface {
                     if (!isInternetConnectionAvailable(mActivity)) {
                         showNoInternetConnectionDialog()
                     } else {
-                        val service = CreateStoreService()
+                        val service = DukaanNameService()
                         service.setServiceInterface(this)
                         val storeIdStr = PrefsManager.getStringDataFromSharedPref(Constants.USER_ID)
                         val request = CreateStoreRequest(

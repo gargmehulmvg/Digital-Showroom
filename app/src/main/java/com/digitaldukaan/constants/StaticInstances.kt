@@ -22,4 +22,5 @@ object StaticInstances {
     var sAppFlyerRefMobileNumber: String? = ""
     var sStaticData: StaticTextResponse? = null
     var sMyPaymentPageInfoResponse: MyPaymentsPageInfoResponse? = null
+    var sCustomDomainBottomSheetResponse: CustomDomainBottomSheetResponse? = null
 }
