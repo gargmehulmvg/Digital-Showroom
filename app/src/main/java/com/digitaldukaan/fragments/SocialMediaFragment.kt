@@ -23,7 +23,6 @@ import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.ISocialMediaServiceInterface
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.layout_home_fragment.*
-import kotlinx.android.synthetic.main.layout_on_board_help_screen.*
 import kotlinx.android.synthetic.main.layout_social_media.*
 
 class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToolbarIconClick,
