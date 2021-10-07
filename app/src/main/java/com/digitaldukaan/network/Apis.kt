@@ -72,16 +72,16 @@ interface Apis {
     suspend fun getReferAndEarnData() : Response<CommonApiResponse>
 
     @POST("api/dotk/vm1/settings/setStoreBusinesses")
-    suspend fun setStoreBusinesses(@Header("auth_token") authToken:String, @Body request: BusinessTypeRequest) : Response<CommonApiResponse>
+    suspend fun setStoreBusinesses(@Body request: BusinessTypeRequest) : Response<CommonApiResponse>
 
     @POST("api/dotk/vm1/settings/setDeliveryInfo")
-    suspend fun updateDeliveryInfo(@Header("auth_token") authToken: String, @Body request: MoreControlsRequest): Response<CommonApiResponse>
+    suspend fun updateDeliveryInfo(@Body request: MoreControlsRequest): Response<CommonApiResponse>
 
     @POST("api/dotk/vm1/settings/setBankDetails")
-    suspend fun setBankDetails(@Header("auth_token") authToken: String, @Body request: BankDetailsRequest): Response<CommonApiResponse>
+    suspend fun setBankDetails(@Body request: BankDetailsRequest): Response<CommonApiResponse>
 
     @POST("api/dotk/vm1/settings/initiateKyc")
-    suspend fun initiateKyc(@Header("auth_token") authToken: String): Response<CommonApiResponse>
+    suspend fun initiateKyc(): Response<CommonApiResponse>
 
     @GET("api/dotk/vm1/settings/getBankDetailsPageInfo")
     suspend fun getBankDetailsPageInfo(): Response<CommonApiResponse>
@@ -106,7 +106,7 @@ interface Apis {
 
     /* ----------------------       Images         ---------------------- */
     @POST("api/dotk/vm1/media/setStoreLogo")
-    suspend fun setStoreLogo(@Header("auth_token") authToken:String, @Body request: StoreLogoRequest) : Response<CommonApiResponse>
+    suspend fun setStoreLogo(@Body request: StoreLogoRequest) : Response<CommonApiResponse>
 
     @Multipart
     @POST("api/dotk/vm1/media/uploadMediaToS3")
@@ -135,10 +135,6 @@ interface Apis {
     suspend fun generateProductStorePdf(): Response<CommonApiResponse>
 
     /* ----------------------       Products         ---------------------- */
-    @Deprecated("Not using currently")
-    @GET("api/dotk/vm1/products/shareStorePdfText")
-    suspend fun getProductShareStorePdfText(@Header("auth_token") authToken: String): Response<CommonApiResponse>
-
     @POST("api/dotk/vm1/products/shareStore")
     suspend fun getProductShareStoreData(): Response<CommonApiResponse>
 

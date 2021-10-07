@@ -140,7 +140,7 @@ class BusinessTypeFragment : BaseFragment(), IBusinessTypeServiceInterface {
                 verifyTextView?.isEnabled = false
                 val businessTypRequest = BusinessTypeRequest(businessTypeSelectedList)
                 showProgressDialog(mActivity)
-                businessTypeService.setStoreBusinesses(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), businessTypRequest)
+                businessTypeService.setStoreBusinesses(businessTypRequest)
             }
         }
     }

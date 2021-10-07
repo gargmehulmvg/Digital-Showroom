@@ -278,7 +278,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         stopProgress()
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
             val photoResponse = Gson().fromJson<String>(response.mCommonDataStr, String::class.java)
-            mProfileService.updateStoreLogo(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), StoreLogoRequest(photoResponse))
+            mProfileService.updateStoreLogo(StoreLogoRequest(photoResponse))
         }
     }
 

@@ -37,9 +37,9 @@ class ProfilePreviewService {
         }
     }
 
-    fun updateStoreLogo(authToken: String, request: StoreLogoRequest) {
+    fun updateStoreLogo(request: StoreLogoRequest) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.updateStoreLogoServerCall(authToken, request, mServiceInterface)
+            mNetworkService.updateStoreLogoServerCall(request, mServiceInterface)
         }
     }
 
@@ -49,9 +49,9 @@ class ProfilePreviewService {
         }
     }
 
-    fun initiateKyc(authToken: String) {
+    fun initiateKyc() {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.initiateKycServerCall(authToken, mServiceInterface)
+            mNetworkService.initiateKycServerCall(mServiceInterface)
         }
     }
 

@@ -91,12 +91,11 @@ class ProfilePreviewNetworkService {
     }
 
     suspend fun updateStoreLogoServerCall(
-        authToken: String,
         request: StoreLogoRequest,
         serviceInterface: IProfilePreviewServiceInterface
     ) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.setStoreLogo(authToken, request)
+            val response = RetrofitApi().getServerCallObject()?.setStoreLogo(request)
             response?.let {
                 if (it.isSuccessful) {
                     it.body()?.let { storeLinkResponse ->
@@ -136,12 +135,9 @@ class ProfilePreviewNetworkService {
         }
     }
 
-    suspend fun initiateKycServerCall(
-        authToken: String,
-        serviceInterface: IProfilePreviewServiceInterface
-    ) {
+    suspend fun initiateKycServerCall(serviceInterface: IProfilePreviewServiceInterface) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.initiateKyc(authToken)
+            val response = RetrofitApi().getServerCallObject()?.initiateKyc()
             response?.let {
                 if (it.isSuccessful) {
                     it.body()?.let { storeLinkResponse ->

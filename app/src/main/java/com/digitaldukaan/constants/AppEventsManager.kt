@@ -84,7 +84,7 @@ class AppEventsManager {
             try {
                 val bundle = Bundle()
                 for (entry in data.entries) {
-                    val value = "" + entry.value
+                    val value = "${entry.value}"
                     bundle.putString(entry.key, value)
                 }
                 Log.d(TAG, "FIREBASE ANALYTICS: event name :: $eventName && bundle :: $bundle")

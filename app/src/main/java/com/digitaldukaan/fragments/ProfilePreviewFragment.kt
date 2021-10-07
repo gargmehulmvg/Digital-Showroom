@@ -354,7 +354,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                     data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.STATE to mProfileInfoSettingKeyResponse.mDefaultText)
                 )
-                mService.initiateKyc(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
+                mService.initiateKyc()
             }
             Constants.ACTION_EMAIL_AUTHENTICATION -> {
                 showProgressDialog(mActivity)
@@ -707,7 +707,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
             val photoResponse = Gson().fromJson<String>(response.mCommonDataStr, String::class.java)
             stopProgress()
-            mService.updateStoreLogo(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), StoreLogoRequest(photoResponse))
+            mService.updateStoreLogo(StoreLogoRequest(photoResponse))
         }
     }
 

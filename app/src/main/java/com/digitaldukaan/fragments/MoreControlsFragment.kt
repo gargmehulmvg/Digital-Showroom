@@ -297,7 +297,7 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
                         )
                         showProgressDialog(mActivity)
                         bottomSheetDialog.dismiss()
-                        mMoreControlsService?.updateDeliveryInfo(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
+                        mMoreControlsService?.updateDeliveryInfo(request)
                     }
                 }
             }.show()

@@ -20,9 +20,9 @@ class BusinessTypeService {
         }
     }
 
-    fun setStoreBusinesses(authToken:String, businessTypeRequest : BusinessTypeRequest) {
+    fun setStoreBusinesses(businessTypeRequest: BusinessTypeRequest) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.setStoreBusinessesServerCall(authToken, businessTypeRequest, mServiceInterface)
+            mNetworkService.setStoreBusinessesServerCall(businessTypeRequest, mServiceInterface)
         }
     }
 
