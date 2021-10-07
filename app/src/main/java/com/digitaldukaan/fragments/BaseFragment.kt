@@ -1328,14 +1328,14 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     }
 
     protected fun openLocationSettings(isBackRequired: Boolean) {
-        mActivity?.let {
-            AlertDialog.Builder(it).apply {
+        mActivity?.let { context ->
+            AlertDialog.Builder(context).apply {
                 setTitle("Permission")
                 setMessage("Please allow Location permission")
                 setPositiveButton(getString(R.string.txt_yes)) { dialogInterface, _ ->
                     dialogInterface?.dismiss()
-                    if (isBackRequired) it.onBackPressed()
-                    it.startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+                    if (isBackRequired) context.onBackPressed()
+                    context.startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
                 }
                 setNegativeButton(getString(R.string.text_no)) { dialogInterface, _ -> dialogInterface?.dismiss() }
             }.create().show()
@@ -1373,7 +1373,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         storeStringDataInSharedPref(Constants.STORE_NAME, "")
         storeStringDataInSharedPref(Constants.USER_MOBILE_NUMBER, "")
         storeStringDataInSharedPref(Constants.STORE_ID, "")
-        launchFragment(LoginFragment.newInstance(), true)
+        launchFragment(LoginFragmentV2.newInstance(isAppLogout), true)
     }
 
     fun shareStoreOverWhatsAppServerCall() {
@@ -1791,6 +1791,65 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         }
         smoothScroller.targetPosition = position
         layoutManager?.startSmoothScroll(smoothScroller)
+    }
+
+    open fun openSubscriptionLockedUrlInBrowser(url: String) = openWebViewFragment(this@BaseFragment, "", url)
+
+    open fun showShipmentConfirmationBottomSheet(mOrderDetailStaticData: OrderDetailsStaticTextResponse?, orderId: Int?) {
+        mActivity?.let { context ->
+            val bottomSheetDialog = BottomSheetDialog(context, R.style.BottomSheetDialogTheme)
+            val view = LayoutInflater.from(context).inflate(R.layout.bottom_sheet_shipment_confirmation, context.findViewById(R.id.bottomSheetContainer))
+            bottomSheetDialog.apply {
+                setContentView(view)
+                val bottomSheetClose: View = view.findViewById(R.id.bottomSheetClose)
+                val headingTextView: TextView = view.findViewById(R.id.headingTextView)
+                val ctaTextView: TextView = view.findViewById(R.id.ctaTextView)
+                val radioButtonDeliveryPartnerSubHeading: TextView = view.findViewById(R.id.radioButtonDeliveryPartnerSubHeading)
+                val radioButtonShipMyselfSubHeading: TextView = view.findViewById(R.id.radioButtonShipMyselfSubHeading)
+                val radioButtonDeliveryPartner: RadioButton = view.findViewById(R.id.radioButtonDeliveryPartner)
+                val radioButtonShipMyself: RadioButton = view.findViewById(R.id.radioButtonShipMyself)
+                bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
+                headingTextView.text = mOrderDetailStaticData?.bottom_sheet_heading_how_will_you_ship
+                radioButtonShipMyselfSubHeading.text = mOrderDetailStaticData?.bottom_sheet_sub_message2_select_this
+                radioButtonDeliveryPartnerSubHeading.text = mOrderDetailStaticData?.bottom_sheet_sub_message1_select_this
+                radioButtonDeliveryPartner.apply {
+                    text = mOrderDetailStaticData?.bottom_sheet_message1_ship_using_partners
+                    isChecked = true
+                    setOnClickListener {
+                        radioButtonShipMyself.isChecked = false
+                    }
+                }
+                radioButtonShipMyself.apply {
+                    text = mOrderDetailStaticData?.bottom_sheet_message2_i_will_ship
+                    setOnClickListener {
+                        radioButtonDeliveryPartner.isChecked = false
+                    }
+                }
+                radioButtonDeliveryPartnerSubHeading.setOnClickListener {
+                    radioButtonDeliveryPartner.isChecked = true
+                    radioButtonShipMyself.isChecked = false
+                }
+                radioButtonShipMyselfSubHeading.setOnClickListener {
+                    radioButtonShipMyself.isChecked = true
+                    radioButtonDeliveryPartner.isChecked = false
+                }
+                ctaTextView.apply {
+                    text = mOrderDetailStaticData?.text_next
+                    setOnClickListener {
+                        AppEventsManager.pushAppEvents(
+                            eventName = AFInAppEventType.EVENT_DELIVERY_SHIPPING_MODE,
+                            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                            data = mapOf(
+                                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                                AFInAppEventParameterName.ORDER_ID to "${orderId}"
+                            )
+                        )
+                        bottomSheetDialog.dismiss()
+                        onShipmentCtaClicked(radioButtonDeliveryPartner.isChecked)
+                    }
+                }
+            }.show()
+        }
     }
 
 }

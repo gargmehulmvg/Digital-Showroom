@@ -3,18 +3,20 @@ package com.digitaldukaan.models.response
 import com.google.gson.annotations.SerializedName
 
 data class AccountInfoResponse(
-    @SerializedName("store")                    var mStoreInfo: StoreResponse,
-    @SerializedName("store_share")              var mStoreShare: StoreShareResponse?,
-    @SerializedName("wa_share")                 var waShare: String?,
-    @SerializedName("new_releases")             var mTrendingList: ArrayList<TrendingListResponse>?,
-    @SerializedName("store_options")            var mStoreOptions: ArrayList<StoreOptionsResponse>?,
-    @SerializedName("app_settings")             var mSubPages: ArrayList<SubPagesResponse>?,
-    @SerializedName("total_steps")              var mTotalSteps: Int,
-    @SerializedName("completed_steps")          var mCompletedSteps: Int,
-    @SerializedName("static_text")              var mAccountStaticText: AccountStaticTextResponse?,
-    @SerializedName("footer_images")            var mFooterImages: ArrayList<String>?,
-    @SerializedName("is_order_notification_on") var mIsOrderNotificationOn: Boolean,
-    @SerializedName("online_payment_type")      var mOnlinePaymentType: String?
+    @SerializedName("store")                            var mStoreInfo: StoreResponse,
+    @SerializedName("store_share")                      var mStoreShare: StoreShareResponse?,
+    @SerializedName("wa_share")                         var waShare: String?,
+    @SerializedName("new_releases")                     var mTrendingList: ArrayList<TrendingListResponse>?,
+    @SerializedName("store_options")                    var mStoreOptions: ArrayList<StoreOptionsResponse>?,
+    @SerializedName("app_settings")                     var mSubPages: ArrayList<SubPagesResponse>?,
+    @SerializedName("total_steps")                      var mTotalSteps: Int,
+    @SerializedName("completed_steps")                  var mCompletedSteps: Int,
+    @SerializedName("static_text")                      var mAccountStaticText: AccountStaticTextResponse?,
+    @SerializedName("footer_images")                    var mFooterImages: ArrayList<String>?,
+    @SerializedName("is_order_notification_on")         var mIsOrderNotificationOn: Boolean,
+    @SerializedName("prepaid_orders_locked")            var mPrepaidOrdersLocked: HelpPageResponse,
+    @SerializedName("online_payment_modes_locked")      var mOnlinePaymentModesOn: HelpPageResponse,
+    @SerializedName("online_payment_type")              var mOnlinePaymentType: String?
 )
 
 data class StoreInfoResponse(
@@ -127,6 +129,7 @@ data class AccountStaticTextResponse(
     @SerializedName("heading_bottom_sheet_set_delivery_pickup")                 var heading_bottom_sheet_set_delivery_pickup: String?,
     @SerializedName("message_bottom_sheet_delivery")                            var message_bottom_sheet_delivery: String?,
     @SerializedName("heading_tap_the_icon")                                     var heading_tap_the_icon: String?,
+    @SerializedName("text_unlock_now")                                          var text_unlock_now: String?,
     @SerializedName("message_bottom_sheet_pickup")                              var message_bottom_sheet_pickup: String?
 )
 

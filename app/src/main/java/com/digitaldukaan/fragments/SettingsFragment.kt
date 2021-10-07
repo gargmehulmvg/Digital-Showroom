@@ -102,7 +102,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         StaticInstances.sAppStoreServicesResponse = mAppStoreServicesResponse
         StaticInstances.sPaymentMethodStr = mProfileResponse?.mOnlinePaymentType
         when (view?.id) {
-            storeControlView?.id -> launchFragment(MoreControlsFragment.newInstance(mAppSettingsResponseStaticData, mProfileResponse?.mIsOrderNotificationOn), true)
+            storeControlView?.id -> launchFragment(MoreControlsFragment.newInstance(mAppSettingsResponseStaticData, mProfileResponse), true)
             dukaanNameTextView?.id -> launchProfilePreviewFragment()
             editProfileTextView?.id -> launchProfilePreviewFragment()
             profileStatusRecyclerView?.id -> launchProfilePreviewFragment()

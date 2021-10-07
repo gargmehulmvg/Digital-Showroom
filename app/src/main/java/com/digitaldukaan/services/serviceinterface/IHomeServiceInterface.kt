@@ -24,6 +24,8 @@ interface IHomeServiceInterface {
 
     fun onCompleteOrderStatusResponse(commonResponse: CommonApiResponse)
 
+    fun onCustomDomainBottomSheetDataResponse(commonResponse: CommonApiResponse)
+
     fun onHomePageException(e: Exception)
 
 }

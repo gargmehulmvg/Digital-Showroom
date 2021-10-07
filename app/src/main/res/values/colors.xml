@@ -10,6 +10,7 @@
     <color name="pale_yellow">#FFE18D</color>
     <color name="white">#FFFFFFFF</color>
     <color name="default_text_light_grey">#919191</color>
+    <color name="enable_false_bg">#C8C8C8</color>
     <color name="chip_non_select_color">#F7F5F5</color>
     <color name="light_grey_background">#F6F7F7</color>
     <color name="curve_grey_border">#E0E3E5</color>
@@ -26,6 +27,7 @@
     <color name="dark_yellow">#FAA722</color>
     <color name="order_detail_in_progress">#F47D07</color>
     <color name="green_alpha">#AFDBBE</color>
+    <color name="promo_green_bg">#E6F5ED</color>
     <color name="default_bg">#F7F8F8</color>
     <color name="dark_blackish">#232B2E</color>
     <color name="snack_bar_background">#434D4D</color>
@@ -39,4 +41,7 @@
     <color name="ucrop_color_statusbar">@color/open_green</color>
     <color name="ucrop_color_widget_active">@color/open_green</color>
     <color name="gmail_color">#F44336</color>
+    <color name="purple">#E4D5F6</color>
+    <color name="purple_dark">#6B3AAB</color>
+    <color name="tooltip_background">#FFE9CB</color>
 </resources>

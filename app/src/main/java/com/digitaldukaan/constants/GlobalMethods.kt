@@ -30,11 +30,15 @@ import android.view.animation.TranslateAnimation
 import android.widget.Toast
 import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.MainActivity
+import com.digitaldukaan.R
 import com.digitaldukaan.fragments.BaseFragment
 import com.digitaldukaan.fragments.CommonWebViewFragment
 import com.digitaldukaan.models.dto.ContactModel
 import com.digitaldukaan.models.response.ProfileInfoResponse
 import com.digitaldukaan.models.response.ProfilePreviewSettingsKeyResponse
+import com.skydoves.balloon.Balloon
+import com.skydoves.balloon.BalloonAnimation
+import com.skydoves.balloon.createBalloon
 import io.sentry.Sentry
 import org.shadow.apache.commons.lang3.StringUtils
 import java.io.*
@@ -239,6 +243,14 @@ fun openWebViewFragment(fragment: BaseFragment, title: String, webViewUrl: Strin
     }
 }
 
+fun openWebViewFragmentV3(fragment: BaseFragment, title: String, webViewUrl: String?) {
+    try {
+        fragment.launchFragment(CommonWebViewFragment().newInstance(title, webViewUrl ?: ""), true)
+    } catch (e: Exception) {
+        Sentry.captureException(e, "openWebViewFragment :: fragment: BaseFragment, title: String, webViewType: String?")
+    }
+}
+
 fun openWebViewFragmentWithLocation(fragment: BaseFragment, title: String, webViewType: String?) {
     try {
         fragment.launchFragment(CommonWebViewFragment().newInstance(title, webViewType ?: ""), true)
@@ -352,8 +364,7 @@ fun getHeaderByActionInSettingKetList(profilePreviewResponse: ProfileInfoRespons
 
 fun isAppInstalled(packageName: String, context: Context): Boolean {
     val pm: PackageManager = context.packageManager
-    val appInstalled: Boolean
-    appInstalled = try {
+    val appInstalled = try {
         pm.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES)
         true
     } catch (e: PackageManager.NameNotFoundException) {
@@ -460,6 +471,31 @@ fun startShinningAnimation(view: View) {
             view.startAnimation(animation)
         }
     },Constants.SHINE_ANIMATION_INTERVAL, Constants.SHINE_ANIMATION_INTERVAL, TimeUnit.MILLISECONDS)
+}
+
+fun getToolTipBalloon(mContext: Context?, text: String? = "Sample Testing", arrowPosition: Float = 0.5f): Balloon? {
+    mContext?.let { context ->
+        return createBalloon(context) {
+            setArrowSize(15)
+            setArrowPosition(arrowPosition)
+            textSize = 11f
+            paddingTop = 12
+            paddingLeft = 20
+            paddingRight = 20
+            paddingBottom = 12
+            setCornerRadius(8f)
+            setText(text ?: "")
+            setTextColorResource(R.color.black)
+            setBackgroundColorResource(R.color.tooltip_background)
+            setBalloonAnimation(BalloonAnimation.CIRCULAR)
+            setAutoDismissDuration(Constants.TOOL_TIP_TIMER_INTERVAL)
+        }
+    }
+    return null
+}
+
+fun isSingleDigitNumber(number: Long): Boolean {
+    return !((number in 10..99) || (number < -9 && number > -100))
 }
 
 fun drawScreenShotBitmap(v: View) {

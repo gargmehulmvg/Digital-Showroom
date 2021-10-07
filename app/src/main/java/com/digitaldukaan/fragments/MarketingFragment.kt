@@ -243,7 +243,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                     data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.TYPE to AFInAppEventParameterName.SOCIAL)
                 )
-                openWebViewFragment(this, "", response.url, Constants.SETTINGS)
+                launchFragment(SocialMediaFragment.newInstance(), true)
             }
             Constants.ACTION_THEME_DISCOVER -> {
                 AppEventsManager.pushAppEvents(

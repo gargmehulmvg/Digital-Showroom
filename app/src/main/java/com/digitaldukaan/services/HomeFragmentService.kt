@@ -54,4 +54,10 @@ class HomeFragmentService {
         }
     }
 
+    fun getCustomDomainBottomSheetData() {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.getCustomDomainBottomSheetDataServerCall(mServiceInterface)
+        }
+    }
+
 }
