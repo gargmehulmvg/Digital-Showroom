@@ -34,5 +34,6 @@ data class TransactionDetailStaticTextResponse(
 data class CTAItemResponse(
     @SerializedName("text")             var text: String?,
     @SerializedName("action")           var action: String,
+    @SerializedName("page_url")         var pageUrl: String,
     @SerializedName("display_message")  var displayMessage: String?
 )

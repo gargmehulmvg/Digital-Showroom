@@ -9,9 +9,10 @@
 
     <ImageView
         android:id="@+id/bottomSheetClose"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/_22sdp"
+        android:layout_height="@dimen/_22sdp"
         android:layout_margin="@dimen/_15sdp"
+        android:padding="@dimen/_1sdp"
         android:contentDescription="@string/image_view_content_description"
         android:src="@drawable/ic_black_close"
         app:layout_constraintEnd_toEndOf="parent"
@@ -22,33 +23,31 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_10sdp"
-        android:fontFamily="@font/montserrat"
         android:gravity="center"
-        android:padding="@dimen/_5sdp"
+        android:padding="@dimen/_2sdp"
         android:textColor="@color/black"
-        android:textSize="@dimen/_16sdp"
+        android:textSize="@dimen/_14sdp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/bottomSheetClose"
+        app:layout_constraintTop_toBottomOf="@id/bottomSheetClose"
         tools:text="@string/app_name" />
 
     <TextView
         android:id="@+id/bottomSheetUrl"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_10sdp"
+        android:layout_marginTop="@dimen/_20sdp"
         android:background="@drawable/curve_red_background"
-        android:fontFamily="@font/montserrat"
         android:gravity="center"
         android:paddingStart="@dimen/_15sdp"
         android:paddingTop="@dimen/_5sdp"
         android:paddingEnd="@dimen/_15sdp"
         android:paddingBottom="@dimen/_5sdp"
         android:textColor="@color/white"
-        android:textSize="@dimen/_15sdp"
+        android:textSize="@dimen/_14sdp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/bottomSheetHeadingTextView"
+        app:layout_constraintTop_toBottomOf="@id/bottomSheetHeadingTextView"
         tools:text="@string/app_name" />
 
     <ImageView
@@ -59,7 +58,7 @@
         android:contentDescription="@string/image_view_content_description"
         android:src="@drawable/ic_laptop"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/bottomSheetUrl" />
+        app:layout_constraintTop_toBottomOf="@id/bottomSheetUrl" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -76,9 +75,9 @@
             android:layout_height="0dp"
             android:contentDescription="@string/image_view_content_description"
             android:src="@drawable/ic_browsers"
-            app:layout_constraintBottom_toBottomOf="@+id/bottomSheetBrowserText"
-            app:layout_constraintStart_toEndOf="@+id/bottomSheetBrowserText"
-            app:layout_constraintTop_toTopOf="@+id/bottomSheetBrowserText" />
+            app:layout_constraintBottom_toBottomOf="@id/bottomSheetBrowserText"
+            app:layout_constraintStart_toEndOf="@id/bottomSheetBrowserText"
+            app:layout_constraintTop_toTopOf="@id/bottomSheetBrowserText" />
 
         <TextView
             android:id="@+id/bottomSheetBrowserText"
@@ -97,7 +96,7 @@
             app:layout_constraintHorizontal_bias="0.23"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="@string/best_viewed_on" />
+            android:text="@string/best_viewed_on" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

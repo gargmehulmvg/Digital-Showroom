@@ -28,7 +28,8 @@ interface AFInAppEventType {
         const val EVENT_EDIT_THEME                                  =   "Edit_Theme"
         const val EVENT_EDIT_COLOR                                  =   "Edit_Color"
         const val EVENT_SAVE_THEME_COLOR                            =   "Saved_ThemeColor"
-        const val EVENT_ENTER_NAME                                  =   "Enter_Name"
+        const val EVENT_ENTER_NAME                                  =   "EnterName"
+        const val EVENT_ENTER_NAME_SPACE                            =   "Enter Name"
         const val EVENT_EDIT_THEME_IMAGE                            =   "Edit_ThemeImage"
         const val EVENT_MOBILE_BANNER_CROPPED                       =   "Mobile_Banner_Cropped"
         const val EVENT_DESKTOP_BANNER_CROPPED                      =   "Desktop_Banner_Cropped"
@@ -104,5 +105,7 @@ interface AFInAppEventType {
         const val EVENT_ADD_EMAIL                                   =   "Add_email"
         const val EVENT_EMAIL_SIGN_IN                               =   "Email_sign_in"
         const val EVENT_SHARE_PRODUCT_MARKETING                     =   "Share_product_marketing"
+        const val EVENT_DELIVERY_SHIP_USING_PARTNER                 =   "delivery_ship_using_partner"
+        const val EVENT_DELIVERY_SHIPPING_MODE                      =   "delivery_shipping_mode"
     }
 }

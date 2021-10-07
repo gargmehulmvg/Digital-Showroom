@@ -52,7 +52,7 @@ class AppEventsManager {
                     Log.d(TAG, "pushServerCallEvent: event name :: $eventName && map :: $data")
                     val storeIdStr = PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)
                     val request = AndroidEventLogRequest(if (storeIdStr.isNotEmpty()) storeIdStr.toInt() else 0, eventName, data)
-                    val response = RetrofitApi().getServerCallObject()?.androidEventLog(request)
+                    val response = RetrofitApi().getAnalyticsServerCallObject()?.androidEventLog(request)
                     Log.d(TAG, "pushServerCallEvent: $response")
                 } catch (e: Exception) {
                     Sentry.captureException(e, "pushServerCallEvent: exception")

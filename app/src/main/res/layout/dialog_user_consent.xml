@@ -13,18 +13,25 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_18sdp"
-        android:textColor="@color/black"
         android:lineSpacingMultiplier="1.2"
+        android:textColor="@color/black"
         android:textSize="@dimen/_10sdp"
         tools:text="I hereby provide my consent to receive emails, SMS, phone calls, whatsapp messages and other communications from Dotpe in order to understand about Dotpe’s services, offerings, promotions and other related information." />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/updateTextView"
-        style="@style/common_text_view_background"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_22sdp"
+        android:layout_marginBottom="@dimen/_18sdp"
+        android:background="@drawable/ripple_curve_grey_black_background"
+        android:fontFamily="@font/roboto_bold"
         android:gravity="center"
         android:onClick="onClick"
+        android:paddingTop="@dimen/_10sdp"
+        android:paddingBottom="@dimen/_10sdp"
+        android:textColor="@color/white"
+        android:textSize="@dimen/_16sdp"
         tools:text="@string/ok" />
 
 </LinearLayout>

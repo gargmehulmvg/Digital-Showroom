@@ -2,13 +2,14 @@ package com.digitaldukaan.constants
 
 class Constants {
     companion object {
-        const val SPLASH_TIMER                                  = 1_000L
+        const val OTP_SUCCESS_TIMER                             = 500L
         const val LOCATION_REQUEST_CODE                         = 1001
         const val BACK_PRESS_INTERVAL                           = 2_000L
         const val SHINE_ANIMATION_INTERVAL                      = 2_000L
         const val STORE_CREATION_PROGRESS_ANIMATION_INTERVAL    = 3_000L
         const val RESEND_OTP_TIMER                              = 30_000L
         const val TIMER_INTERVAL                                = 500L
+        const val TOOL_TIP_TIMER_INTERVAL                       = 3_000L
         const val CREDENTIAL_PICKER_REQUEST                     = 1001
         const val IMAGE_PICK_REQUEST_CODE                       = 1002
         const val CONTACT_REQUEST_CODE                          = 1003
@@ -34,6 +35,7 @@ class Constants {
         const val TEXT_YES                                      = "yes"
         const val TEXT_NO                                       = "no"
         const val APP_SECRET_KEY                                = "wFqjaY2jR85nMmgI7wqvPHd6mYaEN9a1"
+        const val ANALYTICS_PRODUCTION_URL                      = "https://api.dotshowroom.in/"
         //ACTIONS
         const val ACTION_LOGOUT                                 = "logout"
         const val ACTION_STORE_DESCRIPTION                      = "store_description"
@@ -53,6 +55,7 @@ class Constants {
         const val ACTION_ADD_BANK                               = "add-bank"
         const val ACTION_REJECT_ORDER                           = "reject-order"
         const val ACTION_SHARE_BILL                             = "share-bill"
+        const val ACTION_SEND_BILL                              = "send-bill"
         const val ACTION_DOWNLOAD_BILL                          = "download-bill"
         const val ACTION_CASH_COLLECTED                         = "cash-collected"
         const val ACTION_DOMAIN_SUCCESS                         = "domain-success"
@@ -61,6 +64,8 @@ class Constants {
         const val ACTION_BOTTOM_SHEET                           = "bottom-sheet"
         const val ACTION_PROMO_CODE                             = "promo-code"
         const val ACTION_EMAIL_AUTHENTICATION                   = "email-authentication"
+        const val ACTION_MARK_OUT_FOR_DELIVERY                  = "mark-out-for-delivery"
+        const val ACTION_HOW_TO_SHIP                            = "how-to-ship"
         //Incomplete profile actions
         const val ACTION_LOGO                                   = "logo"
         const val ACTION_DESCRIPTION                            = "description"
@@ -88,21 +93,21 @@ class Constants {
         const val ORDER_TYPE_POSTPAID                           = 0
         const val ORDER_TYPE_PREPAID                            = 1
         //DISPLAY_STATUS
-        const val DS_NEW                                        = "new"                         // When order comes but not opened by merchant
-        const val DS_SEND_BILL                                  = "sendBill"                    // When order comes opened the order but didn't send bill and exit
-        const val DS_BILL_SENT                                  = "billSent"                    // When order comes and send bill but payment is due
-        const val DS_CASH_MARKED                                = "cashMarked"                  // When order comes & marked as cash
-        const val DS_PAID_ONLINE                                = "paidOnline"                  // When order comes & order is paid online by customer
-        const val DS_REJECTED                                   = "rejected"                    // Order rejected byt customer
-        const val DS_COMPLETED_CASH                             = "completedCash"               // When order comes & marked as cash
-        const val DS_COMPLETED_ONLINE                           = "completedOnline"             // Order self checklist by merchant :: Paid Online
-        const val DS_PENDING_PAYMENT_LINK                       = "pendingPaymentLink"          // Order self checklist by merchant :: Paid Online
-        const val DS_MARK_READY                                 = "markReady"                   // Merchant seen & start making the order for customer
+        const val DS_NEW                                        = "new"                             // When order comes but not opened by merchant
+        const val DS_SEND_BILL                                  = "sendBill"                        // When order comes opened the order but didn't send bill and exit
+        const val DS_BILL_SENT                                  = "billSent"                        // When order comes and send bill but payment is due
+        const val DS_CASH_MARKED                                = "cashMarked"                      // When order comes & marked as cash
+        const val DS_PAID_ONLINE                                = "paidOnline"                      // When order comes & order is paid online by customer
+        const val DS_REJECTED                                   = "rejected"                        // Order rejected byt customer
+        const val DS_COMPLETED_CASH                             = "completedCash"                   // When order comes & marked as cash
+        const val DS_COMPLETED_ONLINE                           = "completedOnline"                 // Order self checklist by merchant :: Paid Online
+        const val DS_PENDING_PAYMENT_LINK                       = "pendingPaymentLink"              // Order self checklist by merchant :: Paid Online
+        const val DS_MARK_READY                                 = "markReady"                       // Merchant seen & start making the order for customer
         const val DS_PREPAID_PICKUP_READY                       = "prepaidPickupReady"
         const val DS_PREPAID_DELIVERY_READY                     = "prepaidDeliveryReady"
         const val DS_PREPAID_PICKUP_COMPLETED                   = "prepaidPickupCompleted"
         const val DS_PREPAID_DELIVERY_COMPLETED                 = "prepaidDeliveryCompleted"
-        const val DS_OUT_FOR_DELIVERY                           = "outForDelivery"              // Order out for delivery
+        const val DS_OUT_FOR_DELIVERY                           = "outForDelivery"                  // Order out for delivery
         //MODES
         const val MODE_PENDING                                  = "mode_pending"
         const val MODE_COMPLETED                                = "mode_completed"
@@ -172,5 +177,8 @@ class Constants {
         const val ITEM_TYPE_LIST                                = "list"
         const val ITEM_TYPE_CATALOG                             = "catalog"
         const val ITEM_TYPE_DISCOUNT                            = "discount"
+        //CTA_TYPES
+        const val CTA_TYPE_BORDER: String                       = "border"
+        const val CTA_TYPE_SOLID: String                        = "solid"
     }
 }

@@ -166,7 +166,6 @@
                         android:layout_height="wrap_content"
                         app:layout_constraintEnd_toEndOf="@id/smsImageView"
                         app:layout_constraintStart_toStartOf="@id/enterMobileNumberHeading"
-                        app:layout_constraintTop_toBottomOf="@id/send4DigitOtpHeading"
                         tools:hint="Enter Item Name">
 
                         <EditText
@@ -267,7 +266,6 @@
                         android:layout_height="wrap_content"
                         app:layout_constraintEnd_toEndOf="@id/smsImageView"
                         app:layout_constraintStart_toStartOf="@id/enterMobileNumberHeading"
-                        app:layout_constraintTop_toBottomOf="@id/send4DigitOtpHeading"
                         tools:hint="Price (₹)">
 
                         <EditText
@@ -398,7 +396,6 @@
                         android:layout_height="wrap_content"
                         app:layout_constraintEnd_toEndOf="@id/smsImageView"
                         app:layout_constraintStart_toStartOf="@id/enterMobileNumberHeading"
-                        app:layout_constraintTop_toBottomOf="@id/send4DigitOtpHeading"
                         tools:hint="Enter Category (Optional)">
 
                         <EditText

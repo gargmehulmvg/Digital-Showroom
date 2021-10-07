@@ -14,12 +14,12 @@ interface Apis {
     suspend fun getAppVersion(@Query("app_name") appName: String, @Query("app_version") appVersion: String) : Response<CommonApiResponse>
 
     @GET("api/dotk/vo1/onboard/getAppStaticText")
-    suspend fun getAppStaticText(@Query("lanuageId") languageId:String) : Response<CommonApiResponse>
+    suspend fun getAppStaticText(@Query("language_id") languageId:String) : Response<CommonApiResponse>
 
     @POST("api/dotk/vc1/onboard/createStore")
     suspend fun createStore(@Body request: CreateStoreRequest?): Response<CommonApiResponse>
 
-    @GET("api/dotk/vo1/onboard/getHelpScreens")
+    @GET("api/dotk/vo1/onboard/getLoginHelpScreen")
     suspend fun getHelpScreens(): Response<CommonApiResponse>
 
     @POST("api/dotk/vo1/onboard/validateUser")
@@ -144,6 +144,7 @@ interface Apis {
     suspend fun generateProductStorePdf(): Response<CommonApiResponse>
 
     /* ----------------------       Products         ---------------------- */
+    @Deprecated("Not using currently")
     @GET("api/dotk/vm1/products/shareStorePdfText")
     suspend fun getProductShareStorePdfText(@Header("auth_token") authToken: String): Response<CommonApiResponse>
 
@@ -222,6 +223,9 @@ interface Apis {
 
     @GET("api/dotk/vm1/orders/getDeliveryTime")
     suspend fun getDeliveryTime(): Response<CommonApiResponse>
+
+    @GET("api/dotk/vm1/onboard/getOnboardingPageInfo")
+    suspend fun getCustomDomainBottomSheetData(): Response<CommonApiResponse>
 
     @POST("api/dotk/vm1/orders/updateOrderV2")
     suspend fun updateOrder(@Body statusRequest: UpdateOrderRequest): Response<CommonApiResponse>

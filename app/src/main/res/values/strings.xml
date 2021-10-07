@@ -7,6 +7,7 @@
     <string name="enter_your_mobile_number">Enter your \nmobile number</string>
     <string name="we_will_send_you_4_digit_otp">We will send you 4 digit OTP</string>
     <string name="enter_mobile_number">Enter Mobile Number</string>
+    <string name="enter_whatsapp_number">Enter WhatsApp Number</string>
     <string name="get_otp">Get OTP</string>
     <string name="mandatory_field_message">This field is mandatory</string>
     <string name="please_enter_valid_input">Please enter valid input</string>
@@ -127,6 +128,10 @@
     <string name="flat">Flat</string>
     <string name="add_variants_optional">+ Add Variants (optional)</string>
     <string name="logout_message">You have been logged out for system maintenance activity. Please login again.</string>
+    <string name="or">or</string>
+    <string name="login_using_true_caller">Login using TrueCaller</string>
+    <string name="made_in_india">Made in India</string>
+    <string name="transaction_details">Transaction Details</string>
     <string-array name="state_array">
         <item >Andhra Pradesh</item>
         <item >Arunachal Pradesh</item>
