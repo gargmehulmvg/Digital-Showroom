@@ -35,12 +35,11 @@ class ProfilePhotoNetworkService {
     }
 
     suspend fun uploadStoreImageServerCall(
-        authToken: String,
         request: StoreLogoRequest,
         serviceInterface: IProfilePhotoServiceInterface
     ) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.setStoreLogo(authToken, request)
+            val response = RetrofitApi().getServerCallObject()?.setStoreLogo(request)
             response?.let {
                 if (it.isSuccessful) {
                     it.body()?.let { storeLinkResponse ->

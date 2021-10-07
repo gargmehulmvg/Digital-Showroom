@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:id="@+id/bottomSheetContainer"
+    android:background="@drawable/upper_curve_white_background"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/headingTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/roboto_medium"
+        android:gravity="center"
+        android:minLines="@integer/min_lines_two"
+        android:layout_marginTop="@dimen/_15sdp"
+        android:padding="@dimen/_12sdp"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_12sdp"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Create And Share with customers or\nuse as WhatsApp Stories" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/_15sdp"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        app:layout_constraintTop_toBottomOf="@id/headingTextView"
+        app:spanCount="2"
+        tools:itemCount="4"
+        tools:listitem="@layout/marketing_more_options_bottom_sheet_item" />
+
+</LinearLayout>

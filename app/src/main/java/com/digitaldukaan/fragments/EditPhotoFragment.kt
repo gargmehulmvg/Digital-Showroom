@@ -77,7 +77,10 @@ class EditPhotoFragment: BaseFragment() {
                 val widthRatio = (mobileObj?.width ?: 0) / factor
                 val heightRatio = (mobileObj?.height ?: 0) / factor
                 Log.d(TAG, "Constants.EDIT_PHOTO_MODE_MOBILE: Aspect Ratio: $widthRatio : $heightRatio")
-                cropImageView?.setAspectRatio(widthRatio, heightRatio)
+                cropImageView?.setAspectRatio(
+                    if (0 <= widthRatio) widthRatio else 1,
+                    if (0 <= heightRatio) heightRatio else 1
+                )
             }
             Constants.EDIT_PHOTO_MODE_DESKTOP -> {
                 val desktopObj = mPremiumPageInfoResponse?.theme?.themeComponent?.body?.get(1)?.images?.get(1)
@@ -86,10 +89,12 @@ class EditPhotoFragment: BaseFragment() {
                 if (0 == factor) factor = 1
                 val widthRatio = (desktopObj?.width ?: 0) / factor
                 val heightRatio = (desktopObj?.height ?: 0) / factor
-                cropImageView?.setAspectRatio(widthRatio, heightRatio)
                 appTitleTextView?.text = mStaticText?.heading_crop_for_desktop_view
                 Log.d(TAG, "Constants.EDIT_PHOTO_MODE_DESKTOP: Aspect Ratio: $widthRatio : $heightRatio")
-                cropImageView?.setAspectRatio(widthRatio, heightRatio)
+                cropImageView?.setAspectRatio(
+                    if (0 <= widthRatio) widthRatio else 1,
+                    if (0 <= heightRatio) heightRatio else 1
+                )
             }
         }
     }

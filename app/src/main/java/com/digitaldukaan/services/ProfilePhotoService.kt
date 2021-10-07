@@ -22,9 +22,9 @@ class ProfilePhotoService {
         }
     }
 
-    fun uploadStoreLogo(authToken: String, request: StoreLogoRequest) {
+    fun uploadStoreLogo(request: StoreLogoRequest) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.uploadStoreImageServerCall(authToken, request, mServiceInterface)
+            mNetworkService.uploadStoreImageServerCall(request, mServiceInterface)
         }
     }
 

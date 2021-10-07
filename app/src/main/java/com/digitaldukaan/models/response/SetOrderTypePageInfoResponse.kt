@@ -8,7 +8,7 @@ data class SetOrderTypePageInfoResponse(
     @SerializedName("pre_paid")                                 var mPrePaidResponse: PostpaidResponse?,
     @SerializedName("both_paid")                                var mBothPaidResponse: PostpaidResponse?,
     @SerializedName("payment_method")                           var mPaymentMethod: Int,
-    @SerializedName("how_it_works_list")                        var mHowItWorkList: ArrayList<HelpScreenItemResponse>?,
+    @SerializedName("how_it_works_list")                        var mHowItWorkList: ArrayList<HowItWorksItemResponse>?,
     @SerializedName("unlock_options_list")                      var mUnlockOptionList: ArrayList<UnlockOptionItemList>?
 )
 
@@ -46,4 +46,9 @@ data class PostpaidResponse(
 data class SetOrderTypeItemResponse(
     @SerializedName("text")                                     var text: String?,
     @SerializedName("status")                                   var status: String?
+)
+
+data class HowItWorksItemResponse(
+    @SerializedName("url")      var url: String?,
+    @SerializedName("text")     var text: String?
 )

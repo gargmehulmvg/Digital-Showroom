@@ -13,12 +13,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.isEmpty
+import com.digitaldukaan.constants.isNotEmpty
 import com.digitaldukaan.interfaces.IOrderDetailListener
 import com.digitaldukaan.models.response.OrderDetailItemResponse
+import com.digitaldukaan.models.response.OrderDetailsResponse
 import com.digitaldukaan.models.response.OrderDetailsStaticTextResponse
 
 class OrderDetailsAdapter(
     private var mOrderDetailList: ArrayList<OrderDetailItemResponse>?,
+    private var orderDetailResponse: OrderDetailsResponse?,
     private val mDeliveryStatus: String?,
     private val mOrderDetailStaticData: OrderDetailsStaticTextResponse?,
     private val mListener: IOrderDetailListener?
@@ -75,7 +78,8 @@ class OrderDetailsAdapter(
             }
             val priceStr = "${if (Constants.ITEM_TYPE_DISCOUNT == item?.item_type) "- " else ""}${mOrderDetailStaticData?.text_rupees_symbol} ${item?.amount}"
             priceTextView.text = priceStr
-            closeImageView.visibility = if (Constants.DS_SEND_BILL == mDeliveryStatus || Constants.DS_NEW == mDeliveryStatus) View.VISIBLE else View.GONE
+            val isShareBillUI = ((Constants.DS_SEND_BILL == mDeliveryStatus || Constants.DS_NEW == mDeliveryStatus) && (1 == orderDetailResponse?.paymentStatus) && (Constants.StatusSeenByMerchant == orderDetailResponse?.status || Constants.StatusMerchantUpdated == orderDetailResponse?.status) && isNotEmpty(orderDetailResponse?.deliveryInfo?.shipmentId))
+            closeImageView.visibility = if ((Constants.DS_SEND_BILL == mDeliveryStatus || Constants.DS_NEW == mDeliveryStatus) && !isShareBillUI) View.VISIBLE else View.GONE
             if (0.0 == item?.amount && (Constants.DS_NEW == mDeliveryStatus || Constants.DS_SEND_BILL == mDeliveryStatus)) {
                 priceEditText.visibility = View.VISIBLE
                 priceTextView.visibility = View.GONE

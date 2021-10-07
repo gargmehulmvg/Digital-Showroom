@@ -30,12 +30,11 @@ class BusinessTypeNetworkService {
     }
 
     suspend fun setStoreBusinessesServerCall(
-        authToken:String,
-        businessTypeRequest : BusinessTypeRequest,
+        businessTypeRequest: BusinessTypeRequest,
         serviceInterface: IBusinessTypeServiceInterface
     ) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.setStoreBusinesses(authToken, businessTypeRequest)
+            val response = RetrofitApi().getServerCallObject()?.setStoreBusinesses(businessTypeRequest)
             response?.let {
                 if (it.isSuccessful) {
                     it.body()?.let { profilePreviewResponse -> serviceInterface.onSavingBusinessTypeResponse(profilePreviewResponse) }

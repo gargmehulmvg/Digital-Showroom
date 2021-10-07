@@ -3,20 +3,16 @@ package com.digitaldukaan.services.networkservice
 import android.util.Log
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.exceptions.UnAuthorizedAccessException
-import com.digitaldukaan.models.request.CreateStoreRequest
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.network.RetrofitApi
 import com.digitaldukaan.services.serviceinterface.ICreateStoreServiceInterface
 import com.google.gson.Gson
 
-class CreateStoreNetworkService {
+class CreateDukaanNetworkService {
 
-    suspend fun createStoreServerCall(
-        request: CreateStoreRequest?,
-        serviceInterface: ICreateStoreServiceInterface
-    ) {
+    suspend fun getCustomDomainBottomSheetDataServerCall(serviceInterface: ICreateStoreServiceInterface) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.createStore(request)
+            val response = RetrofitApi().getServerCallObject()?.getCustomDomainBottomSheetData()
             response?.let {
                 if (it.isSuccessful) {
                     it.body()?.let { profilePreviewResponse ->
@@ -36,7 +32,7 @@ class CreateStoreNetworkService {
                 }
             }
         } catch (e: Exception) {
-            Log.e(CreateStoreNetworkService::class.java.simpleName, "createStoreServerCall: ", e)
+            Log.e(CreateDukaanNetworkService::class.java.simpleName, "createStoreServerCall: ", e)
             serviceInterface.onCreateStoreServerException(e)
         }
     }

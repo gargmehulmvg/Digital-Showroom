@@ -31,19 +31,16 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
     private val mTagName = "CommonWebViewFragment"
     private var mDomainName = ""
 
-    fun newInstance(headerText: String, loadUrl:String): CommonWebViewFragment {
+    fun newInstance(headerText: String, loadUrl: String): CommonWebViewFragment {
         val fragment = CommonWebViewFragment()
         fragment.mHeaderText = headerText
         fragment.mLoadUrl = loadUrl
-        fragment.mLoadUrl ="${fragment.mLoadUrl}&app_version=${BuildConfig.VERSION_NAME}"
+        fragment.mLoadUrl = "${fragment.mLoadUrl}&app_version=${BuildConfig.VERSION_NAME}"
+        Log.d(mTagName, "CommonWebViewFragment :: URL :: $mLoadUrl")
         return fragment
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.layout_common_webview_fragment, container, false)
         hideBottomNavigationView(true)
         return mContentView
@@ -307,7 +304,7 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
                 launchFragment(HomeFragment.newInstance(), true)
                 true
             } else {
-                if (commonWebView?.canGoBack() == true) {
+                if (true == commonWebView?.canGoBack()) {
                     commonWebView?.goBack()
                     true
                 } else false

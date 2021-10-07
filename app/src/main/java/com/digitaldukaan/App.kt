@@ -25,55 +25,59 @@ class App: Application() {
     }
 
     override fun onCreate() {
-        ActivityLifecycleCallback.register(this)
-        super.onCreate()
-        val conversionDataListener  = object : AppsFlyerConversionListener {
-            override fun onConversionDataSuccess(data: MutableMap<String, Any>?) {
-                data?.let { cvData ->
-                    cvData.forEach { (key, value) ->
-                        Log.d(TAG, "conversion_attribute:  $key = $value")
+        try {
+            ActivityLifecycleCallback.register(this)
+            super.onCreate()
+            val conversionDataListener  = object : AppsFlyerConversionListener {
+                override fun onConversionDataSuccess(data: MutableMap<String, Any>?) {
+                    data?.let { cvData ->
+                        cvData.forEach { (key, value) ->
+                            Log.d(TAG, "conversion_attribute:  $key = $value")
+                        }
+                        val phoneNumber = cvData["af_referrer_customer_id"] as String
+                        val isFirstLaunch = cvData["is_first_launch"] as Boolean
+                        if (isFirstLaunch) StaticInstances.sAppFlyerRefMobileNumber = phoneNumber
+                        Log.d(TAG, "conversion_attribute :: StaticInstances.sAppFlyerRefMobileNumber ::  ${StaticInstances.sAppFlyerRefMobileNumber}")
                     }
-                    val phoneNumber = cvData["af_referrer_customer_id"] as String
-                    val isFirstLaunch = cvData["is_first_launch"] as Boolean
-                    if (isFirstLaunch) StaticInstances.sAppFlyerRefMobileNumber = phoneNumber
-                    Log.d(TAG, "conversion_attribute :: StaticInstances.sAppFlyerRefMobileNumber ::  ${StaticInstances.sAppFlyerRefMobileNumber}")
+                }
+
+                override fun onConversionDataFail(error: String?) {
+                    Log.e(TAG, "error onAttributionFailure :  $error")
+                }
+
+                override fun onAppOpenAttribution(data: MutableMap<String, String>?) {
+                    data?.map {
+                        Log.d(TAG, "onAppOpen_attribute: ${it.key} = ${it.value}")
+                    }
+                }
+
+                override fun onAttributionFailure(error: String?) {
+                    Log.e(TAG, "error onAttributionFailure :  $error")
                 }
             }
-
-            override fun onConversionDataFail(error: String?) {
-                Log.e(TAG, "error onAttributionFailure :  $error")
+            AppsFlyerLib.getInstance().apply {
+                //setDebugLog(true)
+                setAppInviteOneLink("KgNd")
+                init(APP_FLYER_DEV_KEY, conversionDataListener, this@App)
+                start(this@App)
             }
-
-            override fun onAppOpenAttribution(data: MutableMap<String, String>?) {
-                data?.map {
-                    Log.d(TAG, "onAppOpen_attribute: ${it.key} = ${it.value}")
-                }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val notificationChannel = NotificationChannel(
+                    AFInAppEventParameterName.NOTIFICATION_CHANNEL_NOTIFICATIONS,
+                    AFInAppEventParameterName.NOTIFICATION_CHANNEL_NAME,
+                    NotificationManager.IMPORTANCE_HIGH
+                )
+                val manager = getSystemService(NotificationManager::class.java)
+                manager.createNotificationChannel(notificationChannel)
             }
-
-            override fun onAttributionFailure(error: String?) {
-                Log.e(TAG, "error onAttributionFailure :  $error")
+            FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(true)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                val processName = getProcessName(this)
+                val packageName = this.packageName
+                if (packageName != processName) WebView.setDataDirectorySuffix(processName)
             }
-        }
-        AppsFlyerLib.getInstance().apply {
-            //setDebugLog(true)
-            setAppInviteOneLink("KgNd")
-            init(APP_FLYER_DEV_KEY, conversionDataListener, this@App)
-            start(this@App)
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val notificationChannel = NotificationChannel(
-                AFInAppEventParameterName.NOTIFICATION_CHANNEL_NOTIFICATIONS,
-                AFInAppEventParameterName.NOTIFICATION_CHANNEL_NAME,
-                NotificationManager.IMPORTANCE_HIGH
-            )
-            val manager = getSystemService(NotificationManager::class.java)
-            manager.createNotificationChannel(notificationChannel)
-        }
-        FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(true)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            val processName = getProcessName(this)
-            val packageName = this.packageName
-            if (packageName != processName) WebView.setDataDirectorySuffix(processName)
+        } catch (e: Exception) {
+            Log.e(TAG, "App :: onCreate: ${e.message}", e)
         }
     }
 

@@ -15,8 +15,8 @@ android {
         applicationId "com.digitaldukaan"
         minSdkVersion 24
         targetSdkVersion 29
-        versionCode 74
-        versionName "4.2.2"
+        versionCode 76
+        versionName "4.3.0"
         multiDexEnabled true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -169,4 +169,6 @@ dependencies {
     implementation 'com.google.firebase:firebase-core:17.0.0'
     //  Animation
     implementation 'com.daimajia.androidanimations:library:2.4@aar'
+    //  Tooltip animation
+    implementation "com.github.skydoves:balloon:1.2.3"
 }

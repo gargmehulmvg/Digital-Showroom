@@ -14,12 +14,12 @@ interface Apis {
     suspend fun getAppVersion(@Query("app_name") appName: String, @Query("app_version") appVersion: String) : Response<CommonApiResponse>
 
     @GET("api/dotk/vo1/onboard/getAppStaticText")
-    suspend fun getAppStaticText(@Query("lanuageId") languageId:String) : Response<CommonApiResponse>
+    suspend fun getAppStaticText(@Query("language_id") languageId:String) : Response<CommonApiResponse>
 
     @POST("api/dotk/vc1/onboard/createStore")
     suspend fun createStore(@Body request: CreateStoreRequest?): Response<CommonApiResponse>
 
-    @GET("api/dotk/vo1/onboard/getHelpScreens")
+    @GET("api/dotk/vo1/onboard/getLoginHelpScreen")
     suspend fun getHelpScreens(): Response<CommonApiResponse>
 
     @POST("api/dotk/vo1/onboard/validateUser")
@@ -72,16 +72,16 @@ interface Apis {
     suspend fun getReferAndEarnData() : Response<CommonApiResponse>
 
     @POST("api/dotk/vm1/settings/setStoreBusinesses")
-    suspend fun setStoreBusinesses(@Header("auth_token") authToken:String, @Body request: BusinessTypeRequest) : Response<CommonApiResponse>
+    suspend fun setStoreBusinesses(@Body request: BusinessTypeRequest) : Response<CommonApiResponse>
 
     @POST("api/dotk/vm1/settings/setDeliveryInfo")
-    suspend fun updateDeliveryInfo(@Header("auth_token") authToken: String, @Body request: MoreControlsRequest): Response<CommonApiResponse>
+    suspend fun updateDeliveryInfo(@Body request: MoreControlsRequest): Response<CommonApiResponse>
 
     @POST("api/dotk/vm1/settings/setBankDetails")
-    suspend fun setBankDetails(@Header("auth_token") authToken: String, @Body request: BankDetailsRequest): Response<CommonApiResponse>
+    suspend fun setBankDetails(@Body request: BankDetailsRequest): Response<CommonApiResponse>
 
     @POST("api/dotk/vm1/settings/initiateKyc")
-    suspend fun initiateKyc(@Header("auth_token") authToken: String): Response<CommonApiResponse>
+    suspend fun initiateKyc(): Response<CommonApiResponse>
 
     @GET("api/dotk/vm1/settings/getBankDetailsPageInfo")
     suspend fun getBankDetailsPageInfo(): Response<CommonApiResponse>
@@ -106,7 +106,7 @@ interface Apis {
 
     /* ----------------------       Images         ---------------------- */
     @POST("api/dotk/vm1/media/setStoreLogo")
-    suspend fun setStoreLogo(@Header("auth_token") authToken:String, @Body request: StoreLogoRequest) : Response<CommonApiResponse>
+    suspend fun setStoreLogo(@Body request: StoreLogoRequest) : Response<CommonApiResponse>
 
     @Multipart
     @POST("api/dotk/vm1/media/uploadMediaToS3")
@@ -116,8 +116,11 @@ interface Apis {
     suspend fun searchImagesFromBing(@Query("search_text") searchText: String, @Query("store_id") storeId: String) : Response<ImagesSearchResponse>
 
     /* ----------------------       Marketing         ---------------------- */
-    @GET("api/dotk/vm1/marketing/getStoreMarketingText")
-    suspend fun getMarketingCardsData(): Response<CommonApiResponse>
+    @GET("api/dotk/vm1/marketing/getSuggestedDomainsInfo")
+    suspend fun getMarketingSuggestedDomains(): Response<CommonApiResponse>
+
+    @GET("api/dotk/vm1/marketing/getMarketingPageInfo")
+    suspend fun getStoreMarketingPageInfo(): Response<CommonApiResponse>
 
     @POST("api/dotk/vm1/marketing/shareStore")
     suspend fun getShareStore(): Response<CommonApiResponse>
@@ -132,9 +135,6 @@ interface Apis {
     suspend fun generateProductStorePdf(): Response<CommonApiResponse>
 
     /* ----------------------       Products         ---------------------- */
-    @GET("api/dotk/vm1/products/shareStorePdfText")
-    suspend fun getProductShareStorePdfText(@Header("auth_token") authToken: String): Response<CommonApiResponse>
-
     @POST("api/dotk/vm1/products/shareStore")
     suspend fun getProductShareStoreData(): Response<CommonApiResponse>
 
@@ -210,6 +210,9 @@ interface Apis {
 
     @GET("api/dotk/vm1/orders/getDeliveryTime")
     suspend fun getDeliveryTime(): Response<CommonApiResponse>
+
+    @GET("api/dotk/vm1/onboard/getOnboardingPageInfo")
+    suspend fun getCustomDomainBottomSheetData(): Response<CommonApiResponse>
 
     @POST("api/dotk/vm1/orders/updateOrderV2")
     suspend fun updateOrder(@Body statusRequest: UpdateOrderRequest): Response<CommonApiResponse>

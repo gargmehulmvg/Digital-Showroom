@@ -11,6 +11,7 @@ import com.digitaldukaan.R
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.models.request.MoreControlsRequest
 import com.digitaldukaan.models.request.StoreDeliveryStatusChangeRequest
+import com.digitaldukaan.models.response.AccountInfoResponse
 import com.digitaldukaan.models.response.AccountStaticTextResponse
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.StoreServicesResponse
@@ -32,17 +33,23 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
     private var mFreeDeliveryAbove = 0.0
     private var mDeliveryChargeType = 0
     private var mPaymentPaymentMethod: String? = ""
-    private var mIsOrderNotificationOn: Boolean? = false
+    private var mIsOrderNotificationOn: Boolean = false
+    private var mIsOnlinePaymentModeLocked: Boolean = false
+    private var mIsPrepaidOrdersLocked: Boolean = false
     private var mIsDeliveryOn: Boolean = false
     private var mIsPickupOn: Boolean = false
     private var mIsStoreOn: Boolean = false
+    private var mAccountInfoResponse: AccountInfoResponse? = null
 
     companion object {
 
-        fun newInstance(appSettingsResponseStaticData: AccountStaticTextResponse?, isOrderNotificationOn: Boolean?): MoreControlsFragment {
+        fun newInstance(appSettingsResponseStaticData: AccountStaticTextResponse?, accountInfoResponse: AccountInfoResponse?): MoreControlsFragment {
             val fragment = MoreControlsFragment()
             fragment.mMoreControlsStaticData = appSettingsResponseStaticData
-            fragment.mIsOrderNotificationOn = isOrderNotificationOn
+            fragment.mAccountInfoResponse = accountInfoResponse
+            fragment.mIsOrderNotificationOn = accountInfoResponse?.mIsOrderNotificationOn ?: false
+            fragment.mIsPrepaidOrdersLocked = accountInfoResponse?.mPrepaidOrdersLocked?.mIsActive ?: false
+            fragment.mIsOnlinePaymentModeLocked = accountInfoResponse?.mOnlinePaymentModesOn?.mIsActive ?: false
             return fragment
         }
 
@@ -128,7 +135,15 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
 
     private fun setUIDataFromResponse() {
         val orderNotificationGroup: View? = mContentView?.findViewById(R.id.orderNotificationGroup)
-        orderNotificationGroup?.visibility = if (true == mIsOrderNotificationOn) View.VISIBLE else View.GONE
+        orderNotificationGroup?.visibility = if (mIsOrderNotificationOn) View.VISIBLE else View.GONE
+        onlinePaymentsLockGroup?.visibility = if (mIsPrepaidOrdersLocked) {
+            onlinePaymentsUnlockNowTextView?.text = mMoreControlsStaticData?.text_unlock_now
+            View.VISIBLE
+        } else View.GONE
+        paymentModeLockGroup?.visibility = if (mIsOnlinePaymentModeLocked) {
+            paymentModesUnlockNowTextView?.text = mMoreControlsStaticData?.text_unlock_now
+            View.VISIBLE
+        } else View.GONE
         minOrderValueHeadingTextView?.text = if (0.0 == mMinOrderValue) mMoreControlsStaticData?.heading_set_min_order_value_for_delivery else mMoreControlsStaticData?.heading_edit_min_order_value
         minOrderValueOptionalTextView?.text = if (0.0 == mMinOrderValue) mMoreControlsStaticData?.text_optional else "${mMoreControlsStaticData?.sub_heading_success_set_min_order_value_for_delivery} "
         minOrderValueAmountTextView?.text = if (0.0 != mMinOrderValue) "${mMoreControlsStaticData?.text_ruppee_symbol} $mMinOrderValue" else ""
@@ -173,11 +188,7 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_SET_MIN_ORDER_VALUE,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                    data = mapOf(
-                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(
-                            Constants.STORE_ID
-                        )
-                    )
+                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
                 )
                 showMinimumDeliveryOrderBottomSheet()
             }
@@ -185,33 +196,29 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_SET_DELIVERY_CHARGE,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                    data = mapOf(
-                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(
-                            Constants.STORE_ID
-                        )
-                    )
+                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
                 )
-                mMoreControlsStaticData?.let {
-                    launchFragment(
-                        SetDeliveryChargeFragment.newInstance(
-                            it
-                        ), true
-                    )
-                }
+                mMoreControlsStaticData?.let { staticData -> launchFragment(SetDeliveryChargeFragment.newInstance(staticData), true) }
             }
             onlinePaymentsContainer?.id -> {
+                if (mIsPrepaidOrdersLocked) {
+                    openSubscriptionLockedUrlInBrowser(mAccountInfoResponse?.mPrepaidOrdersLocked?.mUrl ?: "")
+                    return
+                }
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_SET_PREPAID_ORDER,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                    data = mapOf(
-                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(
-                            Constants.STORE_ID
-                        ), AFInAppEventParameterName.PATH to AFInAppEventParameterName.MORE_CONTROLS
-                    )
+                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.PATH to AFInAppEventParameterName.MORE_CONTROLS)
                 )
                 launchFragment(SetOrderTypeFragment.newInstance(), true)
             }
-            paymentModesContainer?.id -> launchFragment(PaymentModesFragment.newInstance(), true)
+            paymentModesContainer?.id -> {
+                if (mIsOnlinePaymentModeLocked) {
+                    openSubscriptionLockedUrlInBrowser(mAccountInfoResponse?.mOnlinePaymentModesOn?.mUrl ?: "")
+                    return
+                }
+                launchFragment(PaymentModesFragment.newInstance(), true)
+            }
             notificationsContainer?.id -> getOrderNotificationBottomSheet(AFInAppEventParameterName.STORE_CONTROLS)
             storeImageView?.id -> {
                 startViewAnimation(storeImageView)
@@ -290,7 +297,7 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
                         )
                         showProgressDialog(mActivity)
                         bottomSheetDialog.dismiss()
-                        mMoreControlsService?.updateDeliveryInfo(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
+                        mMoreControlsService?.updateDeliveryInfo(request)
                     }
                 }
             }.show()

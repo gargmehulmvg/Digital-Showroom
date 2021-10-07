@@ -3,11 +3,11 @@ package com.digitaldukaan.models.response
 import com.google.gson.annotations.SerializedName
 
 data class PaymentModesResponse (
-    @SerializedName("payment_options") var paymentOptionsMap: HashMap<String, ArrayList<PaymentModesItemResponse>>?,
-    @SerializedName("upi") var upi: PaymentModesItemResponse?,
-    @SerializedName("cod") var cod: PaymentModesItemResponse?,
-    @SerializedName("IsKYCDone") var kycStatus: PaymentModesKYCStatusResponse?,
-    @SerializedName("static_text") var staticText: PaymentModesStaticData?
+    @SerializedName("payment_options")              var paymentOptionsMap: HashMap<String, ArrayList<PaymentModesItemResponse>>?,
+    @SerializedName("upi")                          var upi: PaymentModesItemResponse?,
+    @SerializedName("cod")                          var cod: PaymentModesItemResponse?,
+    @SerializedName("IsKYCDone")                    var kycStatus: PaymentModesKYCStatusResponse?,
+    @SerializedName("static_text")                  var staticText: PaymentModesStaticData?
 )
 
 data class PaymentModesStaticData(

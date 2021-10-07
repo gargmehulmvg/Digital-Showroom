@@ -40,14 +40,10 @@ class ProfileService {
         }
     }
 
-    fun updateStoreLogo(authToken: String, request: StoreLogoRequest) {
+    fun updateStoreLogo(request: StoreLogoRequest) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.updateStoreLogoServerCall(authToken, request, mProfileServiceInterface)
+            mNetworkService.updateStoreLogoServerCall(request, mProfileServiceInterface)
         }
     }
-    fun getProductShareStoreData() {
-        CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.getProductShareStoreDataServerCall(mProfileServiceInterface)
-        }
-    }
+
 }
