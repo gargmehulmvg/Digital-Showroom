@@ -103,7 +103,6 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mContentView = inflater.inflate(R.layout.layout_home_fragment, container, false)
-        mHomeFragmentService?.getCustomDomainBottomSheetData()
         if (mIsNewUserLogin) {
             mIsNewUserLogin = false
             if (null == StaticInstances.sCustomDomainBottomSheetResponse)
