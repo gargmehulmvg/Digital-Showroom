@@ -18,7 +18,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.viewpager.widget.ViewPager
 import com.digitaldukaan.R
-import com.digitaldukaan.adapters.CustomPagerAdapter
+import com.digitaldukaan.adapters.LoginHelpPageAdapter
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.constants.StaticInstances.sHelpScreenList
 import com.digitaldukaan.models.dto.CleverTapProfile
@@ -133,7 +133,8 @@ class LoginFragmentV2 : BaseFragment(), ILoginServiceInterface {
     }
 
     private fun setupViewPager() {
-        val pagerAdapter = CustomPagerAdapter(mActivity)
+        val pagerAdapter =
+            LoginHelpPageAdapter(mActivity)
         val viewPager: ViewPager? = mContentView?.findViewById(R.id.viewpager)
         val indicator: WormDotsIndicator? = mContentView?.findViewById(R.id.indicator)
         viewPager?.adapter = pagerAdapter
