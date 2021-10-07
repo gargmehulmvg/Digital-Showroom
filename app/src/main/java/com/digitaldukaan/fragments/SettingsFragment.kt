@@ -102,7 +102,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         StaticInstances.sAppStoreServicesResponse = mAppStoreServicesResponse
         StaticInstances.sPaymentMethodStr = mProfileResponse?.mOnlinePaymentType
         when (view?.id) {
-            storeControlView?.id -> launchFragment(MoreControlsFragment.newInstance(mAppSettingsResponseStaticData, mProfileResponse?.mIsOrderNotificationOn), true)
+            storeControlView?.id -> launchFragment(MoreControlsFragment.newInstance(mAppSettingsResponseStaticData, mProfileResponse), true)
             dukaanNameTextView?.id -> launchProfilePreviewFragment()
             editProfileTextView?.id -> launchProfilePreviewFragment()
             profileStatusRecyclerView?.id -> launchProfilePreviewFragment()
@@ -278,7 +278,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         stopProgress()
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
             val photoResponse = Gson().fromJson<String>(response.mCommonDataStr, String::class.java)
-            mProfileService.updateStoreLogo(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), StoreLogoRequest(photoResponse))
+            mProfileService.updateStoreLogo(StoreLogoRequest(photoResponse))
         }
     }
 

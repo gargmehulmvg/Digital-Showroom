@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/singleSpanContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_10sdp"
+        android:layout_marginEnd="@dimen/_10sdp"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:layout_marginBottom="@dimen/_5sdp"
+        android:gravity="center"
+        android:onClick="onClick"
+        android:background="?selectableItemBackgroundBorderless"
+        app:cardCornerRadius="@dimen/_5sdp"
+        app:cardElevation="@dimen/_2sdp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/singleSpanBackgroundView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:clickable="false"
+            android:minHeight="@dimen/_110sdp"
+            android:orientation="vertical"
+            android:padding="@dimen/_10sdp">
+
+            <ImageView
+                android:id="@+id/singleSpanImageView"
+                android:layout_width="@dimen/_42sdp"
+                android:layout_height="@dimen/_42sdp"
+                android:contentDescription="@string/image_view_content_description"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/singleSpanTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:gravity="start"
+                android:lineSpacingMultiplier="1.1"
+                android:fontFamily="@font/roboto_medium"
+                android:minLines="@integer/min_lines_two"
+                android:paddingTop="@dimen/_4sdp"
+                android:paddingBottom="@dimen/_4sdp"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_12sdp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/arrowImageView"
+                app:layout_constraintStart_toStartOf="@+id/singleSpanImageView"
+                app:layout_constraintTop_toBottomOf="@+id/singleSpanImageView"
+                tools:text="Product\nDiscount" />
+
+            <ImageView
+                android:id="@+id/arrowImageView"
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_20sdp"
+                android:clickable="false"
+                android:padding="@dimen/_2sdp"
+                android:contentDescription="@string/image_view_content_description"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                tools:src="@drawable/ic_arrow_small"
+                app:layout_constraintTop_toTopOf="@+id/singleSpanTextView" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.cardview.widget.CardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

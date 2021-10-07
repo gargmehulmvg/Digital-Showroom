@@ -200,7 +200,7 @@ class SetDeliveryChargeFragment : BaseFragment(), IMoreControlsServiceInterface 
                 )
                 val service = MoreControlsService()
                 service.setServiceInterface(this)
-                service.updateDeliveryInfo(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), mMoreControlRequest)
+                service.updateDeliveryInfo(mMoreControlRequest)
             }
         }
     }

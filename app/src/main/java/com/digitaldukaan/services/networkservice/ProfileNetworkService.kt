@@ -100,12 +100,11 @@ class ProfileNetworkService {
     }
 
     suspend fun updateStoreLogoServerCall(
-        authToken: String,
         request: StoreLogoRequest,
         serviceInterface: IProfileServiceInterface
     ) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.setStoreLogo(authToken, request)
+            val response = RetrofitApi().getServerCallObject()?.setStoreLogo(request)
             response?.let {
                 if (it.isSuccessful) {
                     it.body()?.let { storeLinkResponse ->

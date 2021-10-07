@@ -159,7 +159,7 @@ class OnBoardScreenBankDetailsFragment : BaseFragment(), IBankDetailsServiceInte
                     return
                 }
                 showProgressDialog(mActivity)
-                mService?.setBankDetails(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
+                mService?.setBankDetails(request)
             }
         }
     }

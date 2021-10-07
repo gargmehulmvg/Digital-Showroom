@@ -434,10 +434,6 @@
                 android:background="@drawable/ripple_upper_curve_grey_white_background"
                 android:elevation="@dimen/_5sdp"
                 android:onClick="onClick"
-                android:paddingStart="@dimen/_20sdp"
-                android:paddingTop="@dimen/_15sdp"
-                android:paddingEnd="@dimen/_20sdp"
-                android:paddingBottom="@dimen/_15sdp"
                 app:layout_constraintEnd_toEndOf="@id/minOrderValueContainer"
                 app:layout_constraintStart_toStartOf="@id/minOrderValueContainer"
                 app:layout_constraintTop_toBottomOf="@id/onlinePaymentsTextView"
@@ -448,6 +444,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:clickable="false"
+                    android:layout_marginEnd="@dimen/_20sdp"
                     android:contentDescription="@string/image_view_content_description"
                     android:src="@drawable/ic_half_arrow_forward"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -459,6 +456,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:clickable="false"
+                    android:layout_marginTop="@dimen/_15sdp"
+                    android:layout_marginStart="@dimen/_20sdp"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_11sdp"
                     app:layout_constraintEnd_toStartOf="@id/onlinePaymentsImageView"
@@ -471,6 +470,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_2sdp"
+                    android:layout_marginBottom="@dimen/_15sdp"
                     android:clickable="false"
                     android:paddingTop="@dimen/_2sdp"
                     android:textColor="@color/default_text_light_grey"
@@ -491,12 +491,53 @@
                     android:textColor="@color/open_green"
                     android:textSize="@dimen/_9sdp"
                     android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintBottom_toBottomOf="@+id/onlinePaymentsOptionalTextView"
                     app:layout_constraintEnd_toStartOf="@id/onlinePaymentsImageView"
                     app:layout_constraintStart_toEndOf="@id/onlinePaymentsOptionalTextView"
                     app:layout_constraintTop_toTopOf="@id/onlinePaymentsOptionalTextView"
                     tools:text=" Pay on delivery/pickup" />
 
+                <androidx.constraintlayout.widget.Group
+                    android:id="@+id/onlinePaymentsLockGroup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    app:constraint_referenced_ids="onlinePaymentsLockedBackground,onlinePaymentsUnlockNowTextView" />
+
+                <ImageView
+                    android:id="@+id/onlinePaymentsLockedBackground"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:clickable="false"
+                    android:background="@drawable/upper_curve_black_background"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:alpha="0.5"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:contentDescription="@string/image_view_content_description" />
+
+                <TextView
+                    android:id="@+id/onlinePaymentsUnlockNowTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/curve_white_background2"
+                    android:drawablePadding="@dimen/_5sdp"
+                    android:gravity="center"
+                    android:clickable="false"
+                    android:fontFamily="@font/roboto_medium"
+                    android:layout_marginEnd="@dimen/_10sdp"
+                    android:paddingStart="@dimen/_5sdp"
+                    android:paddingTop="@dimen/_5sdp"
+                    android:paddingEnd="@dimen/_5sdp"
+                    android:paddingBottom="@dimen/_5sdp"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_10sdp"
+                    app:drawableStartCompat="@drawable/ic_subscription_locked_black_small"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="Unlock Now" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -508,10 +549,6 @@
                 android:background="@drawable/ripple_lower_curve_grey_white_background"
                 android:elevation="@dimen/_5sdp"
                 android:onClick="onClick"
-                android:paddingStart="@dimen/_20sdp"
-                android:paddingTop="@dimen/_15sdp"
-                android:paddingEnd="@dimen/_20sdp"
-                android:paddingBottom="@dimen/_15sdp"
                 app:layout_constraintEnd_toEndOf="@id/onlinePaymentsContainer"
                 app:layout_constraintStart_toStartOf="@id/onlinePaymentsContainer"
                 app:layout_constraintTop_toBottomOf="@id/onlinePaymentsContainer"
@@ -521,6 +558,7 @@
                     android:id="@+id/paymentModesImageView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/_20sdp"
                     android:clickable="false"
                     android:contentDescription="@string/image_view_content_description"
                     android:src="@drawable/ic_half_arrow_forward"
@@ -533,6 +571,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:clickable="false"
+                    android:layout_marginTop="@dimen/_15sdp"
+                    android:layout_marginStart="@dimen/_20sdp"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_11sdp"
                     app:layout_constraintStart_toStartOf="parent"
@@ -544,7 +584,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/_5sdp"
-                    android:background="@drawable/slight_curve_red_background_without_padding"
+                    android:background="@drawable/slight_curve_red_background_with_padding"
                     android:clickable="false"
                     android:fontFamily="@font/roboto_medium"
                     android:textColor="@color/white"
@@ -562,6 +602,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_2sdp"
                     android:clickable="false"
+                    android:layout_marginBottom="@dimen/_15sdp"
                     android:paddingTop="@dimen/_2sdp"
                     android:textColor="@color/default_text_light_grey"
                     android:textSize="@dimen/_9sdp"
@@ -570,6 +611,47 @@
                     app:layout_constraintTop_toBottomOf="@id/paymentModesHeadingTextView"
                     tools:text="UPI, Debit / Credit cards, Wallets etc" />
 
+                <androidx.constraintlayout.widget.Group
+                    android:id="@+id/paymentModeLockGroup"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    app:constraint_referenced_ids="paymentModesLockedBackground,paymentModesUnlockNowTextView" />
+
+                <ImageView
+                    android:id="@+id/paymentModesLockedBackground"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:clickable="false"
+                    android:background="@drawable/lower_curve_black_background"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:alpha="0.5"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:contentDescription="@string/image_view_content_description" />
+
+                <TextView
+                    android:id="@+id/paymentModesUnlockNowTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/curve_white_background2"
+                    android:drawablePadding="@dimen/_5sdp"
+                    android:gravity="center"
+                    android:fontFamily="@font/roboto_medium"
+                    android:layout_marginEnd="@dimen/_10sdp"
+                    android:paddingStart="@dimen/_5sdp"
+                    android:clickable="false"
+                    android:paddingTop="@dimen/_5sdp"
+                    android:paddingEnd="@dimen/_5sdp"
+                    android:paddingBottom="@dimen/_5sdp"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_10sdp"
+                    app:drawableStartCompat="@drawable/ic_subscription_locked_black_small"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="Unlock Now" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -636,7 +718,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/_5sdp"
-                    android:background="@drawable/slight_curve_red_background_without_padding"
+                    android:background="@drawable/slight_curve_red_background_with_padding"
                     android:clickable="false"
                     android:fontFamily="@font/roboto_medium"
                     android:textColor="@color/white"

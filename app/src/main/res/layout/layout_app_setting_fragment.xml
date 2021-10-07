@@ -9,6 +9,7 @@
         android:id="@+id/appSettingsRecyclerView"
         android:layout_width="match_parent"
         tools:listitem="@layout/app_setting_item"
+        android:paddingTop="@dimen/_5sdp"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent" />
 

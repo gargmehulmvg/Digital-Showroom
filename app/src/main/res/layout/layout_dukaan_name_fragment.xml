@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:padding="@dimen/_15sdp">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/enterDukaanNameHeading"
+        android:fontFamily="@font/roboto_bold"
+        android:layout_width="0dp"
+        android:maxLines="1"
+        android:layout_marginTop="@dimen/_20sdp"
+        android:layout_marginStart="@dimen/_5sdp"
+        android:layout_marginEnd="@dimen/_5sdp"
+        android:textSize="@dimen/_20sdp"
+        android:textColor="@color/black"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="What’s your Business Name" />
+
+    <TextView
+        android:id="@+id/subHeadingTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_15sdp"
+        android:background="@drawable/curve_light_green_background"
+        android:drawablePadding="@dimen/_8sdp"
+        android:fontFamily="@font/roboto"
+        android:textSize="@dimen/_11sdp"
+        android:paddingTop="@dimen/_3sdp"
+        android:paddingBottom="@dimen/_3sdp"
+        android:paddingStart="@dimen/_8sdp"
+        android:paddingEnd="@dimen/_8sdp"
+        tools:text="Easily change your business name anytime."
+        android:textColor="@color/open_green"
+        app:drawableStartCompat="@drawable/ic_tick_green_small"
+        app:layout_constraintStart_toStartOf="@id/enterDukaanNameHeading"
+        app:layout_constraintTop_toBottomOf="@id/enterDukaanNameHeading" />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="@dimen/_20sdp"
+        android:gravity="bottom|end"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/enterDukaanNameHeading"
+        app:layout_constraintHorizontal_bias="0.538"
+        app:layout_constraintStart_toStartOf="@+id/enterDukaanNameHeading"
+        app:layout_constraintTop_toBottomOf="@id/dukaanNameEditText"
+        app:layout_constraintVertical_bias="0.36">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/nextTextView"
+            style="@style/common_text_view_background"
+            android:layout_width="match_parent"
+            android:enabled="false"
+            android:gravity="center"
+            android:onClick="onClick"
+            tools:text="Create Store" />
+
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/dukaanNameEditText"
+        style="@style/common_edit_text_black_border"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_18sdp"
+        android:clickable="true"
+        android:focusable="true"
+        android:imeOptions="actionDone"
+        android:fontFamily="@font/roboto_medium"
+        android:importantForAutofill="no"
+        android:inputType="text"
+        android:maxLength="@integer/description_name_length"
+        android:paddingTop="@dimen/_20sdp"
+        android:paddingBottom="@dimen/_20sdp"
+        android:textColor="@color/black"
+        android:textColorHint="@color/default_text_light_grey"
+        android:textSize="@dimen/_13sdp"
+        app:layout_constraintEnd_toEndOf="@id/enterDukaanNameHeading"
+        app:layout_constraintStart_toStartOf="@id/enterDukaanNameHeading"
+        app:layout_constraintTop_toBottomOf="@id/subHeadingTextView"
+        tools:hint="Enter here" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

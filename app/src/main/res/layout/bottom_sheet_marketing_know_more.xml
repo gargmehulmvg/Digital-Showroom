@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/bottomSheetContainer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/upper_curve_grey_background">
+
+    <ImageView
+        android:id="@+id/bottomSheetClose"
+        android:layout_width="@dimen/_30sdp"
+        android:layout_height="@dimen/_30sdp"
+        android:contentDescription="@string/image_view_content_description"
+        android:padding="@dimen/_5sdp"
+        android:src="@drawable/ic_black_close"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/headingTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/roboto"
+        android:gravity="center"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_12sdp"
+        app:layout_constraintTop_toBottomOf="@id/bottomSheetClose"
+        tools:text="Your Domain" />
+
+    <TextView
+        android:id="@+id/domainTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/roboto_bold"
+        android:gravity="center"
+        android:maxLines="1"
+        android:padding="@dimen/_1sdp"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_14sdp"
+        app:layout_constraintTop_toBottomOf="@id/headingTextView"
+        tools:text="temporary-khanakjahana.com" />
+
+    <TextView
+        android:id="@+id/expiryMessageTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/roboto"
+        android:gravity="center"
+        android:maxLines="1"
+        android:textColor="@color/red_text_color_marketing"
+        android:textSize="@dimen/_11sdp"
+        app:layout_constraintTop_toBottomOf="@id/domainTextView"
+        tools:text="will expire in 7 Days" />
+
+    <TextView
+        android:id="@+id/offerMessageTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:gravity="center"
+        android:padding="@dimen/_2sdp"
+        android:textColor="@color/default_text_light_grey"
+        android:textSize="@dimen/_10sdp"
+        app:layout_constraintTop_toBottomOf="@id/expiryMessageTextView"
+        tools:text="Get the best domain name for your store\nIt will be easier to remember." />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="@dimen/_40sdp"
+        android:layout_height="@dimen/_40sdp"
+        android:layout_margin="@dimen/_50sdp"
+        android:minHeight="@dimen/_160sdp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/offerMessageTextView" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/_20sdp"
+        android:background="@color/white"
+        android:minHeight="@dimen/_160sdp"
+        android:orientation="horizontal"
+        android:visibility="invisible"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintTop_toBottomOf="@id/offerMessageTextView"
+        tools:listitem="@layout/marketing_know_more_item" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

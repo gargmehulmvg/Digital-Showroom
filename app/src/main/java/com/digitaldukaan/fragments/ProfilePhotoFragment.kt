@@ -144,7 +144,7 @@ class ProfilePhotoFragment : BaseFragment(), View.OnClickListener, IProfilePhoto
     override fun onImageCDNLinkGenerateResponse(response: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             val photoResponse = Gson().fromJson<String>(response.mCommonDataStr, String::class.java)
-            service.uploadStoreLogo(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), StoreLogoRequest(photoResponse))
+            service.uploadStoreLogo(StoreLogoRequest(photoResponse))
         }
     }
 
@@ -164,7 +164,7 @@ class ProfilePhotoFragment : BaseFragment(), View.OnClickListener, IProfilePhoto
             return
         }
         if (file == null) {
-            service.uploadStoreLogo(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), StoreLogoRequest(""))
+            service.uploadStoreLogo(StoreLogoRequest(""))
         } else {
             val fileRequestBody = MultipartBody.Part.createFormData("media", file.name, RequestBody.create("image/*".toMediaTypeOrNull(), file))
             val imageTypeRequestBody = RequestBody.create("text/plain".toMediaTypeOrNull(), Constants.BASE64_STORE_LOGO)

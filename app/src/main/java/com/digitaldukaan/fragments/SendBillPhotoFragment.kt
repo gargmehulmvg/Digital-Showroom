@@ -2,23 +2,29 @@ package com.digitaldukaan.fragments
 
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.digitaldukaan.R
+import com.digitaldukaan.adapters.DeliveryTimeAdapter
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.ToolBarManager
+import com.digitaldukaan.interfaces.IChipItemClickListener
 import com.digitaldukaan.interfaces.IOnToolbarIconClick
 import com.digitaldukaan.models.request.UpdateOrderRequest
-import com.digitaldukaan.models.response.CommonApiResponse
-import com.digitaldukaan.models.response.OrderDetailMainResponse
-import com.digitaldukaan.models.response.OrderDetailsStaticTextResponse
-import com.digitaldukaan.models.response.UpdateOrderResponse
+import com.digitaldukaan.models.response.*
 import com.digitaldukaan.services.SendBillPhotoService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.ISendBillPhotoServiceInterface
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.send_bill_photo_fragment.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -37,10 +43,14 @@ class SendBillPhotoFragment: BaseFragment(), ISendBillPhotoServiceInterface {
     private var mDeliveryCharge: Double = 0.0
     private var mDiscount: Double = 0.0
     private var mPayAmount: Double? = 0.0
+    private var mDeliveryTimeResponse: DeliveryTimeResponse? = null
     private val mService = SendBillPhotoService()
 
     companion object {
-        fun newInstance(mainOrderDetailResponse: OrderDetailMainResponse?, file: File?, deliveryTimeStr: String?, extraChargeName: String?, extraCharge: Double, discount: Double, payAmount: Double?, deliveryChargesAmount: Double): SendBillPhotoFragment {
+        private const val TAG = "SendBillPhotoFragment"
+        private const val CUSTOM = "custom"
+
+        fun newInstance(mainOrderDetailResponse: OrderDetailMainResponse?, file: File?, deliveryTimeStr: String?, extraChargeName: String?, extraCharge: Double, discount: Double, payAmount: Double?, deliveryChargesAmount: Double, deliveryTimeResponse: DeliveryTimeResponse?): SendBillPhotoFragment {
             val fragment = SendBillPhotoFragment()
             fragment.mSendPhotoStaticText = mainOrderDetailResponse?.staticText
             fragment.mImageFile = file
@@ -51,15 +61,12 @@ class SendBillPhotoFragment: BaseFragment(), ISendBillPhotoServiceInterface {
             fragment.mPayAmount = payAmount
             fragment.mDeliveryCharge = deliveryChargesAmount
             fragment.mMainOrderDetailResponse = mainOrderDetailResponse
+            fragment.mDeliveryTimeResponse = deliveryTimeResponse
             return fragment
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mService.setServiceListener(this)
         mContentView = inflater.inflate(R.layout.send_bill_photo_fragment, container, false)
         return mContentView
@@ -72,13 +79,22 @@ class SendBillPhotoFragment: BaseFragment(), ISendBillPhotoServiceInterface {
                     showNoInternetConnectionDialog()
                     return
                 }
-                mImageFile?.run {
-                    val fileRequestBody = MultipartBody.Part.createFormData("media", name, RequestBody.create("image/*".toMediaTypeOrNull(), this))
-                    val imageTypeRequestBody = RequestBody.create("text/plain".toMediaTypeOrNull(), Constants.BASE64_ORDER_BILL)
-                    showProgressDialog(mActivity)
-                    mService.generateCDNLink(imageTypeRequestBody, fileRequestBody)
+                Log.d(TAG, "onClick: orderDetailMainResponse?.sendBillAction :: ${mMainOrderDetailResponse?.sendBillAction}")
+                if (Constants.ACTION_HOW_TO_SHIP == mMainOrderDetailResponse?.sendBillAction) {
+                    showShipmentConfirmationBottomSheet(mMainOrderDetailResponse?.staticText, mMainOrderDetailResponse?.orders?.orderId)
+                    return
                 }
+                initiateSendBillServerCall()
             }
+        }
+    }
+
+    private fun initiateSendBillServerCall() {
+        mImageFile?.run {
+            val fileRequestBody = MultipartBody.Part.createFormData("media", name, RequestBody.create("image/*".toMediaTypeOrNull(), this))
+            val imageTypeRequestBody = RequestBody.create("text/plain".toMediaTypeOrNull(), Constants.BASE64_ORDER_BILL)
+            showProgressDialog(mActivity)
+            mService.generateCDNLink(imageTypeRequestBody, fileRequestBody)
         }
     }
 
@@ -90,9 +106,7 @@ class SendBillPhotoFragment: BaseFragment(), ISendBillPhotoServiceInterface {
             onBackPressed(this@SendBillPhotoFragment)
             mActivity?.let {
                 setSideIcon(ContextCompat.getDrawable(it, R.drawable.ic_refresh), object : IOnToolbarIconClick {
-                    override fun onToolbarSideIconClicked() {
-                        openCameraWithoutCrop()
-                    }
+                    override fun onToolbarSideIconClicked() = openCameraWithoutCrop()
                 })
             }
             setSecondSideIconVisibility(false)
@@ -100,7 +114,8 @@ class SendBillPhotoFragment: BaseFragment(), ISendBillPhotoServiceInterface {
         sendBillTextView.text = mSendPhotoStaticText?.text_send_bill
         val image = BitmapFactory.decodeFile(mImageFile?.absolutePath)
         imageView?.setImageBitmap(image)
-        amountEditText?.text = "${mSendPhotoStaticText?.text_rupees_symbol} $mPayAmount"
+        val amountStr = "${mSendPhotoStaticText?.text_rupees_symbol} $mPayAmount"
+        amountEditText?.text = amountStr
     }
 
     override fun onImageSelectionResultFile(file: File?, mode: String) {
@@ -147,8 +162,72 @@ class SendBillPhotoFragment: BaseFragment(), ISendBillPhotoServiceInterface {
         }
     }
 
-    override fun onSendBillPhotoException(e: Exception) {
-        exceptionHandlingForAPIResponse(e)
+    override fun onSendBillPhotoException(e: Exception) = exceptionHandlingForAPIResponse(e)
+
+    override fun onShipmentCtaClicked(initiateServerCall: Boolean) = if (initiateServerCall) initiateSendBillServerCall() else showDeliveryTimeBottomSheet()
+
+    private fun showDeliveryTimeBottomSheet() {
+        mActivity?.run {
+            val bottomSheetDialog = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
+            val view = LayoutInflater.from(this).inflate(
+                R.layout.bottom_sheet_delivery_time,
+                findViewById(R.id.bottomSheetContainer)
+            )
+            bottomSheetDialog.apply {
+                setContentView(view)
+                setBottomSheetCommonProperty()
+                view.run {
+                    val deliveryTimeEditText: EditText = findViewById(R.id.deliveryTimeEditText)
+                    val bottomSheetHeading: TextView = findViewById(R.id.bottomSheetHeading)
+                    val bottomSheetSendBillText: TextView = findViewById(R.id.bottomSheetSendBillText)
+                    val deliveryTimeRecyclerView: RecyclerView = findViewById(R.id.deliveryTimeRecyclerView)
+                    mDeliveryTimeResponse?.staticText?.run {
+                        bottomSheetHeading.text = heading_choose_delivery_time
+                        bottomSheetSendBillText.text = text_send_bill
+                        deliveryTimeRecyclerView.apply {
+                            layoutManager = StaggeredGridLayoutManager(3, LinearLayoutManager.VERTICAL)
+                            var deliveryTimeAdapter: DeliveryTimeAdapter? = null
+                            deliveryTimeAdapter = DeliveryTimeAdapter(mDeliveryTimeResponse?.deliveryTimeList, object : IChipItemClickListener {
+
+                                    override fun onChipItemClickListener(position: Int) {
+                                        mDeliveryTimeResponse?.deliveryTimeList?.forEachIndexed { _, itemResponse ->
+                                            itemResponse.isSelected = false
+                                        }
+                                        mDeliveryTimeResponse?.deliveryTimeList?.get(position)?.isSelected = true
+                                        deliveryTimeEditText.apply {
+                                            visibility = if (CUSTOM == mDeliveryTimeResponse?.deliveryTimeList?.get(position)?.key) View.VISIBLE else View.INVISIBLE
+                                            if (View.VISIBLE == visibility) {
+                                                requestFocus()
+                                                showKeyboard()
+                                            }
+                                        }
+                                        deliveryTimeAdapter?.setDeliveryTimeList(mDeliveryTimeResponse?.deliveryTimeList)
+                                        mDeliveryTimeStr = mDeliveryTimeResponse?.deliveryTimeList?.get(position)?.value
+                                        bottomSheetSendBillText.isEnabled = true
+                                    }
+
+                                })
+                            adapter = deliveryTimeAdapter
+                        }
+                    }
+                    bottomSheetSendBillText.setOnClickListener {
+                        if (true == mDeliveryTimeStr?.equals(CUSTOM, true)) {
+                            mDeliveryTimeStr = deliveryTimeEditText.text.toString()
+                            if (true == mDeliveryTimeStr?.isEmpty()) {
+                                deliveryTimeEditText.apply {
+                                    error = getString(R.string.mandatory_field_message)
+                                    requestFocus()
+                                }
+                                return@setOnClickListener
+                            }
+                        } else {
+                            bottomSheetDialog.dismiss()
+                            initiateSendBillServerCall()
+                        }
+                    }
+                }
+            }.show()
+        }
     }
 
 }
