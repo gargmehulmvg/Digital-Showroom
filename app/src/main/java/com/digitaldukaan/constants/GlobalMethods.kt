@@ -13,8 +13,6 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
-import android.os.Handler
-import android.os.Looper
 import android.provider.ContactsContract
 import android.provider.MediaStore
 import android.provider.Settings
@@ -22,9 +20,10 @@ import android.telephony.PhoneNumberUtils
 import android.text.TextUtils
 import android.util.Base64
 import android.util.Base64OutputStream
+import android.util.DisplayMetrics
 import android.util.Log
-import android.view.PixelCopy
 import android.view.View
+import android.view.View.MeasureSpec
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.TranslateAnimation
 import android.widget.Toast
@@ -52,6 +51,12 @@ import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
+
+
+
+
+
+
 
 
 fun getBitmapFromURL(src: String?): Bitmap? {
@@ -520,23 +525,27 @@ fun drawScreenShotBitmap(v: View) {
     }
 }
 
-fun getBitmapFromView(view: View, activity: Activity?, callback: (Bitmap) -> Unit) {
-    activity?.window?.let { window ->
-        try {
-            val bitmap = Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
-            val locationOfViewInWindow = IntArray(2)
-            view.getLocationInWindow(locationOfViewInWindow)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                PixelCopy.request(window, Rect(locationOfViewInWindow[0], locationOfViewInWindow[1], locationOfViewInWindow[0] + view.width, locationOfViewInWindow[1] + view.height), bitmap, { copyResult ->
-                    if (copyResult == PixelCopy.SUCCESS) {
-                        callback(bitmap)
-                    }
-                    // possible to handle other result codes ...
-                }, Handler(Looper.getMainLooper()))
-            }
-        } catch (e: Exception) {
-            // PixelCopy may throw IllegalArgumentException, make sure to handle it
-            e.printStackTrace()
+fun getBitmapFromView(view: View, activityMain: Activity?): Bitmap? {
+    return try {
+        activityMain?.let { activity ->
+            Log.e("GlobalMethods", "getBitmapFromView: $view")
+            val dm: DisplayMetrics = activity.resources.displayMetrics
+            view.measure(
+                MeasureSpec.makeMeasureSpec(dm.widthPixels, MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(dm.heightPixels, MeasureSpec.EXACTLY)
+            )
+            view.layout(0, 0, view.measuredWidth, view.measuredHeight)
+            val returnedBitmap = Bitmap.createBitmap(
+                view.measuredWidth,
+                view.measuredHeight, Bitmap.Config.ARGB_8888
+            )
+            val c = Canvas(returnedBitmap)
+            view.draw(c)
+            returnedBitmap
         }
+    } catch (e: Exception) {
+        Log.e("GlobalMethods", "getBitmapFromView: ${e.message}", e)
+        null
     }
+
 }

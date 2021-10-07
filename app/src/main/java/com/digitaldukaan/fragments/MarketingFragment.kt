@@ -57,11 +57,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         mService = MarketingService()
         mService?.setMarketingServiceListener(this)
         mContentView = inflater.inflate(R.layout.layout_marketing_fragment, container, false)
@@ -85,7 +81,10 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
         showProgressDialog(mActivity)
         mService?.getMarketingPageInfo()
         WebViewBridge.mWebViewListener = this
-        singleSpanContainer?.let { v -> getBitmapFromView(v, mActivity, this) }
+        screenshotContainer?.let { v ->
+            val originalBitmap = getBitmapFromView(v, mActivity)
+            originalBitmap?.let { bitmap -> shareOnWhatsApp("Sample image testing", bitmap) }
+        }
     }
 
     override fun onClick(view: View?) {

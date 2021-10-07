@@ -202,7 +202,7 @@
             android:overScrollMode="never"
             android:paddingBottom="@dimen/_30sdp"
             app:layout_constraintTop_toBottomOf="@id/moreOptionsHeadingTextView"
-            tools:itemCount="5"
+            tools:itemCount="2"
             tools:listitem="@layout/app_setting_item" />
 
         <FrameLayout
@@ -214,96 +214,78 @@
             <LinearLayout
                 android:id="@+id/screenshotContainer"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="200dp">
 
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/singleSpanContainer"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/singleSpanBackgroundView"
                     android:layout_width="match_parent"
-                    android:layout_height="200dp"
-                    android:layout_marginStart="@dimen/_8sdp"
-                    android:layout_marginTop="@dimen/_7sdp"
-                    android:layout_marginEnd="@dimen/_8sdp"
-                    android:layout_marginBottom="@dimen/_7sdp"
-                    android:clickable="false"
+                    android:layout_height="match_parent"
                     android:gravity="center"
-                    app:cardCornerRadius="@dimen/_5sdp"
-                    app:cardElevation="@dimen/_2sdp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+                    android:background="@drawable/bottom_nav_premium_gradient_background"
+                    android:layout_margin="@dimen/_10sdp"
+                    android:orientation="vertical"
+                    android:padding="@dimen/_10sdp">
 
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:id="@+id/singleSpanBackgroundView"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@color/red"
-                        android:gravity="center"
-                        android:minHeight="@dimen/_115sdp"
-                        android:orientation="vertical"
-                        android:padding="@dimen/_10sdp">
+                    <ImageView
+                        android:id="@+id/singleSpanImageView"
+                        android:layout_width="@dimen/_48sdp"
+                        android:layout_height="@dimen/_48sdp"
+                        android:src="@drawable/ic_whatsapp"
+                        android:contentDescription="@string/image_view_content_description"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
-                        <ImageView
-                            android:id="@+id/singleSpanImageView"
-                            android:layout_width="@dimen/_48sdp"
-                            android:layout_height="@dimen/_48sdp"
-                            android:contentDescription="@string/image_view_content_description"
-                            android:src="@drawable/ic_whatsapp"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
+                    <androidx.cardview.widget.CardView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:clickable="false"
+                        app:cardCornerRadius="@dimen/_10sdp"
+                        app:layout_constraintBottom_toBottomOf="@+id/singleSpanImageView"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/singleSpanImageView">
 
-                        <androidx.cardview.widget.CardView
+                        <TextView
+                            android:id="@+id/singleSpanInfoText"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:clickable="false"
-                            app:cardCornerRadius="@dimen/_10sdp"
-                            app:layout_constraintBottom_toBottomOf="@+id/singleSpanImageView"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintTop_toTopOf="@+id/singleSpanImageView">
-
-                            <TextView
-                                android:id="@+id/singleSpanInfoText"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:fontFamily="@font/roboto_medium"
-                                android:paddingStart="@dimen/_8sdp"
-                                android:paddingTop="@dimen/_2sdp"
-                                android:paddingEnd="@dimen/_8sdp"
-                                android:paddingBottom="@dimen/_2sdp"
-                                android:text="BETA"
-                                android:textSize="@dimen/_10sdp" />
-
-                        </androidx.cardview.widget.CardView>
-
-                        <com.google.android.material.textview.MaterialTextView
-                            android:id="@+id/singleSpanTextView"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/_10sdp"
-                            android:gravity="start"
-                            android:minLines="@integer/min_lines_two"
-                            android:paddingTop="@dimen/_4sdp"
-                            android:paddingBottom="@dimen/_4sdp"
-                            android:text="Create And Run Google Ads"
+                            android:fontFamily="@font/roboto_medium"
+                            android:paddingStart="@dimen/_8sdp"
+                            android:background="@color/black"
                             android:textColor="@color/white"
-                            android:textSize="@dimen/_12sdp"
-                            android:textStyle="bold"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="@+id/singleSpanImageView"
-                            app:layout_constraintTop_toBottomOf="@+id/singleSpanImageView" />
+                            android:paddingTop="@dimen/_2sdp"
+                            android:paddingEnd="@dimen/_8sdp"
+                            android:paddingBottom="@dimen/_2sdp"
+                            android:textSize="@dimen/_10sdp"
+                            android:text="@string/app_name" />
 
-                    </androidx.constraintlayout.widget.ConstraintLayout>
+                    </androidx.cardview.widget.CardView>
 
-                </androidx.cardview.widget.CardView>
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/singleSpanTextView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_10sdp"
+                        android:gravity="start"
+                        android:minLines="@integer/min_lines_two"
+                        android:paddingTop="@dimen/_4sdp"
+                        android:paddingBottom="@dimen/_4sdp"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_12sdp"
+                        android:textStyle="bold"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="@+id/singleSpanImageView"
+                        app:layout_constraintTop_toBottomOf="@+id/singleSpanImageView"
+                        android:text="@string/sample_send_bill" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
             </LinearLayout>
 
-            <ImageView
+            <LinearLayout
+                android:background="@color/white"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:src="@color/black"
-                android:contentDescription="@string/image_view_content_description" />
+                android:layout_height="match_parent" />
 
         </FrameLayout>
 
