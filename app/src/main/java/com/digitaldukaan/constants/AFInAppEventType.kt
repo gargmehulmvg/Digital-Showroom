@@ -29,7 +29,6 @@ interface AFInAppEventType {
         const val EVENT_EDIT_COLOR                                  =   "Edit_Color"
         const val EVENT_SAVE_THEME_COLOR                            =   "Saved_ThemeColor"
         const val EVENT_ENTER_NAME                                  =   "EnterName"
-        const val EVENT_ENTER_NAME_SPACE                            =   "Enter Name"
         const val EVENT_EDIT_THEME_IMAGE                            =   "Edit_ThemeImage"
         const val EVENT_MOBILE_BANNER_CROPPED                       =   "Mobile_Banner_Cropped"
         const val EVENT_DESKTOP_BANNER_CROPPED                      =   "Desktop_Banner_Cropped"

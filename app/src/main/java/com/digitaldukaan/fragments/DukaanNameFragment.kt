@@ -155,20 +155,7 @@ class DukaanNameFragment : BaseFragment(), ICreateStoreServiceInterface {
                         AFInAppEventParameterName.STORE_NAME        to createStoreResponse?.storeInfo?.name,
                         AFInAppEventParameterName.STORE_TYPE        to AFInAppEventParameterName.STORE_TYPE_DUKAAN,
                         AFInAppEventParameterName.VERIFY_PHONE      to "1",
-                        AFInAppEventParameterName.REFERENCE_PHONE   to ""
-                    )
-                )
-                AppEventsManager.pushAppEvents(
-                    eventName = AFInAppEventType.EVENT_ENTER_NAME_SPACE,
-                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                    data = mapOf(
-                        AFInAppEventParameterName.STORE_ID          to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                        AFInAppEventParameterName.PHONE             to PrefsManager.getStringDataFromSharedPref(Constants.USER_MOBILE_NUMBER),
-                        AFInAppEventParameterName.USER_ID           to PrefsManager.getStringDataFromSharedPref(Constants.USER_ID),
-                        AFInAppEventParameterName.STORE_NAME        to createStoreResponse?.storeInfo?.name,
-                        AFInAppEventParameterName.STORE_TYPE        to AFInAppEventParameterName.STORE_TYPE_DUKAAN,
-                        AFInAppEventParameterName.VERIFY_PHONE      to "1",
-                        AFInAppEventParameterName.REFERENCE_PHONE   to ""
+                        AFInAppEventParameterName.REFERENCE_PHONE   to StaticInstances.sAppFlyerRefMobileNumber
                     )
                 )
                 launchFragment(CreateStoreFragment.newInstance(), true)
