@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.DownloadManager
 import android.content.ContentValues
 import android.content.Context
+import android.content.Context.WINDOW_SERVICE
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.database.Cursor
@@ -24,9 +25,12 @@ import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
 import android.view.View.MeasureSpec
+import android.view.WindowManager
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.TranslateAnimation
 import android.widget.Toast
+import androidmads.library.qrgenearator.QRGContents
+import androidmads.library.qrgenearator.QRGEncoder
 import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.MainActivity
 import com.digitaldukaan.R
@@ -51,12 +55,6 @@ import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
 import kotlin.collections.ArrayList
-
-
-
-
-
-
 
 
 fun getBitmapFromURL(src: String?): Bitmap? {
@@ -547,5 +545,27 @@ fun getBitmapFromView(view: View, activityMain: Activity?): Bitmap? {
         Log.e("GlobalMethods", "getBitmapFromView: ${e.message}", e)
         null
     }
+}
 
+fun getQRCodeBitmap(activity: MainActivity?, text: String?): Bitmap? {
+    activity?.let { context ->
+        Log.d("GlobalMethods", "getQRCodeBitmap: $text")
+        val manager = context.getSystemService(WINDOW_SERVICE) as WindowManager
+        val display = manager.defaultDisplay
+        val point = Point()
+        display.getSize(point)
+        val width = point.x
+        val height = point.y
+        var dimen = if (width < height) width else height
+        dimen = dimen * 3 / 4
+        val qrgEncoder = QRGEncoder(text, null, QRGContents.Type.TEXT, dimen)
+        Log.d("GlobalMethods", "qrgEncoder: $qrgEncoder")
+        return try {
+            qrgEncoder.encodeAsBitmap()
+        } catch (e: Exception) {
+            Log.e("GlobalMethods", e.toString())
+            null
+        }
+    }
+    return null
 }

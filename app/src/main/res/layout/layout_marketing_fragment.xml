@@ -318,8 +318,9 @@
                         android:layout_width="@dimen/_85sdp"
                         android:layout_height="@dimen/_85sdp"
                         android:layout_margin="@dimen/_2sdp"
+                        android:scaleType="fitXY"
                         android:contentDescription="@string/image_view_content_description"
-                        android:src="@drawable/sample_qr"
+                        tools:src="@drawable/sample_qr"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent" />
 
@@ -328,10 +329,12 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/screenshotWhiteImageLayout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@color/white"
-                android:visibility="visible" />
+                android:visibility="gone"
+                android:orientation="horizontal" />
 
         </FrameLayout>
 

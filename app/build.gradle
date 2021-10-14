@@ -171,4 +171,6 @@ dependencies {
     implementation 'com.daimajia.androidanimations:library:2.4@aar'
     //  Tooltip animation
     implementation "com.github.skydoves:balloon:1.2.3"
+    //  Generate QR Code
+    implementation 'androidmads.library.qrgenearator:QRGenearator:1.0.3'
 }

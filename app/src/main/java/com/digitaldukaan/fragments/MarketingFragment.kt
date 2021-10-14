@@ -81,10 +81,17 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
         showProgressDialog(mActivity)
         mService?.getMarketingPageInfo()
         WebViewBridge.mWebViewListener = this
-        screenshotContainer?.let { v ->
-            val originalBitmap = getBitmapFromView(v, mActivity)
-            originalBitmap?.let { bitmap -> shareOnWhatsApp("Sample image testing", bitmap) }
+        val bitmap = getQRCodeBitmap(mActivity, "This is the QR code for testing")
+        bitmap?.let { b ->
+            screenshotWhiteImageLayout?.visibility = View.GONE
+            screenshotQRImageView?.setImageBitmap(b)
         }
+        /*Handler(Looper.getMainLooper()).postDelayed({
+//            screenshotContainer?.let { v ->
+//                val originalBitmap = getBitmapFromView(v, mActivity)
+//                originalBitmap?.let { bitmap -> shareOnWhatsApp("Sample image testing", bitmap) }
+//            }
+        }, 3000L)*/
     }
 
     override fun onClick(view: View?) {
