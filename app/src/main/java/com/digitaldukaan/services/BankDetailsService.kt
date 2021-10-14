@@ -14,9 +14,9 @@ class BankDetailsService {
         mServiceInterface = serviceInterface
     }
 
-    fun setBankDetails(authToken:String, request : BankDetailsRequest) {
+    fun setBankDetails(request: BankDetailsRequest) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.setBankDetailsServerCall(authToken, request, mServiceInterface)
+            mNetworkService.setBankDetailsServerCall(request, mServiceInterface)
         }
     }
 

@@ -13,12 +13,11 @@ import com.google.gson.Gson
 class MoreControlNetworkService {
 
     suspend fun updateDeliveryInfoServerCall(
-        authToken:String,
-        request : MoreControlsRequest,
+        request: MoreControlsRequest,
         serviceInterface: IMoreControlsServiceInterface
     ) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.updateDeliveryInfo(authToken, request)
+            val response = RetrofitApi().getServerCallObject()?.updateDeliveryInfo(request)
             response?.let {
                 if (it.isSuccessful) {
                     it.body()?.let { storeNameResponse ->

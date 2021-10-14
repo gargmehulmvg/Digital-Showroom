@@ -15,9 +15,9 @@ class MoreControlsService {
         mServiceInterface = serviceInterface
     }
 
-    fun updateDeliveryInfo(authToken: String, request: MoreControlsRequest) {
+    fun updateDeliveryInfo(request: MoreControlsRequest) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.updateDeliveryInfoServerCall(authToken, request, mServiceInterface)
+            mNetworkService.updateDeliveryInfoServerCall(request, mServiceInterface)
         }
     }
 

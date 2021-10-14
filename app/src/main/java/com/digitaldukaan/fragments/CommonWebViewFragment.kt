@@ -304,7 +304,7 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
                 launchFragment(HomeFragment.newInstance(), true)
                 true
             } else {
-                if (commonWebView?.canGoBack() == true) {
+                if (true == commonWebView?.canGoBack()) {
                     commonWebView?.goBack()
                     true
                 } else false

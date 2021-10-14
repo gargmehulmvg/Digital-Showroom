@@ -11,13 +11,9 @@ import com.google.gson.Gson
 
 class BankDetailsNetworkService {
 
-    suspend fun setBankDetailsServerCall(
-        authToken:String,
-        request : BankDetailsRequest,
-        serviceInterface: IBankDetailsServiceInterface
-    ) {
+    suspend fun setBankDetailsServerCall(request: BankDetailsRequest, serviceInterface: IBankDetailsServiceInterface) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.setBankDetails(authToken, request)
+            val response = RetrofitApi().getServerCallObject()?.setBankDetails(request)
             response?.let {
                 if (it.isSuccessful) {
                     it.body()?.let { responseBody -> serviceInterface.onBankDetailsResponse(responseBody) }

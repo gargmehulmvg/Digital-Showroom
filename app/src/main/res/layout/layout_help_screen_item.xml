@@ -3,15 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:layout_gravity="bottom"
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
     <ImageView
         android:id="@+id/image"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/_255sdp"
+        android:layout_height="@dimen/_275sdp"
         android:contentDescription="@string/image_view_content_description"
-        android:padding="@dimen/_10sdp"
+        android:padding="@dimen/_25sdp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

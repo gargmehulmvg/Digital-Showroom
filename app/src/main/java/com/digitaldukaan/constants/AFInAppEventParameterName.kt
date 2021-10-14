@@ -43,7 +43,7 @@ interface AFInAppEventParameterName {
         const val AMOUNT                                        =   "Amount"
         const val SELECTION                                     =   "Selection"
         const val CHANNEL                                       =   "Channel"
-        const val ON_BOARDING                                   =   "On-Boarding"
+        const val ON_BOARDING                                   =   "Onboarding"
         const val BING_TEXT                                     =   "Bing_Text"
         const val RESULT                                        =   "Result"
         const val PATH                                          =   "Path"

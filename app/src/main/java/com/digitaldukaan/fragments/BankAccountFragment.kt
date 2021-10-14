@@ -167,7 +167,7 @@ class BankAccountFragment : BaseFragment(), IBankDetailsServiceInterface {
             return
         }
         showProgressDialog(mActivity)
-        mService.setBankDetails(getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN), request)
+        mService.setBankDetails(request)
     }
 
     override fun onBankDetailsResponse(response: CommonApiResponse) {

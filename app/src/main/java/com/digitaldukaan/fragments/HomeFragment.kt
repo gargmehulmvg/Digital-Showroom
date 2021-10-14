@@ -796,7 +796,8 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                         searchTextView.setOnClickListener {
                             bottomSheetDialog.dismiss()
                             if (Constants.NEW_RELEASE_TYPE_WEBVIEW == customDomainBottomSheetResponse.searchCta?.action) {
-                                openWebViewFragment(this@HomeFragment, "", BuildConfig.WEB_VIEW_URL + customDomainBottomSheetResponse.searchCta?.pageUrl)
+                                val url = BuildConfig.WEB_VIEW_URL + "${customDomainBottomSheetResponse.searchCta?.pageUrl}?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&${AFInAppEventParameterName.CHANNEL}=${AFInAppEventParameterName.ON_BOARDING}"
+                                openWebViewFragmentV3(this@HomeFragment, "", url)
                             }
                         }
                     }
