@@ -116,6 +116,12 @@ interface Apis {
     suspend fun searchImagesFromBing(@Query("search_text") searchText: String, @Query("store_id") storeId: String) : Response<ImagesSearchResponse>
 
     /* ----------------------       Marketing         ---------------------- */
+    @GET("api/dotk/vm1/products/getItemsBasicDetailsByStoreId")
+    suspend fun getItemsBasicDetailsByStoreId(): Response<CommonApiResponse>
+
+    @GET("api/dotk/vm1/products/getUserCategories")
+    suspend fun getProductsCategories(): Response<CommonApiResponse>
+
     @GET("api/dotk/vm1/marketing/getSuggestedDomainsInfo")
     suspend fun getMarketingSuggestedDomains(): Response<CommonApiResponse>
 
@@ -173,9 +179,6 @@ interface Apis {
 
     @POST("api/dotk/vm1/products/updateStock")
     suspend fun updateStock(@Body request: UpdateStockRequest): Response<CommonApiResponse>
-
-    @GET("api/dotk/vm1/products/getUserCategories")
-    suspend fun getUserCategories(): Response<CommonApiResponse>
 
     @GET("api/dotk/vm1/products/getDeleteCategoryInfo")
     suspend fun getDeleteCategoryInfo(): Response<CommonApiResponse>

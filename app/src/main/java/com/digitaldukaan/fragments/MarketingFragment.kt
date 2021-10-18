@@ -46,6 +46,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
     private var mKnowMoreCustomDomainRecyclerView: RecyclerView? = null
     private var mKnowMoreBottomSheetDialog: BottomSheetDialog? = null
     private var mProgressBarView: View? = null
+    private var mMarketingPageInfoResponse: MarketingPageInfoResponse? = null
 
     companion object {
         private var mService: MarketingService? = null
@@ -114,14 +115,14 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
         stopProgress()
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (response.mIsSuccessStatus) {
-                val marketingPageInfoResponse = Gson().fromJson<MarketingPageInfoResponse>(response.mCommonDataStr, MarketingPageInfoResponse::class.java)
-                setupMarketingShareUI(marketingPageInfoResponse?.marketingStoreShare)
-                setupMarketingHelpPageUI(marketingPageInfoResponse?.marketingHelpPage)
+                mMarketingPageInfoResponse = Gson().fromJson<MarketingPageInfoResponse>(response.mCommonDataStr, MarketingPageInfoResponse::class.java)
+                setupMarketingShareUI(mMarketingPageInfoResponse?.marketingStoreShare)
+                setupMarketingHelpPageUI(mMarketingPageInfoResponse?.marketingHelpPage)
                 ToolBarManager.getInstance()?.apply {
-                    setHeaderTitle(marketingPageInfoResponse?.marketingStaticTextResponse?.heading_marketing)
-                    moreOptionsHeadingTextView?.text = marketingPageInfoResponse?.marketingStaticTextResponse?.text_more_options
+                    setHeaderTitle(mMarketingPageInfoResponse?.marketingStaticTextResponse?.heading_marketing)
+                    moreOptionsHeadingTextView?.text = mMarketingPageInfoResponse?.marketingStaticTextResponse?.text_more_options
                 }
-                val optionMenuAdapterAdapter = MarketingMoreOptionsAdapter(this, marketingPageInfoResponse?.marketingMoreOptionsList)
+                val optionMenuAdapterAdapter = MarketingMoreOptionsAdapter(this, mMarketingPageInfoResponse?.marketingMoreOptionsList)
                 marketingMoreOptionsRecyclerView?.apply {
                     layoutManager = LinearLayoutManager(mActivity)
                     adapter = optionMenuAdapterAdapter
@@ -132,11 +133,11 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                         layoutManager = gridLayoutManager
                         gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
                             override fun getSpanSize(position: Int): Int {
-                                return if (marketingPageInfoResponse?.marketingItemList?.get(position)?.type == Constants.SPAN_TYPE_FULL_WIDTH) 2 else 1
+                                return if (mMarketingPageInfoResponse?.marketingItemList?.get(position)?.type == Constants.SPAN_TYPE_FULL_WIDTH) 2 else 1
                             }
                         }
                         layoutManager = gridLayoutManager
-                        adapter = MarketingCardAdapter(this@MarketingFragment, marketingPageInfoResponse?.marketingItemList, this@MarketingFragment)
+                        adapter = MarketingCardAdapter(this@MarketingFragment, mMarketingPageInfoResponse?.marketingItemList, this@MarketingFragment)
                     }
                 }
             } else {
@@ -243,7 +244,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                     data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.TYPE to AFInAppEventParameterName.SOCIAL)
                 )
-                launchFragment(SocialMediaFragment.newInstance(), true)
+                launchFragment(SocialMediaFragment.newInstance(mMarketingPageInfoResponse), true)
             }
             Constants.ACTION_THEME_DISCOVER -> {
                 AppEventsManager.pushAppEvents(
@@ -556,10 +557,11 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                                         data = item?.eventParameter ?: HashMap()
                                     )
                                     Log.d(TAG, "showMoreOptionsBottomSheet :: item clicked :: $item")
-                                    item?.let { responseItem ->
-                                        bottomSheetDialog.dismiss()
+                                    bottomSheetDialog.dismiss()
+                                    /*item?.let { responseItem ->
                                         openWebViewFragment(this@MarketingFragment, "", "${BuildConfig.WEB_VIEW_URL}${responseItem.url}")
-                                    }
+                                    }*/
+                                    launchFragment(EditSocialMediaTemplateFragment.newInstance(item?.heading, null, true, mMarketingPageInfoResponse), true)
                                 }
 
                             })

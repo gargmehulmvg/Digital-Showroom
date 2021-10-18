@@ -39,11 +39,14 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
     private var mFavoriteCategoryId: Int = 1
     private var mIsUnFavoriteTemplateClicked: Boolean = false
     private var mIsNextPage: Boolean = false
+    private var mMarketingPageInfoResponse: MarketingPageInfoResponse? = null
 
     companion object {
         private const val TAG = "SocialMediaFragment"
-        fun newInstance(): SocialMediaFragment {
-            return SocialMediaFragment()
+        fun newInstance(marketingPageInfoResponse: MarketingPageInfoResponse?): SocialMediaFragment {
+            val fragment =  SocialMediaFragment()
+            fragment.mMarketingPageInfoResponse = marketingPageInfoResponse
+            return fragment
         }
     }
 
@@ -202,7 +205,7 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
     }
 
     override fun onSocialMediaTemplateEditItemClickListener(position: Int, item: SocialMediaTemplateListItemResponse?) {
-        launchFragment(EditSocialMediaTemplateFragment.newInstance(item), true)
+        launchFragment(EditSocialMediaTemplateFragment.newInstance(mMarketingPageInfoResponse?.marketingStaticTextResponse?.heading_edit_and_share, item, false, mMarketingPageInfoResponse), true)
     }
 
     override fun onSocialMediaTemplateShareItemClickListener(position: Int, item: SocialMediaTemplateListItemResponse?) {

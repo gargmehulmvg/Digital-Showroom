@@ -3,47 +3,47 @@ package com.digitaldukaan.models.response
 import com.google.gson.annotations.SerializedName
 
 data class AddProductResponse(
-    @SerializedName("static_text") var addProductStaticText: AddProductStaticText?,
-    @SerializedName("domain") var domain: String?,
-    @SerializedName("categories") var addProductStoreCategories: AddProductStoreCategory?,
-    @SerializedName("option_menu") var addProductStoreOptionsMenu: ArrayList<TrendingListResponse>?,
-    @SerializedName("recent_variants") var recentVariantsList: ArrayList<VariantItemResponse>?,
-    @SerializedName("master_variants") var masterVariantsList: ArrayList<VariantItemResponse>?,
-    @SerializedName("store_item") var storeItem: AddProductItemResponse?,
+    @SerializedName("static_text")                                          var addProductStaticText: AddProductStaticText?,
+    @SerializedName("domain")                                               var domain: String?,
+    @SerializedName("categories")                                           var addProductStoreCategories: AddProductStoreCategory?,
+    @SerializedName("option_menu")                                          var addProductStoreOptionsMenu: ArrayList<TrendingListResponse>?,
+    @SerializedName("recent_variants")                                      var recentVariantsList: ArrayList<VariantItemResponse>?,
+    @SerializedName("master_variants")                                      var masterVariantsList: ArrayList<VariantItemResponse>?,
+    @SerializedName("store_item")                                           var storeItem: AddProductItemResponse?,
     var deletedVariants: HashMap<String?, VariantItemResponse?> = HashMap(),
     var isVariantSaved: Boolean
 )
 
 data class AddProductStoreCategory(
-    @SerializedName("store_categories") val storeCategoriesList:ArrayList<AddStoreCategoryItem>?,
-    @SerializedName("suggested_categories") val suggestedCategories:String?
+    @SerializedName("store_categories")                                     val storeCategoriesList:ArrayList<AddStoreCategoryItem>?,
+    @SerializedName("suggested_categories")                                 val suggestedCategories:String?
 )
 
 data class AddStoreCategoryItem(
-    @SerializedName("id") val id: Int?,
-    @SerializedName("name") val name:String?,
+    @SerializedName("id")                                                   val id: Int?,
+    @SerializedName("name")                                                 val name:String?,
     var isSelected: Boolean
 )
 
 data class AddProductStaticText(
-    @SerializedName("product_page_heading") var product_page_heading: String?,
-    @SerializedName("bottom_sheet_add_from_gallery") var bottom_sheet_add_from_gallery: String?,
-    @SerializedName("bottom_sheet_add_image") var bottom_sheet_add_image: String?,
-    @SerializedName("bottom_sheet_confirm_selection") var bottom_sheet_confirm_selection: String?,
-    @SerializedName("bottom_sheet_hint_search_for_images_here") var bottom_sheet_hint_search_for_images_here: String?,
-    @SerializedName("bottom_sheet_remove_image") var bottom_sheet_remove_image: String?,
-    @SerializedName("bottom_sheet_search_image") var bottom_sheet_search_image: String?,
-    @SerializedName("bottom_sheet_set_price") var bottom_sheet_set_price: String?,
-    @SerializedName("bottom_sheet_set_price_below") var bottom_sheet_set_price_below: String?,
-    @SerializedName("bottom_sheet_take_a_photo") var bottom_sheet_take_a_photo: String?,
-    @SerializedName("bottom_sheet_you_can_add_upto_4_images") var bottom_sheet_you_can_add_upto_4_images: String?,
-    @SerializedName("error_mandatory_field") var error_mandatory_field: String?,
+    @SerializedName("product_page_heading")                                 var product_page_heading: String?,
+    @SerializedName("bottom_sheet_add_from_gallery")                        var bottom_sheet_add_from_gallery: String?,
+    @SerializedName("bottom_sheet_add_image")                               var bottom_sheet_add_image: String?,
+    @SerializedName("bottom_sheet_confirm_selection")                       var bottom_sheet_confirm_selection: String?,
+    @SerializedName("bottom_sheet_hint_search_for_images_here")             var bottom_sheet_hint_search_for_images_here: String?,
+    @SerializedName("bottom_sheet_remove_image")                            var bottom_sheet_remove_image: String?,
+    @SerializedName("bottom_sheet_search_image")                            var bottom_sheet_search_image: String?,
+    @SerializedName("bottom_sheet_set_price")                               var bottom_sheet_set_price: String?,
+    @SerializedName("bottom_sheet_set_price_below")                         var bottom_sheet_set_price_below: String?,
+    @SerializedName("bottom_sheet_take_a_photo")                            var bottom_sheet_take_a_photo: String?,
+    @SerializedName("bottom_sheet_you_can_add_upto_4_images")               var bottom_sheet_you_can_add_upto_4_images: String?,
+    @SerializedName("error_mandatory_field")                                var error_mandatory_field: String?,
     @SerializedName("error_discounted_price_must_be_less_than_items_price") var error_discount_price_less_then_original_price: String?,
-    @SerializedName("heading_add_product_banner") var heading_add_product_banner: String?,
-    @SerializedName("heading_add_product_page") var heading_add_product_page: String?,
-    @SerializedName("heading_explore_categories_page") var heading_explore_categories_page: String?,
-    @SerializedName("heading_search_products_page") var heading_search_products_page: String?,
-    @SerializedName("hint_enter_category_optional") var hint_enter_category_optional: String?,
+    @SerializedName("heading_add_product_banner")                           var heading_add_product_banner: String?,
+    @SerializedName("heading_add_product_page")                             var heading_add_product_page: String?,
+    @SerializedName("heading_explore_categories_page")                      var heading_explore_categories_page: String?,
+    @SerializedName("heading_search_products_page")                         var heading_search_products_page: String?,
+    @SerializedName("hint_enter_category_optional")                         var hint_enter_category_optional: String?,
     @SerializedName("hint_item_name") var hint_item_name: String?,
     @SerializedName("hint_mrp") var hint_mrp: String?,
     @SerializedName("hint_price") var hint_price: String?,

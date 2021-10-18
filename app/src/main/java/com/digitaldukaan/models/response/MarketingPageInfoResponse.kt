@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 data class MarketingPageInfoResponse(
     @SerializedName("store_share")              var marketingStoreShare: MarketingStoreShareResponse?,
+    @SerializedName("store_info")               var marketingStoreInfo: MarketingStoreInfoResponse?,
     @SerializedName("static_text")              var marketingStaticTextResponse: MarketingStaticTextResponse?,
     @SerializedName("more_options_list")        var marketingMoreOptionsList: ArrayList<MarketingMoreOptionsItemResponse?>,
     @SerializedName("marketing_item_list")      var marketingItemList: ArrayList<MarketingCardsItemResponse?>,
@@ -13,7 +14,7 @@ data class MarketingPageInfoResponse(
 data class MarketingStoreShareResponse(
     @SerializedName("heading")                  var heading: String?,
     @SerializedName("left_icon_cdn")            var left_icon_cdn: String?,
-    @SerializedName("right_icon_cdn")            var right_icon_cdn: String?,
+    @SerializedName("right_icon_cdn")           var right_icon_cdn: String?,
     @SerializedName("right_icon_text")          var right_icon_text: String?,
     @SerializedName("domain_expiry_message")    var domain_expiry_message: String?,
     @SerializedName("domain_expiry_cdn")        var domain_expiry_cdn: String?,
@@ -25,8 +26,30 @@ data class MarketingStoreShareResponse(
 )
 
 data class MarketingStaticTextResponse(
-    @SerializedName("heading_marketing")        var heading_marketing: String?,
-    @SerializedName("text_more_options")        var text_more_options: String
+    @SerializedName("heading_marketing")                        var heading_marketing: String?,
+    @SerializedName("heading_edit_and_share")                   var heading_edit_and_share: String?,
+    @SerializedName("heading_product_discount")                 var heading_product_discount: String?,
+    @SerializedName("heading_new_launches_and_bestsellers")     var heading_new_launches_and_bestsellers: String?,
+    @SerializedName("text_edit_text")                           var text_edit_text: String?,
+    @SerializedName("text_edit_background")                     var text_edit_background: String?,
+    @SerializedName("text_background")                          var text_background: String?,
+    @SerializedName("text_share")                               var text_share: String?,
+    @SerializedName("text_change_product")                      var text_change_product: String?,
+    @SerializedName("text_recently_added")                      var text_recently_added: String?,
+    @SerializedName("text_save_changes")                        var text_save_changes: String?,
+    @SerializedName("text_whatsapp")                            var text_whatsapp: String?,
+    @SerializedName("hint_search_product")                      var hint_search_product: String?,
+    @SerializedName("hint_text_line_1")                         var text_line_1: String?,
+    @SerializedName("hint_text_line_2")                         var text_line_2: String?,
+    @SerializedName("hint_text_line_3")                         var text_line_3: String?,
+    @SerializedName("message_please_note")                      var message_please_note: String?,
+    @SerializedName("text_more_options")                        var text_more_options: String
+)
+
+data class MarketingStoreInfoResponse(
+    @SerializedName("name")                         var name: String?,
+    @SerializedName("is_store_item_limit_exceed")   var isStoreItemLimitExceeds: Boolean,
+    @SerializedName("domain")                       var domain: String
 )
 
 data class MarketingDomainKnowMoreResponse(

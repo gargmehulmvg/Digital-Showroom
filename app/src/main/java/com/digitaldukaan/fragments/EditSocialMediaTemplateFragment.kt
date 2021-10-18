@@ -7,25 +7,41 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.widget.EditText
+import android.widget.TextView
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
-import com.digitaldukaan.constants.Constants
-import com.digitaldukaan.constants.PrefsManager
-import com.digitaldukaan.constants.ToolBarManager
-import com.digitaldukaan.models.response.SocialMediaTemplateListItemResponse
+import com.digitaldukaan.adapters.CategoryProductAdapter
+import com.digitaldukaan.constants.*
+import com.digitaldukaan.models.response.*
+import com.digitaldukaan.services.EditSocialMediaTemplateService
+import com.digitaldukaan.services.serviceinterface.IEditSocialMediaTemplateServiceInterface
 import com.digitaldukaan.webviews.WebViewBridge
+import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.gson.Gson
 import kotlinx.android.synthetic.main.layout_edit_premium_fragment.*
 import kotlinx.android.synthetic.main.layout_edit_social_media_template_fragment.*
 
-class EditSocialMediaTemplateFragment : BaseFragment() {
+class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplateServiceInterface {
 
     private var mSocialMediaTemplateResponse: SocialMediaTemplateListItemResponse? = null
+    private var mService: EditSocialMediaTemplateService? = null
+    private var mIsOpenBottomSheet = false
+    private var mHeadingStr = ""
+    private var mMarketingPageInfoResponse: MarketingPageInfoResponse? = null
+    private var mAddProductStoreCategoryList: ArrayList<AddStoreCategoryItem>? = ArrayList()
+    private var mIsStoreItemLimitExceeds = false
 
     companion object {
         private const val TAG = "EditSocialMediaTemplateFragment"
 
-        fun newInstance(item: SocialMediaTemplateListItemResponse?): EditSocialMediaTemplateFragment {
+        fun newInstance(heading: String?, item: SocialMediaTemplateListItemResponse?, isOpenBottomSheet: Boolean = false, marketingPageInfoResponse: MarketingPageInfoResponse?): EditSocialMediaTemplateFragment {
             val fragment = EditSocialMediaTemplateFragment()
             fragment.mSocialMediaTemplateResponse = item
+            fragment.mHeadingStr = heading ?: ""
+            fragment.mIsOpenBottomSheet = isOpenBottomSheet
+            fragment.mMarketingPageInfoResponse = marketingPageInfoResponse
             return fragment
         }
     }
@@ -34,6 +50,14 @@ class EditSocialMediaTemplateFragment : BaseFragment() {
         mContentView = inflater.inflate(R.layout.layout_edit_social_media_template_fragment, container, false)
         hideBottomNavigationView(true)
         WebViewBridge.mWebViewListener = this
+        mService = EditSocialMediaTemplateService()
+        mService?.setEditSocialMediaTemplateServiceListener(this)
+        if (mIsOpenBottomSheet) {
+            showProgressDialog(mActivity)
+            mService?.getItemsBasicDetailsByStoreId()
+        } else {
+            mService?.getProductCategories()
+        }
         return mContentView
     }
 
@@ -41,7 +65,7 @@ class EditSocialMediaTemplateFragment : BaseFragment() {
         super.onViewCreated(view, savedInstanceState)
         ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, false)
-            setHeaderTitle("Edit & Share")
+            setHeaderTitle(mHeadingStr)
             setSideIconVisibility(false)
             onBackPressed(this@EditSocialMediaTemplateFragment)
         }
@@ -51,23 +75,57 @@ class EditSocialMediaTemplateFragment : BaseFragment() {
             settings.domStorageEnabled = true
             addJavascriptInterface(WebViewBridge(), "Android")
             var url = mSocialMediaTemplateResponse?.html?.htmlText ?: ""
-
             url = url.replace("id=\"business_creative_storename\"> Store Name</div>", "id=\"business_creative_storename\">${PrefsManager.getStringDataFromSharedPref(Constants.STORE_NAME)}</div>")
-
             Log.d(TAG, "onViewCreated: text :: $url")
-
             webViewClient = object : WebViewClient() {
                 override fun onPageFinished(view: WebView, url: String) {
                     Log.d(TAG, "onPageFinished: called")
                     stopProgress()
                 }
 
-                override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
-                    return onCommonWebViewShouldOverrideUrlLoading(url, view)
-                }
+                override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean { return onCommonWebViewShouldOverrideUrlLoading(url, view) }
             }
             loadData(url, "text/html", "UTF-8")
         }
     }
 
+    override fun onEditSocialMediaTemplateErrorResponse(e: Exception) = exceptionHandlingForAPIResponse(e)
+
+    override fun onItemsBasicDetailsByStoreIdResponse(response: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+        }
+    }
+
+    override fun onProductCategoryResponse(response: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            if (response.mIsSuccessStatus) {
+                val productCategoryResponse = Gson().fromJson<AddProductStoreCategory>(response.mCommonDataStr, AddProductStoreCategory::class.java)
+                mAddProductStoreCategoryList = productCategoryResponse?.storeCategoriesList
+                Log.d(TAG, "onProductCategoryResponse: $productCategoryResponse")
+                showCategoryBottomSheet()
+            }
+        }
+    }
+
+    private fun showCategoryBottomSheet() {
+        mActivity?.let {
+            val bottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
+            val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_category_product, it.findViewById(R.id.bottomSheetContainer))
+            bottomSheetDialog.apply {
+                setContentView(view)
+                view.run {
+                    val headingTextView: TextView = findViewById(R.id.headingTextView)
+                    val editText: EditText = findViewById(R.id.editText)
+                    val searchProductRecyclerView: RecyclerView = findViewById(R.id.searchProductRecyclerView)
+                    headingTextView.setHtmlData(mMarketingPageInfoResponse?.marketingStaticTextResponse?.message_please_note)
+                    editText.hint = mMarketingPageInfoResponse?.marketingStaticTextResponse?.hint_search_product
+                    searchProductRecyclerView.apply {
+                        layoutManager = LinearLayoutManager(mActivity)
+                        adapter = CategoryProductAdapter(mMarketingPageInfoResponse?.marketingStaticTextResponse, mAddProductStoreCategoryList)
+                    }
+                }
+            }.show()
+        }
+    }
 }
