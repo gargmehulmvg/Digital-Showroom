@@ -81,11 +81,11 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
         showProgressDialog(mActivity)
         mService?.getMarketingPageInfo()
         WebViewBridge.mWebViewListener = this
-        val bitmap = getQRCodeBitmap(mActivity, "This is the QR code for testing")
-        bitmap?.let { b ->
-            screenshotWhiteImageLayout?.visibility = View.GONE
-            screenshotQRImageView?.setImageBitmap(b)
-        }
+//        val bitmap = getQRCodeBitmap(mActivity, "This is the QR code for testing")
+//        bitmap?.let { b ->
+//            screenshotWhiteImageLayout?.visibility = View.GONE
+//            screenshotQRImageView?.setImageBitmap(b)
+//        }
         /*Handler(Looper.getMainLooper()).postDelayed({
 //            screenshotContainer?.let { v ->
 //                val originalBitmap = getBitmapFromView(v, mActivity)
@@ -108,9 +108,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
 
     override fun onMarketingErrorResponse(e: Exception) = exceptionHandlingForAPIResponse(e)
 
-    override fun onMarketingResponse(response: CommonApiResponse) {
-        stopProgress()
-    }
+    override fun onMarketingResponse(response: CommonApiResponse) = stopProgress()
 
     override fun onMarketingPageInfoResponse(response: CommonApiResponse) {
         stopProgress()
@@ -196,11 +194,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
     override fun onGenerateStorePdfResponse(response: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
-            showShortSnackBar(
-                response.mMessage,
-                true,
-                if (response.mIsSuccessStatus) R.drawable.ic_check_circle else R.drawable.ic_close_red
-            )
+            showShortSnackBar(response.mMessage, true, if (response.mIsSuccessStatus) R.drawable.ic_check_circle else R.drawable.ic_close_red)
         }
     }
 
@@ -305,7 +299,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                         AFInAppEventParameterName.PATH to AFInAppEventParameterName.MARKETING
                     )
                 )
-                if (mShareStorePDFResponse == null) {
+                if (null == mShareStorePDFResponse) {
                     showProgressDialog(mActivity)
                     mService?.getShareStorePdfText()
                 } else {
@@ -550,7 +544,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                     view.run {
                         val headingTextView: TextView = findViewById(R.id.headingTextView)
                         val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
-                        headingTextView.text = itemResponse.expandable_data_heading
+                        headingTextView.text = itemResponse.expandableDataHeading
                         recyclerView.apply {
                             layoutManager = GridLayoutManager(mActivity, 2)
                             adapter = MarketingMoreOptionsBottomSheetItemAdapter(this@MarketingFragment, itemResponse.expandableData, object : IAdapterItemClickListener {

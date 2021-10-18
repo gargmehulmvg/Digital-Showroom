@@ -38,15 +38,15 @@ data class MarketingDomainKnowMoreResponse(
 )
 
 data class MarketingMoreOptionsItemResponse(
-    @SerializedName("info_text")                var info_text: String?,
+    @SerializedName("info_text")                var infoText: String?,
     @SerializedName("heading")                  var heading: String,
-    @SerializedName("right_cdn")                var right_cdn: String,
-    @SerializedName("is_clickable")             var is_clickable: Boolean,
-    @SerializedName("is_enabled")               var is_enabled: Boolean,
+    @SerializedName("right_cdn")                var rightCdn: String,
+    @SerializedName("is_clickable")             var isClickable: Boolean,
+    @SerializedName("is_enabled")               var isEnabled: Boolean,
     @SerializedName("action")                   var action: String?,
-    @SerializedName("expandable_data_heading")  var expandable_data_heading: String?,
+    @SerializedName("expandable_data_heading")  var expandableDataHeading: String?,
     @SerializedName("expandable_data")          var expandableData: ArrayList<MarketingExpandableItemResponse?>?,
-    @SerializedName("left_cdn")                 var left_cdn: String
+    @SerializedName("left_cdn")                 var leftCdn: String
 )
 
 data class MarketingExpandableItemResponse(
@@ -57,12 +57,12 @@ data class MarketingExpandableItemResponse(
     @SerializedName("info_text")                var infoText: String?,
     @SerializedName("info_text_color")          var infoTextColor: String?,
     @SerializedName("info_text_bg_color")       var infoTextBgColor: String?,
-    @SerializedName("is_clickable")             var is_clickable: Boolean,
-    @SerializedName("is_enabled")               var is_enabled: Boolean,
+    @SerializedName("is_clickable")             var isClickable: Boolean,
+    @SerializedName("is_enabled")               var isEnabled: Boolean,
     @SerializedName("event_name")               var eventName: String?,
     @SerializedName("event_parameter")          var eventParameter: Map<String, String>,
     @SerializedName("url")                      var url: String?,
-    @SerializedName("cta_cdn")                  var cta_cdn: String
+    @SerializedName("cta_cdn")                  var ctaCdn: String
 )
 
 data class MarketingSuggestedDomainItemResponse(

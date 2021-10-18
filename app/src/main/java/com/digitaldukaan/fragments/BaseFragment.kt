@@ -26,6 +26,7 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
+import android.webkit.WebView
 import android.widget.*
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -1841,7 +1842,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                             isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                             data = mapOf(
                                 AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                                AFInAppEventParameterName.ORDER_ID to "${orderId}"
+                                AFInAppEventParameterName.ORDER_ID to "$orderId"
                             )
                         )
                         bottomSheetDialog.dismiss()
@@ -1849,6 +1850,37 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                     }
                 }
             }.show()
+        }
+    }
+
+    open fun onCommonWebViewShouldOverrideUrlLoading(url: String, view: WebView) = when {
+        url.startsWith("tel:") -> {
+            try {
+                view.context?.startActivity(Intent(Intent.ACTION_DIAL, Uri.parse(url)))
+            } catch (e: Exception) {
+                Log.e(TAG, "shouldOverrideUrlLoading :: tel :: ${e.message}", e)
+            }
+            true
+        }
+        url.contains("mailto:") -> {
+            try {
+                view.context?.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+            } catch (e: Exception) {
+                Log.e(TAG, "shouldOverrideUrlLoading :: mailto :: ${e.message}", e)
+            }
+            true
+        }
+        url.contains("whatsapp:") -> {
+            try {
+                view.context?.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+            } catch (e: Exception) {
+                Log.e(TAG, "shouldOverrideUrlLoading :: whatsapp :: ${e.message}", e)
+            }
+            true
+        }
+        else -> {
+            view.loadUrl(url)
+            true
         }
     }
 

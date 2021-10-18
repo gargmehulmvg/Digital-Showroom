@@ -252,6 +252,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                 )
                 mStoreNameEditBottomSheet?.run { if (isShowing) dismiss() }
                 mStoreName = storeNameResponse.storeInfo.name
+                PrefsManager.storeStringDataInSharedPref(Constants.STORE_NAME, mStoreName)
                 showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
                 onRefresh()
             } else showToast(response.mMessage)

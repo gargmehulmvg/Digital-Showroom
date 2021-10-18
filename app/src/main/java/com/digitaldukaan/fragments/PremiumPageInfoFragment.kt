@@ -94,36 +94,7 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
                     }
 
                     override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
-                        return when {
-                            url.startsWith("tel:") -> {
-                                try {
-                                    view.context?.startActivity(Intent(Intent.ACTION_DIAL, Uri.parse(url)))
-                                } catch (e: Exception) {
-                                    Log.e(TAG, "shouldOverrideUrlLoading :: tel :: ${e.message}", e)
-                                }
-                                true
-                            }
-                            url.contains("mailto:") -> {
-                                try {
-                                    view.context?.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
-                                } catch (e: Exception) {
-                                    Log.e(TAG, "shouldOverrideUrlLoading :: mailto :: ${e.message}", e)
-                                }
-                                true
-                            }
-                            url.contains("whatsapp:") -> {
-                                try {
-                                    view.context?.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
-                                } catch (e: Exception) {
-                                    Log.e(TAG, "shouldOverrideUrlLoading :: whatsapp :: ${e.message}", e)
-                                }
-                                true
-                            }
-                            else -> {
-                                view.loadUrl(url)
-                                true
-                            }
-                        }
+                        return onCommonWebViewShouldOverrideUrlLoading(url, view)
                     }
                 }
                 loadUrl(url)
