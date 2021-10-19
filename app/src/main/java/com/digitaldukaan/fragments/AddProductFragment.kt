@@ -68,8 +68,8 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     private var imagePickBottomSheet: BottomSheetDialog? = null
     private var imageAdapter = ImagesSearchAdapter()
     private var mImageChangePosition = 0
-    private var mAddProductStoreCategoryList: ArrayList<AddStoreCategoryItem>? = ArrayList()
-    private val mTempProductCategoryList: ArrayList<AddStoreCategoryItem> = ArrayList()
+    private var mAddProductStoreCategoryList: ArrayList<StoreCategoryItem>? = ArrayList()
+    private val mTempProductCategoryList: ArrayList<StoreCategoryItem> = ArrayList()
     private var addProductChipsAdapter: AddProductsChipsAdapter? = null
     private var mOptionsMenuResponse: ArrayList<TrendingListResponse>? = null
     private var mImageAddAdapter: AddProductsImagesAdapter? = null

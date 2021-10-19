@@ -45,9 +45,9 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
     private var mUserCategoryResponse: AddProductStoreCategory? = null
     private var addProductBannerStaticDataResponse: AddProductBannerTextResponse? = null
     private var addProductChipsAdapter: AddProductsChipsAdapter? = null
-    private var mSelectedCategoryItem: AddStoreCategoryItem? = null
+    private var mSelectedCategoryItem: StoreCategoryItem? = null
     private var mDeleteCategoryItemList: ArrayList<DeleteCategoryItemResponse?>? = null
-    private val mTempProductCategoryList: ArrayList<AddStoreCategoryItem> = ArrayList()
+    private val mTempProductCategoryList: ArrayList<StoreCategoryItem> = ArrayList()
 
 
     companion object {

@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.CategoryProductAdapter
 import com.digitaldukaan.constants.*
+import com.digitaldukaan.interfaces.IProductItemClickListener
 import com.digitaldukaan.models.response.*
 import com.digitaldukaan.services.EditSocialMediaTemplateService
 import com.digitaldukaan.services.serviceinterface.IEditSocialMediaTemplateServiceInterface
@@ -23,15 +24,16 @@ import com.google.gson.Gson
 import kotlinx.android.synthetic.main.layout_edit_premium_fragment.*
 import kotlinx.android.synthetic.main.layout_edit_social_media_template_fragment.*
 
-class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplateServiceInterface {
+class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplateServiceInterface, IProductItemClickListener {
 
     private var mSocialMediaTemplateResponse: SocialMediaTemplateListItemResponse? = null
     private var mService: EditSocialMediaTemplateService? = null
     private var mIsOpenBottomSheet = false
     private var mHeadingStr = ""
     private var mMarketingPageInfoResponse: MarketingPageInfoResponse? = null
-    private var mAddProductStoreCategoryList: ArrayList<AddStoreCategoryItem>? = ArrayList()
+    private var mAddProductStoreCategoryList: ArrayList<StoreCategoryItem>? = ArrayList()
     private var mIsStoreItemLimitExceeds = false
+    private var mCategoryBottomSheetDialog: BottomSheetDialog? = null
 
     companion object {
         private const val TAG = "EditSocialMediaTemplateFragment"
@@ -110,9 +112,9 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
 
     private fun showCategoryBottomSheet() {
         mActivity?.let {
-            val bottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
+            mCategoryBottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
             val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_category_product, it.findViewById(R.id.bottomSheetContainer))
-            bottomSheetDialog.apply {
+            mCategoryBottomSheetDialog?.apply {
                 setContentView(view)
                 view.run {
                     val headingTextView: TextView = findViewById(R.id.headingTextView)
@@ -122,10 +124,15 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
                     editText.hint = mMarketingPageInfoResponse?.marketingStaticTextResponse?.hint_search_product
                     searchProductRecyclerView.apply {
                         layoutManager = LinearLayoutManager(mActivity)
-                        adapter = CategoryProductAdapter(mMarketingPageInfoResponse?.marketingStaticTextResponse, mAddProductStoreCategoryList)
+                        adapter = CategoryProductAdapter(mActivity, mMarketingPageInfoResponse?.marketingStaticTextResponse, mAddProductStoreCategoryList, this@EditSocialMediaTemplateFragment)
                     }
                 }
-            }.show()
+            }?.show()
         }
+    }
+
+    override fun onProductItemClickListener(productItem: ProductResponse?) {
+        mCategoryBottomSheetDialog?.dismiss()
+        showToast(productItem?.name)
     }
 }

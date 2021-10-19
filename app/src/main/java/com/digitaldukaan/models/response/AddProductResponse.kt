@@ -15,11 +15,11 @@ data class AddProductResponse(
 )
 
 data class AddProductStoreCategory(
-    @SerializedName("store_categories")                                     val storeCategoriesList:ArrayList<AddStoreCategoryItem>?,
+    @SerializedName("store_categories")                                     val storeCategoriesList:ArrayList<StoreCategoryItem>?,
     @SerializedName("suggested_categories")                                 val suggestedCategories:String?
 )
 
-data class AddStoreCategoryItem(
+data class StoreCategoryItem(
     @SerializedName("id")                                                   val id: Int?,
     @SerializedName("name")                                                 val name:String?,
     var isSelected: Boolean

@@ -250,7 +250,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         }
     }
 
-    fun TextView.showStrikeOffText() {
+    open fun TextView.showStrikeOffText() {
         paintFlags = paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
     }
 

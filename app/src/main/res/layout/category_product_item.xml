@@ -1,19 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
-    android:layout_height="wrap_content">
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/categoryNameTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/dark_blackish"
+        android:fontFamily="@font/roboto_medium"
         android:paddingTop="@dimen/_2sdp"
-        android:textSize="@dimen/_13sdp"
         android:paddingBottom="@dimen/_2sdp"
-        tools:text="Recently Added"
-        android:fontFamily="@font/roboto" />
+        android:textColor="@color/dark_blackish"
+        android:textSize="@dimen/_13sdp"
+        tools:text="Recently Added" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_5sdp" />
 
 </LinearLayout>
