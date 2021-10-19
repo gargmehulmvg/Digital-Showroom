@@ -22,6 +22,8 @@ import android.provider.MediaStore
 import android.provider.Settings
 import android.text.Editable
 import android.text.Html
+import android.text.InputFilter
+import android.text.InputFilter.LengthFilter
 import android.text.TextWatcher
 import android.util.Log
 import android.view.*
@@ -252,6 +254,10 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
 
     open fun TextView.showStrikeOffText() {
         paintFlags = paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+    }
+
+    open fun TextView.setMaxLength(length: Int) {
+        filters = arrayOf<InputFilter>(LengthFilter(length))
     }
 
     open fun hideSoftKeyboard() {

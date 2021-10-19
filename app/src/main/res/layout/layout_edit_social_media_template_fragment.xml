@@ -10,7 +10,7 @@
         android:id="@+id/templateLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="visible">
+        android:visibility="gone">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/screenshotContainer"
@@ -22,7 +22,7 @@
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_420sdp"
+                android:layout_height="@dimen/_425sdp"
                 android:layout_margin="@dimen/_15sdp"
                 app:cardCornerRadius="@dimen/_10sdp"
                 app:cardElevation="@dimen/_1sdp"
@@ -44,7 +44,7 @@
                     <WebView
                         android:id="@+id/webView"
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/_320sdp"
+                        android:layout_height="@dimen/_330sdp"
                         app:layout_constraintBottom_toTopOf="@id/screenshotQRImageView"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -176,8 +176,11 @@
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/_250sdp"
                         android:layout_marginTop="@dimen/_10sdp"
+                        android:scaleType="centerCrop"
                         android:contentDescription="@string/image_view_content_description"
-                        android:src="@drawable/ic_default_image"
+                        tools:src="@drawable/ic_default_image"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/storeLinkTextView" />
 
                     <TextView

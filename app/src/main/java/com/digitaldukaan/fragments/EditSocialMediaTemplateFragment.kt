@@ -23,6 +23,7 @@ import com.digitaldukaan.services.EditSocialMediaTemplateService
 import com.digitaldukaan.services.serviceinterface.IEditSocialMediaTemplateServiceInterface
 import com.digitaldukaan.webviews.WebViewBridge
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.textfield.TextInputLayout
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.layout_add_product_fragment.*
@@ -42,6 +43,7 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
     private var mAddProductStoreCategoryList: ArrayList<StoreCategoryItem>? = ArrayList()
     private var mCategoryBottomSheetDialog: BottomSheetDialog? = null
     private var mProductCategoryCombineList: ArrayList<ProductCategoryCombineResponse>? = ArrayList()
+    private var mStoreDomainStr = ""
 
     companion object {
         private const val TAG = "EditSocialMediaTemplateFragment"
@@ -73,7 +75,8 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
             settings.domStorageEnabled = true
             addJavascriptInterface(WebViewBridge(), "Android")
             var url = mSocialMediaTemplateResponse?.html?.htmlText ?: ""
-            url = url.replace("id=\"business_creative_storename\"> Store Name</div>", "id=\"business_creative_storename\">${mMarketingPageInfoResponse?.marketingStoreInfo?.name}</div>")
+            mStoreDomainStr = mMarketingPageInfoResponse?.marketingStoreInfo?.name ?: ""
+            url = url.replace("id=\"business_creative_storename\"> Store Name</div>", "id=\"business_creative_storename\">$mStoreDomainStr</div>")
             Log.d(TAG, "onViewCreated: text :: $url")
 
             webViewClient = object : WebViewClient() {
@@ -184,12 +187,41 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
         }
     }
 
+    private fun showEditTemplateBottomSheet() {
+        mActivity?.let {
+            val bottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
+            val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_edit_product_category_details, it.findViewById(R.id.bottomSheetContainer))
+            bottomSheetDialog.apply {
+                setContentView(view)
+                setBottomSheetCommonProperty()
+                view.run {
+                    val closeImageView: View = findViewById(R.id.closeImageView)
+                    val editTextTextView: TextView = findViewById(R.id.editTextTextView)
+                    val text1InputLayout: TextInputLayout = findViewById(R.id.text1InputLayout)
+                    val text2InputLayout: TextInputLayout = findViewById(R.id.text2InputLayout)
+                    val saveChangesTextView: TextView = findViewById(R.id.saveChangesTextView)
+                    val text1EditText: EditText = findViewById(R.id.text1EditText)
+                    val text2EditText: EditText = findViewById(R.id.text2EditText)
+                    text1EditText.setMaxLength(mSocialMediaTemplateResponse?.html?.htmlDefaults?.text1?.maxLength ?: 0)
+                    text2EditText.setMaxLength(mSocialMediaTemplateResponse?.html?.htmlDefaults?.text2?.maxLength ?: 0)
+                    text1EditText.setText(mSocialMediaTemplateResponse?.html?.htmlDefaults?.text1?.name)
+                    text2EditText.setText(mSocialMediaTemplateResponse?.html?.htmlDefaults?.text2?.name)
+                    saveChangesTextView.text = mMarketingPageInfoResponse?.marketingStaticTextResponse?.text_save_changes
+                    editTextTextView.text = mMarketingPageInfoResponse?.marketingStaticTextResponse?.text_edit_text
+                    text1InputLayout.hint = mMarketingPageInfoResponse?.marketingStaticTextResponse?.text_line_1
+                    text2InputLayout.hint = mMarketingPageInfoResponse?.marketingStaticTextResponse?.text_line_2
+                    closeImageView.setOnClickListener { bottomSheetDialog.dismiss() }
+                }
+            }.show()
+        }
+    }
+
     override fun onProductItemClickListener(productItem: ProductResponse?) {
         mCategoryBottomSheetDialog?.dismiss()
         showToast(productItem?.name)
         productShareScreenshotView?.visibility = View.VISIBLE
         qrCodeScreenshotView?.visibility = View.GONE
-        val orderAtStr = mMarketingPageInfoResponse?.marketingStaticTextResponse?.text_order_at + mMarketingPageInfoResponse?.marketingStoreInfo?.domain
+        val orderAtStr = "${mMarketingPageInfoResponse?.marketingStaticTextResponse?.text_order_at} : ${mMarketingPageInfoResponse?.marketingStoreInfo?.domain}"
         storeNameTextView?.text = mMarketingPageInfoResponse?.marketingStoreInfo?.name
         storeLinkTextView?.text = orderAtStr
         productNameTextView?.text = productItem?.name
@@ -227,6 +259,8 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
             editTextTextView?.id -> {
                 if (editTextTextView?.text == mMarketingPageInfoResponse?.marketingStaticTextResponse?.text_change_product) {
                     showCategoryBottomSheet()
+                } else {
+                    showEditTemplateBottomSheet()
                 }
             }
             addProductTextView?.id -> launchFragment(AddProductFragment.newInstance(0, true), true)
