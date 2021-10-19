@@ -57,28 +57,20 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
         WebViewBridge.mWebViewListener = this
         mService = EditSocialMediaTemplateService()
         mService?.setEditSocialMediaTemplateServiceListener(this)
-        if (mIsOpenBottomSheet) {
-            mService?.getProductCategories()
-        }
         return mContentView
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        ToolBarManager.getInstance()?.apply {
-            hideToolBar(mActivity, false)
-            headerTitle = mHeadingStr
-            setSideIconVisibility(false)
-            onBackPressed(this@EditSocialMediaTemplateFragment)
-        }
-        Log.d(TAG, "onViewCreated: mSocialMediaTemplateResponse :: $mSocialMediaTemplateResponse")
+    private fun setupUIWithQRCode() {
+        templateLayout?.visibility = View.VISIBLE
+        noTemplateLayout?.visibility = View.GONE
         webView?.apply {
             settings.javaScriptEnabled = true
             settings.domStorageEnabled = true
             addJavascriptInterface(WebViewBridge(), "Android")
             var url = mSocialMediaTemplateResponse?.html?.htmlText ?: ""
-            url = url.replace("id=\"business_creative_storename\"> Store Name</div>", "id=\"business_creative_storename\">${PrefsManager.getStringDataFromSharedPref(Constants.STORE_NAME)}</div>")
+            url = url.replace("id=\"business_creative_storename\"> Store Name</div>", "id=\"business_creative_storename\">${mMarketingPageInfoResponse?.marketingStoreInfo?.name}</div>")
             Log.d(TAG, "onViewCreated: text :: $url")
+
             webViewClient = object : WebViewClient() {
                 override fun onPageFinished(view: WebView, url: String) {
                     Log.d(TAG, "onPageFinished: called")
@@ -87,7 +79,35 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
 
                 override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean { return onCommonWebViewShouldOverrideUrlLoading(url, view) }
             }
+
             loadData(url, "text/html", "UTF-8")
+            val domain = mMarketingPageInfoResponse?.marketingStoreInfo?.domain
+            screenshotStoreNameTextView?.text = domain
+            getQRCodeBitmap(mActivity, domain)?.let { b -> screenshotQRImageView?.setImageBitmap(b) }
+        }
+        mMarketingPageInfoResponse?.marketingStaticTextResponse?.let { staticText ->
+            backgroundTextView?.text = staticText.text_background
+            editTextTextView?.text = staticText.text_edit_text
+            shareTextView?.text = staticText.text_share
+            whatsappTextView?.text = staticText.text_whatsapp
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        Log.d(TAG, "onViewCreated: mMarketingPageInfoResponse :: $mMarketingPageInfoResponse")
+        Log.d(TAG, "onViewCreated: mSocialMediaTemplateResponse :: $mSocialMediaTemplateResponse")
+        ToolBarManager.getInstance()?.apply {
+            hideToolBar(mActivity, false)
+            headerTitle = mHeadingStr
+            setSideIconVisibility(false)
+            onBackPressed(this@EditSocialMediaTemplateFragment)
+        }
+        if (mIsOpenBottomSheet) {
+//            mService?.getProductCategories()
+            mService?.getItemsBasicDetailsByStoreId()
+        } else {
+            setupUIWithQRCode()
         }
     }
 
@@ -150,6 +170,18 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
     override fun onClick(view: View?) {
         when(view?.id) {
             addProductTextView?.id -> launchFragment(AddProductFragment.newInstance(0, true), true)
+            whatsappTextView?.id -> {
+                screenshotContainer?.let { v ->
+                    val originalBitmap = getBitmapFromView(v, mActivity)
+                    originalBitmap?.let { bitmap -> shareOnWhatsApp("Order From - ${mMarketingPageInfoResponse?.marketingStoreInfo?.domain}", bitmap) }
+                }
+            }
+            shareTextView?.id -> {
+                screenshotContainer?.let { v ->
+                    val originalBitmap = getBitmapFromView(v, mActivity)
+                    originalBitmap?.let { bitmap -> shareData("Order From - ${mMarketingPageInfoResponse?.marketingStoreInfo?.domain}", bitmap) }
+                }
+            }
         }
     }
 }

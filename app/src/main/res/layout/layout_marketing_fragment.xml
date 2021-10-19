@@ -209,6 +209,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingBottom="@dimen/_5sdp"
+            android:visibility="gone"
             app:layout_constraintTop_toBottomOf="@id/marketingMoreOptionsRecyclerView">
 
             <LinearLayout
@@ -333,7 +334,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@color/white"
-                android:visibility="visible"
+                android:visibility="gone"
                 android:orientation="horizontal" />
 
         </FrameLayout>

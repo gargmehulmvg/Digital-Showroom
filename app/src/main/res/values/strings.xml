@@ -132,6 +132,9 @@
     <string name="login_using_true_caller">Login using TrueCaller</string>
     <string name="made_in_india">Made in India</string>
     <string name="transaction_details">Transaction Details</string>
+    <string name="scan">SCAN</string>
+    <string name="order">ORDER</string>
+    <string name="pay">PAY</string>
     <string-array name="state_array">
         <item >Andhra Pradesh</item>
         <item >Arunachal Pradesh</item>
