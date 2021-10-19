@@ -8,9 +8,12 @@ import android.view.ViewGroup
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.CategoryProductAdapter
 import com.digitaldukaan.constants.*
@@ -27,6 +30,7 @@ import kotlinx.android.synthetic.main.layout_edit_premium_fragment.*
 import kotlinx.android.synthetic.main.layout_edit_social_media_template_fragment.*
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.math.ceil
 
 class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplateServiceInterface, IProductItemClickListener {
 
@@ -113,8 +117,8 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
         if (mIsOpenBottomSheet) {
             showProgressDialog(mActivity)
             if (true == mMarketingPageInfoResponse?.marketingStoreInfo?.isStoreItemLimitExceeds) mService?.getProductCategories() else mService?.getItemsBasicDetailsByStoreId()
-//            mService?.getProductCategories()
         } else {
+            qrCodeScreenshotView?.visibility = View.VISIBLE
             setupUIWithQRCode()
         }
     }
@@ -183,6 +187,39 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
     override fun onProductItemClickListener(productItem: ProductResponse?) {
         mCategoryBottomSheetDialog?.dismiss()
         showToast(productItem?.name)
+        productShareScreenshotView?.visibility = View.VISIBLE
+        qrCodeScreenshotView?.visibility = View.GONE
+        val orderAtStr = mMarketingPageInfoResponse?.marketingStaticTextResponse?.text_order_at + mMarketingPageInfoResponse?.marketingStoreInfo?.domain
+        storeNameTextView?.text = mMarketingPageInfoResponse?.marketingStoreInfo?.name
+        storeLinkTextView?.text = orderAtStr
+        productNameTextView?.text = productItem?.name
+        productDescriptionTextView?.text = productItem?.description
+        val productImageView: ImageView? = mContentView?.findViewById(R.id.productImageView)
+        val promoCodeTextView: TextView? = mContentView?.findViewById(R.id.promoCodeTextView)
+        val discountedPriceTextView: TextView? = mContentView?.findViewById(R.id.discountedPriceTextView)
+        val originalPriceTextView: TextView? = mContentView?.findViewById(R.id.originalPriceTextView)
+        val discount = ceil(((((productItem?.price ?: 0.0) - (productItem?.discountedPrice ?: 0.0)) / (productItem?.price ?: 0.0)) * 100)).toInt()
+        promoCodeTextView?.text = if (productItem?.price == productItem?.discountedPrice) null else "$discount %"
+        originalPriceTextView?.text = "₹${productItem?.discountedPrice}"
+        discountedPriceTextView?.apply {
+            showStrikeOffText()
+            text = "₹${productItem?.price}"
+        }
+        mActivity?.let { context ->
+            productImageView?.let { view -> Glide.with(context).load(productItem?.imageUrl).into(view) }
+        }
+        val saleImageView: ImageView? = mContentView?.findViewById(R.id.saleImageView)
+        if (ToolBarManager.getInstance().headerTitle == mMarketingPageInfoResponse?.marketingStaticTextResponse?.heading_product_discount) {
+            saleImageView?.visibility = View.VISIBLE
+            percentageTextView?.visibility = View.VISIBLE
+            bestsellerTextView?.visibility = View.GONE
+            mActivity?.let { context -> saleImageView?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_sale_background)) }
+            percentageTextView?.text = "$discount"
+        } else {
+            saleImageView?.visibility = View.GONE
+            percentageTextView?.visibility = View.GONE
+            bestsellerTextView?.visibility = View.VISIBLE
+        }
     }
 
     override fun onClick(view: View?) {

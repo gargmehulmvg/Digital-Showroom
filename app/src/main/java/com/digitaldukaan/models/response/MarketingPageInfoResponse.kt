@@ -45,6 +45,7 @@ data class MarketingStaticTextResponse(
     @SerializedName("message_bestseller_zero_screen")           var message_bestseller_zero_screen: String?,
     @SerializedName("cta_text_add_products")                    var cta_text_add_products: String?,
     @SerializedName("message_product_discount_zero_screen")     var message_product_discount_zero_screen: String?,
+    @SerializedName("text_order_at")                            var text_order_at: String?,
     @SerializedName("message_please_note")                      var message_please_note: String?,
     @SerializedName("text_more_options")                        var text_more_options: String
 )
