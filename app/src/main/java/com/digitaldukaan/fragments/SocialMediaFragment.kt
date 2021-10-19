@@ -1,15 +1,20 @@
 package com.digitaldukaan.fragments
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.widget.NestedScrollView
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.SocialMediaCategoryAdapter
 import com.digitaldukaan.adapters.SocialMediaTemplateAdapter
@@ -22,8 +27,10 @@ import com.digitaldukaan.services.SocialMediaService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.ISocialMediaServiceInterface
 import com.google.gson.Gson
+import kotlinx.android.synthetic.main.layout_edit_social_media_template_fragment.*
 import kotlinx.android.synthetic.main.layout_home_fragment.*
 import kotlinx.android.synthetic.main.layout_social_media.*
+import kotlinx.android.synthetic.main.layout_social_media.screenshotContainer
 
 class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToolbarIconClick,
     ISocialMediaTemplateItemClickListener {
@@ -84,6 +91,7 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
             adapter = mSocialMediaTemplateAdapter
         }
         scrollingLayout?.setOnScrollChangeListener(NestedScrollView.OnScrollChangeListener { v, _, scrollY, _, _ ->
+            screenshotOuterContainer?.visibility = View.GONE
             if (scrollY == (v.getChildAt(0).measuredHeight - v.measuredHeight) && mIsNextPage) {
                 Log.d(TAG, "onViewCreated: scrollingLayout called :: mIsNextPage :: $mIsNextPage :: page number :: $mPageNumber :: Category Id :: $mSelectedCategoryId")
                 mPageNumber++
@@ -218,11 +226,40 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
     }
 
     override fun onSocialMediaTemplateShareItemClickListener(position: Int, item: SocialMediaTemplateListItemResponse?) {
+        setupUIForScreenShot(item)
         showToast("Share $position")
+        screenshotContainer?.let { v ->
+            Handler(Looper.getMainLooper()).postDelayed({
+                val originalBitmap = getBitmapFromView(v, mActivity)
+                originalBitmap?.let { bitmap -> shareOnWhatsApp("Order From - ${mMarketingPageInfoResponse?.marketingStoreInfo?.domain}", bitmap) }
+            }, Constants.TIMER_INTERVAL)
+        }
     }
 
     override fun onSocialMediaTemplateWhatsappItemClickListener(position: Int, item: SocialMediaTemplateListItemResponse?) {
+        setupUIForScreenShot(item)
         showToast("Whatsapp $position")
+        screenshotContainer?.let { v ->
+            Handler(Looper.getMainLooper()).postDelayed({
+                val originalBitmap = getBitmapFromView(v, mActivity)
+                originalBitmap?.let { bitmap -> shareOnWhatsApp("Order From - ${mMarketingPageInfoResponse?.marketingStoreInfo?.domain}", bitmap) }
+            }, Constants.TIMER_INTERVAL)
+        }
+    }
+
+    private fun setupUIForScreenShot(item: SocialMediaTemplateListItemResponse?) {
+        screenshotOuterContainer?.visibility = View.VISIBLE
+        mActivity?.let { context ->
+            val screenshotImageView: ImageView? = mContentView?.findViewById(R.id.screenshotImageView)
+            screenshotImageView?.let { view -> Glide.with(context).load(item?.coverImage).into(view) }
+        }
+        val screenshotStoreNameTextView: TextView? = mContentView?.findViewById(R.id.screenshotStoreNameTextView)
+        val domain = mMarketingPageInfoResponse?.marketingStoreInfo?.domain
+        getQRCodeBitmap(mActivity, domain)?.let { b ->
+            val screenshotQRImageView: ImageView? = mContentView?.findViewById(R.id.screenshotQRImageView)
+            screenshotQRImageView?.setImageBitmap(b)
+        }
+        screenshotStoreNameTextView?.text = domain
     }
 
     override fun onDestroy() {

@@ -104,8 +104,8 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
             onBackPressed(this@EditSocialMediaTemplateFragment)
         }
         if (mIsOpenBottomSheet) {
-//            mService?.getProductCategories()
-            mService?.getItemsBasicDetailsByStoreId()
+//            if (true == mMarketingPageInfoResponse?.marketingStoreInfo?.isStoreItemLimitExceeds) mService?.getProductCategories() else mService?.getItemsBasicDetailsByStoreId()
+            mService?.getProductCategories()
         } else {
             setupUIWithQRCode()
         }
