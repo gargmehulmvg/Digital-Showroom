@@ -29,11 +29,9 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
     ISocialMediaTemplateItemClickListener {
 
     private var mService: SocialMediaService? = null
-    private var mSocialMediaPageInfoResponse: SocialMediaPageInfoResponse? = null
     private var mSocialMediaCategoryAdapter: SocialMediaCategoryAdapter? = null
     private var mSocialMediaTemplateAdapter: SocialMediaTemplateAdapter? = null
     private var mSocialMediaTemplateList: ArrayList<SocialMediaTemplateListItemResponse?>? = ArrayList()
-    private var mSocialMediaCategoriesList: ArrayList<SocialMediaCategoryItemResponse?>? = ArrayList()
     private var mPageNumber: Int = 1
     private var mSelectedCategoryId: String = "0"
     private var mFavoriteCategoryId: Int = 1
@@ -43,6 +41,9 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
 
     companion object {
         private const val TAG = "SocialMediaFragment"
+        private var sSocialMediaPageInfoResponse: SocialMediaPageInfoResponse? = null
+        private var sSocialMediaCategoriesList: ArrayList<SocialMediaCategoryItemResponse?>? = ArrayList()
+
         fun newInstance(marketingPageInfoResponse: MarketingPageInfoResponse?): SocialMediaFragment {
             val fragment =  SocialMediaFragment()
             fragment.mMarketingPageInfoResponse = marketingPageInfoResponse
@@ -68,8 +69,12 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
             showNoInternetConnectionDialog()
             return
         }
-        showProgressDialog(mActivity)
-        mService?.getSocialMediaPageInfo()
+        if (null == sSocialMediaPageInfoResponse) {
+            showProgressDialog(mActivity)
+            mService?.getSocialMediaPageInfo()
+        } else {
+            setupSocialMediaUIFromResponse()
+        }
         Log.d(TAG, "onViewCreated: called :: page number :: $mPageNumber :: Category Id :: $mSelectedCategoryId")
         mService?.getSocialMediaTemplateList(mSelectedCategoryId, mPageNumber)
         templateRecyclerView?.apply {
@@ -90,12 +95,12 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
     override fun onClick(view: View?) {
         when (view?.id) {
             showMoreCategoryTextView?.id -> {
-                if (showMoreCategoryTextView?.text == mSocialMediaPageInfoResponse?.socialMediaStaticTextResponse?.text_show_more_categories) {
-                    showMoreCategoryTextView?.text = mSocialMediaPageInfoResponse?.socialMediaStaticTextResponse?.text_hide
-                    mSocialMediaCategoryAdapter?.setListSize(mSocialMediaPageInfoResponse?.socialMediaCategoriesList?.size ?: 0)
+                if (showMoreCategoryTextView?.text == sSocialMediaPageInfoResponse?.socialMediaStaticTextResponse?.text_show_more_categories) {
+                    showMoreCategoryTextView?.text = sSocialMediaPageInfoResponse?.socialMediaStaticTextResponse?.text_hide
+                    mSocialMediaCategoryAdapter?.setListSize(sSocialMediaPageInfoResponse?.socialMediaCategoriesList?.size ?: 0)
                 } else {
-                    showMoreCategoryTextView?.text = mSocialMediaPageInfoResponse?.socialMediaStaticTextResponse?.text_show_more_categories
-                    mSocialMediaCategoryAdapter?.setListSize(mSocialMediaPageInfoResponse?.categoryShowCount ?: 0)
+                    showMoreCategoryTextView?.text = sSocialMediaPageInfoResponse?.socialMediaStaticTextResponse?.text_show_more_categories
+                    mSocialMediaCategoryAdapter?.setListSize(sSocialMediaPageInfoResponse?.categoryShowCount ?: 0)
                 }
             }
         }
@@ -105,21 +110,25 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
         stopProgress()
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (commonApiResponse.mIsSuccessStatus) {
-                mSocialMediaPageInfoResponse = Gson().fromJson<SocialMediaPageInfoResponse>(commonApiResponse.mCommonDataStr, SocialMediaPageInfoResponse::class.java)
-                ToolBarManager.getInstance()?.apply {
-                    setHeaderTitle(mSocialMediaPageInfoResponse?.socialMediaStaticTextResponse?.heading_social_media)
-                    setupHelpPageUI(mSocialMediaPageInfoResponse?.socialMediaHelpPage)
-                }
-                mFavoriteCategoryId = mSocialMediaPageInfoResponse?.favouriteCategoryId ?: 1
-                showMoreCategoryTextView?.text = mSocialMediaPageInfoResponse?.socialMediaStaticTextResponse?.text_show_more_categories
-                categoryRecyclerView?.apply {
-                    mSocialMediaCategoriesList = mSocialMediaPageInfoResponse?.socialMediaCategoriesList
-                    itemAnimator = DefaultItemAnimator()
-                    mSocialMediaCategoryAdapter = SocialMediaCategoryAdapter(mActivity, mSocialMediaCategoriesList, mSocialMediaPageInfoResponse?.categoryShowCount ?: 0, this@SocialMediaFragment)
-                    layoutManager = GridLayoutManager(mActivity, 3)
-                    adapter = mSocialMediaCategoryAdapter
-                }
+                sSocialMediaPageInfoResponse = Gson().fromJson<SocialMediaPageInfoResponse>(commonApiResponse.mCommonDataStr, SocialMediaPageInfoResponse::class.java)
+                setupSocialMediaUIFromResponse()
             }
+        }
+    }
+
+    private fun setupSocialMediaUIFromResponse() {
+        ToolBarManager.getInstance()?.apply {
+            headerTitle = sSocialMediaPageInfoResponse?.socialMediaStaticTextResponse?.heading_social_media
+            setupHelpPageUI(sSocialMediaPageInfoResponse?.socialMediaHelpPage)
+        }
+        mFavoriteCategoryId = sSocialMediaPageInfoResponse?.favouriteCategoryId ?: 1
+        showMoreCategoryTextView?.text = sSocialMediaPageInfoResponse?.socialMediaStaticTextResponse?.text_show_more_categories
+        categoryRecyclerView?.apply {
+            sSocialMediaCategoriesList = sSocialMediaPageInfoResponse?.socialMediaCategoriesList
+            itemAnimator = DefaultItemAnimator()
+            mSocialMediaCategoryAdapter = SocialMediaCategoryAdapter(mActivity, sSocialMediaCategoriesList, sSocialMediaPageInfoResponse?.categoryShowCount ?: 0, this@SocialMediaFragment)
+            layoutManager = GridLayoutManager(mActivity, 3)
+            adapter = mSocialMediaCategoryAdapter
         }
     }
 
@@ -181,7 +190,7 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
     override fun onSocialMediaTemplateCategoryItemClickListener(position: Int, item: SocialMediaCategoryItemResponse?) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (mSelectedCategoryId == (item?.id ?: "0")) return@runTaskOnCoroutineMain
-            mSocialMediaCategoriesList?.forEachIndexed { pos, itemResponse ->
+            sSocialMediaCategoriesList?.forEachIndexed { pos, itemResponse ->
                 itemResponse?.isSelected = (pos == position)
             }
             mSocialMediaCategoryAdapter?.notifyDataSetChanged()
@@ -214,6 +223,11 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
 
     override fun onSocialMediaTemplateWhatsappItemClickListener(position: Int, item: SocialMediaTemplateListItemResponse?) {
         showToast("Whatsapp $position")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        sSocialMediaPageInfoResponse = null
     }
 
 }
