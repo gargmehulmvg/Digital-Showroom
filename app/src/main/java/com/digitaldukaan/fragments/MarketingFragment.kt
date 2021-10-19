@@ -558,10 +558,12 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                                     )
                                     Log.d(TAG, "showMoreOptionsBottomSheet :: item clicked :: $item")
                                     bottomSheetDialog.dismiss()
-                                    /*item?.let { responseItem ->
-                                        openWebViewFragment(this@MarketingFragment, "", "${BuildConfig.WEB_VIEW_URL}${responseItem.url}")
-                                    }*/
-                                    launchFragment(EditSocialMediaTemplateFragment.newInstance(item?.heading, null, true, mMarketingPageInfoResponse), true)
+                                    val headingStr = when(item?.action) {
+                                        Constants.ACTION_BESTSELLER -> mMarketingPageInfoResponse?.marketingStaticTextResponse?.heading_new_launches_and_bestsellers
+                                        Constants.ACTION_PRODUCT_DISCOUNT -> mMarketingPageInfoResponse?.marketingStaticTextResponse?.heading_product_discount
+                                        else -> ""
+                                    }
+                                    launchFragment(EditSocialMediaTemplateFragment.newInstance(headingStr, null, true, mMarketingPageInfoResponse), true)
                                 }
 
                             })

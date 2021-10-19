@@ -21,8 +21,11 @@ import com.digitaldukaan.services.serviceinterface.IEditSocialMediaTemplateServi
 import com.digitaldukaan.webviews.WebViewBridge
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
+import kotlinx.android.synthetic.main.layout_add_product_fragment.*
 import kotlinx.android.synthetic.main.layout_edit_premium_fragment.*
 import kotlinx.android.synthetic.main.layout_edit_social_media_template_fragment.*
+import java.util.*
+import kotlin.collections.ArrayList
 
 class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplateServiceInterface, IProductItemClickListener {
 
@@ -55,9 +58,6 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
         mService = EditSocialMediaTemplateService()
         mService?.setEditSocialMediaTemplateServiceListener(this)
         if (mIsOpenBottomSheet) {
-            showProgressDialog(mActivity)
-            mService?.getItemsBasicDetailsByStoreId()
-        } else {
             mService?.getProductCategories()
         }
         return mContentView
@@ -67,7 +67,7 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
         super.onViewCreated(view, savedInstanceState)
         ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, false)
-            setHeaderTitle(mHeadingStr)
+            headerTitle = mHeadingStr
             setSideIconVisibility(false)
             onBackPressed(this@EditSocialMediaTemplateFragment)
         }
@@ -105,12 +105,23 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
                 val productCategoryResponse = Gson().fromJson<AddProductStoreCategory>(response.mCommonDataStr, AddProductStoreCategory::class.java)
                 mAddProductStoreCategoryList = productCategoryResponse?.storeCategoriesList
                 Log.d(TAG, "onProductCategoryResponse: $productCategoryResponse")
-                showCategoryBottomSheet()
+                if (isEmpty(mAddProductStoreCategoryList)) {
+                    noTemplateLayout?.visibility = View.VISIBLE
+                    templateLayout?.visibility = View.GONE
+                    addProductTextView?.text = mMarketingPageInfoResponse?.marketingStaticTextResponse?.cta_text_add_products
+                    messageTextView?.text = when(ToolBarManager.getInstance().headerTitle) {
+                        mMarketingPageInfoResponse?.marketingStaticTextResponse?.heading_product_discount -> mMarketingPageInfoResponse?.marketingStaticTextResponse?.message_product_discount_zero_screen
+                        mMarketingPageInfoResponse?.marketingStaticTextResponse?.heading_new_launches_and_bestsellers -> mMarketingPageInfoResponse?.marketingStaticTextResponse?.message_bestseller_zero_screen
+                        else -> ""
+                    }
+                } else showCategoryBottomSheet()
             }
         }
     }
 
     private fun showCategoryBottomSheet() {
+        noTemplateLayout?.visibility = View.GONE
+        templateLayout?.visibility = View.VISIBLE
         mActivity?.let {
             mCategoryBottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
             val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_category_product, it.findViewById(R.id.bottomSheetContainer))
@@ -134,5 +145,11 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
     override fun onProductItemClickListener(productItem: ProductResponse?) {
         mCategoryBottomSheetDialog?.dismiss()
         showToast(productItem?.name)
+    }
+
+    override fun onClick(view: View?) {
+        when(view?.id) {
+            addProductTextView?.id -> launchFragment(AddProductFragment.newInstance(0, true), true)
+        }
     }
 }

@@ -66,6 +66,8 @@ class Constants {
         const val ACTION_EMAIL_AUTHENTICATION                   = "email-authentication"
         const val ACTION_MARK_OUT_FOR_DELIVERY                  = "mark-out-for-delivery"
         const val ACTION_HOW_TO_SHIP                            = "how-to-ship"
+        const val ACTION_PRODUCT_DISCOUNT                       = "product-discount"
+        const val ACTION_BESTSELLER                             = "bestseller"
         //Incomplete profile actions
         const val ACTION_LOGO                                   = "logo"
         const val ACTION_DESCRIPTION                            = "description"

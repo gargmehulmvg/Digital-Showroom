@@ -32,6 +32,11 @@ public class ToolBarManager {
         v.setText(title);
     }
 
+    public String getHeaderTitle() {
+        TextView view = mToolbar.findViewById(R.id.appTitleTextView);
+        return view.getText().toString();
+    }
+
     public void setHeaderSubTitle(String title) {
         TextView v = mToolbar.findViewById(R.id.appSubTitleTextView);
         v.setVisibility(View.VISIBLE);

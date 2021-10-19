@@ -24,8 +24,9 @@
             android:layout_width="@dimen/_75sdp"
             android:layout_height="@dimen/_75sdp"
             android:clickable="false"
+            android:padding="@dimen/_8sdp"
             android:contentDescription="@string/image_view_content_description"
-            tools:src="@drawable/ic_change_image" />
+            android:src="@drawable/ic_default_image" />
 
     </androidx.cardview.widget.CardView>
 
