@@ -21,6 +21,7 @@ import com.digitaldukaan.services.serviceinterface.IEditSocialMediaTemplateServi
 import com.digitaldukaan.webviews.WebViewBridge
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.layout_add_product_fragment.*
 import kotlinx.android.synthetic.main.layout_edit_premium_fragment.*
 import kotlinx.android.synthetic.main.layout_edit_social_media_template_fragment.*
@@ -35,8 +36,8 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
     private var mHeadingStr = ""
     private var mMarketingPageInfoResponse: MarketingPageInfoResponse? = null
     private var mAddProductStoreCategoryList: ArrayList<StoreCategoryItem>? = ArrayList()
-    private var mIsStoreItemLimitExceeds = false
     private var mCategoryBottomSheetDialog: BottomSheetDialog? = null
+    private var mProductCategoryCombineList: ArrayList<ProductCategoryCombineResponse>? = ArrayList()
 
     companion object {
         private const val TAG = "EditSocialMediaTemplateFragment"
@@ -86,8 +87,14 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
             getQRCodeBitmap(mActivity, domain)?.let { b -> screenshotQRImageView?.setImageBitmap(b) }
         }
         mMarketingPageInfoResponse?.marketingStaticTextResponse?.let { staticText ->
-            backgroundTextView?.text = staticText.text_background
-            editTextTextView?.text = staticText.text_edit_text
+            if (ToolBarManager.getInstance().headerTitle == mMarketingPageInfoResponse?.marketingStaticTextResponse?.heading_edit_and_share) {
+                backgroundTextView?.text = staticText.text_background
+                editTextTextView?.text = staticText.text_edit_text
+            } else {
+                backgroundTextView?.visibility = View.GONE
+                editTextTextView?.text = staticText.text_change_product
+                editTextTextView.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_change_product, 0, 0)
+            }
             shareTextView?.text = staticText.text_share
             whatsappTextView?.text = staticText.text_whatsapp
         }
@@ -104,8 +111,9 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
             onBackPressed(this@EditSocialMediaTemplateFragment)
         }
         if (mIsOpenBottomSheet) {
-//            if (true == mMarketingPageInfoResponse?.marketingStoreInfo?.isStoreItemLimitExceeds) mService?.getProductCategories() else mService?.getItemsBasicDetailsByStoreId()
-            mService?.getProductCategories()
+            showProgressDialog(mActivity)
+            if (true == mMarketingPageInfoResponse?.marketingStoreInfo?.isStoreItemLimitExceeds) mService?.getProductCategories() else mService?.getItemsBasicDetailsByStoreId()
+//            mService?.getProductCategories()
         } else {
             setupUIWithQRCode()
         }
@@ -115,11 +123,18 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
 
     override fun onItemsBasicDetailsByStoreIdResponse(response: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            stopProgress()
+            val listType = object : TypeToken<List<ProductCategoryCombineResponse>>() {}.type
+            mProductCategoryCombineList = ArrayList()
+            mProductCategoryCombineList = Gson().fromJson<ArrayList<ProductCategoryCombineResponse>>(response.mCommonDataStr, listType)
+            Log.d(TAG, "onItemsBasicDetailsByStoreIdResponse: productCategoryCombineList :: $mProductCategoryCombineList")
+            setupUIWithQRCode()
+            showCategoryBottomSheet()
         }
+        stopProgress()
     }
 
     override fun onProductCategoryResponse(response: CommonApiResponse) {
+        stopProgress()
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (response.mIsSuccessStatus) {
                 val productCategoryResponse = Gson().fromJson<AddProductStoreCategory>(response.mCommonDataStr, AddProductStoreCategory::class.java)
@@ -134,7 +149,9 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
                         mMarketingPageInfoResponse?.marketingStaticTextResponse?.heading_new_launches_and_bestsellers -> mMarketingPageInfoResponse?.marketingStaticTextResponse?.message_bestseller_zero_screen
                         else -> ""
                     }
-                } else showCategoryBottomSheet()
+                } else {
+//                    showCategoryBottomSheet()
+                }
             }
         }
     }
@@ -155,7 +172,8 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
                     editText.hint = mMarketingPageInfoResponse?.marketingStaticTextResponse?.hint_search_product
                     searchProductRecyclerView.apply {
                         layoutManager = LinearLayoutManager(mActivity)
-                        adapter = CategoryProductAdapter(mActivity, mMarketingPageInfoResponse?.marketingStaticTextResponse, mAddProductStoreCategoryList, this@EditSocialMediaTemplateFragment)
+                        isNestedScrollingEnabled = false
+                        adapter = CategoryProductAdapter(mActivity, mMarketingPageInfoResponse?.marketingStaticTextResponse, mProductCategoryCombineList, this@EditSocialMediaTemplateFragment)
                     }
                 }
             }?.show()
@@ -169,6 +187,11 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
 
     override fun onClick(view: View?) {
         when(view?.id) {
+            editTextTextView?.id -> {
+                if (editTextTextView?.text == mMarketingPageInfoResponse?.marketingStaticTextResponse?.text_change_product) {
+                    showCategoryBottomSheet()
+                }
+            }
             addProductTextView?.id -> launchFragment(AddProductFragment.newInstance(0, true), true)
             whatsappTextView?.id -> {
                 screenshotContainer?.let { v ->

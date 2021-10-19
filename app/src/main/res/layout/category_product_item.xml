@@ -21,6 +21,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:itemCount="2"
+        android:nestedScrollingEnabled="false"
         tools:listitem="@layout/products_item"
         android:layout_marginTop="@dimen/_5sdp" />
 

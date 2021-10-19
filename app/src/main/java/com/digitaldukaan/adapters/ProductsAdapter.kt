@@ -16,7 +16,7 @@ import com.digitaldukaan.models.response.ProductResponse
 
 class ProductsAdapter(
     private val mContext: Context?,
-    private val productsList: ArrayList<ProductResponse>,
+    private val productsList: ArrayList<ProductResponse?>?,
     private val mListener: IProductItemClickListener) : RecyclerView.Adapter<ProductsAdapter.ProductsViewHolder>() {
 
     inner class ProductsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -31,23 +31,23 @@ class ProductsAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductsViewHolder {
         val view = ProductsViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.products_item, parent, false))
         view.container.setOnClickListener {
-            mListener.onProductItemClickListener(productsList[view.adapterPosition])
+            mListener.onProductItemClickListener(productsList?.get(view.adapterPosition))
         }
         return view
     }
 
-    override fun getItemCount(): Int = productsList.size
+    override fun getItemCount(): Int = productsList?.size ?: 0
 
     override fun onBindViewHolder(holder: ProductsViewHolder, position: Int) {
-        val item = productsList[position]
+        val item = productsList?.get(position)
         holder.apply {
-            titleTextView.text = item.name
-            discountedPriceTextView.text = "₹${item.discountedPrice}"
+            titleTextView.text = item?.name
+            discountedPriceTextView.text = "₹${item?.discountedPrice}"
             originalPriceTextView.apply {
-                text = "₹${item.price}"
+                text = "₹${item?.price}"
                 paintFlags = paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
             }
-            if (isNotEmpty(item.thumbnailUrl)) mContext?.let { context -> Glide.with(context).load(item.thumbnailUrl).into(imageView) }
+            if (isNotEmpty(item?.thumbnailUrl)) mContext?.let { context -> Glide.with(context).load(item?.thumbnailUrl).into(imageView) }
         }
     }
 

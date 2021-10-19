@@ -9,19 +9,14 @@ import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
-import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.interfaces.IProductItemClickListener
 import com.digitaldukaan.models.response.MarketingStaticTextResponse
-import com.digitaldukaan.models.response.ProductResponse
-import com.digitaldukaan.models.response.StoreCategoryItem
-import com.digitaldukaan.network.RetrofitApi
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import com.digitaldukaan.models.response.ProductCategoryCombineResponse
 
 class CategoryProductAdapter(
     private val mContext: Context?,
     private val mMarketingStaticTextResponse: MarketingStaticTextResponse?,
-    private val mCategoryNameList: ArrayList<StoreCategoryItem>?,
+    private val mCompleteList: ArrayList<ProductCategoryCombineResponse>?,
     private val mListener: IProductItemClickListener
 ) :
     RecyclerView.Adapter<CategoryProductAdapter.CategoryProductViewHolder>() {
@@ -39,18 +34,23 @@ class CategoryProductAdapter(
         return CategoryProductViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.category_product_item, parent, false))
     }
 
-    override fun getItemCount(): Int = mCategoryNameList?.size ?: 0
+    override fun getItemCount(): Int = mCompleteList?.size ?: 0
 
     override fun onBindViewHolder(holder: CategoryProductViewHolder, position: Int) {
-        val item = mCategoryNameList?.get(position)
+        val item = mCompleteList?.get(position)
         holder.apply {
             Log.d("CustomDomainSelectionAdapter", "onBindViewHolder: $position :: $item")
-            categoryNameTextView.text = if (0 == position) mMarketingStaticTextResponse?.text_recently_added else mCategoryNameList?.get(position)?.name
-            initiateProductsApiCall(item?.id ?: 0, holder)
+            categoryNameTextView.text = if (0 == position) mMarketingStaticTextResponse?.text_recently_added else mCompleteList?.get(position)?.category?.name
+            recyclerView.apply {
+                isNestedScrollingEnabled = false
+                layoutManager = LinearLayoutManager(mContext)
+                adapter = ProductsAdapter(mContext, mCompleteList?.get(position)?.productsList, mListener)
+            }
+//            initiateProductsApiCall(item?.id ?: 0, holder)
         }
     }
 
-    private fun initiateProductsApiCall(id: Int, holder: CategoryProductViewHolder) {
+    /*private fun initiateProductsApiCall(id: Int, holder: CategoryProductViewHolder) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
             try {
                 val response = RetrofitApi().getServerCallObject()?.getProductsByCategoryId(id)
@@ -75,6 +75,6 @@ class CategoryProductAdapter(
                 Log.e(TAG, "initiateProductsApiCall: ${e.message}", e)
             }
         }
-    }
+    }*/
 
 }
