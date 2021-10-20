@@ -626,10 +626,11 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
     private fun setupDeliveryChargeUI(displayStatus: String?, deliveryInfo: DeliveryInfoItemResponse?, deliveryCharge: Double?) {
         Log.d(TAG, "setupDeliveryChargeUI: deliveryInfo?.type :: ${deliveryInfo?.type}")
         when(deliveryInfo?.type) {
-            Constants.FREE_DELIVERY -> setFreeDelivery(displayStatus)
+            Constants.FREE_DELIVERY -> setFreeDelivery()
             Constants.FIXED_DELIVERY_CHARGE -> setFixedDeliveryChargeUI(displayStatus, deliveryCharge)
             Constants.CUSTOM_DELIVERY_CHARGE -> setCustomDeliveryChargeUI(displayStatus)
             Constants.UNKNOWN_DELIVERY_CHARGE -> setCustomDeliveryChargeUI(displayStatus)
+            else -> setCustomDeliveryChargeUI(displayStatus)
         }
         deliveryChargeValueEditText?.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(editable: Editable?) {
@@ -706,24 +707,19 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
         }
     }
 
-    private fun setFreeDelivery(displayStatus: String?) {
+    private fun setFreeDelivery() {
         try {
-            if (Constants.DS_SEND_BILL == displayStatus || Constants.DS_NEW == displayStatus) {
-                deliveryChargeLabel?.visibility = View.VISIBLE
-                deliveryChargeValue?.visibility = View.VISIBLE
-                val txtSpannable = SpannableString(getString(R.string.free).toUpperCase(Locale.getDefault()))
-                val boldSpan = StyleSpan(Typeface.BOLD)
-                txtSpannable.setSpan(boldSpan, 0, txtSpannable.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-                deliveryChargeValue?.text = txtSpannable
-                mActivity?.run {
-                    deliveryChargeValue?.setTextColor(ContextCompat.getColor(this, R.color.open_green))
-                    deliveryChargeValue?.background = ContextCompat.getDrawable(this, R.drawable.order_adapter_new)
-                }
-                addDeliveryChargesLabel?.text = getString(R.string.add_discount_and_other_charges)
-            } else {
-                deliveryChargeLabel?.visibility = View.GONE
-                deliveryChargeValue?.visibility = View.GONE
+            deliveryChargeLabel?.visibility = View.VISIBLE
+            deliveryChargeValue?.visibility = View.VISIBLE
+            val txtSpannable = SpannableString(getString(R.string.free).toUpperCase(Locale.getDefault()))
+            val boldSpan = StyleSpan(Typeface.BOLD)
+            txtSpannable.setSpan(boldSpan, 0, txtSpannable.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            deliveryChargeValue?.text = txtSpannable
+            mActivity?.run {
+                deliveryChargeValue?.setTextColor(ContextCompat.getColor(this, R.color.open_green))
+                deliveryChargeValue?.background = ContextCompat.getDrawable(this, R.drawable.order_adapter_new)
             }
+            addDeliveryChargesLabel?.text = getString(R.string.add_discount_and_other_charges)
         } catch (e: Exception) {
             Log.e(TAG, "setFreeDelivery: ${e.message}", e)
         }
