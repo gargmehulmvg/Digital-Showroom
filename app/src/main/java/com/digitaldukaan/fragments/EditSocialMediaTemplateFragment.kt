@@ -56,7 +56,7 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
 
     companion object {
         private const val TAG = "EditSocialMediaTemplateFragment"
-        private const val EDIT_TEMPLATE_WEB_VIEW_URL = BuildConfig.WEB_VIEW_SHOW_ROOM_URL + Constants.WEB_VIEW_URL_EDIT_SOCIAL_MEDIA_POST
+        private const val EDIT_TEMPLATE_WEB_VIEW_URL = BuildConfig.WEB_VIEW_URL + Constants.WEB_VIEW_URL_EDIT_SOCIAL_MEDIA_POST
 
         fun newInstance(heading: String?, item: SocialMediaTemplateListItemResponse?, isOpenBottomSheet: Boolean = false, marketingPageInfoResponse: MarketingPageInfoResponse?): EditSocialMediaTemplateFragment {
             val fragment = EditSocialMediaTemplateFragment()
@@ -85,7 +85,6 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
             settings.javaScriptEnabled = true
             settings.domStorageEnabled = true
             addJavascriptInterface(WebViewBridge(), "Android")
-//            mWebViewUrl = "$EDIT_TEMPLATE_WEB_VIEW_URL?store_name=${mMarketingPageInfoResponse?.marketingStoreInfo?.name}&html=${Gson().toJson()}"
             mWebViewUrl = "$EDIT_TEMPLATE_WEB_VIEW_URL?store_name=${mMarketingPageInfoResponse?.marketingStoreInfo?.name}&html=${URLEncoder.encode(Gson().toJson(mSocialMediaTemplateResponse?.html), "utf-8")}"
             Log.d(TAG, "onViewCreated: mWebViewUrl :: $mWebViewUrl")
             webViewClient = object : WebViewClient() {
