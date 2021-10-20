@@ -24,7 +24,6 @@ class CreateStoreFragment : BaseFragment(), ICreateStoreServiceInterface {
     private var mService: CreateStoreService? = null
 
     companion object {
-        private const val TAG = "CreateStoreFragment"
         fun newInstance(): CreateStoreFragment = CreateStoreFragment()
     }
 
@@ -40,6 +39,7 @@ class CreateStoreFragment : BaseFragment(), ICreateStoreServiceInterface {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        TAG = "CreateStoreFragment"
         mService = CreateStoreService()
         mService?.setServiceInterface(this)
         mService?.getCustomDomainBottomSheetData()

@@ -30,7 +30,6 @@ class SendBillFragment : BaseFragment() {
     private var billCameraImageView: ImageView? = null
 
     companion object {
-        private const val TAG = "SendBillFragment"
         fun newInstance(uri: Uri?, file: File?, amount: String): SendBillFragment {
             val fragment = SendBillFragment()
             fragment.mImageUri = uri
@@ -41,6 +40,7 @@ class SendBillFragment : BaseFragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        TAG = "SendBillFragment"
         mContentView = inflater.inflate(R.layout.layout_send_bill, container, false)
         hideBottomNavigationView(true)
         ToolBarManager.getInstance()?.apply { hideToolBar(mActivity, true) }

@@ -36,6 +36,7 @@ class BankAccountFragment : BaseFragment(), IBankDetailsServiceInterface {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        TAG = "BankAccountFragment"
         mContentView = inflater.inflate(R.layout.layout_bank_account_fragment, container, false)
         mService = BankDetailsService()
         mService.setServiceInterface(this)

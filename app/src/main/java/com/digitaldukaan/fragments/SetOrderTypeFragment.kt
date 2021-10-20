@@ -47,17 +47,13 @@ class SetOrderTypeFragment: BaseFragment(), ISetOrderTypeServiceInterface, IRecy
     private var mIsBothCompleted = false
 
     companion object {
-        private const val TAG = "SetOrderTypeFragment"
         fun newInstance(): SetOrderTypeFragment{
             return SetOrderTypeFragment()
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        TAG = "SetOrderTypeFragment"
         mContentView = inflater.inflate(R.layout.layout_set_order_type_fragment, container, false)
         initializeUI()
         mService = SetOrderTypeService()
