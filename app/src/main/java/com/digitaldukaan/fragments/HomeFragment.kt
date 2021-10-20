@@ -98,7 +98,6 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
             setCustomKey("store_id", PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
             setCustomKey("store_name", PrefsManager.getStringDataFromSharedPref(Constants.STORE_NAME))
             setCustomKey("mobile_number", PrefsManager.getStringDataFromSharedPref(Constants.USER_MOBILE_NUMBER))
-            setCustomKey("screen_tag", TAG)
         }
     }
 

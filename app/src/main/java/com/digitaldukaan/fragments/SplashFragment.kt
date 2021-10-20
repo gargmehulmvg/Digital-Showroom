@@ -22,6 +22,7 @@ import com.digitaldukaan.models.response.*
 import com.digitaldukaan.services.SplashService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.ISplashServiceInterface
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
@@ -44,6 +45,7 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
         TAG = "SplashFragment"
         mContentView = inflater.inflate(R.layout.layout_splash_fragment, container, false)
         hideBottomNavigationView(true)
+        FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
         return mContentView
     }
 
