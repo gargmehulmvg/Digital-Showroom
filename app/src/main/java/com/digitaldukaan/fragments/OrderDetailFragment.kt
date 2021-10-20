@@ -188,7 +188,6 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                 }
                 return
             }
-            val deliveryChargesAmount = calculateDeliveryCharge(payAmount)
             val orderDetailList = orderDetailsItemsList?.toMutableList()
             if (!isEmpty(orderDetailList)) {
                 orderDetailList?.forEachIndexed { _, itemResponse -> if (Constants.ITEM_TYPE_DELIVERY_CHARGE == itemResponse.item_type || Constants.ITEM_TYPE_CHARGE == itemResponse.item_type) orderDetailsItemsList?.remove(itemResponse) }
@@ -206,7 +205,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                 if (true == otherChargesValueEditText.text?.isNotEmpty()) otherChargesValueEditText.text.toString().toDouble() else 0.0,
                 if (true == discountsValueEditText.text?.isNotEmpty()) discountsValueEditText.text.toString().toDouble() else 0.0,
                 payAmount,
-                deliveryChargesAmount
+                mDeliveryChargeAmount
             )
             Log.d(OrderDetailFragment::class.java.simpleName, "initiateSendBillServerCall: $request")
             showProgressDialog(mActivity)
@@ -225,21 +224,6 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
             )
             mOrderDetailService?.updateOrder(request)
         }
-    }
-
-    private fun calculateDeliveryCharge(payAmount: Double?): Double {
-        var deliveryChargesAmount = 0.0
-        val storeServices = orderDetailMainResponse?.storeServices
-        if (!mIsPickUpOrder) {
-            if (Constants.CUSTOM_DELIVERY_CHARGE == storeServices?.mDeliveryChargeType && 0.0 == storeServices.mFreeDeliveryAbove) {
-                deliveryChargesAmount = mDeliveryChargeAmount
-            } else if ((Constants.CUSTOM_DELIVERY_CHARGE == storeServices?.mDeliveryChargeType && payAmount ?: 0.0 <= storeServices.mFreeDeliveryAbove) || (Constants.UNKNOWN_DELIVERY_CHARGE == storeServices?.mDeliveryChargeType)) {
-                deliveryChargesAmount = mDeliveryChargeAmount
-            } else if (Constants.FIXED_DELIVERY_CHARGE == storeServices?.mDeliveryChargeType) {
-                deliveryChargesAmount = storeServices.mDeliveryPrice ?: 0.0
-            }
-        }
-        return deliveryChargesAmount
     }
 
     override fun onOrderDetailResponse(commonResponse: CommonApiResponse) {
@@ -729,10 +713,6 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
         amountEditText?.setText("$amount")
     }
 
-    private fun getAmountFromEditText() : Double {
-        return mTotalPayAmount + mDeliveryChargeAmount + mOtherChargeAmount - mDiscountAmount
-    }
-
     private fun getActualAmountOfOrder() : Double {
         return mTotalActualAmount + mDeliveryChargeAmount + mOtherChargeAmount
     }
@@ -868,8 +848,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
         val extraCharge = if (true == otherChargesValueEditText.text?.isNotEmpty()) otherChargesValueEditText.text.toString().toDouble() else 0.0
         val discount = if (true == discountsValueEditText.text?.isNotEmpty()) discountsValueEditText.text.toString().toDouble() else 0.0
         val payAmount = if (true == amountEditText.text?.isNotEmpty()) amountEditText.text.toString().toDouble() else orderDetailMainResponse?.orders?.amount
-        val deliveryChargesAmount = calculateDeliveryCharge(payAmount)
-        launchFragment(SendBillPhotoFragment.newInstance(orderDetailMainResponse, file, mDeliveryTimeStr, extraChargeName, extraCharge, discount, payAmount, deliveryChargesAmount, deliveryTimeResponse), true)
+        launchFragment(SendBillPhotoFragment.newInstance(orderDetailMainResponse, file, mDeliveryTimeStr, extraChargeName, extraCharge, discount, payAmount, mDeliveryChargeAmount, deliveryTimeResponse), true)
     }
 
     override fun onOrderDetailException(e: Exception) = exceptionHandlingForAPIResponse(e)
