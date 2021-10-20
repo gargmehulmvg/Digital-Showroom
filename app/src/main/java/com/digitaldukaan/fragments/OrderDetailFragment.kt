@@ -255,7 +255,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
             val isUpperLayoutVisible = (true == orderDetailMainResponse?.isHeaderLayoutVisible)
             orderDetailContainer?.visibility = if (isUpperLayoutVisible) View.VISIBLE else View.GONE
             addDeliveryChargesLabel?.visibility = if (Constants.ACTION_SHARE_BILL != orderDetailMainResponse?.footerLayout && (Constants.DS_NEW == displayStatus || Constants.DS_SEND_BILL == displayStatus)) View.VISIBLE else View.GONE
-            setupPrepaidOrderUI(displayStatus, orderDetailResponse)
+//            setupPrepaidOrderUI(displayStatus, orderDetailResponse)
             var isCreateListItemAdded = false
             isCreateListItemAdded = setupOrderDetailItemRecyclerView(orderDetailResponse, isCreateListItemAdded, displayStatus)
             amountEditText?.setText("$mTotalPayAmount")
@@ -296,6 +296,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
     }
 
     private fun setupFooterLayout() {
+        Log.d(TAG, "setupFooterLayout: ${orderDetailMainResponse?.footerLayout}")
         when (orderDetailMainResponse?.footerLayout) {
             Constants.ACTION_SHARE_BILL -> {
                 deliveryPartnerShareLinkContainer?.apply {
@@ -312,6 +313,12 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
             }
             Constants.ACTION_SEND_BILL -> {
                 sendBillLayout?.visibility = View.VISIBLE
+            }
+            Constants.ACTION_SET_PREPAID_ORDER -> {
+                setupPrepaidOrderUI(orderDetailMainResponse?.orders?.displayStatus, orderDetailMainResponse?.orders)
+            }
+            Constants.ACTION_PREPAID_ORDER -> {
+                setupPrepaidOrderUI(orderDetailMainResponse?.orders?.displayStatus, orderDetailMainResponse?.orders)
             }
         }
 
@@ -579,6 +586,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
     private fun setupPrepaidOrderUI(displayStatus: String?, orderDetailResponse: OrderDetailsResponse?) {
         if (Constants.ORDER_TYPE_PREPAID == orderDetailMainResponse?.orders?.prepaidFlag) {
             sendBillLayout?.visibility = View.GONE
+            prepaidOrderLayout?.visibility = View.VISIBLE
             Log.d(TAG, "setupPrepaidOrderUI: displayStatus :: $displayStatus")
             when (displayStatus) {
                 Constants.DS_MARK_READY -> {
