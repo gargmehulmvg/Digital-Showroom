@@ -30,6 +30,7 @@ class Constants {
         const val SETTINGS                                      = "settings"
         const val DOTPE_OFFICIAL_URL_CLIPBOARD                  = "https://web.dotpe.in"
         const val DOTPE_OFFICIAL_URL                            = "Go to web.dotpe.in"
+        const val WEB_VIEW_URL_EDIT_SOCIAL_MEDIA_POST            = "edit-social-media-template"
         const val KEY_DONT_SHOW_MESSAGE_AGAIN                   = "KEY_DONT_SHOW_MESSAGE_AGAIN"
         const val KEY_DONT_SHOW_MESSAGE_AGAIN_STOCK             = "KEY_DONT_SHOW_MESSAGE_AGAIN_STOCK"
         const val TEXT_YES                                      = "yes"

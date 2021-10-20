@@ -11,12 +11,16 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.CategoryProductAdapter
+import com.digitaldukaan.adapters.TemplateBackgroundAdapter
 import com.digitaldukaan.constants.*
+import com.digitaldukaan.interfaces.IAdapterItemClickListener
 import com.digitaldukaan.interfaces.IProductItemClickListener
 import com.digitaldukaan.models.response.*
 import com.digitaldukaan.services.EditSocialMediaTemplateService
@@ -29,6 +33,7 @@ import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.layout_add_product_fragment.*
 import kotlinx.android.synthetic.main.layout_edit_premium_fragment.*
 import kotlinx.android.synthetic.main.layout_edit_social_media_template_fragment.*
+import java.net.URLEncoder
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.ceil
@@ -43,10 +48,15 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
     private var mAddProductStoreCategoryList: ArrayList<StoreCategoryItem>? = ArrayList()
     private var mCategoryBottomSheetDialog: BottomSheetDialog? = null
     private var mProductCategoryCombineList: ArrayList<ProductCategoryCombineResponse>? = ArrayList()
+    private var mTemplateBackgroundList: ArrayList<TemplateBackgroundItemResponse>? = ArrayList()
     private var mStoreDomainStr = ""
+    private var mWebViewUrl = ""
+    private var mSelectedBackgroundItem: TemplateBackgroundItemResponse? = null
+    private var editTemplateWebView: WebView? = null
 
     companion object {
         private const val TAG = "EditSocialMediaTemplateFragment"
+        private const val EDIT_TEMPLATE_WEB_VIEW_URL = BuildConfig.WEB_VIEW_SHOW_ROOM_URL + Constants.WEB_VIEW_URL_EDIT_SOCIAL_MEDIA_POST
 
         fun newInstance(heading: String?, item: SocialMediaTemplateListItemResponse?, isOpenBottomSheet: Boolean = false, marketingPageInfoResponse: MarketingPageInfoResponse?): EditSocialMediaTemplateFragment {
             val fragment = EditSocialMediaTemplateFragment()
@@ -64,21 +74,20 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
         WebViewBridge.mWebViewListener = this
         mService = EditSocialMediaTemplateService()
         mService?.setEditSocialMediaTemplateServiceListener(this)
+        editTemplateWebView = mContentView?.findViewById(R.id.webView)
         return mContentView
     }
 
-    private fun setupUIWithQRCode() {
+    private fun setupEditAndShareTemplateUI() {
         templateLayout?.visibility = View.VISIBLE
         noTemplateLayout?.visibility = View.GONE
-        webView?.apply {
+        editTemplateWebView?.apply {
             settings.javaScriptEnabled = true
             settings.domStorageEnabled = true
             addJavascriptInterface(WebViewBridge(), "Android")
-            var url = mSocialMediaTemplateResponse?.html?.htmlText ?: ""
-            mStoreDomainStr = mMarketingPageInfoResponse?.marketingStoreInfo?.name ?: ""
-            url = url.replace("id=\"business_creative_storename\"> Store Name</div>", "id=\"business_creative_storename\">$mStoreDomainStr</div>")
-            Log.d(TAG, "onViewCreated: text :: $url")
-
+//            mWebViewUrl = "$EDIT_TEMPLATE_WEB_VIEW_URL?store_name=${mMarketingPageInfoResponse?.marketingStoreInfo?.name}&html=${Gson().toJson()}"
+            mWebViewUrl = "$EDIT_TEMPLATE_WEB_VIEW_URL?store_name=${mMarketingPageInfoResponse?.marketingStoreInfo?.name}&html=${URLEncoder.encode(Gson().toJson(mSocialMediaTemplateResponse?.html), "utf-8")}"
+            Log.d(TAG, "onViewCreated: mWebViewUrl :: $mWebViewUrl")
             webViewClient = object : WebViewClient() {
                 override fun onPageFinished(view: WebView, url: String) {
                     Log.d(TAG, "onPageFinished: called")
@@ -87,8 +96,7 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
 
                 override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean { return onCommonWebViewShouldOverrideUrlLoading(url, view) }
             }
-
-            loadData(url, "text/html", "UTF-8")
+            loadUrl(mWebViewUrl)
             val domain = mMarketingPageInfoResponse?.marketingStoreInfo?.domain
             screenshotStoreNameTextView?.text = domain
             getQRCodeBitmap(mActivity, domain)?.let { b -> screenshotQRImageView?.setImageBitmap(b) }
@@ -122,7 +130,7 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
             if (true == mMarketingPageInfoResponse?.marketingStoreInfo?.isStoreItemLimitExceeds) mService?.getProductCategories() else mService?.getItemsBasicDetailsByStoreId()
         } else {
             qrCodeScreenshotView?.visibility = View.VISIBLE
-            setupUIWithQRCode()
+            setupEditAndShareTemplateUI()
         }
     }
 
@@ -134,7 +142,7 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
             mProductCategoryCombineList = ArrayList()
             mProductCategoryCombineList = Gson().fromJson<ArrayList<ProductCategoryCombineResponse>>(response.mCommonDataStr, listType)
             Log.d(TAG, "onItemsBasicDetailsByStoreIdResponse: productCategoryCombineList :: $mProductCategoryCombineList")
-            setupUIWithQRCode()
+            setupEditAndShareTemplateUI()
             showCategoryBottomSheet()
         }
         stopProgress()
@@ -159,6 +167,18 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
                 } else {
 //                    showCategoryBottomSheet()
                 }
+            }
+        }
+    }
+
+    override fun onSocialMediaTemplateBackgroundsResponse(response: CommonApiResponse) {
+        stopProgress()
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            if (response.mIsSuccessStatus) {
+                val listType = object : TypeToken<List<TemplateBackgroundItemResponse>>() {}.type
+                mTemplateBackgroundList = ArrayList()
+                mTemplateBackgroundList = Gson().fromJson<ArrayList<TemplateBackgroundItemResponse>>(response.mCommonDataStr, listType)
+                showBackgroundBottomSheet()
             }
         }
     }
@@ -211,6 +231,55 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
                     text1InputLayout.hint = mMarketingPageInfoResponse?.marketingStaticTextResponse?.text_line_1
                     text2InputLayout.hint = mMarketingPageInfoResponse?.marketingStaticTextResponse?.text_line_2
                     closeImageView.setOnClickListener { bottomSheetDialog.dismiss() }
+                    saveChangesTextView.setOnClickListener {
+                        val text1Str = text1EditText.text.toString().trim()
+                        val text2Str = text2EditText.text.toString().trim()
+                        mSocialMediaTemplateResponse?.html?.htmlDefaults?.text1?.name = text1Str
+                        mSocialMediaTemplateResponse?.html?.htmlDefaults?.text2?.name = text2Str
+                        mWebViewUrl = "$EDIT_TEMPLATE_WEB_VIEW_URL?store_name=${mMarketingPageInfoResponse?.marketingStoreInfo?.name}&html=${URLEncoder.encode(Gson().toJson(mSocialMediaTemplateResponse?.html), "utf-8")}"
+                        if (null != mSelectedBackgroundItem) {
+                            mWebViewUrl += "&background=${URLEncoder.encode(Gson().toJson(mSelectedBackgroundItem), "utf-8")}"
+                        }
+                        Log.d(TAG, "showEditTemplateBottomSheet :: mWebViewUrl :: $mWebViewUrl")
+                        editTemplateWebView?.loadUrl(mWebViewUrl)
+                        bottomSheetDialog.dismiss()
+                    }
+                }
+            }.show()
+        }
+    }
+
+    private fun showBackgroundBottomSheet() {
+        mActivity?.let {
+            val bottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
+            val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_social_media_template_background, it.findViewById(R.id.bottomSheetContainer))
+            bottomSheetDialog.apply {
+                setContentView(view)
+                view.run {
+                    val closeImageView: View = findViewById(R.id.closeImageView)
+                    val editBackgroundTextView: TextView = findViewById(R.id.editBackgroundTextView)
+                    val backgroundColorRecyclerView: RecyclerView = findViewById(R.id.backgroundColorRecyclerView)
+                    editBackgroundTextView.text = mMarketingPageInfoResponse?.marketingStaticTextResponse?.text_edit_background
+                    closeImageView.setOnClickListener { bottomSheetDialog.dismiss() }
+                    backgroundColorRecyclerView.apply {
+                        layoutManager = GridLayoutManager(mActivity, 3)
+                        adapter = TemplateBackgroundAdapter(mActivity, mTemplateBackgroundList, object : IAdapterItemClickListener {
+
+                            override fun onAdapterItemClickListener(position: Int) {
+                                bottomSheetDialog.dismiss()
+                                mTemplateBackgroundList?.forEachIndexed { _, itemResponse -> itemResponse.isSelected = false }
+                                mSelectedBackgroundItem = null
+                                mSelectedBackgroundItem = mTemplateBackgroundList?.get(position)
+                                mSelectedBackgroundItem?.isSelected = true
+                                val newWebViewUrlWithBg = "$mWebViewUrl&background=${URLEncoder.encode(Gson().toJson(mSelectedBackgroundItem))}"
+                                Log.d(TAG, "showBackgroundBottomSheet :: onAdapterItemClickListener: newWebViewUrlWithBg :: $newWebViewUrlWithBg")
+                                editTemplateWebView?.loadUrl(newWebViewUrlWithBg)
+
+                            }
+
+                        })
+                    }
+
                 }
             }.show()
         }
@@ -262,6 +331,12 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
                 } else {
                     showEditTemplateBottomSheet()
                 }
+            }
+            backgroundTextView?.id -> {
+                if (isEmpty(mTemplateBackgroundList)) {
+                    showProgressDialog(mActivity)
+                    mService?.getSocialMediaTemplateBackgrounds(mSocialMediaTemplateResponse?.id ?: "")
+                } else showBackgroundBottomSheet()
             }
             addProductTextView?.id -> launchFragment(AddProductFragment.newInstance(0, true), true)
             whatsappTextView?.id -> {

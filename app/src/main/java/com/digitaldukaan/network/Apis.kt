@@ -119,6 +119,9 @@ interface Apis {
     @GET("api/dotk/vm1/products/getItemsBasicDetailsByStoreId")
     suspend fun getItemsBasicDetailsByStoreId(): Response<CommonApiResponse>
 
+    @GET("api/dotk/vm1/marketing/getTemplatesBackground/{id}")
+    suspend fun getSocialMediaTemplateBackgrounds(@Path("id") id: String): Response<CommonApiResponse>
+
     @GET("api/dotk/vm1/products/getItemsBasicDetails/{id}")
     suspend fun getProductsByCategoryId(@Path("id") id: Int): Response<CommonApiResponse>
 

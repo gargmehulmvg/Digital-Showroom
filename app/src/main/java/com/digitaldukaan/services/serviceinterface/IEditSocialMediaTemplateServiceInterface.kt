@@ -10,4 +10,6 @@ interface IEditSocialMediaTemplateServiceInterface {
 
     fun onProductCategoryResponse(response: CommonApiResponse)
 
+    fun onSocialMediaTemplateBackgroundsResponse(response: CommonApiResponse)
+
 }

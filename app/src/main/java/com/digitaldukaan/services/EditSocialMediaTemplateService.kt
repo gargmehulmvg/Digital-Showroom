@@ -26,4 +26,10 @@ class EditSocialMediaTemplateService {
         }
     }
 
+    fun getSocialMediaTemplateBackgrounds(id: String) {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.getSocialMediaTemplateBackgroundsServerCall(id, mServiceInterface)
+        }
+    }
+
 }
