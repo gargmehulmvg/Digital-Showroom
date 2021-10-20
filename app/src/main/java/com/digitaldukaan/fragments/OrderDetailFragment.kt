@@ -263,7 +263,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
             setUpOrderDeliveryPartnerUI(orderDetailMainResponse)
             appSubTitleTextView?.text = getStringDateTimeFromOrderDate(getCompleteDateFromOrderString(orderDetailMainResponse?.orders?.createdAt))
             if (isCreateListItemAdded) orderDetailMainResponse?.storeServices?.mDeliveryChargeType = Constants.CUSTOM_DELIVERY_CHARGE
-            setupDeliveryChargeUI(displayStatus, orderDetailMainResponse?.storeServices)
+            setupDeliveryChargeUI(displayStatus, orderDetailMainResponse?.orders?.deliveryInfo, orderDetailMainResponse?.orders?.deliveryCharge)
             setupOrderTypeUI(orderDetailResponse, displayStatus)
             if (isNotEmpty(orderDetailResponse?.instruction)) {
                 instructionsValue?.visibility = View.VISIBLE
@@ -623,12 +623,13 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
         } else prepaidOrderLayout?.visibility = View.GONE
     }
 
-    private fun setupDeliveryChargeUI(displayStatus: String?, storeServices: StoreServicesResponse?) {
-        when(storeServices?.mDeliveryChargeType) {
+    private fun setupDeliveryChargeUI(displayStatus: String?, deliveryInfo: DeliveryInfoItemResponse?, deliveryCharge: Double?) {
+        Log.d(TAG, "setupDeliveryChargeUI: deliveryInfo?.type :: ${deliveryInfo?.type}")
+        when(deliveryInfo?.type) {
             Constants.FREE_DELIVERY -> setFreeDelivery(displayStatus)
-            Constants.FIXED_DELIVERY_CHARGE -> setFixedDeliveryChargeUI(displayStatus, storeServices)
-            Constants.CUSTOM_DELIVERY_CHARGE -> setCustomDeliveryChargeUI(displayStatus, storeServices)
-            Constants.UNKNOWN_DELIVERY_CHARGE -> setUnknownDeliveryChargeUI(displayStatus)
+            Constants.FIXED_DELIVERY_CHARGE -> setFixedDeliveryChargeUI(displayStatus, deliveryCharge)
+            Constants.CUSTOM_DELIVERY_CHARGE -> setCustomDeliveryChargeUI(displayStatus)
+            Constants.UNKNOWN_DELIVERY_CHARGE -> setCustomDeliveryChargeUI(displayStatus)
         }
         deliveryChargeValueEditText?.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(editable: Editable?) {
@@ -678,8 +679,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
         })
     }
 
-    private fun setUnknownDeliveryChargeUI(displayStatus: String?) {
-        addDeliveryChargesLabel?.text = getString(R.string.add_discount_and_other_charges)
+    private fun setCustomDeliveryChargeUI(displayStatus: String?) {
         if (Constants.DS_SEND_BILL == displayStatus || Constants.DS_NEW == displayStatus) {
             deliveryChargeLabel?.visibility = View.VISIBLE
             deliveryChargeValue?.visibility = View.VISIBLE
@@ -689,43 +689,17 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
             deliveryChargeValue?.visibility = View.GONE
             deliveryChargeValueEditText?.visibility = View.GONE
         }
-    }
-
-    private fun setCustomDeliveryChargeUI(displayStatus: String?, storeServices: StoreServicesResponse) {
-        if (Constants.DS_SEND_BILL == displayStatus || Constants.DS_NEW == displayStatus) {
-            val amount = getAmountFromEditText()
-            if (storeServices.mFreeDeliveryAbove != 0.0 && storeServices.mFreeDeliveryAbove <= amount) {
-                mDeliveryChargeAmount = 0.0
-                setFreeDelivery(displayStatus)
-                setAmountToEditText()
-            } else {
-                deliveryChargeLabel?.visibility = View.VISIBLE
-                deliveryChargeValue?.visibility = View.VISIBLE
-                deliveryChargeValueEditText?.visibility = View.VISIBLE
-            }
-        } else {
-            deliveryChargeLabel?.visibility = View.GONE
-            deliveryChargeValue?.visibility = View.GONE
-            deliveryChargeValueEditText?.visibility = View.GONE
-        }
         addDeliveryChargesLabel?.text = getString(R.string.add_discount_and_other_charges)
     }
 
-    private fun setFixedDeliveryChargeUI(displayStatus: String?, storeServices: StoreServicesResponse) {
+    private fun setFixedDeliveryChargeUI(displayStatus: String?, deliveryCharge: Double?) {
         if (Constants.DS_SEND_BILL == displayStatus || Constants.DS_NEW == displayStatus) {
-            val amount = getAmountFromEditText()
-            if (storeServices.mFreeDeliveryAbove != 0.0 && storeServices.mFreeDeliveryAbove <= amount) {
-                mDeliveryChargeAmount = 0.0
-                setFreeDelivery(displayStatus)
-                setAmountToEditText()
-            } else {
-                mDeliveryChargeAmount = storeServices.mDeliveryPrice ?: 0.0
-                deliveryChargeLabel?.visibility = View.VISIBLE
-                deliveryChargeValue?.visibility = View.VISIBLE
-                addDeliveryChargesLabel?.text = getString(R.string.add_discount_and_other_charges)
-                deliveryChargeValue?.text = "${storeServices.mDeliveryPrice}"
-                setAmountToEditText()
-            }
+            mDeliveryChargeAmount = deliveryCharge ?: 0.0
+            deliveryChargeLabel?.visibility = View.VISIBLE
+            deliveryChargeValue?.visibility = View.VISIBLE
+            addDeliveryChargesLabel?.text = getString(R.string.add_discount_and_other_charges)
+            deliveryChargeValue?.text = "$deliveryCharge"
+            setAmountToEditText()
         } else {
             deliveryChargeLabel?.visibility = View.GONE
             deliveryChargeValue?.visibility = View.GONE
