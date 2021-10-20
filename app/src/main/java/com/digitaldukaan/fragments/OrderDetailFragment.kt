@@ -255,7 +255,6 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
             val isUpperLayoutVisible = (true == orderDetailMainResponse?.isHeaderLayoutVisible)
             orderDetailContainer?.visibility = if (isUpperLayoutVisible) View.VISIBLE else View.GONE
             addDeliveryChargesLabel?.visibility = if (Constants.ACTION_SHARE_BILL != orderDetailMainResponse?.footerLayout && (Constants.DS_NEW == displayStatus || Constants.DS_SEND_BILL == displayStatus)) View.VISIBLE else View.GONE
-//            setupPrepaidOrderUI(displayStatus, orderDetailResponse)
             var isCreateListItemAdded = false
             isCreateListItemAdded = setupOrderDetailItemRecyclerView(orderDetailResponse, isCreateListItemAdded, displayStatus)
             amountEditText?.setText("$mTotalPayAmount")
