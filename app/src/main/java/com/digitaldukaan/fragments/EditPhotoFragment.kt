@@ -33,7 +33,6 @@ class EditPhotoFragment: BaseFragment() {
     private var mPremiumPageInfoResponse: PremiumPageInfoResponse? = null
 
     companion object {
-        private const val TAG = "EditPhotoFragment"
         fun newInstance(uri: Uri?, mode: String, staticText: PremiumPageInfoStaticTextResponse?, premiumPageInfoResponse: PremiumPageInfoResponse?): EditPhotoFragment {
             val fragment = EditPhotoFragment()
             fragment.mFileUri = uri
@@ -56,6 +55,7 @@ class EditPhotoFragment: BaseFragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        TAG = "EditPhotoFragment"
         mContentView = inflater.inflate(R.layout.layout_edit_photo_fragment, container, false)
         return mContentView
     }

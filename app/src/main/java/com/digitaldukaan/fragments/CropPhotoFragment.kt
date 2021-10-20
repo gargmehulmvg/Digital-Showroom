@@ -19,7 +19,6 @@ class CropPhotoFragment: BaseFragment() {
     private var mFileUri: Uri? = null
 
     companion object {
-        private const val TAG = "CropPhotoFragment"
         fun newInstance(fileUri: Uri?): CropPhotoFragment {
             val fragment = CropPhotoFragment()
             fragment.mFileUri = fileUri
@@ -27,11 +26,8 @@ class CropPhotoFragment: BaseFragment() {
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        TAG = "CropPhotoFragment"
         mContentView = inflater.inflate(R.layout.layout_crop_photo, container, false)
         return mContentView
     }

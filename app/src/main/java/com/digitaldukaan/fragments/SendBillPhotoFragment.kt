@@ -47,7 +47,6 @@ class SendBillPhotoFragment: BaseFragment(), ISendBillPhotoServiceInterface {
     private val mService = SendBillPhotoService()
 
     companion object {
-        private const val TAG = "SendBillPhotoFragment"
         private const val CUSTOM = "custom"
 
         fun newInstance(mainOrderDetailResponse: OrderDetailMainResponse?, file: File?, deliveryTimeStr: String?, extraChargeName: String?, extraCharge: Double, discount: Double, payAmount: Double?, deliveryChargesAmount: Double, deliveryTimeResponse: DeliveryTimeResponse?): SendBillPhotoFragment {
@@ -67,6 +66,7 @@ class SendBillPhotoFragment: BaseFragment(), ISendBillPhotoServiceInterface {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        TAG = "SendBillPhotoFragment"
         mService.setServiceListener(this)
         mContentView = inflater.inflate(R.layout.send_bill_photo_fragment, container, false)
         return mContentView

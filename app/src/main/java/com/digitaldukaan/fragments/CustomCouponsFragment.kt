@@ -28,7 +28,6 @@ import java.util.*
 class CustomCouponsFragment : BaseFragment(), ICustomCouponsServiceInterface {
 
     companion object {
-        private const val TAG = "CustomCouponsFragment"
 
         fun newInstance(staticText: PromoCodePageStaticTextResponse?): CustomCouponsFragment {
             val fragment = CustomCouponsFragment()
@@ -64,6 +63,7 @@ class CustomCouponsFragment : BaseFragment(), ICustomCouponsServiceInterface {
     private var mStoreName = ""
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        TAG = "CustomCouponsFragment"
         mContentView = inflater.inflate(R.layout.layout_custom_coupons_fragment, container, false)
         initializeUI()
         mService.setCustomCouponsServiceListener(this)

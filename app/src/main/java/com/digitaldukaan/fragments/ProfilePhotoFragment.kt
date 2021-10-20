@@ -36,7 +36,6 @@ class ProfilePhotoFragment : BaseFragment(), View.OnClickListener, IProfilePhoto
 
     companion object {
 
-        private const val TAG = "ProfilePhotoFragment"
         private val service: ProfilePhotoService = ProfilePhotoService()
 
         fun newInstance(storeLinkStr: String?): ProfilePhotoFragment {
@@ -52,6 +51,7 @@ class ProfilePhotoFragment : BaseFragment(), View.OnClickListener, IProfilePhoto
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        TAG = "ProfilePhotoFragment"
         mContentView = inflater.inflate(R.layout.layout_profile_photo_fragment, container, false)
         service.setServiceInterface(this)
         StaticInstances.sIsStoreImageUploaded = false

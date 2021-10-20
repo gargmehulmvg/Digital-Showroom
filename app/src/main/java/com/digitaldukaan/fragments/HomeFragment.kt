@@ -56,7 +56,6 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
     private var mIsNewUserLogin = false
 
     companion object {
-        private val TAG = HomeFragment::class.simpleName
         private var mOrderPageInfoStaticData: OrderPageStaticTextResponse? = null
         private var mIsDoublePressToExit = false
         private var mHomeFragmentService: HomeFragmentService? = null
@@ -87,6 +86,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        TAG = "HomeFragment"
         mHomeFragmentService = HomeFragmentService()
         mHomeFragmentService?.setHomeFragmentServiceListener(this)
         AppsFlyerLib.getInstance().setCustomerUserId(PrefsManager.getStringDataFromSharedPref(Constants.USER_MOBILE_NUMBER))

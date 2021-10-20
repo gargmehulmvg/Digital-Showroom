@@ -23,7 +23,6 @@ class SetDeliveryChargeFragment : BaseFragment(), IMoreControlsServiceInterface 
     private var mAppStoreServicesResponse: StoreServicesResponse? = null
 
     companion object {
-        private const val TAG: String = "SetDeliveryChargeFragment"
 
         fun newInstance(appSettingsResponseStaticData: AccountStaticTextResponse?): SetDeliveryChargeFragment {
             val fragment = SetDeliveryChargeFragment()
@@ -34,6 +33,7 @@ class SetDeliveryChargeFragment : BaseFragment(), IMoreControlsServiceInterface 
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        TAG = "SetDeliveryChargeFragment"
         mContentView = inflater.inflate(R.layout.set_delivery_charge_fragment, container, false)
         return mContentView
     }

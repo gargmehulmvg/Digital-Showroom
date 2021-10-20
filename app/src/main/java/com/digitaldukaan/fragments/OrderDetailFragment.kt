@@ -180,7 +180,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
 
     private fun initiateSendBillServerCall() {
         orderDetailMainResponse?.orders?.run {
-            val payAmount = if (true == amountEditText.text?.isNotEmpty()) amountEditText.text.toString().toDouble() else amount
+            val payAmount = if (isNotEmpty(amountEditText.text.toString())) amountEditText.text.toString().toDouble() else amount
             if (payAmount ?: 0.0 <= 0.0) {
                 amountEditText.apply {
                     error = mActivity?.getString(R.string.bill_value_must_be_greater_than_zero)
@@ -189,7 +189,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                 return
             }
             val orderDetailList = orderDetailsItemsList?.toMutableList()
-            if (!isEmpty(orderDetailList)) {
+            if (isNotEmpty(orderDetailList)) {
                 orderDetailList?.forEachIndexed { _, itemResponse -> if (Constants.ITEM_TYPE_DELIVERY_CHARGE == itemResponse.item_type || Constants.ITEM_TYPE_CHARGE == itemResponse.item_type) orderDetailsItemsList?.remove(itemResponse) }
             }
             val request = UpdateOrderRequest(
