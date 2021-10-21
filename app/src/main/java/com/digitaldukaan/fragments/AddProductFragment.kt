@@ -107,7 +107,6 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     companion object {
         private var sIsVariantImageClicked = false
         private var sVariantImageClickedPosition = 0
-        private const val TAG = "AddProductFragment"
         fun newInstance(itemId:Int, isAddNewProduct: Boolean): AddProductFragment {
             val fragment = AddProductFragment()
             fragment.mItemId = itemId
@@ -134,6 +133,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        TAG = "AddProductFragment"
         mContentView = inflater.inflate(R.layout.layout_add_product_fragment, container, false)
         ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, false)

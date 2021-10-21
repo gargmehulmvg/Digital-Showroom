@@ -73,7 +73,6 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
     private var mStoreUserPageInfoStaticTextResponse: StoreUserPageInfoStaticTextResponse? = null
 
     companion object {
-        private const val TAG = "ProfilePreviewFragment"
 
         fun newInstance(storeName: String? = ""): ProfilePreviewFragment {
             val fragment = ProfilePreviewFragment()
@@ -92,6 +91,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        TAG = "ProfilePreviewFragment"
         mContentView = inflater.inflate(R.layout.layout_profile_preview_fragment, container, false)
         mService.setServiceInterface(this)
         mActivity?.let { cancelWarningDialog = Dialog(it) }

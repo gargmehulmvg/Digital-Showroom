@@ -84,9 +84,9 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     protected var mActivity: MainActivity? = null
     private var mImageAdapter = ImagesSearchAdapter()
     private var mImagePickBottomSheet: BottomSheetDialog? = null
+    protected var TAG: String = ""
 
     companion object {
-        private const val TAG = "BaseFragment"
         private var mCurrentPhotoPath = ""
     }
 

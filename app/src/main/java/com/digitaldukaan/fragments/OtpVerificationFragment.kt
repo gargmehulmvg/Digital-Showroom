@@ -49,7 +49,6 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
     private var mTimerCompleted = false
 
     companion object {
-        private const val TAG = "OtpVerificationFragment"
         fun newInstance(mobileNumber: String): OtpVerificationFragment {
             val fragment = OtpVerificationFragment()
             fragment.mMobileNumberStr = mobileNumber
@@ -72,6 +71,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        TAG = "OtpVerificationFragment"
         mContentView = inflater.inflate(R.layout.otp_verification_fragment, container, false)
         mOtpVerificationService = OtpVerificationService()
         mOtpVerificationService?.setOtpVerificationListener(this)
