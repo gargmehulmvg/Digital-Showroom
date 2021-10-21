@@ -2,6 +2,8 @@ package com.digitaldukaan.fragments
 
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -23,6 +25,7 @@ import com.digitaldukaan.adapters.TemplateBackgroundAdapter
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.IAdapterItemClickListener
 import com.digitaldukaan.interfaces.IProductItemClickListener
+import com.digitaldukaan.models.request.SearchCatalogItemsRequest
 import com.digitaldukaan.models.response.*
 import com.digitaldukaan.network.RetrofitApi
 import com.digitaldukaan.services.EditSocialMediaTemplateService
@@ -256,10 +259,58 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
                     val searchProductRecyclerView: RecyclerView = findViewById(R.id.searchProductRecyclerView)
                     headingTextView.setHtmlData(mMarketingPageInfoResponse?.marketingStaticTextResponse?.message_please_note)
                     editText.hint = mMarketingPageInfoResponse?.marketingStaticTextResponse?.hint_search_product
+                    val categoryProductAdapter = CategoryProductAdapter(mActivity, mMarketingPageInfoResponse?.marketingStaticTextResponse, mProductCategoryCombineList, this@EditSocialMediaTemplateFragment)
+                    editText.addTextChangedListener(object : TextWatcher{
+                        override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                            Log.d(TAG, "beforeTextChanged: do nothing")
+                        }
+
+                        override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                            Log.d(TAG, "onTextChanged: do nothing")
+                        }
+
+                        override fun afterTextChanged(editable: Editable?) {
+                            val str = editable?.toString() ?: ""
+                            if (str.length >= (mActivity?.resources?.getInteger(R.integer.catalog_search_char_count) ?: 3)) {
+                                CoroutineScopeUtils().runTaskOnCoroutineBackground {
+                                    try {
+                                        val response = RetrofitApi().getServerCallObject()?.searchItems(SearchCatalogItemsRequest(1, str))
+                                        response?.let { res ->
+                                            if (res.isSuccessful) {
+                                                res.body()?.let { body ->
+                                                    CoroutineScopeUtils().runTaskOnCoroutineMain {
+                                                        if (body.mIsSuccessStatus) {
+                                                            val tempProductsList: ArrayList<ProductResponse> = ArrayList()
+                                                            val searchProductsResponse = Gson().fromJson<SearchProductsResponse>(body.mCommonDataStr, SearchProductsResponse::class.java)
+                                                            val productsList = searchProductsResponse?.productList
+                                                            if (ToolBarManager.getInstance().headerTitle == mMarketingPageInfoResponse?.marketingStaticTextResponse?.heading_product_discount) {
+                                                                productsList?.forEachIndexed { _, productResponse -> if (productResponse.discountedPrice != productResponse.price) tempProductsList.add(productResponse) }
+                                                            } else {
+                                                                productsList?.let { list -> tempProductsList.addAll(list) }
+                                                            }
+                                                            val productCategoryCombineResponseList: ArrayList<ProductCategoryCombineResponse> = ArrayList()
+                                                            productCategoryCombineResponseList.add(ProductCategoryCombineResponse(StoreCategoryItem(0,"none", false), tempProductsList))
+                                                            categoryProductAdapter.setProductCategoryList(productCategoryCombineResponseList)
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    } catch (e: Exception) {
+                                        Log.e(TAG, "initiateProductsApiCall: ${e.message}", e)
+                                    }
+                                }
+                            } else if (isEmpty(str))
+                                categoryProductAdapter.setProductCategoryList(mProductCategoryCombineList)
+                            else
+                                categoryProductAdapter.setProductCategoryList(null)
+                        }
+
+                    })
                     searchProductRecyclerView.apply {
                         layoutManager = LinearLayoutManager(mActivity)
                         isNestedScrollingEnabled = false
-                        adapter = CategoryProductAdapter(mActivity, mMarketingPageInfoResponse?.marketingStaticTextResponse, mProductCategoryCombineList, this@EditSocialMediaTemplateFragment)
+                        adapter = categoryProductAdapter
                     }
                 }
             }?.show()

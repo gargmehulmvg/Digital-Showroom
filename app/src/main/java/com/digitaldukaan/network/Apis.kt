@@ -171,6 +171,9 @@ interface Apis {
     @POST("api/dotk/vm1/products/setItem")
     suspend fun setItem(@Body request: AddProductRequest): Response<CommonApiResponse>
 
+    @POST("api/dotk/vm1/products/searchItems")
+    suspend fun searchItems(@Body request: SearchCatalogItemsRequest): Response<CommonApiResponse>
+
     @GET("api/dotk/vm1/products/getMasterCategories")
     suspend fun getMasterCategories(): Response<CommonApiResponse>
 

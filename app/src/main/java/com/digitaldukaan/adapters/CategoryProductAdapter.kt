@@ -17,10 +17,15 @@ import com.digitaldukaan.models.response.ProductCategoryCombineResponse
 class CategoryProductAdapter(
     private val mContext: Context?,
     private val mMarketingStaticTextResponse: MarketingStaticTextResponse?,
-    private val mCompleteList: ArrayList<ProductCategoryCombineResponse>?,
+    private var mCompleteList: ArrayList<ProductCategoryCombineResponse>?,
     private val mListener: IProductItemClickListener
 ) :
     RecyclerView.Adapter<CategoryProductAdapter.CategoryProductViewHolder>() {
+
+    fun setProductCategoryList(list: ArrayList<ProductCategoryCombineResponse>?) {
+        this.mCompleteList = list
+        notifyDataSetChanged()
+    }
 
     inner class CategoryProductViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val categoryNameTextView: TextView = itemView.findViewById(R.id.categoryNameTextView)

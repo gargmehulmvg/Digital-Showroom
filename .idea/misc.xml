@@ -37,6 +37,7 @@
         <entry key="app/src/main/res/layout/bottom_sheet_custom_domain_selection.xml" value="0.335" />
         <entry key="app/src/main/res/layout/bottom_sheet_payment_link.xml" value="0.35260416666666666" />
         <entry key="app/src/main/res/layout/bottom_sheet_shipment_confirmation.xml" value="0.41794871794871796" />
+        <entry key="app/src/main/res/layout/bottom_sheet_show_products_with_category.xml" value="0.26018447348193696" />
         <entry key="app/src/main/res/layout/bottom_sheet_subscription_locked.xml" value="0.35260416666666666" />
         <entry key="app/src/main/res/layout/bottom_sheet_take_order.xml" value="0.35260416666666666" />
         <entry key="app/src/main/res/layout/bottom_sheet_transaction_detail.xml" value="0.35260416666666666" />
