@@ -23,6 +23,7 @@ import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.IAdapterItemClickListener
 import com.digitaldukaan.interfaces.IProductItemClickListener
 import com.digitaldukaan.models.response.*
+import com.digitaldukaan.network.RetrofitApi
 import com.digitaldukaan.services.EditSocialMediaTemplateService
 import com.digitaldukaan.services.serviceinterface.IEditSocialMediaTemplateServiceInterface
 import com.digitaldukaan.webviews.WebViewBridge
@@ -49,13 +50,11 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
     private var mCategoryBottomSheetDialog: BottomSheetDialog? = null
     private var mProductCategoryCombineList: ArrayList<ProductCategoryCombineResponse>? = ArrayList()
     private var mTemplateBackgroundList: ArrayList<TemplateBackgroundItemResponse>? = ArrayList()
-    private var mStoreDomainStr = ""
     private var mWebViewUrl = ""
     private var mSelectedBackgroundItem: TemplateBackgroundItemResponse? = null
     private var editTemplateWebView: WebView? = null
 
     companion object {
-        private const val TAG = "EditSocialMediaTemplateFragment"
         private const val EDIT_TEMPLATE_WEB_VIEW_URL = BuildConfig.WEB_VIEW_URL + Constants.WEB_VIEW_URL_EDIT_SOCIAL_MEDIA_POST
 
         fun newInstance(heading: String?, item: SocialMediaTemplateListItemResponse?, isOpenBottomSheet: Boolean = false, marketingPageInfoResponse: MarketingPageInfoResponse?): EditSocialMediaTemplateFragment {
@@ -69,6 +68,7 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        TAG = "EditSocialMediaTemplateFragment"
         mContentView = inflater.inflate(R.layout.layout_edit_social_media_template_fragment, container, false)
         hideBottomNavigationView(true)
         WebViewBridge.mWebViewListener = this
@@ -100,6 +100,10 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
             screenshotStoreNameTextView?.text = domain
             getQRCodeBitmap(mActivity, domain)?.let { b -> screenshotQRImageView?.setImageBitmap(b) }
         }
+        loadBottomNavViewFromStaticText()
+    }
+
+    private fun loadBottomNavViewFromStaticText() {
         mMarketingPageInfoResponse?.marketingStaticTextResponse?.let { staticText ->
             if (ToolBarManager.getInstance().headerTitle == mMarketingPageInfoResponse?.marketingStaticTextResponse?.heading_edit_and_share) {
                 backgroundTextView?.text = staticText.text_background
@@ -126,7 +130,8 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
         }
         if (mIsOpenBottomSheet) {
             showProgressDialog(mActivity)
-            if (true == mMarketingPageInfoResponse?.marketingStoreInfo?.isStoreItemLimitExceeds) mService?.getProductCategories() else mService?.getItemsBasicDetailsByStoreId()
+//            if (true == mMarketingPageInfoResponse?.marketingStoreInfo?.isStoreItemLimitExceeds) mService?.getProductCategories() else mService?.getItemsBasicDetailsByStoreId()
+            if (true == mMarketingPageInfoResponse?.marketingStoreInfo?.isStoreItemLimitExceeds) mService?.getItemsBasicDetailsByStoreId() else mService?.getProductCategories()
         } else {
             qrCodeScreenshotView?.visibility = View.VISIBLE
             setupEditAndShareTemplateUI()
@@ -142,13 +147,12 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
             mProductCategoryCombineList = Gson().fromJson<ArrayList<ProductCategoryCombineResponse>>(response.mCommonDataStr, listType)
             Log.d(TAG, "onItemsBasicDetailsByStoreIdResponse: productCategoryCombineList :: $mProductCategoryCombineList")
             setupEditAndShareTemplateUI()
-            showCategoryBottomSheet()
+            showProductsWithCategoryBottomSheet()
         }
         stopProgress()
     }
 
     override fun onProductCategoryResponse(response: CommonApiResponse) {
-        stopProgress()
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (response.mIsSuccessStatus) {
                 val productCategoryResponse = Gson().fromJson<AddProductStoreCategory>(response.mCommonDataStr, AddProductStoreCategory::class.java)
@@ -164,7 +168,42 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
                         else -> ""
                     }
                 } else {
-//                    showCategoryBottomSheet()
+                    Log.d(TAG, "onProductCategoryResponse: mAddProductStoreCategoryList :: $mAddProductStoreCategoryList")
+                    mProductCategoryCombineList = ArrayList()
+                    mAddProductStoreCategoryList?.forEachIndexed { position, categoryItem ->
+                        initiateProductsApiCall(categoryItem, position, mAddProductStoreCategoryList?.size ?: 0)
+                    }
+                }
+            }
+        }
+        stopProgress()
+    }
+
+    private fun initiateProductsApiCall(item: StoreCategoryItem, position: Int, count: Int) {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            try {
+                val response = RetrofitApi().getServerCallObject()?.getProductsByCategoryId(item.id)
+                response?.let {
+                    if (it.isSuccessful) {
+                        it.body()?.let {
+                            CoroutineScopeUtils().runTaskOnCoroutineMain {
+                                if (it.mIsSuccessStatus) {
+                                    val listType = object : TypeToken<ArrayList<ProductResponse>>() {}.type
+                                    val productsList = Gson().fromJson<ArrayList<ProductResponse>>(it.mCommonDataStr, listType)
+                                    Log.d(TAG, "initiateProductsApiCall: request :: ID :: $id response :: $productsList")
+                                    mProductCategoryCombineList?.add(ProductCategoryCombineResponse(item, productsList))
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "initiateProductsApiCall: ${e.message}", e)
+            }
+            Log.d(TAG, "initiateProductsApiCall: comparison :: position :: $position , count :: $count")
+            if (position == (count - 1)) {
+                CoroutineScopeUtils().runTaskOnCoroutineMain {
+                    showProductsWithCategoryBottomSheet()
                 }
             }
         }
@@ -182,12 +221,12 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
         }
     }
 
-    private fun showCategoryBottomSheet() {
+    private fun showProductsWithCategoryBottomSheet() {
         noTemplateLayout?.visibility = View.GONE
         templateLayout?.visibility = View.VISIBLE
         mActivity?.let {
             mCategoryBottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
-            val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_category_product, it.findViewById(R.id.bottomSheetContainer))
+            val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_show_products_with_category, it.findViewById(R.id.bottomSheetContainer))
             mCategoryBottomSheetDialog?.apply {
                 setContentView(view)
                 view.run {
@@ -273,12 +312,9 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
                                 val newWebViewUrlWithBg = "$mWebViewUrl&background=${URLEncoder.encode(Gson().toJson(mSelectedBackgroundItem))}"
                                 Log.d(TAG, "showBackgroundBottomSheet :: onAdapterItemClickListener: newWebViewUrlWithBg :: $newWebViewUrlWithBg")
                                 editTemplateWebView?.loadUrl(newWebViewUrlWithBg)
-
                             }
-
                         })
                     }
-
                 }
             }.show()
         }
@@ -320,13 +356,14 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
             percentageTextView?.visibility = View.GONE
             bestsellerTextView?.visibility = View.VISIBLE
         }
+        loadBottomNavViewFromStaticText()
     }
 
     override fun onClick(view: View?) {
         when(view?.id) {
             editTextTextView?.id -> {
                 if (editTextTextView?.text == mMarketingPageInfoResponse?.marketingStaticTextResponse?.text_change_product) {
-                    showCategoryBottomSheet()
+                    showProductsWithCategoryBottomSheet()
                 } else {
                     showEditTemplateBottomSheet()
                 }

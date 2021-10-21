@@ -16,7 +16,7 @@ import com.digitaldukaan.models.response.ProductResponse
 
 class ProductsAdapter(
     private val mContext: Context?,
-    private val productsList: ArrayList<ProductResponse?>?,
+    private val productsList: ArrayList<ProductResponse>?,
     private val mListener: IProductItemClickListener) : RecyclerView.Adapter<ProductsAdapter.ProductsViewHolder>() {
 
     inner class ProductsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
