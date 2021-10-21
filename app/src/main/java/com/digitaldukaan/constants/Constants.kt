@@ -56,6 +56,8 @@ class Constants {
         const val ACTION_REJECT_ORDER                           = "reject-order"
         const val ACTION_SHARE_BILL                             = "share-bill"
         const val ACTION_SEND_BILL                              = "send-bill"
+        const val ACTION_SET_PREPAID_ORDER                      = "set-prepaid-order"
+        const val ACTION_PREPAID_ORDER                          = "prepaid-order"
         const val ACTION_DOWNLOAD_BILL                          = "download-bill"
         const val ACTION_CASH_COLLECTED                         = "cash-collected"
         const val ACTION_DOMAIN_SUCCESS                         = "domain-success"

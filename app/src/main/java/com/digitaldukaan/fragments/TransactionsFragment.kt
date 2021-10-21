@@ -48,11 +48,11 @@ class TransactionsFragment: BaseFragment(), IMyPaymentsServiceInterface, ITransa
     private var mPaymentList: ArrayList<MyPaymentsItemResponse>? = ArrayList()
 
     companion object {
-        private const val TAG = "TransactionsFragment"
         fun newInstance(): TransactionsFragment = TransactionsFragment()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        TAG = "TransactionsFragment"
         mContentView = inflater.inflate(R.layout.layout_transactions, container, false)
         transactionRecyclerView = mContentView?.findViewById(R.id.transactionRecyclerView)
         startDateTextView = mContentView?.findViewById(R.id.startDateTextView)

@@ -51,7 +51,6 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
     SwipeRefreshLayout.OnRefreshListener, IStoreSettingsItemClicked {
 
     companion object {
-        private const val TAG = "SettingsFragment"
         fun newInstance(): SettingsFragment = SettingsFragment()
     }
     private var mAppSettingsResponseStaticData: AccountStaticTextResponse? = null
@@ -66,6 +65,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
     private var mNewReleaseItemClickResponse: TrendingListResponse? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        TAG = "SettingsFragment"
         mContentView = inflater.inflate(R.layout.layout_settings_fragment, container, false)
         mProfileService.setProfileServiceInterface(this)
         return mContentView

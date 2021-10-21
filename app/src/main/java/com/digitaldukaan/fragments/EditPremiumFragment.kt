@@ -42,7 +42,6 @@ class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
     private var mDefaultSelectedColorItem: EditPremiumColorItemResponse? = null
 
     companion object {
-        private const val TAG = "EditPremiumFragment"
         private val mService: EditPremiumService = EditPremiumService()
         private var colorAdapter: EditPremiumColorAdapter? = null
 
@@ -64,6 +63,7 @@ class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        TAG = "EditPremiumFragment"
         mService.setServiceInterface(this)
         mEditPremiumColorList = ArrayList()
         mContentView = inflater.inflate(R.layout.layout_edit_premium_fragment, container, false)

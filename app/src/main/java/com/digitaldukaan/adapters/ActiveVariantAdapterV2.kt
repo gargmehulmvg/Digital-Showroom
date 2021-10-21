@@ -96,7 +96,7 @@ class ActiveVariantAdapterV2(
                     val str = editable?.toString()
                     variantPriceInputLayout.error = null
                     variantDiscountPriceInputLayout.error = null
-                    if (!isEmpty(str)) {
+                    if (isNotEmpty(str)) {
                         val discountPriceStr = discountPriceEditText.text.toString()
                         when {
                             "." == str -> {}
@@ -111,6 +111,7 @@ class ActiveVariantAdapterV2(
                                 discountPriceEditText.apply {
                                     text = null
                                 }
+                                item?.discountedPrice = 0.0
                             }
                             else -> item?.price = str?.toDouble() ?: 0.0
                         }

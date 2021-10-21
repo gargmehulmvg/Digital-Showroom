@@ -33,7 +33,6 @@ class StoreDescriptionFragment : BaseFragment(), IStoreDescriptionServiceInterfa
     private var mStoreDescriptionStaticData: ProfileStaticData? = null
 
     companion object {
-        private const val TAG = "StoreDescriptionFragment"
         fun newInstance(profilePreviewResponse: ProfilePreviewSettingsKeyResponse?, position: Int, isSingleStep: Boolean, profileInfoResponse: ProfileInfoResponse?): StoreDescriptionFragment {
             val fragment = StoreDescriptionFragment()
             fragment.mProfilePreviewResponse = profilePreviewResponse
@@ -45,6 +44,7 @@ class StoreDescriptionFragment : BaseFragment(), IStoreDescriptionServiceInterfa
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        TAG = "StoreDescriptionFragment"
         mContentView = inflater.inflate(R.layout.store_description_fragment, container, false)
         return mContentView
     }

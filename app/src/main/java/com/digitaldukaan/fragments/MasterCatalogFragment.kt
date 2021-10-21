@@ -52,7 +52,6 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
     private val mSelectedProductsHashMap: HashMap<Int?, MasterCatalogItemResponse?> = HashMap()
 
     companion object {
-        private const val TAG = "MasterCatalogFragment"
         fun newInstance(addProductStaticData: AddProductStaticText?, item: ExploreCategoryItemResponse?): MasterCatalogFragment {
             val fragment =  MasterCatalogFragment()
             fragment.addProductStaticData = addProductStaticData
@@ -61,11 +60,8 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        TAG = "MasterCatalogFragment"
         mContentView = inflater.inflate(R.layout.layout_master_catelog_fragment, container, false)
         mService.setServiceInterface(this)
         mLinearLayoutManager = LinearLayoutManager(mActivity)

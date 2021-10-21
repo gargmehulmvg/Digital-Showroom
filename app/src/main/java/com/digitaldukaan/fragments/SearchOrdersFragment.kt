@@ -43,7 +43,6 @@ class SearchOrdersFragment: BaseFragment(), IOnToolbarIconClick, ISearchOrderSer
     private var mIsMoreSearchOrderAvailable = false
 
     companion object {
-        private const val TAG = "SearchOrdersFragment"
 
         fun newInstance(orderIdString: String, mobileNumberString: String, orderList: ArrayList<OrderItemResponse>): SearchOrdersFragment {
             val fragment = SearchOrdersFragment()
@@ -54,11 +53,8 @@ class SearchOrdersFragment: BaseFragment(), IOnToolbarIconClick, ISearchOrderSer
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        TAG = "SearchOrdersFragment"
         mContentView = inflater.inflate(R.layout.search_order_fragment, container, false)
         mService = SearchOrdersService()
         mService.setHomeFragmentServiceListener(this)

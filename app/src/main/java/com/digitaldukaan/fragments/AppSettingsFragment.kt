@@ -31,11 +31,8 @@ class AppSettingsFragment : BaseFragment(), IAppSettingsItemClicked {
         return fragment
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        TAG = "AppSettingsFragment"
         mContentView = inflater.inflate(R.layout.layout_app_setting_fragment, container, false)
         return mContentView
     }

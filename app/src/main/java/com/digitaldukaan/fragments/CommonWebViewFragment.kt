@@ -41,6 +41,7 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        TAG = "CommonWebViewFragment"
         mContentView = inflater.inflate(R.layout.layout_common_webview_fragment, container, false)
         hideBottomNavigationView(true)
         return mContentView

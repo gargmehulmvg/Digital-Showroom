@@ -42,6 +42,7 @@ class BusinessTypeFragment : BaseFragment(), IBusinessTypeServiceInterface {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        TAG = "BusinessTypeFragment"
         mContentView = inflater.inflate(R.layout.layout_business_type_fragment, container, false)
         return mContentView
     }
