@@ -274,7 +274,7 @@ class OrderAdapterV2(
 
     private fun getAddress(item: OrderItemResponse?): String {
         return when (item?.orderType) {
-            Constants.ORDER_TYPE_ADDRESS -> "${item.deliveryInfo.address1} ${item.deliveryInfo.address2}"
+            Constants.ORDER_TYPE_ADDRESS -> "${item.deliveryInfo?.address1} ${item.deliveryInfo?.address2}"
             Constants.ORDER_TYPE_PICK_UP -> mOrderPageInfoStaticData?.pickUpOrder ?: "Pick up Order"
             Constants.ORDER_TYPE_SELF -> mOrderPageInfoStaticData?.selfBilled ?: "Self Billed"
             Constants.ORDER_TYPE_SELF_IMAGE -> mOrderPageInfoStaticData?.payment_link ?: "Payment Link"

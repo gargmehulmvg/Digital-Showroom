@@ -51,7 +51,6 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
     companion object {
         private var mService: MarketingService? = null
         private var mShareStorePDFResponse: ShareStorePDFDataItemResponse? = null
-        private const val TAG = "MarketingFragment"
 
         fun newInstance(): MarketingFragment {
             return MarketingFragment()
@@ -59,6 +58,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        TAG = "MarketingFragment"
         mService = MarketingService()
         mService?.setMarketingServiceListener(this)
         mContentView = inflater.inflate(R.layout.layout_marketing_fragment, container, false)

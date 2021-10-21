@@ -30,7 +30,6 @@ import org.json.JSONObject
 class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface {
 
     companion object {
-        private const val TAG = "PremiumPageInfoFragment"
         private val mService: PremiumPageInfoService = PremiumPageInfoService()
         private var mStaticText: PremiumPageInfoStaticTextResponse? = null
         private var premiumPageInfoResponse: PremiumPageInfoResponse? = null
@@ -41,6 +40,7 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        TAG = "PremiumPageInfoFragment"
         mContentView = inflater.inflate(R.layout.layout_premium_fragment, container, false)
         mService.setServiceInterface(this)
         return mContentView

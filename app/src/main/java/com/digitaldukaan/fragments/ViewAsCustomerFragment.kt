@@ -21,7 +21,6 @@ class ViewAsCustomerFragment: BaseFragment() {
     private var addProductStaticData: AddProductStaticText? = null
 
     companion object {
-        private const val TAG = "ViewAsCustomerFragment"
         fun newInstance(domain: String, isPremiumEnable: Boolean, addProductStaticData: AddProductStaticText?): ViewAsCustomerFragment {
             val fragment = ViewAsCustomerFragment()
             fragment.mDomainName = domain
@@ -31,11 +30,8 @@ class ViewAsCustomerFragment: BaseFragment() {
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        TAG = "ViewAsCustomerFragment"
         mContentView = inflater.inflate(R.layout.layout_view_as_customer, container, false)
         return mContentView
     }

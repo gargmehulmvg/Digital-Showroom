@@ -51,7 +51,6 @@ class LoginFragmentV2 : BaseFragment(), ILoginServiceInterface {
     private var mTrueCallerInstance: TruecallerSDK? = null
 
     companion object {
-        private val TAG = LoginFragmentV2::class.simpleName
         private const val USE_ANOTHER_NUMBER = 14
         private var mMobileNumber = ""
 
@@ -62,6 +61,7 @@ class LoginFragmentV2 : BaseFragment(), ILoginServiceInterface {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        TAG = "LoginFragmentV2"
         mContentView = inflater.inflate(R.layout.layout_login_fragment_v2, container, false)
         mLoginService = LoginService()
         mLoginService?.setLoginServiceInterface(this)

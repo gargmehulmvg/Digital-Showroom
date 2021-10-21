@@ -36,7 +36,6 @@ class NewReleaseFragment: BaseFragment(), IStoreSettingsItemClicked {
     private var mNewReleaseItemClickResponse: TrendingListResponse? = null
 
     companion object {
-        private const val TAG = "NewReleaseFragment"
 
         fun newInstance(trendingList: ArrayList<TrendingListResponse>?, staticTextResponse: AccountStaticTextResponse?): NewReleaseFragment {
             val fragment = NewReleaseFragment()
@@ -48,6 +47,7 @@ class NewReleaseFragment: BaseFragment(), IStoreSettingsItemClicked {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        TAG = "NewReleaseFragment"
         mContentView = inflater.inflate(R.layout.layout_new_release_fragment, container, false)
         ToolBarManager.getInstance().apply {
             hideToolBar(mActivity, false)

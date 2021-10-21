@@ -56,6 +56,7 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        TAG = "MoreControlsFragment"
         mContentView = inflater.inflate(R.layout.layout_more_control_fragment, container, false)
         mMoreControlsService = MoreControlsService()
         mMoreControlsService?.setServiceInterface(this)
