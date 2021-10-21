@@ -1,5 +1,6 @@
 package com.digitaldukaan.fragments
 
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -56,6 +57,7 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
 
     companion object {
         private const val EDIT_TEMPLATE_WEB_VIEW_URL = BuildConfig.WEB_VIEW_URL + Constants.WEB_VIEW_URL_EDIT_SOCIAL_MEDIA_POST
+        private var sIsWhatsAppIconClicked = false
 
         fun newInstance(heading: String?, item: SocialMediaTemplateListItemResponse?, isOpenBottomSheet: Boolean = false, marketingPageInfoResponse: MarketingPageInfoResponse?): EditSocialMediaTemplateFragment {
             val fragment = EditSocialMediaTemplateFragment()
@@ -100,21 +102,26 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
             screenshotStoreNameTextView?.text = domain
             getQRCodeBitmap(mActivity, domain)?.let { b -> screenshotQRImageView?.setImageBitmap(b) }
         }
-        loadBottomNavViewFromStaticText()
+        setupBottomNavViewFromStaticText()
     }
 
-    private fun loadBottomNavViewFromStaticText() {
+    private fun setupBottomNavViewFromStaticText() {
         mMarketingPageInfoResponse?.marketingStaticTextResponse?.let { staticText ->
             if (ToolBarManager.getInstance().headerTitle == mMarketingPageInfoResponse?.marketingStaticTextResponse?.heading_edit_and_share) {
+                backgroundTextView.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_background, 0, 0)
                 backgroundTextView?.text = staticText.text_background
                 editTextTextView?.text = staticText.text_edit_text
+                editTextTextView.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_edit_text, 0, 0)
             } else {
                 backgroundTextView?.visibility = View.GONE
+                backgroundTextView.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_background, 0, 0)
                 editTextTextView?.text = staticText.text_change_product
                 editTextTextView.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_change_product, 0, 0)
             }
             shareTextView?.text = staticText.text_share
+            shareTextView.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_social_media_template_share, 0, 0)
             whatsappTextView?.text = staticText.text_whatsapp
+            whatsappTextView.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_social_media_template_whatsapp, 0, 0)
         }
     }
 
@@ -159,14 +166,7 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
                 mAddProductStoreCategoryList = productCategoryResponse?.storeCategoriesList
                 Log.d(TAG, "onProductCategoryResponse: $productCategoryResponse")
                 if (isEmpty(mAddProductStoreCategoryList)) {
-                    noTemplateLayout?.visibility = View.VISIBLE
-                    templateLayout?.visibility = View.GONE
-                    addProductTextView?.text = mMarketingPageInfoResponse?.marketingStaticTextResponse?.cta_text_add_products
-                    messageTextView?.text = when(ToolBarManager.getInstance().headerTitle) {
-                        mMarketingPageInfoResponse?.marketingStaticTextResponse?.heading_product_discount -> mMarketingPageInfoResponse?.marketingStaticTextResponse?.message_product_discount_zero_screen
-                        mMarketingPageInfoResponse?.marketingStaticTextResponse?.heading_new_launches_and_bestsellers -> mMarketingPageInfoResponse?.marketingStaticTextResponse?.message_bestseller_zero_screen
-                        else -> ""
-                    }
+                    setupNoTemplateUI()
                 } else {
                     Log.d(TAG, "onProductCategoryResponse: mAddProductStoreCategoryList :: $mAddProductStoreCategoryList")
                     mProductCategoryCombineList = ArrayList()
@@ -179,6 +179,18 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
         stopProgress()
     }
 
+    private fun setupNoTemplateUI() {
+        noTemplateLayout?.visibility = View.VISIBLE
+        templateLayout?.visibility = View.GONE
+        addProductTextView?.text =
+            mMarketingPageInfoResponse?.marketingStaticTextResponse?.cta_text_add_products
+        messageTextView?.text = when (ToolBarManager.getInstance().headerTitle) {
+            mMarketingPageInfoResponse?.marketingStaticTextResponse?.heading_product_discount -> mMarketingPageInfoResponse?.marketingStaticTextResponse?.message_product_discount_zero_screen
+            mMarketingPageInfoResponse?.marketingStaticTextResponse?.heading_new_launches_and_bestsellers -> mMarketingPageInfoResponse?.marketingStaticTextResponse?.message_bestseller_zero_screen
+            else -> ""
+        }
+    }
+
     private fun initiateProductsApiCall(item: StoreCategoryItem, position: Int, count: Int) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
             try {
@@ -189,9 +201,17 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
                             CoroutineScopeUtils().runTaskOnCoroutineMain {
                                 if (it.mIsSuccessStatus) {
                                     val listType = object : TypeToken<ArrayList<ProductResponse>>() {}.type
+                                    val tempProductsList: ArrayList<ProductResponse> = ArrayList()
                                     val productsList = Gson().fromJson<ArrayList<ProductResponse>>(it.mCommonDataStr, listType)
-                                    Log.d(TAG, "initiateProductsApiCall: request :: ID :: $id response :: $productsList")
-                                    mProductCategoryCombineList?.add(ProductCategoryCombineResponse(item, productsList))
+                                    if (ToolBarManager.getInstance().headerTitle == mMarketingPageInfoResponse?.marketingStaticTextResponse?.heading_product_discount) {
+                                        productsList?.forEachIndexed { _, productResponse ->
+                                            if (productResponse.discountedPrice != productResponse.price) tempProductsList.add(productResponse)
+                                        }
+                                    } else {
+                                        tempProductsList.addAll(productsList)
+                                    }
+                                    if (isNotEmpty(tempProductsList))
+                                        mProductCategoryCombineList?.add(ProductCategoryCombineResponse(item, tempProductsList))
                                 }
                             }
                         }
@@ -203,7 +223,7 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
             Log.d(TAG, "initiateProductsApiCall: comparison :: position :: $position , count :: $count")
             if (position == (count - 1)) {
                 CoroutineScopeUtils().runTaskOnCoroutineMain {
-                    showProductsWithCategoryBottomSheet()
+                    if (isNotEmpty(mProductCategoryCombineList)) showProductsWithCategoryBottomSheet() else setupNoTemplateUI()
                 }
             }
         }
@@ -222,6 +242,7 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
     }
 
     private fun showProductsWithCategoryBottomSheet() {
+        setupBottomNavViewFromStaticText()
         noTemplateLayout?.visibility = View.GONE
         templateLayout?.visibility = View.VISIBLE
         mActivity?.let {
@@ -322,7 +343,6 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
 
     override fun onProductItemClickListener(productItem: ProductResponse?) {
         mCategoryBottomSheetDialog?.dismiss()
-        showToast(productItem?.name)
         productShareScreenshotView?.visibility = View.VISIBLE
         qrCodeScreenshotView?.visibility = View.GONE
         val orderAtStr = "${mMarketingPageInfoResponse?.marketingStaticTextResponse?.text_order_at} : ${mMarketingPageInfoResponse?.marketingStoreInfo?.domain}"
@@ -356,7 +376,6 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
             percentageTextView?.visibility = View.GONE
             bestsellerTextView?.visibility = View.VISIBLE
         }
-        loadBottomNavViewFromStaticText()
     }
 
     override fun onClick(view: View?) {
@@ -376,16 +395,31 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
             }
             addProductTextView?.id -> launchFragment(AddProductFragment.newInstance(0, true), true)
             whatsappTextView?.id -> {
+                sIsWhatsAppIconClicked = true
                 screenshotContainer?.let { v ->
                     val originalBitmap = getBitmapFromView(v, mActivity)
                     originalBitmap?.let { bitmap -> shareOnWhatsApp("Order From - ${mMarketingPageInfoResponse?.marketingStoreInfo?.domain}", bitmap) }
                 }
             }
             shareTextView?.id -> {
+                sIsWhatsAppIconClicked = false
                 screenshotContainer?.let { v ->
                     val originalBitmap = getBitmapFromView(v, mActivity)
                     originalBitmap?.let { bitmap -> shareData("Order From - ${mMarketingPageInfoResponse?.marketingStoreInfo?.domain}", bitmap) }
                 }
+            }
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        Log.i(TAG, "onRequestPermissionResult")
+        if (requestCode == Constants.STORAGE_REQUEST_CODE) {
+            when {
+                grantResults.isEmpty() -> Log.d(TAG, "User interaction was cancelled.")
+                grantResults[0] == PackageManager.PERMISSION_GRANTED -> {
+                    if (sIsWhatsAppIconClicked) whatsappTextView?.callOnClick() else shareTextView?.callOnClick()
+                }
+                else -> showShortSnackBar("Permission was denied", true, R.drawable.ic_close_red)
             }
         }
     }

@@ -17,6 +17,7 @@
         <entry key="app/src/main/res/drawable/ic_share_forward_arrow.xml" value="0.4338461538461538" />
         <entry key="app/src/main/res/drawable/ic_white_tick.xml" value="0.36875" />
         <entry key="app/src/main/res/drawable/lower_curve_black_background.xml" value="0.31851851851851853" />
+        <entry key="app/src/main/res/drawable/lower_right_curve_white_background.xml" value="0.31851851851851853" />
         <entry key="app/src/main/res/drawable/ripple_curve_grey_black_background.xml" value="0.4338461538461538" />
         <entry key="app/src/main/res/drawable/ripple_curve_grey_purple_background.xml" value="0.31851851851851853" />
         <entry key="app/src/main/res/drawable/ripple_slight_curve_grey_black_background.xml" value="0.32664092664092664" />
@@ -28,6 +29,7 @@
         <entry key="app/src/main/res/drawable/slight_curve_black_border.xml" value="0.32664092664092664" />
         <entry key="app/src/main/res/drawable/slight_curve_green_background_without_padding_v2.xml" value="0.36875" />
         <entry key="app/src/main/res/drawable/upper_curve_black_background.xml" value="0.4338461538461538" />
+        <entry key="app/src/main/res/drawable/upper_curve_white_background.xml" value="0.31851851851851853" />
         <entry key="app/src/main/res/layout/add_bank_bottom_sheet_item.xml" value="0.4027777777777778" />
         <entry key="app/src/main/res/layout/bottom_sheet_category_product.xml" value="0.4027777777777778" />
         <entry key="app/src/main/res/layout/bottom_sheet_cod_confirmation.xml" value="0.4244791666666667" />
