@@ -43,12 +43,12 @@ class TemplateBackgroundAdapter(
     override fun onBindViewHolder(holder: MarketingCardViewHolder, position: Int) {
         val item = mColorList?.get(position)
         holder.run {
-            if (item?.type == Constants.CTA_TYPE_SOLID) {
+            if (Constants.CTA_TYPE_SOLID == item?.type) {
                 imageView.setBackgroundColor(Color.parseColor(item.name))
             } else {
                 mContext?.let { context -> Glide.with(context).load(item?.name).into(imageView) }
             }
-            tickImageView.visibility = if (item?.isSelected == true) View.VISIBLE else View.GONE
+            tickImageView.visibility = if (true == item?.isSelected) View.VISIBLE else View.GONE
         }
     }
 

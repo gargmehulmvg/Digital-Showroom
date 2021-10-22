@@ -505,7 +505,7 @@ fun drawScreenShotBitmap(v: View) {
     val viewBitmap = Bitmap.createBitmap(v.width, v.height, Bitmap.Config.RGB_565)
     val viewCanvas = Canvas(viewBitmap)
     val backgroundDrawable = v.background
-    if (backgroundDrawable != null) {
+    if (null != backgroundDrawable) {
         backgroundDrawable.draw(viewCanvas);
     } else {
         viewCanvas.drawColor(Color.GREEN);

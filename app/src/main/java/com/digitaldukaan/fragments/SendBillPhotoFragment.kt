@@ -101,7 +101,7 @@ class SendBillPhotoFragment: BaseFragment(), ISendBillPhotoServiceInterface {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, false)
-            setHeaderTitle(mSendPhotoStaticText?.text_send_bill)
+            headerTitle = mSendPhotoStaticText?.text_send_bill
             setSideIconVisibility(true)
             onBackPressed(this@SendBillPhotoFragment)
             mActivity?.let {

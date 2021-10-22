@@ -55,7 +55,7 @@ class StoreDescriptionFragment : BaseFragment(), IStoreDescriptionServiceInterfa
         ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, false)
             val stepStr = if (mIsSingleStep) "" else "Step $mPosition : "
-            setHeaderTitle("$stepStr${mProfilePreviewResponse?.mHeadingText}")
+            headerTitle = "$stepStr${mProfilePreviewResponse?.mHeadingText}"
             onBackPressed(this@StoreDescriptionFragment)
             hideBackPressFromToolBar(mActivity, false)
         }

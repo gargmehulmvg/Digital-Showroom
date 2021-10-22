@@ -102,7 +102,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, false)
             onBackPressed(this@ProfilePreviewFragment)
-            setHeaderTitle("")
+            headerTitle = ""
         }
         mStoreLogo = ""
         fetchProfilePreviewCall()
@@ -172,7 +172,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                 }
                 profilePreviewBannerSubHeading?.text = mSubHeading
             }
-            ToolBarManager.getInstance()?.setHeaderTitle(mProfilePreviewResponse?.mProfileStaticText?.pageHeading)
+            ToolBarManager.getInstance()?.headerTitle = mProfilePreviewResponse?.mProfileStaticText?.pageHeading
             val bannerRecyclerView: RecyclerView? = mContentView?.findViewById(R.id.bannerRecyclerView)
             val profileBannerList = mProfilePreviewResponse?.mBannerList
             if (isEmpty(profileBannerList)) {

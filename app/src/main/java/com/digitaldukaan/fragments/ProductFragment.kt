@@ -101,7 +101,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
             bottomContainer?.visibility = if (productResponse?.isZeroProduct == true) View.GONE else View.VISIBLE
             addProductStaticData = productResponse?.static_text
             var url: String
-            ToolBarManager.getInstance()?.setHeaderTitle(productResponse?.static_text?.product_page_heading)
+            ToolBarManager.getInstance()?.headerTitle = productResponse?.static_text?.product_page_heading
             mOptionsMenuResponse = productResponse?.optionMenuList
             commonWebView?.apply {
                 settings.javaScriptEnabled = true

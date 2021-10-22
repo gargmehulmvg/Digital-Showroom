@@ -42,7 +42,7 @@ class AppSettingsFragment : BaseFragment(), IAppSettingsItemClicked {
         ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, false)
             onBackPressed(this@AppSettingsFragment)
-            setHeaderTitle(mHeaderText)
+            headerTitle = mHeaderText
         }
         appSettingsRecyclerView?.apply {
             setHasFixedSize(true)

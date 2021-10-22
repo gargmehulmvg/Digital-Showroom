@@ -145,8 +145,7 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
         }
         if (mIsOpenBottomSheet) {
             showProgressDialog(mActivity)
-//            if (true == mMarketingPageInfoResponse?.marketingStoreInfo?.isStoreItemLimitExceeds) mService?.getProductCategories() else mService?.getItemsBasicDetailsByStoreId()
-            if (true == mMarketingPageInfoResponse?.marketingStoreInfo?.isStoreItemLimitExceeds) mService?.getItemsBasicDetailsByStoreId() else mService?.getProductCategories()
+            if (true == mMarketingPageInfoResponse?.marketingStoreInfo?.isStoreItemLimitExceeds) mService?.getProductCategories() else mService?.getItemsBasicDetailsByStoreId()
         } else {
             qrCodeScreenshotView?.visibility = View.VISIBLE
             setupEditAndShareTemplateUI()

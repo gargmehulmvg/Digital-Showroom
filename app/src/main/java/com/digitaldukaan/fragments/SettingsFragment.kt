@@ -401,7 +401,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         hiddenTextView?.text = infoResponse.mAccountStaticText?.mTextAddPhoto
         newReleaseHeading?.text = infoResponse.mAccountStaticText?.mNewReleaseText
         viewAllHeading?.text = infoResponse.mAccountStaticText?.mViewAllText
-        ToolBarManager.getInstance()?.setHeaderTitle(infoResponse.mAccountStaticText?.page_heading)
+        ToolBarManager.getInstance()?.headerTitle = infoResponse.mAccountStaticText?.page_heading
     }
 
     private fun checkStoreOptionClick(response: StoreOptionsResponse) {

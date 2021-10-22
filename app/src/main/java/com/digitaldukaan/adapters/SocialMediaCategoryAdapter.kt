@@ -41,9 +41,7 @@ class SocialMediaCategoryAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SocialMediaCategoryViewHolder {
-        val view = SocialMediaCategoryViewHolder(
-            LayoutInflater.from(parent.context).inflate(R.layout.social_media_category_item_layout, parent, false)
-        )
+        val view = SocialMediaCategoryViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.social_media_category_item_layout, parent, false))
         view.container.setOnClickListener {
             mListener?.onSocialMediaTemplateCategoryItemClickListener(view.adapterPosition, mList?.get(view.adapterPosition))
         }
@@ -52,10 +50,7 @@ class SocialMediaCategoryAdapter(
 
     override fun getItemCount(): Int = if (0 == mItemCount) (mList?.size ?: 0) else mItemCount
 
-    override fun onBindViewHolder(
-        holder: SocialMediaCategoryViewHolder,
-        position: Int
-    ) {
+    override fun onBindViewHolder(holder: SocialMediaCategoryViewHolder, position: Int) {
         holder.apply {
             val item = mList?.get(position)
             textView.text = item?.text

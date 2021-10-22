@@ -256,6 +256,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         paintFlags = paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
     }
 
+
     open fun TextView.setMaxLength(length: Int) {
         filters = arrayOf<InputFilter>(LengthFilter(length))
     }
@@ -1112,7 +1113,8 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                         })
                         if (isError) {
                             errorTextView.visibility = View.VISIBLE
-                            errorTextView.text = "No order found with this ${if (mobileNumberString.isEmpty()) "Order ID" else "Mobile Number"}"
+                            val message = "No order found with this ${if (isEmpty(mobileNumberString)) "Order ID" else "Mobile Number"}"
+                            errorTextView.text = message
                         }
                     }
                 }.show()
@@ -1295,7 +1297,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                             headerTextView.setHtmlData(addProductBannerStaticDataResponse?.header)
                             bodyTextView.text = addProductBannerStaticDataResponse?.body
                             buttonTextView.text = addProductBannerStaticDataResponse?.button_text
-                            bannerImageView?.let {
+                            bannerImageView.let {
                                 try {
                                     Picasso.get().load(addProductBannerStaticDataResponse?.image_url).into(it)
                                 } catch (e: Exception) {

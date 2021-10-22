@@ -933,7 +933,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     private fun setStaticDataFromResponse() {
         try {
             addProductStaticData?.run {
-                ToolBarManager.getInstance()?.setHeaderTitle(heading_add_product_page)
+                ToolBarManager.getInstance()?.headerTitle = heading_add_product_page
                 val addItemTextView: TextView? = mContentView?.findViewById(R.id.addItemTextView)
                 val tryNowTextView: TextView? = mContentView?.findViewById(R.id.tryNowTextView)
                 val textView2: TextView? = mContentView?.findViewById(R.id.textView2)

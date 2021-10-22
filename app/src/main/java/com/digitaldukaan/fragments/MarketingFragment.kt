@@ -108,7 +108,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                 setupMarketingShareUI(mMarketingPageInfoResponse?.marketingStoreShare)
                 setupMarketingHelpPageUI(mMarketingPageInfoResponse?.marketingHelpPage)
                 ToolBarManager.getInstance()?.apply {
-                    setHeaderTitle(mMarketingPageInfoResponse?.marketingStaticTextResponse?.heading_marketing)
+                    headerTitle = mMarketingPageInfoResponse?.marketingStaticTextResponse?.heading_marketing
                     moreOptionsHeadingTextView?.text = mMarketingPageInfoResponse?.marketingStaticTextResponse?.text_more_options
                 }
                 val optionMenuAdapterAdapter = MarketingMoreOptionsAdapter(this, mMarketingPageInfoResponse?.marketingMoreOptionsList)

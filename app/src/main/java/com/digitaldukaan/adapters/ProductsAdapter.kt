@@ -16,7 +16,7 @@ import com.digitaldukaan.models.response.ProductResponse
 
 class ProductsAdapter(
     private val mContext: Context?,
-    private val productsList: ArrayList<ProductResponse>?,
+    private val mProductsList: ArrayList<ProductResponse>?,
     private val mListener: IProductItemClickListener) : RecyclerView.Adapter<ProductsAdapter.ProductsViewHolder>() {
 
     inner class ProductsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -31,20 +31,22 @@ class ProductsAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProductsViewHolder {
         val view = ProductsViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.products_item, parent, false))
         view.container.setOnClickListener {
-            mListener.onProductItemClickListener(productsList?.get(view.adapterPosition))
+            mListener.onProductItemClickListener(mProductsList?.get(view.adapterPosition))
         }
         return view
     }
 
-    override fun getItemCount(): Int = productsList?.size ?: 0
+    override fun getItemCount(): Int = mProductsList?.size ?: 0
 
     override fun onBindViewHolder(holder: ProductsViewHolder, position: Int) {
-        val item = productsList?.get(position)
+        val item = mProductsList?.get(position)
         holder.apply {
             titleTextView.text = item?.name
-            discountedPriceTextView.text = "₹${item?.discountedPrice}"
+            val discountPriceStr = "₹${item?.discountedPrice}"
+            discountedPriceTextView.text = discountPriceStr
             originalPriceTextView.apply {
-                text = "₹${item?.price}"
+                val priceStr= "₹${item?.price}"
+                text = priceStr
                 paintFlags = paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
             }
             if (isNotEmpty(item?.imageUrl)) mContext?.let { context -> Glide.with(context).load(item?.imageUrl).into(imageView) }

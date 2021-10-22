@@ -34,7 +34,7 @@ class MyPaymentsFragment: BaseFragment(), TabLayout.OnTabSelectedListener,
     private fun initializeUI() {
         ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, false)
-            setHeaderTitle(getString(R.string.my_payments))
+            headerTitle = getString(R.string.my_payments)
             onBackPressed(this@MyPaymentsFragment)
         }
         hideBottomNavigationView(true)
