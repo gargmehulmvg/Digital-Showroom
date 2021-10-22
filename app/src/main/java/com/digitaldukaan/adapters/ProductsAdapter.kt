@@ -47,7 +47,7 @@ class ProductsAdapter(
                 text = "₹${item?.price}"
                 paintFlags = paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
             }
-            if (isNotEmpty(item?.thumbnailUrl)) mContext?.let { context -> Glide.with(context).load(item?.thumbnailUrl).into(imageView) }
+            if (isNotEmpty(item?.imageUrl)) mContext?.let { context -> Glide.with(context).load(item?.imageUrl).into(imageView) }
         }
     }
 

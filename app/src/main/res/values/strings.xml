@@ -136,6 +136,7 @@
     <string name="order">ORDER</string>
     <string name="pay">PAY</string>
     <string name="bestseller">Bestseller</string>
+    <string name="search_results">Search Results</string>
     <string-array name="state_array">
         <item >Andhra Pradesh</item>
         <item >Arunachal Pradesh</item>
