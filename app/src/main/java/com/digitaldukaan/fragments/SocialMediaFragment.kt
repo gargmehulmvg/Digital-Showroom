@@ -227,7 +227,6 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
 
     override fun onSocialMediaTemplateShareItemClickListener(position: Int, item: SocialMediaTemplateListItemResponse?) {
         setupUIForScreenShot(item)
-        showToast("Share $position")
         screenshotContainer?.let { v ->
             Handler(Looper.getMainLooper()).postDelayed({
                 val originalBitmap = getBitmapFromView(v, mActivity)
@@ -238,7 +237,6 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
 
     override fun onSocialMediaTemplateWhatsappItemClickListener(position: Int, item: SocialMediaTemplateListItemResponse?) {
         setupUIForScreenShot(item)
-        showToast("Whatsapp $position")
         screenshotContainer?.let { v ->
             Handler(Looper.getMainLooper()).postDelayed({
                 val originalBitmap = getBitmapFromView(v, mActivity)
