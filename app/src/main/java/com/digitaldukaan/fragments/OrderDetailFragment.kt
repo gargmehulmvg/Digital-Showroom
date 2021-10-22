@@ -697,11 +697,11 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
             val txtSpannable = SpannableString(getString(R.string.free).toUpperCase(Locale.getDefault()))
             val boldSpan = StyleSpan(Typeface.BOLD)
             txtSpannable.setSpan(boldSpan, 0, txtSpannable.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-            deliveryChargeValue?.text = txtSpannable
-            mActivity?.run {
-                deliveryChargeValue?.setTextColor(ContextCompat.getColor(this, R.color.open_green))
-                deliveryChargeValue?.background = ContextCompat.getDrawable(this, R.drawable.order_adapter_new)
+            mActivity?.let { context ->
+                deliveryChargeValue?.setTextColor(ContextCompat.getColor(context, R.color.open_green))
+                deliveryChargeValue?.background = ContextCompat.getDrawable(context, R.drawable.order_adapter_new)
             }
+            deliveryChargeValue?.text = txtSpannable
             addDeliveryChargesLabel?.text = getString(R.string.add_discount_and_other_charges)
         } catch (e: Exception) {
             Log.e(TAG, "setFreeDelivery: ${e.message}", e)
