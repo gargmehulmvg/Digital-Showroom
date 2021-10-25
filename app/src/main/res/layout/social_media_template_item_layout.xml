@@ -21,7 +21,7 @@
         <ImageView
             android:id="@+id/imageView"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_220sdp"
+            android:layout_height="@dimen/_300sdp"
             tools:src="@drawable/ic_laptop"
             android:scaleType="centerCrop"
             android:contentDescription="@string/image_view_content_description"

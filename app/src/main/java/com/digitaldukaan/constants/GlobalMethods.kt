@@ -501,28 +501,6 @@ fun isSingleDigitNumber(number: Long): Boolean {
     return !((number in 10..99) || (number < -9 && number > -100))
 }
 
-fun drawScreenShotBitmap(v: View) {
-    val viewBitmap = Bitmap.createBitmap(v.width, v.height, Bitmap.Config.RGB_565)
-    val viewCanvas = Canvas(viewBitmap)
-    val backgroundDrawable = v.background
-    if (null != backgroundDrawable) {
-        backgroundDrawable.draw(viewCanvas);
-    } else {
-        viewCanvas.drawColor(Color.GREEN);
-        v.draw(viewCanvas)
-    }
-    val fileStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-    val outputStream: OutputStream?
-    try {
-        val imgFile = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "$fileStamp.png")
-        outputStream = FileOutputStream(imgFile)
-        viewBitmap.compress(Bitmap.CompressFormat.PNG, 40, outputStream)
-        outputStream.close()
-    } catch (e: java.lang.Exception) {
-        e.printStackTrace()
-    }
-}
-
 fun getBitmapFromView(view: View, activityMain: Activity?): Bitmap? {
     return try {
         activityMain?.let { activity ->
