@@ -4,12 +4,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="@dimen/_8sdp"
-    android:layout_marginEnd="@dimen/_8sdp"
+    android:layout_marginStart="@dimen/_4sdp"
+    android:layout_marginEnd="@dimen/_4sdp"
     android:layout_marginTop="@dimen/_5sdp"
     android:layout_marginBottom="@dimen/_5sdp"
     app:cardElevation="@dimen/_3sdp"
-    app:cardCornerRadius="@dimen/_8sdp">
+    app:cardCornerRadius="@dimen/_6sdp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/container"
@@ -21,7 +21,7 @@
         <ImageView
             android:id="@+id/imageView"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_195sdp"
+            android:layout_height="@dimen/_220sdp"
             tools:src="@drawable/ic_laptop"
             android:scaleType="centerCrop"
             android:contentDescription="@string/image_view_content_description"
