@@ -10,7 +10,7 @@
         android:id="@+id/templateLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
@@ -36,7 +36,8 @@
                         android:id="@+id/cardView5"
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/_425sdp"
-                        android:layout_margin="@dimen/_15sdp"
+                        android:layout_marginStart="@dimen/_5sdp"
+                        android:layout_marginEnd="@dimen/_5sdp"
                         app:cardCornerRadius="@dimen/_10sdp"
                         app:cardElevation="@dimen/_1sdp"
                         app:layout_constraintEnd_toEndOf="parent"

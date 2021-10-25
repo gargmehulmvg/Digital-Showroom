@@ -460,6 +460,10 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
             addProductTextView?.id -> launchFragment(AddProductFragment.newInstance(0, true), true)
             whatsappTextView?.id -> {
                 sIsWhatsAppIconClicked = true
+                showCancellableProgressDialog(mActivity)
+                Handler(Looper.getMainLooper()).postDelayed({
+                    stopProgress()
+                }, Constants.AUTO_DISMISS_PROGRESS_DIALOG_TIMER)
                 screenshotContainer?.let { v ->
                     val originalBitmap = getBitmapFromView(v, mActivity)
                     originalBitmap?.let { bitmap -> shareOnWhatsApp("Order From - ${mMarketingPageInfoResponse?.marketingStoreInfo?.domain}", bitmap) }
@@ -467,6 +471,10 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
             }
             shareTextView?.id -> {
                 sIsWhatsAppIconClicked = false
+                showCancellableProgressDialog(mActivity)
+                Handler(Looper.getMainLooper()).postDelayed({
+                    stopProgress()
+                }, Constants.AUTO_DISMISS_PROGRESS_DIALOG_TIMER)
                 screenshotContainer?.let { v ->
                     val originalBitmap = getBitmapFromView(v, mActivity)
                     originalBitmap?.let { bitmap -> shareData("Order From - ${mMarketingPageInfoResponse?.marketingStoreInfo?.domain}", bitmap) }

@@ -24,7 +24,7 @@
                 android:padding="@dimen/_10sdp"
                 app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                 app:spanCount="3"
-                tools:itemCount="6"
+                tools:itemCount="0"
                 tools:listitem="@layout/social_media_category_item_layout" />
 
             <TextView
@@ -80,13 +80,14 @@
                             android:id="@+id/screenshotImageView"
                             android:layout_width="match_parent"
                             android:layout_height="@dimen/_320sdp"
-                            android:padding="@dimen/_15sdp"
                             android:contentDescription="@string/image_view_content_description"
-                            tools:src="@drawable/ic_default_image"
-                            app:layout_constraintBottom_toTopOf="@+id/screenshotQRImageView"
+                            android:scaleType="fitXY"
+                            app:layout_constraintBottom_toTopOf="@id/screenshotQRImageView"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintVertical_bias="0.0"
+                            tools:src="@drawable/ic_default_image" />
 
                         <TextView
                             android:id="@+id/textScan"
