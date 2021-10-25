@@ -51,9 +51,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
         private var mService: MarketingService? = null
         private var mShareStorePDFResponse: ShareStorePDFDataItemResponse? = null
 
-        fun newInstance(): MarketingFragment {
-            return MarketingFragment()
-        }
+        fun newInstance(): MarketingFragment = MarketingFragment()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {

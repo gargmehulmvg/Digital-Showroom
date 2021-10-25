@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/bottomSheetContainer"
     android:layout_width="match_parent"
-    android:background="@drawable/upper_curve_white_background"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:background="@drawable/upper_curve_white_background">
 
     <ImageView
         android:id="@+id/closeImageView"
@@ -17,41 +17,48 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/editBackgroundTextView"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_15sdp"
-        android:fontFamily="@font/roboto_medium"
-        android:textColor="@color/dark_blackish"
-        android:textSize="@dimen/_18sdp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/closeImageView"
-        tools:text="Edit Background" />
-
-    <View
-        android:id="@+id/separator"
-        android:layout_width="0dp"
-        android:layout_height="@dimen/_10sdp"
-        android:layout_marginTop="@dimen/_15sdp"
-        android:layout_marginEnd="@dimen/_15sdp"
-        android:alpha="0.1"
-        android:background="@drawable/dotted_line_view_black"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@id/editBackgroundTextView"
-        app:layout_constraintTop_toBottomOf="@id/editBackgroundTextView" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/backgroundColorRecyclerView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_15sdp"
-        android:paddingBottom="@dimen/_20sdp"
-        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+        android:orientation="vertical"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/separator"
-        app:spanCount="3"
-        tools:listitem="@layout/layout_template_background_item" />
+        app:layout_constraintTop_toBottomOf="@id/closeImageView">
+
+        <TextView
+            android:id="@+id/editBackgroundTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_15sdp"
+            android:fontFamily="@font/roboto_medium"
+            android:textColor="@color/dark_blackish"
+            android:textSize="@dimen/_18sdp"
+            tools:text="Edit Background" />
+
+        <View
+            android:id="@+id/separator"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_15sdp"
+            android:layout_marginEnd="@dimen/_15sdp"
+            android:alpha="0.1"
+            android:background="@drawable/dotted_line_view_black" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/backgroundColorRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_15sdp"
+            android:paddingBottom="@dimen/_50sdp"
+            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+            app:spanCount="3"
+            tools:itemCount="5"
+            tools:listitem="@layout/layout_template_background_item" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_40sdp" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
