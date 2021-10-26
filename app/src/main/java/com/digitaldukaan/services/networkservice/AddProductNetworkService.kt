@@ -62,9 +62,7 @@ class AddProductNetworkService {
                             responseBody.string(),
                             CommonApiResponse::class.java
                         )
-                        serviceInterface.onGetAddProductDataResponse(
-                            errorResponse
-                        )
+                        serviceInterface.onGetAddProductDataResponse(errorResponse)
                     }
                 }
             }
@@ -92,9 +90,7 @@ class AddProductNetworkService {
                             responseBody.string(),
                             CommonApiResponse::class.java
                         )
-                        serviceInterface.onAddProductDataResponse(
-                            errorResponse
-                        )
+                        serviceInterface.onAddProductDataResponse(errorResponse)
                     }
                 }
             }
@@ -123,9 +119,7 @@ class AddProductNetworkService {
                             responseBody.string(),
                             CommonApiResponse::class.java
                         )
-                        serviceInterface.onConvertFileToLinkResponse(
-                            errorResponse
-                        )
+                        serviceInterface.onConvertFileToLinkResponse(errorResponse)
                     }
                 }
             }

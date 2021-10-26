@@ -10,8 +10,17 @@ data class AddProductResponse(
     @SerializedName("recent_variants")                                      var recentVariantsList: ArrayList<VariantItemResponse>?,
     @SerializedName("master_variants")                                      var masterVariantsList: ArrayList<VariantItemResponse>?,
     @SerializedName("store_item")                                           var storeItem: AddProductItemResponse?,
+    @SerializedName("youtube_info")                                         var youtubeInfo: YoutubeInfoResponse?,
     var deletedVariants: HashMap<String?, VariantItemResponse?> = HashMap(),
     var isVariantSaved: Boolean
+)
+
+data class YoutubeInfoResponse(
+    @SerializedName("heading")                                              val heading:String?,
+    @SerializedName("steps")                                                val steps:String?,
+    @SerializedName("hint_1")                                               val hint1:String?,
+    @SerializedName("hint_2")                                               val hint2:String?,
+    @SerializedName("message")                                              val message:String?
 )
 
 data class AddProductStoreCategory(
