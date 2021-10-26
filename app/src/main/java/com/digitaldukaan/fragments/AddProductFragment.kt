@@ -499,7 +499,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                             finalList.addAll(list)
                         }
                         if (isNotEmpty(youtubeLinkEditText?.text?.toString())) {
-                            val youtubeLink = youtubeLinkEditText?.text?.toString()
+                            val youtubeLink = youtubeLinkEditText?.text?.toString()?.replace(" ", "")?.trim()
                             if (null == mYoutubeItemResponse)
                                 mYoutubeItemResponse = AddProductImagesResponse(imageId = 0, imageUrl = youtubeLink ?: "", status = 1, mediaType = Constants.MEDIA_TYPE_VIDEOS)
                             else
@@ -866,7 +866,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 }
                 isNotEmpty(youtubeLinkEditText?.text?.toString()) && !isYoutubeUrlValid(youtubeLinkEditText?.text?.toString() ?: "") -> {
                     youtubeLinkEditText?.apply {
-                        error = "Invalid URL"
+                        error = mActivity?.getString(R.string.please_enter_valid_url)
                         requestFocus()
                     }
                     false

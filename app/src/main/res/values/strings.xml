@@ -140,6 +140,7 @@
     <string name="your_store_name_here">Your Store Name Here</string>
     <string name="off">OFF</string>
     <string name="sale">SALE</string>
+    <string name="please_enter_valid_url">Please enter valid URL</string>
     <string-array name="state_array">
         <item >Andhra Pradesh</item>
         <item >Arunachal Pradesh</item>

@@ -281,7 +281,7 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
         screenshotStoreNameTextView?.text = domain
         storeNameWithTextColorTextView?.apply {
             text = mMarketingPageInfoResponse?.marketingStoreInfo?.name
-            if (isNotEmpty(item?.textColor)) setTextColor(Color.parseColor(item?.textColor))
+            setTextColor(if (isNotEmpty(item?.textColor)) Color.parseColor(item?.textColor) else Color.WHITE)
         }
     }
 

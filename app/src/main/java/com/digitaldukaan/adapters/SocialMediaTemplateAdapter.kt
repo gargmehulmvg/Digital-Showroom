@@ -64,7 +64,7 @@ class SocialMediaTemplateAdapter(
             val item = mList?.get(position)
             storeNameTextView.apply {
                 text = context?.getString(R.string.your_store_name_here)
-                if (isNotEmpty(item?.textColor)) setTextColor(Color.parseColor(item?.textColor))
+                setTextColor(if (isNotEmpty(item?.textColor)) Color.parseColor(item?.textColor) else Color.WHITE)
             }
             if (true == item?.favourite?.isActive) {
                 favouriteTextView.visibility = View.VISIBLE

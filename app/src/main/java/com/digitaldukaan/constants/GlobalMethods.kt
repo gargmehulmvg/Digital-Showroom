@@ -551,9 +551,10 @@ fun getQRCodeBitmap(activity: MainActivity?, text: String?): Bitmap? {
 }
 
 fun isYoutubeUrlValid(youTubeUrl: String): Boolean {
-    if (isEmpty(youTubeUrl)) return false
+    val youTubeUrlStr = youTubeUrl.replace(" ", "")
+    if (isEmpty(youTubeUrlStr)) return false
     val pattern = "(?:https?:\\/\\/)?(?:www\\.)?youtu\\.?be(?:\\.com)?\\/?.*(?:watch|embed)?(?:.*v=|v\\/|\\/)([\\w\\-_]+)\\&?"
     val compiledPattern: Pattern = Pattern.compile(pattern)
-    val matcher: Matcher = compiledPattern.matcher(youTubeUrl)
+    val matcher: Matcher = compiledPattern.matcher(youTubeUrlStr)
     return matcher.find()
 }
