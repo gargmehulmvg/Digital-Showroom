@@ -8,15 +8,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.isEmpty
 import com.digitaldukaan.interfaces.IChipItemClickListener
-import com.digitaldukaan.models.response.AddStoreCategoryItem
+import com.digitaldukaan.models.response.StoreCategoryItem
 
 class AddProductsChipsAdapter(
-    private var mAddProductStoreCategoryList: ArrayList<AddStoreCategoryItem>?,
+    private var mAddProductStoreCategoryList: ArrayList<StoreCategoryItem>?,
     private var mListener: IChipItemClickListener
 ) :
     RecyclerView.Adapter<AddProductsChipsAdapter.AddProductsChipsViewHolder>() {
 
-    fun setAddProductStoreCategoryList(list: ArrayList<AddStoreCategoryItem>?) {
+    fun setAddProductStoreCategoryList(list: ArrayList<StoreCategoryItem>?) {
         mAddProductStoreCategoryList = list
         notifyDataSetChanged()
     }

@@ -42,10 +42,7 @@ class EditPremiumColorAdapter(
 
     override fun getItemCount(): Int = mColorList?.size ?: 0
 
-    override fun onBindViewHolder(
-        holder: MarketingCardViewHolder,
-        position: Int
-    ) {
+    override fun onBindViewHolder(holder: MarketingCardViewHolder, position: Int) {
         val item = mColorList?.get(position)
         holder.run {
             item?.primaryColor?.let { color -> imageView.setBackgroundColor(Color.parseColor(color)) }

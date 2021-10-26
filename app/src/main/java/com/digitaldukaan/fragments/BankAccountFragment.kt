@@ -53,7 +53,7 @@ class BankAccountFragment : BaseFragment(), IBankDetailsServiceInterface {
         super.onViewCreated(view, savedInstanceState)
         ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, false)
-            setHeaderTitle("")
+            headerTitle = ""
             onBackPressed(this@BankAccountFragment)
             hideBackPressFromToolBar(mActivity, false)
             setSideIconVisibility(false)

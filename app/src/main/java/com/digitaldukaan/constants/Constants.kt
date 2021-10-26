@@ -8,6 +8,7 @@ class Constants {
         const val SHINE_ANIMATION_INTERVAL                      = 2_000L
         const val STORE_CREATION_PROGRESS_ANIMATION_INTERVAL    = 3_000L
         const val RESEND_OTP_TIMER                              = 30_000L
+        const val AUTO_DISMISS_PROGRESS_DIALOG_TIMER            = 1_000L
         const val TIMER_INTERVAL                                = 500L
         const val TOOL_TIP_TIMER_INTERVAL                       = 3_000L
         const val CREDENTIAL_PICKER_REQUEST                     = 1001
@@ -30,6 +31,7 @@ class Constants {
         const val SETTINGS                                      = "settings"
         const val DOTPE_OFFICIAL_URL_CLIPBOARD                  = "https://web.dotpe.in"
         const val DOTPE_OFFICIAL_URL                            = "Go to web.dotpe.in"
+        const val WEB_VIEW_URL_EDIT_SOCIAL_MEDIA_POST           = "edit-social-media-template"
         const val KEY_DONT_SHOW_MESSAGE_AGAIN                   = "KEY_DONT_SHOW_MESSAGE_AGAIN"
         const val KEY_DONT_SHOW_MESSAGE_AGAIN_STOCK             = "KEY_DONT_SHOW_MESSAGE_AGAIN_STOCK"
         const val TEXT_YES                                      = "yes"
@@ -68,6 +70,8 @@ class Constants {
         const val ACTION_EMAIL_AUTHENTICATION                   = "email-authentication"
         const val ACTION_MARK_OUT_FOR_DELIVERY                  = "mark-out-for-delivery"
         const val ACTION_HOW_TO_SHIP                            = "how-to-ship"
+        const val ACTION_PRODUCT_DISCOUNT                       = "product-discount"
+        const val ACTION_BESTSELLER                             = "bestseller"
         //Incomplete profile actions
         const val ACTION_LOGO                                   = "logo"
         const val ACTION_DESCRIPTION                            = "description"
@@ -182,5 +186,8 @@ class Constants {
         //CTA_TYPES
         const val CTA_TYPE_BORDER: String                       = "border"
         const val CTA_TYPE_SOLID: String                        = "solid"
+        //MODE DELIVERY CHARGE
+        const val MEDIA_TYPE_IMAGES                             = 1
+        const val MEDIA_TYPE_VIDEOS                             = 2
     }
 }

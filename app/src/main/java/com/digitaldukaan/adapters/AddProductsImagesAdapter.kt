@@ -9,6 +9,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.digitaldukaan.R
+import com.digitaldukaan.constants.isEmpty
+import com.digitaldukaan.constants.isNotEmpty
 import com.digitaldukaan.fragments.BaseFragment
 import com.digitaldukaan.interfaces.IAdapterItemClickListener
 import com.digitaldukaan.models.response.AddProductImagesResponse
@@ -41,23 +43,21 @@ class AddProductsImagesAdapter(
         notifyDataSetChanged()
     }
 
-    override fun getItemCount(): Int {
-        return mImagesList?.size ?: 0
-    }
+    override fun getItemCount(): Int = mImagesList?.size ?: 0
 
-    override fun onBindViewHolder(
-        holder: AddProductsImagesViewHolder,
-        position: Int
-    ) {
+    override fun onBindViewHolder(holder: AddProductsImagesViewHolder, position: Int) {
         holder.apply {
             val imageStr = mImagesList?.get(position)
-            if (imageStr?.imageUrl?.isEmpty() == true) {
+            if (isEmpty(imageStr?.imageUrl)) {
                 noImagesLayout.visibility = View.VISIBLE
                 image.visibility = View.GONE
                 updateCameraTextView.text = mNoImagesText
-                if ((mImagesList?.isNotEmpty() == true && mImagesList?.size == 5)) {
+                if ((isNotEmpty(mImagesList) && 5 == mImagesList?.size)) {
                     imageContainer.alpha = 0.2f
                     imageContainer.isEnabled = false
+                } else {
+                    imageContainer.alpha = 1f
+                    imageContainer.isEnabled = true
                 }
             } else {
                 noImagesLayout.visibility = View.GONE

@@ -94,7 +94,7 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
         ToolBarManager.getInstance().apply {
             hideToolBar(mActivity, false)
             val stepStr = if (mIsSingleStep) "" else "Step $mPosition : "
-            setHeaderTitle("$stepStr${mProfilePreviewResponse?.mHeadingText}")
+            headerTitle = "$stepStr${mProfilePreviewResponse?.mHeadingText}"
             onBackPressed(this@StoreMapLocationFragment)
             hideBackPressFromToolBar(mActivity, false)
         }

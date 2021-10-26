@@ -1,13 +1,14 @@
 package com.digitaldukaan.constants
 
+import android.app.Activity
 import android.app.DownloadManager
 import android.content.ContentValues
 import android.content.Context
+import android.content.Context.WINDOW_SERVICE
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.database.Cursor
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
+import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.net.Uri
@@ -20,11 +21,16 @@ import android.telephony.PhoneNumberUtils
 import android.text.TextUtils
 import android.util.Base64
 import android.util.Base64OutputStream
+import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
+import android.view.View.MeasureSpec
+import android.view.WindowManager
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.TranslateAnimation
 import android.widget.Toast
+import androidmads.library.qrgenearator.QRGContents
+import androidmads.library.qrgenearator.QRGEncoder
 import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.MainActivity
 import com.digitaldukaan.R
@@ -48,6 +54,8 @@ import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 import kotlin.collections.ArrayList
 
 
@@ -493,4 +501,60 @@ fun getToolTipBalloon(mContext: Context?, text: String? = "Sample Testing", arro
 
 fun isSingleDigitNumber(number: Long): Boolean {
     return !((number in 10..99) || (number < -9 && number > -100))
+}
+
+fun getBitmapFromView(view: View, activityMain: Activity?): Bitmap? {
+    return try {
+        activityMain?.let { activity ->
+            Log.e("GlobalMethods", "getBitmapFromView: $view")
+            val dm: DisplayMetrics = activity.resources.displayMetrics
+            view.measure(
+                MeasureSpec.makeMeasureSpec(dm.widthPixels, MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(dm.heightPixels, MeasureSpec.EXACTLY)
+            )
+            view.layout(0, 0, view.measuredWidth, view.measuredHeight)
+            val returnedBitmap = Bitmap.createBitmap(
+                view.measuredWidth,
+                view.measuredHeight, Bitmap.Config.ARGB_8888
+            )
+            val c = Canvas(returnedBitmap)
+            view.draw(c)
+            returnedBitmap
+        }
+    } catch (e: Exception) {
+        Log.e("GlobalMethods", "getBitmapFromView: ${e.message}", e)
+        null
+    }
+}
+
+fun getQRCodeBitmap(activity: MainActivity?, text: String?): Bitmap? {
+    activity?.let { context ->
+        Log.d("GlobalMethods", "getQRCodeBitmap: $text")
+        val manager = context.getSystemService(WINDOW_SERVICE) as WindowManager
+        val display = manager.defaultDisplay
+        val point = Point()
+        display.getSize(point)
+        val width = point.x
+        val height = point.y
+        var dimen = if (width < height) width else height
+        dimen = dimen * 3 / 4
+        val qrgEncoder = QRGEncoder(text, null, QRGContents.Type.TEXT, dimen)
+        Log.d("GlobalMethods", "qrgEncoder: $qrgEncoder")
+        return try {
+            qrgEncoder.encodeAsBitmap()
+        } catch (e: Exception) {
+            Log.e("GlobalMethods", e.toString())
+            null
+        }
+    }
+    return null
+}
+
+fun isYoutubeUrlValid(youTubeUrl: String): Boolean {
+    val youTubeUrlStr = youTubeUrl.replace(" ", "")
+    if (isEmpty(youTubeUrlStr)) return false
+    val pattern = "(?:https?:\\/\\/)?(?:www\\.)?youtu\\.?be(?:\\.com)?\\/?.*(?:watch|embed)?(?:.*v=|v\\/|\\/)([\\w\\-_]+)\\&?"
+    val compiledPattern: Pattern = Pattern.compile(pattern)
+    val matcher: Matcher = compiledPattern.matcher(youTubeUrlStr)
+    return matcher.find()
 }
