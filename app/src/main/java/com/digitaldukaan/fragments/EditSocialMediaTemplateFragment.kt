@@ -452,11 +452,15 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
         val discountedPriceTextView: TextView? = mContentView?.findViewById(R.id.discountedPriceTextView)
         val originalPriceTextView: TextView? = mContentView?.findViewById(R.id.originalPriceTextView)
         val discount = ceil(((((productItem?.price ?: 0.0) - (productItem?.discountedPrice ?: 0.0)) / (productItem?.price ?: 0.0)) * 100)).toInt()
-        promoCodeTextView?.text = if (productItem?.price == productItem?.discountedPrice) null else "$discount% OFF"
+        val discountStr = if (productItem?.price == productItem?.discountedPrice) null else "$discount% OFF"
+        promoCodeTextView?.text = discountStr
         originalPriceTextView?.text = "₹${productItem?.discountedPrice}"
         discountedPriceTextView?.apply {
-            showStrikeOffText()
-            text = "₹${productItem?.price}"
+            if (isNotEmpty(discountStr)) {
+                visibility = View.VISIBLE
+                showStrikeOffText()
+                text = "₹${productItem?.price}"
+            } else visibility = View.GONE
         }
         mActivity?.let { context ->
             productImageView?.let { view -> Glide.with(context).load(productItem?.imageUrl).into(view) }

@@ -508,7 +508,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
             if (mSwipeRefreshLayout?.isRefreshing == true) mSwipeRefreshLayout?.isRefreshing = false
             if (commonResponse.mIsSuccessStatus) {
                 val ordersResponse = Gson().fromJson<OrdersResponse>(commonResponse.mCommonDataStr, OrdersResponse::class.java)
-                if (ordersResponse?.mOrdersList?.isNotEmpty() == true) launchFragment(SearchOrdersFragment.newInstance(mOrderIdString, mMobileNumberString, ordersResponse.mOrdersList), true) else {
+                if (isNotEmpty(ordersResponse?.mOrdersList)) launchFragment(SearchOrdersFragment.newInstance(mOrderIdString, mMobileNumberString, ordersResponse.mOrdersList), true) else {
                     showSearchDialog(StaticInstances.sOrderPageInfoStaticData, mMobileNumberString, mOrderIdString, true)
                 }
             } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
@@ -631,7 +631,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
 
     override fun onOrderItemCLickChanged(item: OrderItemResponse?) {
         var isNewOrder = false
-        if (item?.displayStatus == Constants.DS_NEW) {
+        if (Constants.DS_NEW == item?.displayStatus) {
             AppEventsManager.pushAppEvents(
                 eventName = AFInAppEventType.EVENT_VERIFY_ORDER_SEEN,
                 isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
