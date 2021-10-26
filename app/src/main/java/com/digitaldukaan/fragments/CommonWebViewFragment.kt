@@ -48,10 +48,10 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        if (mHeaderText == getString(R.string.my_rewards)) {
+        if (getString(R.string.my_rewards) == mHeaderText) {
             ToolBarManager.getInstance()?.apply {
                 hideToolBar(mActivity, false)
-                setHeaderTitle(mHeaderText)
+                headerTitle = mHeaderText
                 setSideIconVisibility(true)
                 mActivity?.let { setSideIcon(ContextCompat.getDrawable(it, R.drawable.ic_options_menu), this@CommonWebViewFragment) }
             }
@@ -91,10 +91,8 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
     }
 
     override fun onNativeBackPressed() {
-        mActivity?.let {
-            it.runOnUiThread {
-                it.onBackPressed()
-            }
+        mActivity?.let { context ->
+            context.runOnUiThread { context.onBackPressed() }
         }
     }
 
@@ -102,118 +100,134 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
         stopProgress()
         Log.d(mTagName, "sendData: $data")
         val jsonData = JSONObject(data)
-        if (jsonData.optBoolean("shareCreative")) {
-            if (jsonData.optBoolean("shareSingle")) {
+        when {
+            jsonData.optBoolean("shareCreative") -> {
+                if (jsonData.optBoolean("shareSingle")) {
+                    val base64OriginalStr = jsonData.optString("data")
+                    val domain = jsonData.optString("domain")
+                    Log.d(mTagName, "image URL :: $base64OriginalStr")
+                    val base64Str = base64OriginalStr.split("data:image/png;base64,")[1]
+                    Log.d(mTagName, "image URL :: $base64Str")
+                    val bitmap = getBitmapFromBase64V2(base64Str)
+                    shareOnWhatsApp("Order From - ${if (domain.isEmpty()) mDomainName else domain}", bitmap)
+                } else {
+                    val imageBase64 = jsonData.optString("data")
+                    Log.d(mTagName, "image URL :: $imageBase64")
+                    val domain = jsonData.optString("domain")
+                    val bitmap = getBitmapFromBase64(imageBase64)
+                    shareData("Order From - ${if (domain.isEmpty()) mDomainName else domain}", bitmap)
+                }
+            }
+            jsonData.optBoolean("downloadImage") -> {
                 val base64OriginalStr = jsonData.optString("data")
-                val domain = jsonData.optString("domain")
-                Log.d(mTagName, "image URL :: $base64OriginalStr")
+                Log.d(mTagName, "image BASE64 :: $base64OriginalStr")
                 val base64Str = base64OriginalStr.split("data:image/png;base64,")[1]
                 Log.d(mTagName, "image URL :: $base64Str")
                 val bitmap = getBitmapFromBase64V2(base64Str)
-                shareOnWhatsApp("Order From - ${if (domain.isEmpty()) mDomainName else domain}", bitmap)
-            } else {
+                bitmap?.let {
+                    downloadMediaToStorage(it, mActivity)
+                    val file = downloadBillInGallery(it, "my-qr")
+                    file?.run { showDownloadNotification(this, "MyQR") }
+                }
+            }
+            jsonData.optBoolean("redirectBrowser") -> {
+                openUrlInBrowser(jsonData.optString("data"))
+            }
+            jsonData.optBoolean("shareTextOnWhatsApp") -> {
+                val text = jsonData.optString("data")
+                val mobileNumber = jsonData.optString("mobileNumber")
+                shareDataOnWhatsAppByNumber(mobileNumber, text)
+            }
+            jsonData.optBoolean("scratchClaimed") -> {
+                mActivity?.launchInAppReviewDialog()
+            }
+            jsonData.optBoolean("shareQRCode") -> {
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_QR_SHARED,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
+                )
                 val imageBase64 = jsonData.optString("data")
                 Log.d(mTagName, "image URL :: $imageBase64")
                 val domain = jsonData.optString("domain")
                 val bitmap = getBitmapFromBase64(imageBase64)
                 shareData("Order From - ${if (domain.isEmpty()) mDomainName else domain}", bitmap)
             }
-        } else if (jsonData.optBoolean("downloadImage")) {
-            val base64OriginalStr = jsonData.optString("data")
-            Log.d(mTagName, "image BASE64 :: $base64OriginalStr")
-            val base64Str = base64OriginalStr.split("data:image/png;base64,")[1]
-            Log.d(mTagName, "image URL :: $base64Str")
-            val bitmap = getBitmapFromBase64V2(base64Str)
-            bitmap?.let {
-                downloadMediaToStorage(it, mActivity)
-                val file = downloadBillInGallery(it, "my-qr")
-                file?.run { showDownloadNotification(this, "MyQR") }
+            jsonData.optBoolean("redirectHomePage") -> {
+                launchFragment(HomeFragment.newInstance(), true)
             }
-        } else if (jsonData.optBoolean("redirectBrowser")) {
-            openUrlInBrowser(jsonData.optString("data"))
-        } else if (jsonData.optBoolean("shareTextOnWhatsApp")) {
-            val text = jsonData.optString("data")
-            val mobileNumber = jsonData.optString("mobileNumber")
-            shareDataOnWhatsAppByNumber(mobileNumber, text)
-        } else if (jsonData.optBoolean("scratchClaimed")) {
-            mActivity?.launchInAppReviewDialog()
-        } else if (jsonData.optBoolean("shareQRCode")) {
-            AppEventsManager.pushAppEvents(
-                eventName = AFInAppEventType.EVENT_QR_SHARED,
-                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
-            )
-            val imageBase64 = jsonData.optString("data")
-            Log.d(mTagName, "image URL :: $imageBase64")
-            val domain = jsonData.optString("domain")
-            val bitmap = getBitmapFromBase64(imageBase64)
-            shareData("Order From - ${if (domain.isEmpty()) mDomainName else domain}", bitmap)
-        } else if (jsonData.optBoolean("redirectHomePage")) {
-            launchFragment(HomeFragment.newInstance(), true)
-        } else if (jsonData.optBoolean("startLoader")) {
-            showProgressDialog(mActivity)
-        } else if (jsonData.optBoolean("stopLoader")) {
-            stopProgress()
-        } else if (jsonData.optBoolean("unauthorizedAccess")) {
-            logoutFromApplication()
-        } else if (jsonData.optBoolean("openUPIIntent")) {
-            val intent = Intent()
-            intent.data = Uri.parse(jsonData.optString("data"))
-            val chooser = Intent.createChooser(intent, "Pay with...")
-            startActivityForResult(chooser, 1, null)
-        } else if (jsonData.optBoolean("openUPI")) {
-            val packageName = jsonData.optString("packageName")
-            val uri: Uri = Uri.Builder()
-                .scheme("upi")
-                .authority("pay")
-                .appendQueryParameter("pa", jsonData.optString("pa"))
-                .appendQueryParameter("pn", jsonData.optString("pn"))
-                .appendQueryParameter("tr", jsonData.optString("tr"))
-                .appendQueryParameter("tn", jsonData.optString("tn"))
-                .appendQueryParameter("am", jsonData.optString("am"))
-                .appendQueryParameter("cu", "INR")
-                .build()
-            val intent = Intent(Intent.ACTION_VIEW)
-            intent.data = uri
-            intent.setPackage(packageName)
-            mActivity?.startActivityForResult(intent, 123)
-        } else if (jsonData.optBoolean("convertImage")) {
-            showProgressDialog(mActivity)
-            val imageUrl = jsonData.optString("data")
-            mDomainName = jsonData.optString("domain")
-            val image64 = getBase64FromImageURL(imageUrl)
-            Log.d(mTagName, "image BASE64 :: $image64")
-            CoroutineScopeUtils().runTaskOnCoroutineMain {
-                if ("social" == jsonData.optString("sharePage")) {
-                    commonWebView?.loadUrl("javascript: receiveAndroidSocialData('$image64')")
-                } else {
-                    commonWebView?.loadUrl("javascript: receiveAndroidData('$image64')")
+            jsonData.optBoolean("startLoader") -> {
+                showProgressDialog(mActivity)
+            }
+            jsonData.optBoolean("stopLoader") -> {
+                stopProgress()
+            }
+            jsonData.optBoolean("unauthorizedAccess") -> {
+                logoutFromApplication()
+            }
+            jsonData.optBoolean("openUPIIntent") -> {
+                val intent = Intent()
+                intent.data = Uri.parse(jsonData.optString("data"))
+                val chooser = Intent.createChooser(intent, "Pay with...")
+                startActivityForResult(chooser, 1, null)
+            }
+            jsonData.optBoolean("openUPI") -> {
+                val packageName = jsonData.optString("packageName")
+                val uri: Uri = Uri.Builder()
+                    .scheme("upi")
+                    .authority("pay")
+                    .appendQueryParameter("pa", jsonData.optString("pa"))
+                    .appendQueryParameter("pn", jsonData.optString("pn"))
+                    .appendQueryParameter("tr", jsonData.optString("tr"))
+                    .appendQueryParameter("tn", jsonData.optString("tn"))
+                    .appendQueryParameter("am", jsonData.optString("am"))
+                    .appendQueryParameter("cu", "INR")
+                    .build()
+                val intent = Intent(Intent.ACTION_VIEW)
+                intent.data = uri
+                intent.setPackage(packageName)
+                mActivity?.startActivityForResult(intent, 123)
+            }
+            jsonData.optBoolean("convertImage") -> {
+                showProgressDialog(mActivity)
+                val imageUrl = jsonData.optString("data")
+                mDomainName = jsonData.optString("domain")
+                val image64 = getBase64FromImageURL(imageUrl)
+                Log.d(mTagName, "image BASE64 :: $image64")
+                CoroutineScopeUtils().runTaskOnCoroutineMain {
+                    if ("social" == jsonData.optString("sharePage")) {
+                        commonWebView?.loadUrl("javascript: receiveAndroidSocialData('$image64')")
+                    } else {
+                        commonWebView?.loadUrl("javascript: receiveAndroidData('$image64')")
+                    }
                 }
             }
-        } else if (jsonData.optBoolean("convertMultipleImage")) {
-            showProgressDialog(mActivity)
-            val imageArray = jsonData.optJSONArray("imageArray")
-            val listType = object : TypeToken<ArrayList<ConvertMultiImageDTO>>() {}.type
-            val convertMultipleImageList = Gson().fromJson<ArrayList<ConvertMultiImageDTO>>("$imageArray", listType)
-            convertMultipleImageList?.forEachIndexed { _, imageDTO ->
-                val str = getBase64FromImageURL(imageDTO.src)
-                str?.run { imageDTO.src = "data:image/png;base64,$str" }
+            jsonData.optBoolean("convertMultipleImage") -> {
+                showProgressDialog(mActivity)
+                val imageArray = jsonData.optJSONArray("imageArray")
+                val listType = object : TypeToken<ArrayList<ConvertMultiImageDTO>>() {}.type
+                val convertMultipleImageList = Gson().fromJson<ArrayList<ConvertMultiImageDTO>>("$imageArray", listType)
+                convertMultipleImageList?.forEachIndexed { _, imageDTO ->
+                    val str = getBase64FromImageURL(imageDTO.src)
+                    str?.run { imageDTO.src = "data:image/png;base64,$str" }
+                }
+                val finalConvertedStr = Gson().toJson(convertMultipleImageList)
+                Log.d(mTagName, "image BASE64 :: $finalConvertedStr")
+                CoroutineScopeUtils().runTaskOnCoroutineMain {
+                    commonWebView?.loadUrl("javascript: receiveAndroidData($finalConvertedStr)")
+                }
             }
-            val finalConvertedStr = Gson().toJson(convertMultipleImageList)
-            Log.d(mTagName, "image BASE64 :: $finalConvertedStr")
-            CoroutineScopeUtils().runTaskOnCoroutineMain {
-                commonWebView?.loadUrl("javascript: receiveAndroidData($finalConvertedStr)")
+            jsonData.optBoolean("trackEventData") -> {
+                val eventName = jsonData.optString("eventName")
+                val additionalData = jsonData.optString("additionalData")
+                val map = Gson().fromJson<HashMap<String, String>>(additionalData.toString(), HashMap::class.java)
+                Log.d(mTagName, "sendData: working $map")
+                AppEventsManager.pushAppEvents(
+                    eventName = eventName,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = map
+                )
             }
-        } else if (jsonData.optBoolean("trackEventData")) {
-            val eventName = jsonData.optString("eventName")
-            val additionalData = jsonData.optString("additionalData")
-            val map = Gson().fromJson<HashMap<String, String>>(additionalData.toString(), HashMap::class.java)
-            Log.d(mTagName, "sendData: working $map")
-            AppEventsManager.pushAppEvents(
-                eventName = eventName,
-                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                data = map
-            )
         }
     }
 
@@ -271,13 +285,13 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
     override fun onToolbarSideIconClicked() {
         try {
             val sideView:View? = mActivity?.findViewById(R.id.sideIconToolbar)
-            val optionsMenu: PopupMenu? = PopupMenu(mActivity, sideView)
-            optionsMenu?.apply {
+            val optionsMenu = PopupMenu(mActivity, sideView)
+            optionsMenu.apply {
                 inflate(R.menu.menu_product_fragment)
                 menu?.add(Menu.NONE, 0, Menu .NONE, getString(R.string.term_and_condition))
                 menu?.add(Menu.NONE, 1, Menu .NONE, getString(R.string.help))
                 setOnMenuItemClickListener(this@CommonWebViewFragment)
-            }?.show()
+            }.show()
         } catch (e: Exception) {
             Log.e(mTagName, "onToolbarSideIconClicked: ${e.message}", e)
         }
@@ -289,9 +303,7 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
         return true
     }
 
-    override fun showAndroidToast(data: String) {
-        showToast(data)
-    }
+    override fun showAndroidToast(data: String) = showToast(data)
 
     override fun showAndroidLog(data: String) {
         Log.d(mTagName, "showAndroidLog :: $data")

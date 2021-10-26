@@ -85,7 +85,7 @@ class SetOrderTypeFragment: BaseFragment(), ISetOrderTypeServiceInterface, IRecy
         clearRadioButtonSelection()
         val howDoesPrepaidWorkTextView: TextView? = mContentView?.findViewById(R.id.howDoesPrepaidWorkTextView)
         howDoesPrepaidWorkTextView?.text = mStaticText?.heading_how_does_prepaid_orders_works
-        ToolBarManager.getInstance()?.setHeaderTitle(mStaticText?.heading_set_orders_type)
+        ToolBarManager.getInstance()?.headerTitle = mStaticText?.heading_set_orders_type
         mSetOrderTypePageInfoResponse?.mPostPaidResponse?.let {
             if (it.id == mPaymentMethod) {
                 postpaidRadioButton?.isChecked = true

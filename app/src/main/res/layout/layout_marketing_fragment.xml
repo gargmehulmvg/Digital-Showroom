@@ -200,9 +200,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_10sdp"
             android:overScrollMode="never"
-            android:paddingBottom="@dimen/_30sdp"
+            android:paddingBottom="@dimen/_5sdp"
             app:layout_constraintTop_toBottomOf="@id/moreOptionsHeadingTextView"
-            tools:itemCount="5"
+            tools:itemCount="1"
             tools:listitem="@layout/app_setting_item" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

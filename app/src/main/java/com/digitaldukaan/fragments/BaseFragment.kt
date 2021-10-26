@@ -22,10 +22,13 @@ import android.provider.MediaStore
 import android.provider.Settings
 import android.text.Editable
 import android.text.Html
+import android.text.InputFilter
+import android.text.InputFilter.LengthFilter
 import android.text.TextWatcher
 import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
+import android.webkit.WebView
 import android.widget.*
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -249,8 +252,13 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         }
     }
 
-    fun TextView.showStrikeOffText() {
+    open fun TextView.showStrikeOffText() {
         paintFlags = paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+    }
+
+
+    open fun TextView.setMaxLength(length: Int) {
+        filters = arrayOf<InputFilter>(LengthFilter(length))
     }
 
     open fun hideSoftKeyboard() {
@@ -1105,7 +1113,8 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                         })
                         if (isError) {
                             errorTextView.visibility = View.VISIBLE
-                            errorTextView.text = "No order found with this ${if (mobileNumberString.isEmpty()) "Order ID" else "Mobile Number"}"
+                            val message = "No order found with this ${if (isEmpty(mobileNumberString)) "Order ID" else "Mobile Number"}"
+                            errorTextView.text = message
                         }
                     }
                 }.show()
@@ -1288,7 +1297,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                             headerTextView.setHtmlData(addProductBannerStaticDataResponse?.header)
                             bodyTextView.text = addProductBannerStaticDataResponse?.body
                             buttonTextView.text = addProductBannerStaticDataResponse?.button_text
-                            bannerImageView?.let {
+                            bannerImageView.let {
                                 try {
                                     Picasso.get().load(addProductBannerStaticDataResponse?.image_url).into(it)
                                 } catch (e: Exception) {
@@ -1841,7 +1850,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                             isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                             data = mapOf(
                                 AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                                AFInAppEventParameterName.ORDER_ID to "${orderId}"
+                                AFInAppEventParameterName.ORDER_ID to "$orderId"
                             )
                         )
                         bottomSheetDialog.dismiss()
@@ -1849,6 +1858,37 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                     }
                 }
             }.show()
+        }
+    }
+
+    open fun onCommonWebViewShouldOverrideUrlLoading(url: String, view: WebView) = when {
+        url.startsWith("tel:") -> {
+            try {
+                view.context?.startActivity(Intent(Intent.ACTION_DIAL, Uri.parse(url)))
+            } catch (e: Exception) {
+                Log.e(TAG, "shouldOverrideUrlLoading :: tel :: ${e.message}", e)
+            }
+            true
+        }
+        url.contains("mailto:") -> {
+            try {
+                view.context?.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+            } catch (e: Exception) {
+                Log.e(TAG, "shouldOverrideUrlLoading :: mailto :: ${e.message}", e)
+            }
+            true
+        }
+        url.contains("whatsapp:") -> {
+            try {
+                view.context?.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+            } catch (e: Exception) {
+                Log.e(TAG, "shouldOverrideUrlLoading :: whatsapp :: ${e.message}", e)
+            }
+            true
+        }
+        else -> {
+            view.loadUrl(url)
+            true
         }
     }
 

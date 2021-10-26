@@ -41,7 +41,7 @@ class MarketingMoreOptionsAdapter(
         holder.mAppSettingTextView.text = response?.heading
         holder.mAppSettingImageView.let {
             try {
-                Picasso.get().load(response?.left_cdn).into(it)
+                Picasso.get().load(response?.leftCdn).into(it)
             } catch (e: Exception) {
                 Log.e(MarketingMoreOptionsAdapter::class.java.simpleName, "picasso image loading issue: ${e.message}", e)
             }

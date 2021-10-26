@@ -67,7 +67,7 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
         super.onViewCreated(view, savedInstanceState)
         ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, false)
-            setHeaderTitle(mMoreControlsStaticData?.mTextStoreControls)
+            headerTitle = mMoreControlsStaticData?.mTextStoreControls
             onBackPressed(this@MoreControlsFragment)
             hideBackPressFromToolBar(mActivity, false)
         }

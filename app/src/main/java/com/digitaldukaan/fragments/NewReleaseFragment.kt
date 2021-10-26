@@ -51,7 +51,7 @@ class NewReleaseFragment: BaseFragment(), IStoreSettingsItemClicked {
         mContentView = inflater.inflate(R.layout.layout_new_release_fragment, container, false)
         ToolBarManager.getInstance().apply {
             hideToolBar(mActivity, false)
-            setHeaderTitle(mHeadingStr)
+            headerTitle = mHeadingStr
             onBackPressed(this@NewReleaseFragment)
             setSideIconVisibility(false)
             setSecondSideIconVisibility(false)

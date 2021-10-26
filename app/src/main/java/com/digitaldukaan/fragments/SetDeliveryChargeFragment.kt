@@ -43,7 +43,7 @@ class SetDeliveryChargeFragment : BaseFragment(), IMoreControlsServiceInterface 
         ToolBarManager.getInstance().hideToolBar(mActivity, true)
         ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, false)
-            setHeaderTitle(mMoreControlsStaticData?.page_heading_set_delivery_charge)
+            headerTitle = mMoreControlsStaticData?.page_heading_set_delivery_charge
             onBackPressed(this@SetDeliveryChargeFragment)
             hideBackPressFromToolBar(mActivity, false)
         }
