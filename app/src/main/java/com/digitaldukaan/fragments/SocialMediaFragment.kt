@@ -235,6 +235,10 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
                 val originalBitmap = getBitmapFromView(v, mActivity)
                 originalBitmap?.let { bitmap -> shareOnWhatsApp("Order From - ${mMarketingPageInfoResponse?.marketingStoreInfo?.domain}", bitmap) }
             }, Constants.TIMER_INTERVAL)
+            Handler(Looper.getMainLooper()).postDelayed({
+                stopProgress()
+            }, Constants.AUTO_DISMISS_PROGRESS_DIALOG_TIMER)
+            showProgressDialog(mActivity)
         }
     }
 
@@ -245,6 +249,10 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
                 val originalBitmap = getBitmapFromView(v, mActivity)
                 originalBitmap?.let { bitmap -> shareOnWhatsApp("Order From - ${mMarketingPageInfoResponse?.marketingStoreInfo?.domain}", bitmap) }
             }, Constants.TIMER_INTERVAL)
+            Handler(Looper.getMainLooper()).postDelayed({
+                stopProgress()
+            }, Constants.AUTO_DISMISS_PROGRESS_DIALOG_TIMER)
+            showProgressDialog(mActivity)
         }
     }
 

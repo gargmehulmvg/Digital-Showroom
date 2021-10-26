@@ -164,6 +164,22 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
                 setupNoTemplateUI()
             } else {
                 setupEditAndShareTemplateUI()
+                val productCategoryTempCombineList: ArrayList<ProductCategoryCombineResponse> = ArrayList()
+                mProductCategoryCombineList?.forEachIndexed { _, categoryCombineResponse -> productCategoryTempCombineList.add(categoryCombineResponse) }
+                mProductCategoryCombineList = ArrayList()
+                productCategoryTempCombineList.forEachIndexed { _, categoryResponse ->
+                    val productsList: ArrayList<ProductResponse> = ArrayList()
+                    categoryResponse.productsList?.forEachIndexed { _, productsResponse ->
+                        if (ToolBarManager.getInstance().headerTitle == mMarketingPageInfoResponse?.marketingStaticTextResponse?.heading_product_discount) {
+                            if (productsResponse.discountedPrice != productsResponse.price) productsList.add(productsResponse)
+                        } else {
+                            productsList.add(productsResponse)
+                        }
+                    }
+                    if (isNotEmpty(productsList)) {
+                        mProductCategoryCombineList?.add(ProductCategoryCombineResponse(categoryResponse.category, productsList))
+                    }
+                }
                 showProductsWithCategoryBottomSheet()
             }
         }
@@ -214,11 +230,9 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
                                     val tempProductsList: ArrayList<ProductResponse> = ArrayList()
                                     val productsList = Gson().fromJson<ArrayList<ProductResponse>>(it.mCommonDataStr, listType)
                                     if (ToolBarManager.getInstance().headerTitle == mMarketingPageInfoResponse?.marketingStaticTextResponse?.heading_product_discount) {
-                                        productsList?.forEachIndexed { _, productResponse ->
-                                            if (productResponse.discountedPrice != productResponse.price) tempProductsList.add(productResponse)
-                                        }
+                                        productsList?.forEachIndexed { _, productResponse -> if (productResponse.discountedPrice != productResponse.price && isNotEmpty(productResponse.imageUrl)) tempProductsList.add(productResponse) }
                                     } else {
-                                        tempProductsList.addAll(productsList)
+                                        productsList?.forEachIndexed { _, productResponse -> tempProductsList.add(productResponse) }
                                     }
                                     if (isNotEmpty(tempProductsList))
                                         mProductCategoryCombineList?.add(ProductCategoryCombineResponse(item, tempProductsList))
@@ -253,82 +267,88 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
 
     private fun showProductsWithCategoryBottomSheet() {
         setupBottomNavViewFromStaticText()
-        noTemplateLayout?.visibility = View.GONE
-        templateLayout?.visibility = View.VISIBLE
-        mActivity?.let {
-            mCategoryBottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
-            val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_show_products_with_category, it.findViewById(R.id.bottomSheetContainer))
-            mCategoryBottomSheetDialog?.apply {
-                behavior.skipCollapsed = true
-                behavior.state = BottomSheetBehavior.STATE_EXPANDED
-                window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
-                setOnDismissListener {
-                    if (!mIsItemSelectedFromBottomSheet) mActivity?.onBackPressed()
-                    Handler(Looper.getMainLooper()).postDelayed({ hideSoftKeyboard() }, Constants.TIMER_INTERVAL)
-                }
-                setContentView(view)
-                view.run {
-                    val headingTextView: TextView = findViewById(R.id.headingTextView)
-                    val editText: EditText = findViewById(R.id.editText)
-                    val searchProductRecyclerView: RecyclerView = findViewById(R.id.searchProductRecyclerView)
-                    headingTextView.setHtmlData(mMarketingPageInfoResponse?.marketingStaticTextResponse?.message_please_note)
-                    editText.hint = mMarketingPageInfoResponse?.marketingStaticTextResponse?.hint_search_product
-                    val categoryProductAdapter = CategoryProductAdapter(mActivity, mMarketingPageInfoResponse?.marketingStaticTextResponse, mProductCategoryCombineList, this@EditSocialMediaTemplateFragment)
-                    editText.addTextChangedListener(object : TextWatcher{
-                        override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                            Log.d(TAG, "beforeTextChanged: do nothing")
-                        }
+        if (isEmpty(mProductCategoryCombineList)) {
+            setupNoTemplateUI()
+        } else {
+            noTemplateLayout?.visibility = View.GONE
+            templateLayout?.visibility = View.VISIBLE
+            mActivity?.let {
+                mCategoryBottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
+                val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_show_products_with_category, it.findViewById(R.id.bottomSheetContainer))
+                mCategoryBottomSheetDialog?.apply {
+                    behavior.skipCollapsed = true
+                    behavior.state = BottomSheetBehavior.STATE_EXPANDED
+                    window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+                    setOnDismissListener {
+                        if (!mIsItemSelectedFromBottomSheet) mActivity?.onBackPressed()
+                        Handler(Looper.getMainLooper()).postDelayed({ hideSoftKeyboard() }, Constants.TIMER_INTERVAL)
+                    }
+                    setContentView(view)
+                    view.run {
+                        val headingTextView: TextView = findViewById(R.id.headingTextView)
+                        val editText: EditText = findViewById(R.id.editText)
+                        val searchProductRecyclerView: RecyclerView = findViewById(R.id.searchProductRecyclerView)
+                        headingTextView.setHtmlData(mMarketingPageInfoResponse?.marketingStaticTextResponse?.message_please_note)
+                        editText.hint = mMarketingPageInfoResponse?.marketingStaticTextResponse?.hint_search_product
+                        val categoryProductAdapter = CategoryProductAdapter(mActivity, mMarketingPageInfoResponse?.marketingStaticTextResponse, mProductCategoryCombineList, this@EditSocialMediaTemplateFragment)
+                        editText.addTextChangedListener(object : TextWatcher {
+                            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                                Log.d(TAG, "beforeTextChanged: do nothing")
+                            }
 
-                        override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                            Log.d(TAG, "onTextChanged: do nothing")
-                        }
+                            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                                Log.d(TAG, "onTextChanged: do nothing")
+                            }
 
-                        override fun afterTextChanged(editable: Editable?) {
-                            val str = editable?.toString() ?: ""
-                            when {
-                                str.length >= (mActivity?.resources?.getInteger(R.integer.catalog_search_char_count) ?: 3) -> {
-                                    CoroutineScopeUtils().runTaskOnCoroutineBackground {
-                                        try {
-                                            val response = RetrofitApi().getServerCallObject()?.searchItems(SearchCatalogItemsRequest(1, str))
-                                            response?.let { res ->
-                                                if (res.isSuccessful) {
-                                                    res.body()?.let { body ->
-                                                        CoroutineScopeUtils().runTaskOnCoroutineMain {
-                                                            if (body.mIsSuccessStatus) {
-                                                                val tempProductsList: ArrayList<ProductResponse> = ArrayList()
-                                                                val searchProductsResponse = Gson().fromJson<SearchProductsResponse>(body.mCommonDataStr, SearchProductsResponse::class.java)
-                                                                val productsList = searchProductsResponse?.productList
-                                                                if (ToolBarManager.getInstance().headerTitle == mMarketingPageInfoResponse?.marketingStaticTextResponse?.heading_product_discount) {
-                                                                    productsList?.forEachIndexed { _, productResponse -> if (productResponse.discountedPrice != productResponse.price) tempProductsList.add(productResponse) }
-                                                                } else {
-                                                                    productsList?.let { list -> tempProductsList.addAll(list) }
+                            override fun afterTextChanged(editable: Editable?) {
+                                val str = editable?.toString() ?: ""
+                                when {
+                                    str.length >= (mActivity?.resources?.getInteger(R.integer.catalog_search_char_count) ?: 3) -> {
+                                        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+                                            try {
+                                                val response = RetrofitApi().getServerCallObject()?.searchItems(
+                                                    SearchCatalogItemsRequest(1, str)
+                                                )
+                                                response?.let { res ->
+                                                    if (res.isSuccessful) {
+                                                        res.body()?.let { body ->
+                                                            CoroutineScopeUtils().runTaskOnCoroutineMain {
+                                                                if (body.mIsSuccessStatus) {
+                                                                    val tempProductsList: ArrayList<ProductResponse> = ArrayList()
+                                                                    val searchProductsResponse = Gson().fromJson<SearchProductsResponse>(body.mCommonDataStr, SearchProductsResponse::class.java)
+                                                                    val productsList = searchProductsResponse?.productList
+                                                                    if (ToolBarManager.getInstance().headerTitle == mMarketingPageInfoResponse?.marketingStaticTextResponse?.heading_product_discount) {
+                                                                        productsList?.forEachIndexed { _, productResponse -> if (productResponse.discountedPrice != productResponse.price && isNotEmpty(productResponse.imageUrl)) tempProductsList.add(productResponse) }
+                                                                    } else {
+                                                                        productsList?.forEachIndexed { _, productResponse -> tempProductsList.add(productResponse) }
+                                                                    }
+                                                                    val productCategoryCombineResponseList: ArrayList<ProductCategoryCombineResponse> = ArrayList()
+                                                                    productCategoryCombineResponseList.add(ProductCategoryCombineResponse(StoreCategoryItem(0, mActivity?.getString(R.string.search_results), false), tempProductsList))
+                                                                    categoryProductAdapter.setProductCategoryList(productCategoryCombineResponseList)
                                                                 }
-                                                                val productCategoryCombineResponseList: ArrayList<ProductCategoryCombineResponse> = ArrayList()
-                                                                productCategoryCombineResponseList.add(ProductCategoryCombineResponse(StoreCategoryItem(0, mActivity?.getString(R.string.search_results), false), tempProductsList))
-                                                                categoryProductAdapter.setProductCategoryList(productCategoryCombineResponseList)
                                                             }
                                                         }
                                                     }
                                                 }
+                                            } catch (e: Exception) {
+                                                Log.e(TAG, "initiateProductsApiCall: ${e.message}", e)
                                             }
-                                        } catch (e: Exception) {
-                                            Log.e(TAG, "initiateProductsApiCall: ${e.message}", e)
                                         }
                                     }
+                                    isEmpty(str) -> categoryProductAdapter.setProductCategoryList(mProductCategoryCombineList)
+                                    else -> categoryProductAdapter.setProductCategoryList(null)
                                 }
-                                isEmpty(str) -> categoryProductAdapter.setProductCategoryList(mProductCategoryCombineList)
-                                else -> categoryProductAdapter.setProductCategoryList(null)
                             }
-                        }
 
-                    })
-                    searchProductRecyclerView.apply {
-                        layoutManager = LinearLayoutManager(mActivity)
-                        isNestedScrollingEnabled = false
-                        adapter = categoryProductAdapter
+                        })
+                        searchProductRecyclerView.apply {
+                            layoutManager = LinearLayoutManager(mActivity)
+                            isNestedScrollingEnabled = false
+                            adapter = categoryProductAdapter
+                        }
                     }
-                }
-            }?.show()
+                }?.show()
+            }
         }
     }
 
