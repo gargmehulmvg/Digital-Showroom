@@ -43,12 +43,10 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
     private var mPageNumber: Int = 1
     private var mSelectedCategoryId: String = "0"
     private var mFavoriteCategoryId: Int = 1
-    private var mIsUnFavoriteTemplateClicked: Boolean = false
     private var mIsNextPage: Boolean = false
     private var mMarketingPageInfoResponse: MarketingPageInfoResponse? = null
 
     companion object {
-        private const val TAG = "SocialMediaFragment"
         private var sSocialMediaPageInfoResponse: SocialMediaPageInfoResponse? = null
         private var sSocialMediaCategoriesList: ArrayList<SocialMediaCategoryItemResponse?>? = ArrayList()
 
@@ -60,6 +58,7 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        TAG = "SocialMediaFragment"
         mContentView = inflater.inflate(R.layout.layout_social_media, container, false)
         hideBottomNavigationView(true)
         ToolBarManager.getInstance()?.apply {
@@ -160,7 +159,7 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
     override fun onSocialMediaTemplateFavouriteResponse(commonApiResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             showShortSnackBar(commonApiResponse.mMessage, true, if (commonApiResponse.mIsSuccessStatus) R.drawable.ic_check_circle else R.drawable.ic_close_red_small)
-            if (!mIsUnFavoriteTemplateClicked) {
+            if (mSelectedCategoryId.toInt() == mFavoriteCategoryId) {
                 Log.d(TAG, "onViewCreated: onSocialMediaTemplateFavouriteResponse called :: page number :: $mPageNumber :: Category Id :: $mSelectedCategoryId")
                 mService?.getSocialMediaTemplateList("$mFavoriteCategoryId", mPageNumber)
             }
@@ -220,7 +219,6 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
             templateId = item?.id?.toInt() ?: 0,
             isFavourite = !(item?.isFavourite ?: false)
         )
-        mIsUnFavoriteTemplateClicked = request.isFavourite
         mService?.setSocialMediaFavourite(request)
         item?.isFavourite = !(item?.isFavourite ?: false)
         mSocialMediaTemplateAdapter?.notifyItemChanged(position)
