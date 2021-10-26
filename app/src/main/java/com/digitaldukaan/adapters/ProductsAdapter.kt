@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.digitaldukaan.R
+import com.digitaldukaan.constants.isEmpty
 import com.digitaldukaan.constants.isNotEmpty
 import com.digitaldukaan.interfaces.IProductItemClickListener
 import com.digitaldukaan.models.response.ProductResponse
@@ -42,12 +43,22 @@ class ProductsAdapter(
         val item = mProductsList?.get(position)
         holder.apply {
             titleTextView.text = item?.name
-            val discountPriceStr = "₹${item?.discountedPrice}"
-            discountedPriceTextView.text = discountPriceStr
+            var discountPriceStr: String? = ""
+            discountPriceStr = if (item?.price != item?.discountedPrice) {
+                "₹${item?.discountedPrice}"
+            } else {
+                null
+            }
+            if (isEmpty(discountPriceStr)) {
+                discountedPriceTextView.visibility = View.GONE
+            } else {
+                discountedPriceTextView.visibility = View.VISIBLE
+                discountedPriceTextView.text = discountPriceStr
+            }
             originalPriceTextView.apply {
                 val priceStr= "₹${item?.price}"
                 text = priceStr
-                paintFlags = paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+                if (isNotEmpty(discountPriceStr)) paintFlags = paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
             }
             if (isNotEmpty(item?.imageUrl)) mContext?.let { context -> Glide.with(context).load(item?.imageUrl).into(imageView) }
         }
