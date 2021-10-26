@@ -35,7 +35,7 @@
             android:padding="@dimen/_12sdp">
 
             <ImageView
-                android:id="@+id/imageView9"
+                android:id="@+id/exclamationImageView"
                 android:layout_width="@dimen/_13sdp"
                 android:layout_height="@dimen/_13sdp"
                 android:layout_marginTop="@dimen/_3sdp"
@@ -54,7 +54,7 @@
                 android:paddingEnd="@dimen/_5sdp"
                 android:textSize="@dimen/_11sdp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/imageView9"
+                app:layout_constraintStart_toEndOf="@id/exclamationImageView"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="Please note: Only products with images are shown here" />
 

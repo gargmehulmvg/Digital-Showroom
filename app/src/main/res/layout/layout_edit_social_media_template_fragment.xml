@@ -154,9 +154,9 @@
                                 android:paddingEnd="@dimen/_1sdp"
                                 android:textColor="@color/black"
                                 app:layout_constraintBottom_toBottomOf="parent"
-                                app:layout_constraintEnd_toStartOf="@+id/screenshotQRImageView"
+                                app:layout_constraintEnd_toStartOf="@id/screenshotQRImageView"
                                 app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="@+id/screenshotStoreNameBackgroundTextView"
+                                app:layout_constraintTop_toTopOf="@id/screenshotStoreNameBackgroundTextView"
                                 tools:text="https://webview.digitaldukaan.co.in.digitaldukaan.co.in/" />
 
                             <ImageView
@@ -236,16 +236,16 @@
                                 android:textColor="@color/white"
                                 android:textSize="@dimen/_16sdp"
                                 android:visibility="gone"
-                                app:layout_constraintBottom_toBottomOf="@+id/productImageView"
+                                app:layout_constraintBottom_toBottomOf="@id/productImageView"
                                 app:layout_constraintStart_toStartOf="parent" />
 
                             <ImageView
                                 android:id="@+id/saleImageView"
-                                android:layout_width="@dimen/_69sdp"
-                                android:layout_height="@dimen/_69sdp"
+                                android:layout_width="@dimen/_72sdp"
+                                android:layout_height="@dimen/_72sdp"
                                 android:contentDescription="@string/image_view_content_description"
-                                android:visibility="gone"
-                                app:layout_constraintBottom_toBottomOf="@+id/productImageView"
+                                android:visibility="visible"
+                                app:layout_constraintBottom_toBottomOf="@id/productImageView"
                                 app:layout_constraintStart_toStartOf="parent"
                                 tools:src="@drawable/ic_sale_background" />
 
@@ -254,17 +254,53 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:fontFamily="@font/roboto_bold"
-                                android:maxLength="@integer/max_length_two"
+                                android:maxLength="@integer/min_lines_three"
                                 android:textColor="@color/black"
+                                android:gravity="center"
+                                android:paddingTop="@dimen/_5sdp"
+                                android:paddingBottom="@dimen/_2sdp"
                                 android:textSize="@dimen/_16sdp"
-                                android:visibility="gone"
-                                app:layout_constraintBottom_toBottomOf="@+id/saleImageView"
-                                app:layout_constraintEnd_toEndOf="@+id/saleImageView"
-                                app:layout_constraintHorizontal_bias="0.35"
+                                android:visibility="visible"
+                                app:layout_constraintBottom_toBottomOf="@id/saleImageView"
+                                app:layout_constraintEnd_toEndOf="@id/saleImageView"
+                                app:layout_constraintHorizontal_bias="0.5"
                                 app:layout_constraintStart_toStartOf="parent"
-                                app:layout_constraintTop_toTopOf="@+id/saleImageView"
-                                app:layout_constraintVertical_bias="0.55"
-                                tools:text="70" />
+                                app:layout_constraintTop_toTopOf="@id/saleImageView"
+                                app:layout_constraintVertical_bias="0.48"
+                                tools:text="22%" />
+
+                            <TextView
+                                android:id="@+id/offTextView"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/roboto_bold"
+                                android:gravity="center"
+                                android:maxLength="@integer/min_lines_three"
+                                android:text="@string/off"
+                                android:textColor="@color/black"
+                                android:textSize="@dimen/_8sdp"
+                                android:visibility="visible"
+                                app:layout_constraintBottom_toBottomOf="@+id/percentageTextView"
+                                app:layout_constraintEnd_toEndOf="@+id/percentageTextView"
+                                app:layout_constraintHorizontal_bias="0.5"
+                                app:layout_constraintStart_toStartOf="@+id/percentageTextView"
+                                app:layout_constraintTop_toBottomOf="@+id/percentageTextView" />
+
+                            <TextView
+                                android:id="@+id/saleTextView"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:fontFamily="@font/roboto_bold"
+                                android:gravity="center"
+                                android:text="@string/sale"
+                                android:textColor="@color/black"
+                                android:textSize="@dimen/_11sdp"
+                                android:visibility="visible"
+                                app:layout_constraintBottom_toTopOf="@+id/percentageTextView"
+                                app:layout_constraintEnd_toEndOf="@+id/percentageTextView"
+                                app:layout_constraintHorizontal_bias="0.5"
+                                app:layout_constraintStart_toStartOf="@+id/percentageTextView"
+                                app:layout_constraintTop_toTopOf="@+id/percentageTextView" />
 
                             <TextView
                                 android:id="@+id/productNameTextView"
@@ -295,8 +331,8 @@
                                 android:maxLines="2"
                                 android:textColor="@color/black"
                                 android:textSize="@dimen/_12sdp"
-                                app:layout_constraintEnd_toEndOf="@+id/productNameTextView"
-                                app:layout_constraintStart_toStartOf="@+id/productNameTextView"
+                                app:layout_constraintEnd_toEndOf="@id/productNameTextView"
+                                app:layout_constraintStart_toStartOf="@id/productNameTextView"
                                 app:layout_constraintTop_toBottomOf="@id/productNameTextView"
                                 tools:text="@string/app_name" />
 
@@ -309,34 +345,35 @@
                                 android:fontFamily="@font/roboto_bold"
                                 android:textColor="@color/black"
                                 android:textSize="@dimen/_13sdp"
-                                app:layout_constraintStart_toStartOf="@+id/productDescriptionTextView"
-                                app:layout_constraintTop_toBottomOf="@+id/productDescriptionTextView"
+                                app:layout_constraintStart_toStartOf="@id/productDescriptionTextView"
+                                app:layout_constraintTop_toBottomOf="@id/productDescriptionTextView"
                                 tools:text="₹500" />
 
                             <TextView
                                 android:id="@+id/discountedPriceTextView"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="@dimen/_10sdp"
+                                android:layout_marginTop="@dimen/_2sdp"
                                 android:clickable="false"
-                                android:fontFamily="@font/roboto"
-                                android:textColor="@color/black"
-                                app:layout_constraintStart_toStartOf="@+id/originalPriceTextView"
-                                app:layout_constraintTop_toBottomOf="@+id/originalPriceTextView"
+                                android:textSize="@dimen/_11sdp"
+                                android:fontFamily="@font/roboto_light"
+                                app:layout_constraintStart_toStartOf="@id/originalPriceTextView"
+                                app:layout_constraintTop_toBottomOf="@id/originalPriceTextView"
                                 tools:text="₹500" />
 
                             <TextView
                                 android:id="@+id/promoCodeTextView"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="@dimen/_10sdp"
+                                android:layout_marginStart="@dimen/_3sdp"
                                 android:clickable="false"
-                                android:fontFamily="@font/roboto_light"
+                                android:textSize="@dimen/_13sdp"
+                                android:fontFamily="@font/roboto_bold"
                                 android:paddingStart="@dimen/_5sdp"
                                 android:paddingEnd="@dimen/_5sdp"
                                 android:textColor="@color/open_green"
-                                app:layout_constraintBaseline_toBaselineOf="@+id/originalPriceTextView"
-                                app:layout_constraintStart_toEndOf="@+id/originalPriceTextView"
+                                app:layout_constraintBaseline_toBaselineOf="@id/originalPriceTextView"
+                                app:layout_constraintStart_toEndOf="@id/originalPriceTextView"
                                 tools:text="₹500" />
 
                         </androidx.constraintlayout.widget.ConstraintLayout>

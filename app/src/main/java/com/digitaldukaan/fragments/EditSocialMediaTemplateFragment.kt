@@ -39,6 +39,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.textfield.TextInputLayout
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import kotlinx.android.synthetic.main.bottom_sheet_show_products_with_category.view.*
 import kotlinx.android.synthetic.main.layout_add_product_fragment.*
 import kotlinx.android.synthetic.main.layout_edit_premium_fragment.*
 import kotlinx.android.synthetic.main.layout_edit_social_media_template_fragment.*
@@ -288,7 +289,15 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
                         val headingTextView: TextView = findViewById(R.id.headingTextView)
                         val editText: EditText = findViewById(R.id.editText)
                         val searchProductRecyclerView: RecyclerView = findViewById(R.id.searchProductRecyclerView)
-                        headingTextView.setHtmlData(mMarketingPageInfoResponse?.marketingStaticTextResponse?.message_please_note)
+                        if (ToolBarManager.getInstance().headerTitle == mMarketingPageInfoResponse?.marketingStaticTextResponse?.heading_product_discount) {
+                            val headingStr = mMarketingPageInfoResponse?.marketingStaticTextResponse?.message_please_note ?: ""
+                            exclamationImageView?.visibility = View.VISIBLE
+                            headingTextView.visibility = View.VISIBLE
+                            headingTextView.setHtmlData(headingStr)
+                        } else {
+                            exclamationImageView?.visibility = View.GONE
+                            headingTextView.visibility = View.GONE
+                        }
                         editText.hint = mMarketingPageInfoResponse?.marketingStaticTextResponse?.hint_search_product
                         val categoryProductAdapter = CategoryProductAdapter(mActivity, mMarketingPageInfoResponse?.marketingStaticTextResponse, mProductCategoryCombineList, this@EditSocialMediaTemplateFragment)
                         editText.addTextChangedListener(object : TextWatcher {
@@ -443,7 +452,7 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
         val discountedPriceTextView: TextView? = mContentView?.findViewById(R.id.discountedPriceTextView)
         val originalPriceTextView: TextView? = mContentView?.findViewById(R.id.originalPriceTextView)
         val discount = ceil(((((productItem?.price ?: 0.0) - (productItem?.discountedPrice ?: 0.0)) / (productItem?.price ?: 0.0)) * 100)).toInt()
-        promoCodeTextView?.text = if (productItem?.price == productItem?.discountedPrice) null else "$discount %"
+        promoCodeTextView?.text = if (productItem?.price == productItem?.discountedPrice) null else "$discount% OFF"
         originalPriceTextView?.text = "₹${productItem?.discountedPrice}"
         discountedPriceTextView?.apply {
             showStrikeOffText()
@@ -456,12 +465,16 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
         if (ToolBarManager.getInstance().headerTitle == mMarketingPageInfoResponse?.marketingStaticTextResponse?.heading_product_discount) {
             saleImageView?.visibility = View.VISIBLE
             percentageTextView?.visibility = View.VISIBLE
+            offTextView?.visibility = View.VISIBLE
+            saleTextView?.visibility = View.VISIBLE
             bestsellerTextView?.visibility = View.GONE
             mActivity?.let { context -> saleImageView?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_sale_background)) }
-            percentageTextView?.text = "$discount"
+            percentageTextView?.text = "$discount%"
         } else {
             saleImageView?.visibility = View.GONE
             percentageTextView?.visibility = View.GONE
+            offTextView?.visibility = View.GONE
+            saleTextView?.visibility = View.GONE
             bestsellerTextView?.visibility = View.VISIBLE
         }
     }
