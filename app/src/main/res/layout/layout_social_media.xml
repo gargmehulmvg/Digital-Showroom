@@ -175,6 +175,23 @@
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent" />
 
+                        <TextView
+                            android:id="@+id/storeNameWithTextColorTextView"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            tools:text="@string/app_name"
+                            android:paddingStart="@dimen/_10sdp"
+                            android:paddingEnd="@dimen/_10sdp"
+                            android:ellipsize="marquee"
+                            android:maxLines="@integer/min_lines_two"
+                            android:layout_marginTop="@dimen/_10sdp"
+                            android:gravity="center"
+                            android:fontFamily="@font/roboto_medium"
+                            android:textSize="@dimen/_22sdp"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                 </LinearLayout>

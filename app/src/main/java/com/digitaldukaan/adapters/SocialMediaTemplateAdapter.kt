@@ -1,5 +1,6 @@
 package com.digitaldukaan.adapters
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,6 +9,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.digitaldukaan.R
+import com.digitaldukaan.constants.isNotEmpty
 import com.digitaldukaan.fragments.BaseFragment
 import com.digitaldukaan.interfaces.ISocialMediaTemplateItemClickListener
 import com.digitaldukaan.models.response.SocialMediaTemplateListItemResponse
@@ -15,13 +17,15 @@ import com.digitaldukaan.models.response.SocialMediaTemplateListItemResponse
 class SocialMediaTemplateAdapter(
     private var mContext: BaseFragment?,
     private var mList: ArrayList<SocialMediaTemplateListItemResponse?>?,
-    private var mListener: ISocialMediaTemplateItemClickListener?
+    private var mListener: ISocialMediaTemplateItemClickListener?,
+    private val mStoreName: String?
 ) :
     RecyclerView.Adapter<SocialMediaTemplateAdapter.SocialMediaTemplateViewHolder>() {
 
     inner class SocialMediaTemplateViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val favouriteTextView: TextView = itemView.findViewById(R.id.favouriteTextView)
         val editTextView: TextView = itemView.findViewById(R.id.editTextView)
+        val storeNameTextView: TextView = itemView.findViewById(R.id.storeNameTextView)
         val shareTextView: TextView = itemView.findViewById(R.id.shareTextView)
         val whatsappTextView: TextView = itemView.findViewById(R.id.whatsappTextView)
         val imageView: ImageView = itemView.findViewById(R.id.imageView)
@@ -50,6 +54,10 @@ class SocialMediaTemplateAdapter(
     override fun onBindViewHolder(holder: SocialMediaTemplateViewHolder, position: Int) {
         holder.apply {
             val item = mList?.get(position)
+            storeNameTextView.apply {
+                text = mStoreName
+                if (isNotEmpty(item?.textColor)) setTextColor(Color.parseColor(item?.textColor))
+            }
             if (true == item?.favourite?.isActive) {
                 favouriteTextView.visibility = View.VISIBLE
                 favouriteTextView.text = item.favourite?.text

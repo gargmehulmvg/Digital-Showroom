@@ -1,5 +1,6 @@
 package com.digitaldukaan.fragments
 
+import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -86,7 +87,7 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
         mService?.getSocialMediaTemplateList(mSelectedCategoryId, mPageNumber)
         templateRecyclerView?.apply {
             setHasFixedSize(true)
-            mSocialMediaTemplateAdapter = SocialMediaTemplateAdapter(this@SocialMediaFragment, null, this@SocialMediaFragment)
+            mSocialMediaTemplateAdapter = SocialMediaTemplateAdapter(this@SocialMediaFragment, null, this@SocialMediaFragment, mMarketingPageInfoResponse?.marketingStoreInfo?.name)
             layoutManager = LinearLayoutManager(mActivity)
             adapter = mSocialMediaTemplateAdapter
         }
@@ -258,6 +259,10 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
             screenshotQRImageView?.setImageBitmap(b)
         }
         screenshotStoreNameTextView?.text = domain
+        storeNameWithTextColorTextView?.apply {
+            text = mMarketingPageInfoResponse?.marketingStoreInfo?.name
+            if (isNotEmpty(item?.textColor)) setTextColor(Color.parseColor(item?.textColor))
+        }
     }
 
     override fun onDestroy() {

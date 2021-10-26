@@ -10,6 +10,7 @@ data class SocialMediaTemplateListResponse(
 data class SocialMediaTemplateListItemResponse(
     @SerializedName("id")                   var id: String?,
     @SerializedName("cover_image")          var coverImage: String?,
+    @SerializedName("text_color")           var textColor: String?,
     @SerializedName("is_favourite")         var isFavourite: Boolean?,
     @SerializedName("share")                var share: SocialMediaTemplateShareIconResponse?,
     @SerializedName("edit")                 var edit: SocialMediaTemplateShareIconResponse?,
