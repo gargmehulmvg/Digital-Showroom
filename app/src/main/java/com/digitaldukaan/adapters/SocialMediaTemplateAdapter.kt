@@ -17,8 +17,7 @@ import com.digitaldukaan.models.response.SocialMediaTemplateListItemResponse
 class SocialMediaTemplateAdapter(
     private var mContext: BaseFragment?,
     private var mList: ArrayList<SocialMediaTemplateListItemResponse?>?,
-    private var mListener: ISocialMediaTemplateItemClickListener?,
-    private val mStoreName: String?
+    private var mListener: ISocialMediaTemplateItemClickListener?
 ) :
     RecyclerView.Adapter<SocialMediaTemplateAdapter.SocialMediaTemplateViewHolder>() {
 
@@ -43,9 +42,18 @@ class SocialMediaTemplateAdapter(
             mContext?.startViewAnimation(view.favouriteTextView)
             mListener?.onSocialMediaTemplateFavItemClickListener(view.adapterPosition, mList?.get(view.adapterPosition))
         }
-        view.shareTextView.setOnClickListener { mListener?.onSocialMediaTemplateShareItemClickListener(view.adapterPosition, mList?.get(view.adapterPosition)) }
-        view.editTextView.setOnClickListener { mListener?.onSocialMediaTemplateEditItemClickListener(view.adapterPosition, mList?.get(view.adapterPosition)) }
-        view.whatsappTextView.setOnClickListener { mListener?.onSocialMediaTemplateWhatsappItemClickListener(view.adapterPosition, mList?.get(view.adapterPosition)) }
+        view.shareTextView.setOnClickListener {
+            mContext?.startViewAnimation(view.shareTextView)
+            mListener?.onSocialMediaTemplateShareItemClickListener(view.adapterPosition, mList?.get(view.adapterPosition))
+        }
+        view.editTextView.setOnClickListener {
+            mContext?.startViewAnimation(view.editTextView)
+            mListener?.onSocialMediaTemplateEditItemClickListener(view.adapterPosition, mList?.get(view.adapterPosition))
+        }
+        view.whatsappTextView.setOnClickListener {
+            mContext?.startViewAnimation(view.whatsappTextView)
+            mListener?.onSocialMediaTemplateWhatsappItemClickListener(view.adapterPosition, mList?.get(view.adapterPosition))
+        }
         return view
     }
 
@@ -55,7 +63,7 @@ class SocialMediaTemplateAdapter(
         holder.apply {
             val item = mList?.get(position)
             storeNameTextView.apply {
-                text = mStoreName
+                text = context?.getString(R.string.your_store_name_here)
                 if (isNotEmpty(item?.textColor)) setTextColor(Color.parseColor(item?.textColor))
             }
             if (true == item?.favourite?.isActive) {

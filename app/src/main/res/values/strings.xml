@@ -137,6 +137,7 @@
     <string name="pay">PAY</string>
     <string name="bestseller">Bestseller</string>
     <string name="search_results">Search Results</string>
+    <string name="your_store_name_here">Your Store Name Here</string>
     <string-array name="state_array">
         <item >Andhra Pradesh</item>
         <item >Arunachal Pradesh</item>

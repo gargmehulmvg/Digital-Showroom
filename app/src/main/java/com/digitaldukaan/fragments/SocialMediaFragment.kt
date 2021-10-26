@@ -87,7 +87,11 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
         mService?.getSocialMediaTemplateList(mSelectedCategoryId, mPageNumber)
         templateRecyclerView?.apply {
             setHasFixedSize(true)
-            mSocialMediaTemplateAdapter = SocialMediaTemplateAdapter(this@SocialMediaFragment, null, this@SocialMediaFragment, mMarketingPageInfoResponse?.marketingStoreInfo?.name)
+            mSocialMediaTemplateAdapter = SocialMediaTemplateAdapter(
+                this@SocialMediaFragment,
+                null,
+                this@SocialMediaFragment
+            )
             layoutManager = LinearLayoutManager(mActivity)
             adapter = mSocialMediaTemplateAdapter
         }
