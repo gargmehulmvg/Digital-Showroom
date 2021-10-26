@@ -253,7 +253,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             setupImagesRecyclerView()
             setupCategoryChipRecyclerView()
             setupOptionsMenu()
-            if (true == mAddProductResponse?.storeItem?.description?.isNotEmpty()) {
+            if (isNotEmpty(mAddProductResponse?.storeItem?.description)) {
                 addItemTextView?.visibility = View.GONE
                 productDescriptionInputLayout?.visibility = View.VISIBLE
                 productDescriptionEditText?.setText(mAddProductResponse?.storeItem?.description)
@@ -266,6 +266,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             } else {
                 discountContainer?.visibility = View.VISIBLE
             }
+            setupYoutubeUI()
         }
         return mContentView
     }
@@ -492,12 +493,8 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                             mActiveVariantAdapter?.notifyDataSetChanged()
                             return
                         }
-                        mActiveVariantList?.let { list ->
-                            finalList.addAll(list)
-                        }
-                        mDeletedVariantList?.let { list ->
-                            finalList.addAll(list)
-                        }
+                        mActiveVariantList?.let { list -> finalList.addAll(list) }
+                        mDeletedVariantList?.let { list -> finalList.addAll(list) }
                         if (isNotEmpty(youtubeLinkEditText?.text?.toString())) {
                             val youtubeLink = youtubeLinkEditText?.text?.toString()?.replace(" ", "")?.trim()
                             if (null == mYoutubeItemResponse)
@@ -954,13 +951,15 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     }
 
     private fun setupYoutubeUI() {
+        val youtubeLinkContainer: View? = mContentView?.findViewById(R.id.youtubeLinkContainer)
         if (null == mAddProductResponse?.youtubeInfo) {
             youtubeLinkContainer?.visibility = View.GONE
         } else {
             mAddProductResponse?.youtubeInfo?.let { youtube ->
+                val learnYouTubeLinkTextView: TextView? = mContentView?.findViewById(R.id.learnYouTubeLinkHelpTextView)
                 youtubeLinkContainer?.visibility = View.VISIBLE
                 youtubeLinkInputLayout?.hint = youtube.hint1
-                learnYouTubeLinkHelpTextView?.text = youtube.message
+                learnYouTubeLinkTextView?.text = youtube.message
                 mAddProductResponse?.storeItem?.imagesList?.forEachIndexed { _, imagesItemResponse ->
                     if (Constants.MEDIA_TYPE_VIDEOS == imagesItemResponse.mediaType && 1 == imagesItemResponse.status) {
                         mYoutubeItemResponse = imagesItemResponse
