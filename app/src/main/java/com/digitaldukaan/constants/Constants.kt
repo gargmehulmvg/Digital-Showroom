@@ -186,5 +186,8 @@ class Constants {
         //CTA_TYPES
         const val CTA_TYPE_BORDER: String                       = "border"
         const val CTA_TYPE_SOLID: String                        = "solid"
+        //MODE DELIVERY CHARGE
+        const val MEDIA_TYPE_IMAGES                             = 1
+        const val MEDIA_TYPE_VIDEOS                             = 2
     }
 }

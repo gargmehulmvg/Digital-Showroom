@@ -17,7 +17,7 @@ data class AddProductResponse(
 
 data class YoutubeInfoResponse(
     @SerializedName("heading")                                              val heading:String?,
-    @SerializedName("steps")                                                val steps:String?,
+    @SerializedName("steps")                                                val steps:ArrayList<String>?,
     @SerializedName("hint_1")                                               val hint1:String?,
     @SerializedName("hint_2")                                               val hint2:String?,
     @SerializedName("message")                                              val message:String?

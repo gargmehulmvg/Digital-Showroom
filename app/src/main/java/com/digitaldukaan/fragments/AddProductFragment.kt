@@ -22,10 +22,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.recyclerview.widget.*
 import com.digitaldukaan.R
-import com.digitaldukaan.adapters.ActiveVariantAdapterV2
-import com.digitaldukaan.adapters.AddProductsChipsAdapter
-import com.digitaldukaan.adapters.AddProductsImagesAdapter
-import com.digitaldukaan.adapters.ImagesSearchAdapter
+import com.digitaldukaan.adapters.*
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.*
 import com.digitaldukaan.models.request.AddProductImageItem
@@ -60,13 +57,13 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     IOnToolbarSecondIconClick {
 
     private var mService: AddProductService? = null
-    private var addProductBannerStaticDataResponse: AddProductBannerTextResponse? = null
-    private var addProductStaticData: AddProductStaticText? = null
+    private var mAddProductBannerStaticDataResponse: AddProductBannerTextResponse? = null
+    private var mAddProductStaticData: AddProductStaticText? = null
     private var mItemId = 0
     private var mItemCategoryId = 0
     private val mImagesStrList: ArrayList<AddProductImagesResponse> = ArrayList()
     private var imagePickBottomSheet: BottomSheetDialog? = null
-    private var imageAdapter = ImagesSearchAdapter()
+    private var mImageSearchAdapter = ImagesSearchAdapter()
     private var mImageChangePosition = 0
     private var mAddProductStoreCategoryList: ArrayList<StoreCategoryItem>? = ArrayList()
     private val mTempProductCategoryList: ArrayList<StoreCategoryItem> = ArrayList()
@@ -107,6 +104,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     companion object {
         private var sIsVariantImageClicked = false
         private var sVariantImageClickedPosition = 0
+
         fun newInstance(itemId:Int, isAddNewProduct: Boolean): AddProductFragment {
             val fragment = AddProductFragment()
             fragment.mItemId = itemId
@@ -176,7 +174,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                         priceStr.isEmpty() -> {
                             if (str != "0.0") {
                                 priceEditText?.apply {
-                                    error = addProductStaticData?.error_mandatory_field
+                                    error = mAddProductStaticData?.error_mandatory_field
                                     requestFocus()
                                 }
                                 discountPriceEditText?.text = null
@@ -187,13 +185,13 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                         !isDouble(str) -> {
                             discountPriceEditText?.apply {
                                 text = null
-                                error = addProductStaticData?.error_mandatory_field
+                                error = mAddProductStaticData?.error_mandatory_field
                                 requestFocus()
                             }
                         }
                         priceStr.toDouble() < str.toDouble() -> {
                             discountPriceEditText?.apply {
-                                error = addProductStaticData?.error_discount_price_less_then_original_price
+                                error = mAddProductStaticData?.error_discount_price_less_then_original_price
                                 text = null
                                 requestFocus()
                             }
@@ -210,11 +208,11 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                             mIsOrderEdited = true
                             discountedPriceTextView?.apply {
                                 visibility = View.VISIBLE
-                                val discountStr = "${addProductStaticData?.text_rupees_symbol} ${str.toDouble()}"
+                                val discountStr = "${mAddProductStaticData?.text_rupees_symbol} ${str.toDouble()}"
                                 text = discountStr
                             }
                             originalPriceTextView?.apply {
-                                val originalPriceStr = "${addProductStaticData?.text_rupees_symbol} ${priceStr.toDouble()}"
+                                val originalPriceStr = "${mAddProductStaticData?.text_rupees_symbol} ${priceStr.toDouble()}"
                                 text = originalPriceStr
                                 showStrikeOffText()
                             }
@@ -242,15 +240,15 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
 
         })
         if (isEmpty(mImagesStrList)) {
-            mImagesStrList.add(0, AddProductImagesResponse(0,"", 0))
+            mImagesStrList.add(0, AddProductImagesResponse(0,"", 0, Constants.MEDIA_TYPE_IMAGES))
         } else {
-            mImagesStrList[0] = AddProductImagesResponse(0,"", 0)
+            mImagesStrList[0] = AddProductImagesResponse(0,"", 0, Constants.MEDIA_TYPE_IMAGES)
         }
         if (null == mAddProductResponse) {
             showProgressDialog(mActivity)
             mService?.getItemInfo(mItemId)
         } else {
-            addProductStaticData = mAddProductResponse?.addProductStaticText
+            mAddProductStaticData = mAddProductResponse?.addProductStaticText
             setStaticDataFromResponse()
             setupImagesRecyclerView()
             setupCategoryChipRecyclerView()
@@ -400,14 +398,14 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 })
             }
             tryNowTextView?.id -> {
-                if (null == addProductBannerStaticDataResponse) {
+                if (null == mAddProductBannerStaticDataResponse) {
                     if (!isInternetConnectionAvailable(mActivity)) {
                         showNoInternetConnectionDialog()
                         return
                     }
                     showProgressDialog(mActivity)
                     mService?.getAddOrderBottomSheetData()
-                } else showMasterCatalogBottomSheet(addProductBannerStaticDataResponse, addProductStaticData, Constants.MODE_ADD_PRODUCT)
+                } else showMasterCatalogBottomSheet(mAddProductBannerStaticDataResponse, mAddProductStaticData, Constants.MODE_ADD_PRODUCT)
             }
             continueTextView?.id -> {
                 if (checkValidation()) {
@@ -470,11 +468,11 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                             }
                         }
                         if (isVariantNameCommon) {
-                            showShortSnackBar(addProductStaticData?.error_variant_already_exist, true, R.drawable.ic_close_red_small)
+                            showShortSnackBar(mAddProductStaticData?.error_variant_already_exist, true, R.drawable.ic_close_red_small)
                             return
                         }
                         if (isVariantNameSameAsItemName) {
-                            showShortSnackBar(addProductStaticData?.error_variant_name_same_with_item_name, true, R.drawable.ic_close_red_small)
+                            showShortSnackBar(mAddProductStaticData?.error_variant_name_same_with_item_name, true, R.drawable.ic_close_red_small)
                             return
                         }
                         if (isErrorInVariantList) {
@@ -518,6 +516,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             }
             updateCameraImageView?.id -> showAddProductImagePickerBottomSheet(0)
             updateCameraTextView?.id -> showAddProductImagePickerBottomSheet(0)
+            learnYouTubeLinkHelpTextView?.id -> showLearnYouTubeBottomSheet()
             addVariantsTextView?.id -> {
                 if (isEmpty(mActiveVariantList)) {
                     addNewVariantInList()
@@ -528,6 +527,34 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 }
                 showAddProductContainer()
             }
+        }
+    }
+
+    private fun showLearnYouTubeBottomSheet() {
+        try {
+            mActivity?.let {
+                val bottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
+                val view = LayoutInflater.from(it).inflate(
+                    R.layout.bottom_sheet_learn_youtube,
+                    it.findViewById(R.id.bottomSheetContainer)
+                )
+                bottomSheetDialog.apply {
+                    setContentView(view)
+                    view.run {
+                        mAddProductResponse?.youtubeInfo?.let { youtube ->
+                            val headingTextView: TextView = findViewById(R.id.headingTextView)
+                            val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
+                            headingTextView.text = youtube.heading
+                            recyclerView.apply {
+                                layoutManager = LinearLayoutManager(mActivity)
+                                adapter = LearnYoutubeAdapter(youtube.steps)
+                            }
+                        }
+                    }
+                }.show()
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "showMoreOptionsBottomSheet: ${e.message}", e)
         }
     }
 
@@ -552,11 +579,11 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     private fun setupVariantRecyclerView() {
         variantHeadingTextView?.apply {
             visibility = View.VISIBLE
-            text = addProductStaticData?.text_variants
+            text = mAddProductStaticData?.text_variants
         }
         priceCardView?.visibility = View.GONE
-        addVariantsTextView?.text = addProductStaticData?.text_add_variant
-        mActiveVariantAdapter = ActiveVariantAdapterV2(mActivity, addProductStaticData, mAddProductResponse?.recentVariantsList, mActiveVariantList, object : IVariantItemClickListener {
+        addVariantsTextView?.text = mAddProductStaticData?.text_add_variant
+        mActiveVariantAdapter = ActiveVariantAdapterV2(mActivity, mAddProductStaticData, mAddProductResponse?.recentVariantsList, mActiveVariantList, object : IVariantItemClickListener {
 
             override fun onVariantDeleteClicked(position: Int) = showDeleteVariantConfirmationDialog(position)
 
@@ -594,9 +621,9 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 val deleteVariantMessageTextView: TextView = dialog.findViewById(R.id.deleteVariantMessageTextView)
                 val deleteVariantTextView: TextView = dialog.findViewById(R.id.deleteVariantTextView)
                 val deleteVariantCancelTextView: TextView = dialog.findViewById(R.id.deleteVariantCancelTextView)
-                deleteVariantMessageTextView.text = addProductStaticData?.dialog_delete_variant_message
-                deleteVariantTextView.text = addProductStaticData?.text_delete
-                deleteVariantCancelTextView.text = addProductStaticData?.text_cancel
+                deleteVariantMessageTextView.text = mAddProductStaticData?.dialog_delete_variant_message
+                deleteVariantTextView.text = mAddProductStaticData?.text_delete
+                deleteVariantCancelTextView.text = mAddProductStaticData?.text_cancel
                 deleteVariantTextView.setOnClickListener {
                     dialog.dismiss()
                     val variantItem = mActiveVariantList?.get(position)
@@ -639,12 +666,12 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     val searchImageEditText: EditText = findViewById(R.id.searchImageEditText)
                     val searchImageImageView: View = findViewById(R.id.searchImageImageView)
                     val searchImageRecyclerView: RecyclerView = findViewById(R.id.searchImageRecyclerView)
-                    bottomSheetUploadImageGalleryTextView.text = addProductStaticData?.bottom_sheet_add_from_gallery
-                    bottomSheetUploadImageSearchHeading.text = addProductStaticData?.bottom_sheet_you_can_add_upto_4_images
-                    bottomSheetUploadImageRemovePhotoTextView.text = addProductStaticData?.bottom_sheet_remove_image
-                    bottomSheetUploadImageHeading.text = addProductStaticData?.bottom_sheet_add_image
-                    bottomSheetUploadImageCameraTextView.text = addProductStaticData?.bottom_sheet_take_a_photo
-                    searchImageEditText.hint = addProductStaticData?.bottom_sheet_hint_search_for_images_here
+                    bottomSheetUploadImageGalleryTextView.text = mAddProductStaticData?.bottom_sheet_add_from_gallery
+                    bottomSheetUploadImageSearchHeading.text = mAddProductStaticData?.bottom_sheet_you_can_add_upto_4_images
+                    bottomSheetUploadImageRemovePhotoTextView.text = mAddProductStaticData?.bottom_sheet_remove_image
+                    bottomSheetUploadImageHeading.text = mAddProductStaticData?.bottom_sheet_add_image
+                    bottomSheetUploadImageCameraTextView.text = mAddProductStaticData?.bottom_sheet_take_a_photo
+                    searchImageEditText.hint = mAddProductStaticData?.bottom_sheet_hint_search_for_images_here
                     mProductNameStr?.let { str ->
                         if (isVariantImageClicked) {
                             val name = str + " " + mActiveVariantList?.get(position)?.variantName
@@ -680,8 +707,8 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                             mImageAddAdapter?.setListToAdapter(mImagesStrList)
                         }
                     }
-                    imageAdapter.setSearchImageListener(this@AddProductFragment)
-                    imageAdapter.setContext(mActivity)
+                    mImageSearchAdapter.setSearchImageListener(this@AddProductFragment)
+                    mImageSearchAdapter.setContext(mActivity)
                     searchImageImageView.setOnClickListener {
                         if (searchImageEditText.text.trim().toString().isEmpty()) {
                             searchImageEditText.error = getString(R.string.mandatory_field_message)
@@ -700,8 +727,8 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                                                 val list = it.mImagesList
                                                 searchImageRecyclerView?.apply {
                                                     layoutManager = GridLayoutManager(mActivity, 3)
-                                                    adapter = imageAdapter
-                                                    list?.let { arrayList -> imageAdapter.setSearchImageList(arrayList) }
+                                                    adapter = mImageSearchAdapter
+                                                    list?.let { arrayList -> mImageSearchAdapter.setSearchImageList(arrayList) }
                                                 }
                                             }
                                         }
@@ -782,14 +809,14 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             return when {
                 true == nameEditText?.text?.trim()?.isEmpty() -> {
                     nameEditText?.apply {
-                        error = addProductStaticData?.error_mandatory_field
+                        error = mAddProductStaticData?.error_mandatory_field
                         requestFocus()
                     }
                     false
                 }
                 "." == priceEditText?.text?.toString() -> {
                     priceEditText?.apply {
-                        error = addProductStaticData?.error_mandatory_field
+                        error = mAddProductStaticData?.error_mandatory_field
                         requestFocus()
                     }
                     false
@@ -803,7 +830,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 true == discountPriceEditText?.text?.toString()?.isNotEmpty() && "." == discountPriceEditText?.text?.toString() -> {
                     discountPriceEditText?.apply {
                         text = null
-                        error = addProductStaticData?.error_mandatory_field
+                        error = mAddProductStaticData?.error_mandatory_field
                         requestFocus()
                     }
                     false
@@ -811,7 +838,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 true == discountPriceEditText?.text?.toString()?.isNotEmpty() && (priceEditText?.text.toString().toDouble() < discountPriceEditText?.text.toString().toDouble()) -> {
                     discountPriceEditText?.apply {
                         text = null
-                        error = addProductStaticData?.error_discount_price_less_then_original_price
+                        error = mAddProductStaticData?.error_discount_price_less_then_original_price
                         requestFocus()
                     }
                     false
@@ -827,8 +854,8 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     override fun onAddProductBannerStaticDataResponse(commonResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
-            addProductBannerStaticDataResponse = Gson().fromJson<AddProductBannerTextResponse>(commonResponse.mCommonDataStr, AddProductBannerTextResponse::class.java)
-            addProductBannerStaticDataResponse?.let { showMasterCatalogBottomSheet(it, addProductStaticData, Constants.MODE_ADD_PRODUCT) }
+            mAddProductBannerStaticDataResponse = Gson().fromJson<AddProductBannerTextResponse>(commonResponse.mCommonDataStr, AddProductBannerTextResponse::class.java)
+            mAddProductBannerStaticDataResponse?.let { showMasterCatalogBottomSheet(it, mAddProductStaticData, Constants.MODE_ADD_PRODUCT) }
         }
     }
 
@@ -838,7 +865,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 stopProgress()
                 mAddProductResponse = Gson().fromJson<AddProductResponse>(commonResponse.mCommonDataStr, AddProductResponse::class.java)
                 Log.d(TAG, "onGetAddProductDataResponse: $mAddProductResponse")
-                addProductStaticData = mAddProductResponse?.addProductStaticText
+                mAddProductStaticData = mAddProductResponse?.addProductStaticText
                 mAddProductResponse?.storeItem?.run {
                     nameEditText?.setText(name)
                     mProductNameStr = name
@@ -857,11 +884,11 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                         imagesRecyclerView?.apply {
                             layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
                             mImagesStrList.clear()
-                            if (mImagesStrList.isEmpty()) mImagesStrList.add(AddProductImagesResponse(0, "", 0))
+                            if (mImagesStrList.isEmpty()) mImagesStrList.add(AddProductImagesResponse(0, "", 0, Constants.MEDIA_TYPE_IMAGES))
                             mAddProductResponse?.storeItem?.imagesList?.forEachIndexed { _, imagesResponse ->
-                                if (imagesResponse.status != 0) mImagesStrList.add(AddProductImagesResponse(imagesResponse.imageId, imagesResponse.imageUrl, 1))
+                                if (imagesResponse.status != 0) mImagesStrList.add(AddProductImagesResponse(imagesResponse.imageId, imagesResponse.imageUrl, 1, Constants.MEDIA_TYPE_IMAGES))
                             }
-                            mImageAddAdapter = AddProductsImagesAdapter(this@AddProductFragment, mImagesStrList ,addProductStaticData?.text_upload_or_search_images, this@AddProductFragment)
+                            mImageAddAdapter = AddProductsImagesAdapter(this@AddProductFragment, mImagesStrList ,mAddProductStaticData?.text_upload_or_search_images, this@AddProductFragment)
                             adapter = mImageAddAdapter
                         }
                     } else {
@@ -877,6 +904,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 setupCategoryChipRecyclerView()
                 setStaticDataFromResponse()
                 setupOptionsMenu()
+                setupYoutubeUI()
                 if (isNotEmpty(mAddProductResponse?.storeItem?.variantsList)) {
                     mActiveVariantList = ArrayList()
                     mActiveVariantList = mAddProductResponse?.storeItem?.variantsList
@@ -893,6 +921,18 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 handleVisibilityTextWatcher()
             } catch (e: Exception) {
                 Log.e(TAG, "onGetAddProductDataResponse: ${e.message}", e)
+            }
+        }
+    }
+
+    private fun setupYoutubeUI() {
+        if (null == mAddProductResponse?.youtubeInfo) {
+            youtubeLinkContainer?.visibility = View.GONE
+        } else {
+            mAddProductResponse?.youtubeInfo?.let { youtube ->
+                youtubeLinkContainer?.visibility = View.VISIBLE
+                youtubeLinkInputLayout?.hint = youtube.hint1
+                learnYouTubeLinkHelpTextView?.text = youtube.message
             }
         }
     }
@@ -932,7 +972,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
 
     private fun setStaticDataFromResponse() {
         try {
-            addProductStaticData?.run {
+            mAddProductStaticData?.run {
                 ToolBarManager.getInstance()?.headerTitle = heading_add_product_page
                 val addItemTextView: TextView? = mContentView?.findViewById(R.id.addItemTextView)
                 val tryNowTextView: TextView? = mContentView?.findViewById(R.id.tryNowTextView)
@@ -1033,7 +1073,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                         }
                         mActiveVariantAdapter?.notifyItemChanged(sVariantImageClickedPosition)
                     } else if (1 == mImagesStrList.size || 0 == mImageChangePosition) {
-                        mImagesStrList.add(AddProductImagesResponse(0, base64Str, 1))
+                        mImagesStrList.add(AddProductImagesResponse(0, base64Str, 1, Constants.MEDIA_TYPE_IMAGES))
                     } else if (0 != mImageChangePosition) {
                         val imageResponse = mImagesStrList[mImageChangePosition]
                         imageResponse.imageUrl = base64Str
@@ -1056,13 +1096,13 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 mImageAddAdapter = AddProductsImagesAdapter(
                     this@AddProductFragment,
                     mImagesStrList,
-                    addProductStaticData?.text_upload_or_search_images,
+                    mAddProductStaticData?.text_upload_or_search_images,
                     this@AddProductFragment
                 )
                 adapter = mImageAddAdapter
                 mImageAddAdapter?.setListToAdapter(mImagesStrList)
             }
-            val imagesLeftStr = "${mImagesStrList?.size - 1}/4 ${addProductStaticData?.text_images_added}"
+            val imagesLeftStr = "${mImagesStrList?.size - 1}/4 ${mAddProductStaticData?.text_images_added}"
             imagesLeftTextView?.text = imagesLeftStr
         } catch (e: Exception) {
             Log.e(TAG, "setupImagesRecyclerView: ${e.message}", e)
@@ -1155,8 +1195,8 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 mActivity?.let {
                     val builder: AlertDialog.Builder? = AlertDialog.Builder(it)
                     builder?.apply {
-                        setTitle(addProductStaticData?.text_go_back)
-                        setMessage(addProductStaticData?.text_go_back_message)
+                        setTitle(mAddProductStaticData?.text_go_back)
+                        setMessage(mAddProductStaticData?.text_go_back_message)
                         setCancelable(true)
                         setNegativeButton(getString(R.string.text_no)) { dialog, _ -> dialog.dismiss() }
                         setPositiveButton(getString(R.string.txt_yes)) { dialog, _ ->

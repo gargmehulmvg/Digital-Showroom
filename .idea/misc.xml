@@ -29,12 +29,14 @@
         <entry key="app/src/main/res/drawable/slight_curve_black_border.xml" value="0.32664092664092664" />
         <entry key="app/src/main/res/drawable/slight_curve_green_background_without_padding_v2.xml" value="0.36875" />
         <entry key="app/src/main/res/drawable/upper_curve_black_background.xml" value="0.4338461538461538" />
+        <entry key="app/src/main/res/drawable/upper_curve_light_red_background.xml" value="0.31851851851851853" />
         <entry key="app/src/main/res/drawable/upper_curve_white_background.xml" value="0.31851851851851853" />
         <entry key="app/src/main/res/layout/add_bank_bottom_sheet_item.xml" value="0.4027777777777778" />
         <entry key="app/src/main/res/layout/bottom_sheet_category_product.xml" value="0.4027777777777778" />
         <entry key="app/src/main/res/layout/bottom_sheet_cod_confirmation.xml" value="0.4244791666666667" />
         <entry key="app/src/main/res/layout/bottom_sheet_complete_your_kyc.xml" value="0.35260416666666666" />
         <entry key="app/src/main/res/layout/bottom_sheet_custom_domain_selection.xml" value="0.335" />
+        <entry key="app/src/main/res/layout/bottom_sheet_learn_youtube.xml" value="0.4244791666666667" />
         <entry key="app/src/main/res/layout/bottom_sheet_payment_link.xml" value="0.35260416666666666" />
         <entry key="app/src/main/res/layout/bottom_sheet_shipment_confirmation.xml" value="0.41794871794871796" />
         <entry key="app/src/main/res/layout/bottom_sheet_show_products_with_category.xml" value="0.26018447348193696" />
@@ -70,7 +72,9 @@
         <entry key="app/src/main/res/layout/otp_verification_fragment.xml" value="0.35260416666666666" />
         <entry key="app/src/main/res/layout/products_item.xml" value="0.35260416666666666" />
         <entry key="app/src/main/res/layout/send_bill_photo_fragment.xml" value="0.4027777777777778" />
+        <entry key="app/src/main/res/layout/share_pdf_item.xml" value="0.4027777777777778" />
         <entry key="app/src/main/res/layout/social_media_template_item_layout.xml" value="0.35260416666666666" />
+        <entry key="app/src/main/res/layout/youtube_item.xml" value="0.41794871794871796" />
       </map>
     </option>
   </component>
