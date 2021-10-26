@@ -493,6 +493,9 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                 val wrapper = ContextThemeWrapper(mActivity, R.style.popupMenuStyle)
                 val optionsMenu = PopupMenu(wrapper, helpImageView)
                 optionsMenu.inflate(R.menu.menu_product_fragment)
+                mOrderPageInfoResponse?.optionMenuList?.forEachIndexed { position, response ->
+                    optionsMenu.menu?.add(Menu.NONE, position, Menu.NONE, response.mText)
+                }
                 optionsMenu.setOnMenuItemClickListener(this)
                 optionsMenu.show()
             }
