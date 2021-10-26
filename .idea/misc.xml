@@ -12,10 +12,12 @@
         <entry key="app/src/main/res/drawable/curve_light_green_background.xml" value="0.31851851851851853" />
         <entry key="app/src/main/res/drawable/curve_purple_background.xml" value="0.31851851851851853" />
         <entry key="app/src/main/res/drawable/custom_green_horizontal_progress_bar.xml" value="0.36875" />
+        <entry key="app/src/main/res/drawable/ic_favourite.xml" value="0.36875" />
         <entry key="app/src/main/res/drawable/ic_on_board_dukaan_name.xml" value="0.36875" />
         <entry key="app/src/main/res/drawable/ic_search.xml" value="0.4338461538461538" />
         <entry key="app/src/main/res/drawable/ic_share.xml" value="0.4338461538461538" />
         <entry key="app/src/main/res/drawable/ic_share_forward_arrow.xml" value="0.4338461538461538" />
+        <entry key="app/src/main/res/drawable/ic_un_favourite.xml" value="0.36875" />
         <entry key="app/src/main/res/drawable/ic_white_tick.xml" value="0.36875" />
         <entry key="app/src/main/res/drawable/lower_curve_black_background.xml" value="0.31851851851851853" />
         <entry key="app/src/main/res/drawable/lower_right_curve_white_background.xml" value="0.31851851851851853" />
@@ -38,6 +40,7 @@
         <entry key="app/src/main/res/layout/bottom_sheet_cod_confirmation.xml" value="0.4244791666666667" />
         <entry key="app/src/main/res/layout/bottom_sheet_complete_your_kyc.xml" value="0.35260416666666666" />
         <entry key="app/src/main/res/layout/bottom_sheet_custom_domain_selection.xml" value="0.335" />
+        <entry key="app/src/main/res/layout/bottom_sheet_edit_product_category_details.xml" value="0.35260416666666666" />
         <entry key="app/src/main/res/layout/bottom_sheet_image_pick_v2.xml" value="0.35260416666666666" />
         <entry key="app/src/main/res/layout/bottom_sheet_learn_youtube.xml" value="0.4244791666666667" />
         <entry key="app/src/main/res/layout/bottom_sheet_payment_link.xml" value="0.35260416666666666" />

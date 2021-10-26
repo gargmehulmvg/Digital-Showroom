@@ -63,6 +63,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/_15sdp"
+        android:visibility="gone"
         android:layout_marginTop="@dimen/_15sdp"
         android:layout_marginEnd="@dimen/_15sdp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -100,8 +101,8 @@
         android:textColor="@color/white"
         android:textSize="@dimen/_16sdp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@id/text2InputLayout"
-        app:layout_constraintStart_toStartOf="@id/text2InputLayout"
+        app:layout_constraintEnd_toEndOf="@+id/text1InputLayout"
+        app:layout_constraintStart_toStartOf="@+id/text1InputLayout"
         app:layout_constraintTop_toBottomOf="@id/text2InputLayout"
         tools:text="Save Changes" />
 

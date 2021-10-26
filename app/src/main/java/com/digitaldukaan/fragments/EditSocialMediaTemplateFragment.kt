@@ -376,6 +376,7 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
                     text1InputLayout.hint = mMarketingPageInfoResponse?.marketingStaticTextResponse?.text_line_1
                     text2InputLayout.hint = mMarketingPageInfoResponse?.marketingStaticTextResponse?.text_line_2
                     closeImageView.setOnClickListener { bottomSheetDialog.dismiss() }
+                    text2InputLayout.visibility = if (null == mSocialMediaTemplateResponse?.html?.htmlDefaults?.text2) View.GONE else View.VISIBLE
                     saveChangesTextView.setOnClickListener {
                         val text1Str = text1EditText.text.toString().trim()
                         val text2Str = text2EditText.text.toString().trim()
@@ -510,10 +511,10 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         Log.i(TAG, "onRequestPermissionResult")
-        if (requestCode == Constants.STORAGE_REQUEST_CODE) {
+        if (Constants.STORAGE_REQUEST_CODE == requestCode) {
             when {
                 grantResults.isEmpty() -> Log.d(TAG, "User interaction was cancelled.")
-                grantResults[0] == PackageManager.PERMISSION_GRANTED -> {
+                PackageManager.PERMISSION_GRANTED == grantResults[0] -> {
                     if (sIsWhatsAppIconClicked) whatsappTextView?.callOnClick() else shareTextView?.callOnClick()
                 }
                 else -> showShortSnackBar("Permission was denied", true, R.drawable.ic_close_red)

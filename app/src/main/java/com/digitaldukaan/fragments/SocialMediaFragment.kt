@@ -1,5 +1,6 @@
 package com.digitaldukaan.fragments
 
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
@@ -49,6 +50,9 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
     companion object {
         private var sSocialMediaPageInfoResponse: SocialMediaPageInfoResponse? = null
         private var sSocialMediaCategoriesList: ArrayList<SocialMediaCategoryItemResponse?>? = ArrayList()
+        private var sIsWhatsAppIconClicked = false
+        private var sSelectedTemplatePosition = 0
+        private var sSelectedTemplateItem: SocialMediaTemplateListItemResponse? = null
 
         fun newInstance(marketingPageInfoResponse: MarketingPageInfoResponse?): SocialMediaFragment {
             val fragment =  SocialMediaFragment()
@@ -229,11 +233,14 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
     }
 
     override fun onSocialMediaTemplateShareItemClickListener(position: Int, item: SocialMediaTemplateListItemResponse?) {
+        sIsWhatsAppIconClicked = false
         setupUIForScreenShot(item)
+        sSelectedTemplatePosition = position
+        sSelectedTemplateItem = item
         screenshotContainer?.let { v ->
             Handler(Looper.getMainLooper()).postDelayed({
                 val originalBitmap = getBitmapFromView(v, mActivity)
-                originalBitmap?.let { bitmap -> shareOnWhatsApp("Order From - ${mMarketingPageInfoResponse?.marketingStoreInfo?.domain}", bitmap) }
+                originalBitmap?.let { bitmap -> shareData("Order From - ${mMarketingPageInfoResponse?.marketingStoreInfo?.domain}", bitmap) }
             }, Constants.TIMER_INTERVAL)
             Handler(Looper.getMainLooper()).postDelayed({
                 stopProgress()
@@ -243,6 +250,9 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
     }
 
     override fun onSocialMediaTemplateWhatsappItemClickListener(position: Int, item: SocialMediaTemplateListItemResponse?) {
+        sIsWhatsAppIconClicked = true
+        sSelectedTemplatePosition = position
+        sSelectedTemplateItem = item
         setupUIForScreenShot(item)
         screenshotContainer?.let { v ->
             Handler(Looper.getMainLooper()).postDelayed({
@@ -280,4 +290,16 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
         sSocialMediaPageInfoResponse = null
     }
 
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        Log.i(TAG, "onRequestPermissionResult")
+        if (Constants.STORAGE_REQUEST_CODE == requestCode) {
+            when {
+                grantResults.isEmpty() -> Log.d(TAG, "User interaction was cancelled.")
+                grantResults[0] == PackageManager.PERMISSION_GRANTED -> {
+                    if (sIsWhatsAppIconClicked) onSocialMediaTemplateWhatsappItemClickListener(sSelectedTemplatePosition, sSelectedTemplateItem) else onSocialMediaTemplateShareItemClickListener(sSelectedTemplatePosition, sSelectedTemplateItem)
+                }
+                else -> showShortSnackBar("Permission was denied", true, R.drawable.ic_close_red)
+            }
+        }
+    }
 }
