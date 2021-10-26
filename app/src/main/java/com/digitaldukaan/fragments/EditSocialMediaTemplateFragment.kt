@@ -160,8 +160,12 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
             mProductCategoryCombineList = ArrayList()
             mProductCategoryCombineList = Gson().fromJson<ArrayList<ProductCategoryCombineResponse>>(response.mCommonDataStr, listType)
             Log.d(TAG, "onItemsBasicDetailsByStoreIdResponse: productCategoryCombineList :: $mProductCategoryCombineList")
-            setupEditAndShareTemplateUI()
-            showProductsWithCategoryBottomSheet()
+            if (isEmpty(mProductCategoryCombineList)) {
+                setupNoTemplateUI()
+            } else {
+                setupEditAndShareTemplateUI()
+                showProductsWithCategoryBottomSheet()
+            }
         }
         stopProgress()
     }
@@ -189,8 +193,7 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
     private fun setupNoTemplateUI() {
         noTemplateLayout?.visibility = View.VISIBLE
         templateLayout?.visibility = View.GONE
-        addProductTextView?.text =
-            mMarketingPageInfoResponse?.marketingStaticTextResponse?.cta_text_add_products
+        addProductTextView?.text = mMarketingPageInfoResponse?.marketingStaticTextResponse?.cta_text_add_products
         messageTextView?.text = when (ToolBarManager.getInstance().headerTitle) {
             mMarketingPageInfoResponse?.marketingStaticTextResponse?.heading_product_discount -> mMarketingPageInfoResponse?.marketingStaticTextResponse?.message_product_discount_zero_screen
             mMarketingPageInfoResponse?.marketingStaticTextResponse?.heading_new_launches_and_bestsellers -> mMarketingPageInfoResponse?.marketingStaticTextResponse?.message_bestseller_zero_screen
@@ -462,6 +465,7 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
                 sIsWhatsAppIconClicked = true
                 showCancellableProgressDialog(mActivity)
                 Handler(Looper.getMainLooper()).postDelayed({
+                    nestedScrollView?.scrollTo(0, 150)
                     stopProgress()
                 }, Constants.AUTO_DISMISS_PROGRESS_DIALOG_TIMER)
                 screenshotContainer?.let { v ->
@@ -473,6 +477,7 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
                 sIsWhatsAppIconClicked = false
                 showCancellableProgressDialog(mActivity)
                 Handler(Looper.getMainLooper()).postDelayed({
+                    nestedScrollView?.scrollTo(0, 150)
                     stopProgress()
                 }, Constants.AUTO_DISMISS_PROGRESS_DIALOG_TIMER)
                 screenshotContainer?.let { v ->

@@ -13,6 +13,7 @@
         android:visibility="gone">
 
         <androidx.core.widget.NestedScrollView
+            android:id="@+id/nestedScrollView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fillViewport="true">
@@ -22,14 +23,19 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
+                android:descendantFocusability="blocksDescendants"
                 android:orientation="vertical"
                 app:layout_constraintBottom_toTopOf="@id/bottomViewsContainer"
                 app:layout_constraintTop_toTopOf="parent">
 
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_10sdp" />
+
                 <LinearLayout
                     android:id="@+id/screenshotContainer"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/_450sdp"
+                    android:layout_height="@dimen/_430sdp"
                     android:gravity="center">
 
                     <androidx.cardview.widget.CardView
@@ -341,7 +347,7 @@
 
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/_100sdp" />
+                    android:layout_height="@dimen/_150sdp" />
 
             </LinearLayout>
 
