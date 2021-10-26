@@ -21,7 +21,7 @@ class LearnYoutubeAdapter(private var mItemList: ArrayList<String>?) : RecyclerV
 
     override fun onBindViewHolder(holder: LearnYoutubeViewHolder, position: Int) {
         val number = "${position + 1}."
-        holder.numberingTextView.text = "$number"
+        holder.numberingTextView.text = number
         holder.textView.text = mItemList?.get(position)
     }
 
