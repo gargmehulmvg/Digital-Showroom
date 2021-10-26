@@ -25,7 +25,6 @@ import com.digitaldukaan.R
 import com.digitaldukaan.adapters.*
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.*
-import com.digitaldukaan.models.request.AddProductImageItem
 import com.digitaldukaan.models.request.AddProductItemCategory
 import com.digitaldukaan.models.request.AddProductRequest
 import com.digitaldukaan.models.request.DeleteItemRequest
@@ -100,6 +99,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     private var mActiveVariantAdapter: ActiveVariantAdapterV2? = null
     private var mActiveVariantList: ArrayList<VariantItemResponse>? = null
     private var mDeletedVariantList: ArrayList<VariantItemResponse>? = null
+    private var mYoutubeItemResponse: AddProductImagesResponse? = null
 
     companion object {
         private var sIsVariantImageClicked = false
@@ -368,6 +368,21 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             }
 
         })
+        youtubeLinkEditText?.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                mIsOrderEdited = true
+                showAddProductContainer()
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                Log.d(TAG, "beforeTextChanged: youtubeLinkEditText :: do nothing")
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                Log.d(TAG, "onTextChanged: youtubeLinkEditText :: do nothing")
+            }
+
+        })
     }
 
     override fun onClick(view: View?) {
@@ -415,11 +430,9 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     val descriptionStr = productDescriptionEditText?.text.toString().trim()
                     val categoryStr = enterCategoryEditText?.text.toString()
                     if (!isInternetConnectionAvailable(mActivity)) return else {
-                        val imageListRequest: ArrayList<AddProductImageItem> = ArrayList()
+                        val imageListRequest: ArrayList<AddProductImagesResponse> = ArrayList()
                         mImagesStrList.forEachIndexed { _, imageItem ->
-                            if (imageItem.imageUrl.isNotEmpty()) {
-                                imageListRequest.add(AddProductImageItem(imageItem.imageId, imageItem.imageUrl, 1))
-                            }
+                            if (isNotEmpty(imageItem.imageUrl)) imageListRequest.add(AddProductImagesResponse(imageItem.imageId, imageItem.imageUrl, 1, imageItem.mediaType))
                         }
                         if (mAddProductResponse?.deletedVariants?.isEmpty() != true && true == mAddProductResponse?.isVariantSaved) {
                             mAddProductResponse?.deletedVariants?.values?.let {
@@ -485,13 +498,21 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                         mDeletedVariantList?.let { list ->
                             finalList.addAll(list)
                         }
+                        if (isNotEmpty(youtubeLinkEditText?.text?.toString())) {
+                            val youtubeLink = youtubeLinkEditText?.text?.toString()
+                            if (null == mYoutubeItemResponse)
+                                mYoutubeItemResponse = AddProductImagesResponse(imageId = 0, imageUrl = youtubeLink ?: "", status = 1, mediaType = Constants.MEDIA_TYPE_VIDEOS)
+                            else
+                                mYoutubeItemResponse?.imageUrl = youtubeLink ?: ""
+                            mYoutubeItemResponse?.let { youtube -> imageListRequest.add(youtube) }
+                        }
                         val request = AddProductRequest(
                             mItemId,
                             1,
                             if (isNotEmpty(mActiveVariantList)) mActiveVariantList?.get(0)?.price else price,
                             if (isNotEmpty(mActiveVariantList)) mActiveVariantList?.get(0)?.discountedPrice ?: 0.0 else discountPrice,
                             descriptionStr.trim(),
-                            if (categoryStr.trim().isEmpty()) AddProductItemCategory(0, "") else AddProductItemCategory(mItemCategoryId, categoryStr),
+                            if (isEmpty(categoryStr.trim())) AddProductItemCategory(0, "") else AddProductItemCategory(mItemCategoryId, categoryStr),
                             imageListRequest,
                             nameStr.trim(),
                             finalList
@@ -835,10 +856,17 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     }
                     false
                 }
-                true == discountPriceEditText?.text?.toString()?.isNotEmpty() && (priceEditText?.text.toString().toDouble() < discountPriceEditText?.text.toString().toDouble()) -> {
+                isNotEmpty(discountPriceEditText?.text?.toString()) && (priceEditText?.text.toString().toDouble() < discountPriceEditText?.text.toString().toDouble()) -> {
                     discountPriceEditText?.apply {
                         text = null
                         error = mAddProductStaticData?.error_discount_price_less_then_original_price
+                        requestFocus()
+                    }
+                    false
+                }
+                isNotEmpty(youtubeLinkEditText?.text?.toString()) && !isYoutubeUrlValid(youtubeLinkEditText?.text?.toString() ?: "") -> {
+                    youtubeLinkEditText?.apply {
+                        error = "Invalid URL"
                         requestFocus()
                     }
                     false
@@ -879,14 +907,14 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                         discountContainer?.visibility = View.VISIBLE
                         discountPriceEditText?.setText("$discountedPrice")
                     }
-                    if (true == mAddProductResponse?.storeItem?.imagesList?.isNotEmpty()) {
+                    if (isNotEmpty(mAddProductResponse?.storeItem?.imagesList)) {
                         noImagesLayout?.visibility = View.GONE
                         imagesRecyclerView?.apply {
                             layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
                             mImagesStrList.clear()
-                            if (mImagesStrList.isEmpty()) mImagesStrList.add(AddProductImagesResponse(0, "", 0, Constants.MEDIA_TYPE_IMAGES))
+                            if (isEmpty(mImagesStrList)) mImagesStrList.add(AddProductImagesResponse(0, "", 0, Constants.MEDIA_TYPE_IMAGES))
                             mAddProductResponse?.storeItem?.imagesList?.forEachIndexed { _, imagesResponse ->
-                                if (imagesResponse.status != 0) mImagesStrList.add(AddProductImagesResponse(imagesResponse.imageId, imagesResponse.imageUrl, 1, Constants.MEDIA_TYPE_IMAGES))
+                                if (0 != imagesResponse.status && Constants.MEDIA_TYPE_IMAGES == imagesResponse.mediaType) mImagesStrList.add(AddProductImagesResponse(imagesResponse.imageId, imagesResponse.imageUrl, 1, imagesResponse.mediaType))
                             }
                             mImageAddAdapter = AddProductsImagesAdapter(this@AddProductFragment, mImagesStrList ,mAddProductStaticData?.text_upload_or_search_images, this@AddProductFragment)
                             adapter = mImageAddAdapter
@@ -933,6 +961,13 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 youtubeLinkContainer?.visibility = View.VISIBLE
                 youtubeLinkInputLayout?.hint = youtube.hint1
                 learnYouTubeLinkHelpTextView?.text = youtube.message
+                mAddProductResponse?.storeItem?.imagesList?.forEachIndexed { _, imagesItemResponse ->
+                    if (Constants.MEDIA_TYPE_VIDEOS == imagesItemResponse.mediaType && 1 == imagesItemResponse.status) {
+                        mYoutubeItemResponse = imagesItemResponse
+                        return@forEachIndexed
+                    }
+                }
+                if (null != mYoutubeItemResponse) youtubeLinkEditText?.setText(mYoutubeItemResponse?.imageUrl)
             }
         }
     }
@@ -948,10 +983,10 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 chipGroupRecyclerView?.apply {
                     layoutManager = StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL)
                     mAddProductStoreCategoryList = it.storeCategoriesList
-                    if (true == mAddProductStoreCategoryList?.isNotEmpty()) {
+                    if (isNotEmpty(mAddProductStoreCategoryList)) {
                         mTempProductCategoryList.clear()
                         mAddProductStoreCategoryList?.forEachIndexed { _, categoryItem ->
-                            if (true == categoryItem.name?.isNotEmpty()) mTempProductCategoryList.add(categoryItem)
+                            if (isNotEmpty(categoryItem.name)) mTempProductCategoryList.add(categoryItem)
                         }
                         mTempProductCategoryList.forEachIndexed { _, categoryItem ->
                             if (categoryItem.id == mAddProductResponse?.storeItem?.category?.id) {
@@ -1119,9 +1154,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         }
     }
 
-    override fun onAddProductException(e: Exception) {
-        exceptionHandlingForAPIResponse(e)
-    }
+    override fun onAddProductException(e: Exception) = exceptionHandlingForAPIResponse(e)
 
     override fun onAdapterItemClickListener(position: Int) {
         mImageChangePosition = position
@@ -1171,9 +1204,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         return true
     }
 
-    override fun onToolbarSecondIconClicked() {
-        showDeleteConfirmationDialog()
-    }
+    override fun onToolbarSecondIconClicked() = showDeleteConfirmationDialog()
 
     override fun onBackPressed(): Boolean {
         try {
@@ -1243,8 +1274,8 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
 
     private fun showAddProductContainer() {
         if (View.VISIBLE == shareProductContainer?.visibility) {
-            shareProductContainer?.visibility   = View.GONE
-            continueTextView?.visibility        = View.VISIBLE
+            shareProductContainer?.visibility = View.GONE
+            continueTextView?.visibility = View.VISIBLE
             if (!mIsAddNewProduct) continueTextView?.text = getString(R.string.save)
         }
     }

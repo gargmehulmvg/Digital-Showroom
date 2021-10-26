@@ -54,6 +54,8 @@ import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 import kotlin.collections.ArrayList
 
 
@@ -546,4 +548,12 @@ fun getQRCodeBitmap(activity: MainActivity?, text: String?): Bitmap? {
         }
     }
     return null
+}
+
+fun isYoutubeUrlValid(youTubeUrl: String): Boolean {
+    if (isEmpty(youTubeUrl)) return false
+    val pattern = "(?:https?:\\/\\/)?(?:www\\.)?youtu\\.?be(?:\\.com)?\\/?.*(?:watch|embed)?(?:.*v=|v\\/|\\/)([\\w\\-_]+)\\&?"
+    val compiledPattern: Pattern = Pattern.compile(pattern)
+    val matcher: Matcher = compiledPattern.matcher(youTubeUrl)
+    return matcher.find()
 }
