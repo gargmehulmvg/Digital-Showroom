@@ -611,12 +611,17 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
     }
 
     override fun onSearchDialogContinueButtonClicked(inputOrderId: String, inputMobileNumber: String) {
-        mOrderIdString = inputOrderId
-        mMobileNumberString = inputMobileNumber
-        val request = SearchOrdersRequest(if (mOrderIdString.isNotEmpty()) mOrderIdString.toLong() else 0, mMobileNumberString, 1)
-        if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog()
-        showProgressDialog(mActivity)
-        mHomeFragmentService?.getSearchOrders(request)
+        try {
+            mOrderIdString = inputOrderId
+            mMobileNumberString = inputMobileNumber
+            val request = SearchOrdersRequest(if (isNotEmpty(mOrderIdString)) mOrderIdString.toLong() else 0, mMobileNumberString, 1)
+            if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog()
+            showProgressDialog(mActivity)
+            mHomeFragmentService?.getSearchOrders(request)
+        } catch (e: Exception) {
+            showToast(mActivity?.getString(R.string.something_went_wrong))
+            Log.e(TAG, "onSearchDialogContinueButtonClicked: ${e.message}", e)
+        }
     }
 
     override fun onOrderCheckBoxChanged(isChecked: Boolean, item: OrderItemResponse?) {

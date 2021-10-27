@@ -644,6 +644,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 deleteVariantCancelTextView.text = mAddProductStaticData?.text_cancel
                 deleteVariantTextView.setOnClickListener {
                     dialog.dismiss()
+                    if (position >= (mActiveVariantList?.size ?: 0)) return@setOnClickListener
                     val variantItem = mActiveVariantList?.get(position)
                     variantItem?.let { item ->
                         item.status = 0
