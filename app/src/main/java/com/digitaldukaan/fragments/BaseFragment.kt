@@ -887,30 +887,37 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     }
 
     private fun startCropping(bitmap: Bitmap?) {
-        mActivity?.let {
-            val originalImgFile = File(it.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "${System.currentTimeMillis()}_originalImgFile.jpg")
-            bitmap?.let { b ->convertBitmapToFile(originalImgFile, b) }
-            val croppedImgFile = File(it.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "${System.currentTimeMillis()}_croppedImgFile.jpg")
-            UCrop.of(Uri.fromFile(originalImgFile), Uri.fromFile(croppedImgFile))
-                .withAspectRatio(1f, 1f)
-                .withMaxResultSize(500, 500)
-                .start(it)
-            stopProgress()
+        try {
+            mActivity?.let {
+                val originalImgFile = File(it.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "${System.currentTimeMillis()}_originalImgFile.jpg")
+                bitmap?.let { b ->convertBitmapToFile(originalImgFile, b) }
+                val croppedImgFile = File(it.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "${System.currentTimeMillis()}_croppedImgFile.jpg")
+                UCrop.of(Uri.fromFile(originalImgFile), Uri.fromFile(croppedImgFile))
+                    .withAspectRatio(1f, 1f)
+                    .withMaxResultSize(500, 500)
+                    .start(it)
+                stopProgress()
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "startCropping: ${e.message}", e)
         }
     }
 
     private fun convertBitmapToFile(destinationFile: File, bitmap: Bitmap) {
-        //create a file to write bitmap data
-        destinationFile.createNewFile()
-        //Convert bitmap to byte array
-        val bos = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 50, bos)
-        val bitmapData = bos.toByteArray()
-        //write the bytes in file
-        val fos = FileOutputStream(destinationFile)
-        fos.write(bitmapData)
-        fos.flush()
-        fos.close()
+        try {//create a file to write bitmap data
+            destinationFile.createNewFile()
+            //Convert bitmap to byte array
+            val bos = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 50, bos)
+            val bitmapData = bos.toByteArray()
+            //write the bytes in file
+            val fos = FileOutputStream(destinationFile)
+            fos.write(bitmapData)
+            fos.flush()
+            fos.close()
+        } catch (e: Exception) {
+            Log.e(TAG, "convertBitmapToFile: ${e.message}", e)
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
