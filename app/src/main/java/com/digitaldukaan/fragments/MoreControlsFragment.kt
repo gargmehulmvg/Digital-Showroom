@@ -43,9 +43,9 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
 
     companion object {
 
-        fun newInstance(appSettingsResponseStaticData: AccountStaticTextResponse?, accountInfoResponse: AccountInfoResponse?): MoreControlsFragment {
+        fun newInstance(accountInfoResponse: AccountInfoResponse?): MoreControlsFragment {
             val fragment = MoreControlsFragment()
-            fragment.mMoreControlsStaticData = appSettingsResponseStaticData
+            fragment.mMoreControlsStaticData = accountInfoResponse?.mAccountStaticText
             fragment.mAccountInfoResponse = accountInfoResponse
             fragment.mIsOrderNotificationOn = accountInfoResponse?.mIsOrderNotificationOn ?: false
             fragment.mIsPrepaidOrdersLocked = accountInfoResponse?.mPrepaidOrdersLocked?.mIsActive ?: false

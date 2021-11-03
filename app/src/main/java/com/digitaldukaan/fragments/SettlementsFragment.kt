@@ -17,6 +17,7 @@ import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.ITransactionItemClicked
 import com.digitaldukaan.models.request.TransactionRequest
 import com.digitaldukaan.models.response.CommonApiResponse
+import com.digitaldukaan.models.response.LockedStoreShareResponse
 import com.digitaldukaan.models.response.MyPaymentsItemResponse
 import com.digitaldukaan.models.response.MyPaymentsResponse
 import com.digitaldukaan.services.MyPaymentsService
@@ -67,7 +68,9 @@ class SettlementsFragment : BaseFragment(), IMyPaymentsServiceInterface, ITransa
                     AFInAppEventParameterName.IS_SETTLEMENT_PAGE to AFInAppEventParameterName.TRUE
                 )
             )
-            shareStoreOverWhatsAppServerCall()
+            if (StaticInstances.sIsShareStoreLocked) {
+                getLockedStoreShareDataServerCall(Constants.MODE_SHARE_STORE)
+            } else shareStoreOverWhatsAppServerCall()
         }
         startDateTextView?.setOnClickListener { showDatePickerDialog() }
         mService.setServiceInterface(this)
@@ -248,5 +251,7 @@ class SettlementsFragment : BaseFragment(), IMyPaymentsServiceInterface, ITransa
             }
         }
     }
+
+    override fun onLockedStoreShareSuccessResponse(lockedShareResponse: LockedStoreShareResponse) = showLockedStoreShareBottomSheet(lockedShareResponse)
 
 }

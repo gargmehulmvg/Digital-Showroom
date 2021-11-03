@@ -11,10 +11,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
-import com.digitaldukaan.constants.Constants
-import com.digitaldukaan.constants.StaticInstances
-import com.digitaldukaan.constants.getStringFromOrderDate
-import com.digitaldukaan.constants.getTimeFromOrderString
+import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.IOrderListItemListener
 import com.digitaldukaan.models.response.OrderItemResponse
 import com.digitaldukaan.models.response.OrderPageStaticTextResponse
@@ -56,7 +53,7 @@ class OrderAdapterV2(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OrderViewHolder {
         val view = OrderViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.order_item, parent, false))
         view.orderCheckBox.setOnClickListener {
-            if (mOrderList?.isEmpty() == true) return@setOnClickListener
+            if (isEmpty(mOrderList)) return@setOnClickListener
             val position = view.adapterPosition
             if (position < 0 || position >= mOrderList?.size ?: 0) return@setOnClickListener
             mListItemListener?.onOrderCheckBoxChanged(view.orderCheckBox.isChecked, mOrderList?.get(position))
@@ -73,9 +70,7 @@ class OrderAdapterV2(
         return view
     }
 
-    override fun getItemCount(): Int {
-        return mOrderList?.size ?:0
-    }
+    override fun getItemCount(): Int = mOrderList?.size ?:0
 
     override fun onBindViewHolder(holder: OrderAdapterV2.OrderViewHolder, position: Int) {
         val item = mOrderList?.get(position)
@@ -107,18 +102,14 @@ class OrderAdapterV2(
         }
     }
 
-    override fun getItemId(position: Int): Long {
-        return position.toLong()
-    }
+    override fun getItemId(position: Int): Long = position.toLong()
 
-    override fun getItemViewType(position: Int): Int {
-        return position
-    }
+    override fun getItemViewType(position: Int): Int = position
 
     private fun getOrderStatus(item: OrderItemResponse?, orderStatusTextView: TextView, orderItemContainer: View, orderCheckBox: CheckBox, orderStatusImageView: ImageView) {
         when (item?.displayStatus) {
             Constants.DS_NEW -> {
-                orderStatusTextView.text = if (mOrderPageInfoStaticData?.newText?.isEmpty() == true) mOrderPageInfoStaticData?.newText else "New"
+                orderStatusTextView.text = if (isEmpty(mOrderPageInfoStaticData?.newText)) mOrderPageInfoStaticData?.newText else "New"
                 orderStatusTextView.setTextColor(mContext.getColor(R.color.open_green))
                 orderStatusTextView.background = ContextCompat.getDrawable(mContext, R.drawable.order_adapter_new)
                 orderCheckBox.isEnabled = false

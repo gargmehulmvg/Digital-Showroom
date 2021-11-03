@@ -500,6 +500,10 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
             }
             addProductTextView?.id -> launchFragment(AddProductFragment.newInstance(0, true), true)
             whatsappTextView?.id -> {
+                if (StaticInstances.sIsShareStoreLocked) {
+                    getLockedStoreShareDataServerCall(if (mIsOpenBottomSheet) Constants.MODE_SHARE_PRODUCTS else Constants.MODE_SHARE_TEMPLATE)
+                    return
+                }
                 sIsWhatsAppIconClicked = true
                 showCancellableProgressDialog(mActivity)
                 Handler(Looper.getMainLooper()).postDelayed({
@@ -512,6 +516,10 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
                 }
             }
             shareTextView?.id -> {
+                if (StaticInstances.sIsShareStoreLocked) {
+                    getLockedStoreShareDataServerCall(if (mIsOpenBottomSheet) Constants.MODE_SHARE_PRODUCTS else Constants.MODE_SHARE_TEMPLATE)
+                    return
+                }
                 sIsWhatsAppIconClicked = false
                 showCancellableProgressDialog(mActivity)
                 Handler(Looper.getMainLooper()).postDelayed({
@@ -538,4 +546,7 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
             }
         }
     }
+
+    override fun onLockedStoreShareSuccessResponse(lockedShareResponse: LockedStoreShareResponse) = showLockedStoreShareBottomSheet(lockedShareResponse)
+
 }

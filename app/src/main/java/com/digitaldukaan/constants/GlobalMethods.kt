@@ -217,33 +217,33 @@ fun openWebViewFragment(fragment: BaseFragment, title: String, webViewType: Stri
     }
 }
 
-fun openWebViewFragmentV2(fragment: BaseFragment, title: String, webViewType: String, redirectFromStr: String) {
+fun openWebViewFragmentV2(fragment: BaseFragment?, title: String, webViewType: String, redirectFromStr: String) {
     try {
-        fragment.launchFragment(CommonWebViewFragment().newInstance(title, webViewType + "?storeid=${fragment.getStringDataFromSharedPref(Constants.STORE_ID)}&redirectFrom=$redirectFromStr&token=${fragment.getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"), true)
+        fragment?.launchFragment(CommonWebViewFragment().newInstance(title, webViewType + "?storeid=${fragment.getStringDataFromSharedPref(Constants.STORE_ID)}&redirectFrom=$redirectFromStr&token=${fragment.getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"), true)
     } catch (e: Exception) {
         Sentry.captureException(e, "openWebViewFragment :: fragment: BaseFragment, title: String, webViewType: String, redirectFromStr: String")
     }
 }
 
-fun openWebViewFragment(fragment: BaseFragment, title: String, webViewUrl: String?) {
+fun openWebViewFragment(fragment: BaseFragment?, title: String, webViewUrl: String?) {
     try {
-        fragment.launchFragment(CommonWebViewFragment().newInstance(title, webViewUrl + "?storeid=${fragment.getStringDataFromSharedPref(Constants.STORE_ID)}&token=${fragment.getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"), true)
+        fragment?.launchFragment(CommonWebViewFragment().newInstance(title, webViewUrl + "?storeid=${fragment.getStringDataFromSharedPref(Constants.STORE_ID)}&token=${fragment.getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"), true)
     } catch (e: Exception) {
         Sentry.captureException(e, "openWebViewFragment :: fragment: BaseFragment, title: String, webViewType: String?")
     }
 }
 
-fun openWebViewFragmentV3(fragment: BaseFragment, title: String, webViewUrl: String?) {
+fun openWebViewFragmentV3(fragment: BaseFragment?, title: String, webViewUrl: String?) {
     try {
-        fragment.launchFragment(CommonWebViewFragment().newInstance(title, webViewUrl ?: ""), true)
+        fragment?.launchFragment(CommonWebViewFragment().newInstance(title, webViewUrl ?: ""), true)
     } catch (e: Exception) {
         Sentry.captureException(e, "openWebViewFragment :: fragment: BaseFragment, title: String, webViewType: String?")
     }
 }
 
-fun openWebViewFragmentWithLocation(fragment: BaseFragment, title: String, webViewType: String?) {
+fun openWebViewFragmentWithLocation(fragment: BaseFragment?, title: String, webViewType: String?) {
     try {
-        fragment.launchFragment(CommonWebViewFragment().newInstance(title, webViewType ?: ""), true)
+        fragment?.launchFragment(CommonWebViewFragment().newInstance(title, webViewType ?: ""), true)
     } catch (e: Exception) {
         Sentry.captureException(e, "openWebViewFragment :: fragment: BaseFragment, title: String, webViewType: String?")
     }

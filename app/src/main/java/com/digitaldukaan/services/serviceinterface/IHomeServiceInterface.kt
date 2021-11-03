@@ -26,6 +26,10 @@ interface IHomeServiceInterface {
 
     fun onCustomDomainBottomSheetDataResponse(commonResponse: CommonApiResponse)
 
+    fun onLandingPageCardsResponse(commonResponse: CommonApiResponse)
+
+    fun onDomainSuggestionListResponse(commonResponse: CommonApiResponse)
+
     fun onHomePageException(e: Exception)
 
 }

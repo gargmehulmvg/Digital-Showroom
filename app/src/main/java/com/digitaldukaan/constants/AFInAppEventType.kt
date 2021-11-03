@@ -73,6 +73,8 @@ interface AFInAppEventType {
         const val EVENT_SHARE_PDF_CATALOG                           =   "Share PDF Catalog"
         const val EVENT_DOMAIN_DETAIL                               =   "DomainDetails"
         const val EVENT_DOMAIN_EXPLORE                              =   "Domain_Explore"
+        const val EVENT_DOMAIN_SEARCH                               =   "Domain_Search"
+        const val EVENT_DOMAIN_APPLY                                =   "Domain_Apply"
         const val EVENT_BING_SEARCH                                 =   "Bing_Search"
         const val EVENT_SET_PREPAID_ORDER                           =   "Set_prepaid_orders"
         const val EVENT_HOW_PREPAID_ORDER_WORK                      =   "How_prepaid_orders_work"

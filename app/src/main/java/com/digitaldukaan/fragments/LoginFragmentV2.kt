@@ -67,7 +67,13 @@ class LoginFragmentV2 : BaseFragment(), ILoginServiceInterface {
         mLoginService?.setLoginServiceInterface(this)
         hideBottomNavigationView(true)
         initializeTrueCaller()
+        initializeStaticInstances()
         return mContentView
+    }
+
+    private fun initializeStaticInstances() {
+        StaticInstances.sSuggestedDomainsList = null
+        StaticInstances.sStoreId = 0
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -133,8 +139,7 @@ class LoginFragmentV2 : BaseFragment(), ILoginServiceInterface {
     }
 
     private fun setupViewPager() {
-        val pagerAdapter =
-            LoginHelpPageAdapter(mActivity)
+        val pagerAdapter = LoginHelpPageAdapter(mActivity)
         val viewPager: ViewPager? = mContentView?.findViewById(R.id.viewpager)
         val indicator: WormDotsIndicator? = mContentView?.findViewById(R.id.indicator)
         viewPager?.adapter = pagerAdapter
@@ -339,7 +344,7 @@ class LoginFragmentV2 : BaseFragment(), ILoginServiceInterface {
                     "${it.address1}, ${it.googleAddress}, ${it.pinCode}"
                 }
                 AppEventsManager.pushCleverTapProfile(cleverTapProfile)
-                if (null == userResponse.store && userResponse.user.isNewUser) launchFragment(DukaanNameFragment.newInstance(), true) else launchFragment(HomeFragment(), true)
+                if (null == userResponse.store && userResponse.user.isNewUser) launchFragment(DukaanNameFragment.newInstance(), true) else launchFragment(OrderFragment.newInstance(), true)
             } else showShortSnackBar(validateUserResponse.mMessage, true, R.drawable.ic_close_red)
         }
     }

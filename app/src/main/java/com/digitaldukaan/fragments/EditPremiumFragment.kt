@@ -16,10 +16,7 @@ import com.digitaldukaan.R
 import com.digitaldukaan.adapters.EditPremiumColorAdapter
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.IAdapterItemClickListener
-import com.digitaldukaan.models.response.CommonApiResponse
-import com.digitaldukaan.models.response.EditPremiumColorItemResponse
-import com.digitaldukaan.models.response.PremiumPageInfoResponse
-import com.digitaldukaan.models.response.PremiumPageInfoStaticTextResponse
+import com.digitaldukaan.models.response.*
 import com.digitaldukaan.network.RetrofitApi
 import com.digitaldukaan.services.EditPremiumService
 import com.digitaldukaan.services.isInternetConnectionAvailable
@@ -109,7 +106,7 @@ class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
         when (view?.id) {
             backButtonToolbar?.id -> mActivity?.onBackPressed()
             editColorContainer?.id -> {
-                if (mEditPremiumColorList == null || mEditPremiumColorList?.isEmpty() == true) {
+                if (null == mEditPremiumColorList || true == mEditPremiumColorList?.isEmpty()) {
                     if (!isInternetConnectionAvailable(mActivity)) {
                         showNoInternetConnectionDialog()
                         return
@@ -136,7 +133,11 @@ class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
                 openUrlInBrowser(url)
             }
             whatsAppImageView?.id -> {
-                if (mShareDataOverWhatsAppText.isNotEmpty()) {
+                if (StaticInstances.sIsShareStoreLocked) {
+                    getLockedStoreShareDataServerCall(Constants.MODE_SHARE_STORE)
+                    return
+                }
+                if (isNotEmpty(mShareDataOverWhatsAppText)) {
                     shareOnWhatsApp(mShareDataOverWhatsAppText)
                 } else if (!isInternetConnectionAvailable(mActivity)) {
                     showNoInternetConnectionDialog()
@@ -252,5 +253,7 @@ class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
     }
 
     override fun onEditPremiumServerException(e: Exception) = exceptionHandlingForAPIResponse(e)
+
+    override fun onLockedStoreShareSuccessResponse(lockedShareResponse: LockedStoreShareResponse) = showLockedStoreShareBottomSheet(lockedShareResponse)
 
 }

@@ -890,6 +890,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             try {
                 stopProgress()
                 mAddProductResponse = Gson().fromJson<AddProductResponse>(commonResponse.mCommonDataStr, AddProductResponse::class.java)
+                StaticInstances.sIsShareStoreLocked = mAddProductResponse?.isShareStoreLocked ?: false
                 Log.d(TAG, "onGetAddProductDataResponse: $mAddProductResponse")
                 mAddProductStaticData = mAddProductResponse?.addProductStaticText
                 mAddProductResponse?.storeItem?.run {
@@ -937,6 +938,10 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     setupVariantRecyclerView()
                 }
                 shareProductContainer?.setOnClickListener {
+                    if (StaticInstances.sIsShareStoreLocked) {
+                        getLockedStoreShareDataServerCall(Constants.MODE_SHARE_STORE)
+                        return@setOnClickListener
+                    }
                     val productNameStr = mAddProductResponse?.storeItem?.name?.trim()
                     val newProductName = replaceTemplateString(productNameStr)
                     val sharingData = "ItemName: ${mAddProductResponse?.storeItem?.name}\nPrice:  ₹${mAddProductResponse?.storeItem?.price} \nDiscounted Price: ₹${mAddProductResponse?.storeItem?.discountedPrice}\n\n\uD83D\uDED2 ORDER NOW, Click on the link below\n\n" + "${mAddProductResponse?.domain}/product/${mAddProductResponse?.storeItem?.id}/$newProductName"
@@ -1279,4 +1284,6 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             if (!mIsAddNewProduct) continueTextView?.text = getString(R.string.save)
         }
     }
+
+    override fun onLockedStoreShareSuccessResponse(lockedShareResponse: LockedStoreShareResponse) = showLockedStoreShareBottomSheet(lockedShareResponse)
 }

@@ -141,6 +141,9 @@
     <string name="off">OFF</string>
     <string name="sale">SALE</string>
     <string name="please_enter_valid_url">Please enter valid URL</string>
+    <string name="already_have_a_domain">Already Have a Domain?</string>
+    <string name="search_domain">Search Domain</string>
+    <string name="best_pick_for_you">Best Pick for You</string>
     <string-array name="state_array">
         <item >Andhra Pradesh</item>
         <item >Arunachal Pradesh</item>

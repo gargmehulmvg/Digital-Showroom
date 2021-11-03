@@ -18,7 +18,7 @@ data class PrimaryDomainItemResponse(
     @SerializedName("promo")                var promo: String,
     @SerializedName("validity")             var validity: String,
     @SerializedName("cta")                  var cta: CustomDomainCtaResponse?,
-    @SerializedName("info_data")            var info_data: CustomDomainInfoTextResponse
+    @SerializedName("info_data")            var infoData: CustomDomainInfoTextResponse?
 )
 
 data class CustomDomainCtaResponse(
@@ -39,15 +39,6 @@ data class CustomDomainBottomSheetStaticTextResponse(
     @SerializedName("subheading_budiness_needs_domain")     var subheading_budiness_needs_domain: String,
     @SerializedName("text_cant_find")                       var text_cant_find: String,
     @SerializedName("text_more_suggestions")                var text_more_suggestions: String,
+    @SerializedName("text_best_pick_for_you")               var text_best_pick_for_you: String,
     @SerializedName("text_search")                          var text_search: String
 )
-
-/*
-* "static_text": {
-      "heading_last_step": "One Last Step",
-      "subheading_budiness_needs_domain": "Your Business needs a Domain!",
-      "text_cant_find": "Can’t find what you are looking for?",
-      "text_more_suggestions": "More Suggestions",
-      "text_search": "Search"
-    }
-* */

@@ -3,11 +3,12 @@ package com.digitaldukaan.models.response
 import com.google.gson.annotations.SerializedName
 
 data class PremiumPageInfoResponse(
-    @SerializedName("theme")            var theme: ThemeResponse?,
-    @SerializedName("static_text")      var staticText: PremiumPageInfoStaticTextResponse?,
-    @SerializedName("domain")           var domain: String?,
+    @SerializedName("theme")                    var theme: ThemeResponse?,
+    @SerializedName("static_text")              var staticText: PremiumPageInfoStaticTextResponse?,
+    @SerializedName("domain")                   var domain: String?,
     @SerializedName("is_bottom_nav_bar_active") var mIsBottomNavBarActive: Boolean,
-    @SerializedName("premium")          var premium: PremiumPageActiveResponse?
+    @SerializedName("is_share_store_locked")    var isShareStoreLocked: Boolean,
+    @SerializedName("premium")                  var premium: PremiumPageActiveResponse?
 )
 
 data class PremiumPageActiveResponse(
