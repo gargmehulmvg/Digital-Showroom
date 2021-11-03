@@ -22,10 +22,13 @@ import android.provider.MediaStore
 import android.provider.Settings
 import android.text.Editable
 import android.text.Html
+import android.text.InputFilter
+import android.text.InputFilter.LengthFilter
 import android.text.TextWatcher
 import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
+import android.webkit.WebView
 import android.widget.*
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -38,10 +41,12 @@ import androidx.recyclerview.widget.*
 import com.bumptech.glide.Glide
 import com.daimajia.androidanimations.library.Techniques
 import com.daimajia.androidanimations.library.YoYo
+import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.MainActivity
 import com.digitaldukaan.MyFcmMessageListenerService
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.ContactAdapter
+import com.digitaldukaan.adapters.CustomDomainSelectionAdapter
 import com.digitaldukaan.adapters.ImagesSearchAdapter
 import com.digitaldukaan.adapters.OrderNotificationsAdapter
 import com.digitaldukaan.constants.*
@@ -249,8 +254,13 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         }
     }
 
-    fun TextView.showStrikeOffText() {
+    open fun TextView.showStrikeOffText() {
         paintFlags = paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+    }
+
+
+    open fun TextView.setMaxLength(length: Int) {
+        filters = arrayOf<InputFilter>(LengthFilter(length))
     }
 
     open fun hideSoftKeyboard() {
@@ -879,30 +889,37 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     }
 
     private fun startCropping(bitmap: Bitmap?) {
-        mActivity?.let {
-            val originalImgFile = File(it.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "${System.currentTimeMillis()}_originalImgFile.jpg")
-            bitmap?.let { b ->convertBitmapToFile(originalImgFile, b) }
-            val croppedImgFile = File(it.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "${System.currentTimeMillis()}_croppedImgFile.jpg")
-            UCrop.of(Uri.fromFile(originalImgFile), Uri.fromFile(croppedImgFile))
-                .withAspectRatio(1f, 1f)
-                .withMaxResultSize(500, 500)
-                .start(it)
-            stopProgress()
+        try {
+            mActivity?.let {
+                val originalImgFile = File(it.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "${System.currentTimeMillis()}_originalImgFile.jpg")
+                bitmap?.let { b ->convertBitmapToFile(originalImgFile, b) }
+                val croppedImgFile = File(it.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "${System.currentTimeMillis()}_croppedImgFile.jpg")
+                UCrop.of(Uri.fromFile(originalImgFile), Uri.fromFile(croppedImgFile))
+                    .withAspectRatio(1f, 1f)
+                    .withMaxResultSize(500, 500)
+                    .start(it)
+                stopProgress()
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "startCropping: ${e.message}", e)
         }
     }
 
     private fun convertBitmapToFile(destinationFile: File, bitmap: Bitmap) {
-        //create a file to write bitmap data
-        destinationFile.createNewFile()
-        //Convert bitmap to byte array
-        val bos = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 50, bos)
-        val bitmapData = bos.toByteArray()
-        //write the bytes in file
-        val fos = FileOutputStream(destinationFile)
-        fos.write(bitmapData)
-        fos.flush()
-        fos.close()
+        try {//create a file to write bitmap data
+            destinationFile.createNewFile()
+            //Convert bitmap to byte array
+            val bos = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 50, bos)
+            val bitmapData = bos.toByteArray()
+            //write the bytes in file
+            val fos = FileOutputStream(destinationFile)
+            fos.write(bitmapData)
+            fos.flush()
+            fos.close()
+        } catch (e: Exception) {
+            Log.e(TAG, "convertBitmapToFile: ${e.message}", e)
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -1006,16 +1023,16 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                 Constants.ACTION_LOGO -> askCameraPermission()
                 Constants.ACTION_DESCRIPTION -> {
                     if (currentFragment is StoreDescriptionFragment) {
-                        launchFragment(HomeFragment.newInstance(), true)
+                        launchFragment(OrderFragment.newInstance(), true)
                     } else launchFragment(StoreDescriptionFragment.newInstance(getHeaderByActionInSettingKetList(profilePreviewResponse, Constants.ACTION_STORE_DESCRIPTION), incompleteProfilePageNumber, false, profilePreviewResponse), true)
                 }
                 Constants.ACTION_BUSINESS -> {
-                    if (currentFragment is BusinessTypeFragment) launchFragment(HomeFragment.newInstance(), true) else launchFragment(BusinessTypeFragment.newInstance(getHeaderByActionInSettingKetList(profilePreviewResponse, Constants.ACTION_BUSINESS_TYPE),
+                    if (currentFragment is BusinessTypeFragment) launchFragment(OrderFragment.newInstance(), true) else launchFragment(BusinessTypeFragment.newInstance(getHeaderByActionInSettingKetList(profilePreviewResponse, Constants.ACTION_BUSINESS_TYPE),
                         incompleteProfilePageNumber, false, profilePreviewResponse), true)
                 }
                 Constants.ACTION_BANK -> launchFragment(BankAccountFragment.newInstance(getHeaderByActionInSettingKetList(profilePreviewResponse, Constants.ACTION_BANK_ACCOUNT),
                     incompleteProfilePageNumber, false, profilePreviewResponse), true)
-                else -> launchFragment(HomeFragment.newInstance(), true)
+                else -> launchFragment(OrderFragment.newInstance(), true)
             }
         }
     }
@@ -1053,10 +1070,10 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                             mobileNumberEditText.setText("")
                         }
                         orderIdRadioButton.isChecked = true
-                        if (mobileNumberString.isNotEmpty()) {
+                        if (isNotEmpty(mobileNumberString) && (mActivity?.getCurrentFragment() is SearchOrdersFragment)) {
                             phoneRadioButton.isChecked = true
                             mobileNumberEditText.setText(mobileNumberString)
-                        } else {
+                        } else if (mActivity?.getCurrentFragment() is SearchOrdersFragment) {
                             orderIdRadioButton.isChecked = true
                             mobileNumberEditText.setText(orderIdStr)
                         }
@@ -1084,14 +1101,14 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                                 eventName = AFInAppEventType.EVENT_SEARCH_CLICK,
                                 isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                                 data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)
-                                , AFInAppEventParameterName.SEARCH_BY to if (inputMobileNumber.isEmpty()) AFInAppEventParameterName.PHONE else AFInAppEventParameterName.ORDER_ID)
+                                , AFInAppEventParameterName.SEARCH_BY to if (isEmpty(inputMobileNumber)) AFInAppEventParameterName.PHONE else AFInAppEventParameterName.ORDER_ID)
                             )
                             onSearchDialogContinueButtonClicked(inputOrderId, inputMobileNumber)
                         }
                         mobileNumberEditText.addTextChangedListener(object : TextWatcher {
                             override fun afterTextChanged(p0: Editable?) {
                                 val str = p0?.toString()
-                                if (str?.isNotEmpty() == true) errorTextView.visibility = View.GONE
+                                if (isNotEmpty(str)) errorTextView.visibility = View.GONE
                             }
 
                             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
@@ -1105,7 +1122,8 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                         })
                         if (isError) {
                             errorTextView.visibility = View.VISIBLE
-                            errorTextView.text = "No order found with this ${if (mobileNumberString.isEmpty()) "Order ID" else "Mobile Number"}"
+                            val message = "No order found with this ${if (isEmpty(mobileNumberString)) "Order ID" else "Mobile Number"}"
+                            errorTextView.text = message
                         }
                     }
                 }.show()
@@ -1288,7 +1306,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                             headerTextView.setHtmlData(addProductBannerStaticDataResponse?.header)
                             bodyTextView.text = addProductBannerStaticDataResponse?.body
                             buttonTextView.text = addProductBannerStaticDataResponse?.button_text
-                            bannerImageView?.let {
+                            bannerImageView.let {
                                 try {
                                     Picasso.get().load(addProductBannerStaticDataResponse?.image_url).into(it)
                                 } catch (e: Exception) {
@@ -1387,6 +1405,30 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                         it.body()?.let {
                             withContext(Dispatchers.Main) {
                                 if (it.mIsSuccessStatus) shareOnWhatsApp(Gson().fromJson<String>(it.mCommonDataStr, String::class.java)) else showShortSnackBar(it.mMessage, true, R.drawable.ic_close_red)
+                            }
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                exceptionHandlingForAPIResponse(e)
+            }
+        }
+    }
+
+    fun getLockedStoreShareDataServerCall(mode: Int) {
+        showCancellableProgressDialog(mActivity)
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            try {
+                val response = RetrofitApi().getServerCallObject()?.getLockedStoreShareData(mode)
+                response?.let {
+                    stopProgress()
+                    if (it.isSuccessful) {
+                        it.body()?.let {
+                            withContext(Dispatchers.Main) {
+                                if (it.mIsSuccessStatus) {
+                                    val lockedShareResponse = Gson().fromJson<LockedStoreShareResponse>(it.mCommonDataStr, LockedStoreShareResponse::class.java)
+                                    onLockedStoreShareSuccessResponse(lockedShareResponse)
+                                } else showShortSnackBar(it.mMessage, true, R.drawable.ic_close_red)
                             }
                         }
                     }
@@ -1841,11 +1883,155 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                             isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                             data = mapOf(
                                 AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                                AFInAppEventParameterName.ORDER_ID to "${orderId}"
+                                AFInAppEventParameterName.ORDER_ID to "$orderId"
                             )
                         )
                         bottomSheetDialog.dismiss()
                         onShipmentCtaClicked(radioButtonDeliveryPartner.isChecked)
+                    }
+                }
+            }.show()
+        }
+    }
+
+    open fun onCommonWebViewShouldOverrideUrlLoading(url: String, view: WebView) = when {
+        url.startsWith("tel:") -> {
+            try {
+                view.context?.startActivity(Intent(Intent.ACTION_DIAL, Uri.parse(url)))
+            } catch (e: Exception) {
+                Log.e(TAG, "shouldOverrideUrlLoading :: tel :: ${e.message}", e)
+            }
+            true
+        }
+        url.contains("mailto:") -> {
+            try {
+                view.context?.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+            } catch (e: Exception) {
+                Log.e(TAG, "shouldOverrideUrlLoading :: mailto :: ${e.message}", e)
+            }
+            true
+        }
+        url.contains("whatsapp:") -> {
+            try {
+                view.context?.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+            } catch (e: Exception) {
+                Log.e(TAG, "shouldOverrideUrlLoading :: whatsapp :: ${e.message}", e)
+            }
+            true
+        }
+        else -> {
+            view.loadUrl(url)
+            true
+        }
+    }
+
+    open fun showLockedStoreShareBottomSheet(lockedShareResponse: LockedStoreShareResponse) {
+        mActivity?.run {
+            val bottomSheetDialog = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
+            val view = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_locked_store_share, findViewById(R.id.bottomSheetContainer))
+            bottomSheetDialog.apply {
+                behavior.state = BottomSheetBehavior.STATE_EXPANDED
+                setContentView(view)
+                view.run {
+                    val domainMessageTextView: TextView = findViewById(R.id.domainMessageTextView)
+                    val headingTextView: TextView = findViewById(R.id.headingTextView)
+                    val subHeadingTextView: TextView = findViewById(R.id.subHeadingTextView)
+                    val storeDomainTextView: TextView = findViewById(R.id.storeDomainTextView)
+                    val progressBarContainer: View = findViewById(R.id.progressBarContainer)
+                    val domainListContainer: View = findViewById(R.id.domainListContainer)
+                    val offerMessageTextView: TextView = findViewById(R.id.offerMessageTextView)
+                    val domainTextView: TextView = findViewById(R.id.domainTextView)
+                    val buyNowTextView: TextView = findViewById(R.id.buyNowTextView)
+                    val promoCodeTextView: TextView = findViewById(R.id.promoCodeTextView)
+                    val originalPriceTextView: TextView = findViewById(R.id.originalPriceTextView)
+                    val messageTextView: TextView = findViewById(R.id.messageTextView)
+                    val priceTextView: TextView = findViewById(R.id.priceTextView)
+                    headingTextView.text = lockedShareResponse.heading
+                    subHeadingTextView.text = lockedShareResponse.subHeading
+                    storeDomainTextView.text = lockedShareResponse.storeDomain
+                    domainMessageTextView.text = lockedShareResponse.message
+                    progressBarContainer.visibility = View.VISIBLE
+                    CoroutineScopeUtils().runTaskOnCoroutineBackground {
+                        try {
+                            val response = RetrofitApi().getServerCallObject()?.getCustomDomainBottomSheetData()
+                            response?.let {
+                                stopProgress()
+                                if (it.isSuccessful) {
+                                    it.body()?.let {
+                                        withContext(Dispatchers.Main) {
+                                            if (it.mIsSuccessStatus) {
+                                                val customDomainBottomSheetResponse = Gson().fromJson<CustomDomainBottomSheetResponse>(it.mCommonDataStr, CustomDomainBottomSheetResponse::class.java)
+                                                progressBarContainer.visibility = View.GONE
+                                                domainListContainer.visibility = View.VISIBLE
+                                                domainMessageTextView.text = lockedShareResponse.message
+                                                val item = customDomainBottomSheetResponse?.primaryDomain
+                                                offerMessageTextView.text = customDomainBottomSheetResponse?.staticText?.text_best_pick_for_you
+                                                domainTextView.text = item?.domainName
+                                                promoCodeTextView.text = item?.promo
+                                                val messageStr = "${item?.infoData?.firstYearText}\n${item?.infoData?.renewsText}"
+                                                messageTextView.text = messageStr
+                                                buyNowTextView.apply {
+                                                    text = item?.cta?.text
+                                                    setTextColor(Color.parseColor(item?.cta?.textColor))
+                                                    setOnClickListener {
+                                                        bottomSheetDialog.dismiss()
+                                                        if (Constants.NEW_RELEASE_TYPE_WEBVIEW == item?.cta?.action) {
+                                                            val url = "${BuildConfig.WEB_VIEW_URL}${item.cta?.pageUrl}?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&domain_name=${item.domainName}&purchase_price=${item.originalPrice}&renewal_price=${item.renewalPrice}&${AFInAppEventParameterName.CHANNEL}=${AFInAppEventParameterName.LANDING_PAGE}"
+                                                            openWebViewFragmentV3(this@BaseFragment, "", url)
+                                                        }
+                                                    }
+                                                }
+                                                var price = "₹${item?.originalPrice}"
+                                                originalPriceTextView.apply {
+                                                    text = price
+                                                    paintFlags = (priceTextView.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG)
+                                                }
+                                                price = "₹${item?.discountedPrice}"
+                                                priceTextView.text = price
+                                                mActivity?.let { context ->
+                                                    promoCodeTextView.setTextColor(ContextCompat.getColor(context, R.color.open_green))
+                                                    offerMessageTextView.setBackgroundColor(ContextCompat.getColor(context, R.color.purple_best_offer_bg))
+                                                }
+                                                val searchTextView: TextView = findViewById(R.id.searchTextView)
+                                                val moreSuggestionsTextView: TextView = findViewById(R.id.moreSuggestionsTextView)
+                                                val searchMessageTextView: TextView = findViewById(R.id.searchMessageTextView)
+                                                val suggestedDomainRecyclerView = findViewById<RecyclerView>(R.id.suggestedDomainRecyclerView)
+                                                searchMessageTextView.text = customDomainBottomSheetResponse?.staticText?.text_cant_find
+                                                moreSuggestionsTextView.text = customDomainBottomSheetResponse?.staticText?.text_more_suggestions
+                                                searchTextView.apply {
+                                                    text = customDomainBottomSheetResponse?.staticText?.text_search
+                                                    setOnClickListener {
+                                                        bottomSheetDialog.dismiss()
+                                                        if (Constants.NEW_RELEASE_TYPE_WEBVIEW == customDomainBottomSheetResponse.searchCta?.action) {
+                                                            val url = "${BuildConfig.WEB_VIEW_URL}${customDomainBottomSheetResponse.searchCta?.pageUrl}?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&${AFInAppEventParameterName.CHANNEL}=${AFInAppEventParameterName.LANDING_PAGE}"
+                                                            openWebViewFragmentV3(this@BaseFragment, "", url)
+                                                        }
+                                                    }
+                                                }
+                                                suggestedDomainRecyclerView.apply {
+                                                    layoutManager = LinearLayoutManager(mActivity)
+                                                    adapter = CustomDomainSelectionAdapter(
+                                                        customDomainBottomSheetResponse.suggestedDomainsList,
+                                                        object : IAdapterItemClickListener {
+
+                                                            override fun onAdapterItemClickListener(position: Int) {
+                                                                bottomSheetDialog.dismiss()
+                                                                val domainItemResponse = customDomainBottomSheetResponse.suggestedDomainsList?.get(position)
+                                                                if (Constants.NEW_RELEASE_TYPE_WEBVIEW == domainItemResponse?.cta?.action) {
+                                                                    val url = "${BuildConfig.WEB_VIEW_URL}${domainItemResponse.cta?.pageUrl}?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&domain_name=${domainItemResponse.domainName}&purchase_price=${domainItemResponse.originalPrice}&renewal_price=${domainItemResponse.renewalPrice}&${AFInAppEventParameterName.CHANNEL}=${AFInAppEventParameterName.LANDING_PAGE}"
+                                                                    openWebViewFragmentV3(this@BaseFragment, "", url)
+                                                                }
+                                                            }
+                                                        })
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        } catch (e: Exception) {
+                            exceptionHandlingForAPIResponse(e)
+                        }
                     }
                 }
             }.show()

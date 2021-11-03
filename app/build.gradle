@@ -15,8 +15,8 @@ android {
         applicationId "com.digitaldukaan"
         minSdkVersion 24
         targetSdkVersion 29
-        versionCode 78
-        versionName "4.3.2"
+        versionCode 80
+        versionName "4.3.4"
         multiDexEnabled true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -171,4 +171,6 @@ dependencies {
     implementation 'com.daimajia.androidanimations:library:2.4@aar'
     //  Tooltip animation
     implementation "com.github.skydoves:balloon:1.2.3"
+    //  Generate QR Code
+    implementation 'androidmads.library.qrgenearator:QRGenearator:1.0.3'
 }

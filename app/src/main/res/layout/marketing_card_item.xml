@@ -18,7 +18,7 @@
         android:layout_marginBottom="@dimen/_7sdp"
         android:clickable="false"
         android:gravity="center"
-        android:visibility="visible"
+        android:visibility="gone"
         app:cardCornerRadius="@dimen/_5sdp"
         app:cardElevation="@dimen/_2sdp"
         app:layout_constraintBottom_toBottomOf="parent"

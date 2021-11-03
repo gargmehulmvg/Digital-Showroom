@@ -210,6 +210,8 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
             }
 
         })
+        if (isEmpty(mMobileNumberStr))
+            mActivity?.onBackPressed()
     }
 
     private fun startCountDownTimer() {
@@ -286,7 +288,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
                         AFInAppEventParameterName.IS_CONSENT to if (mIsConsentTakenFromUser) "1" else "0")
                 )
                 Handler(Looper.getMainLooper()).postDelayed({
-                    if (null == validateOtpResponse.mStore && mIsNewUser) launchFragment(DukaanNameFragment.newInstance(), true) else launchFragment(HomeFragment(), true)
+                    if (null == validateOtpResponse.mStore && mIsNewUser) launchFragment(DukaanNameFragment.newInstance(), true) else launchFragment(OrderFragment.newInstance(), true)
                 }, Constants.OTP_SUCCESS_TIMER)
                 verifiedOtpGroup?.visibility = View.GONE
                 verifiedTextViewContainer?.visibility = View.VISIBLE

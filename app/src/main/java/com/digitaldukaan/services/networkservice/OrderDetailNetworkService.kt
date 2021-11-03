@@ -192,7 +192,7 @@ class OrderDetailNetworkService {
                 }
             }
         } catch (e: Exception) {
-            Log.e(HomeNetworkService::class.java.simpleName, "completeOrderServerCall: ", e)
+            Log.e(OrderNetworkService::class.java.simpleName, "completeOrderServerCall: ", e)
             serviceInterface.onOrderDetailException(e)
         }
     }
@@ -215,7 +215,7 @@ class OrderDetailNetworkService {
                 }
             }
         } catch (e: Exception) {
-            Log.e(HomeNetworkService::class.java.simpleName, "sharePaymentLink: ", e)
+            Log.e(OrderNetworkService::class.java.simpleName, "sharePaymentLink: ", e)
             serviceInterface.onOrderDetailException(e)
         }
     }

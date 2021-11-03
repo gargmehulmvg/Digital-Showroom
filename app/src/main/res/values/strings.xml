@@ -132,6 +132,18 @@
     <string name="login_using_true_caller">Login using TrueCaller</string>
     <string name="made_in_india">Made in India</string>
     <string name="transaction_details">Transaction Details</string>
+    <string name="scan">SCAN</string>
+    <string name="order">ORDER</string>
+    <string name="pay">PAY</string>
+    <string name="bestseller">Bestseller</string>
+    <string name="search_results">Search Results</string>
+    <string name="your_store_name_here">Your Store Name Here</string>
+    <string name="off">OFF</string>
+    <string name="sale">SALE</string>
+    <string name="please_enter_valid_url">Please enter valid URL</string>
+    <string name="already_have_a_domain">Already Have a Domain?</string>
+    <string name="search_domain">Search Domain</string>
+    <string name="best_pick_for_you">Best Pick for You</string>
     <string-array name="state_array">
         <item >Andhra Pradesh</item>
         <item >Arunachal Pradesh</item>

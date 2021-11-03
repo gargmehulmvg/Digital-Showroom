@@ -13,7 +13,7 @@ import com.digitaldukaan.network.RetrofitApi
 import com.digitaldukaan.services.serviceinterface.IHomeServiceInterface
 import com.google.gson.Gson
 
-class HomeNetworkService {
+class OrderNetworkService {
 
     suspend fun getOrdersServerCall(
         request: OrdersRequest,
@@ -42,7 +42,7 @@ class HomeNetworkService {
                 }
             }
         } catch (e: Exception) {
-            Log.e(HomeNetworkService::class.java.simpleName, "getOrdersServerCall: ", e)
+            Log.e(OrderNetworkService::class.java.simpleName, "getOrdersServerCall: ", e)
             serviceInterface.onHomePageException(e)
         }
     }
@@ -62,7 +62,7 @@ class HomeNetworkService {
                 }
             }
         } catch (e: Exception) {
-            Log.e(HomeNetworkService::class.java.simpleName, "getAnalyticsDataServerCall: ", e)
+            Log.e(OrderNetworkService::class.java.simpleName, "getAnalyticsDataServerCall: ", e)
             serviceInterface.onHomePageException(e)
         }
     }
@@ -82,7 +82,7 @@ class HomeNetworkService {
                 }
             }
         } catch (e: Exception) {
-            Log.e(HomeNetworkService::class.java.simpleName, "getOrderPageInfoServerCall: ", e)
+            Log.e(OrderNetworkService::class.java.simpleName, "getOrderPageInfoServerCall: ", e)
             serviceInterface.onHomePageException(e)
         }
     }
@@ -105,7 +105,7 @@ class HomeNetworkService {
                 }
             }
         } catch (e: Exception) {
-            Log.e(HomeNetworkService::class.java.simpleName, "getSearchOrdersServerCall: ", e)
+            Log.e(OrderNetworkService::class.java.simpleName, "getSearchOrdersServerCall: ", e)
             serviceInterface.onHomePageException(e)
         }
     }
@@ -128,7 +128,7 @@ class HomeNetworkService {
                 }
             }
         } catch (e: Exception) {
-            Log.e(HomeNetworkService::class.java.simpleName, "updateOrderStatusServerCall: ", e)
+            Log.e(OrderNetworkService::class.java.simpleName, "updateOrderStatusServerCall: ", e)
             serviceInterface.onHomePageException(e)
         }
     }
@@ -151,7 +151,7 @@ class HomeNetworkService {
                 }
             }
         } catch (e: Exception) {
-            Log.e(HomeNetworkService::class.java.simpleName, "completeOrderServerCall: ", e)
+            Log.e(OrderNetworkService::class.java.simpleName, "completeOrderServerCall: ", e)
             serviceInterface.onHomePageException(e)
         }
     }
@@ -171,7 +171,50 @@ class HomeNetworkService {
                 }
             }
         } catch (e: Exception) {
-            Log.e(HomeNetworkService::class.java.simpleName, "getCustomDomainBottomSheetDataServerCall: ", e)
+            Log.e(OrderNetworkService::class.java.simpleName, "getCustomDomainBottomSheetDataServerCall: ", e)
+            serviceInterface.onHomePageException(e)
+        }
+    }
+
+    suspend fun getLandingPageCardsServerCall(serviceInterface: IHomeServiceInterface) {
+        try {
+            val response = RetrofitApi().getServerCallObject()?.getLandingPageCards()
+            response?.let {
+                if (it.isSuccessful) it.body()?.let { commonApiResponse -> serviceInterface.onLandingPageCardsResponse(commonApiResponse) }
+                else {
+                    if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    val responseBody = it.errorBody()
+                    responseBody?.let {
+                        val errorResponse = Gson().fromJson(responseBody.string(), CommonApiResponse::class.java)
+                        serviceInterface.onLandingPageCardsResponse(errorResponse)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(OrderNetworkService::class.java.simpleName, "getLandingPageCardsServerCall: ", e)
+            serviceInterface.onHomePageException(e)
+        }
+    }
+
+    suspend fun getDomainSuggestionListServerCall(
+        count: Int,
+        serviceInterface: IHomeServiceInterface
+    ) {
+        try {
+            val response = RetrofitApi().getServerCallObject()?.getDomainSuggestionList(count)
+            response?.let {
+                if (it.isSuccessful) it.body()?.let { commonApiResponse -> serviceInterface.onDomainSuggestionListResponse(commonApiResponse) }
+                else {
+                    if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    val responseBody = it.errorBody()
+                    responseBody?.let {
+                        val errorResponse = Gson().fromJson(responseBody.string(), CommonApiResponse::class.java)
+                        serviceInterface.onDomainSuggestionListResponse(errorResponse)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(OrderNetworkService::class.java.simpleName, "getLandingPageCardsServerCall: ", e)
             serviceInterface.onHomePageException(e)
         }
     }

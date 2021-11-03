@@ -64,7 +64,7 @@ class SearchOrdersFragment: BaseFragment(), IOnToolbarIconClick, ISearchOrderSer
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, false)
-            setHeaderTitle("\"${if (mMobileNumberString.isEmpty()) mOrderIdString else mMobileNumberString}\"")
+            headerTitle = if (isEmpty(mMobileNumberString)) mOrderIdString else mMobileNumberString
             setSideIconVisibility(true)
             setSecondSideIconVisibility(false)
             onBackPressed(this@SearchOrdersFragment)
@@ -112,7 +112,7 @@ class SearchOrdersFragment: BaseFragment(), IOnToolbarIconClick, ISearchOrderSer
         mMobileNumberString = inputMobileNumber
         val request = SearchOrdersRequest(if (mOrderIdString.isNotEmpty()) mOrderIdString.toLong() else 0, mMobileNumberString, searchPageCount)
         if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog()
-        ToolBarManager.getInstance()?.setHeaderTitle("\"${if (inputMobileNumber.isEmpty()) inputOrderId else inputMobileNumber}\"")
+        ToolBarManager.getInstance()?.headerTitle = if (isEmpty(inputMobileNumber)) inputOrderId else inputMobileNumber
         showProgressDialog(mActivity)
         mService.getSearchOrders(request)
     }

@@ -40,7 +40,7 @@ class ViewAsCustomerFragment: BaseFragment() {
         ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, false)
             hideBackPressFromToolBar(mActivity, false)
-            setHeaderTitle(addProductStaticData?.heading_view_store_as_customer)
+            headerTitle = addProductStaticData?.heading_view_store_as_customer
             onBackPressed(this@ViewAsCustomerFragment)
             setSideIconVisibility(false)
         }

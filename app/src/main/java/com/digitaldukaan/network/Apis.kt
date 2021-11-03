@@ -116,14 +116,35 @@ interface Apis {
     suspend fun searchImagesFromBing(@Query("search_text") searchText: String, @Query("store_id") storeId: String) : Response<ImagesSearchResponse>
 
     /* ----------------------       Marketing         ---------------------- */
+    @GET("api/dotk/vm1/products/getItemsBasicDetailsByStoreId")
+    suspend fun getItemsBasicDetailsByStoreId(): Response<CommonApiResponse>
+
+    @GET("api/dotk/vm1/marketing/getTemplatesBackground/{id}")
+    suspend fun getSocialMediaTemplateBackgrounds(@Path("id") id: String): Response<CommonApiResponse>
+
+    @GET("api/dotk/vm1/products/getItemsBasicDetails/{id}")
+    suspend fun getProductsByCategoryId(@Path("id") id: Int): Response<CommonApiResponse>
+
+    @GET("api/dotk/vm1/products/getUserCategories")
+    suspend fun getProductsCategories(): Response<CommonApiResponse>
+
     @GET("api/dotk/vm1/marketing/getSuggestedDomainsInfo")
     suspend fun getMarketingSuggestedDomains(): Response<CommonApiResponse>
 
     @GET("api/dotk/vm1/marketing/getMarketingPageInfo")
     suspend fun getStoreMarketingPageInfo(): Response<CommonApiResponse>
 
+    @GET("api/dotk/vm1/marketing/getSocialMediaPageInfo")
+    suspend fun getSocialMediaPageInfo(): Response<CommonApiResponse>
+
+    @GET("api/dotk/vm1/marketing/getSocialMediaTemplateList/{id}")
+    suspend fun getSocialMediaTemplateList(@Path("id") id: String, @Query("page") page: Int): Response<CommonApiResponse>
+
     @POST("api/dotk/vm1/marketing/shareStore")
     suspend fun getShareStore(): Response<CommonApiResponse>
+
+    @POST("api/dotk/vm1/marketing/setSocialMediaFavourite")
+    suspend fun setSocialMediaFavourite(@Body request: SocialMediaTemplateFavouriteRequest): Response<CommonApiResponse>
 
     @GET("api/dotk/vm1/marketing/shareStorePdfText")
     suspend fun getShareStorePdfText(): Response<CommonApiResponse>
@@ -150,6 +171,9 @@ interface Apis {
     @POST("api/dotk/vm1/products/setItem")
     suspend fun setItem(@Body request: AddProductRequest): Response<CommonApiResponse>
 
+    @POST("api/dotk/vm1/products/searchItems")
+    suspend fun searchItems(@Body request: SearchCatalogItemsRequest): Response<CommonApiResponse>
+
     @GET("api/dotk/vm1/products/getMasterCategories")
     suspend fun getMasterCategories(): Response<CommonApiResponse>
 
@@ -165,9 +189,6 @@ interface Apis {
     @POST("api/dotk/vm1/products/updateStock")
     suspend fun updateStock(@Body request: UpdateStockRequest): Response<CommonApiResponse>
 
-    @GET("api/dotk/vm1/products/getUserCategories")
-    suspend fun getUserCategories(): Response<CommonApiResponse>
-
     @GET("api/dotk/vm1/products/getDeleteCategoryInfo")
     suspend fun getDeleteCategoryInfo(): Response<CommonApiResponse>
 
@@ -181,6 +202,9 @@ interface Apis {
     suspend fun deleteItem(@Body request: DeleteItemRequest): Response<CommonApiResponse>
 
     /* ----------------------       Orders         ---------------------- */
+    @GET("api/dotk/vm1/orders/getLandingPageCards")
+    suspend fun getLandingPageCards() : Response<CommonApiResponse>
+
     @GET("api/dotk/vm1/orders/getOrderAnalytics")
     suspend fun getAnalyticsData() : Response<CommonApiResponse>
 
@@ -229,6 +253,9 @@ interface Apis {
 
 
     /* ----------------------       Premium         ---------------------- */
+    @GET("api/dotk/vm1/premium/getDomainSuggestionList/{count}")
+    suspend fun getDomainSuggestionList(@Path("count") count:Int): Response<CommonApiResponse>
+
     @GET("api/dotk/vm1/premium/getPremiumPageInfo")
     suspend fun getPremiumPageInfo(): Response<CommonApiResponse>
 
@@ -266,4 +293,7 @@ interface Apis {
 
     @GET("api/dotk/template/referAppWa")
     suspend fun getReferAndEarnDataOverWhatsApp() : Response<ReferEarnOverWhatsAppResponse>
+
+    @GET("api/dotk/vm1/settings/getLockedStoreShareData/{mode}")
+    suspend fun getLockedStoreShareData(@Path("mode") mode: Int) : Response<CommonApiResponse>
 }

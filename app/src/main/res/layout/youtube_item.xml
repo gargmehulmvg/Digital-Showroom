@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/numberingTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        tools:text="1."
+        android:textColor="@color/dark_blackish"
+        android:textSize="@dimen/_10sdp"
+        android:paddingTop="@dimen/_5sdp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/roboto"
+        android:lineSpacingMultiplier="1.2"
+        android:paddingTop="@dimen/_5sdp"
+        android:layout_marginStart="@dimen/_5sdp"
+        android:paddingBottom="@dimen/_5sdp"
+        android:textColor="@color/dark_blackish"
+        android:textSize="@dimen/_10sdp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/numberingTextView"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Log in to your YouTube account." />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

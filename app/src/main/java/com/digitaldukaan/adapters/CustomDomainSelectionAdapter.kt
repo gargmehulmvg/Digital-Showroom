@@ -46,8 +46,8 @@ class CustomDomainSelectionAdapter(
         holder.apply {
             Log.d("CustomDomainSelectionAdapter", "onBindViewHolder: $position :: $item")
             domainTextView.text = item?.domainName
-            messageTextView.text = item?.info_data?.firstYearText?.trim()
-            message2TextView.text = item?.info_data?.renewsText?.trim()
+            messageTextView.text = item?.infoData?.firstYearText?.trim()
+            message2TextView.text = item?.infoData?.renewsText?.trim()
             promoCodeTextView.text = item?.promo
             buyNowTextView.apply {
                 text = item?.cta?.text

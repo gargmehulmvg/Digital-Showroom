@@ -52,7 +52,7 @@ class OnBoardScreenBankDetailsFragment : BaseFragment(), IBankDetailsServiceInte
         super.onViewCreated(view, savedInstanceState)
         ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, true)
-            setHeaderTitle("")
+            headerTitle = ""
             onBackPressed(this@OnBoardScreenBankDetailsFragment)
             hideBackPressFromToolBar(mActivity, false)
             setSideIconVisibility(false)
@@ -210,7 +210,7 @@ class OnBoardScreenBankDetailsFragment : BaseFragment(), IBankDetailsServiceInte
                         }
                         ToolBarManager.getInstance()?.apply {
                             hideToolBar(mActivity, false)
-                            setHeaderTitle("")
+                            headerTitle = ""
                             onBackPressed(this@OnBoardScreenBankDetailsFragment)
                             hideBackPressFromToolBar(mActivity, false)
                             setSideIconVisibility(false)

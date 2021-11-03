@@ -13,14 +13,18 @@ object StaticInstances {
     var sHelpScreenList: ArrayList<HelpScreenItemResponse> = ArrayList()
     var sOrderPageInfoStaticData: OrderPageStaticTextResponse? = null
     var sAccountPageSettingsStaticData: AccountStaticTextResponse? = null
+    var sSearchDomainUrl: String? = ""
+    var sExploreDomainUrl: String? = ""
     var sAppSessionId: String? = ""
     var sCleverTapId: String? = ""
     var sFireBaseMessagingToken: String? = ""
     var sStoreId: Int = 0
+    var sIsShareStoreLocked: Boolean = false
     var sAppStoreServicesResponse: StoreServicesResponse? = null
     var sPaymentMethodStr: String? = null
     var sAppFlyerRefMobileNumber: String? = ""
     var sStaticData: StaticTextResponse? = null
     var sMyPaymentPageInfoResponse: MyPaymentsPageInfoResponse? = null
     var sCustomDomainBottomSheetResponse: CustomDomainBottomSheetResponse? = null
+    var sSuggestedDomainsList: ArrayList<PrimaryDomainItemResponse>? = null
 }
