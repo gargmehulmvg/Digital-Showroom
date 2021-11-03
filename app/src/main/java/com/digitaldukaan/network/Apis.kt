@@ -202,6 +202,9 @@ interface Apis {
     suspend fun deleteItem(@Body request: DeleteItemRequest): Response<CommonApiResponse>
 
     /* ----------------------       Orders         ---------------------- */
+    @GET("api/dotk/vm1/orders/getLandingPageCards")
+    suspend fun getLandingPageCards() : Response<CommonApiResponse>
+
     @GET("api/dotk/vm1/orders/getOrderAnalytics")
     suspend fun getAnalyticsData() : Response<CommonApiResponse>
 
@@ -250,6 +253,9 @@ interface Apis {
 
 
     /* ----------------------       Premium         ---------------------- */
+    @GET("api/dotk/vm1/premium/getDomainSuggestionList/{count}")
+    suspend fun getDomainSuggestionList(@Path("count") count:Int): Response<CommonApiResponse>
+
     @GET("api/dotk/vm1/premium/getPremiumPageInfo")
     suspend fun getPremiumPageInfo(): Response<CommonApiResponse>
 
@@ -287,4 +293,7 @@ interface Apis {
 
     @GET("api/dotk/template/referAppWa")
     suspend fun getReferAndEarnDataOverWhatsApp() : Response<ReferEarnOverWhatsAppResponse>
+
+    @GET("api/dotk/vm1/settings/getLockedStoreShareData/{mode}")
+    suspend fun getLockedStoreShareData(@Path("mode") mode: Int) : Response<CommonApiResponse>
 }

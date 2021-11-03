@@ -3,6 +3,9 @@
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
+    <color name="purple">#E4D5F6</color>
+    <color name="purple_dark">#6B3AAB</color>
+    <color name="purple_best_offer_bg">#7E49F5</color>
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
@@ -43,7 +46,6 @@
     <color name="ucrop_color_statusbar">@color/open_green</color>
     <color name="ucrop_color_widget_active">@color/open_green</color>
     <color name="gmail_color">#F44336</color>
-    <color name="purple">#E4D5F6</color>
-    <color name="purple_dark">#6B3AAB</color>
     <color name="tooltip_background">#FFE9CB</color>
+    <color name="pink">#FF4D4D</color>
 </resources>

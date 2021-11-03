@@ -5,16 +5,16 @@ import com.digitaldukaan.models.request.CompleteOrderRequest
 import com.digitaldukaan.models.request.OrdersRequest
 import com.digitaldukaan.models.request.SearchOrdersRequest
 import com.digitaldukaan.models.request.UpdateOrderStatusRequest
-import com.digitaldukaan.services.networkservice.HomeNetworkService
+import com.digitaldukaan.services.networkservice.OrderNetworkService
 import com.digitaldukaan.services.serviceinterface.IHomeServiceInterface
 
-class HomeFragmentService {
+class OrderFragmentService {
 
     private lateinit var mServiceInterface: IHomeServiceInterface
 
-    private val mNetworkService = HomeNetworkService()
+    private val mNetworkService = OrderNetworkService()
 
-    fun setHomeFragmentServiceListener(listener: IHomeServiceInterface) {
+    fun setServiceListener(listener: IHomeServiceInterface) {
         mServiceInterface = listener
     }
 
@@ -57,6 +57,18 @@ class HomeFragmentService {
     fun getCustomDomainBottomSheetData() {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
             mNetworkService.getCustomDomainBottomSheetDataServerCall(mServiceInterface)
+        }
+    }
+
+    fun getLandingPageCards() {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.getLandingPageCardsServerCall(mServiceInterface)
+        }
+    }
+
+    fun getDomainSuggestionList(count: Int) {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.getDomainSuggestionListServerCall(count, mServiceInterface)
         }
     }
 

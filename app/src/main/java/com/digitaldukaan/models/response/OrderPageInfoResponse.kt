@@ -3,20 +3,22 @@ package com.digitaldukaan.models.response
 import com.google.gson.annotations.SerializedName
 
 data class OrderPageInfoResponse(
-    @SerializedName("zero_order")               var mIsZeroOrder: ZeroOrderPageResponse,
-    @SerializedName("is_take_order_on")         var mIsTakeOrder: Boolean,
-    @SerializedName("take_order_image")         var mTakeOrderImage: String,
-    @SerializedName("is_subscription_purchased")var mIsSubscriptionDone: Boolean,
-    @SerializedName("is_search_on")             var mIsSearchOrder: Boolean,
-    @SerializedName("help_page")                var mIsHelpOrder: HelpPageResponse,
-    @SerializedName("banners")                  var mBannerList: ArrayList<HomePageBannerResponse>,
-    @SerializedName("options_menu_list")        var optionMenuList: ArrayList<TrendingListResponse>,
-    @SerializedName("is_analytics")             var mIsAnalyticsOrder: Boolean,
-    @SerializedName("completed_order_count")    var mCompletedOrderCount: Int,
-    @SerializedName("pending_order_count")      var mPendingOrderCount: Int,
-    @SerializedName("store")                    var mStoreInfo: StoreResponse?,
-    @SerializedName("payment_link_locked")      var mPaymentLinkLocked: HelpPageResponse,
-    @SerializedName("static_text")              var mOrderPageStaticText: OrderPageStaticTextResponse?
+    @SerializedName("zero_order")                               var mIsZeroOrder: ZeroOrderPageResponse,
+    @SerializedName("is_take_order_on")                         var mIsTakeOrder: Boolean,
+    @SerializedName("take_order_image")                         var mTakeOrderImage: String,
+    @SerializedName("domain_search_url")                        var mDomainSearchUrl: String,
+    @SerializedName("domain_explore_url")                       var mDomainExploreUrl: String,
+    @SerializedName("is_subscription_purchased")                var mIsSubscriptionDone: Boolean,
+    @SerializedName("is_search_on")                             var mIsSearchOrder: Boolean,
+    @SerializedName("help_page")                                var mIsHelpOrder: HelpPageResponse,
+    @SerializedName("banners")                                  var mBannerList: ArrayList<HomePageBannerResponse>,
+    @SerializedName("options_menu_list")                        var optionMenuList: ArrayList<TrendingListResponse>,
+    @SerializedName("is_analytics")                             var mIsAnalyticsOrder: Boolean,
+    @SerializedName("completed_order_count")                    var mCompletedOrderCount: Int,
+    @SerializedName("pending_order_count")                      var mPendingOrderCount: Int,
+    @SerializedName("store")                                    var mStoreInfo: StoreResponse?,
+    @SerializedName("payment_link_locked")                      var mPaymentLinkLocked: HelpPageResponse,
+    @SerializedName("static_text")                              var mOrderPageStaticText: OrderPageStaticTextResponse?
 )
 
 data class ZeroOrderPageResponse(
@@ -84,5 +86,13 @@ data class OrderPageStaticTextResponse(
     @SerializedName("bottom_sheet_message_payment_link")            var bottom_sheet_message_payment_link: String,
     @SerializedName("text_send_payment_link")                       var text_send_payment_link: String,
     @SerializedName("payment_link")                                 var payment_link: String,
+    @SerializedName("text_congratulations")                         var text_congratulations: String,
+    @SerializedName("text_next_steps")                              var text_next_steps: String,
+    @SerializedName("text_my_orders")                               var text_my_orders: String,
+    @SerializedName("text_epos")                                    var text_epos: String,
+    @SerializedName("text_share_store")                             var text_share_store: String,
+    @SerializedName("heading_zero_order")                           var heading_zero_order: String,
+    @SerializedName("message_zero_order")                           var message_zero_order: String,
+    @SerializedName("text_my_shortcuts")                            var text_my_shortcuts: String,
     @SerializedName("text_payment_link")                            var text_payment_link: String
 )

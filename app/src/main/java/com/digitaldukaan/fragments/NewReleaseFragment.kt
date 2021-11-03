@@ -74,6 +74,10 @@ class NewReleaseFragment: BaseFragment(), IStoreSettingsItemClicked {
         when (responseItem?.mAction) {
             Constants.NEW_RELEASE_TYPE_WEBVIEW -> {
                 if (Constants.NEW_RELEASE_TYPE_GOOGLE_ADS == responseItem.mType) {
+                    if (StaticInstances.sIsShareStoreLocked) {
+                        getLockedStoreShareDataServerCall(Constants.MODE_GOOGLE_ADS)
+                        return
+                    }
                     AppEventsManager.pushAppEvents(
                         eventName = AFInAppEventType.EVENT_GOOGLE_ADS_EXPLORE,
                         isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,

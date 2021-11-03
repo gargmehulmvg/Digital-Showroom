@@ -16,10 +16,7 @@ import com.digitaldukaan.adapters.TransactionsAdapter
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.ITransactionItemClicked
 import com.digitaldukaan.models.request.TransactionRequest
-import com.digitaldukaan.models.response.CommonApiResponse
-import com.digitaldukaan.models.response.MyPaymentsItemResponse
-import com.digitaldukaan.models.response.MyPaymentsPageInfoResponse
-import com.digitaldukaan.models.response.MyPaymentsResponse
+import com.digitaldukaan.models.response.*
 import com.digitaldukaan.services.MyPaymentsService
 import com.digitaldukaan.services.serviceinterface.IMyPaymentsServiceInterface
 import com.google.android.material.datepicker.MaterialDatePicker
@@ -69,7 +66,9 @@ class TransactionsFragment: BaseFragment(), IMyPaymentsServiceInterface, ITransa
                     AFInAppEventParameterName.IS_ORDER_PAGE to AFInAppEventParameterName.TRUE
                 )
             )
-            shareStoreOverWhatsAppServerCall()
+            if (StaticInstances.sIsShareStoreLocked) {
+                getLockedStoreShareDataServerCall(Constants.MODE_SHARE_STORE)
+            } else shareStoreOverWhatsAppServerCall()
         }
         mService.setServiceInterface(this)
         applyPagination()
@@ -248,5 +247,7 @@ class TransactionsFragment: BaseFragment(), IMyPaymentsServiceInterface, ITransa
         }
         getTransactionDetailBottomSheet(idStr, AFInAppEventParameterName.PAYMENT_ORDERS)
     }
+
+    override fun onLockedStoreShareSuccessResponse(lockedShareResponse: LockedStoreShareResponse) = showLockedStoreShareBottomSheet(lockedShareResponse)
 
 }

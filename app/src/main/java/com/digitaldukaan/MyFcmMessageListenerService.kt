@@ -13,6 +13,7 @@ import androidx.core.app.NotificationCompat
 import androidx.core.net.toUri
 import com.clevertap.android.sdk.CleverTapAPI
 import com.digitaldukaan.constants.AFInAppEventParameterName
+import com.digitaldukaan.constants.isNotEmpty
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 
@@ -31,7 +32,6 @@ class MyFcmMessageListenerService : FirebaseMessagingService() {
                     val info = CleverTapAPI.getNotificationInfo(extras)
                     if (info.fromCleverTap) {
                         Log.d(TAG, "CLEVER-TAP NOTIFICATIONS :: $info")
-                        //CleverTapAPI.createNotification(applicationContext, extras)
                         prepareNotification(extras.getString("nt"), extras.getString("nm"), extras.getString("wzrk_dl"))
                     }
                 }
@@ -39,7 +39,7 @@ class MyFcmMessageListenerService : FirebaseMessagingService() {
                 Log.d(TAG, "Error parsing FCM message", t)
             }
         }
-        if (message.notification != null) {
+        if (null != message.notification) {
             Log.d(TAG, "FIREBASE NOTIFICATIONS")
             val title = message.notification?.title
             val body = message.notification?.body
@@ -54,7 +54,7 @@ class MyFcmMessageListenerService : FirebaseMessagingService() {
 
     private fun prepareNotification(title: String?, message: String?, deepLinkUrl: String? = "") {
         val intent = Intent(this, MainActivity::class.java)
-        if (deepLinkUrl?.isNotEmpty() == true) intent.data = deepLinkUrl.toUri()
+        if (isNotEmpty(deepLinkUrl)) intent.data = deepLinkUrl?.toUri()
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT)
         createNotification(title, message, pendingIntent, this)

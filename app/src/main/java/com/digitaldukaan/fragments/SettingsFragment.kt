@@ -61,7 +61,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
     private var mStoreLogo: String? = ""
     private var mShareDataOverWhatsAppText = ""
     private var mReferEarnOverWhatsAppResponse: ReferEarnOverWhatsAppResponse? = null
-    private var mProfileResponse: AccountInfoResponse? = null
+    private var mAccountPageInfoResponse: AccountInfoResponse? = null
     private var mNewReleaseItemClickResponse: TrendingListResponse? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -100,9 +100,9 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         super.onClick(view)
         StaticInstances.sAccountPageSettingsStaticData = mAppSettingsResponseStaticData
         StaticInstances.sAppStoreServicesResponse = mAppStoreServicesResponse
-        StaticInstances.sPaymentMethodStr = mProfileResponse?.mOnlinePaymentType
+        StaticInstances.sPaymentMethodStr = mAccountPageInfoResponse?.mOnlinePaymentType
         when (view?.id) {
-            storeControlView?.id -> launchFragment(MoreControlsFragment.newInstance(mAppSettingsResponseStaticData, mProfileResponse), true)
+            storeControlView?.id -> launchFragment(MoreControlsFragment.newInstance(mAccountPageInfoResponse), true)
             dukaanNameTextView?.id -> launchProfilePreviewFragment()
             editProfileTextView?.id -> launchProfilePreviewFragment()
             profileStatusRecyclerView?.id -> launchProfilePreviewFragment()
@@ -118,7 +118,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         }
     }
 
-    private fun launchProfilePreviewFragment() = launchFragment(ProfilePreviewFragment.newInstance(mProfileResponse?.mStoreInfo?.storeInfo?.name), true)
+    private fun launchProfilePreviewFragment() = launchFragment(ProfilePreviewFragment.newInstance(mAccountPageInfoResponse?.mStoreInfo?.storeInfo?.name), true)
 
     override fun onImageSelectionResultFile(file: File?, mode: String) {
         if (mode == Constants.MODE_CROP) {
@@ -242,12 +242,13 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         ToolBarManager.getInstance()?.setSideIconVisibility(false)
     }
 
-    override fun onProfileResponse(commonResponse: CommonApiResponse) {
+    override fun onProfileResponse(profileResponse: CommonApiResponse) {
         stopProgress()
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (swipeRefreshLayout?.isRefreshing == true) swipeRefreshLayout?.isRefreshing = false
-            if (commonResponse.mIsSuccessStatus) {
-                mAccountInfoResponse = Gson().fromJson<AccountInfoResponse>(commonResponse.mCommonDataStr, AccountInfoResponse::class.java)
+            if (profileResponse.mIsSuccessStatus) {
+                mAccountInfoResponse = Gson().fromJson<AccountInfoResponse>(profileResponse.mCommonDataStr, AccountInfoResponse::class.java)
+                StaticInstances.sIsShareStoreLocked = mAccountInfoResponse?.mIsShareStoreLocked ?: false
                 mAccountInfoResponse?.let { setupUIFromProfileResponse(it) }
                 mAccountInfoResponse?.mAccountStaticText?.run { mAppSettingsResponseStaticData = this }
                 mAccountInfoResponse?.mStoreInfo?.storeServices?.run { mAppStoreServicesResponse = this }
@@ -321,7 +322,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
 
     private fun setupUIFromProfileResponse(infoResponse: AccountInfoResponse) {
         StaticInstances.sIsStoreImageUploaded = (StaticInstances.sStoreInfo?.mStoreLogoStr?.isNotEmpty() == true)
-        mProfileResponse = infoResponse
+        mAccountPageInfoResponse = infoResponse
         dukaanNameTextView?.text = infoResponse.mStoreInfo.storeInfo.name
         if (infoResponse.mStoreInfo.storeInfo.logoImage?.isNotEmpty() == true) {
             storePhotoImageView?.let {
@@ -430,7 +431,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             }
             Constants.PAGE_HELP -> onToolbarSideIconClicked()
             Constants.PAGE_FEEDBACK -> openPlayStore()
-            Constants.PAGE_APP_SETTINGS -> launchFragment(AppSettingsFragment().newInstance(mProfileResponse?.mSubPages, response.mText, mAppSettingsResponseStaticData), true)
+            Constants.PAGE_APP_SETTINGS -> launchFragment(AppSettingsFragment().newInstance(mAccountPageInfoResponse?.mSubPages, response.mText, mAppSettingsResponseStaticData), true)
             Constants.PAGE_REWARDS -> launchFragment(CommonWebViewFragment().newInstance(getString(R.string.my_rewards), "${BuildConfig.WEB_VIEW_URL}${WebViewUrls.WEB_VIEW_REWARDS}?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&redirectFrom=settings&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"), true)
         }
     }
@@ -452,6 +453,10 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         when (responseItem?.mAction) {
             Constants.NEW_RELEASE_TYPE_WEBVIEW -> {
                 if (Constants.NEW_RELEASE_TYPE_GOOGLE_ADS == responseItem.mType) {
+                    if (StaticInstances.sIsShareStoreLocked) {
+                        getLockedStoreShareDataServerCall(Constants.MODE_GOOGLE_ADS)
+                        return
+                    }
                     AppEventsManager.pushAppEvents(
                         eventName = AFInAppEventType.EVENT_GOOGLE_ADS_EXPLORE,
                         isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
@@ -514,7 +519,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
     override fun onBackPressed(): Boolean {
         Log.d(TAG, "onBackPressed: called")
         if(fragmentManager != null && fragmentManager?.backStackEntryCount == 1) {
-            launchFragment(HomeFragment.newInstance(), true)
+            launchFragment(OrderFragment.newInstance(), true)
             return true
         }
         return false

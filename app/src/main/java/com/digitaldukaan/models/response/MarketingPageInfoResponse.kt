@@ -8,20 +8,22 @@ data class MarketingPageInfoResponse(
     @SerializedName("static_text")              var marketingStaticTextResponse: MarketingStaticTextResponse?,
     @SerializedName("more_options_list")        var marketingMoreOptionsList: ArrayList<MarketingMoreOptionsItemResponse?>,
     @SerializedName("marketing_item_list")      var marketingItemList: ArrayList<MarketingCardsItemResponse?>,
+    @SerializedName("is_share_store_locked")    var isShareStoreLocked: Boolean,
     @SerializedName("help_page")                var marketingHelpPage: HelpPageResponse?
 )
 
 data class MarketingStoreShareResponse(
     @SerializedName("heading")                  var heading: String?,
-    @SerializedName("left_icon_cdn")            var left_icon_cdn: String?,
-    @SerializedName("right_icon_cdn")           var right_icon_cdn: String?,
-    @SerializedName("right_icon_text")          var right_icon_text: String?,
-    @SerializedName("domain_expiry_message")    var domain_expiry_message: String?,
-    @SerializedName("domain_expiry_cdn")        var domain_expiry_cdn: String?,
-    @SerializedName("heading_know_more")        var heading_know_more: String?,
+    @SerializedName("left_icon_cdn")            var leftIconCdn: String?,
+    @SerializedName("right_icon_cdn")           var rightIconCdn: String?,
+    @SerializedName("right_icon_text")          var rightIconText: String?,
+    @SerializedName("domain_expiry_message")    var domainExpiryMessage: String?,
+    @SerializedName("domain_expiry_cdn")        var domainExpiryCdn: String?,
+    @SerializedName("heading_know_more")        var headingKnowMore: String?,
     @SerializedName("domain")                   var domain: String?,
     @SerializedName("domain_know_more")         var knowMore: MarketingDomainKnowMoreResponse?,
     @SerializedName("is_enabled")               var isEnabled: Boolean,
+    @SerializedName("is_know_more_enable")      var isKnowMoreEnable: Boolean,
     @SerializedName("is_clickable")             var isClickable: Boolean
 )
 

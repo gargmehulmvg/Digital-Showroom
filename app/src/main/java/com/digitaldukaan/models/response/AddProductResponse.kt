@@ -11,6 +11,7 @@ data class AddProductResponse(
     @SerializedName("master_variants")                                      var masterVariantsList: ArrayList<VariantItemResponse>?,
     @SerializedName("store_item")                                           var storeItem: AddProductItemResponse?,
     @SerializedName("youtube_info")                                         var youtubeInfo: YoutubeInfoResponse?,
+    @SerializedName("is_share_store_locked")                                var isShareStoreLocked: Boolean,
     var deletedVariants: HashMap<String?, VariantItemResponse?> = HashMap(),
     var isVariantSaved: Boolean
 )
