@@ -98,6 +98,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
     override fun onProductPageInfoResponse(commonResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             val productResponse = Gson().fromJson(commonResponse.mCommonDataStr, ProductPageResponse::class.java)
+            StaticInstances.sIsShareStoreLocked = productResponse?.isShareStoreLocked ?: false
             bottomContainer?.visibility = if (productResponse?.isZeroProduct == true) View.GONE else View.VISIBLE
             addProductStaticData = productResponse?.static_text
             var url: String
@@ -117,7 +118,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
             }
             productResponse?.shareShop?.run {
                 shareButtonTextView?.text = this.mText
-                if (mCDN != null && mCDN.isNotEmpty() && shareButtonImageView != null) {
+                if (isNotEmpty(mCDN) && null != shareButtonImageView) {
                     try {
                         Glide.with(this@ProductFragment).load(mCDN).into(shareButtonImageView)
                     } catch (e: Exception) {
@@ -127,7 +128,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
             }
             productResponse?.addProduct?.run {
                 addProductTextView?.text = this.mText
-                if (mCDN != null && mCDN.isNotEmpty() && addProductImageView != null) {
+                if (isNotEmpty(mCDN) && null != addProductImageView) {
                     try {
                         Glide.with(this@ProductFragment).load(mCDN).into(addProductImageView)
                     } catch (e: Exception) {
@@ -139,8 +140,8 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
         stopProgress()
     }
 
-    override fun onShareStorePdfDataResponse(response: CommonApiResponse) {
-        mShareStorePDFResponse = Gson().fromJson<ShareStorePDFDataItemResponse>(response.mCommonDataStr, ShareStorePDFDataItemResponse::class.java)
+    override fun onShareStorePdfDataResponse(commonResponse: CommonApiResponse) {
+        mShareStorePDFResponse = Gson().fromJson<ShareStorePDFDataItemResponse>(commonResponse.mCommonDataStr, ShareStorePDFDataItemResponse::class.java)
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             showPDFShareBottomSheet(mShareStorePDFResponse)
@@ -255,11 +256,13 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                     val bottomSheetHeadingTextView: TextView = findViewById(R.id.bottomSheetHeadingTextView)
                     val verifyTextView: TextView = findViewById(R.id.verifyTextView)
                     val referAndEarnRecyclerView: RecyclerView = findViewById(R.id.referAndEarnRecyclerView)
-                    if (response?.imageUrl?.isNotEmpty() == true) bottomSheetUpperImageView?.let {
-                        try {
-                            Glide.with(this@ProductFragment).load(response.imageUrl).into(it)
-                        } catch (e: Exception) {
-                            Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+                    if (isNotEmpty(response?.imageUrl)) {
+                        bottomSheetUpperImageView.let { view ->
+                            try {
+                                Glide.with(this@ProductFragment).load(response?.imageUrl).into(view)
+                            } catch (e: Exception) {
+                                Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+                            }
                         }
                     }
                     bottomSheetUpperImageView.setImageDrawable(ContextCompat.getDrawable(it, R.drawable.ic_share_pdf_whatsapp))
@@ -267,6 +270,10 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                     bottomSheetHeadingTextView.text = response?.heading
                     verifyTextView.text = response?.subHeading
                     verifyTextView.setOnClickListener{
+                        if (StaticInstances.sIsShareStoreLocked) {
+                            getLockedStoreShareDataServerCall(Constants.MODE_GET_MY_CATALOGUE)
+                            return@setOnClickListener
+                        }
                         showProgressDialog(mActivity)
                         AppEventsManager.pushAppEvents(
                             eventName = AFInAppEventType.EVENT_GET_PDF_CATALOG,
@@ -302,7 +309,11 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                         AFInAppEventParameterName.IS_CATALOG to AFInAppEventParameterName.TRUE
                     )
                 )
-                if (!isEmpty(mShareDataOverWhatsAppText)) shareOnWhatsApp(mShareDataOverWhatsAppText) else if (!isInternetConnectionAvailable(mActivity)) {
+                if (StaticInstances.sIsShareStoreLocked) {
+                    getLockedStoreShareDataServerCall(Constants.MODE_SHARE_STORE)
+                    return
+                }
+                if (isNotEmpty(mShareDataOverWhatsAppText)) shareOnWhatsApp(mShareDataOverWhatsAppText) else if (!isInternetConnectionAvailable(mActivity)) {
                     showNoInternetConnectionDialog()
                     return
                 } else {
@@ -593,9 +604,11 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
         Log.d(TAG, "onBackPressed: called")
         if(fragmentManager != null && fragmentManager?.backStackEntryCount == 1) {
             clearFragmentBackStack()
-            launchFragment(HomeFragment.newInstance(), true)
+            launchFragment(OrderFragment.newInstance(), true)
             return true
         }
         return false
     }
+
+    override fun onLockedStoreShareSuccessResponse(lockedShareResponse: LockedStoreShareResponse) = showLockedStoreShareBottomSheet(lockedShareResponse)
 }

@@ -127,6 +127,7 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (commonApiResponse.mIsSuccessStatus) {
                 sSocialMediaPageInfoResponse = Gson().fromJson<SocialMediaPageInfoResponse>(commonApiResponse.mCommonDataStr, SocialMediaPageInfoResponse::class.java)
+                StaticInstances.sIsShareStoreLocked = sSocialMediaPageInfoResponse?.isShareStoreLocked ?: false
                 setupSocialMediaUIFromResponse()
             }
         }
@@ -233,6 +234,10 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
     }
 
     override fun onSocialMediaTemplateShareItemClickListener(position: Int, item: SocialMediaTemplateListItemResponse?) {
+        if (StaticInstances.sIsShareStoreLocked) {
+            getLockedStoreShareDataServerCall(Constants.MODE_SHARE_TEMPLATE)
+            return
+        }
         sIsWhatsAppIconClicked = false
         setupUIForScreenShot(item)
         sSelectedTemplatePosition = position
@@ -250,6 +255,10 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
     }
 
     override fun onSocialMediaTemplateWhatsappItemClickListener(position: Int, item: SocialMediaTemplateListItemResponse?) {
+        if (StaticInstances.sIsShareStoreLocked) {
+            getLockedStoreShareDataServerCall(Constants.MODE_SHARE_TEMPLATE)
+            return
+        }
         sIsWhatsAppIconClicked = true
         sSelectedTemplatePosition = position
         sSelectedTemplateItem = item
@@ -302,4 +311,6 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
             }
         }
     }
+
+    override fun onLockedStoreShareSuccessResponse(lockedShareResponse: LockedStoreShareResponse) = showLockedStoreShareBottomSheet(lockedShareResponse)
 }

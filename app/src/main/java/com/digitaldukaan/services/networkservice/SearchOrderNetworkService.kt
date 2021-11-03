@@ -54,7 +54,7 @@ class SearchOrderNetworkService {
                 }
             }
         } catch (e: Exception) {
-            Log.e(HomeNetworkService::class.java.simpleName, "updateOrderStatusServerCall: ", e)
+            Log.e(OrderNetworkService::class.java.simpleName, "updateOrderStatusServerCall: ", e)
             serviceInterface.onSearchOrderException(e)
         }
     }
@@ -76,7 +76,7 @@ class SearchOrderNetworkService {
                 }
             }
         } catch (e: Exception) {
-            Log.e(HomeNetworkService::class.java.simpleName, "completeOrderServerCall: ", e)
+            Log.e(OrderNetworkService::class.java.simpleName, "completeOrderServerCall: ", e)
             serviceInterface.onSearchOrderException(e)
         }
     }

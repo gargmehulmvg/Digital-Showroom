@@ -2,15 +2,18 @@ package com.digitaldukaan.constants
 
 class Constants {
     companion object {
+        //TIMER
         const val OTP_SUCCESS_TIMER                             = 500L
         const val LOCATION_REQUEST_CODE                         = 1001
         const val BACK_PRESS_INTERVAL                           = 2_000L
         const val SHINE_ANIMATION_INTERVAL                      = 2_000L
-        const val STORE_CREATION_PROGRESS_ANIMATION_INTERVAL    = 3_000L
+        const val STORE_CREATION_PROGRESS_ANIMATION_INTERVAL    = 5_000L
         const val RESEND_OTP_TIMER                              = 30_000L
         const val AUTO_DISMISS_PROGRESS_DIALOG_TIMER            = 1_000L
         const val TIMER_INTERVAL                                = 500L
+        const val ORDER_DELAY_INTERVAL                          = 150L
         const val TOOL_TIP_TIMER_INTERVAL                       = 3_000L
+        //REQUEST_CODE
         const val CREDENTIAL_PICKER_REQUEST                     = 1001
         const val IMAGE_PICK_REQUEST_CODE                       = 1002
         const val CONTACT_REQUEST_CODE                          = 1003
@@ -18,6 +21,7 @@ class Constants {
         const val EXTERNAL_STORAGE_REQUEST_CODE                 = 1005
         const val STORAGE_REQUEST_CODE                          = 1006
         const val EMAIL_REQUEST_CODE                            = 1007
+        //ERROR_CODE
         const val ERROR_CODE_UN_AUTHORIZED_ACCESS               = 401
         const val ERROR_CODE_FORBIDDEN_ACCESS                   = 403
         const val ERROR_MESSAGE_UN_AUTHORIZED_ACCESS            = "unauthorized access"
@@ -32,12 +36,16 @@ class Constants {
         const val DOTPE_OFFICIAL_URL_CLIPBOARD                  = "https://web.dotpe.in"
         const val DOTPE_OFFICIAL_URL                            = "Go to web.dotpe.in"
         const val WEB_VIEW_URL_EDIT_SOCIAL_MEDIA_POST           = "edit-social-media-template"
-        const val KEY_DONT_SHOW_MESSAGE_AGAIN                   = "KEY_DONT_SHOW_MESSAGE_AGAIN"
-        const val KEY_DONT_SHOW_MESSAGE_AGAIN_STOCK             = "KEY_DONT_SHOW_MESSAGE_AGAIN_STOCK"
         const val TEXT_YES                                      = "yes"
         const val TEXT_NO                                       = "no"
         const val APP_SECRET_KEY                                = "wFqjaY2jR85nMmgI7wqvPHd6mYaEN9a1"
         const val ANALYTICS_PRODUCTION_URL                      = "https://api.dotshowroom.in/"
+        //KEYS
+        const val KEY_BUY_DOMAIN                                = "buy-domain"
+        const val KEY_BUY_THEMES                                = "buy-themes"
+        const val KEY_ADD_PRODUCT                               = "add-product"
+        const val KEY_DONT_SHOW_MESSAGE_AGAIN                   = "KEY_DONT_SHOW_MESSAGE_AGAIN"
+        const val KEY_DONT_SHOW_MESSAGE_AGAIN_STOCK             = "KEY_DONT_SHOW_MESSAGE_AGAIN_STOCK"
         //ACTIONS
         const val ACTION_LOGOUT                                 = "logout"
         const val ACTION_STORE_DESCRIPTION                      = "store_description"
@@ -49,7 +57,7 @@ class Constants {
         const val ACTION_BUSINESS_CREATIVE                      = "business_creatives"
         const val ACTION_SOCIAL_CREATIVE                        = "social_creatives"
         const val ACTION_QR_DOWNLOAD                            = "qr-download"
-        const val ACTION_SHARE_DATA                             = "share-store"
+        const val ACTION_SHARE_STORE                            = "share-store"
         const val ACTION_CATALOG_WHATSAPP                       = "catalog-whatsapp"
         const val ACTION_THEME_DISCOVER                         = "theme-discover"
         const val ACTION_THEME_EXPLORE                          = "theme-explore"
@@ -72,12 +80,14 @@ class Constants {
         const val ACTION_HOW_TO_SHIP                            = "how-to-ship"
         const val ACTION_PRODUCT_DISCOUNT                       = "product-discount"
         const val ACTION_BESTSELLER                             = "bestseller"
-        //Incomplete profile actions
         const val ACTION_LOGO                                   = "logo"
         const val ACTION_DESCRIPTION                            = "description"
         const val ACTION_LOCATION                               = "address"
         const val ACTION_BUSINESS                               = "business"
         const val ACTION_BANK                                   = "bank"
+        const val ACTION_ADD_PRODUCT                            = "add-products"
+        const val ACTION_MY_PROFILE                             = "my-profile"
+        const val ACTION_STORE_CONTROLS                         = "store-controls"
         //PAGES
         const val PAGE_REFER                                    = "refer"
         const val PAGE_HELP                                     = "help"
@@ -130,6 +140,18 @@ class Constants {
         const val MODE_INACTIVE                                 = "inactive"
         const val MODE_PROMO_CODE_ACTIVE                        = "A"
         const val MODE_PROMO_CODE_DE_ACTIVE                     = "D"
+        const val MODE_SHARE_STORE                              = 1
+        const val MODE_SHARE_TEMPLATE                           = 2
+        const val MODE_SHARE_PRODUCTS                           = 3
+        const val MODE_SHARE_QR                                 = 4
+        const val MODE_CREATE_BILL                              = 5
+        const val MODE_SEND_BILL                                = 6
+        const val MODE_SHARE_BILL                               = 7
+        const val MODE_OUT_FOR_DELIVERY                         = 8
+        const val MODE_READY_FOR_PICKUP                         = 9
+        const val MODE_GET_MY_CATALOGUE                         = 10
+        const val MODE_GOOGLE_ADS                               = 11
+        const val MODE_ORDER_SHIPPED                            = 12
         //ORDER_STATUS
         const val StatusCustomerUpdated                         = 1
         const val StatusMerchantUpdated                         = 2

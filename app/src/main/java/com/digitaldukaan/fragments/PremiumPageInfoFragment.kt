@@ -11,10 +11,7 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
-import com.digitaldukaan.constants.AppEventsManager
-import com.digitaldukaan.constants.Constants
-import com.digitaldukaan.constants.CoroutineScopeUtils
-import com.digitaldukaan.constants.ToolBarManager
+import com.digitaldukaan.constants.*
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.PremiumPageInfoResponse
 import com.digitaldukaan.models.response.PremiumPageInfoStaticTextResponse
@@ -29,14 +26,13 @@ import org.json.JSONObject
 
 class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface {
 
-    companion object {
-        private val mService: PremiumPageInfoService = PremiumPageInfoService()
-        private var mStaticText: PremiumPageInfoStaticTextResponse? = null
-        private var premiumPageInfoResponse: PremiumPageInfoResponse? = null
+    private var mPremiumPageInfoResponse: PremiumPageInfoResponse? = null
+    private val mService: PremiumPageInfoService = PremiumPageInfoService()
 
-        fun newInstance(): PremiumPageInfoFragment {
-            return PremiumPageInfoFragment()
-        }
+    companion object {
+        private var mStaticText: PremiumPageInfoStaticTextResponse? = null
+
+        fun newInstance(): PremiumPageInfoFragment = PremiumPageInfoFragment()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -62,17 +58,14 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
     }
 
     override fun onNativeBackPressed() {
-        mActivity?.let {
-            it.runOnUiThread {
-                it.onBackPressed()
-            }
-        }
+        mActivity?.let { context -> context.runOnUiThread { context.onBackPressed() } }
     }
 
     override fun onPremiumPageInfoResponse(response: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            premiumPageInfoResponse = Gson().fromJson<PremiumPageInfoResponse>(response.mCommonDataStr, PremiumPageInfoResponse::class.java)
-            mStaticText = premiumPageInfoResponse?.staticText
+            mPremiumPageInfoResponse = Gson().fromJson<PremiumPageInfoResponse>(response.mCommonDataStr, PremiumPageInfoResponse::class.java)
+            StaticInstances.sIsShareStoreLocked = mPremiumPageInfoResponse?.isShareStoreLocked ?: false
+            mStaticText = mPremiumPageInfoResponse?.staticText
             commonWebView?.apply {
                 clearHistory()
                 clearCache(true)
@@ -83,9 +76,9 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
                     javaScriptCanOpenWindowsAutomatically = true
                 }
                 addJavascriptInterface(WebViewBridge(), "Android")
-                val isBottomNavBarActive = premiumPageInfoResponse?.mIsBottomNavBarActive ?: false
+                val isBottomNavBarActive = mPremiumPageInfoResponse?.mIsBottomNavBarActive ?: false
                 hideBottomNavigationView(!isBottomNavBarActive)
-                val url = BuildConfig.WEB_VIEW_URL + premiumPageInfoResponse?.premium?.mUrl + "?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&app_version=${BuildConfig.VERSION_NAME}"
+                val url = BuildConfig.WEB_VIEW_URL + mPremiumPageInfoResponse?.premium?.mUrl + "?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&app_version=${BuildConfig.VERSION_NAME}"
                 Log.d(PremiumPageInfoFragment::class.simpleName, "onViewCreated: $url")
                 webViewClient = object : WebViewClient() {
                     override fun onPageFinished(view: WebView, url: String) {
@@ -93,9 +86,8 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
                         stopProgress()
                     }
 
-                    override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
-                        return onCommonWebViewShouldOverrideUrlLoading(url, view)
-                    }
+                    override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean =
+                        onCommonWebViewShouldOverrideUrlLoading(url, view)
                 }
                 loadUrl(url)
             }
@@ -106,7 +98,7 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
         Log.d(TAG, "sendData: $data")
         val jsonData = JSONObject(data)
         when {
-            jsonData.optBoolean("redirectNative") -> launchFragment(EditPremiumFragment.newInstance(mStaticText, premiumPageInfoResponse), true)
+            jsonData.optBoolean("redirectNative") -> launchFragment(EditPremiumFragment.newInstance(mStaticText, mPremiumPageInfoResponse), true)
             jsonData.optBoolean("redirectBrowser") -> openUrlInBrowser(jsonData.optString("data"))
             jsonData.optBoolean("unauthorizedAccess") -> logoutFromApplication()
             jsonData.optBoolean("openUPIIntent") -> {
@@ -166,7 +158,7 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
             Log.d(TAG, "onBackPressed :: called")
             if(fragmentManager != null && fragmentManager?.backStackEntryCount == 1) {
                 clearFragmentBackStack()
-                launchFragment(HomeFragment.newInstance(), true)
+                launchFragment(OrderFragment.newInstance(), true)
                 true
             } else {
                 if (commonWebView?.canGoBack() == true) {

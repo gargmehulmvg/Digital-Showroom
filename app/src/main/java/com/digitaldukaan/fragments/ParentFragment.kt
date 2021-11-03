@@ -3,6 +3,7 @@ package com.digitaldukaan.fragments
 import android.net.Uri
 import androidx.fragment.app.Fragment
 import com.digitaldukaan.interfaces.IWebViewCallbacks
+import com.digitaldukaan.models.response.LockedStoreShareResponse
 import com.digitaldukaan.models.response.OrderItemResponse
 import com.digitaldukaan.models.response.TransactionDetailResponse
 import java.io.File
@@ -38,6 +39,8 @@ open class ParentFragment : Fragment(), IWebViewCallbacks {
     open fun onTransactionDetailResponse(transactionItem: TransactionDetailResponse?) = Unit
 
     open fun onSMSIconClicked() = Unit
+
+    open fun onLockedStoreShareSuccessResponse(lockedShareResponse: LockedStoreShareResponse) = Unit
 
     open fun onSearchDialogContinueButtonClicked(inputOrderId: String, inputMobileNumber: String) = Unit
 

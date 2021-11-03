@@ -14,6 +14,7 @@ data class AccountInfoResponse(
     @SerializedName("static_text")                      var mAccountStaticText: AccountStaticTextResponse?,
     @SerializedName("footer_images")                    var mFooterImages: ArrayList<String>?,
     @SerializedName("is_order_notification_on")         var mIsOrderNotificationOn: Boolean,
+    @SerializedName("is_share_store_locked")            var mIsShareStoreLocked: Boolean,
     @SerializedName("prepaid_orders_locked")            var mPrepaidOrdersLocked: HelpPageResponse,
     @SerializedName("online_payment_modes_locked")      var mOnlinePaymentModesOn: HelpPageResponse,
     @SerializedName("online_payment_type")              var mOnlinePaymentType: String?

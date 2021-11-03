@@ -360,7 +360,7 @@ class PaymentModesFragment: BaseFragment(), IPaymentModesServiceInterface,
         Log.d(TAG, "onBackPressed: called")
         if(fragmentManager != null && fragmentManager?.backStackEntryCount == 1) {
             clearFragmentBackStack()
-            launchFragment(HomeFragment.newInstance(), true)
+            launchFragment(OrderFragment.newInstance(), true)
             return true
         }
         return false

@@ -16,6 +16,7 @@ import com.digitaldukaan.R
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.IOnToolbarIconClick
 import com.digitaldukaan.models.dto.ConvertMultiImageDTO
+import com.digitaldukaan.models.response.LockedStoreShareResponse
 import com.digitaldukaan.webviews.WebViewBridge
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -36,7 +37,7 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
         fragment.mHeaderText = headerText
         fragment.mLoadUrl = loadUrl
         fragment.mLoadUrl = "${fragment.mLoadUrl}&app_version=${BuildConfig.VERSION_NAME}"
-        Log.d(mTagName, "CommonWebViewFragment :: URL :: $mLoadUrl")
+        Log.d(mTagName, "CommonWebViewFragment :: URL :: ${fragment.mLoadUrl}")
         return fragment
     }
 
@@ -91,9 +92,7 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
     }
 
     override fun onNativeBackPressed() {
-        mActivity?.let { context ->
-            context.runOnUiThread { context.onBackPressed() }
-        }
+        mActivity?.let { context -> context.runOnUiThread { context.onBackPressed() } }
     }
 
     override fun sendData(data: String) {
@@ -147,14 +146,18 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                     data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
                 )
-                val imageBase64 = jsonData.optString("data")
-                Log.d(mTagName, "image URL :: $imageBase64")
-                val domain = jsonData.optString("domain")
-                val bitmap = getBitmapFromBase64(imageBase64)
-                shareData("Order From - ${if (domain.isEmpty()) mDomainName else domain}", bitmap)
+                if (StaticInstances.sIsShareStoreLocked) {
+                    getLockedStoreShareDataServerCall(Constants.MODE_SHARE_QR)
+                } else {
+                    val imageBase64 = jsonData.optString("data")
+                    Log.d(mTagName, "image URL :: $imageBase64")
+                    val domain = jsonData.optString("domain")
+                    val bitmap = getBitmapFromBase64(imageBase64)
+                    shareData("Order From - ${if (isEmpty(domain)) mDomainName else domain}", bitmap)
+                }
             }
             jsonData.optBoolean("redirectHomePage") -> {
-                launchFragment(HomeFragment.newInstance(), true)
+                launchFragment(OrderFragment.newInstance(), true)
             }
             jsonData.optBoolean("startLoader") -> {
                 showProgressDialog(mActivity)
@@ -312,9 +315,9 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
     override fun onBackPressed(): Boolean {
         return try {
             Log.d(mTagName, "onBackPressed :: called")
-            if(fragmentManager != null && fragmentManager?.backStackEntryCount == 1) {
+            if(null != fragmentManager && 1 == fragmentManager?.backStackEntryCount) {
                 clearFragmentBackStack()
-                launchFragment(HomeFragment.newInstance(), true)
+                launchFragment(OrderFragment.newInstance(), true)
                 true
             } else {
                 if (true == commonWebView?.canGoBack()) {
@@ -326,4 +329,6 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
             false
         }
     }
+
+    override fun onLockedStoreShareSuccessResponse(lockedShareResponse: LockedStoreShareResponse) = showLockedStoreShareBottomSheet(lockedShareResponse)
 }

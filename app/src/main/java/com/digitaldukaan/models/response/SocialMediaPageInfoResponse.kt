@@ -7,6 +7,7 @@ data class SocialMediaPageInfoResponse(
     @SerializedName("social_media_categories_list") var socialMediaCategoriesList: ArrayList<SocialMediaCategoryItemResponse?>?,
     @SerializedName("category_show_count")          var categoryShowCount: Int,
     @SerializedName("favourite_category_id")        var favouriteCategoryId: Int,
+    @SerializedName("is_share_store_locked")        var isShareStoreLocked: Boolean,
     @SerializedName("help_page")                    var socialMediaHelpPage: HelpPageResponse?
 )
 

@@ -49,8 +49,8 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         PrefsManager.setPrefsManager(this)
         requestInAppReviewObject()
         AppEventsManager.setAppEventsManager(this)
-        if (StaticInstances.sAppSessionId?.isEmpty() == true) StaticInstances.sAppSessionId = RandomStringGenerator(16).nextString()
-        if (PrefsManager.getStringDataFromSharedPref(PrefsManager.APP_INSTANCE_ID).isEmpty()) PrefsManager.storeStringDataInSharedPref(PrefsManager.APP_INSTANCE_ID, RandomStringGenerator(16).nextString())
+        if (isEmpty(StaticInstances.sAppSessionId)) StaticInstances.sAppSessionId = RandomStringGenerator(16).nextString()
+        if (isEmpty(PrefsManager.getStringDataFromSharedPref(PrefsManager.APP_INSTANCE_ID))) PrefsManager.storeStringDataInSharedPref(PrefsManager.APP_INSTANCE_ID, RandomStringGenerator(16).nextString())
         Log.d(TAG, "appSessionID :: ${StaticInstances.sAppSessionId}")
         Log.d(TAG, "appInstanceID :: ${PrefsManager.getStringDataFromSharedPref(PrefsManager.APP_INSTANCE_ID)}")
         Log.d(TAG, "userMobileNumber :: ${PrefsManager.getStringDataFromSharedPref(Constants.USER_MOBILE_NUMBER)}")
@@ -260,7 +260,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         val fragment = getCurrentFragment() ?: return false
         when (item.itemId) {
-            R.id.menuHome -> if (fragment !is HomeFragment) launchFragment(HomeFragment.newInstance(), true)
+            R.id.menuHome -> if (fragment !is OrderFragment) launchFragment(OrderFragment.newInstance(), true)
             R.id.menuSettings -> if (fragment !is SettingsFragment) launchFragment(SettingsFragment.newInstance(), true)
             R.id.menuMarketing -> if (fragment !is MarketingFragment) launchFragment(MarketingFragment.newInstance(), true)
             R.id.menuProducts -> if (fragment !is ProductFragment) launchFragment(ProductFragment.newInstance(), true)

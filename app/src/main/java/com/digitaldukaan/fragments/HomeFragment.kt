@@ -31,7 +31,7 @@ import com.digitaldukaan.models.request.OrdersRequest
 import com.digitaldukaan.models.request.SearchOrdersRequest
 import com.digitaldukaan.models.request.UpdateOrderStatusRequest
 import com.digitaldukaan.models.response.*
-import com.digitaldukaan.services.HomeFragmentService
+import com.digitaldukaan.services.OrderFragmentService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IHomeServiceInterface
 import com.digitaldukaan.webviews.WebViewBridge
@@ -58,7 +58,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
     companion object {
         private var mOrderPageInfoStaticData: OrderPageStaticTextResponse? = null
         private var mIsDoublePressToExit = false
-        private var mHomeFragmentService: HomeFragmentService? = null
+        private var mOrderFragmentService: OrderFragmentService? = null
         private var mDoubleClickToExitStr: String? = ""
         private var mFetchingOrdersStr: String? = ""
         private lateinit var orderAdapter: OrderAdapterV2
@@ -87,8 +87,8 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         TAG = "HomeFragment"
-        mHomeFragmentService = HomeFragmentService()
-        mHomeFragmentService?.setHomeFragmentServiceListener(this)
+        mOrderFragmentService = OrderFragmentService()
+        mOrderFragmentService?.setServiceListener(this)
         AppsFlyerLib.getInstance().setCustomerUserId(PrefsManager.getStringDataFromSharedPref(Constants.USER_MOBILE_NUMBER))
         Log.d(TAG, "onCreate: FIREBASE ANALYTICS CALLED")
         val firebaseAnalytics = Firebase.analytics
@@ -106,14 +106,14 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         if (mIsNewUserLogin) {
             mIsNewUserLogin = false
             if (null == StaticInstances.sCustomDomainBottomSheetResponse)
-                mHomeFragmentService?.getCustomDomainBottomSheetData()
+                mOrderFragmentService?.getCustomDomainBottomSheetData()
             else
                 StaticInstances.sCustomDomainBottomSheetResponse?.let { response -> showCustomDomainBottomSheet(response) }
         }
         if (!askContactPermission()) if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else {
             if (mOrderPageInfoResponse == null) {
-                mHomeFragmentService?.getOrderPageInfo()
-                mHomeFragmentService?.getAnalyticsData()
+                mOrderFragmentService?.getOrderPageInfo()
+                mOrderFragmentService?.getAnalyticsData()
             } else {
                 setupOrderPageInfoUI()
                 setupAnalyticsUI()
@@ -186,7 +186,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
     private fun fetchLatestOrders(mode: String, fetchingOrderStr: String?, page: Int = 1, showProgressDialog: Boolean = true) {
         if (showProgressDialog) if (fetchingOrderStr?.isNotEmpty() == true) showCancellableProgressDialog(mActivity, fetchingOrderStr)
         val request = OrdersRequest(mode, page)
-        mHomeFragmentService?.getOrders(request)
+        mOrderFragmentService?.getOrders(request)
     }
 
     override fun onClick(view: View?) {
@@ -548,6 +548,14 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         }
     }
 
+    override fun onLandingPageCardsResponse(commonResponse: CommonApiResponse) {
+
+    }
+
+    override fun onDomainSuggestionListResponse(commonResponse: CommonApiResponse) {
+
+    }
+
     override fun onHomePageException(e: Exception) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (mSwipeRefreshLayout?.isRefreshing == true) mSwipeRefreshLayout?.isRefreshing = false
@@ -578,8 +586,8 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         completedPageCount = 1
         pendingPageCount = 1
         fetchLatestOrders(Constants.MODE_PENDING, mFetchingOrdersStr, pendingPageCount)
-        mHomeFragmentService?.getOrderPageInfo()
-        mHomeFragmentService?.getAnalyticsData()
+        mOrderFragmentService?.getOrderPageInfo()
+        mOrderFragmentService?.getAnalyticsData()
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
@@ -591,13 +599,13 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                     grantResults[0] == PackageManager.PERMISSION_GRANTED -> {
                         CoroutineScopeUtils().runTaskOnCoroutineBackground { getContactsFromStorage2(mActivity) }
                         if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else {
-                            mHomeFragmentService?.getOrderPageInfo()
-                            mHomeFragmentService?.getAnalyticsData()
+                            mOrderFragmentService?.getOrderPageInfo()
+                            mOrderFragmentService?.getAnalyticsData()
                         }
                     }
                     else -> {
-                        mHomeFragmentService?.getOrderPageInfo()
-                        mHomeFragmentService?.getAnalyticsData()
+                        mOrderFragmentService?.getOrderPageInfo()
+                        mOrderFragmentService?.getAnalyticsData()
                     }
                 }
             }
@@ -617,7 +625,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
             val request = SearchOrdersRequest(if (isNotEmpty(mOrderIdString)) mOrderIdString.toLong() else 0, mMobileNumberString, 1)
             if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog()
             showProgressDialog(mActivity)
-            mHomeFragmentService?.getSearchOrders(request)
+            mOrderFragmentService?.getSearchOrders(request)
         } catch (e: Exception) {
             showToast(mActivity?.getString(R.string.something_went_wrong))
             Log.e(TAG, "onSearchDialogContinueButtonClicked: ${e.message}", e)
@@ -652,7 +660,7 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                 item.orderId.toLong(),
                 Constants.StatusSeenByMerchant.toLong()
             )
-            mHomeFragmentService?.updateOrderStatus(request)
+            mOrderFragmentService?.updateOrderStatus(request)
             isNewOrder = true
         }
         launchFragment(OrderDetailFragment.newInstance(item?.orderHash.toString(), isNewOrder), true)
@@ -662,12 +670,12 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         val request = CompleteOrderRequest(item?.orderId?.toLong())
         if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else {
             showProgressDialog(mActivity)
-            mHomeFragmentService?.completeOrder(request)
+            mOrderFragmentService?.completeOrder(request)
         }
     }
 
     override fun onNativeBackPressed() {
-        mActivity?.runOnUiThread { mActivity?.onBackPressed() }
+        mActivity?.let { context -> context.runOnUiThread { context.onBackPressed() } }
     }
 
     override fun sendData(data: String) {
@@ -836,8 +844,8 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
                                 }
                             }
                         }
-                        messageTextView.text = primaryDomain.info_data.firstYearText.trim()
-                        message2TextView.text = primaryDomain.info_data.renewsText.trim()
+                        messageTextView.text = primaryDomain.infoData?.firstYearText?.trim()
+                        message2TextView.text = primaryDomain.infoData?.renewsText?.trim()
                     }
                     val suggestedDomainRecyclerView = findViewById<RecyclerView>(R.id.suggestedDomainRecyclerView)
                     suggestedDomainRecyclerView.apply {
@@ -952,8 +960,8 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
             completedPageCount = 1
             pendingPageCount = 1
             fetchLatestOrders(Constants.MODE_PENDING, mFetchingOrdersStr, pendingPageCount, false)
-            mHomeFragmentService?.getOrderPageInfo()
-            mHomeFragmentService?.getAnalyticsData()
+            mOrderFragmentService?.getOrderPageInfo()
+            mOrderFragmentService?.getAnalyticsData()
         }
     }
 }
