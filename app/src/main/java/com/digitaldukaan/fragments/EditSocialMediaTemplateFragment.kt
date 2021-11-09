@@ -281,8 +281,8 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
                     behavior.state = BottomSheetBehavior.STATE_EXPANDED
                     window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
                     setOnDismissListener {
-                        if (!mIsItemSelectedFromBottomSheet) mActivity?.onBackPressed()
                         Handler(Looper.getMainLooper()).postDelayed({ hideSoftKeyboard() }, Constants.TIMER_INTERVAL)
+                        if (!mIsItemSelectedFromBottomSheet) mActivity?.onBackPressed()
                     }
                     setContentView(view)
                     view.run {

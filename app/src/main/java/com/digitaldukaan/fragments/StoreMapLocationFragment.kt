@@ -137,7 +137,7 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
                 val service = StoreAddressService()
                 service.setServiceInterface(this)
                 val address = completeAddressEditText?.text?.trim().toString()
-                if (address.isEmpty()) {
+                if (isEmpty(address)) {
                     completeAddressEditText?.error =  getString(R.string.mandatory_field_message)
                     completeAddressEditText?.requestFocus()
                     return@setOnClickListener
@@ -156,9 +156,7 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_SAVE_ADDRESS_CHANGES,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                    data = mapOf(
-                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)
-                    )
+                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
                 )
                 service.updateStoreAddress(request)
             }
@@ -167,7 +165,7 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
             pinCodeEditText?.setText(pinCode)
             cityEditText?.setText(city)
             completeAddressEditText?.setText(address1)
-            stateTextView?.text = if (state.isEmpty()) getString(R.string.select_state) else state
+            stateTextView?.text = if (isEmpty(state)) getString(R.string.select_state) else state
         }
         if (mIsSingleStep)  statusRecyclerView?.visibility = View.GONE else {
             statusRecyclerView?.apply {
@@ -197,7 +195,7 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
         if (checkLocationPermission()) return
         mGoogleApiClient?.lastLocation?.addOnCompleteListener { task ->
                 val location = task.result
-                if (location != null) {
+                if (null != location) {
                     mCurrentLatitude = location.latitude
                     mCurrentLongitude = location.longitude
                     showCurrentLocationMarkers(location.latitude, location.longitude)
@@ -229,7 +227,7 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
                     mGoogleMap?.setOnMarkerDragListener(object :GoogleMap.OnMarkerDragListener {
 
                         override fun onMarkerDragEnd(marker: Marker?) {
-                            if (null != mCurrentMarker) mCurrentMarker?.remove()
+                            if (mCurrentMarker != null) mCurrentMarker?.remove()
                             mCurrentLatitude = marker?.position?.latitude ?: 0.0
                             mCurrentLongitude = marker?.position?.longitude ?: 0.0
                             showCurrentLocationMarkers(mCurrentLatitude, mCurrentLongitude)
@@ -256,16 +254,18 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         Log.i(TAG, "onRequestPermissionResult")
-        if (requestCode == Constants.LOCATION_REQUEST_CODE) {
-            when {
-                grantResults.isEmpty() -> Log.i(TAG, "User interaction was cancelled.")
-                grantResults[0] == PackageManager.PERMISSION_GRANTED -> {
-                    getLastLocation()
-                    setupLocationUI()
-                }
-                else -> {
-                    mActivity?.onBackPressed()
-                    showShortSnackBar("Permission was denied", true, R.drawable.ic_close_red)
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            if (Constants.LOCATION_REQUEST_CODE == requestCode) {
+                when {
+                    grantResults.isEmpty() -> Log.i(TAG, "User interaction was cancelled.")
+                    PackageManager.PERMISSION_GRANTED == grantResults[0] -> {
+                        getLastLocation()
+                        setupLocationUI()
+                    }
+                    else -> {
+                        showShortSnackBar("Permission was denied, Please allow location permission from settings to continue", true, R.drawable.ic_close_red)
+                        mActivity?.onBackPressed()
+                    }
                 }
             }
         }
@@ -285,7 +285,7 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
         return try {
             val geoCoder = Geocoder(mActivity, Locale.getDefault())
             val addressList = geoCoder.getFromLocation(mCurrentLatitude, mCurrentLongitude, 1)
-            if (addressList != null && addressList.isNotEmpty()) addressList[0].getAddressLine(0).toString() else ""
+            if (isNotEmpty(addressList)) addressList[0].getAddressLine(0).toString() else ""
         } catch (e: Exception) {
             Log.e(TAG, "getAddress: ${e.message}", e)
             ""
@@ -300,14 +300,6 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
         Log.d(TAG, "onStatusChanged :: p0 :: $p0, p1 :: $p1, p2:: $p2")
     }
 
-    override fun onProviderEnabled(p0: String?) {
-        Log.d(TAG, "onProviderEnabled :: $p0")
-    }
-
-    override fun onProviderDisabled(p0: String?) {
-        Log.d(TAG, "onProviderDisabled :: $p0")
-    }
-
     override fun onStoreAddressResponse(response: CommonApiResponse) {
         stopProgress()
         CoroutineScopeUtils().runTaskOnCoroutineMain {
@@ -316,7 +308,7 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
                 if (!mIsSingleStep) {
                     StaticInstances.sStepsCompletedList?.run {
                         for (completedItem in this) {
-                            if (completedItem.action == Constants.ACTION_LOCATION) {
+                            if (Constants.ACTION_LOCATION == completedItem.action) {
                                 completedItem.isCompleted = true
                                 break
                             }
@@ -337,8 +329,7 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
                     AlertDialog.Builder(it).apply {
                         setTitle("Location Permission")
                         setMessage("Please allow Location permission to continue")
-                        setPositiveButton(R.string.ok) { _, _ -> ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), Constants.LOCATION_REQUEST_CODE)
-                        }
+                        setPositiveButton(R.string.ok) { _, _ -> ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), Constants.LOCATION_REQUEST_CODE) }
                     }.create().show()
                 } else ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), Constants.LOCATION_REQUEST_CODE)
                 true

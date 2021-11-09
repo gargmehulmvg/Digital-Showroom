@@ -75,6 +75,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     private var mProductDiscountedPriceStr: String? = ""
     private var mProductDescriptionPriceStr: String? = ""
     private var mIsOrderEdited = false
+    private var mIsOrderDeleted = false
     private var mAddProductResponse: AddProductResponse? = null
     private var discountPriceEditText: EditText? = null
     private var productDescriptionEditText: EditText? = null
@@ -435,7 +436,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                         mImagesStrList.forEachIndexed { _, imageItem ->
                             if (isNotEmpty(imageItem.imageUrl)) imageListRequest.add(AddProductImagesResponse(imageItem.imageId, imageItem.imageUrl, 1, imageItem.mediaType))
                         }
-                        if (mAddProductResponse?.deletedVariants?.isEmpty() != true && true == mAddProductResponse?.isVariantSaved) {
+                        if (true != mAddProductResponse?.deletedVariants?.isEmpty() && true == mAddProductResponse?.isVariantSaved) {
                             mAddProductResponse?.deletedVariants?.values?.let {
                                 val deletedVariantList = ArrayList<VariantItemResponse>(it)
                                 deletedVariantList.forEachIndexed { _, itemResponse -> itemResponse.status = 0 }
@@ -444,7 +445,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                         }
                         var price: Double? = 0.0
                         try {
-                            price = if (priceStr.isNotEmpty()) priceStr.toDoubleOrNull() else 0.0
+                            price = if (isNotEmpty(priceStr)) priceStr.toDoubleOrNull() else 0.0
                         } catch (e: Exception) {
                             Log.e(TAG, "AddProductFragment onClick request: ", e)
                             Sentry.captureException(e, "AddProductFragment onClick request: ")
@@ -1152,7 +1153,9 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     override fun onDeleteItemResponse(commonResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
+            mIsOrderDeleted = false
             if (commonResponse.mIsSuccessStatus) {
+                mIsOrderDeleted = true
                 showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_check_circle)
                 mActivity?.onBackPressed()
             } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
@@ -1213,7 +1216,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
 
     override fun onBackPressed(): Boolean {
         try {
-            return if (mIsOrderEdited && shareProductContainer?.visibility != View.VISIBLE) {
+            return if (!mIsOrderDeleted && mIsOrderEdited && shareProductContainer?.visibility != View.VISIBLE) {
                 showGoBackDialog()
                 return true
             } else {

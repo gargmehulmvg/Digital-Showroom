@@ -466,12 +466,8 @@ class CustomCouponsFragment : BaseFragment(), ICustomCouponsServiceInterface {
     override fun onCustomCouponsResponse(response: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
+            showShortSnackBar(response.mMessage, true, if (response.mIsSuccessStatus) R.drawable.ic_check_circle else R.drawable.ic_close_red)
             if (response.mIsSuccessStatus) mActivity?.onBackPressed()
-            showShortSnackBar(
-                response.mMessage,
-                true,
-                if (response.mIsSuccessStatus) R.drawable.ic_check_circle else R.drawable.ic_close_red
-            )
         }
     }
 
