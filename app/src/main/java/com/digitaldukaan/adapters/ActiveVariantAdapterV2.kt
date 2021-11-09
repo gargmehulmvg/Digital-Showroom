@@ -53,33 +53,26 @@ class ActiveVariantAdapterV2(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ActiveVariantViewHolder {
-        val view = ActiveVariantViewHolder(
-            LayoutInflater.from(parent.context).inflate(R.layout.layout_active_variant_item_v2, parent, false)
-        )
+        val view = ActiveVariantViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.layout_active_variant_item_v2, parent, false))
         view.deleteTextView.setOnClickListener { mListener?.onVariantDeleteClicked(view.adapterPosition) }
         view.imageViewContainer.setOnClickListener { mListener?.onVariantImageClicked(view.adapterPosition) }
         return view
     }
     override fun getItemCount(): Int = mActiveVariantList?.size ?: 0
 
-    override fun onBindViewHolder(
-        holder: ActiveVariantViewHolder,
-        position: Int
-    ) {
+    override fun onBindViewHolder(holder: ActiveVariantViewHolder, position: Int) {
         val item = mActiveVariantList?.get(position)
         holder.apply {
-            if (1 == item?.available) {
-                variantSwitch.isChecked = true
-                inStockTextView.text = mStaticText?.text_in_stock
-            } else {
-                variantSwitch.isChecked = false
-                inStockTextView.text = mContext?.getString(R.string.out_of_stock)
-            }
+            variantSwitch.isChecked = (1 == item?.available)
+            inStockTextView.text = if (1 == item?.available) mStaticText?.text_in_stock else mContext?.getString(R.string.out_of_stock)
             deleteTextView.text = mStaticText?.text_delete
             variantNameInputLayout.hint = mStaticText?.hint_variant_name
             variantPriceInputLayout.hint = mStaticText?.hint_price
             variantDiscountPriceInputLayout.hint = mStaticText?.hint_discounted_price
             if (isNotEmpty(item?.variantName)) nameEditText.setText(item?.variantName) else nameEditText.text = null
+            if (0.0 != item?.price) priceEditText.setText("${item?.price}") else if (0.0 == item.price && 0.0 == mActiveVariantList?.get(0)?.price) { priceEditText.text = null } else priceEditText.setText("${mActiveVariantList?.get(0)?.price}")
+            if (0.0 != item?.discountedPrice) discountPriceEditText.setText("${item?.discountedPrice}") else if (0.0 == item.discountedPrice && 0.0 == mActiveVariantList?.get(0)?.discountedPrice) { discountPriceEditText.text = null } else discountPriceEditText.setText("${mActiveVariantList?.get(0)?.discountedPrice}")
+            variantNameInputLayout.error = if (item?.isVariantNameEmptyError == true) mContext?.getString(R.string.mandatory_field_message) else null
             priceEditText.addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                     Log.d(TAG, "beforeTextChanged: ")
@@ -112,12 +105,37 @@ class ActiveVariantAdapterV2(
                             }
                             else -> item?.price = str?.toDouble() ?: 0.0
                         }
+                    } else {
+                        discountPriceEditText.apply {
+                            text = null
+                        }
+                        item?.price = 0.0
+                        item?.discountedPrice = 0.0
                     }
                     mListener?.onVariantItemChanged()
                 }
 
             })
-            if (0.0 != item?.price) priceEditText.setText("${item?.price}") else if (0.0 == item.price && 0.0 == mActiveVariantList?.get(0)?.price) { priceEditText.text = null } else priceEditText.setText("${mActiveVariantList?.get(0)?.price}")
+            nameEditText.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                    Log.d(TAG, "beforeTextChanged: ")
+                }
+
+                override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+                    Log.d(TAG, "onTextChanged: ")
+                }
+
+                override fun afterTextChanged(editable: Editable?) {
+                    val str = editable?.toString()?.trim()
+                    item?.variantName = str
+                    if (isNotEmpty(str)) {
+                        variantNameInputLayout.error = null
+                        item?.isVariantNameEmptyError = false
+                    }
+                    mListener?.onVariantItemChanged()
+                }
+
+            })
             discountPriceEditText.addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                     Log.d(TAG, "beforeTextChanged: ")
@@ -131,7 +149,7 @@ class ActiveVariantAdapterV2(
                     val str = editable?.toString()
                     variantPriceInputLayout.error = null
                     variantDiscountPriceInputLayout.error = null
-                    if (!isEmpty(str)) {
+                    if (isNotEmpty(str)) {
                         val priceStr = priceEditText.text.toString()
                         when {
                             isEmpty(priceStr) -> {
@@ -161,28 +179,8 @@ class ActiveVariantAdapterV2(
                             }
                             else -> item?.discountedPrice = str?.toDouble() ?: 0.0
                         }
-                    }
-                    mListener?.onVariantItemChanged()
-                }
-
-            })
-            if (0.0 != item?.discountedPrice) discountPriceEditText.setText("${item?.discountedPrice}") else if (0.0 == item.discountedPrice && 0.0 == mActiveVariantList?.get(0)?.discountedPrice) { discountPriceEditText.text = null } else discountPriceEditText.setText("${mActiveVariantList?.get(0)?.discountedPrice}")
-            variantNameInputLayout.error = if (item?.isVariantNameEmptyError == true) mContext?.getString(R.string.mandatory_field_message) else null
-            nameEditText.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                    Log.d(TAG, "beforeTextChanged: ")
-                }
-
-                override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                    Log.d(TAG, "onTextChanged: ")
-                }
-
-                override fun afterTextChanged(editable: Editable?) {
-                    val str = editable?.toString()?.trim()
-                    item?.variantName = str
-                    if (isNotEmpty(str)) {
-                        variantNameInputLayout.error = null
-                        item?.isVariantNameEmptyError = false
+                    } else {
+                        item?.discountedPrice = 0.0
                     }
                     mListener?.onVariantItemChanged()
                 }
@@ -206,13 +204,8 @@ class ActiveVariantAdapterV2(
             }
             variantSwitch.setOnCheckedChangeListener { _, isChecked ->
                 mListener?.onVariantItemChanged()
-                if (isChecked) {
-                    item?.available = 1
-                    inStockTextView.text = mStaticText?.text_in_stock
-                } else {
-                    item?.available = 0
-                    inStockTextView.text = mContext?.getString(R.string.out_of_stock)
-                }
+                item?.available = if (isChecked) 1 else 0
+                inStockTextView.text = if (isChecked) mStaticText?.text_in_stock else mContext?.getString(R.string.out_of_stock)
             }
             mContext?.let { context ->
                 val adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1, getRecentVariantList())
@@ -222,13 +215,9 @@ class ActiveVariantAdapterV2(
         }
     }
 
-    override fun getItemId(position: Int): Long {
-        return position.toLong()
-    }
+    override fun getItemId(position: Int): Long = position.toLong()
 
-    override fun getItemViewType(position: Int): Int {
-        return position
-    }
+    override fun getItemViewType(position: Int): Int = position
 
     fun deleteItemFromActiveVariantList(position: Int) {
         mActiveVariantList?.removeAt(position)

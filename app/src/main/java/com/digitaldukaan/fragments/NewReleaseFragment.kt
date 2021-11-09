@@ -191,8 +191,8 @@ class NewReleaseFragment: BaseFragment(), IStoreSettingsItemClicked {
                     getLocationFromGoogleMap()
                 }
                 else -> {
-                    mActivity?.onBackPressed()
                     showShortSnackBar("Permission was denied", true, R.drawable.ic_close_red)
+                    mActivity?.onBackPressed()
                 }
             }
         }
