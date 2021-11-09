@@ -41,12 +41,12 @@ class DukaanNameFragment : BaseFragment(), ICreateStoreServiceInterface {
     private var lastLocation: Location? = null
 
     companion object {
-        private val TAG = DukaanNameFragment::class.simpleName
         fun newInstance(): DukaanNameFragment = DukaanNameFragment()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        TAG = "DukaanNameFragment"
         sharedElementEnterTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.move)
         locationManager = mActivity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         mActivity?.let { context -> fusedLocationClient = LocationServices.getFusedLocationProviderClient(context) }

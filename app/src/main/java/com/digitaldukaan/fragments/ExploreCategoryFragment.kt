@@ -26,7 +26,6 @@ class ExploreCategoryFragment: BaseFragment(), IExploreCategoryServiceInterface 
     private var addProductStaticData: AddProductStaticText? = null
 
     companion object {
-        private const val TAG = "ExploreCategoryFragment"
         fun newInstance(addProductStaticData: AddProductStaticText?): ExploreCategoryFragment {
             val fragment =  ExploreCategoryFragment()
             fragment.addProductStaticData = addProductStaticData
@@ -34,11 +33,8 @@ class ExploreCategoryFragment: BaseFragment(), IExploreCategoryServiceInterface 
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        TAG = "ExploreCategoryFragment"
         mContentView = inflater.inflate(R.layout.layout_explore_category_fragment, container, false)
         mService.setServiceInterface(this)
         AppEventsManager.pushAppEvents(

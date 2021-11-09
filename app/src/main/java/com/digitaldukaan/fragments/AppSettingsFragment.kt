@@ -31,11 +31,8 @@ class AppSettingsFragment : BaseFragment(), IAppSettingsItemClicked {
         return fragment
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        TAG = "AppSettingsFragment"
         mContentView = inflater.inflate(R.layout.layout_app_setting_fragment, container, false)
         return mContentView
     }
@@ -45,7 +42,7 @@ class AppSettingsFragment : BaseFragment(), IAppSettingsItemClicked {
         ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, false)
             onBackPressed(this@AppSettingsFragment)
-            setHeaderTitle(mHeaderText)
+            headerTitle = mHeaderText
         }
         appSettingsRecyclerView?.apply {
             setHasFixedSize(true)

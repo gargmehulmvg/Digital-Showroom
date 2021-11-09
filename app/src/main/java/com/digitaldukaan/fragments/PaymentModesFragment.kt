@@ -35,7 +35,6 @@ class PaymentModesFragment: BaseFragment(), IPaymentModesServiceInterface,
     private var mPaymentType: String? = ""
 
     companion object {
-        private const val TAG = "PaymentModesFragment"
 
         fun newInstance(): PaymentModesFragment = PaymentModesFragment()
     }
@@ -50,6 +49,7 @@ class PaymentModesFragment: BaseFragment(), IPaymentModesServiceInterface,
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        TAG = "PaymentModesFragment"
         mContentView = inflater.inflate(R.layout.layout_payment_modes, container, false)
         initializeUI()
         mService.setServiceInterface(this)
@@ -360,7 +360,7 @@ class PaymentModesFragment: BaseFragment(), IPaymentModesServiceInterface,
         Log.d(TAG, "onBackPressed: called")
         if(fragmentManager != null && fragmentManager?.backStackEntryCount == 1) {
             clearFragmentBackStack()
-            launchFragment(HomeFragment.newInstance(), true)
+            launchFragment(OrderFragment.newInstance(), true)
             return true
         }
         return false

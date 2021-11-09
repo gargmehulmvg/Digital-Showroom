@@ -28,7 +28,6 @@ import java.util.*
 class CustomCouponsFragment : BaseFragment(), ICustomCouponsServiceInterface {
 
     companion object {
-        private const val TAG = "CustomCouponsFragment"
 
         fun newInstance(staticText: PromoCodePageStaticTextResponse?): CustomCouponsFragment {
             val fragment = CustomCouponsFragment()
@@ -64,6 +63,7 @@ class CustomCouponsFragment : BaseFragment(), ICustomCouponsServiceInterface {
     private var mStoreName = ""
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        TAG = "CustomCouponsFragment"
         mContentView = inflater.inflate(R.layout.layout_custom_coupons_fragment, container, false)
         initializeUI()
         mService.setCustomCouponsServiceListener(this)
@@ -76,7 +76,7 @@ class CustomCouponsFragment : BaseFragment(), ICustomCouponsServiceInterface {
         ToolBarManager.getInstance()?.apply {
             setSideIconVisibility(false)
             setSecondSideIconVisibility(false)
-            setHeaderTitle(mStaticText?.heading_custom_coupon)
+            headerTitle = mStaticText?.heading_custom_coupon
             hideToolBar(mActivity, false)
             onBackPressed(this@CustomCouponsFragment)
         }
@@ -466,12 +466,8 @@ class CustomCouponsFragment : BaseFragment(), ICustomCouponsServiceInterface {
     override fun onCustomCouponsResponse(response: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
+            showShortSnackBar(response.mMessage, true, if (response.mIsSuccessStatus) R.drawable.ic_check_circle else R.drawable.ic_close_red)
             if (response.mIsSuccessStatus) mActivity?.onBackPressed()
-            showShortSnackBar(
-                response.mMessage,
-                true,
-                if (response.mIsSuccessStatus) R.drawable.ic_check_circle else R.drawable.ic_close_red
-            )
         }
     }
 

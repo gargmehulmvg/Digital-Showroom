@@ -36,7 +36,7 @@ class MarketingMoreOptionsBottomSheetItemAdapter(
             val position = view.adapterPosition
             if (position < 0 || position >= (mMarketingItemList?.size ?: 0)) return@setOnClickListener
             val item = mMarketingItemList?.get(position)
-            if (true == item?.is_clickable && item.is_enabled) mInterface?.onAdapterItemClickListener(position)
+            if (true == item?.isClickable && item.isEnabled) mInterface?.onAdapterItemClickListener(position)
         }
         return view
     }
@@ -56,7 +56,7 @@ class MarketingMoreOptionsBottomSheetItemAdapter(
             }
             arrowImageView.let {
                 mContext?.let { context ->
-                    Glide.with(context).load(item?.cta_cdn).into(it)
+                    Glide.with(context).load(item?.ctaCdn).into(it)
                 }
             }
             singleSpanTextView.text = item?.heading

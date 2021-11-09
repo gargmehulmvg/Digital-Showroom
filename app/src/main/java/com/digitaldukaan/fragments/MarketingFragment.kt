@@ -45,22 +45,17 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
     private var mKnowMoreCustomDomainRecyclerView: RecyclerView? = null
     private var mKnowMoreBottomSheetDialog: BottomSheetDialog? = null
     private var mProgressBarView: View? = null
+    private var mMarketingPageInfoResponse: MarketingPageInfoResponse? = null
+    private var mService: MarketingService? = null
 
     companion object {
-        private var mService: MarketingService? = null
         private var mShareStorePDFResponse: ShareStorePDFDataItemResponse? = null
-        private const val TAG = "MarketingFragment"
 
-        fun newInstance(): MarketingFragment {
-            return MarketingFragment()
-        }
+        fun newInstance(): MarketingFragment = MarketingFragment()
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        TAG = "MarketingFragment"
         mService = MarketingService()
         mService?.setMarketingServiceListener(this)
         mContentView = inflater.inflate(R.layout.layout_marketing_fragment, container, false)
@@ -88,11 +83,11 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
 
     override fun onClick(view: View?) {
         when(view?.id) {
-            shareHeadingTextView?.id -> shareStoreOverWhatsAppServerCall()
-            shareRightImageView?.id -> shareStoreOverWhatsAppServerCall()
-            shareTextView?.id -> shareStoreOverWhatsAppServerCall()
-            shareLeftImageView?.id -> shareStoreOverWhatsAppServerCall()
-            domainTextView?.id -> shareStoreOverWhatsAppServerCall()
+            shareStoreClickContainer?.id -> {
+                if (StaticInstances.sIsShareStoreLocked) {
+                    getLockedStoreShareDataServerCall(Constants.MODE_SHARE_STORE)
+                } else shareStoreOverWhatsAppServerCall()
+            }
         }
     }
 
@@ -100,22 +95,21 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
 
     override fun onMarketingErrorResponse(e: Exception) = exceptionHandlingForAPIResponse(e)
 
-    override fun onMarketingResponse(response: CommonApiResponse) {
-        stopProgress()
-    }
+    override fun onMarketingResponse(response: CommonApiResponse) = stopProgress()
 
     override fun onMarketingPageInfoResponse(response: CommonApiResponse) {
         stopProgress()
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (response.mIsSuccessStatus) {
-                val marketingPageInfoResponse = Gson().fromJson<MarketingPageInfoResponse>(response.mCommonDataStr, MarketingPageInfoResponse::class.java)
-                setupMarketingShareUI(marketingPageInfoResponse?.marketingStoreShare)
-                setupMarketingHelpPageUI(marketingPageInfoResponse?.marketingHelpPage)
+                mMarketingPageInfoResponse = Gson().fromJson<MarketingPageInfoResponse>(response.mCommonDataStr, MarketingPageInfoResponse::class.java)
+                StaticInstances.sIsShareStoreLocked = mMarketingPageInfoResponse?.isShareStoreLocked ?: false
+                setupMarketingShareUI(mMarketingPageInfoResponse?.marketingStoreShare)
+                setupMarketingHelpPageUI(mMarketingPageInfoResponse?.marketingHelpPage)
                 ToolBarManager.getInstance()?.apply {
-                    setHeaderTitle(marketingPageInfoResponse?.marketingStaticTextResponse?.heading_marketing)
-                    moreOptionsHeadingTextView?.text = marketingPageInfoResponse?.marketingStaticTextResponse?.text_more_options
+                    headerTitle = mMarketingPageInfoResponse?.marketingStaticTextResponse?.heading_marketing
+                    moreOptionsHeadingTextView?.text = mMarketingPageInfoResponse?.marketingStaticTextResponse?.text_more_options
                 }
-                val optionMenuAdapterAdapter = MarketingMoreOptionsAdapter(this, marketingPageInfoResponse?.marketingMoreOptionsList)
+                val optionMenuAdapterAdapter = MarketingMoreOptionsAdapter(this, mMarketingPageInfoResponse?.marketingMoreOptionsList)
                 marketingMoreOptionsRecyclerView?.apply {
                     layoutManager = LinearLayoutManager(mActivity)
                     adapter = optionMenuAdapterAdapter
@@ -126,11 +120,11 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                         layoutManager = gridLayoutManager
                         gridLayoutManager.spanSizeLookup = object : GridLayoutManager.SpanSizeLookup() {
                             override fun getSpanSize(position: Int): Int {
-                                return if (marketingPageInfoResponse?.marketingItemList?.get(position)?.type == Constants.SPAN_TYPE_FULL_WIDTH) 2 else 1
+                                return if (Constants.SPAN_TYPE_FULL_WIDTH == mMarketingPageInfoResponse?.marketingItemList?.get(position)?.type) 2 else 1
                             }
                         }
                         layoutManager = gridLayoutManager
-                        adapter = MarketingCardAdapter(this@MarketingFragment, marketingPageInfoResponse?.marketingItemList, this@MarketingFragment)
+                        adapter = MarketingCardAdapter(this@MarketingFragment, mMarketingPageInfoResponse?.marketingItemList, this@MarketingFragment)
                     }
                 }
             } else {
@@ -141,7 +135,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
 
     private fun setupMarketingHelpPageUI(marketingHelpPage: HelpPageResponse?) {
         ToolBarManager.getInstance()?.apply {
-            if (marketingHelpPage?.mIsActive == true) {
+            if (true == marketingHelpPage?.mIsActive) {
                 setSideIconVisibility(true)
                 mActivity?.let { setSideIcon(ContextCompat.getDrawable(it, R.drawable.ic_setting_toolbar), this@MarketingFragment) }
             } else {
@@ -154,25 +148,37 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
         shareResponse?.let { response ->
             shareHeadingTextView?.text = response.heading
             domainTextView?.text = response.domain
-            shareTextView?.text = response.right_icon_text
+            shareTextView?.text = response.rightIconText
             val shareLeftImageView: ImageView? = mContentView?.findViewById(R.id.shareLeftImageView)
             val shareRightImageView: ImageView? = mContentView?.findViewById(R.id.shareRightImageView)
             val expiryLeftImageView: ImageView? = mContentView?.findViewById(R.id.expiryLeftImageView)
             mActivity?.let { context ->
-                shareLeftImageView?.let { view -> Glide.with(context).load(response.left_icon_cdn).into(view) }
-                shareRightImageView?.let { view -> Glide.with(context).load(response.right_icon_cdn).into(view) }
-                if (isEmpty(response.domain_expiry_message)) {
+                shareLeftImageView?.let { view -> Glide.with(context).load(response.leftIconCdn).into(view) }
+                shareRightImageView?.let { view -> Glide.with(context).load(response.rightIconCdn).into(view) }
+                if (isEmpty(response.domainExpiryMessage)) {
                     separator?.visibility = View.GONE
                     expiryContainer?.visibility = View.GONE
                 } else {
                     separator?.visibility = View.VISIBLE
                     expiryContainer?.visibility = View.VISIBLE
-                    expiryTextView?.text = response.domain_expiry_message
-                    knowMoreTextView?.text = response.heading_know_more
+                    expiryTextView?.text = response.domainExpiryMessage
+                    knowMoreTextView?.apply {
+                        if (shareResponse.isKnowMoreEnable) {
+                            visibility = View.VISIBLE
+                            text = response.headingKnowMore
+                        } else {
+                            text = null
+                            visibility = View.GONE
+                        }
+                    }
                     expiryContainer?.setOnClickListener {
+                        if (StaticInstances.sIsShareStoreLocked) {
+                            getLockedStoreShareDataServerCall(Constants.MODE_SHARE_STORE)
+                            return@setOnClickListener
+                        }
                         showKnowMoreBottomSheet(response.knowMore)
                     }
-                    expiryLeftImageView?.let { view -> Glide.with(context).load(response.domain_expiry_cdn).into(view) }
+                    expiryLeftImageView?.let { view -> Glide.with(context).load(response.domainExpiryCdn).into(view) }
                 }
             }
         }
@@ -188,11 +194,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
     override fun onGenerateStorePdfResponse(response: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
-            showShortSnackBar(
-                response.mMessage,
-                true,
-                if (response.mIsSuccessStatus) R.drawable.ic_check_circle else R.drawable.ic_close_red
-            )
+            showShortSnackBar(response.mMessage, true, if (response.mIsSuccessStatus) R.drawable.ic_check_circle else R.drawable.ic_close_red)
         }
     }
 
@@ -215,6 +217,10 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                 launchFragment(PromoCodePageInfoFragment.newInstance(), true)
             }
             Constants.NEW_RELEASE_TYPE_GOOGLE_ADS -> {
+                if (StaticInstances.sIsShareStoreLocked) {
+                    getLockedStoreShareDataServerCall(Constants.MODE_GOOGLE_ADS)
+                    return
+                }
                 mMarketingItemClickResponse = response
                 getLocationForGoogleAds()
             }
@@ -241,7 +247,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                     data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.TYPE to AFInAppEventParameterName.SOCIAL)
                 )
-                openWebViewFragment(this, "", response.url, Constants.SETTINGS)
+                launchFragment(SocialMediaFragment.newInstance(mMarketingPageInfoResponse), true)
             }
             Constants.ACTION_THEME_DISCOVER -> {
                 AppEventsManager.pushAppEvents(
@@ -276,7 +282,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                 )
                 openWebViewFragment(this, "", response.url, Constants.SETTINGS)
             }
-            Constants.ACTION_SHARE_DATA -> {
+            Constants.ACTION_SHARE_STORE -> {
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_STORE_SHARE,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
@@ -297,7 +303,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                         AFInAppEventParameterName.PATH to AFInAppEventParameterName.MARKETING
                     )
                 )
-                if (mShareStorePDFResponse == null) {
+                if (null == mShareStorePDFResponse) {
                     showProgressDialog(mActivity)
                     mService?.getShareStorePdfText()
                 } else {
@@ -357,18 +363,17 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                         val bottomSheetHeadingTextView: TextView = findViewById(R.id.bottomSheetHeadingTextView)
                         val verifyTextView: TextView = findViewById(R.id.verifyTextView)
                         val referAndEarnRecyclerView: RecyclerView = findViewById(R.id.referAndEarnRecyclerView)
-                        if (response?.imageUrl?.isNotEmpty() == true) bottomSheetUpperImageView?.let {
-                            try {
-                                Glide.with(this@MarketingFragment).load(response.imageUrl).into(it)
-                            } catch (e: Exception) {
-                                Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
-                            }
-                        }
+                        if (isNotEmpty(response?.imageUrl))
+                            Glide.with(this@MarketingFragment).load(response?.imageUrl).into(bottomSheetUpperImageView)
                         bottomSheetUpperImageView.setImageDrawable(ContextCompat.getDrawable(it, R.drawable.ic_share_pdf_whatsapp))
                         bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
                         bottomSheetHeadingTextView.text = response?.heading
                         verifyTextView.text = response?.subHeading
                         verifyTextView.setOnClickListener{
+                            if (StaticInstances.sIsShareStoreLocked) {
+                                getLockedStoreShareDataServerCall(Constants.MODE_GET_MY_CATALOGUE)
+                                return@setOnClickListener
+                            }
                             showProgressDialog(mActivity)
                             mService?.generateStorePdf()
                             AppEventsManager.pushAppEvents(
@@ -395,11 +400,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
     }
 
     override fun onNativeBackPressed() {
-        mActivity?.let {
-            it.runOnUiThread {
-                it.onBackPressed()
-            }
-        }
+        mActivity?.let { context -> context.runOnUiThread { context.onBackPressed() } }
     }
 
     override fun sendData(data: String) {
@@ -412,7 +413,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
         Log.d(TAG, "onBackPressed: called")
         if(fragmentManager != null && fragmentManager?.backStackEntryCount == 1) {
             clearFragmentBackStack()
-            launchFragment(HomeFragment.newInstance(), true)
+            launchFragment(OrderFragment.newInstance(), true)
             return true
         }
         return false
@@ -441,9 +442,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
             eventName = AFInAppEventType.EVENT_GOOGLE_ADS_EXPLORE,
             isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
             data = mapOf(
-                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(
-                    Constants.STORE_ID
-                ),
+                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
                 AFInAppEventParameterName.CHANNEL to AFInAppEventParameterName.MARKETING
             )
         )
@@ -452,15 +451,15 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         Log.i(TAG, "onRequestPermissionResult")
-        if (requestCode == Constants.LOCATION_REQUEST_CODE) {
+        if (Constants.LOCATION_REQUEST_CODE == requestCode) {
             when {
                 grantResults.isEmpty() -> Log.i(TAG, "User interaction was cancelled.")
-                grantResults[0] == PackageManager.PERMISSION_GRANTED -> {
+                PackageManager.PERMISSION_GRANTED == grantResults[0] -> {
                     getLocationFromGoogleMap()
                 }
                 else -> {
-                    mActivity?.onBackPressed()
                     showShortSnackBar("Permission was denied", true, R.drawable.ic_close_red)
+                    mActivity?.onBackPressed()
                 }
             }
         }
@@ -490,7 +489,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                 )
                 openWebViewFragment(this, "", WebViewUrls.WEB_VIEW_QR_DOWNLOAD, Constants.SETTINGS)
             }
-            Constants.ACTION_SHARE_DATA -> {
+            Constants.ACTION_SHARE_STORE -> {
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_STORE_SHARE,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
@@ -511,7 +510,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                         AFInAppEventParameterName.PATH to AFInAppEventParameterName.MARKETING
                     )
                 )
-                if (mShareStorePDFResponse == null) {
+                if (null == mShareStorePDFResponse) {
                     showProgressDialog(mActivity)
                     mService?.getShareStorePdfText()
                 } else {
@@ -542,7 +541,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                     view.run {
                         val headingTextView: TextView = findViewById(R.id.headingTextView)
                         val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
-                        headingTextView.text = itemResponse.expandable_data_heading
+                        headingTextView.text = itemResponse.expandableDataHeading
                         recyclerView.apply {
                             layoutManager = GridLayoutManager(mActivity, 2)
                             adapter = MarketingMoreOptionsBottomSheetItemAdapter(this@MarketingFragment, itemResponse.expandableData, object : IAdapterItemClickListener {
@@ -554,10 +553,13 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                                         data = item?.eventParameter ?: HashMap()
                                     )
                                     Log.d(TAG, "showMoreOptionsBottomSheet :: item clicked :: $item")
-                                    item?.let { responseItem ->
-                                        bottomSheetDialog.dismiss()
-                                        openWebViewFragment(this@MarketingFragment, "", "${BuildConfig.WEB_VIEW_URL}${responseItem.url}")
+                                    bottomSheetDialog.dismiss()
+                                    val headingStr = when(item?.action) {
+                                        Constants.ACTION_BESTSELLER -> mMarketingPageInfoResponse?.marketingStaticTextResponse?.heading_new_launches_and_bestsellers
+                                        Constants.ACTION_PRODUCT_DISCOUNT -> mMarketingPageInfoResponse?.marketingStaticTextResponse?.heading_product_discount
+                                        else -> ""
                                     }
+                                    launchFragment(EditSocialMediaTemplateFragment.newInstance(headingStr, null, true, mMarketingPageInfoResponse), true)
                                 }
 
                             })
@@ -608,4 +610,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
     override fun onAppSettingItemClicked(subPagesResponse: SubPagesResponse) {
         Log.d(TAG, "onAppSettingItemClicked: ${subPagesResponse.mAction}")
     }
+
+    override fun onLockedStoreShareSuccessResponse(lockedShareResponse: LockedStoreShareResponse) = showLockedStoreShareBottomSheet(lockedShareResponse)
+
 }

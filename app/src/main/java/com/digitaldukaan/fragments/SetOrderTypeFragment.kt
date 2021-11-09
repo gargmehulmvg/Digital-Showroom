@@ -47,17 +47,13 @@ class SetOrderTypeFragment: BaseFragment(), ISetOrderTypeServiceInterface, IRecy
     private var mIsBothCompleted = false
 
     companion object {
-        private const val TAG = "SetOrderTypeFragment"
         fun newInstance(): SetOrderTypeFragment{
             return SetOrderTypeFragment()
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        TAG = "SetOrderTypeFragment"
         mContentView = inflater.inflate(R.layout.layout_set_order_type_fragment, container, false)
         initializeUI()
         mService = SetOrderTypeService()
@@ -89,7 +85,7 @@ class SetOrderTypeFragment: BaseFragment(), ISetOrderTypeServiceInterface, IRecy
         clearRadioButtonSelection()
         val howDoesPrepaidWorkTextView: TextView? = mContentView?.findViewById(R.id.howDoesPrepaidWorkTextView)
         howDoesPrepaidWorkTextView?.text = mStaticText?.heading_how_does_prepaid_orders_works
-        ToolBarManager.getInstance()?.setHeaderTitle(mStaticText?.heading_set_orders_type)
+        ToolBarManager.getInstance()?.headerTitle = mStaticText?.heading_set_orders_type
         mSetOrderTypePageInfoResponse?.mPostPaidResponse?.let {
             if (it.id == mPaymentMethod) {
                 postpaidRadioButton?.isChecked = true

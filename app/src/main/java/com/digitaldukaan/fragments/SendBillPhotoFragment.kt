@@ -47,7 +47,6 @@ class SendBillPhotoFragment: BaseFragment(), ISendBillPhotoServiceInterface {
     private val mService = SendBillPhotoService()
 
     companion object {
-        private const val TAG = "SendBillPhotoFragment"
         private const val CUSTOM = "custom"
 
         fun newInstance(mainOrderDetailResponse: OrderDetailMainResponse?, file: File?, deliveryTimeStr: String?, extraChargeName: String?, extraCharge: Double, discount: Double, payAmount: Double?, deliveryChargesAmount: Double, deliveryTimeResponse: DeliveryTimeResponse?): SendBillPhotoFragment {
@@ -67,6 +66,7 @@ class SendBillPhotoFragment: BaseFragment(), ISendBillPhotoServiceInterface {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        TAG = "SendBillPhotoFragment"
         mService.setServiceListener(this)
         mContentView = inflater.inflate(R.layout.send_bill_photo_fragment, container, false)
         return mContentView
@@ -101,7 +101,7 @@ class SendBillPhotoFragment: BaseFragment(), ISendBillPhotoServiceInterface {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, false)
-            setHeaderTitle(mSendPhotoStaticText?.text_send_bill)
+            headerTitle = mSendPhotoStaticText?.text_send_bill
             setSideIconVisibility(true)
             onBackPressed(this@SendBillPhotoFragment)
             mActivity?.let {
@@ -157,7 +157,7 @@ class SendBillPhotoFragment: BaseFragment(), ISendBillPhotoServiceInterface {
                 showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_green_check_small)
                 val response = Gson().fromJson<UpdateOrderResponse>(commonResponse.mCommonDataStr, UpdateOrderResponse::class.java)
                 shareOnWhatsApp(response?.whatsAppText)
-                launchFragment(HomeFragment.newInstance(), true)
+                launchFragment(OrderFragment.newInstance(), true)
             } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
         }
     }

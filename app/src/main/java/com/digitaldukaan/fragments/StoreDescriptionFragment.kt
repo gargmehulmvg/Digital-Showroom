@@ -33,7 +33,6 @@ class StoreDescriptionFragment : BaseFragment(), IStoreDescriptionServiceInterfa
     private var mStoreDescriptionStaticData: ProfileStaticData? = null
 
     companion object {
-        private const val TAG = "StoreDescriptionFragment"
         fun newInstance(profilePreviewResponse: ProfilePreviewSettingsKeyResponse?, position: Int, isSingleStep: Boolean, profileInfoResponse: ProfileInfoResponse?): StoreDescriptionFragment {
             val fragment = StoreDescriptionFragment()
             fragment.mProfilePreviewResponse = profilePreviewResponse
@@ -45,6 +44,7 @@ class StoreDescriptionFragment : BaseFragment(), IStoreDescriptionServiceInterfa
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        TAG = "StoreDescriptionFragment"
         mContentView = inflater.inflate(R.layout.store_description_fragment, container, false)
         return mContentView
     }
@@ -55,7 +55,7 @@ class StoreDescriptionFragment : BaseFragment(), IStoreDescriptionServiceInterfa
         ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, false)
             val stepStr = if (mIsSingleStep) "" else "Step $mPosition : "
-            setHeaderTitle("$stepStr${mProfilePreviewResponse?.mHeadingText}")
+            headerTitle = "$stepStr${mProfilePreviewResponse?.mHeadingText}"
             onBackPressed(this@StoreDescriptionFragment)
             hideBackPressFromToolBar(mActivity, false)
         }

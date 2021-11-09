@@ -8,9 +8,7 @@ import com.digitaldukaan.services.serviceinterface.IMarketingServiceInterface
 
 class MarketingNetworkService {
 
-    suspend fun getMarketingSuggestedDomainsServerCall(
-        serviceInterface: IMarketingServiceInterface
-    ) {
+    suspend fun getMarketingSuggestedDomainsServerCall(serviceInterface: IMarketingServiceInterface) {
         try {
             val response = RetrofitApi().getServerCallObject()?.getMarketingSuggestedDomains()
             response?.let {
@@ -27,9 +25,7 @@ class MarketingNetworkService {
         }
     }
 
-    suspend fun getMarketingPageInfoServerCall(
-        serviceInterface: IMarketingServiceInterface
-    ) {
+    suspend fun getMarketingPageInfoServerCall(serviceInterface: IMarketingServiceInterface) {
         try {
             val response = RetrofitApi().getServerCallObject()?.getStoreMarketingPageInfo()
             response?.let {
@@ -46,9 +42,7 @@ class MarketingNetworkService {
         }
     }
 
-    suspend fun getShareStoreDataServerCall(
-        serviceInterface: IMarketingServiceInterface
-    ) {
+    suspend fun getShareStoreDataServerCall(serviceInterface: IMarketingServiceInterface) {
         try {
             val response = RetrofitApi().getServerCallObject()?.getShareStore()
             response?.let {
@@ -65,9 +59,7 @@ class MarketingNetworkService {
         }
     }
 
-    suspend fun generateStorePdfServerCall(
-        serviceInterface: IMarketingServiceInterface
-    ) {
+    suspend fun generateStorePdfServerCall(serviceInterface: IMarketingServiceInterface) {
         try {
             val response = RetrofitApi().getServerCallObject()?.generateStorePdf()
             response?.let {
@@ -84,9 +76,7 @@ class MarketingNetworkService {
         }
     }
 
-    suspend fun getShareStorePdfTextServerCall(
-        serviceInterface: IMarketingServiceInterface
-    ) {
+    suspend fun getShareStorePdfTextServerCall(serviceInterface: IMarketingServiceInterface) {
         try {
             val response = RetrofitApi().getServerCallObject()?.getShareStorePdfText()
             response?.let {

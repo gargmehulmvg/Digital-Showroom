@@ -1,6 +1,5 @@
 package com.digitaldukaan.fragments
 
-import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -17,10 +16,7 @@ import com.digitaldukaan.R
 import com.digitaldukaan.adapters.EditPremiumColorAdapter
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.IAdapterItemClickListener
-import com.digitaldukaan.models.response.CommonApiResponse
-import com.digitaldukaan.models.response.EditPremiumColorItemResponse
-import com.digitaldukaan.models.response.PremiumPageInfoResponse
-import com.digitaldukaan.models.response.PremiumPageInfoStaticTextResponse
+import com.digitaldukaan.models.response.*
 import com.digitaldukaan.network.RetrofitApi
 import com.digitaldukaan.services.EditPremiumService
 import com.digitaldukaan.services.isInternetConnectionAvailable
@@ -42,7 +38,6 @@ class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
     private var mDefaultSelectedColorItem: EditPremiumColorItemResponse? = null
 
     companion object {
-        private const val TAG = "EditPremiumFragment"
         private val mService: EditPremiumService = EditPremiumService()
         private var colorAdapter: EditPremiumColorAdapter? = null
 
@@ -64,6 +59,7 @@ class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        TAG = "EditPremiumFragment"
         mService.setServiceInterface(this)
         mEditPremiumColorList = ArrayList()
         mContentView = inflater.inflate(R.layout.layout_edit_premium_fragment, container, false)
@@ -93,36 +89,7 @@ class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
                 }
 
                 override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
-                    return when {
-                        url.startsWith("tel:") -> {
-                            try {
-                                view.context?.startActivity(Intent(Intent.ACTION_DIAL, Uri.parse(url)))
-                            } catch (e: Exception) {
-                                Log.e(TAG, "shouldOverrideUrlLoading :: tel :: ${e.message}", e)
-                            }
-                            true
-                        }
-                        url.contains("mailto:") -> {
-                            try {
-                                view.context?.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
-                            } catch (e: Exception) {
-                                Log.e(TAG, "shouldOverrideUrlLoading :: mailto :: ${e.message}", e)
-                            }
-                            true
-                        }
-                        url.contains("whatsapp:") -> {
-                            try {
-                                view.context?.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
-                            } catch (e: Exception) {
-                                Log.e(TAG, "shouldOverrideUrlLoading :: whatsapp :: ${e.message}", e)
-                            }
-                            true
-                        }
-                        else -> {
-                            view.loadUrl(url)
-                            true
-                        }
-                    }
+                    return onCommonWebViewShouldOverrideUrlLoading(url, view)
                 }
             }
             loadUrl(url)
@@ -139,7 +106,7 @@ class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
         when (view?.id) {
             backButtonToolbar?.id -> mActivity?.onBackPressed()
             editColorContainer?.id -> {
-                if (mEditPremiumColorList == null || mEditPremiumColorList?.isEmpty() == true) {
+                if (null == mEditPremiumColorList || true == mEditPremiumColorList?.isEmpty()) {
                     if (!isInternetConnectionAvailable(mActivity)) {
                         showNoInternetConnectionDialog()
                         return
@@ -166,7 +133,11 @@ class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
                 openUrlInBrowser(url)
             }
             whatsAppImageView?.id -> {
-                if (mShareDataOverWhatsAppText.isNotEmpty()) {
+                if (StaticInstances.sIsShareStoreLocked) {
+                    getLockedStoreShareDataServerCall(Constants.MODE_SHARE_STORE)
+                    return
+                }
+                if (isNotEmpty(mShareDataOverWhatsAppText)) {
                     shareOnWhatsApp(mShareDataOverWhatsAppText)
                 } else if (!isInternetConnectionAvailable(mActivity)) {
                     showNoInternetConnectionDialog()
@@ -282,5 +253,7 @@ class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
     }
 
     override fun onEditPremiumServerException(e: Exception) = exceptionHandlingForAPIResponse(e)
+
+    override fun onLockedStoreShareSuccessResponse(lockedShareResponse: LockedStoreShareResponse) = showLockedStoreShareBottomSheet(lockedShareResponse)
 
 }

@@ -22,6 +22,7 @@ import com.digitaldukaan.models.response.*
 import com.digitaldukaan.services.SplashService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.ISplashServiceInterface
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 
@@ -30,7 +31,6 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
     private var mIntentUri: Uri? = null
 
     companion object {
-        private const val TAG = "SplashFragment"
         private val splashService: SplashService = SplashService()
         private var appUpdateDialog: Dialog? = null
 
@@ -42,8 +42,10 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        TAG = "SplashFragment"
         mContentView = inflater.inflate(R.layout.layout_splash_fragment, container, false)
         hideBottomNavigationView(true)
+        FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
         return mContentView
     }
 
@@ -103,7 +105,7 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
         when {
             null != mIntentUri -> switchToFragmentByDeepLink()
             "" == getStringDataFromSharedPref(Constants.STORE_ID) -> launchFragment(LoginFragmentV2.newInstance(), true)
-            else -> launchFragment(HomeFragment.newInstance(), true)
+            else -> launchFragment(OrderFragment.newInstance(), true)
         }
     }
 
@@ -143,8 +145,8 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
         when {
             intentUriStr.contains("${deepLinkStr}Settings") -> launchFragment(SettingsFragment.newInstance(), true)
             intentUriStr.contains("${deepLinkStr}ProfilePage") -> launchFragment(ProfilePreviewFragment.newInstance(), true)
-            intentUriStr.contains("${deepLinkStr}ProductList") -> launchFragment(HomeFragment.newInstance(), true)
-            intentUriStr.contains("${deepLinkStr}OrderList") -> launchFragment(HomeFragment.newInstance(), true)
+            intentUriStr.contains("${deepLinkStr}ProductList") -> launchFragment(OrderFragment.newInstance(), true)
+            intentUriStr.contains("${deepLinkStr}OrderList") -> launchFragment(OrderFragment.newInstance(), true)
             intentUriStr.contains("${deepLinkStr}ProductAdd") -> launchFragment(ProductFragment.newInstance(), true)
             intentUriStr.contains("${deepLinkStr}MarketingBroadCast") -> launchFragment(MarketingFragment.newInstance(), true)
             intentUriStr.contains("${deepLinkStr}OTP") -> launchFragment(LoginFragmentV2.newInstance(), true)

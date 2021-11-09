@@ -16,8 +16,10 @@
     <integer name="min_lines_three">3</integer>
     <integer name="pin_code_length">6</integer>
     <integer name="business_type_count">3</integer>
+    <integer name="catalog_search_char_count">3</integer>
     <integer name="store_name_min_length">4</integer>
     <integer name="otp_length">4</integer>
     <integer name="image_mb_size">20</integer>
     <integer name="variant_count">20</integer>
+    <integer name="custom_domain_count">4</integer>
 </resources>

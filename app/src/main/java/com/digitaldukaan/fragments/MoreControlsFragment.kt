@@ -43,9 +43,9 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
 
     companion object {
 
-        fun newInstance(appSettingsResponseStaticData: AccountStaticTextResponse?, accountInfoResponse: AccountInfoResponse?): MoreControlsFragment {
+        fun newInstance(accountInfoResponse: AccountInfoResponse?): MoreControlsFragment {
             val fragment = MoreControlsFragment()
-            fragment.mMoreControlsStaticData = appSettingsResponseStaticData
+            fragment.mMoreControlsStaticData = accountInfoResponse?.mAccountStaticText
             fragment.mAccountInfoResponse = accountInfoResponse
             fragment.mIsOrderNotificationOn = accountInfoResponse?.mIsOrderNotificationOn ?: false
             fragment.mIsPrepaidOrdersLocked = accountInfoResponse?.mPrepaidOrdersLocked?.mIsActive ?: false
@@ -56,6 +56,7 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        TAG = "MoreControlsFragment"
         mContentView = inflater.inflate(R.layout.layout_more_control_fragment, container, false)
         mMoreControlsService = MoreControlsService()
         mMoreControlsService?.setServiceInterface(this)
@@ -66,7 +67,7 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
         super.onViewCreated(view, savedInstanceState)
         ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, false)
-            setHeaderTitle(mMoreControlsStaticData?.mTextStoreControls)
+            headerTitle = mMoreControlsStaticData?.mTextStoreControls
             onBackPressed(this@MoreControlsFragment)
             hideBackPressFromToolBar(mActivity, false)
         }

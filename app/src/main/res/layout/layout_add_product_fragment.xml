@@ -84,8 +84,10 @@
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/imagesLeftContainer"
+                    app:layout_constraintVertical_bias="0.517"
                     tools:itemCount="1"
                     tools:listitem="@layout/add_product_images_item" />
 
@@ -361,6 +363,8 @@
                             android:background="@drawable/slight_curve_green_background_without_padding"
                             android:fontFamily="@font/montserrat_bold"
                             android:textColor="@color/white"
+                            android:paddingStart="@dimen/_5sdp"
+                            android:paddingEnd="@dimen/_5sdp"
                             android:textSize="@dimen/_11sdp"
                             android:visibility="invisible"
                             app:layout_constraintBottom_toBottomOf="@id/originalPriceTextView"
@@ -420,17 +424,71 @@
                         android:layout_marginTop="@dimen/_14sdp"
                         app:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
                         app:spanCount="2"
+                        tools:itemCount="2"
                         tools:listitem="@layout/chip_item_layout2" />
 
                 </LinearLayout>
 
             </androidx.cardview.widget.CardView>
 
-            <View
+            <androidx.cardview.widget.CardView
+                android:id="@+id/youtubeLinkContainer"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_1sdp"
-                android:alpha="0.5"
-                android:background="@color/curve_grey_border" />
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                app:cardCornerRadius="@dimen/_5sdp"
+                android:layout_marginEnd="@dimen/_10sdp" >
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:orientation="vertical"
+                    android:padding="@dimen/_12sdp">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/youtubeLinkInputLayout"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintEnd_toEndOf="@id/smsImageView"
+                        app:layout_constraintStart_toStartOf="@id/enterMobileNumberHeading"
+                        tools:hint="Paste your Product Youtube Video link here…">
+
+                        <EditText
+                            android:id="@+id/youtubeLinkEditText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:importantForAutofill="no"
+                            android:inputType="textCapWords"
+                            android:maxLength="@integer/description_name_length"
+                            android:textColor="@color/black"
+                            android:textColorHint="@color/default_text_light_grey"
+                            android:textSize="@dimen/_12sdp" />
+
+                        <TextView
+                            android:id="@+id/learnYouTubeLinkHelpTextView"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/red"
+                            android:onClick="onClick"
+                            android:layout_marginTop="@dimen/_5sdp"
+                            android:paddingTop="@dimen/_5sdp"
+                            android:paddingBottom="@dimen/_5sdp"
+                            android:background="?selectableItemBackground"
+                            android:textSize="@dimen/_10sdp"
+                            android:drawablePadding="@dimen/_5sdp"
+                            tools:text="Learn how to add Product Youtube Video link?"
+                            app:drawableStartCompat="@drawable/ic_youtube" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+
+            </androidx.cardview.widget.CardView>
 
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"

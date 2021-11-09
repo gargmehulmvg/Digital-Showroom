@@ -33,7 +33,6 @@ class EditPhotoFragment: BaseFragment() {
     private var mPremiumPageInfoResponse: PremiumPageInfoResponse? = null
 
     companion object {
-        private const val TAG = "EditPhotoFragment"
         fun newInstance(uri: Uri?, mode: String, staticText: PremiumPageInfoStaticTextResponse?, premiumPageInfoResponse: PremiumPageInfoResponse?): EditPhotoFragment {
             val fragment = EditPhotoFragment()
             fragment.mFileUri = uri
@@ -49,20 +48,17 @@ class EditPhotoFragment: BaseFragment() {
         AppEventsManager.pushAppEvents(
             eventName = AFInAppEventType.EVENT_MOBILE_BANNER_CROPPED,
             isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-            data = mapOf(
-                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)
-            )
+            data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
         )
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        TAG = "EditPhotoFragment"
         mContentView = inflater.inflate(R.layout.layout_edit_photo_fragment, container, false)
         return mContentView
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        setupUI()
-    }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) = setupUI()
 
     private fun setupUI() {
         cropImageView?.setImageUriAsync(mFileUri)
@@ -78,8 +74,8 @@ class EditPhotoFragment: BaseFragment() {
                 val heightRatio = (mobileObj?.height ?: 0) / factor
                 Log.d(TAG, "Constants.EDIT_PHOTO_MODE_MOBILE: Aspect Ratio: $widthRatio : $heightRatio")
                 cropImageView?.setAspectRatio(
-                    if (0 <= widthRatio) widthRatio else 1,
-                    if (0 <= heightRatio) heightRatio else 1
+                    if (0 < widthRatio) widthRatio else 1,
+                    if (0 < heightRatio) heightRatio else 1
                 )
             }
             Constants.EDIT_PHOTO_MODE_DESKTOP -> {
@@ -92,8 +88,8 @@ class EditPhotoFragment: BaseFragment() {
                 appTitleTextView?.text = mStaticText?.heading_crop_for_desktop_view
                 Log.d(TAG, "Constants.EDIT_PHOTO_MODE_DESKTOP: Aspect Ratio: $widthRatio : $heightRatio")
                 cropImageView?.setAspectRatio(
-                    if (0 <= widthRatio) widthRatio else 1,
-                    if (0 <= heightRatio) heightRatio else 1
+                    if (0 < widthRatio) widthRatio else 1,
+                    if (0 < heightRatio) heightRatio else 1
                 )
             }
         }
@@ -108,8 +104,8 @@ class EditPhotoFragment: BaseFragment() {
                 response?.let {
                     if (response.isSuccessful) {
                         val base64Str = Gson().fromJson<String>(response.body()?.mCommonDataStr, String::class.java)
-                        if (mode == Constants.EDIT_PHOTO_MODE_MOBILE) mMobileCdnLink = base64Str else mDesktopCdnLink = base64Str
-                        if (mode == Constants.EDIT_PHOTO_MODE_DESKTOP) {
+                        if (Constants.EDIT_PHOTO_MODE_MOBILE == mode) mMobileCdnLink = base64Str else mDesktopCdnLink = base64Str
+                        if (Constants.EDIT_PHOTO_MODE_DESKTOP == mode) {
                             AppEventsManager.pushAppEvents(
                                 eventName = AFInAppEventType.EVENT_DESKTOP_BANNER_CROPPED,
                                 isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
@@ -139,7 +135,7 @@ class EditPhotoFragment: BaseFragment() {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
             val imageUrlItems: ArrayList<ImageUrlItemRequest>? = ArrayList()
             mPremiumPageInfoResponse?.theme?.themeComponent?.body?.get(1)?.images?.forEachIndexed { position, themeBodyResponse ->
-                if (position == 0) {
+                if (0 == position) {
                     val request = ImageUrlItemRequest(themeBodyResponse.id, mMobileCdnLink)
                     imageUrlItems?.add(request)
                 } else {
@@ -154,7 +150,7 @@ class EditPhotoFragment: BaseFragment() {
                     CoroutineScopeUtils().runTaskOnCoroutineMain {
                         stopProgress()
                         if (response.isSuccessful) {
-                            if (response.body()?.mIsSuccessStatus == true) {
+                            if (true == response.body()?.mIsSuccessStatus) {
                                 showShortSnackBar(response.body()?.mMessage, true, R.drawable.ic_green_check_small)
                                 mActivity?.onBackPressed()
                             }

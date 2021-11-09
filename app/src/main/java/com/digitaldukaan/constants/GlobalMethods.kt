@@ -1,13 +1,13 @@
 package com.digitaldukaan.constants
 
-import android.app.DownloadManager
+import android.app.Activity
 import android.content.ContentValues
 import android.content.Context
+import android.content.Context.WINDOW_SERVICE
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.database.Cursor
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
+import android.graphics.*
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.net.Uri
@@ -20,11 +20,15 @@ import android.telephony.PhoneNumberUtils
 import android.text.TextUtils
 import android.util.Base64
 import android.util.Base64OutputStream
+import android.util.DisplayMetrics
 import android.util.Log
 import android.view.View
+import android.view.View.MeasureSpec
+import android.view.WindowManager
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.TranslateAnimation
-import android.widget.Toast
+import androidmads.library.qrgenearator.QRGContents
+import androidmads.library.qrgenearator.QRGEncoder
 import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.MainActivity
 import com.digitaldukaan.R
@@ -48,6 +52,8 @@ import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.TimeUnit
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 import kotlin.collections.ArrayList
 
 
@@ -59,7 +65,7 @@ fun getBitmapFromURL(src: String?): Bitmap? {
     }
 }
 fun getBitmapFromUri(uri: Uri?, context: Context?): Bitmap? {
-    if (uri == null || context == null) return null
+    if (null == uri || null == context) return null
     return try {
         val imageStream = context.contentResolver.openInputStream(uri)
         return BitmapFactory.decodeStream(imageStream);
@@ -69,8 +75,8 @@ fun getBitmapFromUri(uri: Uri?, context: Context?): Bitmap? {
 }
 
 fun isLocationEnabledInSettings(context: Context?): Boolean {
-    if (context == null) return false
-    var locationMode = 0
+    if (null == context) return false
+    val locationMode: Int
     val locationProviders: String
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
         locationMode = try {
@@ -90,7 +96,7 @@ fun isLocationEnabledInSettings(context: Context?): Boolean {
 }
 
 fun convertImageFileToBase64(imageFile: File?): String {
-    if (imageFile == null) return ""
+    if (null == imageFile) return ""
     return ByteArrayOutputStream().use { outputStream ->
         Base64OutputStream(outputStream, Base64.DEFAULT).use { base64FilterStream ->
             imageFile.inputStream().use { inputStream ->
@@ -101,64 +107,47 @@ fun convertImageFileToBase64(imageFile: File?): String {
     }
 }
 
-fun downloadImageNew(filename: String, downloadUrlOfImage: String, context: Context) {
-    try {
-        val dm = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager?
-        val downloadUri = Uri.parse(downloadUrlOfImage)
-        val request = DownloadManager.Request(downloadUri)
-        request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI or DownloadManager.Request.NETWORK_MOBILE)
-            .setAllowedOverRoaming(false)
-            .setTitle(filename)
-            .setMimeType("image/jpeg") // Your file type. You can use this code to download other file types also.
-            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-            .setDestinationInExternalPublicDir(
-                Environment.DIRECTORY_PICTURES,
-                File.separator.toString() + filename + ".jpg"
-            )
-        dm!!.enqueue(request)
-        Toast.makeText(context, "Image download started.", Toast.LENGTH_SHORT).show()
-    } catch (e: java.lang.Exception) {
-        Toast.makeText(context, "Image download failed.", Toast.LENGTH_SHORT).show()
-    }
-}
-
 fun downloadMediaToStorage(bitmap: Bitmap?, activity: MainActivity?): Boolean {
-    val filename = "${System.currentTimeMillis()}.jpg"
-    var fos: OutputStream? = null
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-        activity?.contentResolver?.also { resolver ->
-            val contentValues = ContentValues().apply {
-                put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
-                put(MediaStore.MediaColumns.MIME_TYPE, "image/jpg")
-                put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES)
+    try {
+        val filename = "${System.currentTimeMillis()}.jpg"
+        var fos: OutputStream? = null
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            activity?.contentResolver?.also { resolver ->
+                val contentValues = ContentValues().apply {
+                    put(MediaStore.MediaColumns.DISPLAY_NAME, filename)
+                    put(MediaStore.MediaColumns.MIME_TYPE, "image/jpg")
+                    put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_PICTURES)
+                }
+                val imageUri: Uri? = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+                fos = imageUri?.let { resolver.openOutputStream(it) }
             }
-            val imageUri: Uri? = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
-            fos = imageUri?.let { resolver.openOutputStream(it) }
+        } else {
+            val imagesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
+            val image = File(imagesDir, filename)
+            fos = FileOutputStream(image)
         }
-    } else {
-        val imagesDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES)
-        val image = File(imagesDir, filename)
-        fos = FileOutputStream(image)
+        fos?.use {
+            bitmap?.compress(Bitmap.CompressFormat.JPEG, 100, it)
+            activity?.showToast("Image Saved to Gallery successfully")
+            return true
+        }
+        return false
+    } catch (e: Exception) {
+        return false
     }
-    fos?.use {
-        bitmap?.compress(Bitmap.CompressFormat.JPEG, 100, it)
-        activity?.showToast("Image Saved to Gallery successfully")
-        return true
-    }
-    return false
 }
 
 fun getBase64FromImageURL(url: String): String? {
     try {
         val imageUrl = URL(url)
-        val ucon: URLConnection = imageUrl.openConnection()
-        val inputStream: InputStream = ucon.getInputStream()
-        val baos = ByteArrayOutputStream()
+        val uCon: URLConnection = imageUrl.openConnection()
+        val inputStream: InputStream = uCon.getInputStream()
+        val bAos = ByteArrayOutputStream()
         val buffer = ByteArray(1024)
         var read: Int
-        while (inputStream.read(buffer, 0, buffer.size).also { read = it } != -1) baos.write(buffer, 0, read)
-        baos.flush()
-        return Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT)
+        while (inputStream.read(buffer, 0, buffer.size).also { read = it } != -1) bAos.write(buffer, 0, read)
+        bAos.flush()
+        return Base64.encodeToString(bAos.toByteArray(), Base64.DEFAULT)
     } catch (e: Exception) {
         Log.e("Error", "getBase64FromImageURL", e)
     }
@@ -204,16 +193,20 @@ fun getBitmapFromBase64(base64Str: String?): Bitmap? {
     return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
 }
 
-fun getBitmapFromBase64V2(input: String?): Bitmap? {
+fun getBitmapFromBase64V2(input: String?): Bitmap? = try {
     val decodedByte = Base64.decode(input, 0)
-    return BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.size)
+    BitmapFactory.decodeByteArray(decodedByte, 0, decodedByte.size)
+} catch (e: Exception) {
+    null
 }
 
-fun Bitmap.getImageUri(inContext: Context?): Uri? {
+fun Bitmap.getImageUri(inContext: Context?): Uri? = try {
     val bytes = ByteArrayOutputStream()
     this.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
     val path = MediaStore.Images.Media.insertImage(inContext?.contentResolver, this, "IMG_${Calendar.getInstance().time}", null)
-    return if (path == null || path.isEmpty()) null else Uri.parse(path)
+    if (isEmpty(path)) null else Uri.parse(path)
+} catch (e: Exception) {
+    null
 }
 
 fun openWebViewFragment(fragment: BaseFragment, title: String, webViewType: String?, redirectFromStr: String) {
@@ -224,33 +217,33 @@ fun openWebViewFragment(fragment: BaseFragment, title: String, webViewType: Stri
     }
 }
 
-fun openWebViewFragmentV2(fragment: BaseFragment, title: String, webViewType: String, redirectFromStr: String) {
+fun openWebViewFragmentV2(fragment: BaseFragment?, title: String, webViewType: String, redirectFromStr: String) {
     try {
-        fragment.launchFragment(CommonWebViewFragment().newInstance(title, webViewType + "?storeid=${fragment.getStringDataFromSharedPref(Constants.STORE_ID)}&redirectFrom=$redirectFromStr&token=${fragment.getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"), true)
+        fragment?.launchFragment(CommonWebViewFragment().newInstance(title, webViewType + "?storeid=${fragment.getStringDataFromSharedPref(Constants.STORE_ID)}&redirectFrom=$redirectFromStr&token=${fragment.getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"), true)
     } catch (e: Exception) {
         Sentry.captureException(e, "openWebViewFragment :: fragment: BaseFragment, title: String, webViewType: String, redirectFromStr: String")
     }
 }
 
-fun openWebViewFragment(fragment: BaseFragment, title: String, webViewUrl: String?) {
+fun openWebViewFragment(fragment: BaseFragment?, title: String, webViewUrl: String?) {
     try {
-        fragment.launchFragment(CommonWebViewFragment().newInstance(title, webViewUrl + "?storeid=${fragment.getStringDataFromSharedPref(Constants.STORE_ID)}&token=${fragment.getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"), true)
+        fragment?.launchFragment(CommonWebViewFragment().newInstance(title, webViewUrl + "?storeid=${fragment.getStringDataFromSharedPref(Constants.STORE_ID)}&token=${fragment.getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"), true)
     } catch (e: Exception) {
         Sentry.captureException(e, "openWebViewFragment :: fragment: BaseFragment, title: String, webViewType: String?")
     }
 }
 
-fun openWebViewFragmentV3(fragment: BaseFragment, title: String, webViewUrl: String?) {
+fun openWebViewFragmentV3(fragment: BaseFragment?, title: String, webViewUrl: String?) {
     try {
-        fragment.launchFragment(CommonWebViewFragment().newInstance(title, webViewUrl ?: ""), true)
+        fragment?.launchFragment(CommonWebViewFragment().newInstance(title, webViewUrl ?: ""), true)
     } catch (e: Exception) {
         Sentry.captureException(e, "openWebViewFragment :: fragment: BaseFragment, title: String, webViewType: String?")
     }
 }
 
-fun openWebViewFragmentWithLocation(fragment: BaseFragment, title: String, webViewType: String?) {
+fun openWebViewFragmentWithLocation(fragment: BaseFragment?, title: String, webViewType: String?) {
     try {
-        fragment.launchFragment(CommonWebViewFragment().newInstance(title, webViewType ?: ""), true)
+        fragment?.launchFragment(CommonWebViewFragment().newInstance(title, webViewType ?: ""), true)
     } catch (e: Exception) {
         Sentry.captureException(e, "openWebViewFragment :: fragment: BaseFragment, title: String, webViewType: String?")
     }
@@ -294,19 +287,19 @@ fun getTxnDateStringFromTxnDate(date: Date): String {
 }
 
 fun getStringDateTimeFromOrderDate(date: Date?): String {
-    if (date == null) return ""
+    if (null == date) return ""
     val dateFormat = SimpleDateFormat("dd MMM yy | hh:mm a", Locale.getDefault())
     return dateFormat.format(date)
 }
 
 fun getStringDateTimeFromTransactionDetailDate(date: Date?): String {
-    if (date == null) return ""
+    if (null == date) return ""
     val dateFormat = SimpleDateFormat("hh:mm a - d MMM,yyyy", Locale.getDefault())
     return dateFormat.format(date)
 }
 
 fun getStringTimeFromDate(date: Date?): String {
-    if (date == null) return ""
+    if (null == date) return ""
     val dateFormat = SimpleDateFormat("hh:mm a", Locale.getDefault())
     return dateFormat.format(date)
 }
@@ -361,17 +354,16 @@ fun getHeaderByActionInSettingKetList(profilePreviewResponse: ProfileInfoRespons
 
 fun isAppInstalled(packageName: String, context: Context): Boolean {
     val pm: PackageManager = context.packageManager
-    val appInstalled = try {
+    return try {
         pm.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES)
         true
     } catch (e: PackageManager.NameNotFoundException) {
         false
     }
-    return appInstalled
 }
 
 fun replaceTemplateString(text: String?): String? {
-    if (text == null || text.isEmpty()) return ""
+    if (isEmpty(text)) return ""
     var returnText = text
     returnText = StringUtils.replace(returnText," ", "-")
     returnText = StringUtils.replace(returnText,"(", "-")
@@ -493,4 +485,68 @@ fun getToolTipBalloon(mContext: Context?, text: String? = "Sample Testing", arro
 
 fun isSingleDigitNumber(number: Long): Boolean {
     return !((number in 10..99) || (number < -9 && number > -100))
+}
+
+fun getBitmapFromView(view: View, activityMain: Activity?): Bitmap? {
+    return try {
+        activityMain?.let { activity ->
+            Log.e("GlobalMethods", "getBitmapFromView: $view")
+            val dm: DisplayMetrics = activity.resources.displayMetrics
+            view.measure(
+                MeasureSpec.makeMeasureSpec(dm.widthPixels, MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(dm.heightPixels, MeasureSpec.EXACTLY)
+            )
+            view.layout(0, 0, view.measuredWidth, view.measuredHeight)
+            val returnedBitmap = Bitmap.createBitmap(
+                view.measuredWidth,
+                view.measuredHeight, Bitmap.Config.ARGB_8888
+            )
+            val c = Canvas(returnedBitmap)
+            view.draw(c)
+            returnedBitmap
+        }
+    } catch (e: Exception) {
+        Log.e("GlobalMethods", "getBitmapFromView: ${e.message}", e)
+        null
+    }
+}
+
+fun getQRCodeBitmap(activity: MainActivity?, text: String?): Bitmap? {
+    try {
+        activity?.let { context ->
+            Log.d("GlobalMethods", "getQRCodeBitmap: $text")
+            val manager = context.getSystemService(WINDOW_SERVICE) as WindowManager
+            val display = manager.defaultDisplay
+            val point = Point()
+            display.getSize(point)
+            val width = point.x
+            val height = point.y
+            var dimen = if (width < height) width else height
+            dimen = dimen * 3 / 4
+            val qrgEncoder = QRGEncoder(text, null, QRGContents.Type.TEXT, dimen)
+            Log.d("GlobalMethods", "qrgEncoder: $qrgEncoder")
+            return try {
+                qrgEncoder.encodeAsBitmap()
+            } catch (e: Exception) {
+                Log.e("GlobalMethods", e.toString())
+                null
+            }
+        }
+        return null
+    } catch (e: Exception) {
+        return null
+    }
+}
+
+fun isYoutubeUrlValid(youTubeUrl: String): Boolean {
+    try {
+        val youTubeUrlStr = youTubeUrl.replace(" ", "")
+        if (isEmpty(youTubeUrlStr)) return false
+        val pattern = "(?:https?:\\/\\/)?(?:www\\.)?youtu\\.?be(?:\\.com)?\\/?.*(?:watch|embed)?(?:.*v=|v\\/|\\/)([\\w\\-_]+)\\&?"
+        val compiledPattern: Pattern = Pattern.compile(pattern)
+        val matcher: Matcher = compiledPattern.matcher(youTubeUrlStr)
+        return matcher.find()
+    } catch (e: Exception) {
+        return false
+    }
 }

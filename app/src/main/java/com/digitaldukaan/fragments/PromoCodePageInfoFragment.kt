@@ -37,7 +37,6 @@ import kotlinx.android.synthetic.main.layout_promo_code_page_info_fragment.*
 class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInterface {
 
     companion object {
-        private const val TAG = "CreateCouponsFragment"
         fun newInstance(): PromoCodePageInfoFragment = PromoCodePageInfoFragment()
     }
 
@@ -58,6 +57,7 @@ class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInter
     private var mShareCdn = ""
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        TAG = "CreateCouponsFragment"
         mContentView = inflater.inflate(R.layout.layout_promo_code_page_info_fragment, container, false)
         hideBottomNavigationView(true)
         ToolBarManager.getInstance()?.hideToolBar(mActivity, true)

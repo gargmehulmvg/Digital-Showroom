@@ -44,15 +44,14 @@ class ContactAdapter(
         holder.apply {
             val item = mList[position]
             val name = item.name
-            if (item.number?.length != mContext?.resources?.getInteger(R.integer.mobile_number_length)) {
+            if (mContext?.resources?.getInteger(R.integer.mobile_number_length) != item.number?.length) {
                 container.isEnabled = false
                 container.alpha = 0.2f
             } else {
                 container.isEnabled = true
                 container.alpha = 1f
             }
-            val initials: String
-            initials = when {
+            val initials: String = when {
                 name?.length == 1 -> "${name.toCharArray()[0]}#"
                 Character.isDigit(name?.toCharArray()?.get(0) ?: '0') -> "#"
                 else -> "${name?.toCharArray()?.get(0)}${name?.toCharArray()?.get(1)}"

@@ -21,11 +21,11 @@ class MyPaymentsFragment: BaseFragment(), TabLayout.OnTabSelectedListener,
     private lateinit var mSettlementsFragment: SettlementsFragment
 
     companion object {
-        private const val TAG = "MyPaymentsFragment"
         fun newInstance(): MyPaymentsFragment = MyPaymentsFragment()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        TAG = "MyPaymentsFragment"
         mContentView = inflater.inflate(R.layout.layout_my_payment, container, false)
         initializeUI()
         return mContentView
@@ -34,7 +34,7 @@ class MyPaymentsFragment: BaseFragment(), TabLayout.OnTabSelectedListener,
     private fun initializeUI() {
         ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, false)
-            setHeaderTitle(getString(R.string.my_payments))
+            headerTitle = getString(R.string.my_payments)
             onBackPressed(this@MyPaymentsFragment)
         }
         hideBottomNavigationView(true)

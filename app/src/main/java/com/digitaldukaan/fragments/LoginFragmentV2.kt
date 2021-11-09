@@ -51,7 +51,6 @@ class LoginFragmentV2 : BaseFragment(), ILoginServiceInterface {
     private var mTrueCallerInstance: TruecallerSDK? = null
 
     companion object {
-        private val TAG = LoginFragmentV2::class.simpleName
         private const val USE_ANOTHER_NUMBER = 14
         private var mMobileNumber = ""
 
@@ -62,12 +61,19 @@ class LoginFragmentV2 : BaseFragment(), ILoginServiceInterface {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        TAG = "LoginFragmentV2"
         mContentView = inflater.inflate(R.layout.layout_login_fragment_v2, container, false)
         mLoginService = LoginService()
         mLoginService?.setLoginServiceInterface(this)
         hideBottomNavigationView(true)
         initializeTrueCaller()
+        initializeStaticInstances()
         return mContentView
+    }
+
+    private fun initializeStaticInstances() {
+        StaticInstances.sSuggestedDomainsList = null
+        StaticInstances.sStoreId = 0
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -133,8 +139,7 @@ class LoginFragmentV2 : BaseFragment(), ILoginServiceInterface {
     }
 
     private fun setupViewPager() {
-        val pagerAdapter =
-            LoginHelpPageAdapter(mActivity)
+        val pagerAdapter = LoginHelpPageAdapter(mActivity)
         val viewPager: ViewPager? = mContentView?.findViewById(R.id.viewpager)
         val indicator: WormDotsIndicator? = mContentView?.findViewById(R.id.indicator)
         viewPager?.adapter = pagerAdapter
@@ -339,7 +344,7 @@ class LoginFragmentV2 : BaseFragment(), ILoginServiceInterface {
                     "${it.address1}, ${it.googleAddress}, ${it.pinCode}"
                 }
                 AppEventsManager.pushCleverTapProfile(cleverTapProfile)
-                if (null == userResponse.store && userResponse.user.isNewUser) launchFragment(DukaanNameFragment.newInstance(), true) else launchFragment(HomeFragment(), true)
+                if (null == userResponse.store && userResponse.user.isNewUser) launchFragment(DukaanNameFragment.newInstance(), true) else launchFragment(OrderFragment.newInstance(), true)
             } else showShortSnackBar(validateUserResponse.mMessage, true, R.drawable.ic_close_red)
         }
     }

@@ -24,7 +24,6 @@ class CreateStoreFragment : BaseFragment(), ICreateStoreServiceInterface {
     private var mService: CreateStoreService? = null
 
     companion object {
-        private const val TAG = "CreateStoreFragment"
         fun newInstance(): CreateStoreFragment = CreateStoreFragment()
     }
 
@@ -40,6 +39,7 @@ class CreateStoreFragment : BaseFragment(), ICreateStoreServiceInterface {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        TAG = "CreateStoreFragment"
         mService = CreateStoreService()
         mService?.setServiceInterface(this)
         mService?.getCustomDomainBottomSheetData()
@@ -51,6 +51,7 @@ class CreateStoreFragment : BaseFragment(), ICreateStoreServiceInterface {
         val progressAnimation: ObjectAnimator? = ObjectAnimator.ofInt(progressBarStyleHorizontal, "progress", 0, 25)
         progressAnimation?.apply {
             setAutoCancel(true)
+            repeatCount = 1
             duration = Constants.STORE_CREATION_PROGRESS_ANIMATION_INTERVAL
         }
         progressAnimation?.addListener(object : Animator.AnimatorListener {
@@ -59,11 +60,9 @@ class CreateStoreFragment : BaseFragment(), ICreateStoreServiceInterface {
             }
 
             override fun onAnimationEnd(animation: Animator?) {
-                try {
-                    clearFragmentBackStack()
-                } catch (e: Exception) {
-                    Log.e(TAG, "onAnimationEnd: ${e.message}", e)
-                }
+                Log.d(TAG, "onAnimationEnd: do nothing")
+                progressAnimation.pause()
+                progressAnimation.cancel()
             }
 
             override fun onAnimationCancel(animation: Animator?) {
@@ -82,7 +81,8 @@ class CreateStoreFragment : BaseFragment(), ICreateStoreServiceInterface {
             if (commonApiResponse.mIsSuccessStatus) {
                 val customDomainBottomSheetResponse = Gson().fromJson<CustomDomainBottomSheetResponse>(commonApiResponse.mCommonDataStr, CustomDomainBottomSheetResponse::class.java)
                 StaticInstances.sCustomDomainBottomSheetResponse = customDomainBottomSheetResponse
-                launchFragment(HomeFragment.newInstance(true), true)
+                clearFragmentBackStack()
+                launchFragment(OrderFragment.newInstance(true), true)
             }
         }
     }

@@ -45,15 +45,14 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
     private var mUserCategoryResponse: AddProductStoreCategory? = null
     private var addProductBannerStaticDataResponse: AddProductBannerTextResponse? = null
     private var addProductChipsAdapter: AddProductsChipsAdapter? = null
-    private var mSelectedCategoryItem: AddStoreCategoryItem? = null
+    private var mSelectedCategoryItem: StoreCategoryItem? = null
     private var mDeleteCategoryItemList: ArrayList<DeleteCategoryItemResponse?>? = null
-    private val mTempProductCategoryList: ArrayList<AddStoreCategoryItem> = ArrayList()
+    private val mTempProductCategoryList: ArrayList<StoreCategoryItem> = ArrayList()
 
 
     companion object {
         private var addProductStaticData: AddProductStaticText? = null
 
-        private const val TAG = "ProductFragment"
         fun newInstance(): ProductFragment {
             return ProductFragment()
         }
@@ -66,6 +65,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        TAG = "ProductFragment"
         mContentView = inflater.inflate(R.layout.product_fragment, container, false)
         if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else {
             showCancellableProgressDialog(mActivity)
@@ -98,10 +98,11 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
     override fun onProductPageInfoResponse(commonResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             val productResponse = Gson().fromJson(commonResponse.mCommonDataStr, ProductPageResponse::class.java)
+            StaticInstances.sIsShareStoreLocked = productResponse?.isShareStoreLocked ?: false
             bottomContainer?.visibility = if (productResponse?.isZeroProduct == true) View.GONE else View.VISIBLE
             addProductStaticData = productResponse?.static_text
             var url: String
-            ToolBarManager.getInstance()?.setHeaderTitle(productResponse?.static_text?.product_page_heading)
+            ToolBarManager.getInstance()?.headerTitle = productResponse?.static_text?.product_page_heading
             mOptionsMenuResponse = productResponse?.optionMenuList
             commonWebView?.apply {
                 settings.javaScriptEnabled = true
@@ -117,7 +118,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
             }
             productResponse?.shareShop?.run {
                 shareButtonTextView?.text = this.mText
-                if (mCDN != null && mCDN.isNotEmpty() && shareButtonImageView != null) {
+                if (isNotEmpty(mCDN) && null != shareButtonImageView) {
                     try {
                         Glide.with(this@ProductFragment).load(mCDN).into(shareButtonImageView)
                     } catch (e: Exception) {
@@ -127,7 +128,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
             }
             productResponse?.addProduct?.run {
                 addProductTextView?.text = this.mText
-                if (mCDN != null && mCDN.isNotEmpty() && addProductImageView != null) {
+                if (isNotEmpty(mCDN) && null != addProductImageView) {
                     try {
                         Glide.with(this@ProductFragment).load(mCDN).into(addProductImageView)
                     } catch (e: Exception) {
@@ -139,8 +140,8 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
         stopProgress()
     }
 
-    override fun onShareStorePdfDataResponse(response: CommonApiResponse) {
-        mShareStorePDFResponse = Gson().fromJson<ShareStorePDFDataItemResponse>(response.mCommonDataStr, ShareStorePDFDataItemResponse::class.java)
+    override fun onShareStorePdfDataResponse(commonResponse: CommonApiResponse) {
+        mShareStorePDFResponse = Gson().fromJson<ShareStorePDFDataItemResponse>(commonResponse.mCommonDataStr, ShareStorePDFDataItemResponse::class.java)
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             showPDFShareBottomSheet(mShareStorePDFResponse)
@@ -255,11 +256,13 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                     val bottomSheetHeadingTextView: TextView = findViewById(R.id.bottomSheetHeadingTextView)
                     val verifyTextView: TextView = findViewById(R.id.verifyTextView)
                     val referAndEarnRecyclerView: RecyclerView = findViewById(R.id.referAndEarnRecyclerView)
-                    if (response?.imageUrl?.isNotEmpty() == true) bottomSheetUpperImageView?.let {
-                        try {
-                            Glide.with(this@ProductFragment).load(response.imageUrl).into(it)
-                        } catch (e: Exception) {
-                            Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+                    if (isNotEmpty(response?.imageUrl)) {
+                        bottomSheetUpperImageView.let { view ->
+                            try {
+                                Glide.with(this@ProductFragment).load(response?.imageUrl).into(view)
+                            } catch (e: Exception) {
+                                Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
+                            }
                         }
                     }
                     bottomSheetUpperImageView.setImageDrawable(ContextCompat.getDrawable(it, R.drawable.ic_share_pdf_whatsapp))
@@ -267,6 +270,10 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                     bottomSheetHeadingTextView.text = response?.heading
                     verifyTextView.text = response?.subHeading
                     verifyTextView.setOnClickListener{
+                        if (StaticInstances.sIsShareStoreLocked) {
+                            getLockedStoreShareDataServerCall(Constants.MODE_GET_MY_CATALOGUE)
+                            return@setOnClickListener
+                        }
                         showProgressDialog(mActivity)
                         AppEventsManager.pushAppEvents(
                             eventName = AFInAppEventType.EVENT_GET_PDF_CATALOG,
@@ -302,7 +309,11 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                         AFInAppEventParameterName.IS_CATALOG to AFInAppEventParameterName.TRUE
                     )
                 )
-                if (!isEmpty(mShareDataOverWhatsAppText)) shareOnWhatsApp(mShareDataOverWhatsAppText) else if (!isInternetConnectionAvailable(mActivity)) {
+                if (StaticInstances.sIsShareStoreLocked) {
+                    getLockedStoreShareDataServerCall(Constants.MODE_SHARE_STORE)
+                    return
+                }
+                if (isNotEmpty(mShareDataOverWhatsAppText)) shareOnWhatsApp(mShareDataOverWhatsAppText) else if (!isInternetConnectionAvailable(mActivity)) {
                     showNoInternetConnectionDialog()
                     return
                 } else {
@@ -328,10 +339,12 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
 
     override fun onMenuItemClick(item: MenuItem?): Boolean {
         val optionMenuItemStr = mOptionsMenuResponse?.get(item?.itemId ?: 0)
-        if (optionMenuItemStr?.mPage?.isNotEmpty() == true) {
-            openWebViewFragment(this, "", BuildConfig.WEB_VIEW_URL + optionMenuItemStr.mPage)
+        if (isNotEmpty(optionMenuItemStr?.mPage)) {
+            openWebViewFragment(this, "", BuildConfig.WEB_VIEW_URL + optionMenuItemStr?.mPage)
         } else {
-            if (mShareStorePDFResponse != null) showPDFShareBottomSheet(mShareStorePDFResponse) else if (!isInternetConnectionAvailable(mActivity)) {
+            if (null != mShareStorePDFResponse) {
+                showPDFShareBottomSheet(mShareStorePDFResponse)
+            } else if (!isInternetConnectionAvailable(mActivity)) {
                 showNoInternetConnectionDialog()
             } else {
                 AppEventsManager.pushAppEvents(
@@ -352,67 +365,77 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
     override fun sendData(data: String) {
         Log.d(TAG, "sendData: $data")
         val jsonData = JSONObject(data)
-        if (jsonData.optBoolean("catalogBuilderBannerClick")) {
-            if (addProductBannerStaticDataResponse == null) {
-                if (!isInternetConnectionAvailable(mActivity)) {
-                    showNoInternetConnectionDialog()
-                    return
-                }
-                showProgressDialog(mActivity)
-                mService?.getAddOrderBottomSheetData()
-            } else showMasterCatalogBottomSheet(addProductBannerStaticDataResponse, addProductStaticData, Constants.MODE_PRODUCT_LIST)
-        }
-        else if (jsonData.optBoolean("catalogCategoryEdit")) {
-            val jsonDataObject = JSONObject(jsonData.optString("data"))
-            showUpdateCategoryBottomSheet(jsonDataObject.optString("name"), jsonDataObject.optInt("id"))
-        } else if (jsonData.optBoolean("catalogItemEdit")) {
-            val jsonDataObject = JSONObject(jsonData.optString("data"))
-            launchFragment(AddProductFragment.newInstance(jsonDataObject.optInt("id"), false), true)
-        } else if (jsonData.optBoolean("catalogAddItem")) {
-            launchFragment(AddProductFragment.newInstance(0, true), true)
-        } else if (jsonData.optBoolean("unauthorizedAccess")) {
-                logoutFromApplication()
-        } else if (jsonData.optBoolean("stopLoader")) {
-                stopProgress()
-        } else if (jsonData.optBoolean("shareTextOnWhatsApp")) {
-            val text = jsonData.optString("data")
-            val mobileNumber = jsonData.optString("mobileNumber")
-            shareDataOnWhatsAppByNumber(mobileNumber, text)
-        } else if (jsonData.optBoolean("viewShopAsCustomer")) {
-            AppEventsManager.pushAppEvents(
-                eventName = AFInAppEventType.EVENT_VIEW_AS_CUSTOMER,
-                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.CHANNEL to "isCatalog")
-            )
-            val isPremiumEnable = (1 == jsonData.optInt("isPremium"))
-            launchFragment(ViewAsCustomerFragment.newInstance(jsonData.optString("domain"), isPremiumEnable, addProductStaticData), true)
-        } else if (jsonData.optBoolean("catalogStockUpdate")) {
-            val jsonDataObject = JSONObject(jsonData.optString("data"))
-            val isAvailable = jsonDataObject.optInt("available")
-            if (1 == isAvailable) {
-                if (Constants.TEXT_YES == PrefsManager.getStringDataFromSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN_STOCK)) {
-                    val request = UpdateStockRequest(jsonDataObject.optInt("id"), 0)
-                    mService?.updateStock(request)
-                } else showOutOfStockDialog(jsonDataObject)
-            } else {
-                val request = UpdateStockRequest(jsonDataObject.optInt("id"), if (jsonDataObject.optInt("available") == 0) 1 else 0)
-                if (!isInternetConnectionAvailable(mActivity)) {
-                    showNoInternetConnectionDialog()
-                    return
-                }
-                showProgressDialog(mActivity)
-                mService?.updateStock(request)
+        when {
+            jsonData.optBoolean("catalogBuilderBannerClick") -> {
+                if (addProductBannerStaticDataResponse == null) {
+                    if (!isInternetConnectionAvailable(mActivity)) {
+                        showNoInternetConnectionDialog()
+                        return
+                    }
+                    showProgressDialog(mActivity)
+                    mService?.getAddOrderBottomSheetData()
+                } else showMasterCatalogBottomSheet(addProductBannerStaticDataResponse, addProductStaticData, Constants.MODE_PRODUCT_LIST)
             }
-        } else if (jsonData.optBoolean("trackEventData")) {
-            val eventName = jsonData.optString("eventName")
-            val additionalData = jsonData.optString("additionalData")
-            val map = Gson().fromJson<HashMap<String, String>>(additionalData.toString(), HashMap::class.java)
-            Log.d(TAG, "sendData: working $map")
-            AppEventsManager.pushAppEvents(
-                eventName = eventName,
-                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                data = map
-            )
+            jsonData.optBoolean("catalogCategoryEdit") -> {
+                val jsonDataObject = JSONObject(jsonData.optString("data"))
+                showUpdateCategoryBottomSheet(jsonDataObject.optString("name"), jsonDataObject.optInt("id"))
+            }
+            jsonData.optBoolean("catalogItemEdit") -> {
+                val jsonDataObject = JSONObject(jsonData.optString("data"))
+                launchFragment(AddProductFragment.newInstance(jsonDataObject.optInt("id"), false), true)
+            }
+            jsonData.optBoolean("catalogAddItem") -> {
+                launchFragment(AddProductFragment.newInstance(0, true), true)
+            }
+            jsonData.optBoolean("unauthorizedAccess") -> {
+                logoutFromApplication()
+            }
+            jsonData.optBoolean("stopLoader") -> {
+                stopProgress()
+            }
+            jsonData.optBoolean("shareTextOnWhatsApp") -> {
+                val text = jsonData.optString("data")
+                val mobileNumber = jsonData.optString("mobileNumber")
+                shareDataOnWhatsAppByNumber(mobileNumber, text)
+            }
+            jsonData.optBoolean("viewShopAsCustomer") -> {
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_VIEW_AS_CUSTOMER,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.CHANNEL to "isCatalog")
+                )
+                val isPremiumEnable = (1 == jsonData.optInt("isPremium"))
+                launchFragment(ViewAsCustomerFragment.newInstance(jsonData.optString("domain"), isPremiumEnable, addProductStaticData), true)
+            }
+            jsonData.optBoolean("catalogStockUpdate") -> {
+                val jsonDataObject = JSONObject(jsonData.optString("data"))
+                val isAvailable = jsonDataObject.optInt("available")
+                if (1 == isAvailable) {
+                    if (Constants.TEXT_YES == PrefsManager.getStringDataFromSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN_STOCK)) {
+                        val request = UpdateStockRequest(jsonDataObject.optInt("id"), 0)
+                        mService?.updateStock(request)
+                    } else showOutOfStockDialog(jsonDataObject)
+                } else {
+                    val request = UpdateStockRequest(jsonDataObject.optInt("id"), if (jsonDataObject.optInt("available") == 0) 1 else 0)
+                    if (!isInternetConnectionAvailable(mActivity)) {
+                        showNoInternetConnectionDialog()
+                        return
+                    }
+                    showProgressDialog(mActivity)
+                    mService?.updateStock(request)
+                }
+            }
+            jsonData.optBoolean("trackEventData") -> {
+                val eventName = jsonData.optString("eventName")
+                val additionalData = jsonData.optString("additionalData")
+                val map = Gson().fromJson<HashMap<String, String>>(additionalData.toString(), HashMap::class.java)
+                Log.d(TAG, "sendData: working $map")
+                AppEventsManager.pushAppEvents(
+                    eventName = eventName,
+                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = map
+                )
+            }
         }
     }
 
@@ -581,9 +604,11 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
         Log.d(TAG, "onBackPressed: called")
         if(fragmentManager != null && fragmentManager?.backStackEntryCount == 1) {
             clearFragmentBackStack()
-            launchFragment(HomeFragment.newInstance(), true)
+            launchFragment(OrderFragment.newInstance(), true)
             return true
         }
         return false
     }
+
+    override fun onLockedStoreShareSuccessResponse(lockedShareResponse: LockedStoreShareResponse) = showLockedStoreShareBottomSheet(lockedShareResponse)
 }

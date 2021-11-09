@@ -36,7 +36,6 @@ class NewReleaseFragment: BaseFragment(), IStoreSettingsItemClicked {
     private var mNewReleaseItemClickResponse: TrendingListResponse? = null
 
     companion object {
-        private const val TAG = "NewReleaseFragment"
 
         fun newInstance(trendingList: ArrayList<TrendingListResponse>?, staticTextResponse: AccountStaticTextResponse?): NewReleaseFragment {
             val fragment = NewReleaseFragment()
@@ -48,10 +47,11 @@ class NewReleaseFragment: BaseFragment(), IStoreSettingsItemClicked {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        TAG = "NewReleaseFragment"
         mContentView = inflater.inflate(R.layout.layout_new_release_fragment, container, false)
         ToolBarManager.getInstance().apply {
             hideToolBar(mActivity, false)
-            setHeaderTitle(mHeadingStr)
+            headerTitle = mHeadingStr
             onBackPressed(this@NewReleaseFragment)
             setSideIconVisibility(false)
             setSecondSideIconVisibility(false)
@@ -74,6 +74,10 @@ class NewReleaseFragment: BaseFragment(), IStoreSettingsItemClicked {
         when (responseItem?.mAction) {
             Constants.NEW_RELEASE_TYPE_WEBVIEW -> {
                 if (Constants.NEW_RELEASE_TYPE_GOOGLE_ADS == responseItem.mType) {
+                    if (StaticInstances.sIsShareStoreLocked) {
+                        getLockedStoreShareDataServerCall(Constants.MODE_GOOGLE_ADS)
+                        return
+                    }
                     AppEventsManager.pushAppEvents(
                         eventName = AFInAppEventType.EVENT_GOOGLE_ADS_EXPLORE,
                         isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
@@ -187,8 +191,8 @@ class NewReleaseFragment: BaseFragment(), IStoreSettingsItemClicked {
                     getLocationFromGoogleMap()
                 }
                 else -> {
-                    mActivity?.onBackPressed()
                     showShortSnackBar("Permission was denied", true, R.drawable.ic_close_red)
+                    mActivity?.onBackPressed()
                 }
             }
         }

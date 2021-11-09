@@ -8,15 +8,15 @@ plugins {
 }
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 30
     buildToolsVersion "30.0.3"
 
     defaultConfig {
         applicationId "com.digitaldukaan"
         minSdkVersion 24
-        targetSdkVersion 29
-        versionCode 76
-        versionName "4.3.0"
+        targetSdkVersion 30
+        versionCode 80
+        versionName "4.3.4"
         multiDexEnabled true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -74,7 +74,7 @@ android {
             applicationId "com.digitaldukaanlocal"
         }
         prod {
-            buildConfigField('String', 'BASE_URL', '"https://api.dotpe.in/"')
+            buildConfigField('String', 'BASE_URL', '"https://api.dotshowroom.in/"')
             buildConfigField('String', 'WEB_VIEW_URL', '"https://webview.digitaldukaan.co.in/"')
             buildConfigField('String', 'WEB_VIEW_SHOW_ROOM_URL', '"https://showroom.dotpe.in/"')
             buildConfigField('String', 'WEB_VIEW_PREVIEW_URL', '"https://showroom-preview2.dotpe.in/"')
@@ -171,4 +171,6 @@ dependencies {
     implementation 'com.daimajia.androidanimations:library:2.4@aar'
     //  Tooltip animation
     implementation "com.github.skydoves:balloon:1.2.3"
+    //  Generate QR Code
+    implementation 'androidmads.library.qrgenearator:QRGenearator:1.0.3'
 }

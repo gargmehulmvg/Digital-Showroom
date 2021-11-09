@@ -162,7 +162,7 @@ class ProductNetworkService {
         serviceInterface: IProductServiceInterface
     ) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.getUserCategories()
+            val response = RetrofitApi().getServerCallObject()?.getProductsCategories()
             response?.let {
                 if (it.isSuccessful) {
                     it.body()?.let { commonApiResponse -> serviceInterface.onUserCategoryResponse(commonApiResponse)

@@ -73,7 +73,6 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
     private var mStoreUserPageInfoStaticTextResponse: StoreUserPageInfoStaticTextResponse? = null
 
     companion object {
-        private const val TAG = "ProfilePreviewFragment"
 
         fun newInstance(storeName: String? = ""): ProfilePreviewFragment {
             val fragment = ProfilePreviewFragment()
@@ -92,6 +91,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        TAG = "ProfilePreviewFragment"
         mContentView = inflater.inflate(R.layout.layout_profile_preview_fragment, container, false)
         mService.setServiceInterface(this)
         mActivity?.let { cancelWarningDialog = Dialog(it) }
@@ -102,7 +102,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, false)
             onBackPressed(this@ProfilePreviewFragment)
-            setHeaderTitle("")
+            headerTitle = ""
         }
         mStoreLogo = ""
         fetchProfilePreviewCall()
@@ -172,7 +172,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                 }
                 profilePreviewBannerSubHeading?.text = mSubHeading
             }
-            ToolBarManager.getInstance()?.setHeaderTitle(mProfilePreviewResponse?.mProfileStaticText?.pageHeading)
+            ToolBarManager.getInstance()?.headerTitle = mProfilePreviewResponse?.mProfileStaticText?.pageHeading
             val bannerRecyclerView: RecyclerView? = mContentView?.findViewById(R.id.bannerRecyclerView)
             val profileBannerList = mProfilePreviewResponse?.mBannerList
             if (isEmpty(profileBannerList)) {
@@ -252,6 +252,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                 )
                 mStoreNameEditBottomSheet?.run { if (isShowing) dismiss() }
                 mStoreName = storeNameResponse.storeInfo.name
+                PrefsManager.storeStringDataInSharedPref(Constants.STORE_NAME, mStoreName)
                 showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
                 onRefresh()
             } else showToast(response.mMessage)
