@@ -22,4 +22,5 @@
     <integer name="image_mb_size">20</integer>
     <integer name="variant_count">20</integer>
     <integer name="custom_domain_count">4</integer>
+    <integer name="gst_count">15</integer>
 </resources>

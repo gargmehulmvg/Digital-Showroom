@@ -38,6 +38,9 @@ interface Apis {
     @GET("api/dotk/vm1/settings/getOrderTypePageInfo")
     suspend fun getOrderTypePageInfo() : Response<CommonApiResponse>
 
+    @POST("api/dotk/vm1/settings/setGST")
+    suspend fun setGST(@Body request: SetGstRequest) : Response<CommonApiResponse>
+
     @POST("api/dotk/vm1/settings/getTransactionsList")
     suspend fun getTransactionsList(@Body request: TransactionRequest) : Response<CommonApiResponse>
 

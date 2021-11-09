@@ -327,6 +327,16 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         }
     }
 
+    override fun onSetGstResponse(apiResponse: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+//            if (apiResponse.mIsSuccessStatus) {
+//                showShortSnackBar(apiResponse.mMessage, true, R.drawable.ic_check_circle)
+//                onRefresh()
+//            } else showShortSnackBar(apiResponse.mMessage, true, R.drawable.ic_close_red)
+        }
+    }
+
     override fun onProfilePreviewItemClicked(profilePreviewResponse: ProfilePreviewSettingsKeyResponse, position: Int) {
         Log.d(TAG, "onProfilePreviewItemClicked: $profilePreviewResponse")
         mProfileInfoSettingKeyResponse = profilePreviewResponse
@@ -660,15 +670,27 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
             bottomSheetEditStoreSaveTextView.text = mProfilePreviewStaticData?.bottom_sheet_gst_cta_text
             bottomSheetEditStoreCloseImageView.setOnClickListener { mStoreNameEditBottomSheet?.dismiss() }
             bottomSheetEditStoreSaveTextView.setOnClickListener {
-//                val newStoreName = bottomSheetEditStoreLinkEditText.text.trim().toString()
-//                if (!isInternetConnectionAvailable(mActivity)) {
-//                    showNoInternetConnectionDialog()
-//                } else {
-//                    val request = StoreNameRequest(newStoreName)
-//                    showProgressDialog(mActivity)
-//                    bottomSheetEditStoreSaveTextView.isEnabled = false
-//                    mService.updateStoreName(request)
-//                }
+                val value = bottomSheetEditStoreLinkEditText.text.trim().toString()
+                if (isEmpty(value)) {
+                    bottomSheetEditStoreLinkEditText.apply {
+                        error = mProfilePreviewStaticData?.error_mandatory_field
+                        requestFocus()
+                    }
+                    return@setOnClickListener
+                }
+                if (value.length < (mActivity?.resources?.getInteger(R.integer.gst_count) ?: 15)) {
+                    bottomSheetEditStoreLinkEditText.apply {
+                        error = mProfilePreviewStaticData?.bottom_sheet_gst_error_invalid_input
+                        requestFocus()
+                    }
+                    return@setOnClickListener
+                }
+                if (!isInternetConnectionAvailable(mActivity)) {
+                    showNoInternetConnectionDialog()
+                } else {
+                    showProgressDialog(mActivity)
+                    mService.setGST(value)
+                }
             }
             bottomSheetEditStoreHeading.text = mProfilePreviewStaticData?.bottom_sheet_gst_heading
             bottomSheetEditStoreLinkEditText.hint = mProfilePreviewStaticData?.bottom_sheet_gst_hint
@@ -679,7 +701,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
     override fun onRefresh() = fetchProfilePreviewCall()
 
     override fun onImageSelectionResultFile(file: File?, mode: String) {
-        if (mode == Constants.MODE_CROP) {
+        if (Constants.MODE_CROP == mode) {
             val fragment = CropPhotoFragment.newInstance(file?.toUri())
             fragment.setTargetFragment(this, Constants.CROP_IMAGE_REQUEST_CODE)
             launchFragment(fragment, true)
@@ -701,7 +723,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
             if (response.mIsSuccessStatus) {
                 val photoResponse = Gson().fromJson<StoreResponse>(response.mCommonDataStr, StoreResponse::class.java)
                 mStoreLogo = photoResponse.storeInfo.logoImage
-                if (mStoreLogo?.isNotEmpty() == true) {
+                if (isNotEmpty(mStoreLogo)) {
                     storePhotoImageView?.visibility = View.VISIBLE
                     hiddenImageView?.visibility = View.INVISIBLE
                     hiddenTextView?.visibility = View.INVISIBLE
@@ -762,8 +784,6 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                 }
             }
             Constants.EMAIL_REQUEST_CODE -> {
-                // The Task returned from this call is always completed, no need to attach
-                // a listener.
                 val task = GoogleSignIn.getSignedInAccountFromIntent(data)
                 handleSignInResult(task)
             }

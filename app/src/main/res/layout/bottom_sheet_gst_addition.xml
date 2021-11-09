@@ -43,7 +43,7 @@
         android:layout_marginEnd="@dimen/_10sdp"
         android:background="@drawable/slight_curve_black_border"
         android:importantForAutofill="no"
-        android:maxLength="@integer/store_name_length"
+        android:maxLength="@integer/gst_count"
         android:inputType="text"
         android:textColor="@color/black"
         tools:text="@string/app_name" />
@@ -55,7 +55,6 @@
         android:layout_gravity="center"
         android:textSize="@dimen/_16sdp"
         android:gravity="center"
-        android:enabled="false"
         android:layout_marginTop="@dimen/_20sdp"
         android:layout_marginBottom="@dimen/_15sdp"
         android:minWidth="@dimen/_200sdp"
