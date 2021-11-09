@@ -210,8 +210,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
             }
 
         })
-        if (isEmpty(mMobileNumberStr))
-            mActivity?.onBackPressed()
+        if (isEmpty(mMobileNumberStr)) mActivity?.onBackPressed()
     }
 
     private fun startCountDownTimer() {

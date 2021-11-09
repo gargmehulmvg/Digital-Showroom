@@ -12,20 +12,21 @@ import com.digitaldukaan.R
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.models.response.AddProductStaticText
 import com.digitaldukaan.webviews.WebViewBridge
+import kotlinx.android.synthetic.main.layout_common_webview_fragment.*
 import kotlinx.android.synthetic.main.layout_view_as_customer.*
 
 class ViewAsCustomerFragment: BaseFragment() {
 
     private var mDomainName = ""
     private var mIsPremiumEnable: Boolean = false
-    private var addProductStaticData: AddProductStaticText? = null
+    private var mAddProductStaticData: AddProductStaticText? = null
 
     companion object {
         fun newInstance(domain: String, isPremiumEnable: Boolean, addProductStaticData: AddProductStaticText?): ViewAsCustomerFragment {
             val fragment = ViewAsCustomerFragment()
             fragment.mDomainName = domain
             fragment.mIsPremiumEnable = isPremiumEnable
-            fragment.addProductStaticData = addProductStaticData
+            fragment.mAddProductStaticData = addProductStaticData
             return fragment
         }
     }
@@ -40,12 +41,12 @@ class ViewAsCustomerFragment: BaseFragment() {
         ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, false)
             hideBackPressFromToolBar(mActivity, false)
-            headerTitle = addProductStaticData?.heading_view_store_as_customer
+            headerTitle = mAddProductStaticData?.heading_view_store_as_customer
             onBackPressed(this@ViewAsCustomerFragment)
             setSideIconVisibility(false)
         }
-        getPremiumTextView?.setHtmlData(addProductStaticData?.message_get_premium_website_for_your_showroom)
-        getStartedTextView?.text = addProductStaticData?.text_get_started
+        getPremiumTextView?.setHtmlData(mAddProductStaticData?.message_get_premium_website_for_your_showroom)
+        getStartedTextView?.text = mAddProductStaticData?.text_get_started
         hideBottomNavigationView(true)
         showProgressDialog(mActivity)
         premiumBottomContainer?.visibility = if (mIsPremiumEnable) View.GONE else View.VISIBLE
@@ -82,6 +83,24 @@ class ViewAsCustomerFragment: BaseFragment() {
                 val url = "${BuildConfig.WEB_VIEW_URL}theme-discover?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"
                 launchFragment(CommonWebViewFragment().newInstance("", url), true)
             }
+        }
+    }
+
+    override fun onBackPressed(): Boolean {
+        return try {
+            Log.d(TAG, "onBackPressed :: called")
+            if(null != fragmentManager && 1 == fragmentManager?.backStackEntryCount) {
+                clearFragmentBackStack()
+                launchFragment(OrderFragment.newInstance(), true)
+                true
+            } else {
+                if (true == webView?.canGoBack()) {
+                    webView?.goBack()
+                    true
+                } else false
+            }
+        } catch (e: Exception) {
+            false
         }
     }
 
