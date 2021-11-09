@@ -38,5 +38,10 @@ data class ProfileStaticTextResponse(
     @SerializedName("error_invalid_mobile_number_field") var error_invalid_mobile_number: String?,
     @SerializedName("error_invalid_account_number") var error_invalid_account_number: String?,
     @SerializedName("error_both_account_number_verify_account_number_must_be_same") var error_both_account_number_verify_account_number_must_be_same: String?,
-    @SerializedName("text_no") var mNoText: String?
+    @SerializedName("text_no")                                      var mNoText: String?,
+    @SerializedName("text_kyc_verified")                            var text_kyc_verified: String?,
+    @SerializedName("bottom_sheet_gst_heading")                     var bottom_sheet_gst_heading: String?,
+    @SerializedName("bottom_sheet_gst_cta_text")                    var bottom_sheet_gst_cta_text: String?,
+    @SerializedName("bottom_sheet_gst_error_invalid_input")         var bottom_sheet_gst_error_invalid_input: String?,
+    @SerializedName("bottom_sheet_gst_hint")                        var bottom_sheet_gst_hint: String?
 )

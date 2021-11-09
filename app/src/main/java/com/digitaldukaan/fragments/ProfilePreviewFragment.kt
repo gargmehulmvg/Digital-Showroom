@@ -220,12 +220,13 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                     storePhotoImageView?.visibility = View.GONE
                 }
             }
-            mProfilePreviewResponse?.mSettingsKeysList?.run {
+            mProfilePreviewResponse?.mSettingsKeysList?.let { list->
+                list[0].mAction = Constants.ACTION_GST_ADD
                 profilePreviewRecyclerView?.apply {
                     layoutManager = LinearLayoutManager(mActivity)
                     setHasFixedSize(true)
-                    mActivity?.let {
-                        adapter = ProfilePreviewAdapter(it, this@run, this@ProfilePreviewFragment, mProfilePreviewResponse?.mStoreItemResponse?.storeBusiness)
+                    mActivity?.let { context ->
+                        adapter = ProfilePreviewAdapter(context, list, this@ProfilePreviewFragment, mProfilePreviewResponse?.mStoreItemResponse?.storeBusiness)
                     }
                 }
             }
@@ -344,6 +345,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
             Constants.ACTION_BUSINESS_TYPE -> launchFragment(BusinessTypeFragment.newInstance(profilePreviewResponse, position, true, mProfilePreviewResponse), true)
             Constants.ACTION_EDIT_STORE_LINK -> showEditStoreWarningDialog(profilePreviewResponse)
             Constants.ACTION_STORE_NAME -> showEditStoreNameBottomSheet(mProfilePreviewResponse?.mStoreItemResponse?.storeInfo?.name)
+            Constants.ACTION_GST_ADD -> showGstAdditionBottomSheet()
             Constants.ACTION_KYC_STATUS -> {
                 if (!isInternetConnectionAvailable(mActivity)) {
                     showNoInternetConnectionDialog()
@@ -627,7 +629,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
             }
             bottomSheetEditStoreHeading.text = mProfilePreviewStaticData?.mBottomSheetStoreNameHeading
             bottomSheetEditStoreLinkEditText.hint = mProfilePreviewStaticData?.mBottomSheetStoreNameHeading
-            if (storeValue?.isNotEmpty() == true) bottomSheetEditStoreLinkEditText.setText(storeValue)
+            if (isNotEmpty(storeValue)) bottomSheetEditStoreLinkEditText.setText(storeValue)
             bottomSheetEditStoreLinkEditText.addTextChangedListener(object : TextWatcher{
                 override fun afterTextChanged(s: Editable?) {
                     val string = s.toString()
@@ -643,10 +645,38 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
             mStoreNameEditBottomSheet?.show()
         }
     }
-
-    override fun onRefresh() {
-        fetchProfilePreviewCall()
+    private fun showGstAdditionBottomSheet() {
+        mActivity?.let {
+            mStoreNameEditBottomSheet = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
+            val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_gst_addition, it.findViewById(R.id.bottomSheetContainer))
+            mStoreNameEditBottomSheet?.apply {
+                setContentView(view)
+                setBottomSheetCommonProperty()
+            }
+            val bottomSheetEditStoreHeading:TextView = view.findViewById(R.id.bottomSheetEditStoreHeading)
+            val bottomSheetEditStoreSaveTextView:TextView = view.findViewById(R.id.bottomSheetEditStoreSaveTextView)
+            val bottomSheetEditStoreLinkEditText: EditText = view.findViewById(R.id.bottomSheetEditStoreLinkEditText)
+            val bottomSheetEditStoreCloseImageView:View = view.findViewById(R.id.bottomSheetEditStoreCloseImageView)
+            bottomSheetEditStoreSaveTextView.text = mProfilePreviewStaticData?.bottom_sheet_gst_cta_text
+            bottomSheetEditStoreCloseImageView.setOnClickListener { mStoreNameEditBottomSheet?.dismiss() }
+            bottomSheetEditStoreSaveTextView.setOnClickListener {
+//                val newStoreName = bottomSheetEditStoreLinkEditText.text.trim().toString()
+//                if (!isInternetConnectionAvailable(mActivity)) {
+//                    showNoInternetConnectionDialog()
+//                } else {
+//                    val request = StoreNameRequest(newStoreName)
+//                    showProgressDialog(mActivity)
+//                    bottomSheetEditStoreSaveTextView.isEnabled = false
+//                    mService.updateStoreName(request)
+//                }
+            }
+            bottomSheetEditStoreHeading.text = mProfilePreviewStaticData?.bottom_sheet_gst_heading
+            bottomSheetEditStoreLinkEditText.hint = mProfilePreviewStaticData?.bottom_sheet_gst_hint
+            mStoreNameEditBottomSheet?.show()
+        }
     }
+
+    override fun onRefresh() = fetchProfilePreviewCall()
 
     override fun onImageSelectionResultFile(file: File?, mode: String) {
         if (mode == Constants.MODE_CROP) {

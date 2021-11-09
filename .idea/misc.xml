@@ -6,6 +6,8 @@
         <entry key="app/src/main/res/drawable/curve_black_background.xml" value="0.4338461538461538" />
         <entry key="app/src/main/res/drawable/curve_black_background_selected.xml" value="0.36875" />
         <entry key="app/src/main/res/drawable/curve_black_background_selector.xml" value="0.4338461538461538" />
+        <entry key="app/src/main/res/drawable/curve_green_border.xml" value="0.23289473684210527" />
+        <entry key="app/src/main/res/drawable/curve_green_border_without_padding.xml" value="0.23061889250814332" />
         <entry key="app/src/main/res/drawable/curve_green_dotted_border_green_background.xml" value="0.36875" />
         <entry key="app/src/main/res/drawable/curve_grey_background.xml" value="0.31851851851851853" />
         <entry key="app/src/main/res/drawable/curve_grey_border.xml" value="0.36875" />
@@ -43,6 +45,8 @@
         <entry key="app/src/main/res/layout/bottom_sheet_complete_your_kyc.xml" value="0.35260416666666666" />
         <entry key="app/src/main/res/layout/bottom_sheet_custom_domain_selection.xml" value="0.335" />
         <entry key="app/src/main/res/layout/bottom_sheet_edit_product_category_details.xml" value="0.35260416666666666" />
+        <entry key="app/src/main/res/layout/bottom_sheet_edit_store_name.xml" value="0.22269736842105264" />
+        <entry key="app/src/main/res/layout/bottom_sheet_gst_addition.xml" value="0.22269736842105264" />
         <entry key="app/src/main/res/layout/bottom_sheet_image_pick_v2.xml" value="0.35260416666666666" />
         <entry key="app/src/main/res/layout/bottom_sheet_learn_youtube.xml" value="0.4244791666666667" />
         <entry key="app/src/main/res/layout/bottom_sheet_locked_store_share.xml" value="0.25" />
@@ -88,6 +92,7 @@
         <entry key="app/src/main/res/layout/marketing_know_more_item.xml" value="0.25" />
         <entry key="app/src/main/res/layout/otp_verification_fragment.xml" value="0.35260416666666666" />
         <entry key="app/src/main/res/layout/products_item.xml" value="0.35260416666666666" />
+        <entry key="app/src/main/res/layout/profile_preview_item.xml" value="0.25" />
         <entry key="app/src/main/res/layout/search_order_fragment.xml" value="0.35260416666666666" />
         <entry key="app/src/main/res/layout/send_bill_photo_fragment.xml" value="0.4027777777777778" />
         <entry key="app/src/main/res/layout/share_pdf_item.xml" value="0.4027777777777778" />
