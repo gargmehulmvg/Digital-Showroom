@@ -12,6 +12,8 @@
         <entry key="app/src/main/res/drawable/curve_grey_background.xml" value="0.31851851851851853" />
         <entry key="app/src/main/res/drawable/curve_grey_border.xml" value="0.36875" />
         <entry key="app/src/main/res/drawable/curve_light_green_background.xml" value="0.31851851851851853" />
+        <entry key="app/src/main/res/drawable/curve_light_red_background.xml" value="0.23061889250814332" />
+        <entry key="app/src/main/res/drawable/curve_light_yellow_background.xml" value="0.23061889250814332" />
         <entry key="app/src/main/res/drawable/curve_purple_background.xml" value="0.31851851851851853" />
         <entry key="app/src/main/res/drawable/custom_green_horizontal_progress_bar.xml" value="0.36875" />
         <entry key="app/src/main/res/drawable/ic_favourite.xml" value="0.36875" />

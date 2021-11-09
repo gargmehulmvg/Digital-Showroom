@@ -39,6 +39,7 @@ data class ProfileStaticTextResponse(
     @SerializedName("error_invalid_account_number") var error_invalid_account_number: String?,
     @SerializedName("error_both_account_number_verify_account_number_must_be_same") var error_both_account_number_verify_account_number_must_be_same: String?,
     @SerializedName("text_no")                                      var mNoText: String?,
+    @SerializedName("text_re_enter_gst")                            var text_re_enter_gst: String?,
     @SerializedName("text_kyc_verified")                            var text_kyc_verified: String?,
     @SerializedName("bottom_sheet_gst_heading")                     var bottom_sheet_gst_heading: String?,
     @SerializedName("bottom_sheet_gst_cta_text")                    var bottom_sheet_gst_cta_text: String?,

@@ -30,9 +30,9 @@
         <androidx.constraintlayout.widget.Group
             android:id="@+id/gstKycVerificationGroup"
             android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:visibility="gone"
-            app:constraint_referenced_ids="kycVerifiedTextView,kycVerifiedGreenTickImageView"
-            android:layout_height="wrap_content" />
+            app:constraint_referenced_ids="kycVerifiedTextView,kycVerifiedGreenTickImageView" />
 
         <TextView
             android:id="@+id/kycVerifiedTextView"
@@ -41,26 +41,26 @@
             android:background="@drawable/curve_green_border_without_padding"
             android:fontFamily="@font/roboto_medium"
             android:paddingStart="@dimen/_20sdp"
-            android:paddingEnd="@dimen/_5sdp"
-            tools:text="KYC Verified"
             android:paddingTop="@dimen/_2sdp"
+            android:paddingEnd="@dimen/_5sdp"
             android:paddingBottom="@dimen/_2sdp"
             android:textColor="@color/open_green"
             android:textSize="@dimen/_8sdp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.2" />
+            app:layout_constraintVertical_bias="0.2"
+            tools:text="KYC Verified" />
 
         <ImageView
             android:id="@+id/kycVerifiedGreenTickImageView"
             android:layout_width="@dimen/_20sdp"
             android:layout_height="@dimen/_20sdp"
+            android:contentDescription="@string/image_view_content_description"
             android:src="@drawable/ic_kyc_verified_green_tick"
             app:layout_constraintBottom_toBottomOf="@id/kycVerifiedTextView"
             app:layout_constraintStart_toStartOf="@id/kycVerifiedGreenTickBlankView"
-            app:layout_constraintTop_toTopOf="@id/kycVerifiedTextView"
-            android:contentDescription="@string/image_view_content_description" />
+            app:layout_constraintTop_toTopOf="@id/kycVerifiedTextView" />
 
         <View
             android:id="@+id/kycVerifiedGreenTickBlankView"
@@ -78,7 +78,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_3sdp"
             android:clickable="false"
-            android:fontFamily="sans-serif-medium"
+            android:fontFamily="@font/roboto_medium"
             android:gravity="center_vertical"
             android:textColor="@color/black"
             android:textSize="@dimen/_14sdp"
@@ -95,17 +95,55 @@
             android:drawableEnd="@drawable/ic_edit"
             android:drawablePadding="@dimen/_10sdp"
             android:ellipsize="end"
-            android:fontFamily="sans-serif-medium"
+            android:fontFamily="@font/roboto_medium"
             android:gravity="center_vertical"
             android:maxLines="@integer/min_lines_three"
             android:paddingTop="@dimen/_4sdp"
             android:textColor="@color/dark_blackish"
             android:textSize="@dimen/_14sdp"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/settingKeyHeading"
             app:layout_constraintTop_toBottomOf="@id/profilePreviewBusinessTypeRecyclerView"
             tools:text="@string/start_now" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/gstValueTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:background="@drawable/curve_light_yellow_background"
+            android:clickable="false"
+            android:drawablePadding="@dimen/_10sdp"
+            android:ellipsize="end"
+            android:fontFamily="@font/roboto"
+            android:gravity="center_vertical"
+            android:maxLines="@integer/min_lines_three"
+            android:paddingStart="@dimen/_8sdp"
+            android:paddingTop="@dimen/_4sdp"
+            android:paddingEnd="@dimen/_8sdp"
+            android:paddingBottom="@dimen/_4sdp"
+            android:textColor="@color/gst_pending_text_color"
+            android:textSize="@dimen/_11sdp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@id/settingKeyHeading"
+            app:layout_constraintTop_toBottomOf="@id/profilePreviewBusinessTypeRecyclerView"
+            tools:text="@string/start_now" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/reEnterGstValueTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:fontFamily="@font/roboto"
+            android:textSize="@dimen/_11sdp"
+            android:layout_marginStart="@dimen/_5sdp"
+            android:visibility="gone"
+            app:layout_constraintBaseline_toBaselineOf="@+id/gstValueTextView"
+            app:layout_constraintStart_toEndOf="@+id/gstValueTextView"
+            tools:text="Re-enter GST" />
 
         <androidx.constraintlayout.widget.Group
             android:id="@+id/profilePreviewDefaultScreenGroup"
@@ -113,13 +151,6 @@
             android:layout_height="wrap_content"
             android:visibility="gone"
             app:constraint_referenced_ids="imageView2,addSettingKeyHeading" />
-
-        <androidx.constraintlayout.widget.Group
-            android:id="@+id/profilePreviewDataGroup"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            app:constraint_referenced_ids="addSettingKeyDataTextView" />
 
         <ImageView
             android:id="@+id/imageView2"

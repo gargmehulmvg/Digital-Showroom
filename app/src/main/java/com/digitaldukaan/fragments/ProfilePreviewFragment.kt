@@ -221,7 +221,12 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                 }
             }
             mProfilePreviewResponse?.mSettingsKeysList?.let { list->
-                list[0].mAction = Constants.ACTION_GST_ADD
+
+                list[0].mAction = Constants.ACTION_GST_REJECTED
+                list[0].mIsEditable = true
+                list[0].mDefaultText = null
+                list[0].mValue = "GST rejected"
+
                 profilePreviewRecyclerView?.apply {
                     layoutManager = LinearLayoutManager(mActivity)
                     setHasFixedSize(true)
@@ -355,7 +360,6 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
             Constants.ACTION_BUSINESS_TYPE -> launchFragment(BusinessTypeFragment.newInstance(profilePreviewResponse, position, true, mProfilePreviewResponse), true)
             Constants.ACTION_EDIT_STORE_LINK -> showEditStoreWarningDialog(profilePreviewResponse)
             Constants.ACTION_STORE_NAME -> showEditStoreNameBottomSheet(mProfilePreviewResponse?.mStoreItemResponse?.storeInfo?.name)
-            Constants.ACTION_GST_ADD -> showGstAdditionBottomSheet()
             Constants.ACTION_KYC_STATUS -> {
                 if (!isInternetConnectionAvailable(mActivity)) {
                     showNoInternetConnectionDialog()
@@ -373,6 +377,8 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                 showProgressDialog(mActivity)
                 mService.getStoreUserPageInfo()
             }
+            Constants.ACTION_GST_ADD -> showGstAdditionBottomSheet()
+            Constants.ACTION_GST_REJECTED -> showGstAdditionBottomSheet()
         }
     }
 

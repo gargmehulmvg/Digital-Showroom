@@ -48,4 +48,6 @@
     <color name="gmail_color">#F44336</color>
     <color name="tooltip_background">#FFE9CB</color>
     <color name="pink">#FF4D4D</color>
+    <color name="gst_pending_text_color">#D09B0B</color>
+    <color name="gst_pending_curve_bg_color">#FFF5DA</color>
 </resources>

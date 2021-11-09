@@ -1,6 +1,7 @@
 package com.digitaldukaan.adapters
 
 import android.graphics.Rect
+import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,12 +28,12 @@ class ProfilePreviewAdapter(
 
     inner class ProfilePreviewViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val settingKeyHeading: TextView = itemView.findViewById(R.id.settingKeyHeading)
-        val forwardArrowImageView: View = itemView.findViewById(R.id.imageView2)
+        val gstValueTextView: TextView = itemView.findViewById(R.id.gstValueTextView)
+        val reEnterGstValueTextView: TextView = itemView.findViewById(R.id.reEnterGstValueTextView)
         val gstKycVerificationGroup: View = itemView.findViewById(R.id.gstKycVerificationGroup)
         val addSettingKeyHeading: TextView = itemView.findViewById(R.id.addSettingKeyHeading)
         val profilePreviewContainer: View = itemView.findViewById(R.id.profilePreviewContainer)
         val profilePreviewDefaultScreenGroup: View = itemView.findViewById(R.id.profilePreviewDefaultScreenGroup)
-        val profilePreviewDataGroup: View = itemView.findViewById(R.id.profilePreviewDataGroup)
         val addSettingKeyDataTextView: TextView = itemView.findViewById(R.id.addSettingKeyDataTextView)
         val profilePreviewBusinessTypeRecyclerView: RecyclerView = itemView.findViewById(R.id.profilePreviewBusinessTypeRecyclerView)
     }
@@ -52,12 +53,12 @@ class ProfilePreviewAdapter(
                 settingKeyHeading.text = responseItem.mHeadingText
                 if (isEmpty(responseItem.mValue)) {
                     profilePreviewDefaultScreenGroup.visibility = View.VISIBLE
-                    profilePreviewDataGroup.visibility = View.GONE
+                    addSettingKeyDataTextView.visibility = View.GONE
                     addSettingKeyHeading.text = responseItem.mDefaultText
                     addSettingKeyHeading.setTextColor(ContextCompat.getColor(mActivity, R.color.open_green))
                 } else {
                     profilePreviewDefaultScreenGroup.visibility = View.GONE
-                    profilePreviewDataGroup.visibility = View.VISIBLE
+                    addSettingKeyDataTextView.visibility = View.VISIBLE
                     addSettingKeyDataTextView.text = responseItem.mValue
                     addSettingKeyHeading.setTextColor(ContextCompat.getColor(mActivity, R.color.black))
                 }
@@ -66,18 +67,6 @@ class ProfilePreviewAdapter(
                     addSettingKeyDataTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, if (isEditable) R.drawable.ic_edit else 0, 0)
                 }
                 when (settingKeyItem.mAction) {
-                    Constants.ACTION_GST_ADD -> {
-                        gstKycVerificationGroup.visibility = View.VISIBLE
-                    }
-                    Constants.ACTION_GST_PENDING -> {
-                        gstKycVerificationGroup.visibility = View.VISIBLE
-                    }
-                    Constants.ACTION_GST_REJECTED -> {
-                        gstKycVerificationGroup.visibility = View.VISIBLE
-                    }
-                    Constants.ACTION_GST_VERIFIED -> {
-                        gstKycVerificationGroup.visibility = View.VISIBLE
-                    }
                     Constants.ACTION_STORE_LOCATION -> addSettingKeyDataTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_location_color, 0, R.drawable.ic_edit, 0)
                     Constants.ACTION_EMAIL_AUTHENTICATION -> addSettingKeyDataTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_google_g, 0, R.drawable.ic_edit, 0)
                     Constants.ACTION_DOMAIN_SUCCESS -> addSettingKeyDataTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_round_green_arrow_small, 0)
@@ -98,6 +87,51 @@ class ProfilePreviewAdapter(
                         StaticInstances.sBankDetails?.let { bankItem ->
                             val bankStr = "${bankItem.accountHolderName} \n" + "Account No. : ${bankItem.accountNumber} \n" + "IFSC code : ${bankItem.ifscCode}"
                             addSettingKeyDataTextView.text = bankStr
+                        }
+                    }
+                    Constants.ACTION_GST_ADD -> {
+                        addSettingKeyDataTextView.apply {
+                            text = null
+                            setCompoundDrawablesWithIntrinsicBounds(0, 0, 0,0)
+                        }
+                        gstKycVerificationGroup.visibility = View.VISIBLE
+                    }
+                    Constants.ACTION_GST_PENDING -> {
+                        gstKycVerificationGroup.visibility = View.VISIBLE
+                        gstValueTextView.visibility = View.VISIBLE
+                        addSettingKeyDataTextView.apply {
+                            text = null
+                            setCompoundDrawablesWithIntrinsicBounds(0, 0, 0,0)
+                        }
+                        gstValueTextView.apply {
+                            text = responseItem.mValue
+                            background = ContextCompat.getDrawable(mActivity, R.drawable.curve_light_yellow_background)
+                            setTextColor(ContextCompat.getColor(mActivity, R.color.gst_pending_text_color))
+                        }
+                    }
+                    Constants.ACTION_GST_REJECTED -> {
+                        gstKycVerificationGroup.visibility = View.VISIBLE
+                        reEnterGstValueTextView.visibility = View.VISIBLE
+                        reEnterGstValueTextView.text = Html.fromHtml("<u>Re-Enter OTP</u>", Html.FROM_HTML_MODE_COMPACT)
+                        gstValueTextView.visibility = View.VISIBLE
+                        addSettingKeyDataTextView.apply {
+                            text = null
+                            setCompoundDrawablesWithIntrinsicBounds(0, 0, 0,0)
+                        }
+                        gstValueTextView.apply {
+                            text = responseItem.mValue
+                            background = ContextCompat.getDrawable(mActivity, R.drawable.curve_light_red_background)
+                            setTextColor(ContextCompat.getColor(mActivity, R.color.red))
+                        }
+                    }
+                    Constants.ACTION_GST_VERIFIED -> {
+                        gstKycVerificationGroup.visibility = View.VISIBLE
+                        addSettingKeyDataTextView.apply {
+                            text = null
+                            setCompoundDrawablesWithIntrinsicBounds(0, 0, 0,0)
+                        }
+                        gstValueTextView.apply {
+                            text = Html.fromHtml(responseItem.mValue, Html.FROM_HTML_MODE_COMPACT)
                         }
                     }
                 }
