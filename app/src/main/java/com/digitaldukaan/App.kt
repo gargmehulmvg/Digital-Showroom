@@ -74,7 +74,7 @@ class App: Application() {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 val processName = getProcessName(this)
                 val packageName = this.packageName
-                if (packageName != processName) WebView.setDataDirectorySuffix(processName)
+                if (packageName != processName) WebView.setDataDirectorySuffix(processName ?: "")
             }
         } catch (e: Exception) {
             Log.e(TAG, "App :: onCreate: ${e.message}", e)
