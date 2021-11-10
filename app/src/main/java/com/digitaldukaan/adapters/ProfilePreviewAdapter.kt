@@ -1,7 +1,6 @@
 package com.digitaldukaan.adapters
 
 import android.text.Html
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -51,7 +50,6 @@ class ProfilePreviewAdapter(
     override fun getItemCount(): Int = mSettingsKeysList.size
 
     override fun onBindViewHolder(holder: ProfilePreviewAdapter.ProfilePreviewViewHolder, position: Int) {
-        val TAG = ProfilePreviewAdapter::class.java.name
         val settingKeyItem = mSettingsKeysList[position]
         settingKeyItem.let { responseItem ->
             holder.apply {
@@ -71,7 +69,6 @@ class ProfilePreviewAdapter(
                     holder.profilePreviewContainer.isEnabled = isEditable
                     addSettingKeyDataTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, if (isEditable) R.drawable.ic_edit else 0, 0)
                 }
-                Log.d(TAG, "onBindViewHolder: settingKeyItem.mAction :: ${settingKeyItem.mAction}")
                 when (settingKeyItem.mAction) {
                     Constants.ACTION_STORE_LOCATION -> addSettingKeyDataTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_location_color, 0, R.drawable.ic_edit, 0)
                     Constants.ACTION_EMAIL_AUTHENTICATION -> addSettingKeyDataTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_google_g, 0, R.drawable.ic_edit, 0)
