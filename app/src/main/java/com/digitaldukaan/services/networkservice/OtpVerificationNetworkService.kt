@@ -3,6 +3,7 @@ package com.digitaldukaan.services.networkservice
 import android.util.Log
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.StaticInstances
+import com.digitaldukaan.exceptions.DeprecateAppVersionException
 import com.digitaldukaan.exceptions.UnAuthorizedAccessException
 import com.digitaldukaan.models.request.ValidateOtpRequest
 import com.digitaldukaan.models.response.ValidateOtpErrorResponse
@@ -23,8 +24,8 @@ class OtpVerificationNetworkService {
                 if (it.isSuccessful) {
                     it.body()?.let { validateOtpSuccessResponse -> otpVerificationServiceInterface.onOTPVerificationSuccessResponse(validateOtpSuccessResponse) }
                 } else {
-                    if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(
-                        Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    if (Constants.ERROR_CODE_FORCE_UPDATE == it.code()) throw DeprecateAppVersionException()
                     val validateOtpError = it.errorBody()
                     validateOtpError?.let {
                         val validateOtpErrorResponse = Gson().fromJson(

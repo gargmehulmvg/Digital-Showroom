@@ -50,6 +50,7 @@ import com.digitaldukaan.adapters.CustomDomainSelectionAdapter
 import com.digitaldukaan.adapters.ImagesSearchAdapter
 import com.digitaldukaan.adapters.OrderNotificationsAdapter
 import com.digitaldukaan.constants.*
+import com.digitaldukaan.exceptions.DeprecateAppVersionException
 import com.digitaldukaan.exceptions.UnAuthorizedAccessException
 import com.digitaldukaan.interfaces.IAdapterItemClickListener
 import com.digitaldukaan.interfaces.IContactItemClicked
@@ -90,6 +91,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     private var mImageAdapter = ImagesSearchAdapter()
     private var mImagePickBottomSheet: BottomSheetDialog? = null
     protected var TAG: String = ""
+    private var mAppUpdateDialog: Dialog? = null
 
     companion object {
         private var mCurrentPhotoPath = ""
@@ -204,6 +206,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
             is IOException -> Log.e(TAG, "$TAG exceptionHandlingForAPIResponse: ${e.message}", e)
             is UnknownHostException -> showToast(e.message)
             is UnAuthorizedAccessException -> logoutFromApplication()
+            is DeprecateAppVersionException -> showVersionUpdateDialog()
             else -> showToast("Something went wrong")
         }
     }
@@ -2027,6 +2030,28 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                     }
                 }
             }.show()
+        }
+    }
+
+    open fun showVersionUpdateDialog() {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            if (true == mAppUpdateDialog?.isShowing) return@runTaskOnCoroutineMain
+            mActivity?.let {
+                mAppUpdateDialog = Dialog(it)
+                val view = LayoutInflater.from(mActivity).inflate(R.layout.dialog_app_update, null)
+                mAppUpdateDialog?.apply {
+                    setContentView(view)
+                    setCancelable(false)
+                    window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                    view?.run {
+                        val updateTextView: TextView = findViewById(R.id.updateTextView)
+                        updateTextView.setOnClickListener {
+                            (this@apply).dismiss()
+                            openPlayStore()
+                        }
+                    }
+                }?.show()
+            }
         }
     }
 

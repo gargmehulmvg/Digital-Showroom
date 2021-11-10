@@ -2,6 +2,7 @@ package com.digitaldukaan.services.networkservice
 
 import android.util.Log
 import com.digitaldukaan.constants.Constants
+import com.digitaldukaan.exceptions.DeprecateAppVersionException
 import com.digitaldukaan.exceptions.UnAuthorizedAccessException
 import com.digitaldukaan.models.request.StoreAddressRequest
 import com.digitaldukaan.network.RetrofitApi
@@ -21,8 +22,8 @@ class StoreAddressNetworkService {
                         serviceInterface.onStoreAddressResponse(storeNameResponse)
                     }
                 } else {
-                    if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(
-                        Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    if (Constants.ERROR_CODE_FORCE_UPDATE == it.code()) throw DeprecateAppVersionException()
                     throw Exception(response.message())
                 }
             }
