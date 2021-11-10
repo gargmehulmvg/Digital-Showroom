@@ -13,6 +13,7 @@ import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.StaticInstances
 import com.digitaldukaan.constants.isEmpty
+import com.digitaldukaan.constants.isNotEmpty
 import com.digitaldukaan.interfaces.IProfilePreviewItemClicked
 import com.digitaldukaan.models.response.ProfilePreviewSettingsKeyResponse
 import com.digitaldukaan.models.response.ProfileStaticTextResponse
@@ -117,7 +118,7 @@ class ProfilePreviewAdapter(
                         gstKycVerificationGroup.visibility = View.VISIBLE
                         kycVerifiedTextView.text = mProfilePreviewStaticData?.text_kyc_verified
                         reEnterGstValueTextView.visibility = View.VISIBLE
-                        reEnterGstValueTextView.text = Html.fromHtml(mProfilePreviewStaticData?.text_re_enter_gst, Html.FROM_HTML_MODE_COMPACT)
+                        if (isNotEmpty(mProfilePreviewStaticData?.text_re_enter_gst)) reEnterGstValueTextView.text = Html.fromHtml(mProfilePreviewStaticData?.text_re_enter_gst, Html.FROM_HTML_MODE_COMPACT)
                         gstValueTextView.visibility = View.VISIBLE
                         addSettingKeyDataTextView.apply {
                             text = null

@@ -657,9 +657,9 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
     }
     private fun showGstAdditionBottomSheet() {
         mActivity?.let {
-            mStoreNameEditBottomSheet = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
+            val gstAdditionBottomSheet = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
             val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_gst_addition, it.findViewById(R.id.bottomSheetContainer))
-            mStoreNameEditBottomSheet?.apply {
+            gstAdditionBottomSheet.apply {
                 setContentView(view)
                 setBottomSheetCommonProperty()
             }
@@ -668,33 +668,35 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
             val bottomSheetEditStoreLinkEditText: EditText = view.findViewById(R.id.bottomSheetEditStoreLinkEditText)
             val bottomSheetEditStoreCloseImageView:View = view.findViewById(R.id.bottomSheetEditStoreCloseImageView)
             bottomSheetEditStoreSaveTextView.text = mProfilePreviewStaticData?.bottom_sheet_gst_cta_text
-            bottomSheetEditStoreCloseImageView.setOnClickListener { mStoreNameEditBottomSheet?.dismiss() }
+            bottomSheetEditStoreCloseImageView.setOnClickListener { gstAdditionBottomSheet.dismiss() }
             bottomSheetEditStoreSaveTextView.setOnClickListener {
                 val value = bottomSheetEditStoreLinkEditText.text.trim().toString()
-                if (isEmpty(value)) {
-                    bottomSheetEditStoreLinkEditText.apply {
-                        error = mProfilePreviewStaticData?.error_mandatory_field
-                        requestFocus()
+                when {
+                    isEmpty(value) -> {
+                        bottomSheetEditStoreLinkEditText.apply {
+                            error = mProfilePreviewStaticData?.error_mandatory_field
+                            requestFocus()
+                        }
+                        return@setOnClickListener
                     }
-                    return@setOnClickListener
-                }
-                if (value.length < (mActivity?.resources?.getInteger(R.integer.gst_count) ?: 15)) {
-                    bottomSheetEditStoreLinkEditText.apply {
-                        error = mProfilePreviewStaticData?.bottom_sheet_gst_error_invalid_input
-                        requestFocus()
+                    value.length < (mActivity?.resources?.getInteger(R.integer.gst_count) ?: 15) -> {
+                        bottomSheetEditStoreLinkEditText.apply {
+                            error = mProfilePreviewStaticData?.bottom_sheet_gst_error_invalid_input
+                            requestFocus()
+                        }
+                        return@setOnClickListener
                     }
-                    return@setOnClickListener
-                }
-                if (!isInternetConnectionAvailable(mActivity)) {
-                    showNoInternetConnectionDialog()
-                } else {
-                    showProgressDialog(mActivity)
-                    mService.setGST(value)
+                    !isInternetConnectionAvailable(mActivity) -> { showNoInternetConnectionDialog() }
+                    else -> {
+                        gstAdditionBottomSheet.dismiss()
+                        showProgressDialog(mActivity)
+                        mService.setGST(value)
+                    }
                 }
             }
             bottomSheetEditStoreHeading.text = mProfilePreviewStaticData?.bottom_sheet_gst_heading
             bottomSheetEditStoreLinkEditText.hint = mProfilePreviewStaticData?.bottom_sheet_gst_hint
-            mStoreNameEditBottomSheet?.show()
+            gstAdditionBottomSheet.show()
         }
     }
 
