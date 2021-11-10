@@ -338,4 +338,8 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
         return false
     }
 
+    override fun onProviderEnabled(provider: String) {}
+
+    override fun onProviderDisabled(provider: String) {}
+
 }
