@@ -613,10 +613,10 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
 
     override fun onLockedStoreShareSuccessResponse(lockedShareResponse: LockedStoreShareResponse) = showLockedStoreShareBottomSheet(lockedShareResponse)
 
-    override fun onProviderEnabled(provider: String) {}
+    override fun onProviderEnabled(provider: String) = Unit
 
-    override fun onProviderDisabled(provider: String) {}
+    override fun onProviderDisabled(provider: String) = Unit
 
-    override fun onStatusChanged(p0: String?, p1: Int, p2: Bundle?) {}
+    override fun onStatusChanged(p0: String?, p1: Int, p2: Bundle?) = Unit
 
 }

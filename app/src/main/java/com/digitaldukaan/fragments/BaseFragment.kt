@@ -86,12 +86,17 @@ import kotlin.collections.ArrayList
 open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener {
 
     protected var mContentView: View? = null
-    private var mProgressDialog: Dialog? = null
     protected var mActivity: MainActivity? = null
+    protected var TAG: String = ""
+
+    private var mProgressDialog: Dialog? = null
     private var mImageAdapter = ImagesSearchAdapter()
     private var mImagePickBottomSheet: BottomSheetDialog? = null
-    protected var TAG: String = ""
     private var mAppUpdateDialog: Dialog? = null
+    private var mGoogleApiClient: FusedLocationProviderClient? = null
+    private var mLastLocation: Location? = null
+    private var mCurrentLatitude = 0.0
+    private var mCurrentLongitude = 0.0
 
     companion object {
         private var mCurrentPhotoPath = ""
@@ -146,7 +151,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         }
     }
 
-    open fun onClick(view: View?) {}
+    open fun onClick(view: View?) = Unit
 
     open fun onBackPressed() : Boolean  = false
 
@@ -1771,11 +1776,6 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         }
     }
 
-    private var mGoogleApiClient: FusedLocationProviderClient? = null
-    private var lastLocation: Location? = null
-    private var mCurrentLatitude = 0.0
-    private var mCurrentLongitude = 0.0
-
     private fun checkLocationPermission(): Boolean {
         mActivity?.let {
             if (ContextCompat.checkSelfPermission(it, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
@@ -1793,17 +1793,19 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
             val locationManager = mActivity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 1f, this)
             mActivity?.let { context -> mGoogleApiClient = LocationServices.getFusedLocationProviderClient(context) }
-            mGoogleApiClient?.lastLocation?.addOnCompleteListener(mActivity) { task ->
-                if (task.isSuccessful && task.result != null) {
-                    lastLocation = task.result
-                    mCurrentLatitude = lastLocation?.latitude ?: 0.0
-                    mCurrentLongitude = lastLocation?.longitude ?: 0.0
-                    onLocationChanged(mCurrentLatitude, mCurrentLongitude)
-                } else {
-                    if (!isLocationEnabledInSettings(mActivity)) openLocationSettings(true)
-                    mCurrentLatitude = 0.0
-                    mCurrentLongitude =  0.0
-                    onLocationChanged(mCurrentLatitude, mCurrentLongitude)
+            mActivity?.let { context ->
+                mGoogleApiClient?.lastLocation?.addOnCompleteListener(context) { task ->
+                    if (task.isSuccessful && null != task.result) {
+                        mLastLocation = task.result
+                        mCurrentLatitude = mLastLocation?.latitude ?: 0.0
+                        mCurrentLongitude = mLastLocation?.longitude ?: 0.0
+                        onLocationChanged(mCurrentLatitude, mCurrentLongitude)
+                    } else {
+                        if (!isLocationEnabledInSettings(mActivity)) openLocationSettings(true)
+                        mCurrentLatitude = 0.0
+                        mCurrentLongitude =  0.0
+                        onLocationChanged(mCurrentLatitude, mCurrentLongitude)
+                    }
                 }
             }
         } catch (e: Exception) {
@@ -2055,8 +2057,8 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         }
     }
 
-    override fun onProviderEnabled(provider: String) {}
+    override fun onProviderEnabled(provider: String) = Unit
 
-    override fun onProviderDisabled(provider: String) {}
+    override fun onProviderDisabled(provider: String) = Unit
 
 }
