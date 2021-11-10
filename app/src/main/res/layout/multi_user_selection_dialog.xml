@@ -16,7 +16,7 @@
         android:layout_width="@dimen/_55sdp"
         android:layout_height="@dimen/_55sdp"
         android:contentDescription="@string/image_view_content_description"
-        android:src="@drawable/ic_social_media_template_whatsapp" />
+        tools:src="@drawable/ic_social_media_template_whatsapp" />
 
     <TextView
         android:id="@+id/dialogHeadingTextView"
@@ -27,7 +27,7 @@
         android:gravity="center"
         android:textColor="@color/black"
         android:textSize="@dimen/_14sdp"
-        android:text="You have received a staff invitation\nfrom store Khanakjahana" />
+        tools:text="You have received a staff invitation\nfrom store Khanakjahana" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/dialogOptionsRecyclerView"
@@ -59,7 +59,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:text="More Options" />
+            tools:text="More Options" />
 
         <ImageView
             android:id="@+id/moreOptionsArrowImageView"

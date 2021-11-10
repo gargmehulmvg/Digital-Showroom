@@ -1,11 +1,11 @@
 package com.digitaldukaan.services.serviceinterface
 
+import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.ValidateOtpErrorResponse
-import com.digitaldukaan.models.response.ValidateOtpResponse
 
 interface IOtpVerificationServiceInterface {
 
-    fun onOTPVerificationSuccessResponse(validateOtpResponse: ValidateOtpResponse)
+    fun onOTPVerificationSuccessResponse(commonApiResponse: CommonApiResponse)
 
     fun onOTPVerificationErrorResponse(validateOtpErrorResponse: ValidateOtpErrorResponse)
 

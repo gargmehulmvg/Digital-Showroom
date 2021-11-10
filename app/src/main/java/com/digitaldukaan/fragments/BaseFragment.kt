@@ -45,10 +45,7 @@ import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.MainActivity
 import com.digitaldukaan.MyFcmMessageListenerService
 import com.digitaldukaan.R
-import com.digitaldukaan.adapters.ContactAdapter
-import com.digitaldukaan.adapters.CustomDomainSelectionAdapter
-import com.digitaldukaan.adapters.ImagesSearchAdapter
-import com.digitaldukaan.adapters.OrderNotificationsAdapter
+import com.digitaldukaan.adapters.*
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.exceptions.UnAuthorizedAccessException
 import com.digitaldukaan.interfaces.IAdapterItemClickListener
@@ -56,6 +53,7 @@ import com.digitaldukaan.interfaces.IContactItemClicked
 import com.digitaldukaan.interfaces.ISearchItemClicked
 import com.digitaldukaan.models.dto.ContactModel
 import com.digitaldukaan.models.request.PaymentLinkRequest
+import com.digitaldukaan.models.request.UpdateInvitationRequest
 import com.digitaldukaan.models.request.UpdatePaymentMethodRequest
 import com.digitaldukaan.models.response.*
 import com.digitaldukaan.network.RetrofitApi
@@ -85,11 +83,13 @@ import kotlin.collections.ArrayList
 open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener {
 
     protected var mContentView: View? = null
-    private var mProgressDialog: Dialog? = null
+    protected var TAG: String = ""
     protected var mActivity: MainActivity? = null
+
+    private var mProgressDialog: Dialog? = null
     private var mImageAdapter = ImagesSearchAdapter()
     private var mImagePickBottomSheet: BottomSheetDialog? = null
-    protected var TAG: String = ""
+    private var mMultiUserAdapter: StaffInvitationAdapter? = null
 
     companion object {
         private var mCurrentPhotoPath = ""
@@ -144,7 +144,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         }
     }
 
-    open fun onClick(view: View?) {}
+    open fun onClick(view: View?) = Unit
 
     open fun onBackPressed() : Boolean  = false
 
@@ -204,7 +204,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
             is IOException -> Log.e(TAG, "$TAG exceptionHandlingForAPIResponse: ${e.message}", e)
             is UnknownHostException -> showToast(e.message)
             is UnAuthorizedAccessException -> logoutFromApplication()
-            else -> showToast("Something went wrong")
+            else -> showToast(mActivity?.getString(R.string.something_went_wrong))
         }
     }
 
@@ -2030,8 +2030,75 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         }
     }
 
-    override fun onProviderEnabled(provider: String) {}
+    override fun onProviderEnabled(provider: String) = Unit
 
-    override fun onProviderDisabled(provider: String) {}
+    override fun onProviderDisabled(provider: String) = Unit
+
+    fun showStaffInvitationDialog(staffInvitation: StaffInvitationResponse?, userId: String) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            mActivity?.let { context ->
+                val cancelWarningDialog = Dialog(context)
+                val view = LayoutInflater.from(context).inflate(R.layout.multi_user_selection_dialog, null)
+                cancelWarningDialog.apply {
+                    setContentView(view)
+                    setCancelable(false)
+                    window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                    view?.run {
+                        val dialogImageView: ImageView = findViewById(R.id.dialogImageView)
+                        val moreOptionsContainer: View = findViewById(R.id.moreOptionsContainer)
+                        val dialogOptionsRecyclerView: RecyclerView = findViewById(R.id.dialogOptionsRecyclerView)
+                        val nextTextView: TextView = findViewById(R.id.nextTextView)
+                        val moreOptionsTextView: TextView = findViewById(R.id.moreOptionsTextView)
+                        val dialogHeadingTextView: TextView = findViewById(R.id.dialogHeadingTextView)
+                        mActivity?.let { context -> Glide.with(context).load(staffInvitation?.cdn).into(dialogImageView) }
+                        dialogHeadingTextView.text = staffInvitation?.heading
+                        moreOptionsTextView.text = staffInvitation?.textMoreOptions
+                        staffInvitation?.invitationList?.get(0)?.isSelected = true
+                        mMultiUserAdapter = StaffInvitationAdapter(staffInvitation?.invitationList, object : IAdapterItemClickListener {
+                                override fun onAdapterItemClickListener(position: Int) {
+                                    staffInvitation?.invitationList?.forEachIndexed { _, item -> item?.isSelected = false }
+                                    staffInvitation?.invitationList?.get(position)?.isSelected = true
+                                    mMultiUserAdapter?.notifyDataSetChanged()
+                                }
+                            })
+                        moreOptionsContainer.setOnClickListener {
+                            moreOptionsContainer.visibility = View.GONE
+                            mMultiUserAdapter?.showCompleteList()
+                        }
+                        dialogOptionsRecyclerView.apply {
+                            layoutManager = LinearLayoutManager(context)
+                            adapter = mMultiUserAdapter
+                        }
+                        nextTextView.apply {
+                            text = staffInvitation?.cta?.text
+                            setTextColor(Color.parseColor(staffInvitation?.cta?.text))
+                            setOnClickListener {
+                                CoroutineScopeUtils().runTaskOnCoroutineBackground {
+                                    try {
+                                        val response = RetrofitApi().getServerCallObject()?.updateInvitationStatus(UpdateInvitationRequest(status = 1, storeId = staffInvitation?.storeId ?: 0, userId = userId.toInt(), languageId = 1))
+                                        response?.let {
+                                            stopProgress()
+                                            if (it.isSuccessful) {
+                                                it.body()?.let {
+                                                    withContext(Dispatchers.Main) {
+                                                        if (it.mIsSuccessStatus) {
+                                                            cancelWarningDialog.dismiss()
+                                                            showShortSnackBar(it.mMessage, true, R.drawable.ic_check_circle)
+                                                        } else showShortSnackBar(it.mMessage, true, R.drawable.ic_close_red)
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    } catch (e: Exception) {
+                                        exceptionHandlingForAPIResponse(e)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }.show()
+            }
+        }
+    }
 
 }
