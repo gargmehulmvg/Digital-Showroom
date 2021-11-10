@@ -28,7 +28,7 @@ import com.google.gson.reflect.TypeToken
 class SplashFragment : BaseFragment(), ISplashServiceInterface {
 
     private var mIntentUri: Uri? = null
-    private val splashService: SplashService = SplashService()
+    private val mSplashService: SplashService = SplashService()
 
     companion object {
         fun newInstance(intentUri: Uri?): SplashFragment {
@@ -52,10 +52,10 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
         Handler(Looper.getMainLooper()).postDelayed({
             if (!isInternetConnectionAvailable(mActivity)) {
                 showNoInternetConnectionDialog()
-            } else splashService.getStaticData("1")
+            } else mSplashService.getStaticData("1")
         }, Constants.TIMER_INTERVAL)
         fetchContactsIfPermissionGranted()
-        splashService.setSplashServiceInterface(this)
+        mSplashService.setSplashServiceInterface(this)
     }
 
     private fun fetchContactsIfPermissionGranted() {
@@ -76,7 +76,7 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
     override fun onStaticDataResponse(staticDataResponse: CommonApiResponse) {
         val staticData = Gson().fromJson<StaticTextResponse>(staticDataResponse.mCommonDataStr, StaticTextResponse::class.java)
         StaticInstances.sStaticData = staticData
-        splashService.getAppVersion()
+        mSplashService.getAppVersion()
     }
 
     override fun onHelpScreenResponse(commonResponse: CommonApiResponse) {
@@ -93,17 +93,15 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (commonResponse.mIsSuccessStatus) {
                 val playStoreLinkStr = Gson().fromJson<AppVersionResponse>(commonResponse.mCommonDataStr, AppVersionResponse::class.java)
-                if (playStoreLinkStr.mIsActive) splashService.getHelpScreens() else showVersionUpdateDialog()
+                if (playStoreLinkStr.mIsActive) mSplashService.getHelpScreens() else showVersionUpdateDialog()
             } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
         }
     }
 
-    private fun launchHomeFragment() {
-        when {
-            null != mIntentUri -> switchToFragmentByDeepLink()
-            "" == getStringDataFromSharedPref(Constants.STORE_ID) -> launchFragment(LoginFragmentV2.newInstance(), true)
-            else -> launchFragment(OrderFragment.newInstance(), true)
-        }
+    private fun launchHomeFragment() = when {
+        null != mIntentUri -> switchToFragmentByDeepLink()
+        "" == getStringDataFromSharedPref(Constants.STORE_ID) -> launchFragment(LoginFragmentV2.newInstance(), true)
+        else -> launchFragment(OrderFragment.newInstance(), true)
     }
 
     override fun onStaticDataException(e: Exception) = exceptionHandlingForAPIResponse(e)

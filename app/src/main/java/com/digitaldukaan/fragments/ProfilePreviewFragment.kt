@@ -329,10 +329,10 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
     override fun onSetGstResponse(apiResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
-//            if (apiResponse.mIsSuccessStatus) {
-//                showShortSnackBar(apiResponse.mMessage, true, R.drawable.ic_check_circle)
-//                onRefresh()
-//            } else showShortSnackBar(apiResponse.mMessage, true, R.drawable.ic_close_red)
+            if (apiResponse.mIsSuccessStatus) {
+                showShortSnackBar(apiResponse.mMessage, true, R.drawable.ic_check_circle)
+                onRefresh()
+            } else showShortSnackBar(apiResponse.mMessage, true, R.drawable.ic_close_red)
         }
     }
 
