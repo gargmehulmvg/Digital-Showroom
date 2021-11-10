@@ -1,3 +1,3 @@
 package com.digitaldukaan.exceptions
 
-class DeprecateAppVersionException(): Exception()
+class DeprecateAppVersionException : Exception()
