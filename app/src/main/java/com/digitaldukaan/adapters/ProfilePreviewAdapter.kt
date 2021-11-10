@@ -100,11 +100,11 @@ class ProfilePreviewAdapter(
                             setCompoundDrawablesWithIntrinsicBounds(0, 0, 0,0)
                         }
                         gstKycVerificationGroup.visibility = View.VISIBLE
-                        gstValueTextView.text = mProfilePreviewStaticData?.text_kyc_verified
+                        kycVerifiedTextView.text = mProfilePreviewStaticData?.text_kyc_verified
                     }
                     Constants.ACTION_GST_PENDING -> {
                         gstKycVerificationGroup.visibility = View.VISIBLE
-                        gstValueTextView.text = mProfilePreviewStaticData?.text_kyc_verified
+                        kycVerifiedTextView.text = mProfilePreviewStaticData?.text_kyc_verified
                         gstValueTextView.visibility = View.VISIBLE
                         addSettingKeyDataTextView.apply {
                             text = null
@@ -118,7 +118,7 @@ class ProfilePreviewAdapter(
                     }
                     Constants.ACTION_GST_REJECTED -> {
                         gstKycVerificationGroup.visibility = View.VISIBLE
-                        gstValueTextView.text = mProfilePreviewStaticData?.text_kyc_verified
+                        kycVerifiedTextView.text = mProfilePreviewStaticData?.text_kyc_verified
                         reEnterGstValueTextView.visibility = View.VISIBLE
                         reEnterGstValueTextView.text = Html.fromHtml(mProfilePreviewStaticData?.text_re_enter_gst, Html.FROM_HTML_MODE_COMPACT)
                         gstValueTextView.visibility = View.VISIBLE
@@ -134,7 +134,7 @@ class ProfilePreviewAdapter(
                     }
                     Constants.ACTION_GST_VERIFIED -> {
                         gstKycVerificationGroup.visibility = View.VISIBLE
-                        gstValueTextView.text = mProfilePreviewStaticData?.text_kyc_verified
+                        kycVerifiedTextView.text = mProfilePreviewStaticData?.text_kyc_verified
                         gstValueTextView.visibility = View.GONE
                         addSettingKeyDataTextView.apply {
                             text = Html.fromHtml(responseItem.mValue, Html.FROM_HTML_MODE_COMPACT)
