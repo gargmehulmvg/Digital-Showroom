@@ -149,7 +149,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
     override fun onProfilePreviewResponse(commonApiResponse: CommonApiResponse) {
         val response = Gson().fromJson<ProfileInfoResponse>(commonApiResponse.mCommonDataStr, ProfileInfoResponse::class.java)
         mProfilePreviewResponse = response
-        mProfilePreviewStaticData = response?.mProfileStaticText!!
+        mProfilePreviewStaticData = response?.mProfileStaticText
         StaticInstances.sStepsCompletedList = response.mStepsList
         response.mStoreItemResponse?.bankDetails?.run { StaticInstances.sBankDetails = this }
         CoroutineScopeUtils().runTaskOnCoroutineMain {
@@ -221,17 +221,11 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                 }
             }
             mProfilePreviewResponse?.mSettingsKeysList?.let { list->
-
-                list[0].mAction = Constants.ACTION_GST_REJECTED
-                list[0].mIsEditable = true
-                list[0].mDefaultText = null
-                list[0].mValue = "GST rejected"
-
                 profilePreviewRecyclerView?.apply {
                     layoutManager = LinearLayoutManager(mActivity)
                     setHasFixedSize(true)
                     mActivity?.let { context ->
-                        adapter = ProfilePreviewAdapter(context, list, this@ProfilePreviewFragment, mProfilePreviewResponse?.mStoreItemResponse?.storeBusiness)
+                        adapter = ProfilePreviewAdapter(context, list, this@ProfilePreviewFragment, mProfilePreviewResponse?.mStoreItemResponse?.storeBusiness, mProfilePreviewStaticData)
                     }
                 }
             }

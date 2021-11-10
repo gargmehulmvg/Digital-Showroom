@@ -90,8 +90,8 @@ class Constants {
         const val ACTION_STORE_CONTROLS                         = "store-controls"
         const val ACTION_GST_ADD                                = "gst-add"
         const val ACTION_GST_PENDING                            = "gst-pending"
-        const val ACTION_GST_VERIFIED                           = "gst-rejected"
-        const val ACTION_GST_REJECTED                           = "gst-verified"
+        const val ACTION_GST_VERIFIED                           = "gst-verified"
+        const val ACTION_GST_REJECTED                           = "gst-rejected"
         //PAGES
         const val PAGE_REFER                                    = "refer"
         const val PAGE_HELP                                     = "help"

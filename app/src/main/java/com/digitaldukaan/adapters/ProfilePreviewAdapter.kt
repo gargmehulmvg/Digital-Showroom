@@ -1,7 +1,7 @@
 package com.digitaldukaan.adapters
 
-import android.graphics.Rect
 import android.text.Html
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,17 +16,21 @@ import com.digitaldukaan.constants.StaticInstances
 import com.digitaldukaan.constants.isEmpty
 import com.digitaldukaan.interfaces.IProfilePreviewItemClicked
 import com.digitaldukaan.models.response.ProfilePreviewSettingsKeyResponse
+import com.digitaldukaan.models.response.ProfileStaticTextResponse
 import com.digitaldukaan.models.response.StoreBusinessResponse
+import com.digitaldukaan.views.OverlapDecoration
 import java.util.*
 
 class ProfilePreviewAdapter(
     private val mActivity: MainActivity,
     private var mSettingsKeysList: ArrayList<ProfilePreviewSettingsKeyResponse>,
     private val mProfilePreviewListener: IProfilePreviewItemClicked,
-    private val mBusinessList: ArrayList<StoreBusinessResponse>?
+    private val mBusinessList: ArrayList<StoreBusinessResponse>?,
+    private val mProfilePreviewStaticData: ProfileStaticTextResponse? = null
 ) : RecyclerView.Adapter<ProfilePreviewAdapter.ProfilePreviewViewHolder>() {
 
     inner class ProfilePreviewViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val kycVerifiedTextView: TextView = itemView.findViewById(R.id.kycVerifiedTextView)
         val settingKeyHeading: TextView = itemView.findViewById(R.id.settingKeyHeading)
         val gstValueTextView: TextView = itemView.findViewById(R.id.gstValueTextView)
         val reEnterGstValueTextView: TextView = itemView.findViewById(R.id.reEnterGstValueTextView)
@@ -47,6 +51,7 @@ class ProfilePreviewAdapter(
     override fun getItemCount(): Int = mSettingsKeysList.size
 
     override fun onBindViewHolder(holder: ProfilePreviewAdapter.ProfilePreviewViewHolder, position: Int) {
+        val TAG = ProfilePreviewAdapter::class.java.name
         val settingKeyItem = mSettingsKeysList[position]
         settingKeyItem.let { responseItem ->
             holder.apply {
@@ -66,6 +71,7 @@ class ProfilePreviewAdapter(
                     holder.profilePreviewContainer.isEnabled = isEditable
                     addSettingKeyDataTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, if (isEditable) R.drawable.ic_edit else 0, 0)
                 }
+                Log.d(TAG, "onBindViewHolder: settingKeyItem.mAction :: ${settingKeyItem.mAction}")
                 when (settingKeyItem.mAction) {
                     Constants.ACTION_STORE_LOCATION -> addSettingKeyDataTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_location_color, 0, R.drawable.ic_edit, 0)
                     Constants.ACTION_EMAIL_AUTHENTICATION -> addSettingKeyDataTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_google_g, 0, R.drawable.ic_edit, 0)
@@ -91,13 +97,14 @@ class ProfilePreviewAdapter(
                     }
                     Constants.ACTION_GST_ADD -> {
                         addSettingKeyDataTextView.apply {
-                            text = null
                             setCompoundDrawablesWithIntrinsicBounds(0, 0, 0,0)
                         }
                         gstKycVerificationGroup.visibility = View.VISIBLE
+                        gstValueTextView.text = mProfilePreviewStaticData?.text_kyc_verified
                     }
                     Constants.ACTION_GST_PENDING -> {
                         gstKycVerificationGroup.visibility = View.VISIBLE
+                        gstValueTextView.text = mProfilePreviewStaticData?.text_kyc_verified
                         gstValueTextView.visibility = View.VISIBLE
                         addSettingKeyDataTextView.apply {
                             text = null
@@ -111,8 +118,9 @@ class ProfilePreviewAdapter(
                     }
                     Constants.ACTION_GST_REJECTED -> {
                         gstKycVerificationGroup.visibility = View.VISIBLE
+                        gstValueTextView.text = mProfilePreviewStaticData?.text_kyc_verified
                         reEnterGstValueTextView.visibility = View.VISIBLE
-                        reEnterGstValueTextView.text = Html.fromHtml("<u>Re-Enter OTP</u>", Html.FROM_HTML_MODE_COMPACT)
+                        reEnterGstValueTextView.text = Html.fromHtml(mProfilePreviewStaticData?.text_re_enter_gst, Html.FROM_HTML_MODE_COMPACT)
                         gstValueTextView.visibility = View.VISIBLE
                         addSettingKeyDataTextView.apply {
                             text = null
@@ -126,12 +134,11 @@ class ProfilePreviewAdapter(
                     }
                     Constants.ACTION_GST_VERIFIED -> {
                         gstKycVerificationGroup.visibility = View.VISIBLE
+                        gstValueTextView.text = mProfilePreviewStaticData?.text_kyc_verified
+                        gstValueTextView.visibility = View.GONE
                         addSettingKeyDataTextView.apply {
-                            text = null
-                            setCompoundDrawablesWithIntrinsicBounds(0, 0, 0,0)
-                        }
-                        gstValueTextView.apply {
                             text = Html.fromHtml(responseItem.mValue, Html.FROM_HTML_MODE_COMPACT)
+                            setCompoundDrawablesWithIntrinsicBounds(0, 0, 0,0)
                         }
                     }
                 }
@@ -139,13 +146,4 @@ class ProfilePreviewAdapter(
         }
     }
 
-}
-
-class OverlapDecoration : RecyclerView.ItemDecoration() {
-
-    override fun getItemOffsets(outRect: Rect, view: View, parent: RecyclerView, state: RecyclerView.State) {
-        val position = parent.getChildAdapterPosition(view)
-        val itemCount = state.itemCount
-        if (position == (itemCount - 1)) outRect.set(0, 0, 0, 0) else outRect.set(-25, 0, 0, 0)
-    }
 }
