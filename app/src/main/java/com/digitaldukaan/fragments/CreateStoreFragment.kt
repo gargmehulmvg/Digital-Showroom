@@ -89,4 +89,10 @@ class CreateStoreFragment : BaseFragment(), ICreateStoreServiceInterface {
 
     override fun onCreateStoreServerException(e: Exception) = exceptionHandlingForAPIResponse(e)
 
+    override fun onProviderEnabled(provider: String) {}
+
+    override fun onProviderDisabled(provider: String) {}
+
+    override fun onStatusChanged(p0: String?, p1: Int, p2: Bundle?) {}
+
 }
