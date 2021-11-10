@@ -1,8 +1,11 @@
 package com.digitaldukaan.fragments
 
 import android.app.Activity
+import android.app.Dialog
 import android.app.PendingIntent
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -13,14 +16,20 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import android.widget.ImageView
+import android.widget.TextView
 import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.LoginHelpPageAdapter
+import com.digitaldukaan.adapters.MultiUserSelectionAdapter
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.constants.StaticInstances.sHelpScreenList
+import com.digitaldukaan.interfaces.IAdapterItemClickListener
 import com.digitaldukaan.models.dto.CleverTapProfile
 import com.digitaldukaan.models.request.ValidateUserRequest
 import com.digitaldukaan.models.response.CommonApiResponse
@@ -41,6 +50,7 @@ import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
 import net.yslibrary.android.keyboardvisibilityevent.util.UIUtil
 import java.util.*
+import kotlin.collections.ArrayList
 
 class LoginFragmentV2 : BaseFragment(), ILoginServiceInterface {
 
@@ -68,6 +78,7 @@ class LoginFragmentV2 : BaseFragment(), ILoginServiceInterface {
         hideBottomNavigationView(true)
         initializeTrueCaller()
         initializeStaticInstances()
+        showBottomSheetCancelDialog()
         return mContentView
     }
 
@@ -379,6 +390,48 @@ class LoginFragmentV2 : BaseFragment(), ILoginServiceInterface {
                 isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                 data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), "exception" to e.toString(), "exception point" to "onActivityResult")
             )
+        }
+    }
+
+    private fun showBottomSheetCancelDialog() {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            mActivity?.let { context ->
+                val cancelWarningDialog = Dialog(context)
+                val view = LayoutInflater.from(context).inflate(R.layout.multi_user_selection_dialog, null)
+                cancelWarningDialog.apply {
+                    setContentView(view)
+                    setCancelable(false)
+                    window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                    view?.run {
+                        val dialogImageView: ImageView = findViewById(R.id.dialogImageView)
+                        val moreOptionsContainer: View = findViewById(R.id.moreOptionsContainer)
+                        val dialogOptionsRecyclerView: RecyclerView = findViewById(R.id.dialogOptionsRecyclerView)
+                        val nextTextView: TextView = findViewById(R.id.nextTextView)
+                        val moreOptionsTextView: TextView = findViewById(R.id.moreOptionsTextView)
+                        val dialogHeadingTextView: TextView = findViewById(R.id.dialogHeadingTextView)
+                        nextTextView.setOnClickListener { cancelWarningDialog.dismiss() }
+                        val arrayList:ArrayList<String> = ArrayList()
+                        arrayList.add("Accept staff invitation")
+                        arrayList.add("Reject staff invitation and create your own store")
+                        arrayList.add("Exit App")
+                        val multiUserAdapter = MultiUserSelectionAdapter(arrayList, object : IAdapterItemClickListener {
+
+                            override fun onAdapterItemClickListener(position: Int) {
+
+                            }
+
+                        })
+                        moreOptionsContainer.setOnClickListener {
+                            moreOptionsContainer.visibility = View.GONE
+                            multiUserAdapter.showCompleteList()
+                        }
+                        dialogOptionsRecyclerView.apply {
+                            layoutManager = LinearLayoutManager(context)
+                            adapter = multiUserAdapter
+                        }
+                    }
+                }.show()
+            }
         }
     }
 }

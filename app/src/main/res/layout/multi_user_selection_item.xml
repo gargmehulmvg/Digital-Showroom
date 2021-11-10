@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/radioButtonContainer"
+    android:layout_marginTop="@dimen/_10sdp"
+    android:background="@drawable/slight_curve_black_border_grey_background"
+    android:padding="@dimen/_2sdp">
+
+    <RadioButton
+        android:id="@+id/radioButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:buttonTint="@color/black"
+        android:textSize="@dimen/_9sdp"
+        android:paddingStart="@dimen/_5sdp"
+        android:paddingEnd="@dimen/_5sdp"
+        android:textColor="@color/black"
+        tools:text="Accept staff invitation" />
+
+</LinearLayout>
