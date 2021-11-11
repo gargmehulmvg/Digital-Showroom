@@ -37,6 +37,9 @@ interface Apis {
     @POST("vc1/user/updateInvitationStatus")
     suspend fun updateInvitationStatus(@Body request: UpdateInvitationRequest) : Response<CommonApiResponse>
 
+    @GET("api/dotk/vo1/onboard/getOtpModesList")
+    suspend fun getOtpModesList() : Response<CommonApiResponse>
+
     @POST("api/dotk/vm1/onboard/setStoreAddress")
     suspend fun updateStoreAddress(@Body request: StoreAddressRequest) : Response<CommonApiResponse>
 

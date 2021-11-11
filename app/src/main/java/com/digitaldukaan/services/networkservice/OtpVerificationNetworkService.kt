@@ -8,6 +8,7 @@ import com.digitaldukaan.models.request.ValidateOtpRequest
 import com.digitaldukaan.models.response.ValidateOtpErrorResponse
 import com.digitaldukaan.network.RetrofitApi
 import com.digitaldukaan.services.serviceinterface.IOtpVerificationServiceInterface
+import com.digitaldukaan.services.serviceinterface.ISplashServiceInterface
 import com.google.gson.Gson
 
 class OtpVerificationNetworkService {
@@ -38,6 +39,24 @@ class OtpVerificationNetworkService {
         } catch (e: Exception) {
             Log.e(SplashNetworkService::class.java.simpleName, "verifyOTPServerCall: ", e)
             otpVerificationServiceInterface.onOTPVerificationDataException(e)
+        }
+    }
+
+    suspend fun getOtpModesListServerCall(
+        otpVerificationServiceInterface: IOtpVerificationServiceInterface
+    ) {
+        try {
+            val response = RetrofitApi().getServerCallObject()?.getOtpModesList()
+            response?.let {
+                if (it.isSuccessful) {
+                    it.body()?.let { getOtpModesList ->
+                        otpVerificationServiceInterface.onGetOtpModesListResponse(getOtpModesList)
+                    }
+                } else otpVerificationServiceInterface.onGetOtpModesListDataException(Exception(response.message()))
+            }
+        } catch (e: Exception) {
+            Log.e(SplashNetworkService::class.java.simpleName, "getHelpScreensServerCall :: ", e)
+            otpVerificationServiceInterface.onGetOtpModesListDataException(e)
         }
     }
 
