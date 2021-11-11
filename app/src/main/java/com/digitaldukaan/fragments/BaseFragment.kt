@@ -227,8 +227,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                             val snackBarView = view
                             val snackBarTextView: TextView = snackBarView.findViewById(com.google.android.material.R.id.snackbar_text)
                             snackBarTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, drawableID, 0)
-                            snackBarTextView.compoundDrawablePadding =
-                                resources.getDimensionPixelOffset(R.dimen._5sdp)
+                            snackBarTextView.compoundDrawablePadding = resources.getDimensionPixelOffset(R.dimen._5sdp)
                         }
                         mActivity?.let {
                             setBackgroundTint(ContextCompat.getColor(it, R.color.snack_bar_background))

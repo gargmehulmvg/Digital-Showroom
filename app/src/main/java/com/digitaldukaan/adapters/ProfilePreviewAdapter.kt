@@ -1,5 +1,6 @@
 package com.digitaldukaan.adapters
 
+import android.graphics.Color
 import android.text.Html
 import android.view.LayoutInflater
 import android.view.View
@@ -133,9 +134,17 @@ class ProfilePreviewAdapter(
                     Constants.ACTION_GST_VERIFIED -> {
                         gstKycVerificationGroup.visibility = View.VISIBLE
                         kycVerifiedTextView.text = mProfilePreviewStaticData?.text_kyc_verified
-                        gstValueTextView.visibility = View.GONE
-                        addSettingKeyDataTextView.apply {
+                        gstValueTextView.apply {
+                            textSize = 16f
+                            setTextColor(Color.BLACK)
+                            visibility = View.VISIBLE
                             text = Html.fromHtml(responseItem.mValue, Html.FROM_HTML_MODE_COMPACT)
+                            background = null
+                            setPadding(0, 4, 0, 4)
+                            setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_order_detail_green_tick,0)
+                        }
+                        addSettingKeyDataTextView.apply {
+                            text = null
                             setCompoundDrawablesWithIntrinsicBounds(0, 0, 0,0)
                         }
                     }

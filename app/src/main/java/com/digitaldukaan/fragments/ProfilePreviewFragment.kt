@@ -667,35 +667,54 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
             val bottomSheetEditStoreSaveTextView:TextView = view.findViewById(R.id.bottomSheetEditStoreSaveTextView)
             val bottomSheetEditStoreLinkEditText: EditText = view.findViewById(R.id.bottomSheetEditStoreLinkEditText)
             val bottomSheetEditStoreCloseImageView:View = view.findViewById(R.id.bottomSheetEditStoreCloseImageView)
-            bottomSheetEditStoreSaveTextView.text = mProfilePreviewStaticData?.bottom_sheet_gst_cta_text
             bottomSheetEditStoreCloseImageView.setOnClickListener { gstAdditionBottomSheet.dismiss() }
-            bottomSheetEditStoreSaveTextView.setOnClickListener {
-                val value = bottomSheetEditStoreLinkEditText.text.trim().toString()
-                when {
-                    isEmpty(value) -> {
-                        bottomSheetEditStoreLinkEditText.apply {
-                            error = mProfilePreviewStaticData?.error_mandatory_field
-                            requestFocus()
+            bottomSheetEditStoreSaveTextView.apply {
+                text = mProfilePreviewStaticData?.bottom_sheet_gst_cta_text
+                setOnClickListener {
+                    val value = bottomSheetEditStoreLinkEditText.text.trim().toString()
+                    when {
+                        isEmpty(value) -> {
+                            bottomSheetEditStoreLinkEditText.apply {
+                                error = mProfilePreviewStaticData?.error_mandatory_field
+                                requestFocus()
+                            }
+                            return@setOnClickListener
                         }
-                        return@setOnClickListener
-                    }
-                    value.length < (mActivity?.resources?.getInteger(R.integer.gst_count) ?: 15) -> {
-                        bottomSheetEditStoreLinkEditText.apply {
-                            error = mProfilePreviewStaticData?.bottom_sheet_gst_error_invalid_input
-                            requestFocus()
+                        value.length < (mActivity?.resources?.getInteger(R.integer.gst_count) ?: 15) -> {
+                            bottomSheetEditStoreLinkEditText.apply {
+                                error = mProfilePreviewStaticData?.bottom_sheet_gst_error_invalid_input
+                                requestFocus()
+                            }
+                            return@setOnClickListener
                         }
-                        return@setOnClickListener
-                    }
-                    !isInternetConnectionAvailable(mActivity) -> { showNoInternetConnectionDialog() }
-                    else -> {
-                        gstAdditionBottomSheet.dismiss()
-                        showProgressDialog(mActivity)
-                        mService.setGST(value)
+                        !isInternetConnectionAvailable(mActivity) -> { showNoInternetConnectionDialog() }
+                        else -> {
+                            gstAdditionBottomSheet.dismiss()
+                            showProgressDialog(mActivity)
+                            mService.setGST(value)
+                        }
                     }
                 }
             }
             bottomSheetEditStoreHeading.text = mProfilePreviewStaticData?.bottom_sheet_gst_heading
-            bottomSheetEditStoreLinkEditText.hint = mProfilePreviewStaticData?.bottom_sheet_gst_hint
+            bottomSheetEditStoreLinkEditText.apply {
+                hint = mProfilePreviewStaticData?.bottom_sheet_gst_hint
+                addTextChangedListener(object : TextWatcher {
+                    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                        Log.d(TAG, "beforeTextChanged: ")
+                    }
+
+                    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                        Log.d(TAG, "onTextChanged: ")
+                    }
+
+                    override fun afterTextChanged(s: Editable?) {
+                        val str = s?.toString()?.trim()
+                        bottomSheetEditStoreSaveTextView.isEnabled = isNotEmpty(str)
+                    }
+
+                })
+            }
             gstAdditionBottomSheet.show()
         }
     }
