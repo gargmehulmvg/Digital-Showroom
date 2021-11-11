@@ -1,7 +1,7 @@
 package com.digitaldukaan.models.response
 
 import com.google.gson.annotations.SerializedName
-import java.util.ArrayList
+import java.util.*
 
 data class StaticTextResponse(
     @SerializedName("auth_new")                         var mAuthNew: AuthNewResponseData,
@@ -89,7 +89,8 @@ data class VerifyOtpStaticResponseData(
     @SerializedName("error_mandatory_field")            var error_mandatory_field: String?,
     @SerializedName("error_otp_not_valid")              var error_otp_not_valid: String?,
     @SerializedName("hint_enter_4_digit_otp")           var hint_enter_4_digit_otp: String?,
-    @SerializedName("text_resend_otp")                  var text_resend_otp: String?
+    @SerializedName("text_resend_otp")                  var text_resend_otp: String?,
+    @SerializedName("text_sent_on")                     var text_sent_on: String?
 )
 
 data class OnBoardStep1StaticResponseData(

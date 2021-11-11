@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true">
 
     <TextView
         android:id="@+id/enterMobileNumberHeading"
@@ -40,9 +41,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:visibility="visible"
-        app:constraint_referenced_ids="verifyTextViewContainer,consentCheckBox,readMoreTextView"
-        tools:layout_editor_absoluteX="26dp"
-        tools:layout_editor_absoluteY="26dp" />
+        app:constraint_referenced_ids="verifyTextViewContainer,consentCheckBox,readMoreTextView" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/verifiedTextViewContainer"
@@ -73,6 +72,44 @@
             tools:text="Verified" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <LinearLayout
+        android:id="@+id/otpSentOnContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/black"
+        android:gravity="center"
+        android:animateLayoutChanges="true"
+        android:visibility="gone"
+        android:paddingTop="@dimen/_5sdp"
+        android:paddingBottom="@dimen/_5sdp"
+        android:paddingStart="@dimen/_15sdp"
+        android:paddingEnd="@dimen/_15sdp"
+        android:layout_marginBottom="@dimen/_18sdp"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/verifyTextViewContainer"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <ImageView
+            android:layout_width="@dimen/_20sdp"
+            android:layout_height="@dimen/_20sdp"
+            android:paddingTop="@dimen/_3sdp"
+            android:contentDescription="@string/image_view_content_description"
+            android:src="@drawable/ic_white_tick" />
+
+        <TextView
+            android:id="@+id/otpSentOnTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingStart="@dimen/_10sdp"
+            android:paddingEnd="@dimen/_1sdp"
+            android:fontFamily="@font/roboto"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_12sdp"
+            tools:text="OTP Sent on WhatsApp" />
+
+    </LinearLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/verifyTextViewContainer"
@@ -183,10 +220,12 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/resendOtpContainer"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:visibility="gone"
         android:layout_marginTop="@dimen/_12sdp"
+        android:animateLayoutChanges="true"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@id/otpEditText"
         app:layout_constraintStart_toStartOf="@id/otpEditText"
         app:layout_constraintTop_toBottomOf="@id/otpEditText">
 
@@ -194,20 +233,21 @@
             android:id="@+id/resendTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="@dimen/_11sdp"
             android:textColor="@color/black"
+            android:textSize="@dimen/_11sdp"
             app:layout_constraintStart_toStartOf="@id/resendOtpContainer"
             app:layout_constraintTop_toTopOf="@id/resendOtpContainer"
             tools:text="Resend OTP on" />
 
         <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+            android:orientation="horizontal"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintStart_toStartOf="@+id/resendOtpContainer"
             app:layout_constraintTop_toBottomOf="@+id/resendTextView"
-            app:spanCount="3"
-            tools:itemCount="3"
+            tools:itemCount="40"
             tools:listitem="@layout/resend_otp_item_layout" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
@@ -224,6 +264,7 @@
         android:paddingEnd="@dimen/_2sdp"
         android:textColor="@color/black"
         android:textSize="@dimen/_14sdp"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/resendOtpContainer"

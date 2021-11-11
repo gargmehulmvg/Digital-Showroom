@@ -8,7 +8,6 @@ import com.digitaldukaan.models.request.ValidateOtpRequest
 import com.digitaldukaan.models.response.ValidateOtpErrorResponse
 import com.digitaldukaan.network.RetrofitApi
 import com.digitaldukaan.services.serviceinterface.IOtpVerificationServiceInterface
-import com.digitaldukaan.services.serviceinterface.ISplashServiceInterface
 import com.google.gson.Gson
 
 class OtpVerificationNetworkService {
@@ -42,9 +41,7 @@ class OtpVerificationNetworkService {
         }
     }
 
-    suspend fun getOtpModesListServerCall(
-        otpVerificationServiceInterface: IOtpVerificationServiceInterface
-    ) {
+    suspend fun getOtpModesListServerCall(otpVerificationServiceInterface: IOtpVerificationServiceInterface) {
         try {
             val response = RetrofitApi().getServerCallObject()?.getOtpModesList()
             response?.let {

@@ -23,6 +23,7 @@
         <entry key="app/src/main/res/drawable/ic_share.xml" value="0.4338461538461538" />
         <entry key="app/src/main/res/drawable/ic_share_forward_arrow.xml" value="0.4338461538461538" />
         <entry key="app/src/main/res/drawable/ic_un_favourite.xml" value="0.36875" />
+        <entry key="app/src/main/res/drawable/ic_whatsapp.xml" value="0.23289473684210527" />
         <entry key="app/src/main/res/drawable/ic_white_tick.xml" value="0.36875" />
         <entry key="app/src/main/res/drawable/lower_curve_black_background.xml" value="0.31851851851851853" />
         <entry key="app/src/main/res/drawable/lower_right_curve_white_background.xml" value="0.31851851851851853" />
@@ -99,9 +100,10 @@
         <entry key="app/src/main/res/layout/marketing_know_more_item.xml" value="0.25" />
         <entry key="app/src/main/res/layout/multi_user_selection_dialog.xml" value="0.25" />
         <entry key="app/src/main/res/layout/multi_user_selection_item.xml" value="0.22269736842105264" />
-        <entry key="app/src/main/res/layout/otp_verification_fragment.xml" value="0.35260416666666666" />
+        <entry key="app/src/main/res/layout/otp_verification_fragment.xml" value="0.25" />
         <entry key="app/src/main/res/layout/products_item.xml" value="0.35260416666666666" />
         <entry key="app/src/main/res/layout/profile_preview_item.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/resend_otp_item_layout.xml" value="0.45" />
         <entry key="app/src/main/res/layout/search_order_fragment.xml" value="0.35260416666666666" />
         <entry key="app/src/main/res/layout/send_bill_photo_fragment.xml" value="0.4027777777777778" />
         <entry key="app/src/main/res/layout/share_pdf_item.xml" value="0.4027777777777778" />
