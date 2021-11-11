@@ -157,6 +157,8 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
             changeTextView?.id -> mActivity?.onBackPressed()
             resendOtpText?.id -> if (mTimerCompleted) {
                 resendOtpText?.text = null
+                counterTextView.visibility=View.VISIBLE
+                resendOtpContainer.visibility=View.INVISIBLE
                 startCountDownTimer()
                 if (!isInternetConnectionAvailable(mActivity)) {
                     showNoInternetConnectionDialog()
@@ -227,8 +229,10 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
             override fun onFinish() {
                 CoroutineScopeUtils().runTaskOnCoroutineMain {
                     mTimerCompleted = true
-                    counterTextView?.text = mOtpStaticResponseData?.text_did_not_receive_otp
+                    resendTextView?.text = mOtpStaticResponseData?.text_resend_otp
                     resendOtpText?.text = mOtpStaticResponseData?.text_send_again
+                    counterTextView?.visibility=View.INVISIBLE
+                    resendOtpContainer?.visibility=View.VISIBLE
                 }
             }
         }
@@ -318,7 +322,16 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
         }
     }
 
+    override fun onGetOtpModesListResponse(commonApiResponse: CommonApiResponse) {
+
+    }
+
     override fun onOTPVerificationDataException(e: Exception) {
+        mIsServerCallInitiated = false
+        exceptionHandlingForAPIResponse(e)
+    }
+
+    override fun onGetOtpModesListDataException(e: Exception) {
         mIsServerCallInitiated = false
         exceptionHandlingForAPIResponse(e)
     }

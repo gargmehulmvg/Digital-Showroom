@@ -20,4 +20,9 @@ class OtpVerificationService {
         }
     }
 
+    fun getOtpModes() {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mOtpVerificationNetwork.getOtpModesListServerCall(mOtpVerificationInterface)
+        }
+    }
 }

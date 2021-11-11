@@ -31,6 +31,9 @@ interface Apis {
     @POST("api/dotk/merchant/login")
     suspend fun validateOTP(@Body request: ValidateOtpRequest) : Response<ValidateOtpResponse>
 
+    @GET("api/dotk/vo1/onboard/getOtpModesList")
+    suspend fun getOtpModesList() : Response<CommonApiResponse>
+
     @POST("api/dotk/vm1/onboard/setStoreAddress")
     suspend fun updateStoreAddress(@Body request: StoreAddressRequest) : Response<CommonApiResponse>
 

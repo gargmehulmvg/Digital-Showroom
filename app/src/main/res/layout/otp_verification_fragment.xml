@@ -24,11 +24,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/_20sdp"
-        android:paddingBottom="@dimen/_1sdp"
         android:background="?selectableItemBackgroundBorderless"
         android:fontFamily="@font/roboto_medium"
         android:gravity="end|bottom"
         android:onClick="onClick"
+        android:paddingBottom="@dimen/_1sdp"
         android:textColor="@color/dark_blackish"
         android:textSize="@dimen/_12sdp"
         app:layout_constraintBottom_toBottomOf="@id/enterMobileNumberHeading"
@@ -47,9 +47,9 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/verifiedTextViewContainer"
         android:layout_width="match_parent"
-        android:visibility="gone"
         android:layout_height="@dimen/_75sdp"
         android:background="@color/open_green_darker"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent">
 
         <TextView
@@ -78,14 +78,14 @@
         android:id="@+id/verifyTextViewContainer"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:layout_goneMarginBottom="@dimen/_20sdp"
         android:background="@drawable/ripple_curve_grey_black_background"
         android:onClick="onClick"
         android:paddingTop="@dimen/_10sdp"
         android:paddingBottom="@dimen/_10sdp"
         app:layout_constraintBottom_toTopOf="@id/consentCheckBox"
         app:layout_constraintEnd_toEndOf="@id/changeTextView"
-        app:layout_constraintStart_toStartOf="@id/enterMobileNumberHeading">
+        app:layout_constraintStart_toStartOf="@id/enterMobileNumberHeading"
+        app:layout_goneMarginBottom="@dimen/_20sdp">
 
         <ProgressBar
             android:id="@+id/verifyProgressBar"
@@ -105,8 +105,8 @@
             android:layout_height="wrap_content"
             android:clickable="false"
             android:drawablePadding="@dimen/_10sdp"
-            android:gravity="center"
             android:fontFamily="@font/roboto_medium"
+            android:gravity="center"
             android:paddingStart="@dimen/_10sdp"
             android:paddingEnd="@dimen/_10sdp"
             android:textColor="@color/white"
@@ -139,8 +139,8 @@
         android:background="?selectableItemBackground"
         android:fontFamily="@font/roboto_bold"
         android:gravity="center_vertical"
-        android:padding="@dimen/_4sdp"
         android:onClick="onClick"
+        android:padding="@dimen/_4sdp"
         android:textColor="@color/black"
         android:textSize="@dimen/_9sdp"
         app:layout_constraintBottom_toBottomOf="@id/consentCheckBox"
@@ -150,36 +150,20 @@
 
     <EditText
         android:id="@+id/otpEditText"
+        style="@style/common_edit_text_black_border"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_25sdp"
         android:digits="1234567890"
+        android:imeOptions="actionDone"
+        android:importantForAutofill="no"
         android:inputType="number"
         android:maxLength="4"
-        android:imeOptions="actionDone"
-        tools:hint="Enter 4 digit OTP"
-        style="@style/common_edit_text_black_border"
         android:textSize="@dimen/_14sdp"
         app:layout_constraintEnd_toEndOf="@id/changeTextView"
         app:layout_constraintStart_toStartOf="@id/enterMobileNumberHeading"
         app:layout_constraintTop_toBottomOf="@id/enterMobileNumberHeading"
-        android:importantForAutofill="no" />
-
-    <TextView
-        android:id="@+id/resendOtpText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="?selectableItemBackgroundBorderless"
-        android:fontFamily="@font/roboto_medium"
-        android:onClick="onClick"
-        android:paddingTop="@dimen/_4sdp"
-        android:paddingStart="@dimen/_2sdp"
-        android:paddingEnd="@dimen/_2sdp"
-        android:textColor="@color/black"
-        android:textSize="@dimen/_14sdp"
-        app:layout_constraintEnd_toEndOf="@id/counterTextView"
-        app:layout_constraintTop_toBottomOf="@id/counterTextView"
-        tools:text="Send Again" />
+        tools:hint="Enter 4 digit OTP" />
 
     <TextView
         android:id="@+id/counterTextView"
@@ -188,14 +172,61 @@
         android:background="?selectableItemBackgroundBorderless"
         android:fontFamily="@font/roboto"
         android:onClick="onClick"
-        android:paddingStart="@dimen/_20sdp"
-        android:paddingTop="@dimen/_15sdp"
-        android:paddingEnd="@dimen/_2sdp"
         android:textColor="@color/dark_blackish"
         android:textSize="@dimen/_11sdp"
+        app:layout_constraintBottom_toBottomOf="@+id/otpEditText"
         app:layout_constraintEnd_toEndOf="@id/otpEditText"
-        app:layout_constraintTop_toBottomOf="@id/otpEditText"
+        app:layout_constraintStart_toStartOf="@+id/changeTextView"
+        app:layout_constraintTop_toTopOf="@id/otpEditText"
         tools:ignore="TouchTargetSizeCheck"
         tools:text="30 sec" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/resendOtpContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_marginTop="@dimen/_12sdp"
+        app:layout_constraintStart_toStartOf="@id/otpEditText"
+        app:layout_constraintTop_toBottomOf="@id/otpEditText">
+
+        <TextView
+            android:id="@+id/resendTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/_11sdp"
+            android:textColor="@color/black"
+            app:layout_constraintStart_toStartOf="@id/resendOtpContainer"
+            app:layout_constraintTop_toTopOf="@id/resendOtpContainer"
+            tools:text="Resend OTP on" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+            app:layout_constraintStart_toStartOf="@+id/resendOtpContainer"
+            app:layout_constraintTop_toBottomOf="@+id/resendTextView"
+            app:spanCount="3"
+            tools:itemCount="3"
+            tools:listitem="@layout/resend_otp_item_layout" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/resendOtpText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="?selectableItemBackgroundBorderless"
+        android:fontFamily="@font/roboto_medium"
+        android:onClick="onClick"
+        android:paddingStart="@dimen/_2sdp"
+        android:paddingTop="@dimen/_4sdp"
+        android:paddingEnd="@dimen/_2sdp"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_14sdp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/resendOtpContainer"
+        tools:text="Send Again" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
