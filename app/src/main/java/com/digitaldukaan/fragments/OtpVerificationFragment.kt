@@ -29,6 +29,8 @@ import com.digitaldukaan.smsapi.AppSignatureHelper
 import com.digitaldukaan.smsapi.ISmsReceivedListener
 import com.digitaldukaan.smsapi.MySMSBroadcastReceiver
 import com.google.android.gms.auth.api.phone.SmsRetriever
+import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.google.gson.Gson
 import kotlinx.android.synthetic.main.otp_verification_fragment.*
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
@@ -42,9 +44,9 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
     private var mEnteredOtpStr = ""
     private var mMobileNumberStr = ""
     private var mLoginService: LoginService? = null
-    private var mIsNewUser: Boolean = false
+    private var mIsNewUser = false
     private var mIsConsentTakenFromUser = true
-    private var mIsServerCallInitiated: Boolean = false
+    private var mIsServerCallInitiated = false
     private var mOtpStaticResponseData: VerifyOtpStaticResponseData? = null
     private var mTimerCompleted = false
 
@@ -58,8 +60,8 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        mActivity?.run {
-            val client = SmsRetriever.getClient(this)
+        mActivity?.let { context ->
+            val client = SmsRetriever.getClient(context)
             val task = client.startSmsRetriever()
             MySMSBroadcastReceiver.mSmsReceiverListener = this@OtpVerificationFragment
             task?.addOnSuccessListener { Log.d(TAG, "onCreate: Auto read SMS retrieval task success") }
@@ -72,6 +74,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         TAG = "OtpVerificationFragment"
+        FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
         mContentView = inflater.inflate(R.layout.otp_verification_fragment, container, false)
         mOtpVerificationService = OtpVerificationService()
         mOtpVerificationService?.setOtpVerificationListener(this)
@@ -177,9 +180,9 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
                     setContentView(view)
                     setCancelable(true)
                     window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-                    view?.run {
-                        val updateTextView: TextView = findViewById(R.id.updateTextView)
-                        val messageTextView: TextView = findViewById(R.id.messageTextView)
+                    view?.let { v ->
+                        val updateTextView: TextView = v.findViewById(R.id.updateTextView)
+                        val messageTextView: TextView = v.findViewById(R.id.messageTextView)
                         messageTextView.text = mOtpStaticResponseData?.mConsentMessage
                         updateTextView.text = mOtpStaticResponseData?.mTextOk
                         updateTextView.setOnClickListener { (this@apply).dismiss() }
@@ -194,6 +197,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
         startCountDownTimer()
         verifyProgressBar?.visibility = View.GONE
         otpEditText?.addTextChangedListener(object : TextWatcher {
+
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 Log.d(TAG, "beforeTextChanged: do nothing")
             }
@@ -251,11 +255,12 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
         verifyTextViewContainer?.callOnClick()
     }
 
-    override fun onOTPVerificationSuccessResponse(validateOtpResponse: ValidateOtpResponse) {
+    override fun onOTPVerificationSuccessResponse(commonApiResponse: CommonApiResponse) {
         mIsServerCallInitiated = false
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             mCountDownTimer?.cancel()
-            if (!validateOtpResponse.mIsSuccessStatus) {
+            val validateOtpResponse = Gson().fromJson<ValidateOtpResponse>(commonApiResponse.mCommonDataStr, ValidateOtpResponse::class.java)
+            if (!commonApiResponse.mIsSuccessStatus) {
                 stopProgress()
                 otpEditText?.text = null
                 verifyProgressBar?.visibility = View.GONE
@@ -287,7 +292,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
                         AFInAppEventParameterName.IS_CONSENT to if (mIsConsentTakenFromUser) "1" else "0")
                 )
                 Handler(Looper.getMainLooper()).postDelayed({
-                    if (null == validateOtpResponse.mStore && mIsNewUser) launchFragment(DukaanNameFragment.newInstance(), true) else launchFragment(OrderFragment.newInstance(), true)
+                    if (null == validateOtpResponse.mStore && mIsNewUser) launchFragment(DukaanNameFragment.newInstance(validateOtpResponse?.mIsInvitationShown ?: false, validateOtpResponse?.mStaffInvitation, validateOtpResponse?.mUserId ?: ""), true) else launchFragment(OrderFragment.newInstance(), true)
                 }, Constants.OTP_SUCCESS_TIMER)
                 verifiedOtpGroup?.visibility = View.GONE
                 verifiedTextViewContainer?.visibility = View.VISIBLE
@@ -300,9 +305,9 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
         PrefsManager.storeStringDataInSharedPref(Constants.USER_AUTH_TOKEN, validateOtpResponse.mUserAuthToken)
         PrefsManager.storeStringDataInSharedPref(Constants.USER_MOBILE_NUMBER, validateOtpResponse.mUserPhoneNumber)
         PrefsManager.storeStringDataInSharedPref(Constants.USER_ID, validateOtpResponse.mUserId)
-        validateOtpResponse.mStore?.run {
-            PrefsManager.storeStringDataInSharedPref(Constants.STORE_ID, storeId.toString())
-            PrefsManager.storeStringDataInSharedPref(Constants.STORE_NAME, storeInfo.name)
+        validateOtpResponse.mStore?.let { store ->
+            PrefsManager.storeStringDataInSharedPref(Constants.STORE_ID, store.storeId.toString())
+            PrefsManager.storeStringDataInSharedPref(Constants.STORE_NAME, store.storeInfo.name)
         }
     }
 
@@ -320,6 +325,13 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
 
     override fun onOTPVerificationDataException(e: Exception) {
         mIsServerCallInitiated = false
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            otpEditText?.text = null
+            verifyTextView?.text = mOtpStaticResponseData?.mVerifyText
+            verifyProgressBar?.visibility = View.GONE
+            showShortSnackBar(mActivity?.getString(R.string.something_went_wrong), true, R.drawable.ic_close_red)
+        }
         exceptionHandlingForAPIResponse(e)
     }
 
