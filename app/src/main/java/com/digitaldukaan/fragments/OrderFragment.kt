@@ -80,6 +80,9 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
     private var mIsToolbarSearchAvailable: Boolean = false
     private var mPaymentLinkBottomSheet: BottomSheetDialog? = null
     private var mPaymentLinkAmountStr: String? = null
+    private var mStaffInvitation: StaffInvitationResponse? = null
+    private var mIsInvitationShown: Boolean = false
+    private var mUserId: String = ""
 
     companion object {
         private var sOrderPageInfoResponse: OrderPageInfoResponse? = null
@@ -309,7 +312,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
             stopProgress()
             if (commonResponse.mIsSuccessStatus) {
                 sOrderPageInfoResponse = Gson().fromJson<OrderPageInfoResponse>(commonResponse.mCommonDataStr, OrderPageInfoResponse::class.java)
-                setupOrderPageInfoUI()
+                showDialogOrNot()
                 pushProfileToCleverTap()
             }
         }
@@ -715,6 +718,14 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
         }
     }
 
+    private fun showDialogOrNot(){
+        if(true == sOrderPageInfoResponse?.mIsInvitationShown){
+            setupOrderPageInfoUI()
+        }else{
+            showToast("show dialog")
+        }
+    }
+
     private fun setupOrderPageInfoUI() {
         try {
             sOrderPageInfoResponse?.let { pageInfoResponse ->
@@ -1067,4 +1078,8 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
     }
 
     override fun onLockedStoreShareSuccessResponse(lockedShareResponse: LockedStoreShareResponse) = showLockedStoreShareBottomSheet(lockedShareResponse)
+
+    private fun showInvitationDialog() {
+        if (!mIsInvitationShown) showStaffInvitationDialog(mStaffInvitation, mUserId)
+    }
 }

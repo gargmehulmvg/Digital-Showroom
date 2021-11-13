@@ -18,7 +18,9 @@ data class OrderPageInfoResponse(
     @SerializedName("pending_order_count")                      var mPendingOrderCount: Int,
     @SerializedName("store")                                    var mStoreInfo: StoreResponse?,
     @SerializedName("payment_link_locked")                      var mPaymentLinkLocked: HelpPageResponse,
-    @SerializedName("static_text")                              var mOrderPageStaticText: OrderPageStaticTextResponse?
+    @SerializedName("static_text")                              var mOrderPageStaticText: OrderPageStaticTextResponse?,
+    @SerializedName("is_invitation_shown")                      var mIsInvitationShown: Boolean,
+    @SerializedName("staff_invitation")                         var mStaffInvitation: StaffInvitationResponse
 )
 
 data class ZeroOrderPageResponse(
