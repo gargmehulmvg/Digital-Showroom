@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 data class ValidateOtpResponse (
     @SerializedName("status")               var mIsSuccessStatus: Boolean,
     @SerializedName("new_user")             var mIsNewUser: Boolean,
-    @SerializedName("is_invitation_shown")  var mIsInvitationShown: Boolean,
+    @SerializedName("is_invitation_available")  var mIsInvitationShown: Boolean,
     @SerializedName("message")              var mMessage: String?,
     @SerializedName("user_id")              var mUserId: String?,
     @SerializedName("phone")                var mUserPhoneNumber: String?,
@@ -16,10 +16,10 @@ data class ValidateOtpResponse (
 )
 
 data class ValidateUserResponse (
-    @SerializedName("user")                 var user: UserResponse,
-    @SerializedName("store")                var store: StoreResponse?,
-    @SerializedName("is_invitation_shown")  var mIsInvitationShown: Boolean,
-    @SerializedName("staff_invitation")     var mStaffInvitation: StaffInvitationResponse?
+    @SerializedName("user")                     var user: UserResponse,
+    @SerializedName("store")                    var store: StoreResponse?,
+    @SerializedName("is_invitation_available")  var mIsInvitationShown: Boolean,
+    @SerializedName("staff_invitation")         var mStaffInvitation: StaffInvitationResponse?
 )
 
 data class UserResponse (
@@ -44,7 +44,8 @@ data class StoreOwnerResponse (
     @SerializedName("user_id")              var userId: String,
     @SerializedName("verify_phone")         var verifyPhone: String?,
     @SerializedName("phone")                var phone: String?,
-    @SerializedName("language_id")          var languageId: String?
+    @SerializedName("language_id")          var languageId: String?,
+    @SerializedName("permissions")          var permissionArray: ArrayList<Int>
 )
 
 data class StoreBusinessResponse (

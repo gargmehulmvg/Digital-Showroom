@@ -67,10 +67,16 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         TAG = "ProductFragment"
         mContentView = inflater.inflate(R.layout.product_fragment, container, false)
-        if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else {
-            showCancellableProgressDialog(mActivity)
-            mService?.getProductPageInfo()
+
+        if(StaticInstances.sIsInvitationShown == true){
+            showStaffInvitationDialog(StaticInstances.sStaffInvitation, getStringDataFromSharedPref(Constants.USER_ID))
+        }else{
+            if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else {
+                showCancellableProgressDialog(mActivity)
+                mService?.getProductPageInfo()
+            }
         }
+
         ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, false)
             hideBackPressFromToolBar(mActivity, false)

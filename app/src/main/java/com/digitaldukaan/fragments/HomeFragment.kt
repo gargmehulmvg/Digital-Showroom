@@ -563,6 +563,10 @@ class HomeFragment : BaseFragment(), IHomeServiceInterface,
         }
     }
 
+    override fun checkStaffInviteResponse(commonResponse: CommonApiResponse) {
+
+    }
+
     private fun saveUserDetailsInPref(validateOtpResponse: ValidateOtpResponse) {
         storeStringDataInSharedPref(Constants.USER_AUTH_TOKEN, validateOtpResponse.mUserAuthToken)
         storeStringDataInSharedPref(Constants.USER_MOBILE_NUMBER, validateOtpResponse.mUserPhoneNumber)

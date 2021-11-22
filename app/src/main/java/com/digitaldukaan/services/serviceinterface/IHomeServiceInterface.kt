@@ -32,4 +32,6 @@ interface IHomeServiceInterface {
 
     fun onHomePageException(e: Exception)
 
+    fun checkStaffInviteResponse(commonResponse: CommonApiResponse)
+
 }

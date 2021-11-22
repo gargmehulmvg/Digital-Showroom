@@ -76,8 +76,13 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
             showNoInternetConnectionDialog()
             return
         }
-        showProgressDialog(mActivity)
-        mService?.getMarketingPageInfo()
+
+        if(StaticInstances.sIsInvitationShown == true){
+            showStaffInvitationDialog(StaticInstances.sStaffInvitation, getStringDataFromSharedPref(Constants.USER_ID))
+        }else{
+            showProgressDialog(mActivity)
+            mService?.getMarketingPageInfo()
+        }
         WebViewBridge.mWebViewListener = this
     }
 

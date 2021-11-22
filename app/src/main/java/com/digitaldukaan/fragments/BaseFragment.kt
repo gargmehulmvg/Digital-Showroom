@@ -20,6 +20,7 @@ import android.net.Uri
 import android.os.*
 import android.provider.MediaStore
 import android.provider.Settings
+import android.telephony.PhoneNumberUtils
 import android.text.Editable
 import android.text.Html
 import android.text.InputFilter
@@ -78,6 +79,7 @@ import java.io.IOException
 import java.net.UnknownHostException
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 
 open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener {
@@ -2039,6 +2041,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
             mActivity?.let { context ->
                 val cancelWarningDialog = Dialog(context)
                 val view = LayoutInflater.from(context).inflate(R.layout.multi_user_selection_dialog, null)
+                var selectedText = ""
                 cancelWarningDialog.apply {
                     setContentView(view)
                     setCancelable(false)
@@ -2052,12 +2055,17 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                         val dialogHeadingTextView: TextView = findViewById(R.id.dialogHeadingTextView)
                         mActivity?.let { context -> Glide.with(context).load(staffInvitation?.cdn).into(dialogImageView) }
                         dialogHeadingTextView.text = staffInvitation?.heading
-                        moreOptionsTextView.text = staffInvitation?.textMoreOptions
+                        moreOptionsTextView.setHtmlData(staffInvitation?.textMoreOptions)
                         staffInvitation?.invitationList?.get(0)?.isSelected = true
                         mMultiUserAdapter = StaffInvitationAdapter(staffInvitation?.invitationList, object : IAdapterItemClickListener {
                                 override fun onAdapterItemClickListener(position: Int) {
                                     staffInvitation?.invitationList?.forEachIndexed { _, item -> item?.isSelected = false }
                                     staffInvitation?.invitationList?.get(position)?.isSelected = true
+                                    if("Exit" in staffInvitation?.invitationList?.get(position)?.heading.toString()){
+                                        selectedText = "Exit"
+                                    }else if("Reject" in staffInvitation?.invitationList?.get(position)?.heading.toString()){
+                                        selectedText = "Reject"
+                                    }
                                     mMultiUserAdapter?.notifyDataSetChanged()
                                 }
                             })
@@ -2071,19 +2079,30 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                         }
                         nextTextView.apply {
                             text = staffInvitation?.cta?.text
-                            setTextColor(Color.parseColor(staffInvitation?.cta?.text))
+                            //setTextColor(Color.parseColor(staffInvitation?.cta?.textColor))
                             setOnClickListener {
+                                if("Exit" == selectedText){
+                                    mActivity?.finish()
+                                }
                                 CoroutineScopeUtils().runTaskOnCoroutineBackground {
                                     try {
-                                        val response = RetrofitApi().getServerCallObject()?.updateInvitationStatus(UpdateInvitationRequest(status = 1, storeId = staffInvitation?.storeId ?: 0, userId = userId.toInt(), languageId = 1))
+                                        val response = RetrofitApi().getServerCallObject()?.updateInvitationStatus(UpdateInvitationRequest(status = 1, StoreId = staffInvitation?.invitedStoreId ?: 0, userId = userId.toInt(), languageId = 1))
                                         response?.let {
                                             stopProgress()
                                             if (it.isSuccessful) {
+                                                val updateInvitationResponse = Gson().fromJson<StaffMemberDetailsResponse>(it.body()?.mCommonDataStr, StaffMemberDetailsResponse::class.java)
                                                 it.body()?.let {
                                                     withContext(Dispatchers.Main) {
                                                         if (it.mIsSuccessStatus) {
                                                             cancelWarningDialog.dismiss()
                                                             showShortSnackBar(it.mMessage, true, R.drawable.ic_check_circle)
+                                                            if(selectedText != "Reject"){
+                                                                Log.i("permissionDialog", updateInvitationResponse.permissions.toString())
+                                                                Log.i("storeIdDialog", updateInvitationResponse.storeId.toString())
+                                                                StaticInstances.sPermissionHashMap = updateInvitationResponse.permissionsMap
+                                                                StaticInstances.sPermissionHashMap?.let { it1 -> firstScreen(it1) }
+                                                                storeStringDataInSharedPref(Constants.STORE_ID, updateInvitationResponse.storeId)
+                                                            }
                                                         } else showShortSnackBar(it.mMessage, true, R.drawable.ic_close_red)
                                                     }
                                                 }
@@ -2101,4 +2120,36 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         }
     }
 
+    fun firstScreen(permissionMap: HashMap<String, Boolean>) {
+        //Log.i("screenLaunch", permissionArray.toString())
+        /*when(permissionArray[0]){
+            1 -> launchFragment(OrderFragment.newInstance(), true)
+            2 -> launchFragment(ProductFragment.newInstance(), true)
+            3 -> launchFragment(PremiumPageInfoFragment.newInstance(), true)
+            4 -> launchFragment(MarketingFragment.newInstance(), true)
+            5 -> launchFragment(SettingsFragment.newInstance(), true)
+        }*/
+        clearFragmentBackStack()
+        for (it in permissionMap) {
+            if (it.value) {
+                when (it.key) {
+                    "page_order" -> {
+                        launchFragment(OrderFragment.newInstance(), true)
+                    }
+                    "page_catalog" -> {
+                        launchFragment(ProductFragment.newInstance(), true)
+                    }
+                    "page_premium" -> {
+                        launchFragment(PremiumPageInfoFragment.newInstance(), true)
+                    }
+                    "page_marketing" -> {
+                        launchFragment(MarketingFragment.newInstance(), true)
+                    }
+                    "page_settings" -> {
+                        launchFragment(SettingsFragment.newInstance(), true)
+                    }
+                }
+            }
+        }
+    }
 }

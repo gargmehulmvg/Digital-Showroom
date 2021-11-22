@@ -1,4 +1,4 @@
-package com.digitaldukaan.fragments
+package com.digitaldukaan. fragments
 
 import android.app.Dialog
 import android.graphics.Color
@@ -17,9 +17,12 @@ import android.widget.TextView
 import com.appsflyer.AppsFlyerLib
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.*
+import com.digitaldukaan.fragments.BaseFragment
+import com.digitaldukaan.fragments.DukaanNameFragment
 import com.digitaldukaan.interfaces.IOnOTPFilledListener
 import com.digitaldukaan.models.dto.CleverTapProfile
 import com.digitaldukaan.models.response.*
+import com.digitaldukaan.network.RetrofitApi
 import com.digitaldukaan.services.LoginService
 import com.digitaldukaan.services.OtpVerificationService
 import com.digitaldukaan.services.isInternetConnectionAvailable
@@ -34,6 +37,7 @@ import com.google.gson.Gson
 import kotlinx.android.synthetic.main.otp_verification_fragment.*
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
+import retrofit2.Retrofit
 
 
 class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerificationServiceInterface, ISmsReceivedListener,
@@ -49,6 +53,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
     private var mIsServerCallInitiated = false
     private var mOtpStaticResponseData: VerifyOtpStaticResponseData? = null
     private var mTimerCompleted = false
+    private var mcheckStaffInviteResponse: StaffMemberDetailsResponse? = null
 
     companion object {
         fun newInstance(mobileNumber: String): OtpVerificationFragment {
@@ -270,6 +275,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
                 mIsNewUser = validateOtpResponse.mIsNewUser
                 stopProgress()
                 saveUserDetailsInPref(validateOtpResponse)
+                mOtpVerificationService?.checkStaffInvite()
                 val cleverTapProfile = CleverTapProfile()
                 cleverTapProfile.mShopName = validateOtpResponse.mStore?.storeInfo?.name
                 var businessTypeStr = ""
@@ -292,11 +298,21 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
                         AFInAppEventParameterName.IS_CONSENT to if (mIsConsentTakenFromUser) "1" else "0")
                 )
                 Handler(Looper.getMainLooper()).postDelayed({
-                    if (null == validateOtpResponse.mStore && mIsNewUser) launchFragment(DukaanNameFragment.newInstance(validateOtpResponse?.mIsInvitationShown ?: false, validateOtpResponse?.mStaffInvitation, validateOtpResponse?.mUserId ?: ""), true) else launchFragment(OrderFragment.newInstance(), true)
+                    StaticInstances.sPermissionArray = validateOtpResponse.mStore?.storeOwner?.permissionArray
+                    Log.i("OtpVerification", StaticInstances.sPermissionArray.toString())
+                    if (null == validateOtpResponse.mStore && mIsNewUser) launchFragment(DukaanNameFragment.newInstance(mcheckStaffInviteResponse?.mIsInvitationShown ?: false, mcheckStaffInviteResponse?.mStaffInvitation, validateOtpResponse?.mUserId ?: ""), true) else StaticInstances.sPermissionHashMap?.let { it1 -> firstScreen(it1) }
                 }, Constants.OTP_SUCCESS_TIMER)
                 verifiedOtpGroup?.visibility = View.GONE
                 verifiedTextViewContainer?.visibility = View.VISIBLE
                 verifiedTextView?.text = mOtpStaticResponseData?.text_verified
+            }
+        }
+    }
+
+    override fun checkStaffInviteResponse(commonResponse: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            if(commonResponse.mIsSuccessStatus){
+                mcheckStaffInviteResponse = Gson().fromJson<StaffMemberDetailsResponse>(commonResponse.mCommonDataStr, StaffMemberDetailsResponse::class.java)
             }
         }
     }
@@ -306,6 +322,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
         PrefsManager.storeStringDataInSharedPref(Constants.USER_MOBILE_NUMBER, validateOtpResponse.mUserPhoneNumber)
         PrefsManager.storeStringDataInSharedPref(Constants.USER_ID, validateOtpResponse.mUserId)
         validateOtpResponse.mStore?.let { store ->
+            Log.i("storeIdDialog", store.storeId.toString())
             PrefsManager.storeStringDataInSharedPref(Constants.STORE_ID, store.storeId.toString())
             PrefsManager.storeStringDataInSharedPref(Constants.STORE_NAME, store.storeInfo.name)
         }

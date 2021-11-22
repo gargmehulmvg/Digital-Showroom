@@ -20,4 +20,10 @@ class OtpVerificationService {
         }
     }
 
+    fun checkStaffInvite() {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mOtpVerificationNetwork.checkStaffInviteServerCall(mOtpVerificationInterface)
+        }
+    }
+
 }

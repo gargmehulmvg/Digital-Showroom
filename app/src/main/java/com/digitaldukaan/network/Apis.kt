@@ -34,11 +34,14 @@ interface Apis {
     @POST("api/dotk/vo1/user/loginV2")
     suspend fun validateOTP(@Body request: ValidateOtpRequest) : Response<CommonApiResponse>
 
-    @POST("vc1/user/updateInvitationStatus")
+    @POST("api/dotk/vc1/user/updateInvitationStatus")
     suspend fun updateInvitationStatus(@Body request: UpdateInvitationRequest) : Response<CommonApiResponse>
 
     @POST("api/dotk/vm1/onboard/setStoreAddress")
     suspend fun updateStoreAddress(@Body request: StoreAddressRequest) : Response<CommonApiResponse>
+
+    @GET("api/dotk/vc1/user/getStaffMemberDetails/{store_id}")
+    suspend fun getStaffMembersDetails(@Path("store_id") store_id: String) : Response<CommonApiResponse>
 
     /* ----------------------       Settings         ---------------------- */
     @GET("api/dotk/vm1/settings/getOrderTypePageInfo")
@@ -302,4 +305,7 @@ interface Apis {
 
     @GET("api/dotk/vm1/settings/getLockedStoreShareData/{mode}")
     suspend fun getLockedStoreShareData(@Path("mode") mode: Int) : Response<CommonApiResponse>
+
+    @GET("api/dotk/vc1/user/checkStaffInvite")
+    suspend fun checkStaffInvite() : Response<CommonApiResponse>
 }

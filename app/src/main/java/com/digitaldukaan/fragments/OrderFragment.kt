@@ -22,6 +22,7 @@ import com.digitaldukaan.adapters.LandingPageCardsAdapter
 import com.digitaldukaan.adapters.LandingPageShortcutsAdapter
 import com.digitaldukaan.adapters.OrderAdapterV2
 import com.digitaldukaan.constants.*
+import com.digitaldukaan.constants.StaticInstances.sIsInvitationShown
 import com.digitaldukaan.interfaces.IAdapterItemClickListener
 import com.digitaldukaan.interfaces.ILandingPageAdapterListener
 import com.digitaldukaan.interfaces.IOrderListItemListener
@@ -53,6 +54,7 @@ import kotlinx.android.synthetic.main.layout_order_fragment.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.net.URL
 
 class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuItemClickListener,
     SwipeRefreshLayout.OnRefreshListener, IOrderListItemListener {
@@ -96,6 +98,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
         private var sIsMoreCompletedOrderAvailable = false
         private var sOrderList: ArrayList<OrderItemResponse> = ArrayList()
         private var sCompletedOrderList: ArrayList<OrderItemResponse> = ArrayList()
+        private var sCheckStaffInviteResponse: StaffMemberDetailsResponse? = null
 
         fun newInstance(isNewUserLogin: Boolean = false): OrderFragment {
             val fragment = OrderFragment()
@@ -126,6 +129,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
         mService = OrderFragmentService()
         mService?.setServiceListener(this)
         initializeViews()
+        mService?.checkStaffInvite()
         if (!askContactPermission()) {
             if (!isInternetConnectionAvailable(mActivity)) {
                 showNoInternetConnectionDialog()
@@ -385,53 +389,55 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                 val domainExpiryContainer: View? = mContentView?.findViewById(R.id.domainExpiryContainer)
                 if (mIsAllStepsCompleted) {
                     zeroOrderItemsRecyclerView?.visibility = View.GONE
-                    myShortcutsRecyclerView?.visibility = View.VISIBLE
-                    myShortcutsRecyclerView?.apply {
-                        layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
-                        adapter = LandingPageShortcutsAdapter(mActivity, landingPageCardsResponse?.shortcutsList, object : IAdapterItemClickListener {
-                            override fun onAdapterItemClickListener(position: Int) {
-                                val item = landingPageCardsResponse?.shortcutsList?.get(position)
-                                when(item?.action) {
-                                    Constants.ACTION_ADD_PRODUCT -> launchFragment(AddProductFragment.newInstance(0, true), true)
-                                    Constants.ACTION_SHARE_STORE -> {
-                                        if (StaticInstances.sIsShareStoreLocked) {
-                                            getLockedStoreShareDataServerCall(Constants.MODE_SHARE_STORE)
-                                            return
+                    if(StaticInstances.sPermissionHashMap?.get("my_shortcuts") == true){
+                        myShortcutsRecyclerView?.visibility = View.VISIBLE
+                        myShortcutsRecyclerView?.apply {
+                            layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
+                            adapter = LandingPageShortcutsAdapter(mActivity, landingPageCardsResponse?.shortcutsList, object : IAdapterItemClickListener {
+                                override fun onAdapterItemClickListener(position: Int) {
+                                    val item = landingPageCardsResponse?.shortcutsList?.get(position)
+                                    when(item?.action) {
+                                        Constants.ACTION_ADD_PRODUCT -> launchFragment(AddProductFragment.newInstance(0, true), true)
+                                        Constants.ACTION_SHARE_STORE -> {
+                                            if (StaticInstances.sIsShareStoreLocked) {
+                                                getLockedStoreShareDataServerCall(Constants.MODE_SHARE_STORE)
+                                                return
+                                            }
+                                            shareStoreOverWhatsAppServerCall()
                                         }
-                                        shareStoreOverWhatsAppServerCall()
+                                        Constants.ACTION_MY_PROFILE -> launchFragment(ProfilePreviewFragment.newInstance(), true)
+                                        Constants.ACTION_STORE_CONTROLS -> initiateAccountInfoServerCall()
                                     }
-                                    Constants.ACTION_MY_PROFILE -> launchFragment(ProfilePreviewFragment.newInstance(), true)
-                                    Constants.ACTION_STORE_CONTROLS -> initiateAccountInfoServerCall()
                                 }
-                            }
 
-                            private fun initiateAccountInfoServerCall() {
-                                showProgressDialog(mActivity)
-                                CoroutineScopeUtils().runTaskOnCoroutineBackground {
-                                    try {
-                                        val response = RetrofitApi().getServerCallObject()?.getProfileResponse()
-                                        response?.let {
-                                            stopProgress()
-                                            if (it.isSuccessful) {
-                                                it.body()?.let {
-                                                    withContext(Dispatchers.Main) {
-                                                        stopProgress()
-                                                        if (it.mIsSuccessStatus) {
-                                                            val accountInfoResponse = Gson().fromJson<AccountInfoResponse>(it.mCommonDataStr, AccountInfoResponse::class.java)
-                                                            StaticInstances.sAccountPageSettingsStaticData = accountInfoResponse?.mAccountStaticText
-                                                            StaticInstances.sAppStoreServicesResponse = accountInfoResponse?.mStoreInfo?.storeServices
-                                                            launchFragment(MoreControlsFragment.newInstance(accountInfoResponse), true)
+                                private fun initiateAccountInfoServerCall() {
+                                    showProgressDialog(mActivity)
+                                    CoroutineScopeUtils().runTaskOnCoroutineBackground {
+                                        try {
+                                            val response = RetrofitApi().getServerCallObject()?.getProfileResponse()
+                                            response?.let {
+                                                stopProgress()
+                                                if (it.isSuccessful) {
+                                                    it.body()?.let {
+                                                        withContext(Dispatchers.Main) {
+                                                            stopProgress()
+                                                            if (it.mIsSuccessStatus) {
+                                                                val accountInfoResponse = Gson().fromJson<AccountInfoResponse>(it.mCommonDataStr, AccountInfoResponse::class.java)
+                                                                StaticInstances.sAccountPageSettingsStaticData = accountInfoResponse?.mAccountStaticText
+                                                                StaticInstances.sAppStoreServicesResponse = accountInfoResponse?.mStoreInfo?.storeServices
+                                                                launchFragment(MoreControlsFragment.newInstance(accountInfoResponse), true)
+                                                            }
                                                         }
                                                     }
                                                 }
                                             }
+                                        } catch (e: Exception) {
+                                            exceptionHandlingForAPIResponse(e)
                                         }
-                                    } catch (e: Exception) {
-                                        exceptionHandlingForAPIResponse(e)
                                     }
                                 }
-                            }
-                        })
+                            })
+                        }
                     }
                 } else {
                     zeroOrderItemsRecyclerView?.visibility = View.VISIBLE
@@ -719,10 +725,18 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
     }
 
     private fun showDialogOrNot(){
-        if(true == sOrderPageInfoResponse?.mIsInvitationShown){
-            setupOrderPageInfoUI()
+        Log.i("permissionArrayOrders", sOrderPageInfoResponse?.mStoreInfo?.storeOwner?.permissionArray.toString())
+        StaticInstances.sPermissionArray= sOrderPageInfoResponse?.mStoreInfo?.storeOwner?.permissionArray
+        if(true == sIsInvitationShown){
+            Log.i("showDialogOrNot", sOrderPageInfoResponse?.mStaffInvitation?.invitationList.toString())
+            sOrderPageInfoResponse?.mStoreInfo?.storeOwner?.let {
+                showStaffInvitationDialog(StaticInstances.sStaffInvitation,
+                    getStringDataFromSharedPref(Constants.USER_ID))
+            }
+            //TODO: setupOrderPageInfoUI() after dialog closes, coz now we have a new response
         }else{
-            showToast("show dialog")
+            Log.i("showDialogOrNot", "SAME FLOW")
+            setupOrderPageInfoUI()
         }
     }
 
@@ -774,7 +788,14 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                 searchImageView?.visibility = if (pageInfoResponse.mIsSearchOrder) View.VISIBLE else View.GONE
                 takeOrderTextView?.visibility = if (pageInfoResponse.mIsTakeOrder) View.VISIBLE else View.GONE
             }
-            mService?.getLandingPageCards()
+            if(StaticInstances.sPermissionHashMap?.get("landing_cards") == true){
+                mService?.getLandingPageCards()
+            }else {
+                myShortcutsRecyclerView?.visibility = View.GONE
+                zeroOrderItemsRecyclerView?.visibility = View.GONE
+                nextStepTextView?.visibility = View.GONE
+
+            }
         } catch (e: Exception) {
             Log.e(TAG, "setupOrderPageInfoUI: ${e.message}", e)
         }
@@ -1079,7 +1100,13 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
 
     override fun onLockedStoreShareSuccessResponse(lockedShareResponse: LockedStoreShareResponse) = showLockedStoreShareBottomSheet(lockedShareResponse)
 
-    private fun showInvitationDialog() {
-        if (!mIsInvitationShown) showStaffInvitationDialog(mStaffInvitation, mUserId)
+    override fun checkStaffInviteResponse(commonResponse: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            if (commonResponse.mIsSuccessStatus) {
+                var sCheckStaffInviteResponse = Gson().fromJson<StaffMemberDetailsResponse>(commonResponse.mCommonDataStr, StaffMemberDetailsResponse::class.java)
+                mIsInvitationShown = sCheckStaffInviteResponse.mIsInvitationShown
+                Log.i("isInvitationShownOrders", sCheckStaffInviteResponse?.mIsInvitationShown.toString())
+            }
+        }
     }
 }

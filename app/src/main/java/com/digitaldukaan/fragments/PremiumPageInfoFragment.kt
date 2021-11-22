@@ -49,12 +49,17 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
         }
         WebViewBridge.mWebViewListener = this
         hideBottomNavigationView(false)
-        if (!isInternetConnectionAvailable(mActivity)) {
-            showNoInternetConnectionDialog()
-            return
+
+        if(StaticInstances.sIsInvitationShown == true){
+            showStaffInvitationDialog(StaticInstances.sStaffInvitation, getStringDataFromSharedPref(Constants.USER_ID))
+        }else{
+            if (!isInternetConnectionAvailable(mActivity)) {
+                showNoInternetConnectionDialog()
+                return
+            }
+            showProgressDialog(mActivity)
+            mService.getPremiumPageInfo()
         }
-        showProgressDialog(mActivity)
-        mService.getPremiumPageInfo()
     }
 
     override fun onNativeBackPressed() {

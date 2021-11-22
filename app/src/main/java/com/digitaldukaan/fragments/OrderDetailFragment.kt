@@ -47,6 +47,14 @@ import kotlinx.android.synthetic.main.bottom_layout_send_bill.*
 import kotlinx.android.synthetic.main.layout_order_detail_fragment.*
 import java.io.File
 import java.util.*
+import android.app.DownloadManager
+
+import android.content.Context.DOWNLOAD_SERVICE
+
+import androidx.core.content.ContextCompat.getSystemService
+
+
+
 
 
 class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupMenu.OnMenuItemClickListener {
@@ -1037,7 +1045,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
     } else {
         showToast("Start Downloading...")
         try {
-            Picasso.get().load(receiptStr).into(object : Target {
+            /*Picasso.get().load(receiptStr).into(object : Target {
                 override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
                     bitmap?.let {
                         downloadMediaToStorage(bitmap, mActivity)
@@ -1053,7 +1061,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                 override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
                     Log.d(TAG, "onBitmapFailed: ")
                 }
-            })
+            })*/
         } catch (e: Exception) {
             Log.e(TAG, "startDownloadBill: ${e.message}", e)
             showToast("Something went wrong")

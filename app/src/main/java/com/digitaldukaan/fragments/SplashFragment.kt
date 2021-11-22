@@ -19,6 +19,7 @@ import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.models.response.*
+import com.digitaldukaan.network.RetrofitApi
 import com.digitaldukaan.services.SplashService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.ISplashServiceInterface
@@ -59,6 +60,17 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
         }, Constants.TIMER_INTERVAL)
         fetchContactsIfPermissionGranted()
         splashService.setSplashServiceInterface(this)
+
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            val checkStaffInviteResponse = RetrofitApi().getServerCallObject()?.checkStaffInvite()
+            checkStaffInviteResponse?.let {it ->
+                val checkStaffInviteResponse2 = Gson().fromJson<StaffMemberDetailsResponse>(it.body()?.mCommonDataStr , StaffMemberDetailsResponse::class.java)
+                StaticInstances.sIsInvitationShown = checkStaffInviteResponse2?.mIsInvitationShown
+                StaticInstances.sStaffInvitation = checkStaffInviteResponse2?.mStaffInvitation
+                Log.i("isInvitationSplash", checkStaffInviteResponse2?.mIsInvitationShown.toString())
+                Log.i("isStaffInvitationSplash", checkStaffInviteResponse2?.mStaffInvitation.toString())
+            }
+        }
     }
 
     private fun fetchContactsIfPermissionGranted() {
@@ -105,7 +117,17 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
         when {
             null != mIntentUri -> switchToFragmentByDeepLink()
             "" == getStringDataFromSharedPref(Constants.STORE_ID) -> launchFragment(LoginFragmentV2.newInstance(), true)
-            else -> launchFragment(OrderFragment.newInstance(), true)
+            else -> {
+                CoroutineScopeUtils().runTaskOnCoroutineMain {
+                    val response = RetrofitApi().getServerCallObject()?.getStaffMembersDetails(getStringDataFromSharedPref(Constants.STORE_ID))
+                    response?.let{it->
+                        val response2 = Gson().fromJson<StaffMemberDetailsResponse>(it.body()?.mCommonDataStr , StaffMemberDetailsResponse::class.java)
+                        StaticInstances.sPermissionHashMap= response2?.permissionsMap
+                        response2?.permissionsMap?.let { it1 -> firstScreen(it1) }
+                    }
+                    Log.i("PermissionMapSplash", StaticInstances.sPermissionHashMap.toString())
+                }
+            }
         }
     }
 

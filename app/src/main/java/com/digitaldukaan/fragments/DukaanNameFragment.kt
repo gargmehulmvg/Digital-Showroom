@@ -102,6 +102,7 @@ class DukaanNameFragment : BaseFragment(), ICreateStoreServiceInterface {
             }
         })
         setupUIFromStaticData()
+        showInvitationDialog()
     }
 
     private fun setupUIFromStaticData() {
@@ -209,11 +210,11 @@ class DukaanNameFragment : BaseFragment(), ICreateStoreServiceInterface {
             when {
                 grantResults.isEmpty() -> Log.i(TAG, "User interaction was cancelled.")
                 grantResults[0] == PackageManager.PERMISSION_GRANTED -> {
-                    showInvitationDialog()
+                    //showInvitationDialog()
                     getLastLocation()
                 }
                 else -> {
-                    showInvitationDialog()
+                    //showInvitationDialog()
                     showToast("Permission was denied")
                 }
             }
@@ -221,7 +222,9 @@ class DukaanNameFragment : BaseFragment(), ICreateStoreServiceInterface {
     }
 
     private fun showInvitationDialog() {
-        if (!mIsInvitationShown) showStaffInvitationDialog(mStaffInvitation, mUserId)
+        if (mIsInvitationShown) {
+            showStaffInvitationDialog(mStaffInvitation, mUserId)
+        }
     }
 
     override fun onBackPressed(): Boolean {

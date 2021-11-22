@@ -3,9 +3,9 @@ package com.digitaldukaan.adapters
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.LinearLayout
 import android.widget.RadioButton
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.isNotEmpty
@@ -23,7 +23,7 @@ class StaffInvitationAdapter(
         val radioButton: RadioButton = itemView.findViewById(R.id.radioButton)
         val headingTextView: TextView = itemView.findViewById(R.id.headingTextView)
         val subHeadingTextView: TextView = itemView.findViewById(R.id.subHeadingTextView)
-        val radioButtonContainer: LinearLayout = itemView.findViewById(R.id.radioButtonContainer)
+        val radioButtonContainer: ConstraintLayout = itemView.findViewById(R.id.radioButtonContainer)
     }
 
     fun showCompleteList() {

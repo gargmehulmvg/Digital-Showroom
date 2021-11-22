@@ -11,4 +11,6 @@ interface IOtpVerificationServiceInterface {
 
     fun onOTPVerificationDataException(e: Exception)
 
+    fun checkStaffInviteResponse(commonResponse: CommonApiResponse)
+
 }

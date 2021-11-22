@@ -7,8 +7,8 @@ data class StaffInvitationResponse(
     @field:SerializedName("cta")
     val cta: CommonCtaResponse? = null,
 
-    @field:SerializedName("store_id")
-    val storeId: Int,
+    @field:SerializedName("invited_store_id")
+    val invitedStoreId: Int,
 
     @field:SerializedName("invitation_list")
     val invitationList: ArrayList<InvitationListItem?>? = null,
