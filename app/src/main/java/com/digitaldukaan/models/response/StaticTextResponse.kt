@@ -12,6 +12,7 @@ data class StaticTextResponse(
     @SerializedName("onboarding_step_two")              var mOnBoardStep2StaticData: OnBoardStep2StaticResponseData,
     @SerializedName("merchant_address")                 var mMapStaticData: MapLocationStaticResponseData,
     @SerializedName("subscription_lock")                var mSubscriptionLockStaticData: SubscriptionLockStaticData,
+    @SerializedName("staff_lock_bottomsheet")           var mStaffLockBottomSheet: StaffLockBottomSheetStaticData,
     @SerializedName("catalog_add")                      var mCatalogStaticData: CatalogStaticData
 )
 
@@ -115,4 +116,9 @@ data class SubscriptionLockStaticData(
     @SerializedName("message")      var message: String?,
     @SerializedName("cta_text")     var ctaText: String?,
     @SerializedName("page_url")     var pageUrl: String?
+)
+
+data class StaffLockBottomSheetStaticData(
+    @SerializedName("heading")      var heading: String?,
+    @SerializedName("cta")          var cta: CommonCtaResponse?
 )

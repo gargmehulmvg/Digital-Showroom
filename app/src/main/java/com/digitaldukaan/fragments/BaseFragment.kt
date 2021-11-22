@@ -113,7 +113,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                             messageTextView.text = msg
                         }
                         setContentView(view)
-                        setCancelable(false)
+                        setCancelable(true)
                         window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
                     }?.show()
                 } catch (e: Exception) {
@@ -910,7 +910,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
             destinationFile.createNewFile()
             //Convert bitmap to byte array
             val bos = ByteArrayOutputStream()
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 50, bos)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 85, bos)
             val bitmapData = bos.toByteArray()
             //write the bytes in file
             val fos = FileOutputStream(destinationFile)
@@ -1399,6 +1399,27 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
             try {
                 val response = RetrofitApi().getServerCallObject()?.getShareStore()
+                response?.let {
+                    stopProgress()
+                    if (it.isSuccessful) {
+                        it.body()?.let {
+                            withContext(Dispatchers.Main) {
+                                if (it.mIsSuccessStatus) shareOnWhatsApp(Gson().fromJson<String>(it.mCommonDataStr, String::class.java)) else showShortSnackBar(it.mMessage, true, R.drawable.ic_close_red)
+                            }
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                exceptionHandlingForAPIResponse(e)
+            }
+        }
+    }
+
+    private fun requestFeaturePermissionServerCall(id: Int) {
+        showProgressDialog(mActivity)
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            try {
+                val response = RetrofitApi().getServerCallObject()?.getRequestPermissionText(id)
                 response?.let {
                     stopProgress()
                     if (it.isSuccessful) {
@@ -2140,6 +2161,33 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                     }
                 }
             }
+        }
+    }
+
+    fun showStaffFeatureLockedBottomSheet(id: Int) {
+        mActivity?.run {
+            val bottomSheetDialog = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
+            val view = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_staff_feature_locked, findViewById(R.id.bottomSheetContainer))
+            bottomSheetDialog.apply {
+                setContentView(view)
+                setBottomSheetCommonProperty()
+                view.run {
+                    val headingTextView: TextView = findViewById(R.id.headingTextView)
+                    val ctaImageView: ImageView = findViewById(R.id.ctaImageView)
+                    val ctaTextView: TextView = findViewById(R.id.ctaTextView)
+                    val ctaContainer: View = findViewById(R.id.ctaContainer)
+                    headingTextView.text = StaticInstances.sStaticData?.mStaffLockBottomSheet?.heading
+                    ctaContainer.setOnClickListener {
+                        requestFeaturePermissionServerCall(id)
+                        bottomSheetDialog.dismiss()
+                    }
+                    ctaTextView.apply {
+                        text = StaticInstances.sStaticData?.mStaffLockBottomSheet?.cta?.text
+                        setTextColor(Color.parseColor(StaticInstances.sStaticData?.mStaffLockBottomSheet?.cta?.textColor))
+                        mActivity?.let { context -> Glide.with(context).load(StaticInstances.sStaticData?.mStaffLockBottomSheet?.cta?.cdn).into(ctaImageView) }
+                    }
+                }
+            }.show()
         }
     }
 }

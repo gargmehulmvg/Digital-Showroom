@@ -211,5 +211,11 @@ class Constants {
         //MODE DELIVERY CHARGE
         const val MEDIA_TYPE_IMAGES                             = 1
         const val MEDIA_TYPE_VIDEOS                             = 2
+        //MODE BOTTOM NAV BAR
+        const val NAV_BAR_ORDERS                                = 1
+        const val NAV_BAR_CATALOG                               = 2
+        const val NAV_BAR_PREMIUM                               = 3
+        const val NAV_BAR_MARKETING                             = 4
+        const val NAV_BAR_SETTINGS                              = 5
     }
 }

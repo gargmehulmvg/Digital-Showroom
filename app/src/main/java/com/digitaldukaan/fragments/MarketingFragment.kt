@@ -129,6 +129,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                             }
                         }
                         layoutManager = gridLayoutManager
+                        mMarketingPageInfoResponse?.marketingItemList?.forEachIndexed { _, itemResponse -> itemResponse?.isStaffFeatureLocked = true }
                         adapter = MarketingCardAdapter(this@MarketingFragment, mMarketingPageInfoResponse?.marketingItemList, this@MarketingFragment)
                     }
                 }
@@ -214,6 +215,10 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
     override fun onMarketingItemClick(response: MarketingCardsItemResponse?) {
         if (!isInternetConnectionAvailable(mActivity)) {
             showNoInternetConnectionDialog()
+            return
+        }
+        if (true == response?.isStaffFeatureLocked) {
+            showStaffFeatureLockedBottomSheet(Constants.NAV_BAR_MARKETING)
             return
         }
         Log.d(TAG, "onMarketingItemClick: ${response?.action}")
