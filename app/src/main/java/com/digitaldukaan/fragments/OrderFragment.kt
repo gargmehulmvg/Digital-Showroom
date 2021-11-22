@@ -54,7 +54,6 @@ import kotlinx.android.synthetic.main.layout_order_fragment.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
-import java.net.URL
 
 class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuItemClickListener,
     SwipeRefreshLayout.OnRefreshListener, IOrderListItemListener {
@@ -727,15 +726,10 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
     private fun showDialogOrNot(){
         Log.i("permissionArrayOrders", sOrderPageInfoResponse?.mStoreInfo?.storeOwner?.permissionArray.toString())
         StaticInstances.sPermissionArray= sOrderPageInfoResponse?.mStoreInfo?.storeOwner?.permissionArray
-        if(true == sIsInvitationShown){
-            Log.i("showDialogOrNot", sOrderPageInfoResponse?.mStaffInvitation?.invitationList.toString())
-            sOrderPageInfoResponse?.mStoreInfo?.storeOwner?.let {
-                showStaffInvitationDialog(StaticInstances.sStaffInvitation,
-                    getStringDataFromSharedPref(Constants.USER_ID))
-            }
+        if (true == sIsInvitationShown) {
+            showStaffInvitationDialog(StaticInstances.sStaffInvitation)
             //TODO: setupOrderPageInfoUI() after dialog closes, coz now we have a new response
-        }else{
-            Log.i("showDialogOrNot", "SAME FLOW")
+        } else {
             setupOrderPageInfoUI()
         }
     }

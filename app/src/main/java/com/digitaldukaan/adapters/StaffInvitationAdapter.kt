@@ -49,6 +49,7 @@ class StaffInvitationAdapter(
                     View.VISIBLE
                 } else View.GONE
             }
+            radioButton.isChecked = item?.isSelected ?: false
             radioButtonContainer.alpha = if (true == item?.isSelected) 1f else 0.3f
         }
     }

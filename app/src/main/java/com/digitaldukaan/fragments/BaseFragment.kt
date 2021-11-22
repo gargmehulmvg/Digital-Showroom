@@ -20,7 +20,6 @@ import android.net.Uri
 import android.os.*
 import android.provider.MediaStore
 import android.provider.Settings
-import android.telephony.PhoneNumberUtils
 import android.text.Editable
 import android.text.Html
 import android.text.InputFilter
@@ -79,7 +78,6 @@ import java.io.IOException
 import java.net.UnknownHostException
 import java.util.*
 import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 
 
 open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener {
@@ -2036,7 +2034,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
 
     override fun onProviderDisabled(provider: String) = Unit
 
-    fun showStaffInvitationDialog(staffInvitation: StaffInvitationResponse?, userId: String) {
+    fun showStaffInvitationDialog(staffInvitation: StaffInvitationResponse?) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             mActivity?.let { context ->
                 val cancelWarningDialog = Dialog(context)
@@ -2061,9 +2059,9 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                                 override fun onAdapterItemClickListener(position: Int) {
                                     staffInvitation?.invitationList?.forEachIndexed { _, item -> item?.isSelected = false }
                                     staffInvitation?.invitationList?.get(position)?.isSelected = true
-                                    if("Exit" in staffInvitation?.invitationList?.get(position)?.heading.toString()){
+                                    if ("Exit" in staffInvitation?.invitationList?.get(position)?.heading.toString()) {
                                         selectedText = "Exit"
-                                    }else if("Reject" in staffInvitation?.invitationList?.get(position)?.heading.toString()){
+                                    } else if ("Reject" in staffInvitation?.invitationList?.get(position)?.heading.toString()) {
                                         selectedText = "Reject"
                                     }
                                     mMultiUserAdapter?.notifyDataSetChanged()
@@ -2086,7 +2084,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                                 }
                                 CoroutineScopeUtils().runTaskOnCoroutineBackground {
                                     try {
-                                        val response = RetrofitApi().getServerCallObject()?.updateInvitationStatus(UpdateInvitationRequest(status = 1, StoreId = staffInvitation?.invitedStoreId ?: 0, userId = userId.toInt(), languageId = 1))
+                                        val response = RetrofitApi().getServerCallObject()?.updateInvitationStatus(UpdateInvitationRequest(status = 1, StoreId = staffInvitation?.invitedStoreId ?: 0, userId = getStringDataFromSharedPref(Constants.USER_ID).toInt(), languageId = 1))
                                         response?.let {
                                             stopProgress()
                                             if (it.isSuccessful) {
@@ -2121,14 +2119,6 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     }
 
     fun firstScreen(permissionMap: HashMap<String, Boolean>) {
-        //Log.i("screenLaunch", permissionArray.toString())
-        /*when(permissionArray[0]){
-            1 -> launchFragment(OrderFragment.newInstance(), true)
-            2 -> launchFragment(ProductFragment.newInstance(), true)
-            3 -> launchFragment(PremiumPageInfoFragment.newInstance(), true)
-            4 -> launchFragment(MarketingFragment.newInstance(), true)
-            5 -> launchFragment(SettingsFragment.newInstance(), true)
-        }*/
         clearFragmentBackStack()
         for (it in permissionMap) {
             if (it.value) {

@@ -223,7 +223,7 @@ class DukaanNameFragment : BaseFragment(), ICreateStoreServiceInterface {
 
     private fun showInvitationDialog() {
         if (mIsInvitationShown) {
-            showStaffInvitationDialog(mStaffInvitation, mUserId)
+            showStaffInvitationDialog(mStaffInvitation)
         }
     }
 

@@ -51,7 +51,7 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
         hideBottomNavigationView(false)
 
         if(StaticInstances.sIsInvitationShown == true){
-            showStaffInvitationDialog(StaticInstances.sStaffInvitation, getStringDataFromSharedPref(Constants.USER_ID))
+            showStaffInvitationDialog(StaticInstances.sStaffInvitation)
         }else{
             if (!isInternetConnectionAvailable(mActivity)) {
                 showNoInternetConnectionDialog()

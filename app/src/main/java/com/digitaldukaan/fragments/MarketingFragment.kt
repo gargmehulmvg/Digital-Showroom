@@ -78,7 +78,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
         }
 
         if(StaticInstances.sIsInvitationShown == true){
-            showStaffInvitationDialog(StaticInstances.sStaffInvitation, getStringDataFromSharedPref(Constants.USER_ID))
+            showStaffInvitationDialog(StaticInstances.sStaffInvitation)
         }else{
             showProgressDialog(mActivity)
             mService?.getMarketingPageInfo()
