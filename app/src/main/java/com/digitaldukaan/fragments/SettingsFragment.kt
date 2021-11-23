@@ -95,6 +95,11 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         mStoreLogo = ""
         fetchUserProfile()
         mActivity?.let { context -> imageView5?.setImageDrawable(ContextCompat.getDrawable(context, if (false == StaticInstances.sPermissionHashMap?.get(Constants.PAGE_STORE_CONTROLS)) R.drawable.ic_subscription_locked_black_small else R.drawable.ic_half_arrow_forward)) }
+        mActivity?.let { context -> shapeableImageView?.setImageDrawable(ContextCompat.getDrawable(context, if (false == StaticInstances.sPermissionHashMap?.get(Constants.PAGE_STORE_PROFILE)) R.drawable.ic_subscription_locked_black_small else R.drawable.round_black_background)) }
+        editProfileTextView?.apply {
+            setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, if (false == StaticInstances.sPermissionHashMap?.get(Constants.PAGE_STORE_PROFILE)) R.drawable.ic_subscription_locked_black_small else R.drawable.ic_round_green_arrow_small, 0)
+            mActivity?.let { context -> setTextColor(ContextCompat.getColor(context, if (true == StaticInstances.sPermissionHashMap?.get(Constants.PAGE_STORE_PROFILE)) R.color.open_green else R.color.black)) }
+        }
     }
 
     override fun onClick(view: View?) {
@@ -118,14 +123,20 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             shapeableImageView?.id -> launchProfilePreviewFragment()
             linearLayout?.id -> {
                 var storeLogo = mAccountInfoResponse?.mStoreInfo?.storeInfo?.logoImage
-                if (mStoreLogo?.isNotEmpty() == true) storeLogo = mStoreLogo
-                if (storeLogo?.isNotEmpty() == true) launchFragment(ProfilePhotoFragment.newInstance(storeLogo), true, storePhotoImageView) else askCameraPermission()
+                if (isNotEmpty(mStoreLogo)) storeLogo = mStoreLogo
+                if (isNotEmpty(storeLogo)) launchFragment(ProfilePhotoFragment.newInstance(storeLogo), true, storePhotoImageView) else askCameraPermission()
             }
             viewAllHeading?.id -> launchFragment(NewReleaseFragment.newInstance(mAccountInfoResponse?.mTrendingList, mAccountInfoResponse?.mAccountStaticText), true)
         }
     }
 
-    private fun launchProfilePreviewFragment() = launchFragment(ProfilePreviewFragment.newInstance(mAccountPageInfoResponse?.mStoreInfo?.storeInfo?.name), true)
+    private fun launchProfilePreviewFragment() {
+        if (false == StaticInstances.sPermissionHashMap?.get(Constants.PAGE_STORE_PROFILE)) {
+            showStaffFeatureLockedBottomSheet(Constants.NAV_BAR_SETTINGS)
+            return
+        }
+        launchFragment(ProfilePreviewFragment.newInstance(mAccountPageInfoResponse?.mStoreInfo?.storeInfo?.name), true)
+    }
 
     override fun onImageSelectionResultFile(file: File?, mode: String) {
         if (mode == Constants.MODE_CROP) {
