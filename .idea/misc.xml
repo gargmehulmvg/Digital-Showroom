@@ -15,6 +15,7 @@
         <entry key="app/src/main/res/drawable/curve_light_red_background.xml" value="0.23061889250814332" />
         <entry key="app/src/main/res/drawable/curve_light_yellow_background.xml" value="0.23061889250814332" />
         <entry key="app/src/main/res/drawable/curve_purple_background.xml" value="0.31851851851851853" />
+        <entry key="app/src/main/res/drawable/curve_white_selector.xml" value="0.24111842105263157" />
         <entry key="app/src/main/res/drawable/custom_green_horizontal_progress_bar.xml" value="0.36875" />
         <entry key="app/src/main/res/drawable/ic_favourite.xml" value="0.36875" />
         <entry key="app/src/main/res/drawable/ic_on_board_dukaan_name.xml" value="0.36875" />
@@ -36,10 +37,12 @@
         <entry key="app/src/main/res/drawable/ripple_slight_curve_white_background_grey_border.xml" value="0.2388888888888889" />
         <entry key="app/src/main/res/drawable/ripple_slight_curve_white_background_yellow_border.xml" value="0.2755700325732899" />
         <entry key="app/src/main/res/drawable/ripple_upper_curve_grey_white_background.xml" value="0.4338461538461538" />
+        <entry key="app/src/main/res/drawable/slight_curve_black_background.xml" value="0.24111842105263157" />
         <entry key="app/src/main/res/drawable/slight_curve_black_border.xml" value="0.32664092664092664" />
         <entry key="app/src/main/res/drawable/slight_curve_black_border_grey_background.xml" value="0.23061889250814332" />
         <entry key="app/src/main/res/drawable/slight_curve_black_dotted_border_grey_background.xml" value="0.23289473684210527" />
         <entry key="app/src/main/res/drawable/slight_curve_green_background_without_padding_v2.xml" value="0.36875" />
+        <entry key="app/src/main/res/drawable/slight_curve_grey_background_without_padding.xml" value="0.24111842105263157" />
         <entry key="app/src/main/res/drawable/upper_curve_black_background.xml" value="0.4338461538461538" />
         <entry key="app/src/main/res/drawable/upper_curve_light_red_background.xml" value="0.31851851851851853" />
         <entry key="app/src/main/res/drawable/upper_curve_white_background.xml" value="0.31851851851851853" />
@@ -103,6 +106,7 @@
         <entry key="app/src/main/res/layout/marketing_know_more_item.xml" value="0.25" />
         <entry key="app/src/main/res/layout/multi_user_selection_dialog.xml" value="0.25" />
         <entry key="app/src/main/res/layout/multi_user_selection_item.xml" value="0.22269736842105264" />
+        <entry key="app/src/main/res/layout/new_release_item.xml" value="0.375" />
         <entry key="app/src/main/res/layout/otp_verification_fragment.xml" value="0.25" />
         <entry key="app/src/main/res/layout/product_fragment.xml" value="0.23092105263157894" />
         <entry key="app/src/main/res/layout/products_item.xml" value="0.35260416666666666" />
