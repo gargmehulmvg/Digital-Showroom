@@ -60,17 +60,7 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
         }, Constants.TIMER_INTERVAL)
         fetchContactsIfPermissionGranted()
         splashService.setSplashServiceInterface(this)
-
-        CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            val checkStaffInviteResponse = RetrofitApi().getServerCallObject()?.checkStaffInvite()
-            checkStaffInviteResponse?.let {it ->
-                val checkStaffInviteResponse2 = Gson().fromJson<StaffMemberDetailsResponse>(it.body()?.mCommonDataStr , StaffMemberDetailsResponse::class.java)
-                StaticInstances.sIsInvitationShown = checkStaffInviteResponse2?.mIsInvitationShown
-                StaticInstances.sStaffInvitation = checkStaffInviteResponse2?.mStaffInvitation
-                Log.i("isInvitationSplash", checkStaffInviteResponse2?.mIsInvitationShown.toString())
-                Log.i("isStaffInvitationSplash", checkStaffInviteResponse2?.mStaffInvitation.toString())
-            }
-        }
+        checkStaffInvite()
     }
 
     private fun fetchContactsIfPermissionGranted() {

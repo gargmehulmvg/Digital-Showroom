@@ -724,8 +724,6 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
     }
 
     private fun showDialogOrNot(){
-        Log.i("permissionArrayOrders", sOrderPageInfoResponse?.mStoreInfo?.storeOwner?.permissionArray.toString())
-        StaticInstances.sPermissionArray= sOrderPageInfoResponse?.mStoreInfo?.storeOwner?.permissionArray
         if (true == sIsInvitationShown) {
             showStaffInvitationDialog(StaticInstances.sStaffInvitation)
         } else {
