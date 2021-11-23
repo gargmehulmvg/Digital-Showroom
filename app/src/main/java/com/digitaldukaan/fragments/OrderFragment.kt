@@ -724,6 +724,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
     }
 
     private fun showDialogOrNot(){
+        Log.d("inviteBoolOrder", sIsInvitationShown.toString())
         if (true == sIsInvitationShown) {
             showStaffInvitationDialog(StaticInstances.sStaffInvitation)
         } else {

@@ -2701,20 +2701,23 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                                                         if (it.mIsSuccessStatus) {
                                                             cancelWarningDialog.dismiss()
                                                             showShortSnackBar(it.mMessage, true, R.drawable.ic_check_circle)
-                                                            if (1 == selectedId) {
-                                                                Log.i("permissionDialog", updateInvitationResponse.permissionsMap.toString())
-                                                                Log.i("storeIdDialog", updateInvitationResponse.storeId.toString())
-                                                                StaticInstances.sIsInvitationShown = updateInvitationResponse.mIsInvitationAvailable
-                                                                StaticInstances.sPermissionHashMap = updateInvitationResponse.permissionsMap
-                                                                StaticInstances.sPermissionHashMap?.let { it1 -> launchScreenFromPermissionMap(it1) }
-                                                                storeStringDataInSharedPref(Constants.STORE_ID, updateInvitationResponse.storeId)
-                                                            } else if (0 == selectedId) {
-                                                                Log.i("Dialog", selectedId.toString())
-                                                                mActivity?.finish()
-                                                            } else {
-                                                                Log.i("Dialog", selectedId.toString())
-                                                                checkStaffInvite()
-                                                                cancelWarningDialog.dismiss()
+                                                            when (selectedId) {
+                                                                1 -> {
+                                                                    Log.d("inviteBoolDialog", updateInvitationResponse.mIsInvitationAvailable.toString())
+                                                                    Log.i("permissionDialog", updateInvitationResponse.permissionsMap.toString())
+                                                                    Log.i("storeIdDialog", updateInvitationResponse.storeId.toString())
+                                                                    StaticInstances.sIsInvitationShown = updateInvitationResponse.mIsInvitationAvailable
+                                                                    StaticInstances.sPermissionHashMap = updateInvitationResponse.permissionsMap
+                                                                    StaticInstances.sPermissionHashMap?.let { it1 -> launchScreenFromPermissionMap(it1) }
+                                                                    storeStringDataInSharedPref(Constants.STORE_ID, updateInvitationResponse.storeId)
+                                                                }
+                                                                0 -> {
+                                                                    mActivity?.finish()
+                                                                }
+                                                                else -> {
+                                                                    checkStaffInvite()
+                                                                    cancelWarningDialog.dismiss()
+                                                                }
                                                             }
                                                         } else showShortSnackBar(it.mMessage, true, R.drawable.ic_close_red)
                                                     }

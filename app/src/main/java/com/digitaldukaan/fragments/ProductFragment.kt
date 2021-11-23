@@ -67,7 +67,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         TAG = "ProductFragment"
         mContentView = inflater.inflate(R.layout.product_fragment, container, false)
-
+        Log.d("inviteBool", StaticInstances.sIsInvitationShown.toString())
         if(StaticInstances.sIsInvitationShown == true){
             showStaffInvitationDialog(StaticInstances.sStaffInvitation)
         }else{
