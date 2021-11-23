@@ -28,6 +28,16 @@ interface Apis {
     @POST("api/dotk/vo1/onboard/validateUser")
     suspend fun validateUser(@Body request: ValidateUserRequest): Response<CommonApiResponse>
 
+    @POST("api/dotk/vm1/onboard/setStoreAddress")
+    suspend fun updateStoreAddress(@Body request: StoreAddressRequest) : Response<CommonApiResponse>
+
+    /* ----------------------         User             ---------------------- */
+    @GET("api/dotk/vc1/user/getRequestPermissionText/{id}")
+    suspend fun getRequestPermissionText(@Path("id") id: Int) : Response<CommonApiResponse>
+
+    @GET("api/dotk/vc1/user/checkStaffInvite")
+    suspend fun checkStaffInvite() : Response<CommonApiResponse>
+
     @POST("api/dotk/vo1/user/generateOtp/{phoneNumber}")
     suspend fun generateOTP(@Path("phoneNumber") phoneNumber: String) : Response<GenerateOtpResponse>
 
@@ -36,9 +46,6 @@ interface Apis {
 
     @POST("api/dotk/vc1/user/updateInvitationStatus")
     suspend fun updateInvitationStatus(@Body request: UpdateInvitationRequest) : Response<CommonApiResponse>
-
-    @POST("api/dotk/vm1/onboard/setStoreAddress")
-    suspend fun updateStoreAddress(@Body request: StoreAddressRequest) : Response<CommonApiResponse>
 
     @GET("api/dotk/vc1/user/getStaffMemberDetails/{store_id}")
     suspend fun getStaffMembersDetails(@Path("store_id") store_id: String) : Response<CommonApiResponse>
@@ -305,7 +312,4 @@ interface Apis {
 
     @GET("api/dotk/vm1/settings/getLockedStoreShareData/{mode}")
     suspend fun getLockedStoreShareData(@Path("mode") mode: Int) : Response<CommonApiResponse>
-
-    @GET("api/dotk/vc1/user/checkStaffInvite")
-    suspend fun checkStaffInvite() : Response<CommonApiResponse>
 }

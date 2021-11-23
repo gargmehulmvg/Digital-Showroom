@@ -163,5 +163,6 @@ data class TrendingListResponse(
     @SerializedName("action")                   var mAction: String?,
     @SerializedName("type")                     var mType: String?,
     @SerializedName("lock_text")                var mLockText: String?,
+    @SerializedName("is_staff_feature_locked")  var isStaffFeatureLocked: Boolean?,
     @SerializedName("page")                     var mPage: String?
 )
