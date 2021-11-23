@@ -61,7 +61,7 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
         fetchContactsIfPermissionGranted()
         splashService.setSplashServiceInterface(this)
 
-        CoroutineScopeUtils().runTaskOnCoroutineMain {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
             val checkStaffInviteResponse = RetrofitApi().getServerCallObject()?.checkStaffInvite()
             checkStaffInviteResponse?.let {it ->
                 val checkStaffInviteResponse2 = Gson().fromJson<StaffMemberDetailsResponse>(it.body()?.mCommonDataStr , StaffMemberDetailsResponse::class.java)

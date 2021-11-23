@@ -82,8 +82,8 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
         }else{
             showProgressDialog(mActivity)
             mService?.getMarketingPageInfo()
+            WebViewBridge.mWebViewListener = this
         }
-        WebViewBridge.mWebViewListener = this
     }
 
     override fun onClick(view: View?) {

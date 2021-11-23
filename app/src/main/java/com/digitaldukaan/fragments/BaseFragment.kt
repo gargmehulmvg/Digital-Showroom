@@ -113,7 +113,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                             messageTextView.text = msg
                         }
                         setContentView(view)
-                        setCancelable(false)
+                        setCancelable(true)
                         window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
                     }?.show()
                 } catch (e: Exception) {
@@ -2097,6 +2097,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                                                             if(selectedText != "Reject"){
                                                                 Log.i("permissionDialog", updateInvitationResponse.permissions.toString())
                                                                 Log.i("storeIdDialog", updateInvitationResponse.storeId.toString())
+                                                                StaticInstances.sIsInvitationShown = updateInvitationResponse.mIsInvitationShown
                                                                 StaticInstances.sPermissionHashMap = updateInvitationResponse.permissionsMap
                                                                 StaticInstances.sPermissionHashMap?.let { it1 -> firstScreen(it1) }
                                                                 storeStringDataInSharedPref(Constants.STORE_ID, updateInvitationResponse.storeId)
@@ -2120,23 +2121,42 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
 
     fun firstScreen(permissionMap: HashMap<String, Boolean>) {
         clearFragmentBackStack()
+        Log.i("firstScreen", "11")
         for (it in permissionMap) {
-            if (it.value) {
-                when (it.key) {
-                    "page_order" -> {
+            when (it.key) {
+                "page_order" -> {
+                    if (it.value) {
+                        Log.i("firstScreen", "1")
                         launchFragment(OrderFragment.newInstance(), true)
+                        return
                     }
-                    "page_catalog" -> {
+                }
+                "page_catalog" -> {
+                    if (it.value) {
+                        Log.i("firstScreen", "2")
                         launchFragment(ProductFragment.newInstance(), true)
+                        return
                     }
-                    "page_premium" -> {
+                }
+                "page_premium" -> {
+                    if (it.value) {
+                        Log.i("firstScreen", "3")
                         launchFragment(PremiumPageInfoFragment.newInstance(), true)
+                        return
                     }
-                    "page_marketing" -> {
+                }
+                "page_marketing" -> {
+                    if (it.value) {
+                        Log.i("firstScreen", "4")
                         launchFragment(MarketingFragment.newInstance(), true)
+                        return
                     }
-                    "page_settings" -> {
+                }
+                "page_settings" -> {
+                    if (it.value) {
+                        Log.i("firstScreen", "5")
                         launchFragment(SettingsFragment.newInstance(), true)
+                        return
                     }
                 }
             }

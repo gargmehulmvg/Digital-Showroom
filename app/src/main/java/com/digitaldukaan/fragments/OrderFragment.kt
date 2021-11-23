@@ -728,7 +728,6 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
         StaticInstances.sPermissionArray= sOrderPageInfoResponse?.mStoreInfo?.storeOwner?.permissionArray
         if (true == sIsInvitationShown) {
             showStaffInvitationDialog(StaticInstances.sStaffInvitation)
-            //TODO: setupOrderPageInfoUI() after dialog closes, coz now we have a new response
         } else {
             setupOrderPageInfoUI()
         }

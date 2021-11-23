@@ -260,15 +260,15 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         val fragment = getCurrentFragment() ?: return false
         when (item.itemId) {
-            R.id.menuHome -> if (true == StaticInstances.sPermissionArray?.contains(1)) {
+            R.id.menuHome -> if (true == StaticInstances.sPermissionHashMap?.get("page_order")) {
                 if (fragment !is OrderFragment) launchFragment(OrderFragment.newInstance(), true)
             }else {showToast("Access Denied")}
 
-            R.id.menuProducts -> if (true == StaticInstances.sPermissionArray?.contains(2)) {
+            R.id.menuProducts -> if (true == StaticInstances.sPermissionHashMap?.get("page_catalog")) {
                 if (fragment !is ProductFragment) launchFragment(ProductFragment.newInstance(), true)
             }else {showToast("Access Denied")}
 
-            R.id.menuPremium -> if (true == StaticInstances.sPermissionArray?.contains(3)) {
+            R.id.menuPremium -> if (true == StaticInstances.sPermissionHashMap?.get("page_premium")) {
                 if (fragment !is PremiumPageInfoFragment) {
                     AppEventsManager.pushAppEvents(
                             eventName = AFInAppEventType.EVENT_PREMIUM_PAGE,
@@ -279,7 +279,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
                 }
             }else {showToast("Access Denied")}
 
-            R.id.menuMarketing -> if (true == StaticInstances.sPermissionArray?.contains(4)) {
+            R.id.menuMarketing -> if (true == StaticInstances.sPermissionHashMap?.get("page_marketing")) {
                 if (fragment !is MarketingFragment) launchFragment(MarketingFragment.newInstance(), true)
             }else {showToast("Access Denied")}
 

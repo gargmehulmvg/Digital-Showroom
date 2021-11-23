@@ -298,8 +298,9 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
                         AFInAppEventParameterName.IS_CONSENT to if (mIsConsentTakenFromUser) "1" else "0")
                 )
                 Handler(Looper.getMainLooper()).postDelayed({
-                    StaticInstances.sPermissionArray = validateOtpResponse.mStore?.storeOwner?.permissionArray
-                    Log.i("OtpVerification", StaticInstances.sPermissionArray.toString())
+                    Log.i("permissionHashMapOtp", StaticInstances.sPermissionHashMap.toString())
+                    Log.i("validateOtpResponsepermissionHashMapOtp", validateOtpResponse.mStore.toString())
+                    Log.i("mIsNewUserpermissionHashMapOtp", mIsNewUser.toString())
                     if (null == validateOtpResponse.mStore && mIsNewUser) launchFragment(DukaanNameFragment.newInstance(mcheckStaffInviteResponse?.mIsInvitationShown ?: false, mcheckStaffInviteResponse?.mStaffInvitation, validateOtpResponse?.mUserId ?: ""), true) else StaticInstances.sPermissionHashMap?.let { it1 -> firstScreen(it1) }
                 }, Constants.OTP_SUCCESS_TIMER)
                 verifiedOtpGroup?.visibility = View.GONE
