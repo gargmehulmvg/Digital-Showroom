@@ -102,20 +102,19 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     }
 
     protected fun showProgressDialog(context: Context?, message: String? = "Please wait...") {
+        Thread.dumpStack()
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             context?.let {
                 try {
                     mProgressDialog = Dialog(it)
                     mProgressDialog?.apply {
-                        val view =
-                            LayoutInflater.from(context).inflate(R.layout.progress_dialog, null)
+                        val view = LayoutInflater.from(context).inflate(R.layout.progress_dialog, null)
                         message?.let { msg ->
-                            val messageTextView: TextView =
-                                view.findViewById(R.id.progressDialogTextView)
+                            val messageTextView: TextView = view.findViewById(R.id.progressDialogTextView)
                             messageTextView.text = msg
                         }
                         setContentView(view)
-                        setCancelable(true)
+                        setCancelable(false)
                         window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
                     }?.show()
                 } catch (e: Exception) {
@@ -123,14 +122,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                     AppEventsManager.pushAppEvents(
                         eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
                         isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                        data = mapOf(
-                            AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(
-                                Constants.STORE_ID
-                            ),
-                            "Exception Point" to "showProgressDialog",
-                            "Exception Message" to e.message,
-                            "Exception Logs" to e.toString()
-                        )
+                        data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), "Exception Point" to "showProgressDialog", "Exception Message" to e.message, "Exception Logs" to e.toString())
                     )
                 }
             }
@@ -793,21 +785,14 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                             isAppFlyerEvent = true,
                             isServerCallEvent = true,
                             data = mapOf(
-                                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(
-                                    Constants.STORE_ID
-                                ),
-                                AFInAppEventParameterName.BING_TEXT to searchImageEditText.text.trim()
-                                    .toString()
+                                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                                AFInAppEventParameterName.BING_TEXT to searchImageEditText.text.trim().toString()
                             )
                         )
                         showProgressDialog(mActivity)
                         CoroutineScopeUtils().runTaskOnCoroutineBackground {
                             try {
-                                val response = RetrofitApi().getServerCallObject()
-                                    ?.searchImagesFromBing(
-                                        searchImageEditText.text.trim().toString(),
-                                        getStringDataFromSharedPref(Constants.STORE_ID)
-                                    )
+                                val response = RetrofitApi().getServerCallObject()?.searchImagesFromBing(searchImageEditText.text.trim().toString(), getStringDataFromSharedPref(Constants.STORE_ID))
                                 response?.let { res ->
                                     if (res.isSuccessful) {
                                         res.body()?.let {
@@ -1811,10 +1796,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                         it.body()?.let {
                             withContext(Dispatchers.Main) {
                                 if (it.mIsSuccessStatus) shareOnWhatsApp(
-                                    Gson().fromJson<String>(
-                                        it.mCommonDataStr,
-                                        String::class.java
-                                    )
+                                    Gson().fromJson<String>(it.mCommonDataStr, String::class.java)
                                 ) else showShortSnackBar(it.mMessage, true, R.drawable.ic_close_red)
                             }
                         }
@@ -2684,18 +2666,12 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                             staffInvitation?.invitationList,
                             object : IAdapterItemClickListener {
                                 override fun onAdapterItemClickListener(position: Int) {
-                                    staffInvitation?.invitationList?.forEachIndexed { _, item ->
-                                        item?.isSelected = false
-                                    }
-                                    staffInvitation?.invitationList?.get(position)?.isSelected =
-                                        true
-                                    Log.i(
-                                        "SelectedID",
-                                        staffInvitation?.invitationList?.get(position)?.id.toString()
-                                    )
-                                    if (staffInvitation?.invitationList?.get(position)?.id == 0) {
+                                    staffInvitation?.invitationList?.forEachIndexed { _, item -> item?.isSelected = false }
+                                    staffInvitation?.invitationList?.get(position)?.isSelected = true
+                                    Log.i("SelectedID", staffInvitation?.invitationList?.get(position)?.id.toString())
+                                    if (0 == staffInvitation?.invitationList?.get(position)?.id) {
                                         selectedId = 0
-                                    } else if (staffInvitation?.invitationList?.get(position)?.id == 2) {
+                                    } else if (2 == staffInvitation?.invitationList?.get(position)?.id) {
                                         selectedId = 2
                                     }
                                     mMultiUserAdapter?.notifyDataSetChanged()
@@ -2712,77 +2688,35 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                         Log.i("SelectedID", selectedId.toString())
                         nextTextView.apply {
                             text = staffInvitation?.cta?.text
-                            //setTextColor(Color.parseColor(staffInvitation?.cta?.textColor))
                             setOnClickListener {
                                 CoroutineScopeUtils().runTaskOnCoroutineBackground {
                                     try {
-                                        val response = RetrofitApi().getServerCallObject()
-                                            ?.updateInvitationStatus(
-                                                UpdateInvitationRequest(
-                                                    status = 1,
-                                                    StoreId = staffInvitation?.invitedStoreId ?: 0,
-                                                    userId = getStringDataFromSharedPref(Constants.USER_ID).toInt(),
-                                                    languageId = 1
-                                                )
-                                            )
+                                        val response = RetrofitApi().getServerCallObject()?.updateInvitationStatus(UpdateInvitationRequest(status = 1, StoreId = staffInvitation?.invitedStoreId ?: 0, userId = getStringDataFromSharedPref(Constants.USER_ID).toInt(), languageId = 1))
                                         response?.let {
                                             stopProgress()
                                             if (it.isSuccessful) {
-                                                val updateInvitationResponse =
-                                                    Gson().fromJson<StaffMemberDetailsResponse>(
-                                                        it.body()?.mCommonDataStr,
-                                                        StaffMemberDetailsResponse::class.java
-                                                    )
+                                                val updateInvitationResponse = Gson().fromJson<StaffMemberDetailsResponse>(it.body()?.mCommonDataStr, StaffMemberDetailsResponse::class.java)
                                                 it.body()?.let {
                                                     withContext(Dispatchers.Main) {
                                                         if (it.mIsSuccessStatus) {
                                                             cancelWarningDialog.dismiss()
-                                                            showShortSnackBar(
-                                                                it.mMessage,
-                                                                true,
-                                                                R.drawable.ic_check_circle
-                                                            )
-                                                            if (selectedId == 1) {
-                                                                Log.i(
-                                                                    "permissionDialog",
-                                                                    updateInvitationResponse.permissionsMap.toString()
-                                                                )
-                                                                Log.i(
-                                                                    "storeIdDialog",
-                                                                    updateInvitationResponse.storeId.toString()
-                                                                )
-                                                                StaticInstances.sIsInvitationShown =
-                                                                    updateInvitationResponse.mIsInvitationShown
-                                                                StaticInstances.sPermissionHashMap =
-                                                                    updateInvitationResponse.permissionsMap
-                                                                StaticInstances.sPermissionHashMap?.let { it1 ->
-                                                                    firstScreen(
-                                                                        it1
-                                                                    )
-                                                                }
-                                                                storeStringDataInSharedPref(
-                                                                    Constants.STORE_ID,
-                                                                    updateInvitationResponse.storeId
-                                                                )
+                                                            showShortSnackBar(it.mMessage, true, R.drawable.ic_check_circle)
+                                                            if (1 == selectedId) {
+                                                                Log.i("permissionDialog", updateInvitationResponse.permissionsMap.toString())
+                                                                Log.i("storeIdDialog", updateInvitationResponse.storeId.toString())
+                                                                StaticInstances.sIsInvitationShown = updateInvitationResponse.mIsInvitationAvailable
+                                                                StaticInstances.sPermissionHashMap = updateInvitationResponse.permissionsMap
+                                                                StaticInstances.sPermissionHashMap?.let { it1 -> launchScreenFromPermissionMap(it1) }
+                                                                storeStringDataInSharedPref(Constants.STORE_ID, updateInvitationResponse.storeId)
                                                             } else if (0 == selectedId) {
-                                                                Log.i(
-                                                                    "Dialog",
-                                                                    selectedId.toString()
-                                                                )
+                                                                Log.i("Dialog", selectedId.toString())
                                                                 mActivity?.finish()
                                                             } else {
-                                                                Log.i(
-                                                                    "Dialog",
-                                                                    selectedId.toString()
-                                                                )
+                                                                Log.i("Dialog", selectedId.toString())
                                                                 checkStaffInvite()
                                                                 cancelWarningDialog.dismiss()
                                                             }
-                                                        } else showShortSnackBar(
-                                                            it.mMessage,
-                                                            true,
-                                                            R.drawable.ic_close_red
-                                                        )
+                                                        } else showShortSnackBar(it.mMessage, true, R.drawable.ic_close_red)
                                                     }
                                                 }
                                             }
@@ -2804,67 +2738,37 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
             val checkStaffInviteResponse = RetrofitApi().getServerCallObject()?.checkStaffInvite()
             checkStaffInviteResponse?.let {it ->
                 val checkStaffInviteResponse2 = Gson().fromJson<StaffMemberDetailsResponse>(it.body()?.mCommonDataStr , StaffMemberDetailsResponse::class.java)
-                StaticInstances.sIsInvitationShown = checkStaffInviteResponse2?.mIsInvitationShown
+                StaticInstances.sIsInvitationShown = checkStaffInviteResponse2?.mIsInvitationAvailable
                 StaticInstances.sStaffInvitation = checkStaffInviteResponse2?.mStaffInvitation
-                Log.i("isInvitationSplash", checkStaffInviteResponse2?.mIsInvitationShown.toString())
+                Log.i("isInvitationSplash", checkStaffInviteResponse2?.mIsInvitationAvailable.toString())
                 Log.i("isStaffInvitationSplash", checkStaffInviteResponse2?.mStaffInvitation.toString())
             }
         }
     }
 
-    fun firstScreen(permissionMap: HashMap<String, Boolean>) {
+    fun launchScreenFromPermissionMap(permissionMap: HashMap<String, Boolean>) {
         clearFragmentBackStack()
-        Log.i("permissionDialog2", permissionMap.toString())
-        for (it in permissionMap) {
-            when (it.key) {
-                "page_order" -> {
-                    Log.i("firstScreen", "1")
-                    launchFirstScreen(permissionMap, "page_order")
-                }
-                "page_catalog" -> {
-                    Log.i("firstScreen", "2")
-                    launchFirstScreen(permissionMap, "page_catalog")
-                }
-                "page_premium" -> {
-                    Log.i("firstScreen", "3")
-                    launchFirstScreen(permissionMap, "page_premium")
-                }
-                "page_marketing" -> {
-                    Log.i("firstScreen", "4")
-                    launchFirstScreen(permissionMap, "page_marketing")
-                }
-                "page_settings" -> {
-                    Log.i("firstScreen", "5")
-                    launchFirstScreen(permissionMap, "page_settings")
-                }
+        Log.d("permissionDialog", permissionMap.toString())
+        when {
+            true == permissionMap[Constants.PAGE_ORDER] -> {
+                launchFragment(OrderFragment.newInstance(), true)
+                return
             }
-        }
-    }
-
-    fun launchFirstScreen(permissionMap: HashMap<String, Boolean>, page: String) {
-        for (it in permissionMap) {
-            when (it.key) {
-                page -> {
-                    if (it.value) {
-                        Log.i("firstScreen", "1")
-                        if (page == "page_order") {
-                            launchFragment(OrderFragment.newInstance(), true)
-                            return
-                        } else if (page == "page_catalog") {
-                            launchFragment(ProductFragment.newInstance(), true)
-                            return
-                        } else if (page == "page_premium") {
-                            launchFragment(PremiumPageInfoFragment.newInstance(), true)
-                            return
-                        } else if (page == "page_marketing") {
-                            launchFragment(MarketingFragment.newInstance(), true)
-                            return
-                        } else if (page == "page_settings") {
-                            launchFragment(SettingsFragment.newInstance(), true)
-                            return
-                        }
-                    }
-                }
+            true == permissionMap[Constants.PAGE_CATALOG] -> {
+                launchFragment(ProductFragment.newInstance(), true)
+                return
+            }
+            true == permissionMap[Constants.PAGE_PREMIUM] -> {
+                launchFragment(PremiumPageInfoFragment.newInstance(), true)
+                return
+            }
+            true == permissionMap[Constants.PAGE_MARKETING] -> {
+                launchFragment(MarketingFragment.newInstance(), true)
+                return
+            }
+            true == permissionMap[Constants.PAGE_SETTINGS] -> {
+                launchFragment(SettingsFragment.newInstance(), true)
+                return
             }
         }
     }

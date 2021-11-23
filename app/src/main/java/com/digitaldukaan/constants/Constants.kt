@@ -217,5 +217,11 @@ class Constants {
         const val NAV_BAR_PREMIUM                               = 3
         const val NAV_BAR_MARKETING                             = 4
         const val NAV_BAR_SETTINGS                              = 5
+        //NAV_PAGE
+        const val PAGE_ORDER                                    = "page_order"
+        const val PAGE_CATALOG                                  = "page_catalog"
+        const val PAGE_PREMIUM                                  = "page_premium"
+        const val PAGE_MARKETING                                = "page_marketing"
+        const val PAGE_SETTINGS                                 = "page_settings"
     }
 }

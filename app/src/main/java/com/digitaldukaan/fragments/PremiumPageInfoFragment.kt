@@ -50,9 +50,9 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
         WebViewBridge.mWebViewListener = this
         hideBottomNavigationView(false)
 
-        if(StaticInstances.sIsInvitationShown == true){
+        if (StaticInstances.sIsInvitationShown == true) {
             showStaffInvitationDialog(StaticInstances.sStaffInvitation)
-        }else{
+        } else {
             if (!isInternetConnectionAvailable(mActivity)) {
                 showNoInternetConnectionDialog()
                 return

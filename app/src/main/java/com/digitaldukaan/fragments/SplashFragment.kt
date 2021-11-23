@@ -108,12 +108,13 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
             null != mIntentUri -> switchToFragmentByDeepLink()
             "" == getStringDataFromSharedPref(Constants.STORE_ID) -> launchFragment(LoginFragmentV2.newInstance(), true)
             else -> {
-                CoroutineScopeUtils().runTaskOnCoroutineMain {
+                CoroutineScopeUtils().runTaskOnCoroutineBackground {
                     val response = RetrofitApi().getServerCallObject()?.getStaffMembersDetails(getStringDataFromSharedPref(Constants.STORE_ID))
-                    response?.let{it->
-                        val response2 = Gson().fromJson<StaffMemberDetailsResponse>(it.body()?.mCommonDataStr , StaffMemberDetailsResponse::class.java)
-                        StaticInstances.sPermissionHashMap= response2?.permissionsMap
-                        response2?.permissionsMap?.let { it1 -> firstScreen(it1) }
+                    response?.let { it ->
+                        val staffMemberDetailsResponse = Gson().fromJson<StaffMemberDetailsResponse>(it.body()?.mCommonDataStr, StaffMemberDetailsResponse::class.java)
+                        StaticInstances.sPermissionHashMap = staffMemberDetailsResponse?.permissionsMap
+                        stopProgress()
+                        staffMemberDetailsResponse?.permissionsMap?.let { map -> launchScreenFromPermissionMap(map) }
                     }
                     Log.i("PermissionMapSplash", StaticInstances.sPermissionHashMap.toString())
                 }

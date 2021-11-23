@@ -1,4 +1,4 @@
-package com.digitaldukaan. fragments
+package com.digitaldukaan.fragments
 
 import android.app.Dialog
 import android.graphics.Color
@@ -17,12 +17,9 @@ import android.widget.TextView
 import com.appsflyer.AppsFlyerLib
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.*
-import com.digitaldukaan.fragments.BaseFragment
-import com.digitaldukaan.fragments.DukaanNameFragment
 import com.digitaldukaan.interfaces.IOnOTPFilledListener
 import com.digitaldukaan.models.dto.CleverTapProfile
 import com.digitaldukaan.models.response.*
-import com.digitaldukaan.network.RetrofitApi
 import com.digitaldukaan.services.LoginService
 import com.digitaldukaan.services.OtpVerificationService
 import com.digitaldukaan.services.isInternetConnectionAvailable
@@ -37,8 +34,6 @@ import com.google.gson.Gson
 import kotlinx.android.synthetic.main.otp_verification_fragment.*
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
-import retrofit2.Retrofit
-
 
 class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerificationServiceInterface, ISmsReceivedListener,
     ILoginServiceInterface {
@@ -53,7 +48,8 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
     private var mIsServerCallInitiated = false
     private var mOtpStaticResponseData: VerifyOtpStaticResponseData? = null
     private var mTimerCompleted = false
-    private var mcheckStaffInviteResponse: StaffMemberDetailsResponse? = null
+    private var mCheckStaffInviteResponse: StaffMemberDetailsResponse? = null
+    private var mValidateOtpResponse: ValidateOtpResponse? = null
 
     companion object {
         fun newInstance(mobileNumber: String): OtpVerificationFragment {
@@ -264,31 +260,31 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
         mIsServerCallInitiated = false
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             mCountDownTimer?.cancel()
-            val validateOtpResponse = Gson().fromJson<ValidateOtpResponse>(commonApiResponse.mCommonDataStr, ValidateOtpResponse::class.java)
+            mValidateOtpResponse = Gson().fromJson<ValidateOtpResponse>(commonApiResponse.mCommonDataStr, ValidateOtpResponse::class.java)
             if (!commonApiResponse.mIsSuccessStatus) {
                 stopProgress()
                 otpEditText?.text = null
                 verifyProgressBar?.visibility = View.GONE
                 verifyTextView?.text = mOtpStaticResponseData?.mVerifyText
-                showShortSnackBar(validateOtpResponse.mMessage, true, R.drawable.ic_close_red)
+                showShortSnackBar(mValidateOtpResponse?.mMessage, true, R.drawable.ic_close_red)
             } else {
-                mIsNewUser = validateOtpResponse.mIsNewUser
-                stopProgress()
-                saveUserDetailsInPref(validateOtpResponse)
+                saveUserDetailsInPref(mValidateOtpResponse)
                 mOtpVerificationService?.checkStaffInvite()
+                mIsNewUser = mValidateOtpResponse?.mIsNewUser ?: false
+                stopProgress()
                 val cleverTapProfile = CleverTapProfile()
-                cleverTapProfile.mShopName = validateOtpResponse.mStore?.storeInfo?.name
+                cleverTapProfile.mShopName = mValidateOtpResponse?.mStore?.storeInfo?.name
                 var businessTypeStr = ""
-                validateOtpResponse.mStore?.storeBusiness?.forEachIndexed { _, businessResponse -> businessTypeStr += "$businessResponse ," }
+                mValidateOtpResponse?.mStore?.storeBusiness?.forEachIndexed { _, businessResponse -> businessTypeStr += "$businessResponse ," }
                 cleverTapProfile.mShopCategory = businessTypeStr
-                cleverTapProfile.mPhone = validateOtpResponse.mUserPhoneNumber
-                cleverTapProfile.mIdentity = validateOtpResponse.mUserPhoneNumber
-                cleverTapProfile.mLat = validateOtpResponse.mStore?.storeAddress?.latitude
-                cleverTapProfile.mLong = validateOtpResponse.mStore?.storeAddress?.longitude
-                cleverTapProfile.mAddress = validateOtpResponse.mStore?.storeAddress?.let { address ->
+                cleverTapProfile.mPhone = mValidateOtpResponse?.mUserPhoneNumber
+                cleverTapProfile.mIdentity = mValidateOtpResponse?.mUserPhoneNumber
+                cleverTapProfile.mLat = mValidateOtpResponse?.mStore?.storeAddress?.latitude
+                cleverTapProfile.mLong = mValidateOtpResponse?.mStore?.storeAddress?.longitude
+                cleverTapProfile.mAddress = mValidateOtpResponse?.mStore?.storeAddress?.let { address ->
                     "${address.address1}, ${address.googleAddress}, ${address.pinCode}"
                 }
-                AppsFlyerLib.getInstance()?.setCustomerUserId(validateOtpResponse.mUserPhoneNumber)
+                AppsFlyerLib.getInstance()?.setCustomerUserId(mValidateOtpResponse?.mUserPhoneNumber)
                 AppEventsManager.pushCleverTapProfile(cleverTapProfile)
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_OTP_VERIFIED,
@@ -298,10 +294,10 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
                         AFInAppEventParameterName.IS_CONSENT to if (mIsConsentTakenFromUser) "1" else "0")
                 )
                 Handler(Looper.getMainLooper()).postDelayed({
-                    Log.i("permissionHashMapOtp", StaticInstances.sPermissionHashMap.toString())
-                    Log.i("validateOtpResponsepermissionHashMapOtp", validateOtpResponse.mStore.toString())
-                    Log.i("mIsNewUserpermissionHashMapOtp", mIsNewUser.toString())
-                    if (null == validateOtpResponse.mStore && mIsNewUser) launchFragment(DukaanNameFragment.newInstance(mcheckStaffInviteResponse?.mIsInvitationShown ?: false, mcheckStaffInviteResponse?.mStaffInvitation, validateOtpResponse?.mUserId ?: ""), true) else StaticInstances.sPermissionHashMap?.let { it1 -> firstScreen(it1) }
+                    Log.d("permissionHashMapOtp", StaticInstances.sPermissionHashMap.toString())
+                    Log.d("validateOtpResponsePermissionHashMapOtp", mValidateOtpResponse?.mStore.toString())
+                    Log.d("mIsNewUserPermissionHashMapOtp", mIsNewUser.toString())
+                    if (null == mValidateOtpResponse?.mStore && mIsNewUser) launchFragment(DukaanNameFragment.newInstance(mCheckStaffInviteResponse?.mIsInvitationAvailable ?: false, mCheckStaffInviteResponse?.mStaffInvitation, mValidateOtpResponse?.mUserId ?: ""), true) else StaticInstances.sPermissionHashMap?.let { it1 -> launchScreenFromPermissionMap(it1) }
                 }, Constants.OTP_SUCCESS_TIMER)
                 verifiedOtpGroup?.visibility = View.GONE
                 verifiedTextViewContainer?.visibility = View.VISIBLE
@@ -312,17 +308,23 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
 
     override fun checkStaffInviteResponse(commonResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            if(commonResponse.mIsSuccessStatus){
-                mcheckStaffInviteResponse = Gson().fromJson<StaffMemberDetailsResponse>(commonResponse.mCommonDataStr, StaffMemberDetailsResponse::class.java)
+            stopProgress()
+            if (commonResponse.mIsSuccessStatus) {
+                mCheckStaffInviteResponse = Gson().fromJson<StaffMemberDetailsResponse>(commonResponse.mCommonDataStr, StaffMemberDetailsResponse::class.java)
+                if (true == mCheckStaffInviteResponse?.mIsInvitationAvailable) {
+                    showStaffInvitationDialog(mCheckStaffInviteResponse?.mStaffInvitation)
+                } else if (null == mValidateOtpResponse?.mStore && mIsNewUser) {
+                    launchFragment(DukaanNameFragment.newInstance(mCheckStaffInviteResponse?.mIsInvitationAvailable ?: false, mCheckStaffInviteResponse?.mStaffInvitation, mValidateOtpResponse?.mUserId ?: ""), true)
+                } else launchFragment(OrderFragment.newInstance(), true)
             }
         }
     }
 
-    private fun saveUserDetailsInPref(validateOtpResponse: ValidateOtpResponse) {
-        PrefsManager.storeStringDataInSharedPref(Constants.USER_AUTH_TOKEN, validateOtpResponse.mUserAuthToken)
-        PrefsManager.storeStringDataInSharedPref(Constants.USER_MOBILE_NUMBER, validateOtpResponse.mUserPhoneNumber)
-        PrefsManager.storeStringDataInSharedPref(Constants.USER_ID, validateOtpResponse.mUserId)
-        validateOtpResponse.mStore?.let { store ->
+    private fun saveUserDetailsInPref(validateOtpResponse: ValidateOtpResponse?) {
+        PrefsManager.storeStringDataInSharedPref(Constants.USER_AUTH_TOKEN, validateOtpResponse?.mUserAuthToken)
+        PrefsManager.storeStringDataInSharedPref(Constants.USER_MOBILE_NUMBER, validateOtpResponse?.mUserPhoneNumber)
+        PrefsManager.storeStringDataInSharedPref(Constants.USER_ID, validateOtpResponse?.mUserId)
+        validateOtpResponse?.mStore?.let { store ->
             Log.i("storeIdDialog", store.storeId.toString())
             PrefsManager.storeStringDataInSharedPref(Constants.STORE_ID, store.storeId.toString())
             PrefsManager.storeStringDataInSharedPref(Constants.STORE_NAME, store.storeInfo.name)

@@ -1095,8 +1095,8 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (commonResponse.mIsSuccessStatus) {
                 var sCheckStaffInviteResponse = Gson().fromJson<StaffMemberDetailsResponse>(commonResponse.mCommonDataStr, StaffMemberDetailsResponse::class.java)
-                mIsInvitationShown = sCheckStaffInviteResponse.mIsInvitationShown
-                Log.i("isInvitationShownOrders", sCheckStaffInviteResponse?.mIsInvitationShown.toString())
+                mIsInvitationShown = sCheckStaffInviteResponse.mIsInvitationAvailable
+                Log.i("isInvitationShownOrders", sCheckStaffInviteResponse?.mIsInvitationAvailable.toString())
             }
         }
     }
