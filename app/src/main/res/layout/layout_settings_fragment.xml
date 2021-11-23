@@ -238,7 +238,7 @@
                     android:layout_marginEnd="@dimen/_15sdp"
                     android:clickable="false"
                     android:contentDescription="@string/image_view_content_description"
-                    android:src="@drawable/ic_half_arrow_forward"
+                    tools:src="@drawable/ic_half_arrow_forward"
                     app:layout_constraintBottom_toBottomOf="@id/storeControlTextView"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/storeControlTextView" />
