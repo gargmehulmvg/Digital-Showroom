@@ -92,6 +92,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     private var mMultiUserAdapter: StaffInvitationAdapter? = null
 
     companion object {
+        private var sStaffInvitationDialog: Dialog? = null
         private var mCurrentPhotoPath = ""
     }
 
@@ -1235,26 +1236,10 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     }
 
     protected fun updateNavigationBarState(actionId: Int) {
-        mActivity?.let {
-            if (actionId == R.id.menuPremium) {
-                it.bottomNavigationView.background =
-                    ContextCompat.getDrawable(it, R.drawable.bottom_nav_premium_gradient_background)
-                it.premiumTextView.setTextColor(
-                    ContextCompat.getColor(
-                        it,
-                        R.color.premium_text_color
-                    )
-                )
-            } else {
-                it.bottomNavigationView.background = null
-                it.premiumTextView.setTextColor(
-                    ContextCompat.getColor(
-                        it,
-                        R.color.default_text_light_grey
-                    )
-                )
-            }
-            val menu: Menu = it.bottomNavigationView.menu
+        mActivity?.let { activity ->
+            activity.bottomNavigationView.background = null
+            activity.premiumTextView.setTextColor(ContextCompat.getColor(activity, if (R.id.menuPremium == actionId) R.color.premium_text_color else R.color.default_text_light_grey))
+            val menu: Menu = activity.bottomNavigationView.menu
             menu.findItem(actionId).isChecked = true
         }
     }
@@ -2638,12 +2623,12 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
 
     fun showStaffInvitationDialog(staffInvitation: StaffInvitationResponse?) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
+            if (true == sStaffInvitationDialog?.isShowing) return@runTaskOnCoroutineMain
             mActivity?.let { context ->
-                val cancelWarningDialog = Dialog(context)
-                val view =
-                    LayoutInflater.from(context).inflate(R.layout.multi_user_selection_dialog, null)
+                sStaffInvitationDialog = Dialog(context)
+                val view = LayoutInflater.from(context).inflate(R.layout.multi_user_selection_dialog, null)
                 var selectedId = 1
-                cancelWarningDialog.apply {
+                sStaffInvitationDialog?.apply {
                     setContentView(view)
                     setCancelable(false)
                     window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -2699,7 +2684,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                                                 it.body()?.let {
                                                     withContext(Dispatchers.Main) {
                                                         if (it.mIsSuccessStatus) {
-                                                            cancelWarningDialog.dismiss()
+                                                            sStaffInvitationDialog?.dismiss()
                                                             showShortSnackBar(it.mMessage, true, R.drawable.ic_check_circle)
                                                             if (1 == selectedId) {
                                                                 Log.i("permissionDialog", updateInvitationResponse.permissionsMap.toString())
@@ -2714,7 +2699,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                                                             } else {
                                                                 Log.i("Dialog", selectedId.toString())
                                                                 checkStaffInvite()
-                                                                cancelWarningDialog.dismiss()
+                                                                sStaffInvitationDialog?.dismiss()
                                                             }
                                                         } else showShortSnackBar(it.mMessage, true, R.drawable.ic_close_red)
                                                     }
@@ -2728,7 +2713,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                             }
                         }
                     }
-                }.show()
+                }?.show()
             }
         }
     }
