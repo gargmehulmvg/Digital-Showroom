@@ -94,6 +94,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         swipeRefreshLayout?.setOnRefreshListener(this)
         mStoreLogo = ""
         fetchUserProfile()
+        mActivity?.let { context -> imageView5?.setImageDrawable(ContextCompat.getDrawable(context, if (false == StaticInstances.sPermissionHashMap?.get(Constants.PAGE_STORE_CONTROLS)) R.drawable.ic_subscription_locked_black_small else R.drawable.ic_half_arrow_forward)) }
     }
 
     override fun onClick(view: View?) {
@@ -102,7 +103,13 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         StaticInstances.sAppStoreServicesResponse = mAppStoreServicesResponse
         StaticInstances.sPaymentMethodStr = mAccountPageInfoResponse?.mOnlinePaymentType
         when (view?.id) {
-            storeControlView?.id -> launchFragment(MoreControlsFragment.newInstance(mAccountPageInfoResponse), true)
+            storeControlView?.id -> {
+                if (false == StaticInstances.sPermissionHashMap?.get(Constants.PAGE_STORE_CONTROLS)) {
+                    showStaffFeatureLockedBottomSheet(Constants.NAV_BAR_SETTINGS)
+                    return
+                }
+                launchFragment(MoreControlsFragment.newInstance(mAccountPageInfoResponse), true)
+            }
             dukaanNameTextView?.id -> launchProfilePreviewFragment()
             editProfileTextView?.id -> launchProfilePreviewFragment()
             profileStatusRecyclerView?.id -> launchProfilePreviewFragment()
@@ -373,7 +380,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             }
         }
         settingStoreOptionRecyclerView?.apply {
-            val settingsAdapter = SettingsStoreAdapter(this@SettingsFragment, this@SettingsFragment)
+            val settingsAdapter = SettingsStoreAdapter(mActivity, this@SettingsFragment)
             val linearLayoutManager = LinearLayoutManager(mActivity)
             layoutManager = linearLayoutManager
             adapter = settingsAdapter
@@ -407,6 +414,10 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
 
     private fun checkStoreOptionClick(response: StoreOptionsResponse) {
         Log.d(TAG, "checkStoreOptionClick: $response")
+        if (response.mIsStaffFeatureLocked) {
+            showStaffFeatureLockedBottomSheet(Constants.NAV_BAR_SETTINGS)
+            return
+        }
         when (response.mPage) {
             Constants.PAGE_REFER -> {
                 if (mReferAndEarnResponse != null) {

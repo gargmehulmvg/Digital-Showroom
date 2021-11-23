@@ -153,6 +153,7 @@ data class StoreOptionsResponse(
     @SerializedName("banner_text")              var mBannerText: String?,
     @SerializedName("action")                   var mAction: String?,
     @SerializedName("is_expandable")            var mIsShowMore: Boolean,
+    @SerializedName("is_staff_feature_locked")  var mIsStaffFeatureLocked: Boolean,
     @SerializedName("page")                     var mPage: String?
 )
 
