@@ -28,6 +28,9 @@ interface Apis {
     @POST("api/dotk/vo1/onboard/validateUser")
     suspend fun validateUser(@Body request: ValidateUserRequest): Response<CommonApiResponse>
 
+    @GET("api/dotk/vo1/onboard/getOtpModesList")
+    suspend fun getOtpModesList() : Response<CommonApiResponse>
+
     @POST("api/dotk/vm1/onboard/setStoreAddress")
     suspend fun updateStoreAddress(@Body request: StoreAddressRequest) : Response<CommonApiResponse>
 

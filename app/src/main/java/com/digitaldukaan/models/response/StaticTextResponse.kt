@@ -1,6 +1,7 @@
 package com.digitaldukaan.models.response
 
 import com.google.gson.annotations.SerializedName
+import java.util.ArrayList
 
 data class StaticTextResponse(
     @SerializedName("auth_new")                         var mAuthNew: AuthNewResponseData,
@@ -13,7 +14,8 @@ data class StaticTextResponse(
     @SerializedName("merchant_address")                 var mMapStaticData: MapLocationStaticResponseData,
     @SerializedName("subscription_lock")                var mSubscriptionLockStaticData: SubscriptionLockStaticData,
     @SerializedName("staff_lock_bottomsheet")           var mStaffLockBottomSheet: StaffLockBottomSheetStaticData,
-    @SerializedName("catalog_add")                      var mCatalogStaticData: CatalogStaticData
+    @SerializedName("catalog_add")                      var mCatalogStaticData: CatalogStaticData,
+    @SerializedName("otp_modes_list")                   var mOtpModesList: ArrayList<CommonCtaResponse>
 )
 
 data class ProfileStaticData(
@@ -87,7 +89,8 @@ data class VerifyOtpStaticResponseData(
     @SerializedName("text_did_not_receive_otp")         var text_did_not_receive_otp: String?,
     @SerializedName("error_mandatory_field")            var error_mandatory_field: String?,
     @SerializedName("error_otp_not_valid")              var error_otp_not_valid: String?,
-    @SerializedName("hint_enter_4_digit_otp")           var hint_enter_4_digit_otp: String?
+    @SerializedName("hint_enter_4_digit_otp")           var hint_enter_4_digit_otp: String?,
+    @SerializedName("text_resend_otp")                  var text_resend_otp: String?
 )
 
 data class OnBoardStep1StaticResponseData(

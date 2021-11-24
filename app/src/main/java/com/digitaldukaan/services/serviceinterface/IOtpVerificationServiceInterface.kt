@@ -9,7 +9,11 @@ interface IOtpVerificationServiceInterface {
 
     fun onOTPVerificationErrorResponse(validateOtpErrorResponse: ValidateOtpErrorResponse)
 
+    fun onGetOtpModesListResponse(commonApiResponse: CommonApiResponse)
+
     fun onOTPVerificationDataException(e: Exception)
+
+    fun onGetOtpModesListDataException(e: Exception)
 
     fun checkStaffInviteResponse(commonResponse: CommonApiResponse)
 
