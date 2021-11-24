@@ -130,26 +130,28 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
     fun checkBottomNavBarFeatureVisibility() {
         StaticInstances.sPermissionHashMap?.forEach { (key, value) ->
-            println("$key = $value")
-            if (Constants.PAGE_ORDER == key && !value) {
-                blurBottomNavBarContainer?.visibility = View.VISIBLE
-                blurBottomNavBarOrders?.visibility = View.VISIBLE
-            }
-            if (Constants.PAGE_CATALOG == key && !value) {
-                blurBottomNavBarContainer?.visibility = View.VISIBLE
-                blurBottomNavBarCatalog?.visibility = View.VISIBLE
-            }
-            if (Constants.PAGE_PREMIUM == key && !value) {
-                blurBottomNavBarContainer?.visibility = View.VISIBLE
-                blurBottomNavBarPremium?.visibility = View.VISIBLE
-            }
-            if (Constants.PAGE_MARKETING == key && !value) {
-                blurBottomNavBarContainer?.visibility = View.VISIBLE
-                blurBottomNavBarMarketing?.visibility = View.VISIBLE
-            }
-            if (Constants.PAGE_SETTINGS == key && !value) {
-                blurBottomNavBarContainer?.visibility = View.VISIBLE
-                blurBottomNavBarSettings?.visibility = View.VISIBLE
+            runOnUiThread {
+                println("$key = $value")
+                if (Constants.PAGE_ORDER == key && !value) {
+                    blurBottomNavBarContainer?.visibility = View.VISIBLE
+                    blurBottomNavBarOrders?.visibility = View.VISIBLE
+                }
+                if (Constants.PAGE_CATALOG == key && !value) {
+                    blurBottomNavBarContainer?.visibility = View.VISIBLE
+                    blurBottomNavBarCatalog?.visibility = View.VISIBLE
+                }
+                if (Constants.PAGE_PREMIUM == key && !value) {
+                    blurBottomNavBarContainer?.visibility = View.VISIBLE
+                    blurBottomNavBarPremium?.visibility = View.VISIBLE
+                }
+                if (Constants.PAGE_MARKETING == key && !value) {
+                    blurBottomNavBarContainer?.visibility = View.VISIBLE
+                    blurBottomNavBarMarketing?.visibility = View.VISIBLE
+                }
+                if (Constants.PAGE_SETTINGS == key && !value) {
+                    blurBottomNavBarContainer?.visibility = View.VISIBLE
+                    blurBottomNavBarSettings?.visibility = View.VISIBLE
+                }
             }
         }
     }

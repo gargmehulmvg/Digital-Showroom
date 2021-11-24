@@ -3,6 +3,8 @@ package com.digitaldukaan.fragments
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -28,6 +30,7 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
 
     private var mPremiumPageInfoResponse: PremiumPageInfoResponse? = null
     private val mService: PremiumPageInfoService = PremiumPageInfoService()
+    private var mIsDoublePressToExit = false
 
     companion object {
         private var mStaticText: PremiumPageInfoStaticTextResponse? = null
@@ -161,12 +164,22 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
     override fun onBackPressed(): Boolean {
         return try {
             Log.d(TAG, "onBackPressed :: called")
-            if(fragmentManager != null && fragmentManager?.backStackEntryCount == 1) {
-                clearFragmentBackStack()
-                launchFragment(OrderFragment.newInstance(), true)
-                true
+            if(null != fragmentManager && 1 == fragmentManager?.backStackEntryCount) {
+                if (true == StaticInstances.sPermissionHashMap?.get(Constants.PAGE_ORDER)) {
+                    clearFragmentBackStack()
+                    launchFragment(OrderFragment.newInstance(), true)
+                } else {
+                    if (mIsDoublePressToExit) mActivity?.finish()
+                    showShortSnackBar(getString(R.string.msg_back_press))
+                    mIsDoublePressToExit = true
+                    Handler(Looper.getMainLooper()).postDelayed(
+                        { mIsDoublePressToExit = false },
+                        Constants.BACK_PRESS_INTERVAL
+                    )
+                }
+                return true
             } else {
-                if (commonWebView?.canGoBack() == true) {
+                if (true == commonWebView?.canGoBack()) {
                     commonWebView?.goBack()
                     true
                 } else false

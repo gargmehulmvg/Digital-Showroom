@@ -2635,12 +2635,10 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                     view?.run {
                         val dialogImageView: ImageView = findViewById(R.id.dialogImageView)
                         val moreOptionsContainer: View = findViewById(R.id.moreOptionsContainer)
-                        val dialogOptionsRecyclerView: RecyclerView =
-                            findViewById(R.id.dialogOptionsRecyclerView)
+                        val dialogOptionsRecyclerView: RecyclerView = findViewById(R.id.dialogOptionsRecyclerView)
                         val nextTextView: TextView = findViewById(R.id.nextTextView)
                         val moreOptionsTextView: TextView = findViewById(R.id.moreOptionsTextView)
-                        val dialogHeadingTextView: TextView =
-                            findViewById(R.id.dialogHeadingTextView)
+                        val dialogHeadingTextView: TextView = findViewById(R.id.dialogHeadingTextView)
                         mActivity?.let { context ->
                             Glide.with(context).load(staffInvitation?.cdn).into(dialogImageView)
                         }
@@ -2653,11 +2651,16 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                                 override fun onAdapterItemClickListener(position: Int) {
                                     staffInvitation?.invitationList?.forEachIndexed { _, item -> item?.isSelected = false }
                                     staffInvitation?.invitationList?.get(position)?.isSelected = true
-                                    Log.i("SelectedID", staffInvitation?.invitationList?.get(position)?.id.toString())
-                                    if (0 == staffInvitation?.invitationList?.get(position)?.id) {
-                                        selectedId = 0
-                                    } else if (2 == staffInvitation?.invitationList?.get(position)?.id) {
-                                        selectedId = 2
+                                    selectedId = when (staffInvitation?.invitationList?.get(position)?.id) {
+                                        Constants.STAFF_INVITATION_CODE_EXIT -> {
+                                            staffInvitation.invitationList[position]?.id ?: 0
+                                        }
+                                        Constants.STAFF_INVITATION_CODE_REJECT -> {
+                                            staffInvitation.invitationList[position]?.id ?: 2
+                                        }
+                                        else -> {
+                                            staffInvitation?.invitationList?.get(position)?.id ?: 1
+                                        }
                                     }
                                     mMultiUserAdapter?.notifyDataSetChanged()
                                 }
@@ -2676,7 +2679,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                             setOnClickListener {
                                 CoroutineScopeUtils().runTaskOnCoroutineBackground {
                                     try {
-                                        val response = RetrofitApi().getServerCallObject()?.updateInvitationStatus(UpdateInvitationRequest(status = 1, StoreId = staffInvitation?.invitedStoreId ?: 0, userId = getStringDataFromSharedPref(Constants.USER_ID).toInt(), languageId = 1))
+                                        val response = RetrofitApi().getServerCallObject()?.updateInvitationStatus(UpdateInvitationRequest(status = selectedId, StoreId = staffInvitation?.invitedStoreId ?: 0, userId = getStringDataFromSharedPref(Constants.USER_ID).toInt(), languageId = 1))
                                         response?.let {
                                             stopProgress()
                                             if (it.isSuccessful) {
@@ -2693,15 +2696,8 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                                                                     StaticInstances.sPermissionHashMap?.let { it1 -> launchScreenFromPermissionMap(it1) }
                                                                     storeStringDataInSharedPref(Constants.STORE_ID, updateInvitationResponse.storeId)
                                                                 }
-                                                                0 -> {
-                                                                    Log.i("Dialog", selectedId.toString())
-                                                                    mActivity?.finish()
-                                                                }
-                                                                else -> {
-                                                                    Log.i("Dialog", selectedId.toString())
-                                                                    checkStaffInvite()
-                                                                    sStaffInvitationDialog?.dismiss()
-                                                                }
+                                                                0 -> mActivity?.finish()
+                                                                else -> checkStaffInvite()
                                                             }
                                                         } else showShortSnackBar(it.mMessage, true, R.drawable.ic_close_red)
                                                     }
