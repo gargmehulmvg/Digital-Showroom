@@ -3,6 +3,5 @@ package com.digitaldukaan.models.request
 import com.google.gson.annotations.SerializedName
 
 data class GenerateOtpRequest(
-    @SerializedName("app_name") var mAppName: String,
-    @SerializedName("phone") var mMobileNumber: String
+    @SerializedName("comm_medium") var commMedium: Int
 )

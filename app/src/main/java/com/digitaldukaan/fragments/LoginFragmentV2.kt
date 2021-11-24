@@ -33,6 +33,7 @@ import com.google.android.gms.auth.api.credentials.Credential
 import com.google.android.gms.auth.api.credentials.Credentials
 import com.google.android.gms.auth.api.credentials.CredentialsApi
 import com.google.android.gms.auth.api.credentials.HintRequest
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import com.tbuonomo.viewpagerdotsindicator.WormDotsIndicator
 import com.truecaller.android.sdk.*
@@ -51,7 +52,7 @@ class LoginFragmentV2 : BaseFragment(), ILoginServiceInterface {
     private var mTrueCallerInstance: TruecallerSDK? = null
 
     companion object {
-        private const val USE_ANOTHER_NUMBER = 14
+        private const val TRUE_CALLER_ERROR_USE_ANOTHER_NUMBER = 14
         private var mMobileNumber = ""
 
         fun newInstance(isLogoutDone: Boolean = false): LoginFragmentV2 {
@@ -62,18 +63,13 @@ class LoginFragmentV2 : BaseFragment(), ILoginServiceInterface {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         TAG = "LoginFragmentV2"
+        FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
         mContentView = inflater.inflate(R.layout.layout_login_fragment_v2, container, false)
         mLoginService = LoginService()
         mLoginService?.setLoginServiceInterface(this)
         hideBottomNavigationView(true)
         initializeTrueCaller()
-        initializeStaticInstances()
         return mContentView
-    }
-
-    private fun initializeStaticInstances() {
-        StaticInstances.sSuggestedDomainsList = null
-        StaticInstances.sStoreId = 0
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -231,7 +227,7 @@ class LoginFragmentV2 : BaseFragment(), ILoginServiceInterface {
 
         override fun onFailureProfileShared(trueError: TrueError) {
             Log.d(TAG, "onFailureProfileShared: $trueError")
-            if (USE_ANOTHER_NUMBER == trueError.errorType) mobileNumberTextView?.callOnClick()
+            if (TRUE_CALLER_ERROR_USE_ANOTHER_NUMBER == trueError.errorType) mobileNumberTextView?.callOnClick()
         }
 
         override fun onSuccessProfileShared(response: TrueProfile) {
@@ -310,7 +306,7 @@ class LoginFragmentV2 : BaseFragment(), ILoginServiceInterface {
             )
             showCancellableProgressDialog(mActivity)
             mActivity?.let { context -> UIUtil.hideKeyboard(context) }
-            mLoginService?.generateOTP(mobileNumber)
+            mLoginService?.generateOTP(mobileNumber, 0)
         }
     }
 
@@ -344,7 +340,7 @@ class LoginFragmentV2 : BaseFragment(), ILoginServiceInterface {
                     "${it.address1}, ${it.googleAddress}, ${it.pinCode}"
                 }
                 AppEventsManager.pushCleverTapProfile(cleverTapProfile)
-                if (null == userResponse.store && userResponse.user.isNewUser) launchFragment(DukaanNameFragment.newInstance(), true) else launchFragment(OrderFragment.newInstance(), true)
+                if (null == userResponse.store && userResponse.user.isNewUser) launchFragment(DukaanNameFragment.newInstance(userResponse?.mIsInvitationShown ?: false, userResponse?.mStaffInvitation, userResponse?.user?.userId ?: ""), true) else launchFragment(OrderFragment.newInstance(), true)
             } else showShortSnackBar(validateUserResponse.mMessage, true, R.drawable.ic_close_red)
         }
     }
@@ -353,10 +349,9 @@ class LoginFragmentV2 : BaseFragment(), ILoginServiceInterface {
         PrefsManager.storeStringDataInSharedPref(Constants.USER_AUTH_TOKEN, validateOtpResponse.user.authToken)
         PrefsManager.storeStringDataInSharedPref(Constants.USER_ID, validateOtpResponse.user.userId)
         PrefsManager.storeStringDataInSharedPref(Constants.USER_MOBILE_NUMBER, validateOtpResponse.user.phone)
-        validateOtpResponse.store?.run {
-            StaticInstances.sStoreId = storeId
-            PrefsManager.storeStringDataInSharedPref(Constants.STORE_ID, "$storeId")
-            PrefsManager.storeStringDataInSharedPref(Constants.STORE_NAME, storeInfo.name)
+        validateOtpResponse.store?.let { store ->
+            PrefsManager.storeStringDataInSharedPref(Constants.STORE_ID, "${store.storeId}")
+            PrefsManager.storeStringDataInSharedPref(Constants.STORE_NAME, store.storeInfo.name)
         }
     }
 

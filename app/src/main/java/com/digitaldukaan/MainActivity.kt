@@ -128,6 +128,38 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         bottomNavigationView.setOnNavigationItemSelectedListener(this)
     }
 
+    fun checkBottomNavBarFeatureVisibility() {
+        StaticInstances.sPermissionHashMap?.forEach { (key, value) ->
+            runOnUiThread {
+                println("$key = $value")
+                if (Constants.PAGE_ORDER == key && !value) {
+                    blurBottomNavBarContainer?.visibility = View.VISIBLE
+                    blurBottomNavBarOrders?.visibility = View.VISIBLE
+                } else if (Constants.PAGE_ORDER == key && value) blurBottomNavBarOrders?.visibility = View.INVISIBLE
+                if (Constants.PAGE_CATALOG == key && !value) {
+                    blurBottomNavBarContainer?.visibility = View.VISIBLE
+                    blurBottomNavBarCatalog?.visibility = View.VISIBLE
+                } else if (Constants.PAGE_CATALOG == key && value) blurBottomNavBarCatalog?.visibility = View.INVISIBLE
+                if (Constants.PAGE_PREMIUM == key && !value) {
+                    blurBottomNavBarContainer?.visibility = View.VISIBLE
+                    blurBottomNavBarPremium?.visibility = View.VISIBLE
+                    premiumImageView?.alpha = 0.25f
+                } else if (Constants.PAGE_PREMIUM == key && value) {
+                    premiumImageView?.alpha = 1f
+                    blurBottomNavBarPremium?.visibility = View.INVISIBLE
+                }
+                if (Constants.PAGE_MARKETING == key && !value) {
+                    blurBottomNavBarContainer?.visibility = View.VISIBLE
+                    blurBottomNavBarMarketing?.visibility = View.VISIBLE
+                } else if (Constants.PAGE_MARKETING == key && value) blurBottomNavBarMarketing?.visibility = View.INVISIBLE
+                if (Constants.PAGE_SETTINGS == key && !value) {
+                    blurBottomNavBarContainer?.visibility = View.VISIBLE
+                    blurBottomNavBarSettings?.visibility = View.VISIBLE
+                } else if (Constants.PAGE_SETTINGS == key && value) blurBottomNavBarSettings?.visibility = View.INVISIBLE
+            }
+        }
+    }
+
     override fun onBackPressed() {
         try {
             val current: BaseFragment? = getCurrentFragment()
@@ -149,7 +181,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         val list = mgr.fragments
         val count = mgr.backStackEntryCount
         if (0 == count) {
-            if (list.isNotEmpty()) {
+            if (isNotEmpty(list)) {
                 for (i in list.indices) {
                     if (list[i] is BaseFragment) {
                         return list[i] as BaseFragment
@@ -260,17 +292,43 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         val fragment = getCurrentFragment() ?: return false
         when (item.itemId) {
-            R.id.menuHome -> if (fragment !is OrderFragment) launchFragment(OrderFragment.newInstance(), true)
-            R.id.menuSettings -> if (fragment !is SettingsFragment) launchFragment(SettingsFragment.newInstance(), true)
-            R.id.menuMarketing -> if (fragment !is MarketingFragment) launchFragment(MarketingFragment.newInstance(), true)
-            R.id.menuProducts -> if (fragment !is ProductFragment) launchFragment(ProductFragment.newInstance(), true)
-            R.id.menuPremium -> if (fragment !is PremiumPageInfoFragment) {
-                AppEventsManager.pushAppEvents(
-                    eventName = AFInAppEventType.EVENT_PREMIUM_PAGE,
-                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.CHANNEL to "isBottomNav")
-                )
-                launchFragment(PremiumPageInfoFragment.newInstance(), true)
+            R.id.menuHome -> {
+                if (false == StaticInstances.sPermissionHashMap?.get(Constants.PAGE_ORDER)) {
+                    getCurrentFragment()?.showStaffFeatureLockedBottomSheet(Constants.NAV_BAR_ORDERS)
+                    return true
+                }
+                if (fragment !is OrderFragment) launchFragment(OrderFragment.newInstance(), true)
+            }
+            R.id.menuSettings -> {
+                if (false == StaticInstances.sPermissionHashMap?.get(Constants.PAGE_SETTINGS)) {
+                    getCurrentFragment()?.showStaffFeatureLockedBottomSheet(Constants.NAV_BAR_ORDERS)
+                    return true
+                }
+                if (fragment !is SettingsFragment) launchFragment(SettingsFragment.newInstance(), true)
+            }
+            R.id.menuMarketing -> {
+                if (false == StaticInstances.sPermissionHashMap?.get(Constants.PAGE_MARKETING)) {
+                    getCurrentFragment()?.showStaffFeatureLockedBottomSheet(Constants.NAV_BAR_MARKETING)
+                    return true
+                }
+                if (fragment !is MarketingFragment) launchFragment(MarketingFragment.newInstance(), true)
+            }
+            R.id.menuProducts -> {
+                if (false == StaticInstances.sPermissionHashMap?.get(Constants.PAGE_CATALOG)) {
+                    getCurrentFragment()?.showStaffFeatureLockedBottomSheet(Constants.NAV_BAR_CATALOG)
+                    return true
+                }
+                if (fragment !is ProductFragment) launchFragment(ProductFragment.newInstance(), true)
+            }
+            R.id.menuPremium -> {
+                if (false == StaticInstances.sPermissionHashMap?.get(Constants.PAGE_PREMIUM)) {
+                    getCurrentFragment()?.showStaffFeatureLockedBottomSheet(Constants.NAV_BAR_PREMIUM)
+                    return true
+                }
+                if (fragment !is PremiumPageInfoFragment) {
+                    AppEventsManager.pushAppEvents(eventName = AFInAppEventType.EVENT_PREMIUM_PAGE, isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true, data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.CHANNEL to "isBottomNav"))
+                    launchFragment(PremiumPageInfoFragment.newInstance(), true)
+                }
             }
         }
         return true

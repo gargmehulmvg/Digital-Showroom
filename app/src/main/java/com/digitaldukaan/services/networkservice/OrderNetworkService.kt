@@ -218,4 +218,24 @@ class OrderNetworkService {
             serviceInterface.onHomePageException(e)
         }
     }
+
+    suspend fun checkStaffInviteServerCall(serviceInterface: IHomeServiceInterface) {
+        try {
+            val response = RetrofitApi().getServerCallObject()?.checkStaffInvite()
+            response?.let {
+                if (it.isSuccessful) it.body()?.let { commonApiResponse -> serviceInterface.checkStaffInviteResponse(commonApiResponse) }
+                else {
+                    if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    val responseBody = it.errorBody()
+                    responseBody?.let {
+                        val errorResponse = Gson().fromJson(responseBody.string(), CommonApiResponse::class.java)
+                        serviceInterface.checkStaffInviteResponse(errorResponse)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(OrderNetworkService::class.java.simpleName, "checkStaffInviteServerCall: ", e)
+            serviceInterface.onHomePageException(e)
+        }
+    }
 }

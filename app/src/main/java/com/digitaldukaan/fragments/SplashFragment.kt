@@ -19,6 +19,7 @@ import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.models.response.*
+import com.digitaldukaan.network.RetrofitApi
 import com.digitaldukaan.services.SplashService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.ISplashServiceInterface
@@ -59,6 +60,7 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
         }, Constants.TIMER_INTERVAL)
         fetchContactsIfPermissionGranted()
         splashService.setSplashServiceInterface(this)
+        checkStaffInvite()
     }
 
     private fun fetchContactsIfPermissionGranted() {
@@ -105,7 +107,19 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
         when {
             null != mIntentUri -> switchToFragmentByDeepLink()
             "" == getStringDataFromSharedPref(Constants.STORE_ID) -> launchFragment(LoginFragmentV2.newInstance(), true)
-            else -> launchFragment(OrderFragment.newInstance(), true)
+            else -> {
+                CoroutineScopeUtils().runTaskOnCoroutineBackground {
+                    val response = RetrofitApi().getServerCallObject()?.getStaffMembersDetails(getStringDataFromSharedPref(Constants.STORE_ID))
+                    response?.let { it ->
+                        val staffMemberDetailsResponse = Gson().fromJson<StaffMemberDetailsResponse>(it.body()?.mCommonDataStr, StaffMemberDetailsResponse::class.java)
+                        Log.d(TAG, "StaticInstances.sPermissionHashMap: ${StaticInstances.sPermissionHashMap?.toString()}")
+                        StaticInstances.sPermissionHashMap = staffMemberDetailsResponse?.permissionsMap
+                        stopProgress()
+                        staffMemberDetailsResponse?.permissionsMap?.let { map -> launchScreenFromPermissionMap(map) }
+                    }
+                    Log.i("PermissionMapSplash", StaticInstances.sPermissionHashMap.toString())
+                }
+            }
         }
     }
 

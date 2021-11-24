@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.constraintlayout.widget.Group
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.digitaldukaan.R
@@ -38,6 +39,10 @@ class MarketingCardAdapter(
         val doubleSpanHeadingTextView: TextView = itemView.findViewById(R.id.doubleSpanHeadingTextView)
         val doubleSpanSubHeadingTextView: TextView = itemView.findViewById(R.id.doubleSpanSubHeadingTextView)
         val doubleSpanContainer: View = itemView.findViewById(R.id.doubleSpanContainer)
+        val singleSpanLockNowTextView: TextView = itemView.findViewById(R.id.singleSpanLockNowTextView)
+        val doubleSpanLockNowTextView: TextView = itemView.findViewById(R.id.doubleSpanLockNowTextView)
+        val singleSpanLockGroup: Group = itemView.findViewById(R.id.singleSpanLockGroup)
+        val doubleSpanLockGroup: Group = itemView.findViewById(R.id.doubleSpanLockGroup)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MarketingCardViewHolder {
@@ -73,6 +78,11 @@ class MarketingCardAdapter(
                         doubleSpanShimmerEffectView.visibility = View.VISIBLE
                         startShinningAnimation(doubleSpanShimmerEffectView)
                     } else doubleSpanShimmerEffectView.visibility = View.GONE
+                    if (true == item.isStaffFeatureLocked) {
+                        doubleSpanLockGroup.visibility = View.VISIBLE
+                        doubleSpanContinueTextView.visibility = View.GONE
+                        doubleSpanLockNowTextView.text = "Locked"
+                    } else doubleSpanLockGroup.visibility = View.GONE
                 }
                 else -> {
                     singleSpanContainer.visibility = View.VISIBLE
@@ -90,6 +100,11 @@ class MarketingCardAdapter(
                     } else {
                         singleSpanInfoText.visibility = View.GONE
                     }
+                    if (true == item?.isStaffFeatureLocked) {
+                        singleSpanLockGroup.visibility = View.VISIBLE
+                        singleSpanInfoText.visibility = View.GONE
+                        singleSpanLockNowTextView.text = "Locked"
+                    } else singleSpanLockGroup.visibility = View.GONE
                 }
             }
         }

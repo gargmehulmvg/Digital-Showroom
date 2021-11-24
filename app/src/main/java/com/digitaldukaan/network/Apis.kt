@@ -1,7 +1,10 @@
 package com.digitaldukaan.network
 
 import com.digitaldukaan.models.request.*
-import com.digitaldukaan.models.response.*
+import com.digitaldukaan.models.response.CommonApiResponse
+import com.digitaldukaan.models.response.GenerateOtpResponse
+import com.digitaldukaan.models.response.ImagesSearchResponse
+import com.digitaldukaan.models.response.ReferEarnOverWhatsAppResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Response
@@ -25,14 +28,30 @@ interface Apis {
     @POST("api/dotk/vo1/onboard/validateUser")
     suspend fun validateUser(@Body request: ValidateUserRequest): Response<CommonApiResponse>
 
-    @POST("api/dotk/vo1/user/generateOtp/{phoneNumber}")
-    suspend fun generateOTP(@Path("phoneNumber") phoneNumber: String) : Response<GenerateOtpResponse>
-
-    @POST("api/dotk/merchant/login")
-    suspend fun validateOTP(@Body request: ValidateOtpRequest) : Response<ValidateOtpResponse>
+    @GET("api/dotk/vo1/onboard/getOtpModesList")
+    suspend fun getOtpModesList() : Response<CommonApiResponse>
 
     @POST("api/dotk/vm1/onboard/setStoreAddress")
     suspend fun updateStoreAddress(@Body request: StoreAddressRequest) : Response<CommonApiResponse>
+
+    /* ----------------------         User             ---------------------- */
+    @GET("api/dotk/vc1/user/getRequestPermissionText/{id}")
+    suspend fun getRequestPermissionText(@Path("id") id: Int) : Response<CommonApiResponse>
+
+    @GET("api/dotk/vc1/user/checkStaffInvite")
+    suspend fun checkStaffInvite() : Response<CommonApiResponse>
+
+    @POST("api/dotk/vo1/user/generateOtp/{phoneNumber}")
+    suspend fun generateOTP(@Path("phoneNumber") phoneNumber: String, @Body request: GenerateOtpRequest) : Response<GenerateOtpResponse>
+
+    @POST("api/dotk/vo1/user/loginV2")
+    suspend fun validateOTP(@Body request: ValidateOtpRequest) : Response<CommonApiResponse>
+
+    @POST("api/dotk/vc1/user/updateInvitationStatus")
+    suspend fun updateInvitationStatus(@Body request: UpdateInvitationRequest) : Response<CommonApiResponse>
+
+    @GET("api/dotk/vc1/user/getStaffMemberDetails/{store_id}")
+    suspend fun getStaffMembersDetails(@Path("store_id") store_id: String) : Response<CommonApiResponse>
 
     /* ----------------------       Settings         ---------------------- */
     @GET("api/dotk/vm1/settings/getOrderTypePageInfo")

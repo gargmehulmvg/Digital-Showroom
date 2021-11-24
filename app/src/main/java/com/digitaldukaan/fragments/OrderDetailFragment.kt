@@ -48,7 +48,6 @@ import kotlinx.android.synthetic.main.layout_order_detail_fragment.*
 import java.io.File
 import java.util.*
 
-
 class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupMenu.OnMenuItemClickListener {
 
     private var mOrderHash = ""
@@ -1032,31 +1031,37 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
         startDownloadBill(receiptStr)
     }
 
-    private fun startDownloadBill(receiptStr: String?) = if (true == receiptStr?.isEmpty()) {
-        showToast(mOrderDetailStaticData?.error_no_bill_available_to_download)
-    } else {
+    private fun startDownloadBill(receiptStr: String?) {
+        if (isEmpty(receiptStr)) {
+            showToast(mOrderDetailStaticData?.error_no_bill_available_to_download)
+            return
+        }
         showToast("Start Downloading...")
-        try {
-            Picasso.get().load(receiptStr).into(object : Target {
-                override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
-                    bitmap?.let {
-                        downloadMediaToStorage(bitmap, mActivity)
-                        val file = downloadBillInGallery(bitmap, orderDetailMainResponse?.orders?.orderId?.toString())
-                        file?.let { showDownloadNotification(it, "Bill-#${orderDetailMainResponse?.orders?.orderId}") }
+        if (Constants.BILL_TYPE_PDF.equals(orderDetailMainResponse?.orders?.digitalReceiptExtension, true)) {
+            downloadPdfInGallery(mActivity, receiptStr)
+        } else {
+            try {
+                Picasso.get().load(receiptStr).into(object : Target {
+                    override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
+                        bitmap?.let {
+                            downloadMediaToStorage(bitmap, mActivity)
+                            val file = downloadBillInGallery(bitmap, orderDetailMainResponse?.orders?.orderId?.toString())
+                            file?.let { showDownloadNotification(it, "Bill-#${orderDetailMainResponse?.orders?.orderId}") }
+                        }
                     }
-                }
 
-                override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
-                    Log.d(TAG, "onPrepareLoad: ")
-                }
+                    override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
+                        Log.d(TAG, "onPrepareLoad: ")
+                    }
 
-                override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
-                    Log.d(TAG, "onBitmapFailed: ")
-                }
-            })
-        } catch (e: Exception) {
-            Log.e(TAG, "startDownloadBill: ${e.message}", e)
-            showToast("Something went wrong")
+                    override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
+                        Log.d(TAG, "onBitmapFailed: ")
+                    }
+                })
+            } catch (e: Exception) {
+                Log.e(TAG, "startDownloadBill: ${e.message}", e)
+                showToast("Something went wrong")
+            }
         }
     }
 

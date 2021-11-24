@@ -3,6 +3,7 @@ package com.digitaldukaan.services.networkservice
 import android.util.Log
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.exceptions.UnAuthorizedAccessException
+import com.digitaldukaan.models.request.GenerateOtpRequest
 import com.digitaldukaan.models.request.ValidateUserRequest
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.GenerateOtpResponse
@@ -14,10 +15,11 @@ class LoginNetworkService {
 
     suspend fun generateOTPServerCall(
         mobileNumber: String,
+        otpMode: Int,
         loginServiceInterface: ILoginServiceInterface
     ) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.generateOTP(mobileNumber)
+            val response = RetrofitApi().getServerCallObject()?.generateOTP(mobileNumber, GenerateOtpRequest(otpMode))
             response?.let {
                 if (it.isSuccessful) {
                     it.body()?.let { generateOtpResponse -> loginServiceInterface.onGenerateOTPResponse(generateOtpResponse) }

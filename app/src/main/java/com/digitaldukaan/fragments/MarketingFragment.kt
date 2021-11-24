@@ -5,6 +5,8 @@ import android.app.AlertDialog
 import android.content.pm.PackageManager
 import android.location.LocationListener
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -47,6 +49,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
     private var mProgressBarView: View? = null
     private var mMarketingPageInfoResponse: MarketingPageInfoResponse? = null
     private var mService: MarketingService? = null
+    private var mIsDoublePressToExit = false
 
     companion object {
         private var mShareStorePDFResponse: ShareStorePDFDataItemResponse? = null
@@ -76,9 +79,14 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
             showNoInternetConnectionDialog()
             return
         }
-        showProgressDialog(mActivity)
-        mService?.getMarketingPageInfo()
-        WebViewBridge.mWebViewListener = this
+
+        if(StaticInstances.sIsInvitationShown == true){
+            showStaffInvitationDialog(StaticInstances.sStaffInvitation)
+        }else{
+            showProgressDialog(mActivity)
+            mService?.getMarketingPageInfo()
+            WebViewBridge.mWebViewListener = this
+        }
     }
 
     override fun onClick(view: View?) {
@@ -124,6 +132,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                             }
                         }
                         layoutManager = gridLayoutManager
+                        mMarketingPageInfoResponse?.marketingItemList?.forEachIndexed { _, itemResponse -> itemResponse?.isStaffFeatureLocked = true }
                         adapter = MarketingCardAdapter(this@MarketingFragment, mMarketingPageInfoResponse?.marketingItemList, this@MarketingFragment)
                     }
                 }
@@ -209,6 +218,10 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
     override fun onMarketingItemClick(response: MarketingCardsItemResponse?) {
         if (!isInternetConnectionAvailable(mActivity)) {
             showNoInternetConnectionDialog()
+            return
+        }
+        if (true == response?.isStaffFeatureLocked) {
+            showStaffFeatureLockedBottomSheet(Constants.NAV_BAR_MARKETING)
             return
         }
         Log.d(TAG, "onMarketingItemClick: ${response?.action}")
@@ -411,9 +424,19 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
 
     override fun onBackPressed(): Boolean {
         Log.d(TAG, "onBackPressed: called")
-        if(fragmentManager != null && fragmentManager?.backStackEntryCount == 1) {
-            clearFragmentBackStack()
-            launchFragment(OrderFragment.newInstance(), true)
+        if (null != fragmentManager && 1 == fragmentManager?.backStackEntryCount) {
+            if (true == StaticInstances.sPermissionHashMap?.get(Constants.PAGE_ORDER)) {
+                clearFragmentBackStack()
+                launchFragment(OrderFragment.newInstance(), true)
+            } else {
+                if (mIsDoublePressToExit) mActivity?.finish()
+                showShortSnackBar(getString(R.string.msg_back_press))
+                mIsDoublePressToExit = true
+                Handler(Looper.getMainLooper()).postDelayed(
+                    { mIsDoublePressToExit = false },
+                    Constants.BACK_PRESS_INTERVAL
+                )
+            }
             return true
         }
         return false

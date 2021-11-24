@@ -11,7 +11,8 @@ import com.google.gson.Gson
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 
-class ProfileNetworkService {
+class
+ProfileNetworkService {
 
     suspend fun getProfileServerCall(serviceInterface: IProfileServiceInterface) {
         try {

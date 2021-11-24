@@ -211,5 +211,26 @@ class Constants {
         //MODE DELIVERY CHARGE
         const val MEDIA_TYPE_IMAGES                             = 1
         const val MEDIA_TYPE_VIDEOS                             = 2
+        //MODE BOTTOM NAV BAR
+        const val NAV_BAR_ORDERS                                = 1
+        const val NAV_BAR_CATALOG                               = 2
+        const val NAV_BAR_PREMIUM                               = 3
+        const val NAV_BAR_MARKETING                             = 4
+        const val NAV_BAR_SETTINGS                              = 5
+        //NAV_PAGE
+        const val PAGE_ORDER                                    = "page_order"
+        const val PAGE_CATALOG                                  = "page_catalog"
+        const val PAGE_PREMIUM                                  = "page_premium"
+        const val PAGE_MARKETING                                = "page_marketing"
+        const val PAGE_SETTINGS                                 = "page_settings"
+        const val STORE_LOGO                                    = "store_logo"
+        const val STORE_CONTROLS                                = "store_controls"
+        const val STORE_PROFILE                                 = "store_profile"
+        //BILL_TYPE
+        const val BILL_TYPE_PDF                                 = "pdf"
+        //STAFF_INVITATION_CODE
+        const val STAFF_INVITATION_CODE_EXIT                    = 0
+        const val STAFF_INVITATION_CODE_ACCEPT                  = 1
+        const val STAFF_INVITATION_CODE_REJECT                  = 2
     }
 }

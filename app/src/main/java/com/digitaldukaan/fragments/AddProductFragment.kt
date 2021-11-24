@@ -103,6 +103,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     private var mYoutubeItemResponse: AddProductImagesResponse? = null
 
     companion object {
+
         private var sIsVariantImageClicked = false
         private var sVariantImageClickedPosition = 0
 

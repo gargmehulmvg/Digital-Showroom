@@ -4,7 +4,6 @@ import com.digitaldukaan.models.dto.ContactModel
 import com.digitaldukaan.models.response.*
 
 object StaticInstances {
-
     var sStoreInfo: StoreInfoResponse? = null
     var sBankDetails: BankDetailsResponse? = null
     var sIsStoreImageUploaded: Boolean = false
@@ -18,7 +17,6 @@ object StaticInstances {
     var sAppSessionId: String? = ""
     var sCleverTapId: String? = ""
     var sFireBaseMessagingToken: String? = ""
-    var sStoreId: Int = 0
     var sIsShareStoreLocked: Boolean = false
     var sAppStoreServicesResponse: StoreServicesResponse? = null
     var sPaymentMethodStr: String? = null
@@ -27,4 +25,7 @@ object StaticInstances {
     var sMyPaymentPageInfoResponse: MyPaymentsPageInfoResponse? = null
     var sCustomDomainBottomSheetResponse: CustomDomainBottomSheetResponse? = null
     var sSuggestedDomainsList: ArrayList<PrimaryDomainItemResponse>? = null
+    var sIsInvitationShown: Boolean? = false
+    var sStaffInvitation: StaffInvitationResponse? = null
+    var sPermissionHashMap: HashMap<String, Boolean>? = null
 }

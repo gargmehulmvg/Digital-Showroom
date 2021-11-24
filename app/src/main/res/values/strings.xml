@@ -144,6 +144,7 @@
     <string name="already_have_a_domain">Already Have a Domain?</string>
     <string name="search_domain">Search Domain</string>
     <string name="best_pick_for_you">Best Pick for You</string>
+    <string name="downloading">Downloading…</string>
     <string-array name="state_array">
         <item >Andhra Pradesh</item>
         <item >Arunachal Pradesh</item>
