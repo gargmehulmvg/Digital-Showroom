@@ -128,6 +128,32 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         bottomNavigationView.setOnNavigationItemSelectedListener(this)
     }
 
+    fun checkBottomNavBarFeatureVisibility() {
+        StaticInstances.sPermissionHashMap?.forEach { (key, value) ->
+            println("$key = $value")
+            if (Constants.PAGE_ORDER == key && !value) {
+                blurBottomNavBarContainer?.visibility = View.VISIBLE
+                blurBottomNavBarOrders?.visibility = View.VISIBLE
+            }
+            if (Constants.PAGE_CATALOG == key && !value) {
+                blurBottomNavBarContainer?.visibility = View.VISIBLE
+                blurBottomNavBarCatalog?.visibility = View.VISIBLE
+            }
+            if (Constants.PAGE_PREMIUM == key && !value) {
+                blurBottomNavBarContainer?.visibility = View.VISIBLE
+                blurBottomNavBarPremium?.visibility = View.VISIBLE
+            }
+            if (Constants.PAGE_MARKETING == key && !value) {
+                blurBottomNavBarContainer?.visibility = View.VISIBLE
+                blurBottomNavBarMarketing?.visibility = View.VISIBLE
+            }
+            if (Constants.PAGE_SETTINGS == key && !value) {
+                blurBottomNavBarContainer?.visibility = View.VISIBLE
+                blurBottomNavBarSettings?.visibility = View.VISIBLE
+            }
+        }
+    }
+
     override fun onBackPressed() {
         try {
             val current: BaseFragment? = getCurrentFragment()
@@ -149,7 +175,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         val list = mgr.fragments
         val count = mgr.backStackEntryCount
         if (0 == count) {
-            if (list.isNotEmpty()) {
+            if (isNotEmpty(list)) {
                 for (i in list.indices) {
                     if (list[i] is BaseFragment) {
                         return list[i] as BaseFragment
@@ -260,32 +286,44 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         val fragment = getCurrentFragment() ?: return false
         when (item.itemId) {
-            R.id.menuHome -> if (true == StaticInstances.sPermissionHashMap?.get("page_order")) {
-                if (fragment !is OrderFragment) launchFragment(OrderFragment.newInstance(), true)
-            }else {showToast("Access Denied")}
-
-            R.id.menuProducts -> if (true == StaticInstances.sPermissionHashMap?.get("page_catalog")) {
+            R.id.menuHome -> {
+                if (false == StaticInstances.sPermissionHashMap?.get(Constants.PAGE_ORDER)) {
+                    getCurrentFragment()?.showStaffFeatureLockedBottomSheet(Constants.NAV_BAR_ORDERS)
+                    return true
+                }
+                if (fragment !is HomeFragment) launchFragment(HomeFragment.newInstance(), true)
+            }
+            R.id.menuSettings -> {
+                if (false == StaticInstances.sPermissionHashMap?.get(Constants.PAGE_SETTINGS)) {
+                    getCurrentFragment()?.showStaffFeatureLockedBottomSheet(Constants.NAV_BAR_ORDERS)
+                    return true
+                }
+                if (fragment !is SettingsFragment) launchFragment(SettingsFragment.newInstance(), true)
+            }
+            R.id.menuMarketing -> {
+                if (false == StaticInstances.sPermissionHashMap?.get(Constants.PAGE_MARKETING)) {
+                    getCurrentFragment()?.showStaffFeatureLockedBottomSheet(Constants.NAV_BAR_MARKETING)
+                    return true
+                }
+                if (fragment !is MarketingFragment) launchFragment(MarketingFragment.newInstance(), true)
+            }
+            R.id.menuProducts -> {
+                if (false == StaticInstances.sPermissionHashMap?.get(Constants.PAGE_CATALOG)) {
+                    getCurrentFragment()?.showStaffFeatureLockedBottomSheet(Constants.NAV_BAR_CATALOG)
+                    return true
+                }
                 if (fragment !is ProductFragment) launchFragment(ProductFragment.newInstance(), true)
-            }else {showToast("Access Denied")}
-
-            R.id.menuPremium -> if (true == StaticInstances.sPermissionHashMap?.get("page_premium")) {
+            }
+            R.id.menuPremium -> {
+                if (false == StaticInstances.sPermissionHashMap?.get(Constants.PAGE_PREMIUM)) {
+                    getCurrentFragment()?.showStaffFeatureLockedBottomSheet(Constants.NAV_BAR_PREMIUM)
+                    return true
+                }
                 if (fragment !is PremiumPageInfoFragment) {
-                    AppEventsManager.pushAppEvents(
-                            eventName = AFInAppEventType.EVENT_PREMIUM_PAGE,
-                            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                            data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.CHANNEL to "isBottomNav")
-                    )
+                    AppEventsManager.pushAppEvents(eventName = AFInAppEventType.EVENT_PREMIUM_PAGE, isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true, data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.CHANNEL to "isBottomNav"))
                     launchFragment(PremiumPageInfoFragment.newInstance(), true)
                 }
-            }else {showToast("Access Denied")}
-
-            R.id.menuMarketing -> if (true == StaticInstances.sPermissionHashMap?.get("page_marketing")) {
-                if (fragment !is MarketingFragment) launchFragment(MarketingFragment.newInstance(), true)
-            }else {showToast("Access Denied")}
-
-            R.id.menuSettings -> /*if (true == StaticInstances.sPermissionArray?.contains(5))*/ {
-                if (fragment !is SettingsFragment) launchFragment(SettingsFragment.newInstance(), true)
-            }/*else {showToast("Access Denied")}*/
+            }
         }
         return true
     }
