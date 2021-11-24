@@ -140,66 +140,6 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <LinearLayout
-        android:id="@+id/blurBottomNavBarContainer"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:visibility="gone"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/homeFrame">
-
-        <ImageView
-            android:id="@+id/blurBottomNavBarOrders"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:visibility="invisible"
-            android:alpha="0.75"
-            android:background="@drawable/slight_curve_white_background"
-            android:contentDescription="@string/image_view_content_description" />
-
-        <ImageView
-            android:id="@+id/blurBottomNavBarCatalog"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:alpha="0.75"
-            android:visibility="invisible"
-            android:background="@drawable/slight_curve_white_background"
-            android:contentDescription="@string/image_view_content_description" />
-
-        <ImageView
-            android:id="@+id/blurBottomNavBarPremium"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:alpha="0.75"
-            android:visibility="invisible"
-            android:contentDescription="@string/image_view_content_description" />
-
-        <ImageView
-            android:id="@+id/blurBottomNavBarMarketing"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:alpha="0.75"
-            android:visibility="invisible"
-            android:background="@drawable/slight_curve_white_background"
-            android:contentDescription="@string/image_view_content_description" />
-
-        <ImageView
-            android:id="@+id/blurBottomNavBarSettings"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:alpha="0.75"
-            android:visibility="invisible"
-            android:background="@drawable/slight_curve_white_background"
-            android:contentDescription="@string/image_view_content_description" />
-
-    </LinearLayout>
-
     <ImageView
         android:id="@+id/premiumImageView"
         android:layout_width="@dimen/_35sdp"
@@ -224,5 +164,70 @@
         app:layout_constraintEnd_toEndOf="@id/premiumImageView"
         app:layout_constraintStart_toStartOf="@id/premiumImageView"
         app:layout_constraintTop_toBottomOf="@id/premiumImageView" />
+
+    <LinearLayout
+        android:id="@+id/blurBottomNavBarContainer"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="horizontal"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/premiumImageView">
+
+        <ImageView
+            android:id="@+id/blurBottomNavBarOrders"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:alpha="0.75"
+            android:background="@drawable/slight_curve_white_background"
+            android:contentDescription="@string/image_view_content_description"
+            android:visibility="invisible" />
+
+        <ImageView
+            android:id="@+id/blurBottomNavBarCatalog"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:alpha="0.75"
+            android:background="@drawable/slight_curve_white_background"
+            android:contentDescription="@string/image_view_content_description"
+            android:visibility="invisible" />
+
+        <ImageView
+            android:id="@+id/blurBottomNavBarPremium"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/slight_curve_white_background"
+            android:alpha="0.6"
+            android:contentDescription="@string/image_view_content_description"
+            android:visibility="invisible" />
+
+        <ImageView
+            android:id="@+id/blurBottomNavBarMarketing"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:alpha="0.75"
+            android:background="@drawable/slight_curve_white_background"
+            android:contentDescription="@string/image_view_content_description"
+            android:visibility="invisible" />
+
+        <ImageView
+            android:id="@+id/blurBottomNavBarSettings"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:alpha="0.75"
+            android:background="@drawable/slight_curve_white_background"
+            android:contentDescription="@string/image_view_content_description"
+            android:visibility="invisible" />
+
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
