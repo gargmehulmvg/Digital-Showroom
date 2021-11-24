@@ -3,16 +3,17 @@ package com.digitaldukaan.models.response
 import com.google.gson.annotations.SerializedName
 
 data class ValidateOtpResponse (
-    @SerializedName("status")               var mIsSuccessStatus: Boolean,
-    @SerializedName("new_user")             var mIsNewUser: Boolean,
+    @SerializedName("status")                   var mIsSuccessStatus: Boolean,
+    @SerializedName("new_user")                 var mIsNewUser: Boolean,
     @SerializedName("is_invitation_available")  var mIsInvitationShown: Boolean,
-    @SerializedName("message")              var mMessage: String?,
-    @SerializedName("user_id")              var mUserId: String?,
-    @SerializedName("phone")                var mUserPhoneNumber: String?,
-    @SerializedName("auth_token")           var mUserAuthToken: String?,
-    @SerializedName("store")                var mStore: StoreResponse?,
-    @SerializedName("staff_invitation")     var mStaffInvitation: StaffInvitationResponse?,
-    @SerializedName("auto_verify_time")     var mAutoVerifyTime: Int?
+    @SerializedName("message")                  var mMessage: String?,
+    @SerializedName("user_id")                  var mUserId: String?,
+    @SerializedName("phone")                    var mUserPhoneNumber: String?,
+    @SerializedName("auth_token")               var mUserAuthToken: String?,
+    @SerializedName("store")                    var mStore: StoreResponse?,
+    @SerializedName("staff_invitation")         var mStaffInvitation: StaffInvitationResponse?,
+    @SerializedName("permissions_map"   )       var mPermissionMap: HashMap<String, Boolean>?,
+    @SerializedName("auto_verify_time")         var mAutoVerifyTime: Int?
 )
 
 data class ValidateUserResponse (
