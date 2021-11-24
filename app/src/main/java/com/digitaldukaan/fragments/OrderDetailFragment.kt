@@ -1036,10 +1036,10 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
             showToast(mOrderDetailStaticData?.error_no_bill_available_to_download)
             return
         }
-        if (Constants.BILL_TYPE_PDF.equals(orderDetailMainResponse?.orders?.digitalReceiptExtension, true))
-            DownloadPdfManager.downloadPDFFromUrl(mActivity, receiptStr)
-        else {
-            showToast("Start Downloading...")
+        showToast("Start Downloading...")
+        if (Constants.BILL_TYPE_PDF.equals(orderDetailMainResponse?.orders?.digitalReceiptExtension, true)) {
+            downloadPdfInGallery(mActivity, receiptStr)
+        } else {
             try {
                 Picasso.get().load(receiptStr).into(object : Target {
                     override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
