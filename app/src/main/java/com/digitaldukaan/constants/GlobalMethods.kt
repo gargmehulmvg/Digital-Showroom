@@ -197,7 +197,7 @@ fun downloadPdfInGallery(context: Context?, url: String?) {
     val cookies = CookieManager.getInstance().getCookie(url)
     request.apply {
         setTitle(fileTitle)
-        setDescription("Downloading...")
+        setDescription(context?.getString(R.string.downloading))
         addRequestHeader("cookie", cookies)
         setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
         setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileTitle)

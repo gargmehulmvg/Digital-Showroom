@@ -103,7 +103,6 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     }
 
     protected fun showProgressDialog(context: Context?, message: String? = "Please wait...") {
-        Thread.dumpStack()
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             context?.let {
                 try {
@@ -111,7 +110,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                     mProgressDialog?.apply {
                         val view = LayoutInflater.from(context).inflate(R.layout.progress_dialog, null)
                         message?.let { msg ->
-                            val messageTextView: TextView = view.findViewById(R.id.progressDialogTextView)
+                            val messageTextView : TextView = view.findViewById(R.id.progressDialogTextView)
                             messageTextView.text = msg
                         }
                         setContentView(view)
@@ -156,8 +155,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                     val inflate = LayoutInflater.from(it).inflate(R.layout.progress_dialog, null)
                     mProgressDialog?.setContentView(inflate)
                     message?.run {
-                        val messageTextView: TextView =
-                            inflate.findViewById(R.id.progressDialogTextView)
+                        val messageTextView: TextView = inflate.findViewById(R.id.progressDialogTextView)
                         messageTextView.text = this
                     }
                     mProgressDialog?.setCancelable(true)
@@ -183,10 +181,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                    data = mapOf(
-                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(
-                            Constants.STORE_ID
-                        ),
+                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
                         "Exception Point" to "stopProgress",
                         "Exception Message" to e.message,
                         "Exception Logs" to e.toString()
@@ -224,24 +219,12 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                     Snackbar.make(this, msg, Snackbar.LENGTH_SHORT).apply {
                         if (showDrawable) {
                             val snackBarView = view
-                            val snackBarTextView: TextView =
-                                snackBarView.findViewById(com.google.android.material.R.id.snackbar_text)
-                            snackBarTextView.setCompoundDrawablesWithIntrinsicBounds(
-                                0,
-                                0,
-                                drawableID,
-                                0
-                            )
-                            snackBarTextView.compoundDrawablePadding =
-                                resources.getDimensionPixelOffset(R.dimen._5sdp)
+                            val snackBarTextView: TextView = snackBarView.findViewById(com.google.android.material.R.id.snackbar_text)
+                            snackBarTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, drawableID, 0)
+                            snackBarTextView.compoundDrawablePadding = resources.getDimensionPixelOffset(R.dimen._5sdp)
                         }
                         mActivity?.let {
-                            setBackgroundTint(
-                                ContextCompat.getColor(
-                                    it,
-                                    R.color.snack_bar_background
-                                )
-                            )
+                            setBackgroundTint(ContextCompat.getColor(it, R.color.snack_bar_background))
                             setTextColor(ContextCompat.getColor(it, R.color.white))
                         }
                     }.show()
@@ -2639,9 +2622,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                         val nextTextView: TextView = findViewById(R.id.nextTextView)
                         val moreOptionsTextView: TextView = findViewById(R.id.moreOptionsTextView)
                         val dialogHeadingTextView: TextView = findViewById(R.id.dialogHeadingTextView)
-                        mActivity?.let { context ->
-                            Glide.with(context).load(staffInvitation?.cdn).into(dialogImageView)
-                        }
+                        mActivity?.let { context -> Glide.with(context).load(staffInvitation?.cdn).into(dialogImageView) }
                         dialogHeadingTextView.text = staffInvitation?.heading
                         moreOptionsTextView.setHtmlData(staffInvitation?.textMoreOptions)
                         staffInvitation?.invitationList?.get(0)?.isSelected = true
@@ -2652,9 +2633,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                                     staffInvitation?.invitationList?.forEachIndexed { _, item -> item?.isSelected = false }
                                     staffInvitation?.invitationList?.get(position)?.isSelected = true
                                     selectedId = when (staffInvitation?.invitationList?.get(position)?.id) {
-                                        Constants.STAFF_INVITATION_CODE_EXIT -> {
-                                            staffInvitation.invitationList[position]?.id ?: 0
-                                        }
+                                        Constants.STAFF_INVITATION_CODE_EXIT -> { staffInvitation.invitationList[position]?.id ?: 0 }
                                         Constants.STAFF_INVITATION_CODE_REJECT -> {
                                             staffInvitation.invitationList[position]?.id ?: 2
                                         }
@@ -2673,7 +2652,6 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                             layoutManager = LinearLayoutManager(context)
                             adapter = mMultiUserAdapter
                         }
-                        Log.i("SelectedID", selectedId.toString())
                         nextTextView.apply {
                             text = staffInvitation?.cta?.text
                             setOnClickListener {
