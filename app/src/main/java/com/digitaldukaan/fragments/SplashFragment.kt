@@ -112,6 +112,7 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
                     val response = RetrofitApi().getServerCallObject()?.getStaffMembersDetails(getStringDataFromSharedPref(Constants.STORE_ID))
                     response?.let { it ->
                         val staffMemberDetailsResponse = Gson().fromJson<StaffMemberDetailsResponse>(it.body()?.mCommonDataStr, StaffMemberDetailsResponse::class.java)
+                        Log.d(TAG, "StaticInstances.sPermissionHashMap: ${StaticInstances.sPermissionHashMap?.toString()}")
                         StaticInstances.sPermissionHashMap = staffMemberDetailsResponse?.permissionsMap
                         stopProgress()
                         staffMemberDetailsResponse?.permissionsMap?.let { map -> launchScreenFromPermissionMap(map) }

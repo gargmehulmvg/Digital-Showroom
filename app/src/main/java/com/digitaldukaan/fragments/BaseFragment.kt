@@ -2739,23 +2739,18 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         when {
             true == permissionMap[Constants.PAGE_ORDER] -> {
                 launchFragment(OrderFragment.newInstance(), true)
-                return
             }
             true == permissionMap[Constants.PAGE_CATALOG] -> {
                 launchFragment(ProductFragment.newInstance(), true)
-                return
             }
             true == permissionMap[Constants.PAGE_PREMIUM] -> {
                 launchFragment(PremiumPageInfoFragment.newInstance(), true)
-                return
             }
             true == permissionMap[Constants.PAGE_MARKETING] -> {
                 launchFragment(MarketingFragment.newInstance(), true)
-                return
             }
             true == permissionMap[Constants.PAGE_SETTINGS] -> {
                 launchFragment(SettingsFragment.newInstance(), true)
-                return
             }
         }
         mActivity?.checkBottomNavBarFeatureVisibility()

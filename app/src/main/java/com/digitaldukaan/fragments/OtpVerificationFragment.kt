@@ -5,8 +5,6 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.CountDownTimer
-import android.os.Handler
-import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -269,6 +267,8 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
                 showShortSnackBar(mValidateOtpResponse?.mMessage, true, R.drawable.ic_close_red)
             } else {
                 saveUserDetailsInPref(mValidateOtpResponse)
+                StaticInstances.sPermissionHashMap = null
+                StaticInstances.sPermissionHashMap = mValidateOtpResponse?.mPermissionMap
                 mOtpVerificationService?.checkStaffInvite()
                 mIsNewUser = mValidateOtpResponse?.mIsNewUser ?: false
                 stopProgress()
@@ -293,12 +293,6 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
                         AFInAppEventParameterName.PHONE to mMobileNumberStr,
                         AFInAppEventParameterName.IS_CONSENT to if (mIsConsentTakenFromUser) "1" else "0")
                 )
-                Handler(Looper.getMainLooper()).postDelayed({
-                    Log.d("permissionHashMapOtp", StaticInstances.sPermissionHashMap.toString())
-                    Log.d("validateOtpResponsePermissionHashMapOtp", mValidateOtpResponse?.mStore.toString())
-                    Log.d("mIsNewUserPermissionHashMapOtp", mIsNewUser.toString())
-                    if (null == mValidateOtpResponse?.mStore && mIsNewUser) launchFragment(DukaanNameFragment.newInstance(mCheckStaffInviteResponse?.mIsInvitationAvailable ?: false, mCheckStaffInviteResponse?.mStaffInvitation, mValidateOtpResponse?.mUserId ?: ""), true) else StaticInstances.sPermissionHashMap?.let { it1 -> launchScreenFromPermissionMap(it1) }
-                }, Constants.OTP_SUCCESS_TIMER)
                 verifiedOtpGroup?.visibility = View.GONE
                 verifiedTextViewContainer?.visibility = View.VISIBLE
                 verifiedTextView?.text = mOtpStaticResponseData?.text_verified
@@ -315,7 +309,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
                     showStaffInvitationDialog(mCheckStaffInviteResponse?.mStaffInvitation)
                 } else if (null == mValidateOtpResponse?.mStore && mIsNewUser) {
                     launchFragment(DukaanNameFragment.newInstance(mCheckStaffInviteResponse?.mIsInvitationAvailable ?: false, mCheckStaffInviteResponse?.mStaffInvitation, mValidateOtpResponse?.mUserId ?: ""), true)
-                } else launchFragment(OrderFragment.newInstance(), true)
+                } else StaticInstances.sPermissionHashMap?.let { it1 -> launchScreenFromPermissionMap(it1) }
             }
         }
     }
@@ -325,7 +319,6 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
         PrefsManager.storeStringDataInSharedPref(Constants.USER_MOBILE_NUMBER, validateOtpResponse?.mUserPhoneNumber)
         PrefsManager.storeStringDataInSharedPref(Constants.USER_ID, validateOtpResponse?.mUserId)
         validateOtpResponse?.mStore?.let { store ->
-            Log.i("storeIdDialog", store.storeId.toString())
             PrefsManager.storeStringDataInSharedPref(Constants.STORE_ID, store.storeId.toString())
             PrefsManager.storeStringDataInSharedPref(Constants.STORE_NAME, store.storeInfo.name)
         }

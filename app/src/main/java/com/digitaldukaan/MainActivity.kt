@@ -291,7 +291,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
                     getCurrentFragment()?.showStaffFeatureLockedBottomSheet(Constants.NAV_BAR_ORDERS)
                     return true
                 }
-                if (fragment !is HomeFragment) launchFragment(HomeFragment.newInstance(), true)
+                if (fragment !is OrderFragment) launchFragment(OrderFragment.newInstance(), true)
             }
             R.id.menuSettings -> {
                 if (false == StaticInstances.sPermissionHashMap?.get(Constants.PAGE_SETTINGS)) {
