@@ -143,6 +143,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
                 if (Constants.PAGE_PREMIUM == key && !value) {
                     blurBottomNavBarContainer?.visibility = View.VISIBLE
                     blurBottomNavBarPremium?.visibility = View.VISIBLE
+                    premiumImageView?.alpha = 0.25f
                 }
                 if (Constants.PAGE_MARKETING == key && !value) {
                     blurBottomNavBarContainer?.visibility = View.VISIBLE
