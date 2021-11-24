@@ -94,11 +94,18 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         swipeRefreshLayout?.setOnRefreshListener(this)
         mStoreLogo = ""
         fetchUserProfile()
-        mActivity?.let { context -> imageView5?.setImageDrawable(ContextCompat.getDrawable(context, if (false == StaticInstances.sPermissionHashMap?.get(Constants.PAGE_STORE_CONTROLS)) R.drawable.ic_subscription_locked_black_small else R.drawable.ic_half_arrow_forward)) }
-        mActivity?.let { context -> shapeableImageView?.setImageDrawable(ContextCompat.getDrawable(context, if (false == StaticInstances.sPermissionHashMap?.get(Constants.PAGE_STORE_PROFILE)) R.drawable.ic_subscription_locked_black_small else R.drawable.round_black_background)) }
-        editProfileTextView?.apply {
-            setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, if (false == StaticInstances.sPermissionHashMap?.get(Constants.PAGE_STORE_PROFILE)) R.drawable.ic_subscription_locked_black_small else R.drawable.ic_round_green_arrow_small, 0)
-            mActivity?.let { context -> setTextColor(ContextCompat.getColor(context, if (true == StaticInstances.sPermissionHashMap?.get(Constants.PAGE_STORE_PROFILE)) R.color.open_green else R.color.black)) }
+        setupLockedPermissionUI()
+    }
+
+    private fun setupLockedPermissionUI() {
+        mActivity?.let { context ->
+            imageView5?.setImageDrawable(ContextCompat.getDrawable(context, if (false == StaticInstances.sPermissionHashMap?.get(Constants.STORE_CONTROLS)) R.drawable.ic_subscription_locked_black_small else R.drawable.ic_half_arrow_forward))
+            shapeableImageView?.setImageDrawable(ContextCompat.getDrawable(context, if (false == StaticInstances.sPermissionHashMap?.get(Constants.STORE_PROFILE)) R.drawable.ic_subscription_locked_black_small else R.drawable.round_black_background))
+            editProfileTextView?.apply {
+                setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, if (false == StaticInstances.sPermissionHashMap?.get(Constants.STORE_PROFILE)) R.drawable.ic_subscription_locked_black_small else R.drawable.ic_round_green_arrow_small, 0)
+                setTextColor(ContextCompat.getColor(context, if (true == StaticInstances.sPermissionHashMap?.get(Constants.STORE_PROFILE)) R.color.open_green else R.color.black))
+            }
+            lockedProfilePhotoGroup?.visibility = if (true == StaticInstances.sPermissionHashMap?.get(Constants.STORE_LOGO)) View.GONE else View.VISIBLE
         }
     }
 
@@ -109,7 +116,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         StaticInstances.sPaymentMethodStr = mAccountPageInfoResponse?.mOnlinePaymentType
         when (view?.id) {
             storeControlView?.id -> {
-                if (false == StaticInstances.sPermissionHashMap?.get(Constants.PAGE_STORE_CONTROLS)) {
+                if (false == StaticInstances.sPermissionHashMap?.get(Constants.STORE_CONTROLS)) {
                     showStaffFeatureLockedBottomSheet(Constants.NAV_BAR_SETTINGS)
                     return
                 }
@@ -122,6 +129,10 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             completeProfileTextView?.id -> launchProfilePreviewFragment()
             shapeableImageView?.id -> launchProfilePreviewFragment()
             linearLayout?.id -> {
+                if (false == StaticInstances.sPermissionHashMap?.get(Constants.STORE_LOGO)) {
+                    showStaffFeatureLockedBottomSheet(Constants.NAV_BAR_SETTINGS)
+                    return
+                }
                 var storeLogo = mAccountInfoResponse?.mStoreInfo?.storeInfo?.logoImage
                 if (isNotEmpty(mStoreLogo)) storeLogo = mStoreLogo
                 if (isNotEmpty(storeLogo)) launchFragment(ProfilePhotoFragment.newInstance(storeLogo), true, storePhotoImageView) else askCameraPermission()
@@ -131,7 +142,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
     }
 
     private fun launchProfilePreviewFragment() {
-        if (false == StaticInstances.sPermissionHashMap?.get(Constants.PAGE_STORE_PROFILE)) {
+        if (false == StaticInstances.sPermissionHashMap?.get(Constants.STORE_PROFILE)) {
             showStaffFeatureLockedBottomSheet(Constants.NAV_BAR_SETTINGS)
             return
         }

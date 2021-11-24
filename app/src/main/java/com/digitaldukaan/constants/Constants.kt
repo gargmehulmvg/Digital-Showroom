@@ -223,7 +223,8 @@ class Constants {
         const val PAGE_PREMIUM                                  = "page_premium"
         const val PAGE_MARKETING                                = "page_marketing"
         const val PAGE_SETTINGS                                 = "page_settings"
-        const val PAGE_STORE_CONTROLS                           = "store_controls"
-        const val PAGE_STORE_PROFILE                            = "store_profile"
+        const val STORE_LOGO                                    = "store_logo"
+        const val STORE_CONTROLS                                = "store_controls"
+        const val STORE_PROFILE                                 = "store_profile"
     }
 }
