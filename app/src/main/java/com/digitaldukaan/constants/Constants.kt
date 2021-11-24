@@ -228,5 +228,9 @@ class Constants {
         const val STORE_PROFILE                                 = "store_profile"
         //BILL_TYPE
         const val BILL_TYPE_PDF                                 = "pdf"
+        //STAFF_INVITATION_CODE
+        const val STAFF_INVITATION_CODE_EXIT                    = 0
+        const val STAFF_INVITATION_CODE_ACCEPT                  = 1
+        const val STAFF_INVITATION_CODE_REJECT                  = 2
     }
 }
