@@ -17,7 +17,6 @@ object StaticInstances {
     var sAppSessionId: String? = ""
     var sCleverTapId: String? = ""
     var sFireBaseMessagingToken: String? = ""
-    var sStoreId: Int = 0
     var sIsShareStoreLocked: Boolean = false
     var sAppStoreServicesResponse: StoreServicesResponse? = null
     var sPaymentMethodStr: String? = null
@@ -26,7 +25,7 @@ object StaticInstances {
     var sMyPaymentPageInfoResponse: MyPaymentsPageInfoResponse? = null
     var sCustomDomainBottomSheetResponse: CustomDomainBottomSheetResponse? = null
     var sSuggestedDomainsList: ArrayList<PrimaryDomainItemResponse>? = null
-    var sIsInvitationShown: Boolean ?= false
+    var sIsInvitationShown: Boolean? = false
     var sStaffInvitation: StaffInvitationResponse? = null
     var sPermissionHashMap: HashMap<String, Boolean>? = null
 }

@@ -11,6 +11,7 @@ import com.digitaldukaan.R
 import com.digitaldukaan.adapters.AppSettingsAdapter
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
+import com.digitaldukaan.constants.StaticInstances
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.interfaces.IAppSettingsItemClicked
 import com.digitaldukaan.models.response.AccountStaticTextResponse
@@ -51,8 +52,15 @@ class AppSettingsFragment : BaseFragment(), IAppSettingsItemClicked {
         }
         hideBottomNavigationView(true)
         adapter.setAppSettingsList(mAppSettingsList)
-        appVersionTextView?.text = "${mAppSettingsResponseStaticData?.mAppVersionText} v.${BuildConfig.VERSION_NAME}"
-        storeIdTextView?.text = "${mAppSettingsResponseStaticData?.mStoreId} ${getStringDataFromSharedPref(Constants.STORE_ID)}"
+        var versionStr = "${mAppSettingsResponseStaticData?.mAppVersionText} v.${BuildConfig.VERSION_NAME}"
+        appVersionTextView?.text = versionStr
+        versionStr = "${mAppSettingsResponseStaticData?.mStoreId} ${getStringDataFromSharedPref(Constants.STORE_ID)}"
+        storeIdTextView?.text = versionStr
+    }
+
+    private fun initializeStaticInstances() {
+        StaticInstances.sSuggestedDomainsList = null
+        StaticInstances.sPermissionHashMap = null
     }
 
     private fun showLogoutDialog() {
@@ -65,6 +73,7 @@ class AppSettingsFragment : BaseFragment(), IAppSettingsItemClicked {
                     setCancelable(false)
                     setPositiveButton(mAppSettingsResponseStaticData?.text_yes) { dialog, _ ->
                         dialog.dismiss()
+                        initializeStaticInstances()
                         logoutFromApplication(isAppLogout = true)
                     }
                     setNegativeButton(getString(R.string.text_no)) { dialog, _ -> dialog.dismiss() }
@@ -73,8 +82,7 @@ class AppSettingsFragment : BaseFragment(), IAppSettingsItemClicked {
         }
     }
 
-    override fun onAppSettingItemClicked(subPagesResponse: SubPagesResponse) {
+    override fun onAppSettingItemClicked(subPagesResponse: SubPagesResponse) =
         if (Constants.ACTION_LOGOUT == subPagesResponse.mAction) showLogoutDialog() else openUrlInBrowser(subPagesResponse.mPage)
-    }
 
 }
