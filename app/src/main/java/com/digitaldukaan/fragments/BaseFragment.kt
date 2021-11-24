@@ -2612,10 +2612,6 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         }
     }
 
-    override fun onProviderEnabled(provider: String) = Unit
-
-    override fun onProviderDisabled(provider: String) = Unit
-
     fun showStaffInvitationDialog(staffInvitation: StaffInvitationResponse?) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (true == sStaffInvitationDialog?.isShowing) return@runTaskOnCoroutineMain
