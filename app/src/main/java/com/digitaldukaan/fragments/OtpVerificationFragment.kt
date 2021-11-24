@@ -305,9 +305,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
             stopProgress()
             if (commonResponse.mIsSuccessStatus) {
                 mCheckStaffInviteResponse = Gson().fromJson<StaffMemberDetailsResponse>(commonResponse.mCommonDataStr, StaffMemberDetailsResponse::class.java)
-                if (true == mCheckStaffInviteResponse?.mIsInvitationAvailable) {
-                    showStaffInvitationDialog(mCheckStaffInviteResponse?.mStaffInvitation)
-                } else if (null == mValidateOtpResponse?.mStore && mIsNewUser) {
+                if (null == mValidateOtpResponse?.mStore && mIsNewUser) {
                     launchFragment(DukaanNameFragment.newInstance(mCheckStaffInviteResponse?.mIsInvitationAvailable ?: false, mCheckStaffInviteResponse?.mStaffInvitation, mValidateOtpResponse?.mUserId ?: ""), true)
                 } else StaticInstances.sPermissionHashMap?.let { it1 -> launchScreenFromPermissionMap(it1) }
             }
