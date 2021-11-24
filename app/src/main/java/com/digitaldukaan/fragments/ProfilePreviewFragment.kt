@@ -162,7 +162,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
     override fun onProfilePreviewResponse(commonApiResponse: CommonApiResponse) {
         val response = Gson().fromJson<ProfileInfoResponse>(commonApiResponse.mCommonDataStr, ProfileInfoResponse::class.java)
         mProfilePreviewResponse = response
-        mProfilePreviewStaticData = response?.mProfileStaticText!!
+        mProfilePreviewStaticData = response?.mProfileStaticText
         StaticInstances.sStepsCompletedList = response.mStepsList
         response.mStoreItemResponse?.bankDetails?.run { StaticInstances.sBankDetails = this }
         CoroutineScopeUtils().runTaskOnCoroutineMain {
@@ -225,12 +225,12 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                     storePhotoImageView?.visibility = View.GONE
                 }
             }
-            mProfilePreviewResponse?.mSettingsKeysList?.run {
+            mProfilePreviewResponse?.mSettingsKeysList?.let { list->
                 profilePreviewRecyclerView?.apply {
                     layoutManager = LinearLayoutManager(mActivity)
                     setHasFixedSize(true)
-                    mActivity?.let {
-                        adapter = ProfilePreviewAdapter(it, this@run, this@ProfilePreviewFragment, mProfilePreviewResponse?.mStoreItemResponse?.storeBusiness)
+                    mActivity?.let { context ->
+                        adapter = ProfilePreviewAdapter(context, list, this@ProfilePreviewFragment, mProfilePreviewResponse?.mStoreItemResponse?.storeBusiness, mProfilePreviewStaticData)
                     }
                 }
             }
@@ -331,6 +331,16 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         }
     }
 
+    override fun onSetGstResponse(apiResponse: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            if (apiResponse.mIsSuccessStatus) {
+                showShortSnackBar(apiResponse.mMessage, true, R.drawable.ic_check_circle)
+                onRefresh()
+            } else showShortSnackBar(apiResponse.mMessage, true, R.drawable.ic_close_red)
+        }
+    }
+
     override fun onProfilePreviewItemClicked(profilePreviewResponse: ProfilePreviewSettingsKeyResponse, position: Int) {
         Log.d(TAG, "onProfilePreviewItemClicked: $profilePreviewResponse")
         mProfileInfoSettingKeyResponse = profilePreviewResponse
@@ -366,6 +376,8 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                 showProgressDialog(mActivity)
                 mService.getStoreUserPageInfo()
             }
+            Constants.ACTION_GST_ADD -> showGstAdditionBottomSheet()
+            Constants.ACTION_GST_REJECTED -> showGstAdditionBottomSheet()
         }
     }
 
@@ -650,13 +662,74 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
             mStoreNameEditBottomSheet?.show()
         }
     }
+    private fun showGstAdditionBottomSheet() {
+        mActivity?.let {
+            val gstAdditionBottomSheet = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
+            val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_gst_addition, it.findViewById(R.id.bottomSheetContainer))
+            gstAdditionBottomSheet.apply {
+                setContentView(view)
+                setBottomSheetCommonProperty()
+            }
+            val bottomSheetEditStoreHeading:TextView = view.findViewById(R.id.bottomSheetEditStoreHeading)
+            val bottomSheetEditStoreSaveTextView:TextView = view.findViewById(R.id.bottomSheetEditStoreSaveTextView)
+            val bottomSheetEditStoreLinkEditText: EditText = view.findViewById(R.id.bottomSheetEditStoreLinkEditText)
+            val bottomSheetEditStoreCloseImageView:View = view.findViewById(R.id.bottomSheetEditStoreCloseImageView)
+            bottomSheetEditStoreCloseImageView.setOnClickListener { gstAdditionBottomSheet.dismiss() }
+            bottomSheetEditStoreSaveTextView.apply {
+                text = mProfilePreviewStaticData?.bottom_sheet_gst_cta_text
+                setOnClickListener {
+                    val value = bottomSheetEditStoreLinkEditText.text.trim().toString()
+                    when {
+                        isEmpty(value) -> {
+                            bottomSheetEditStoreLinkEditText.apply {
+                                error = mProfilePreviewStaticData?.error_mandatory_field
+                                requestFocus()
+                            }
+                            return@setOnClickListener
+                        }
+                        value.length < (mActivity?.resources?.getInteger(R.integer.gst_count) ?: 15) -> {
+                            bottomSheetEditStoreLinkEditText.apply {
+                                error = mProfilePreviewStaticData?.bottom_sheet_gst_error_invalid_input
+                                requestFocus()
+                            }
+                            return@setOnClickListener
+                        }
+                        !isInternetConnectionAvailable(mActivity) -> { showNoInternetConnectionDialog() }
+                        else -> {
+                            gstAdditionBottomSheet.dismiss()
+                            showProgressDialog(mActivity)
+                            mService.setGST(value)
+                        }
+                    }
+                }
+            }
+            bottomSheetEditStoreHeading.text = mProfilePreviewStaticData?.bottom_sheet_gst_heading
+            bottomSheetEditStoreLinkEditText.apply {
+                hint = mProfilePreviewStaticData?.bottom_sheet_gst_hint
+                addTextChangedListener(object : TextWatcher {
+                    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                        Log.d(TAG, "beforeTextChanged: ")
+                    }
 
-    override fun onRefresh() {
-        fetchProfilePreviewCall()
+                    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                        Log.d(TAG, "onTextChanged: ")
+                    }
+
+                    override fun afterTextChanged(s: Editable?) {
+                        val str = s?.toString()?.trim()
+                        bottomSheetEditStoreSaveTextView.isEnabled = isNotEmpty(str)
+                    }
+
+                })
+            }
+            gstAdditionBottomSheet.show()
+        }
     }
 
+    override fun onRefresh() = fetchProfilePreviewCall()
+
     override fun onImageSelectionResultFile(file: File?, mode: String) {
-        if (mode == Constants.MODE_CROP) {
+        if (Constants.MODE_CROP == mode) {
             val fragment = CropPhotoFragment.newInstance(file?.toUri())
             fragment.setTargetFragment(this, Constants.CROP_IMAGE_REQUEST_CODE)
             launchFragment(fragment, true)
@@ -678,7 +751,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
             if (response.mIsSuccessStatus) {
                 val photoResponse = Gson().fromJson<StoreResponse>(response.mCommonDataStr, StoreResponse::class.java)
                 mStoreLogo = photoResponse.storeInfo.logoImage
-                if (mStoreLogo?.isNotEmpty() == true) {
+                if (isNotEmpty(mStoreLogo)) {
                     storePhotoImageView?.visibility = View.VISIBLE
                     hiddenImageView?.visibility = View.INVISIBLE
                     hiddenTextView?.visibility = View.INVISIBLE
@@ -739,8 +812,6 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                 }
             }
             Constants.EMAIL_REQUEST_CODE -> {
-                // The Task returned from this call is always completed, no need to attach
-                // a listener.
                 val task = GoogleSignIn.getSignedInAccountFromIntent(data)
                 handleSignInResult(task)
             }

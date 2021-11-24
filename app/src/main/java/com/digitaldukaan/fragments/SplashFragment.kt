@@ -1,10 +1,7 @@
 package com.digitaldukaan.fragments
 
 import android.Manifest
-import android.app.Dialog
 import android.content.pm.PackageManager
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -13,13 +10,16 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.models.response.*
 import com.digitaldukaan.network.RetrofitApi
+import com.digitaldukaan.models.response.AppVersionResponse
+import com.digitaldukaan.models.response.CommonApiResponse
+import com.digitaldukaan.models.response.HelpScreenItemResponse
+import com.digitaldukaan.models.response.StaticTextResponse
 import com.digitaldukaan.services.SplashService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.ISplashServiceInterface
@@ -30,11 +30,9 @@ import com.google.gson.reflect.TypeToken
 class SplashFragment : BaseFragment(), ISplashServiceInterface {
 
     private var mIntentUri: Uri? = null
+    private val mSplashService: SplashService = SplashService()
 
     companion object {
-        private val splashService: SplashService = SplashService()
-        private var appUpdateDialog: Dialog? = null
-
         fun newInstance(intentUri: Uri?): SplashFragment {
             val fragment = SplashFragment()
             fragment.mIntentUri = intentUri
@@ -56,10 +54,10 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
         Handler(Looper.getMainLooper()).postDelayed({
             if (!isInternetConnectionAvailable(mActivity)) {
                 showNoInternetConnectionDialog()
-            } else splashService.getStaticData("1")
+            } else mSplashService.getStaticData("1")
         }, Constants.TIMER_INTERVAL)
         fetchContactsIfPermissionGranted()
-        splashService.setSplashServiceInterface(this)
+        mSplashService.setSplashServiceInterface(this)
         checkStaffInvite()
     }
 
@@ -81,7 +79,7 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
     override fun onStaticDataResponse(staticDataResponse: CommonApiResponse) {
         val staticData = Gson().fromJson<StaticTextResponse>(staticDataResponse.mCommonDataStr, StaticTextResponse::class.java)
         StaticInstances.sStaticData = staticData
-        splashService.getAppVersion()
+        mSplashService.getAppVersion()
     }
 
     override fun onHelpScreenResponse(commonResponse: CommonApiResponse) {
@@ -98,7 +96,7 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (commonResponse.mIsSuccessStatus) {
                 val playStoreLinkStr = Gson().fromJson<AppVersionResponse>(commonResponse.mCommonDataStr, AppVersionResponse::class.java)
-                if (playStoreLinkStr.mIsActive) splashService.getHelpScreens() else showVersionUpdateDialog()
+                if (playStoreLinkStr.mIsActive) mSplashService.getHelpScreens() else showVersionUpdateDialog()
             } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
         }
     }
@@ -127,28 +125,6 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
 
     override fun onNoInternetButtonClick(isNegativeButtonClick: Boolean) {
         mActivity?.finish()
-    }
-
-    private fun showVersionUpdateDialog() {
-        CoroutineScopeUtils().runTaskOnCoroutineMain {
-            if (true == appUpdateDialog?.isShowing) return@runTaskOnCoroutineMain
-            mActivity?.let {
-                appUpdateDialog = Dialog(it)
-                val view = LayoutInflater.from(mActivity).inflate(R.layout.dialog_app_update, null)
-                appUpdateDialog?.apply {
-                    setContentView(view)
-                    setCancelable(false)
-                    window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-                    view?.run {
-                        val updateTextView: TextView = findViewById(R.id.updateTextView)
-                        updateTextView.setOnClickListener {
-                            (this@apply).dismiss()
-                            openPlayStore()
-                        }
-                    }
-                }?.show()
-            }
-        }
     }
 
     private fun switchToFragmentByDeepLink() {

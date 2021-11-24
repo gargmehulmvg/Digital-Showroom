@@ -24,6 +24,7 @@ class Constants {
         //ERROR_CODE
         const val ERROR_CODE_UN_AUTHORIZED_ACCESS               = 401
         const val ERROR_CODE_FORBIDDEN_ACCESS                   = 403
+        const val ERROR_CODE_FORCE_UPDATE                       = 410
         const val ERROR_MESSAGE_UN_AUTHORIZED_ACCESS            = "unauthorized access"
         const val SHARED_PREF_NAME                              = "DigitalDukaanPrefs"
         const val USER_AUTH_TOKEN                               = "USER_AUTH_TOKEN"
@@ -88,6 +89,10 @@ class Constants {
         const val ACTION_ADD_PRODUCT                            = "add-products"
         const val ACTION_MY_PROFILE                             = "my-profile"
         const val ACTION_STORE_CONTROLS                         = "store-controls"
+        const val ACTION_GST_ADD                                = "gst-add"
+        const val ACTION_GST_PENDING                            = "gst-pending"
+        const val ACTION_GST_VERIFIED                           = "gst-verified"
+        const val ACTION_GST_REJECTED                           = "gst-rejected"
         //PAGES
         const val PAGE_REFER                                    = "refer"
         const val PAGE_HELP                                     = "help"

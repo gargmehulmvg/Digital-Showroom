@@ -47,6 +47,7 @@ import com.digitaldukaan.MyFcmMessageListenerService
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.*
 import com.digitaldukaan.constants.*
+import com.digitaldukaan.exceptions.DeprecateAppVersionException
 import com.digitaldukaan.exceptions.UnAuthorizedAccessException
 import com.digitaldukaan.interfaces.IAdapterItemClickListener
 import com.digitaldukaan.interfaces.IContactItemClicked
@@ -83,12 +84,17 @@ import kotlin.collections.ArrayList
 open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener {
 
     protected var mContentView: View? = null
-    protected var TAG: String = ""
     protected var mActivity: MainActivity? = null
+    protected var TAG: String = ""
 
     private var mProgressDialog: Dialog? = null
     private var mImageAdapter = ImagesSearchAdapter()
     private var mImagePickBottomSheet: BottomSheetDialog? = null
+    private var mAppUpdateDialog: Dialog? = null
+    private var mGoogleApiClient: FusedLocationProviderClient? = null
+    private var mLastLocation: Location? = null
+    private var mCurrentLatitude = 0.0
+    private var mCurrentLongitude = 0.0
     private var mMultiUserAdapter: StaffInvitationAdapter? = null
 
     companion object {
@@ -207,6 +213,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
             is IOException -> Log.e(TAG, "$TAG exceptionHandlingForAPIResponse: ${e.message}", e)
             is UnknownHostException -> showToast(e.message)
             is UnAuthorizedAccessException -> logoutFromApplication()
+            is DeprecateAppVersionException -> showVersionUpdateDialog()
             else -> showToast(mActivity?.getString(R.string.something_went_wrong))
         }
     }
@@ -224,16 +231,9 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                     Snackbar.make(this, msg, Snackbar.LENGTH_SHORT).apply {
                         if (showDrawable) {
                             val snackBarView = view
-                            val snackBarTextView: TextView =
-                                snackBarView.findViewById(com.google.android.material.R.id.snackbar_text)
-                            snackBarTextView.setCompoundDrawablesWithIntrinsicBounds(
-                                0,
-                                0,
-                                drawableID,
-                                0
-                            )
-                            snackBarTextView.compoundDrawablePadding =
-                                resources.getDimensionPixelOffset(R.dimen._5sdp)
+                            val snackBarTextView: TextView = snackBarView.findViewById(com.google.android.material.R.id.snackbar_text)
+                            snackBarTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, drawableID, 0)
+                            snackBarTextView.compoundDrawablePadding = resources.getDimensionPixelOffset(R.dimen._5sdp)
                         }
                         mActivity?.let {
                             setBackgroundTint(
@@ -2240,11 +2240,6 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         }
     }
 
-    private var mGoogleApiClient: FusedLocationProviderClient? = null
-    private var lastLocation: Location? = null
-    private var mCurrentLatitude = 0.0
-    private var mCurrentLongitude = 0.0
-
     private fun checkLocationPermission(): Boolean {
         mActivity?.let {
             if (ContextCompat.checkSelfPermission(
@@ -2276,20 +2271,20 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
             val locationManager =
                 mActivity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 1f, this)
+            mActivity?.let { context -> mGoogleApiClient = LocationServices.getFusedLocationProviderClient(context) }
             mActivity?.let { context ->
-                mGoogleApiClient = LocationServices.getFusedLocationProviderClient(context)
-            }
-            mGoogleApiClient?.lastLocation?.addOnCompleteListener(mActivity) { task ->
-                if (task.isSuccessful && task.result != null) {
-                    lastLocation = task.result
-                    mCurrentLatitude = lastLocation?.latitude ?: 0.0
-                    mCurrentLongitude = lastLocation?.longitude ?: 0.0
-                    onLocationChanged(mCurrentLatitude, mCurrentLongitude)
-                } else {
-                    if (!isLocationEnabledInSettings(mActivity)) openLocationSettings(true)
-                    mCurrentLatitude = 0.0
-                    mCurrentLongitude = 0.0
-                    onLocationChanged(mCurrentLatitude, mCurrentLongitude)
+                mGoogleApiClient?.lastLocation?.addOnCompleteListener(context) { task ->
+                    if (task.isSuccessful && null != task.result) {
+                        mLastLocation = task.result
+                        mCurrentLatitude = mLastLocation?.latitude ?: 0.0
+                        mCurrentLongitude = mLastLocation?.longitude ?: 0.0
+                        onLocationChanged(mCurrentLatitude, mCurrentLongitude)
+                    } else {
+                        if (!isLocationEnabledInSettings(mActivity)) openLocationSettings(true)
+                        mCurrentLatitude = 0.0
+                        mCurrentLongitude =  0.0
+                        onLocationChanged(mCurrentLatitude, mCurrentLongitude)
+                    }
                 }
             }
         } catch (e: Exception) {
@@ -2785,4 +2780,31 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
             }.show()
         }
     }
+
+    open fun showVersionUpdateDialog() {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            if (true == mAppUpdateDialog?.isShowing) return@runTaskOnCoroutineMain
+            mActivity?.let {
+                mAppUpdateDialog = Dialog(it)
+                val view = LayoutInflater.from(mActivity).inflate(R.layout.dialog_app_update, null)
+                mAppUpdateDialog?.apply {
+                    setContentView(view)
+                    setCancelable(false)
+                    window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                    view?.run {
+                        val updateTextView: TextView = findViewById(R.id.updateTextView)
+                        updateTextView.setOnClickListener {
+                            (this@apply).dismiss()
+                            openPlayStore()
+                        }
+                    }
+                }?.show()
+            }
+        }
+    }
+
+    override fun onProviderEnabled(provider: String) = Unit
+
+    override fun onProviderDisabled(provider: String) = Unit
+
 }

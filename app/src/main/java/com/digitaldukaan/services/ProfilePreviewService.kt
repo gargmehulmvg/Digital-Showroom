@@ -73,4 +73,10 @@ class ProfilePreviewService {
         }
     }
 
+    fun setGST(text: String) {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.setGSTServerCall(text, mServiceInterface)
+        }
+    }
+
 }
