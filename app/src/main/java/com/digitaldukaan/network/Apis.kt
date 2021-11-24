@@ -60,6 +60,9 @@ interface Apis {
     @POST("api/dotk/vm1/settings/setGST")
     suspend fun setGST(@Body request: SetGstRequest) : Response<CommonApiResponse>
 
+    @GET("api/dotk/vm1/settings/getStoreLocation")
+    suspend fun getStoreLocation() : Response<CommonApiResponse>
+
     @POST("api/dotk/vm1/settings/getTransactionsList")
     suspend fun getTransactionsList(@Body request: TransactionRequest) : Response<CommonApiResponse>
 

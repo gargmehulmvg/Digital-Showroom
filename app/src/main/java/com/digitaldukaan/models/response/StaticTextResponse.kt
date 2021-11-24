@@ -33,6 +33,7 @@ data class CatalogStaticData(
 )
 
 data class MapLocationStaticResponseData(
+    @SerializedName("heading_page")                     var headingPage: String?,
     @SerializedName("address_error")                    var addressError: String?,
     @SerializedName("city_text_hint")                   var cityTextHint: String?,
     @SerializedName("complete_address_text_hint")       var completeAddressHint: String?,

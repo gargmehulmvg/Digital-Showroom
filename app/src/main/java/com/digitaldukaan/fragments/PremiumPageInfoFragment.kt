@@ -142,6 +142,14 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
             jsonData.optBoolean("refreshToken") -> {
                 //mService.getPremiumPageInfo()
             }
+            jsonData.optBoolean("addAddress") -> {
+                launchFragment(StoreMapLocationFragment.newInstance(0, true), true)
+            }
+            jsonData.optBoolean("openAppByPackage") -> {
+                val packageName = jsonData.optString("data")
+                val intent = mActivity?.packageManager?.getLaunchIntentForPackage(packageName)
+                startActivity(intent)
+            }
             jsonData.optBoolean("stopLoader") -> {
                 stopProgress()
             }

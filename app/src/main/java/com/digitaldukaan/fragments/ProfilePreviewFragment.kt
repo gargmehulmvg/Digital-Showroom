@@ -346,7 +346,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         mProfileInfoSettingKeyResponse = profilePreviewResponse
         when (profilePreviewResponse.mAction) {
             Constants.ACTION_STORE_DESCRIPTION -> launchFragment(StoreDescriptionFragment.newInstance(profilePreviewResponse, position, true, mProfilePreviewResponse), true)
-            Constants.ACTION_STORE_LOCATION -> launchFragment(StoreMapLocationFragment.newInstance(profilePreviewResponse, position, true, mProfilePreviewResponse), true)
+            Constants.ACTION_STORE_LOCATION -> launchFragment(StoreMapLocationFragment.newInstance(position, true), true)
             Constants.ACTION_DOMAIN_SUCCESS -> {
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_DOMAIN_DETAIL,
