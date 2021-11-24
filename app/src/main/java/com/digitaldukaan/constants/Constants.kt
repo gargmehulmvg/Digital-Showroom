@@ -226,5 +226,7 @@ class Constants {
         const val STORE_LOGO                                    = "store_logo"
         const val STORE_CONTROLS                                = "store_controls"
         const val STORE_PROFILE                                 = "store_profile"
+        //BILL_TYPE
+        const val BILL_TYPE_PDF                                 = "pdf"
     }
 }

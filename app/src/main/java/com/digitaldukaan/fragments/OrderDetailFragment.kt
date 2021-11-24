@@ -3,8 +3,10 @@ package com.digitaldukaan.fragments
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.Typeface
+import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import android.text.*
@@ -39,6 +41,8 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.skydoves.balloon.showAlignTop
+import com.squareup.picasso.Picasso
+import com.squareup.picasso.Target
 import kotlinx.android.synthetic.main.bottom_layout_send_bill.*
 import kotlinx.android.synthetic.main.layout_order_detail_fragment.*
 import java.io.File
@@ -1029,10 +1033,36 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
 
     private fun startDownloadBill(receiptStr: String?) {
         if (isEmpty(receiptStr)) {
-            showToast("No Url Found")
+            showToast(mOrderDetailStaticData?.error_no_bill_available_to_download)
             return
         }
-        DownloadPdfManager.downloadPDFFromUrl(mActivity, receiptStr)
+        if (Constants.BILL_TYPE_PDF.equals(orderDetailMainResponse?.orders?.digitalReceiptExtension, true))
+            DownloadPdfManager.downloadPDFFromUrl(mActivity, receiptStr)
+        else {
+            showToast("Start Downloading...")
+            try {
+                Picasso.get().load(receiptStr).into(object : Target {
+                    override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
+                        bitmap?.let {
+                            downloadMediaToStorage(bitmap, mActivity)
+                            val file = downloadBillInGallery(bitmap, orderDetailMainResponse?.orders?.orderId?.toString())
+                            file?.let { showDownloadNotification(it, "Bill-#${orderDetailMainResponse?.orders?.orderId}") }
+                        }
+                    }
+
+                    override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
+                        Log.d(TAG, "onPrepareLoad: ")
+                    }
+
+                    override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
+                        Log.d(TAG, "onBitmapFailed: ")
+                    }
+                })
+            } catch (e: Exception) {
+                Log.e(TAG, "startDownloadBill: ${e.message}", e)
+                showToast("Something went wrong")
+            }
+        }
     }
 
     private fun askStoragePermission(): Boolean {
