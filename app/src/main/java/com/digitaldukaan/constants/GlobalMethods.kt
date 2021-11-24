@@ -1,6 +1,7 @@
 package com.digitaldukaan.constants
 
 import android.app.Activity
+import android.app.DownloadManager
 import android.content.ContentValues
 import android.content.Context
 import android.content.Context.WINDOW_SERVICE
@@ -27,6 +28,8 @@ import android.view.View.MeasureSpec
 import android.view.WindowManager
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.TranslateAnimation
+import android.webkit.CookieManager
+import android.webkit.URLUtil
 import androidmads.library.qrgenearator.QRGContents
 import androidmads.library.qrgenearator.QRGEncoder
 import com.digitaldukaan.BuildConfig
@@ -186,6 +189,21 @@ fun downloadBillInGallery(bitmap: Bitmap, orderId: String?): File? {
         e.printStackTrace()
         null
     }
+}
+
+fun downloadPdfInGallery(context: Context?, url: String?) {
+    val request = DownloadManager.Request(Uri.parse(url))
+    val fileTitle = URLUtil.guessFileName(url, null, null)
+    val cookies = CookieManager.getInstance().getCookie(url)
+    request.apply {
+        setTitle(fileTitle)
+        setDescription("Downloading...")
+        addRequestHeader("cookie", cookies)
+        setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+        setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileTitle)
+    }
+    val downloadManager = context?.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+    downloadManager.enqueue(request)
 }
 
 fun getBitmapFromBase64(base64Str: String?): Bitmap? {
