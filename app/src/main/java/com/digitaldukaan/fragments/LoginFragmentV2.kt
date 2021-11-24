@@ -306,7 +306,7 @@ class LoginFragmentV2 : BaseFragment(), ILoginServiceInterface {
             )
             showCancellableProgressDialog(mActivity)
             mActivity?.let { context -> UIUtil.hideKeyboard(context) }
-            mLoginService?.generateOTP(mobileNumber)
+            mLoginService?.generateOTP(mobileNumber, 0)
         }
     }
 

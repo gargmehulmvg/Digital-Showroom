@@ -42,7 +42,7 @@ interface Apis {
     suspend fun checkStaffInvite() : Response<CommonApiResponse>
 
     @POST("api/dotk/vo1/user/generateOtp/{phoneNumber}")
-    suspend fun generateOTP(@Path("phoneNumber") phoneNumber: String) : Response<GenerateOtpResponse>
+    suspend fun generateOTP(@Path("phoneNumber") phoneNumber: String, @Body request: GenerateOtpRequest) : Response<GenerateOtpResponse>
 
     @POST("api/dotk/vo1/user/loginV2")
     suspend fun validateOTP(@Body request: ValidateOtpRequest) : Response<CommonApiResponse>

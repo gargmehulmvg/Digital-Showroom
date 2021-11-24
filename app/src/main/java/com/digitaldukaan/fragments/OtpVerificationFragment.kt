@@ -12,9 +12,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.appsflyer.AppsFlyerLib
 import com.digitaldukaan.R
+import com.digitaldukaan.adapters.ResendOtpAdapter
 import com.digitaldukaan.constants.*
+import com.digitaldukaan.interfaces.IAdapterItemClickListener
 import com.digitaldukaan.interfaces.IOnOTPFilledListener
 import com.digitaldukaan.models.dto.CleverTapProfile
 import com.digitaldukaan.models.response.*
@@ -29,12 +32,13 @@ import com.digitaldukaan.smsapi.MySMSBroadcastReceiver
 import com.google.android.gms.auth.api.phone.SmsRetriever
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.otp_verification_fragment.*
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
 
 class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerificationServiceInterface, ISmsReceivedListener,
-    ILoginServiceInterface {
+    ILoginServiceInterface, IAdapterItemClickListener {
 
     private var mCountDownTimer: CountDownTimer? = null
     private var mOtpVerificationService: OtpVerificationService? = null
@@ -48,6 +52,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
     private var mTimerCompleted = false
     private var mCheckStaffInviteResponse: StaffMemberDetailsResponse? = null
     private var mValidateOtpResponse: ValidateOtpResponse? = null
+    private var mOtpModesList: ArrayList<CommonCtaResponse>? = null
 
     companion object {
         fun newInstance(mobileNumber: String): OtpVerificationFragment {
@@ -92,6 +97,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
                 })
         }
         consentCheckBox?.setOnCheckedChangeListener { _, isChecked -> mIsConsentTakenFromUser = isChecked }
+        mOtpVerificationService?.getOtpModesList()
         return mContentView
     }
 
@@ -147,27 +153,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
                     Log.e(TAG, "onClick: ${e.message}", e)
                 }
             }
-            counterTextView?.id -> if (mTimerCompleted) {
-                resendOtpText?.text = null
-                startCountDownTimer()
-                if (!isInternetConnectionAvailable(mActivity)) {
-                    showNoInternetConnectionDialog()
-                    return
-                }
-                mLoginService?.generateOTP(mMobileNumberStr)
-            }
             changeTextView?.id -> mActivity?.onBackPressed()
-            resendOtpText?.id -> if (mTimerCompleted) {
-                resendOtpText?.text = null
-                counterTextView.visibility=View.VISIBLE
-                resendOtpContainer.visibility=View.INVISIBLE
-                startCountDownTimer()
-                if (!isInternetConnectionAvailable(mActivity)) {
-                    showNoInternetConnectionDialog()
-                    return
-                }
-                mLoginService?.generateOTP(mMobileNumberStr)
-            }
             readMoreTextView?.id -> showConsentDialog()
         }
     }
@@ -219,6 +205,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
     }
 
     private fun startCountDownTimer() {
+        counterTextView.visibility = View.VISIBLE
         mCountDownTimer = object: CountDownTimer(Constants.RESEND_OTP_TIMER, Constants.TIMER_INTERVAL) {
             override fun onTick(millisUntilFinished: Long) {
                 mTimerCompleted = false
@@ -232,10 +219,24 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
             override fun onFinish() {
                 CoroutineScopeUtils().runTaskOnCoroutineMain {
                     mTimerCompleted = true
-                    resendTextView?.text = mOtpStaticResponseData?.text_resend_otp
                     resendOtpText?.text = mOtpStaticResponseData?.text_send_again
-                    counterTextView?.visibility=View.INVISIBLE
-                    resendOtpContainer?.visibility=View.VISIBLE
+                    counterTextView?.visibility = View.INVISIBLE
+                    if (View.GONE == resendOtpContainer?.visibility) {
+                        resendTextView?.text = mOtpStaticResponseData?.text_resend_otp
+                        resendOtpContainer?.visibility = View.VISIBLE
+                        recyclerView?.apply {
+                            layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
+                            val modeTempList: ArrayList<CommonCtaResponse> = ArrayList()
+                            mOtpModesList?.forEachIndexed { _, ctaResponse ->
+                                if (ctaResponse.isEnabled) modeTempList.add(ctaResponse)
+                            }
+                            mOtpModesList = ArrayList()
+                            mOtpModesList?.addAll(modeTempList)
+                            adapter = ResendOtpAdapter(mActivity, mOtpModesList, this@OtpVerificationFragment)
+                        }
+                    } else if (View.VISIBLE == resendOtpContainer?.visibility) {
+                        resendOtpContainer?.alpha = 1f
+                    }
                 }
             }
         }
@@ -339,7 +340,10 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
     }
 
     override fun onGetOtpModesListResponse(commonApiResponse: CommonApiResponse) {
-
+        if (commonApiResponse.mIsSuccessStatus) {
+            val listType = object : TypeToken<List<CommonCtaResponse>>() {}.type
+            mOtpModesList = Gson().fromJson<ArrayList<CommonCtaResponse>>(commonApiResponse.mCommonDataStr, listType)
+        }
     }
 
     override fun onOTPVerificationDataException(e: Exception) {
@@ -372,4 +376,23 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
     }
 
     override fun onGenerateOTPException(e: Exception) = exceptionHandlingForAPIResponse(e)
+
+    override fun onAdapterItemClickListener(position: Int) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            if (1f != resendOtpContainer?.alpha && !mTimerCompleted) return@runTaskOnCoroutineMain
+            otpSentOnContainer?.apply {
+                visibility = View.VISIBLE
+                alpha = 1f
+            }
+            val modeListItem = mOtpModesList?.get(position)
+            val otpSentOnStr = "${mOtpStaticResponseData?.heading_otp_sent_to} ${modeListItem?.text}"
+            otpSentOnTextView?.text = otpSentOnStr
+            resendOtpContainer?.alpha = 0.3f
+            Handler(Looper.getMainLooper()).postDelayed({
+                otpSentOnContainer.visibility = View.GONE
+            }, Constants.STORE_CREATION_PROGRESS_ANIMATION_INTERVAL)
+            startCountDownTimer()
+            mLoginService?.generateOTP(mMobileNumberStr, modeListItem?.id ?: 0)
+        }
+    }
 }
