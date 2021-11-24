@@ -135,24 +135,27 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
                 if (Constants.PAGE_ORDER == key && !value) {
                     blurBottomNavBarContainer?.visibility = View.VISIBLE
                     blurBottomNavBarOrders?.visibility = View.VISIBLE
-                }
+                } else if (Constants.PAGE_ORDER == key && value) blurBottomNavBarOrders?.visibility = View.INVISIBLE
                 if (Constants.PAGE_CATALOG == key && !value) {
                     blurBottomNavBarContainer?.visibility = View.VISIBLE
                     blurBottomNavBarCatalog?.visibility = View.VISIBLE
-                }
+                } else if (Constants.PAGE_CATALOG == key && value) blurBottomNavBarCatalog?.visibility = View.INVISIBLE
                 if (Constants.PAGE_PREMIUM == key && !value) {
                     blurBottomNavBarContainer?.visibility = View.VISIBLE
                     blurBottomNavBarPremium?.visibility = View.VISIBLE
                     premiumImageView?.alpha = 0.25f
+                } else if (Constants.PAGE_PREMIUM == key && value) {
+                    premiumImageView?.alpha = 1f
+                    blurBottomNavBarPremium?.visibility = View.INVISIBLE
                 }
                 if (Constants.PAGE_MARKETING == key && !value) {
                     blurBottomNavBarContainer?.visibility = View.VISIBLE
                     blurBottomNavBarMarketing?.visibility = View.VISIBLE
-                }
+                } else if (Constants.PAGE_MARKETING == key && value) blurBottomNavBarMarketing?.visibility = View.INVISIBLE
                 if (Constants.PAGE_SETTINGS == key && !value) {
                     blurBottomNavBarContainer?.visibility = View.VISIBLE
                     blurBottomNavBarSettings?.visibility = View.VISIBLE
-                }
+                } else if (Constants.PAGE_SETTINGS == key && value) blurBottomNavBarSettings?.visibility = View.INVISIBLE
             }
         }
     }

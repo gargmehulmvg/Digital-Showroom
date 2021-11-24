@@ -5,6 +5,8 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -36,6 +38,7 @@ import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.otp_verification_fragment.*
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
+import java.util.*
 
 class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerificationServiceInterface, ISmsReceivedListener,
     ILoginServiceInterface, IAdapterItemClickListener {
@@ -389,7 +392,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
             otpSentOnTextView?.text = otpSentOnStr
             resendOtpContainer?.alpha = 0.3f
             Handler(Looper.getMainLooper()).postDelayed({
-                otpSentOnContainer.visibility = View.GONE
+                otpSentOnContainer?.visibility = View.GONE
             }, Constants.STORE_CREATION_PROGRESS_ANIMATION_INTERVAL)
             startCountDownTimer()
             mLoginService?.generateOTP(mMobileNumberStr, modeListItem?.id ?: 0)
