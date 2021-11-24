@@ -2725,7 +2725,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         Log.d("permissionDialog", permissionMap.toString())
         when {
             true == permissionMap[Constants.PAGE_ORDER] -> {
-                launchFragment(OrderFragment.newInstance(), true)
+                launchFragment(OrderFragment.newInstance(isClearOrderPageResponse = true), true)
             }
             true == permissionMap[Constants.PAGE_CATALOG] -> {
                 launchFragment(ProductFragment.newInstance(), true)

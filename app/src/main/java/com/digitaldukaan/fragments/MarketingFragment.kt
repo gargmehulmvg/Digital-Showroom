@@ -132,7 +132,6 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                             }
                         }
                         layoutManager = gridLayoutManager
-                        mMarketingPageInfoResponse?.marketingItemList?.forEachIndexed { _, itemResponse -> itemResponse?.isStaffFeatureLocked = true }
                         adapter = MarketingCardAdapter(this@MarketingFragment, mMarketingPageInfoResponse?.marketingItemList, this@MarketingFragment)
                     }
                 }

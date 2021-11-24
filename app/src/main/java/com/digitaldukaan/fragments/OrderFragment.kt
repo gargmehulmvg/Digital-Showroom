@@ -97,11 +97,11 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
         private var sIsMoreCompletedOrderAvailable = false
         private var sOrderList: ArrayList<OrderItemResponse> = ArrayList()
         private var sCompletedOrderList: ArrayList<OrderItemResponse> = ArrayList()
-        private var sCheckStaffInviteResponse: StaffMemberDetailsResponse? = null
 
-        fun newInstance(isNewUserLogin: Boolean = false): OrderFragment {
+        fun newInstance(isNewUserLogin: Boolean = false, isClearOrderPageResponse: Boolean = false): OrderFragment {
             val fragment = OrderFragment()
             fragment.mIsNewUserLogin = isNewUserLogin
+            if (isClearOrderPageResponse) sOrderPageInfoResponse = null
             return fragment
         }
     }
