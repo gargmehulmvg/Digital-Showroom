@@ -1,6 +1,8 @@
 package com.digitaldukaan.fragments
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.*
 import android.webkit.WebView
@@ -48,7 +50,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
     private var mSelectedCategoryItem: StoreCategoryItem? = null
     private var mDeleteCategoryItemList: ArrayList<DeleteCategoryItemResponse?>? = null
     private val mTempProductCategoryList: ArrayList<StoreCategoryItem> = ArrayList()
-
+    private var mIsDoublePressToExit = false
 
     companion object {
         private var addProductStaticData: AddProductStaticText? = null
@@ -608,9 +610,19 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
 
     override fun onBackPressed(): Boolean {
         Log.d(TAG, "onBackPressed: called")
-        if(fragmentManager != null && fragmentManager?.backStackEntryCount == 1) {
-            clearFragmentBackStack()
-            launchFragment(OrderFragment.newInstance(), true)
+        if (null != fragmentManager && 1 == fragmentManager?.backStackEntryCount) {
+            if (true == StaticInstances.sPermissionHashMap?.get(Constants.PAGE_ORDER)) {
+                clearFragmentBackStack()
+                launchFragment(OrderFragment.newInstance(), true)
+            } else {
+                if (mIsDoublePressToExit) mActivity?.finish()
+                showShortSnackBar(getString(R.string.msg_back_press))
+                mIsDoublePressToExit = true
+                Handler(Looper.getMainLooper()).postDelayed(
+                    { mIsDoublePressToExit = false },
+                    Constants.BACK_PRESS_INTERVAL
+                )
+            }
             return true
         }
         return false

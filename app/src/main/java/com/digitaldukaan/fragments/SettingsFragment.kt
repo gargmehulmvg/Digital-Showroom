@@ -6,6 +6,8 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Typeface
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.StyleSpan
@@ -63,6 +65,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
     private var mReferEarnOverWhatsAppResponse: ReferEarnOverWhatsAppResponse? = null
     private var mAccountPageInfoResponse: AccountInfoResponse? = null
     private var mNewReleaseItemClickResponse: TrendingListResponse? = null
+    private var mIsDoublePressToExit = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         TAG = "SettingsFragment"
@@ -555,8 +558,19 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
 
     override fun onBackPressed(): Boolean {
         Log.d(TAG, "onBackPressed: called")
-        if(fragmentManager != null && fragmentManager?.backStackEntryCount == 1) {
-            launchFragment(OrderFragment.newInstance(), true)
+        if (null != fragmentManager && 1 == fragmentManager?.backStackEntryCount) {
+            if (true == StaticInstances.sPermissionHashMap?.get(Constants.PAGE_ORDER)) {
+                clearFragmentBackStack()
+                launchFragment(OrderFragment.newInstance(), true)
+            } else {
+                if (mIsDoublePressToExit) mActivity?.finish()
+                showShortSnackBar(getString(R.string.msg_back_press))
+                mIsDoublePressToExit = true
+                Handler(Looper.getMainLooper()).postDelayed(
+                    { mIsDoublePressToExit = false },
+                    Constants.BACK_PRESS_INTERVAL
+                )
+            }
             return true
         }
         return false
