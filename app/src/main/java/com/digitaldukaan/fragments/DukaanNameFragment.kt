@@ -97,6 +97,7 @@ class DukaanNameFragment : BaseFragment(), ICreateStoreServiceInterface {
             }
         })
         setupUIFromStaticData()
+        if (sIsInvitationAvailable) showStaffInvitationDialog()
     }
 
     private fun setupUIFromStaticData() {
