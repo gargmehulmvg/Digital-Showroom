@@ -2057,14 +2057,13 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                         }
                         dialogHeadingTextView.text = staffInvitation?.heading
                         moreOptionsTextView.setHtmlData(staffInvitation?.textMoreOptions)
-                        staffInvitation?.invitationList?.get(0)?.isSelected = true
-                        mMultiUserAdapter = StaffInvitationAdapter(
-                            staffInvitation?.invitationList,
-                            object : IAdapterItemClickListener {
+                        if (true == staffInvitation?.invitationList?.isNotEmpty()) {
+                            staffInvitation.invitationList[0]?.isSelected = true
+                            mMultiUserAdapter = StaffInvitationAdapter(staffInvitation.invitationList, object : IAdapterItemClickListener {
                                 override fun onAdapterItemClickListener(position: Int) {
-                                    staffInvitation?.invitationList?.forEachIndexed { _, item -> item?.isSelected = false }
-                                    staffInvitation?.invitationList?.get(position)?.isSelected = true
-                                    selectedId = when (staffInvitation?.invitationList?.get(position)?.id) {
+                                    staffInvitation.invitationList.forEachIndexed { _, item -> item?.isSelected = false }
+                                    staffInvitation.invitationList.get(position)?.isSelected = true
+                                    selectedId = when (staffInvitation.invitationList[position]?.id) {
                                         Constants.STAFF_INVITATION_CODE_EXIT -> {
                                             staffInvitation.invitationList[position]?.id ?: Constants.STAFF_INVITATION_CODE_EXIT
                                         }
@@ -2072,12 +2071,13 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                                             staffInvitation.invitationList[position]?.id ?: Constants.STAFF_INVITATION_CODE_REJECT
                                         }
                                         else -> {
-                                            staffInvitation?.invitationList?.get(position)?.id ?: Constants.STAFF_INVITATION_CODE_ACCEPT
+                                            staffInvitation.invitationList[position]?.id ?: Constants.STAFF_INVITATION_CODE_ACCEPT
                                         }
                                     }
                                     mMultiUserAdapter?.notifyDataSetChanged()
                                 }
                             })
+                        }
                         moreOptionsContainer.setOnClickListener {
                             moreOptionsContainer.visibility = View.GONE
                             mMultiUserAdapter?.showCompleteList()
