@@ -55,7 +55,7 @@
         <entry key="app/src/main/res/layout/bottom_sheet_category_product.xml" value="0.4027777777777778" />
         <entry key="app/src/main/res/layout/bottom_sheet_cod_confirmation.xml" value="0.4244791666666667" />
         <entry key="app/src/main/res/layout/bottom_sheet_complete_your_kyc.xml" value="0.35260416666666666" />
-        <entry key="app/src/main/res/layout/bottom_sheet_custom_domain_selection.xml" value="0.335" />
+        <entry key="app/src/main/res/layout/bottom_sheet_custom_domain_selection.xml" value="0.25" />
         <entry key="app/src/main/res/layout/bottom_sheet_edit_product_category_details.xml" value="0.35260416666666666" />
         <entry key="app/src/main/res/layout/bottom_sheet_edit_store_name.xml" value="0.22269736842105264" />
         <entry key="app/src/main/res/layout/bottom_sheet_gst_addition.xml" value="0.22269736842105264" />
@@ -79,6 +79,7 @@
         <entry key="app/src/main/res/layout/dialog_mobile_view_image_upload.xml" value="0.22269736842105264" />
         <entry key="app/src/main/res/layout/dialog_payment_link_success.xml" value="0.335" />
         <entry key="app/src/main/res/layout/dialog_user_consent.xml" value="0.35260416666666666" />
+        <entry key="app/src/main/res/layout/google_work_space_item.xml" value="0.23092105263157894" />
         <entry key="app/src/main/res/layout/layout_add_product_fragment.xml" value="0.335" />
         <entry key="app/src/main/res/layout/layout_business_type_fragment.xml" value="0.22269736842105264" />
         <entry key="app/src/main/res/layout/layout_common_webview_fragment.xml" value="0.4027777777777778" />

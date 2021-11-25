@@ -5,6 +5,7 @@ import com.google.gson.annotations.SerializedName
 data class CustomDomainBottomSheetResponse(
     @SerializedName("primary_domain")       var primaryDomain: PrimaryDomainItemResponse?,
     @SerializedName("suggested_domains")    var suggestedDomainsList: ArrayList<PrimaryDomainItemResponse?>?,
+    @SerializedName("workspace_cdn_list")   var workspaceCdnList: ArrayList<String>?,
     @SerializedName("search_cta")           var searchCta: CTAItemResponse?,
     @SerializedName("static_text")          var staticText: CustomDomainBottomSheetStaticTextResponse?
 )
@@ -40,5 +41,8 @@ data class CustomDomainBottomSheetStaticTextResponse(
     @SerializedName("text_cant_find")                       var text_cant_find: String,
     @SerializedName("text_more_suggestions")                var text_more_suggestions: String,
     @SerializedName("text_best_pick_for_you")               var text_best_pick_for_you: String,
-    @SerializedName("text_search")                          var text_search: String
+    @SerializedName("text_search")                          var text_search: String,
+    @SerializedName("text_workspace_heading")               var text_workspace_heading: String,
+    @SerializedName("text_workspace_subheading")            var text_workspace_subheading: String,
+    @SerializedName("text_get_professional_email")          var text_get_professional_email: String
 )

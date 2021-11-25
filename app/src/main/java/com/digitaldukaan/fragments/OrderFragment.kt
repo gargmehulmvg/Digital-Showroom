@@ -1,7 +1,6 @@
 package com.digitaldukaan.fragments
 
 import android.content.pm.PackageManager
-import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -17,7 +16,6 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.appsflyer.AppsFlyerLib
 import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
-import com.digitaldukaan.adapters.CustomDomainSelectionAdapter
 import com.digitaldukaan.adapters.LandingPageCardsAdapter
 import com.digitaldukaan.adapters.LandingPageShortcutsAdapter
 import com.digitaldukaan.adapters.OrderAdapterV2
@@ -144,7 +142,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
             if (null == StaticInstances.sCustomDomainBottomSheetResponse)
                 mService?.getCustomDomainBottomSheetData()
             else
-                StaticInstances.sCustomDomainBottomSheetResponse?.let { response -> showCustomDomainBottomSheet(response) }
+                StaticInstances.sCustomDomainBottomSheetResponse?.let { response -> showDomainPurchasedBottomSheet(response, false) }
         }
         return mContentView
     }
@@ -365,7 +363,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (commonResponse.mIsSuccessStatus) {
                 val customDomainBottomSheetResponse = Gson().fromJson<CustomDomainBottomSheetResponse>(commonResponse.mCommonDataStr, CustomDomainBottomSheetResponse::class.java)
-                showCustomDomainBottomSheet(customDomainBottomSheetResponse)
+                showDomainPurchasedBottomSheet(customDomainBottomSheetResponse, false)
             }
         }
     }
@@ -385,7 +383,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                 val domainExpiryContainer: View? = mContentView?.findViewById(R.id.domainExpiryContainer)
                 if (mIsAllStepsCompleted) {
                     zeroOrderItemsRecyclerView?.visibility = View.GONE
-                    if(StaticInstances.sPermissionHashMap?.get("my_shortcuts") == true){
+                    if(true == StaticInstances.sPermissionHashMap?.get(Constants.MY_SHORTCUTS)){
                         myShortcutsRecyclerView?.visibility = View.VISIBLE
                         myShortcutsRecyclerView?.apply {
                             layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
@@ -612,7 +610,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
         }
     }
 
-    private fun showCustomDomainBottomSheet(customDomainBottomSheetResponse: CustomDomainBottomSheetResponse) {
+    /*private fun showCustomDomainBottomSheet(customDomainBottomSheetResponse: CustomDomainBottomSheetResponse) {
         mActivity?.let {
             val bottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
             val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_custom_domain_selection, it.findViewById(R.id.bottomSheetContainer))
@@ -690,7 +688,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                 }
             }.show()
         }
-    }
+    }*/
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         Log.d(TAG, "$TAG onRequestPermissionResult")

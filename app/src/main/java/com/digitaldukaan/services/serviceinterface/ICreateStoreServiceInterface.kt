@@ -8,5 +8,4 @@ interface ICreateStoreServiceInterface {
 
     fun onCreateStoreServerException(e: Exception)
 
-    /*fun checkStaffInviteResponse(commonResponse: CommonApiResponse)*/
 }

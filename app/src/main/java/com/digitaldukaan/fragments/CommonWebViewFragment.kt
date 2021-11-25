@@ -132,6 +132,9 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
             jsonData.optBoolean("redirectBrowser") -> {
                 openUrlInBrowser(jsonData.optString("data"))
             }
+            jsonData.optBoolean("openDomainPurchaseBottomSheet") -> {
+                openDomainPurchaseBottomSheetServerCall()
+            }
             jsonData.optBoolean("shareTextOnWhatsApp") -> {
                 val text = jsonData.optString("data")
                 val mobileNumber = jsonData.optString("mobileNumber")

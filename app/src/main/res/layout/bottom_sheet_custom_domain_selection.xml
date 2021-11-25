@@ -3,8 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:fillViewport="true"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -34,45 +34,120 @@
             android:background="@drawable/upper_curve_white_background"
             android:padding="@dimen/_12sdp">
 
-            <TextView
-                android:id="@+id/headingTextView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/roboto"
-                android:textSize="@dimen/_11sdp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:text="One Last Step" />
-
-            <TextView
-                android:id="@+id/subHeadingTextView"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/bottomSheetUpperContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:fontFamily="@font/roboto_bold"
-                android:gravity="center"
-                android:padding="@dimen/_2sdp"
-                android:textColor="@color/black"
-                android:textSize="@dimen/_24sdp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/headingTextView"
-                tools:text="Your Business needs a Domain!" />
+                app:layout_constraintTop_toTopOf="parent">
+
+                <androidx.constraintlayout.widget.Group
+                    android:id="@+id/domainPurchasedGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="visible"
+                    app:constraint_referenced_ids="headingTextView,subHeadingTextView" />
+
+                <androidx.constraintlayout.widget.Group
+                    android:id="@+id/noDomainFoundGroup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    app:constraint_referenced_ids="bottomSheetUpperContainerTextView, bottomSheetUpperContainerRecyclerView, noDomainFoundTextView, noDomainFoundMessageTextView" />
+
+                <TextView
+                    android:id="@+id/headingTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/roboto"
+                    android:textSize="@dimen/_11sdp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="One Last Step" />
+
+                <TextView
+                    android:id="@+id/subHeadingTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:fontFamily="@font/roboto_bold"
+                    android:gravity="center"
+                    android:padding="@dimen/_2sdp"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_24sdp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/headingTextView"
+                    tools:text="Your Business needs a Domain!" />
+
+                <TextView
+                    android:id="@+id/bottomSheetUpperContainerTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="@dimen/_10sdp"
+                    android:padding="@dimen/_2sdp"
+                    android:textColor="@color/default_text_light_grey"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="You will get professional email ID And more" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/bottomSheetUpperContainerRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    android:orientation="horizontal"
+                    tools:listitem="@layout/google_work_space_item"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    app:layout_constraintTop_toBottomOf="@id/bottomSheetUpperContainerTextView" />
+
+                <TextView
+                    android:id="@+id/noDomainFoundTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:fontFamily="@font/roboto_bold"
+                    android:textSize="@dimen/_16sdp"
+                    android:layout_marginTop="@dimen/_15sdp"
+                    android:textColor="@color/black"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/bottomSheetUpperContainerRecyclerView"
+                    tools:text="No Domain Found!" />
+
+                <TextView
+                    android:id="@+id/noDomainFoundMessageTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:gravity="center"
+                    android:fontFamily="@font/roboto"
+                    android:textColor="@color/default_text_light_grey"
+                    android:textSize="@dimen/_11sdp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/noDomainFoundTextView"
+                    tools:text="You need a domain before you can purchase Google Workspace" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_20sdp"
                 android:layout_marginStart="@dimen/_5sdp"
+                android:layout_marginTop="@dimen/_20sdp"
                 android:layout_marginEnd="@dimen/_5sdp"
                 android:background="@drawable/curve_white_background"
                 android:elevation="@dimen/_4sdp"
                 android:padding="@dimen/_10sdp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/subHeadingTextView">
+                app:layout_constraintTop_toBottomOf="@id/bottomSheetUpperContainer">
 
                 <TextView
                     android:id="@+id/premiumHeadingTextView"
@@ -188,11 +263,11 @@
                 <androidx.cardview.widget.CardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_25sdp"
                     android:layout_marginTop="@dimen/_12sdp"
+                    android:layout_marginEnd="@dimen/_25sdp"
                     android:layout_marginBottom="@dimen/_5sdp"
                     app:cardCornerRadius="@dimen/_18sdp"
-                    android:layout_marginStart="@dimen/_25sdp"
-                    android:layout_marginEnd="@dimen/_25sdp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -229,14 +304,14 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/suggestedDomainRecyclerView"
                 android:layout_width="match_parent"
-                tools:itemCount="5"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_5sdp"
                 android:layout_marginEnd="@dimen/_5sdp"
                 android:orientation="vertical"
-                tools:listitem="@layout/custom_domain_selection_item"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/moreSuggestionsTextView" />
+                app:layout_constraintTop_toBottomOf="@id/moreSuggestionsTextView"
+                tools:itemCount="5"
+                tools:listitem="@layout/custom_domain_selection_item" />
 
             <TextView
                 android:id="@+id/searchMessageTextView"
@@ -255,15 +330,15 @@
                 android:id="@+id/searchTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/curve_black_border"
-                android:textColor="@color/black"
-                android:drawablePadding="@dimen/_4sdp"
                 android:layout_marginTop="@dimen/_5sdp"
+                android:background="@drawable/curve_black_border"
+                android:drawablePadding="@dimen/_4sdp"
                 android:onClick="onClick"
-                android:paddingTop="@dimen/_4sdp"
                 android:paddingStart="@dimen/_8sdp"
+                android:paddingTop="@dimen/_4sdp"
                 android:paddingEnd="@dimen/_8sdp"
                 android:paddingBottom="@dimen/_4sdp"
+                android:textColor="@color/black"
                 app:drawableStartCompat="@drawable/ic_search"
                 app:drawableTint="@color/black"
                 app:layout_constraintStart_toStartOf="@+id/moreSuggestionsTextView"

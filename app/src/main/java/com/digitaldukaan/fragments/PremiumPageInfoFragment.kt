@@ -135,6 +135,9 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
             jsonData.optBoolean("refreshToken") -> {
                 //mService.getPremiumPageInfo()
             }
+            jsonData.optBoolean("openDomainPurchaseBottomSheet") -> {
+                openDomainPurchaseBottomSheetServerCall()
+            }
             jsonData.optBoolean("addAddress") -> {
                 launchFragment(StoreMapLocationFragment.newInstance(0, true), true)
             }

@@ -70,6 +70,7 @@ import com.yalantis.ucrop.UCrop
 import id.zelory.compressor.Compressor
 import io.sentry.Sentry
 import kotlinx.android.synthetic.main.activity_main2.*
+import kotlinx.android.synthetic.main.bottom_sheet_custom_domain_selection.view.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
@@ -1947,8 +1948,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                     progressBarContainer.visibility = View.VISIBLE
                     CoroutineScopeUtils().runTaskOnCoroutineBackground {
                         try {
-                            val response = RetrofitApi().getServerCallObject()
-                                ?.getCustomDomainBottomSheetData()
+                            val response = RetrofitApi().getServerCallObject()?.getCustomDomainBottomSheetData()
                             response?.let {
                                 stopProgress()
                                 if (it.isSuccessful) {
@@ -2221,5 +2221,119 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     override fun onProviderEnabled(provider: String) = Unit
 
     override fun onProviderDisabled(provider: String) = Unit
+
+    fun openDomainPurchaseBottomSheetServerCall() {
+        showProgressDialog(mActivity)
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            val customDomainBottomSheetResponse = RetrofitApi().getServerCallObject()?.getCustomDomainBottomSheetData()
+            customDomainBottomSheetResponse?.body()?.let { body ->
+                stopProgress()
+                val bottomSheetResponse = Gson().fromJson<CustomDomainBottomSheetResponse>(body.mCommonDataStr, CustomDomainBottomSheetResponse::class.java)
+                showDomainPurchasedBottomSheet(bottomSheetResponse, isNoDomainFoundLayout = true)
+            }
+        }
+    }
+
+    fun showDomainPurchasedBottomSheet(customDomainBottomSheetResponse: CustomDomainBottomSheetResponse, isNoDomainFoundLayout: Boolean = false) {
+        mActivity?.runOnUiThread {
+            mActivity?.let {
+                val bottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
+                val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_custom_domain_selection, it.findViewById(R.id.bottomSheetContainer))
+                bottomSheetDialog.apply {
+                    setContentView(view)
+                    view?.run {
+                        customDomainBottomSheetResponse.staticText?.let { staticText ->
+                            val domainPurchasedGroup: View = findViewById(R.id.domainPurchasedGroup)
+                            val noDomainFoundGroup: View = findViewById(R.id.noDomainFoundGroup)
+                            if (isNoDomainFoundLayout) {
+                                noDomainFoundGroup.visibility = View.VISIBLE
+                                domainPurchasedGroup.visibility = View.GONE
+                                val bottomSheetUpperContainerTextView: TextView = findViewById(R.id.bottomSheetUpperContainerTextView)
+                                val noDomainFoundTextView: TextView = findViewById(R.id.noDomainFoundTextView)
+                                val noDomainFoundMessageTextView: TextView = findViewById(R.id.noDomainFoundMessageTextView)
+                                val bottomSheetUpperContainerRecyclerView: RecyclerView = findViewById(R.id.bottomSheetUpperContainerRecyclerView)
+                                bottomSheetUpperContainerTextView.text = staticText.text_get_professional_email
+                                noDomainFoundTextView.text = staticText.text_workspace_heading
+                                noDomainFoundMessageTextView.text = staticText.text_workspace_subheading
+                                bottomSheetUpperContainerRecyclerView.apply {
+                                    layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
+                                    adapter  = GoogleWorkspaceAppsAdapter(mActivity, customDomainBottomSheetResponse.workspaceCdnList)
+                                }
+                            } else {
+                                noDomainFoundGroup.visibility = View.GONE
+                                domainPurchasedGroup.visibility = View.VISIBLE
+                            }
+                            val searchTextView: TextView = findViewById(R.id.searchTextView)
+                            val headingTextView: TextView = findViewById(R.id.headingTextView)
+                            val subHeadingTextView: TextView = findViewById(R.id.subHeadingTextView)
+                            val searchMessageTextView: TextView = findViewById(R.id.searchMessageTextView)
+                            val moreSuggestionsTextView: TextView = findViewById(R.id.moreSuggestionsTextView)
+                            subHeadingTextView.text = staticText.subheading_budiness_needs_domain
+                            headingTextView.text = staticText.heading_last_step
+                            moreSuggestionsTextView.text = staticText.text_more_suggestions
+                            searchMessageTextView.text = staticText.text_cant_find
+                            searchTextView.text = staticText.text_search
+                            searchTextView.setOnClickListener {
+                                bottomSheetDialog.dismiss()
+                                if (Constants.NEW_RELEASE_TYPE_WEBVIEW == customDomainBottomSheetResponse.searchCta?.action) {
+                                    val url = BuildConfig.WEB_VIEW_URL + "${customDomainBottomSheetResponse.searchCta?.pageUrl}?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&${AFInAppEventParameterName.CHANNEL}=${AFInAppEventParameterName.ON_BOARDING}"
+                                    openWebViewFragmentV3(this@BaseFragment, "", url)
+                                }
+                            }
+                        }
+                        customDomainBottomSheetResponse.primaryDomain?.let { primaryDomain ->
+                            val premiumHeadingTextView: TextView = findViewById(R.id.premiumHeadingTextView)
+                            val domainTextView: TextView = findViewById(R.id.domainTextView)
+                            val priceTextView: TextView = findViewById(R.id.priceTextView)
+                            val promoCodeTextView: TextView = findViewById(R.id.promoCodeTextView)
+                            val messageTextView: TextView = findViewById(R.id.messageTextView)
+                            val message2TextView: TextView = findViewById(R.id.message2TextView)
+                            val originalPriceTextView: TextView = findViewById(R.id.originalPriceTextView)
+                            val buyNowTextView: TextView = findViewById(R.id.buyNowTextView)
+                            premiumHeadingTextView.text = primaryDomain.heading
+                            domainTextView.text = primaryDomain.domainName
+                            promoCodeTextView.text = primaryDomain.promo
+                            var amount = "₹${primaryDomain.discountedPrice}"
+                            priceTextView.text = amount
+                            amount = "₹${primaryDomain.originalPrice}"
+                            originalPriceTextView.text = amount
+                            originalPriceTextView.showStrikeOffText()
+                            buyNowTextView.apply {
+                                text = primaryDomain.cta?.text
+                                setTextColor(Color.parseColor(primaryDomain.cta?.textColor))
+                                setBackgroundColor(Color.parseColor(primaryDomain.cta?.textBg))
+                                setOnClickListener {
+                                    bottomSheetDialog.dismiss()
+                                    if (Constants.NEW_RELEASE_TYPE_WEBVIEW == primaryDomain.cta?.action) {
+                                        val url = BuildConfig.WEB_VIEW_URL + "${primaryDomain.cta?.pageUrl}?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&domain_name=${primaryDomain.domainName}&purchase_price=${primaryDomain.originalPrice}&renewal_price=${primaryDomain.renewalPrice}&${AFInAppEventParameterName.CHANNEL}=${AFInAppEventParameterName.ON_BOARDING}"
+                                        openWebViewFragmentV3(this@BaseFragment, "", url)
+                                    }
+                                }
+                            }
+                            messageTextView.text = primaryDomain.infoData?.firstYearText?.trim()
+                            message2TextView.text = primaryDomain.infoData?.renewsText?.trim()
+                        }
+                        val suggestedDomainRecyclerView = findViewById<RecyclerView>(R.id.suggestedDomainRecyclerView)
+                        suggestedDomainRecyclerView.apply {
+                            layoutManager = LinearLayoutManager(mActivity)
+                            adapter = CustomDomainSelectionAdapter(
+                                customDomainBottomSheetResponse.suggestedDomainsList,
+                                object : IAdapterItemClickListener {
+
+                                    override fun onAdapterItemClickListener(position: Int) {
+                                        bottomSheetDialog.dismiss()
+                                        val item = customDomainBottomSheetResponse.suggestedDomainsList?.get(position)
+                                        if (Constants.NEW_RELEASE_TYPE_WEBVIEW == item?.cta?.action) {
+                                            val url = BuildConfig.WEB_VIEW_URL + "${item.cta?.pageUrl}?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&domain_name=${item.domainName}&purchase_price=${item.originalPrice}&renewal_price=${item.renewalPrice}&${AFInAppEventParameterName.CHANNEL}=${AFInAppEventParameterName.ON_BOARDING}"
+                                            openWebViewFragment(this@BaseFragment, "", url)
+                                        }
+                                    }
+                                })
+                        }
+                    }
+                }.show()
+            }
+        }
+    }
 
 }
