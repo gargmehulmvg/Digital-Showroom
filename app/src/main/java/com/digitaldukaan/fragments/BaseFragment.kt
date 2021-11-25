@@ -2234,7 +2234,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         }
     }
 
-    fun showDomainPurchasedBottomSheet(customDomainBottomSheetResponse: CustomDomainBottomSheetResponse, isNoDomainFoundLayout: Boolean = false) {
+    fun showDomainPurchasedBottomSheet(customDomainBottomSheetResponse: CustomDomainBottomSheetResponse, isNoDomainFoundLayout: Boolean = false, hideTopView: Boolean = false) {
         mActivity?.runOnUiThread {
             mActivity?.let {
                 val bottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
@@ -2245,6 +2245,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                         customDomainBottomSheetResponse.staticText?.let { staticText ->
                             val domainPurchasedGroup: View = findViewById(R.id.domainPurchasedGroup)
                             val noDomainFoundGroup: View = findViewById(R.id.noDomainFoundGroup)
+                            val headingTextView2: TextView = findViewById(R.id.headingTextView)
                             if (isNoDomainFoundLayout) {
                                 noDomainFoundGroup.visibility = View.VISIBLE
                                 domainPurchasedGroup.visibility = View.GONE
@@ -2264,12 +2265,12 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                                 domainPurchasedGroup.visibility = View.VISIBLE
                             }
                             val searchTextView: TextView = findViewById(R.id.searchTextView)
-                            val headingTextView: TextView = findViewById(R.id.headingTextView)
                             val subHeadingTextView: TextView = findViewById(R.id.subHeadingTextView)
                             val searchMessageTextView: TextView = findViewById(R.id.searchMessageTextView)
                             val moreSuggestionsTextView: TextView = findViewById(R.id.moreSuggestionsTextView)
                             subHeadingTextView.text = staticText.subheading_budiness_needs_domain
-                            headingTextView.text = staticText.heading_last_step
+                            headingTextView2.text = staticText.heading_last_step
+                            if (hideTopView) headingTextView2.text = null
                             moreSuggestionsTextView.text = staticText.text_more_suggestions
                             searchMessageTextView.text = staticText.text_cant_find
                             searchTextView.text = staticText.text_search

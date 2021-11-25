@@ -79,6 +79,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
     private var mIsToolbarSearchAvailable: Boolean = false
     private var mPaymentLinkBottomSheet: BottomSheetDialog? = null
     private var mPaymentLinkAmountStr: String? = null
+    private var mIsCustomDomainTopViewHide: Boolean = false
 
     companion object {
         private var sOrderPageInfoResponse: OrderPageInfoResponse? = null
@@ -139,9 +140,10 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
         }
         if (mIsNewUserLogin) {
             mIsNewUserLogin = false
-            if (null == StaticInstances.sCustomDomainBottomSheetResponse)
+            if (null == StaticInstances.sCustomDomainBottomSheetResponse) {
+                mIsCustomDomainTopViewHide = false
                 mService?.getCustomDomainBottomSheetData()
-            else
+            } else
                 StaticInstances.sCustomDomainBottomSheetResponse?.let { response -> showDomainPurchasedBottomSheet(response, false) }
         }
         return mContentView
@@ -365,7 +367,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
             if (commonResponse.mIsSuccessStatus) {
                 val customDomainBottomSheetResponse = Gson().fromJson<CustomDomainBottomSheetResponse>(commonResponse.mCommonDataStr, CustomDomainBottomSheetResponse::class.java)
                 StaticInstances.sCustomDomainBottomSheetResponse = customDomainBottomSheetResponse
-                showDomainPurchasedBottomSheet(customDomainBottomSheetResponse, false)
+                showDomainPurchasedBottomSheet(customDomainBottomSheetResponse, isNoDomainFoundLayout = false, hideTopView = mIsCustomDomainTopViewHide)
             }
         }
     }
@@ -560,10 +562,11 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
             }
             domainExpiryContainer?.id -> {
                 if (null == StaticInstances.sCustomDomainBottomSheetResponse) {
+                    mIsCustomDomainTopViewHide = true
                     showProgressDialog(mActivity)
                     mService?.getCustomDomainBottomSheetData()
                 } else
-                    StaticInstances.sCustomDomainBottomSheetResponse?.let { response -> showDomainPurchasedBottomSheet(response, false) }
+                    StaticInstances.sCustomDomainBottomSheetResponse?.let { response -> showDomainPurchasedBottomSheet(response, isNoDomainFoundLayout = false, hideTopView = true) }
             }
             searchImageView?.id -> {
                 AppEventsManager.pushAppEvents(
