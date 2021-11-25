@@ -22,7 +22,6 @@ import com.digitaldukaan.adapters.LandingPageCardsAdapter
 import com.digitaldukaan.adapters.LandingPageShortcutsAdapter
 import com.digitaldukaan.adapters.OrderAdapterV2
 import com.digitaldukaan.constants.*
-import com.digitaldukaan.constants.StaticInstances.sIsInvitationShown
 import com.digitaldukaan.interfaces.IAdapterItemClickListener
 import com.digitaldukaan.interfaces.ILandingPageAdapterListener
 import com.digitaldukaan.interfaces.IOrderListItemListener
@@ -81,9 +80,6 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
     private var mIsToolbarSearchAvailable: Boolean = false
     private var mPaymentLinkBottomSheet: BottomSheetDialog? = null
     private var mPaymentLinkAmountStr: String? = null
-    private var mStaffInvitation: StaffInvitationResponse? = null
-    private var mIsInvitationShown: Boolean = false
-    private var mUserId: String = ""
 
     companion object {
         private var sOrderPageInfoResponse: OrderPageInfoResponse? = null
@@ -315,7 +311,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
             stopProgress()
             if (commonResponse.mIsSuccessStatus) {
                 sOrderPageInfoResponse = Gson().fromJson<OrderPageInfoResponse>(commonResponse.mCommonDataStr, OrderPageInfoResponse::class.java)
-                showDialogOrNot()
+                checkPendingStaffInvitationDialog()
                 pushProfileToCleverTap()
             }
         }
@@ -723,10 +719,10 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
         }
     }
 
-    private fun showDialogOrNot(){
-        Log.d("inviteBoolOrder", sIsInvitationShown.toString())
-        if (true == sIsInvitationShown) {
-            showStaffInvitationDialog(StaticInstances.sStaffInvitation)
+    private fun checkPendingStaffInvitationDialog() {
+        Log.d(TAG, "StaticInstances.sIsInvitationShown :: $mIsInvitationShown")
+        if (true == mIsInvitationShown) {
+            showStaffInvitationDialog()
         } else {
             setupOrderPageInfoUI()
         }
@@ -1093,12 +1089,12 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
     override fun onLockedStoreShareSuccessResponse(lockedShareResponse: LockedStoreShareResponse) = showLockedStoreShareBottomSheet(lockedShareResponse)
 
     override fun checkStaffInviteResponse(commonResponse: CommonApiResponse) {
-        CoroutineScopeUtils().runTaskOnCoroutineMain {
+        /*CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (commonResponse.mIsSuccessStatus) {
                 var sCheckStaffInviteResponse = Gson().fromJson<StaffMemberDetailsResponse>(commonResponse.mCommonDataStr, StaffMemberDetailsResponse::class.java)
                 mIsInvitationShown = sCheckStaffInviteResponse.mIsInvitationAvailable
                 Log.i("isInvitationShownOrders", sCheckStaffInviteResponse?.mIsInvitationAvailable.toString())
             }
-        }
+        }*/
     }
 }

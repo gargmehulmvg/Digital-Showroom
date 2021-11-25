@@ -96,6 +96,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     private var mCurrentLatitude = 0.0
     private var mCurrentLongitude = 0.0
     private var mMultiUserAdapter: StaffInvitationAdapter? = null
+    protected var mIsInvitationShown: Boolean? = false
 
     companion object {
         private var sStaffInvitationDialog: Dialog? = null
@@ -2032,9 +2033,9 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         }
     }
 
-    fun showStaffInvitationDialog(staffInvitation: StaffInvitationResponse?) {
+    fun showStaffInvitationDialog() {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            if (true == sStaffInvitationDialog?.isShowing) return@runTaskOnCoroutineMain
+            if (null != sStaffInvitationDialog && true == sStaffInvitationDialog?.isShowing) return@runTaskOnCoroutineMain
             mActivity?.let { context ->
                 sStaffInvitationDialog = Dialog(context)
                 val view = LayoutInflater.from(context).inflate(R.layout.multi_user_selection_dialog, null)
@@ -2050,6 +2051,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                         val nextTextView: TextView = findViewById(R.id.nextTextView)
                         val moreOptionsTextView: TextView = findViewById(R.id.moreOptionsTextView)
                         val dialogHeadingTextView: TextView = findViewById(R.id.dialogHeadingTextView)
+                        val staffInvitation = StaticInstances.sStaffInvitation
                         mActivity?.let { context ->
                             Glide.with(context).load(staffInvitation?.cdn).into(dialogImageView)
                         }
@@ -2101,7 +2103,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                                                             showShortSnackBar(it.mMessage, true, R.drawable.ic_check_circle)
                                                             when (selectedId) {
                                                                 Constants.STAFF_INVITATION_CODE_ACCEPT -> {
-                                                                    StaticInstances.sIsInvitationShown = updateInvitationResponse.mIsInvitationAvailable
+                                                                    mIsInvitationShown = updateInvitationResponse.mIsInvitationAvailable
                                                                     StaticInstances.sPermissionHashMap = null
                                                                     StaticInstances.sPermissionHashMap = updateInvitationResponse.permissionsMap
                                                                     storeStringDataInSharedPref(Constants.STORE_ID, updateInvitationResponse.storeId)
@@ -2127,12 +2129,12 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         }
     }
 
-    fun checkStaffInvite(){
+    fun checkStaffInvite() {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
             val checkStaffInviteResponse = RetrofitApi().getServerCallObject()?.checkStaffInvite()
-            checkStaffInviteResponse?.let {it ->
-                val checkStaffInviteResponse2 = Gson().fromJson<StaffMemberDetailsResponse>(it.body()?.mCommonDataStr , StaffMemberDetailsResponse::class.java)
-                StaticInstances.sIsInvitationShown = checkStaffInviteResponse2?.mIsInvitationAvailable
+            checkStaffInviteResponse?.let { it ->
+                val checkStaffInviteResponse2 = Gson().fromJson<StaffMemberDetailsResponse>(it.body()?.mCommonDataStr, StaffMemberDetailsResponse::class.java)
+                mIsInvitationShown = checkStaffInviteResponse2?.mIsInvitationAvailable
                 StaticInstances.sStaffInvitation = checkStaffInviteResponse2?.mStaffInvitation
             }
         }
@@ -2158,6 +2160,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                 launchFragment(SettingsFragment.newInstance(), true)
             }
         }
+        if (true == mIsInvitationShown) showStaffInvitationDialog()
         mActivity?.checkBottomNavBarFeatureVisibility()
     }
 

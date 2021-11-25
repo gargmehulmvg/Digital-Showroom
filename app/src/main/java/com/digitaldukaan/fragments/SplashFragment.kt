@@ -22,6 +22,7 @@ import com.digitaldukaan.services.serviceinterface.ISplashServiceInterface
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import kotlinx.android.synthetic.main.activity_main2.*
 
 class SplashFragment : BaseFragment(), ISplashServiceInterface {
 
@@ -106,11 +107,16 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
                     val response = RetrofitApi().getServerCallObject()?.getStaffMembersDetails(getStringDataFromSharedPref(Constants.STORE_ID))
                     response?.let { it ->
                         val staffMemberDetailsResponse = Gson().fromJson<StaffMemberDetailsResponse>(it.body()?.mCommonDataStr, StaffMemberDetailsResponse::class.java)
-                        Log.d(TAG, "StaticInstances.sPermissionHashMap: ${StaticInstances.sPermissionHashMap?.toString()}")
-                        StaticInstances.sPermissionHashMap = null
-                        StaticInstances.sPermissionHashMap = staffMemberDetailsResponse?.permissionsMap
-                        stopProgress()
-                        staffMemberDetailsResponse?.permissionsMap?.let { map -> launchScreenFromPermissionMap(map) }
+                        blurBottomNavBarContainer?.visibility = View.INVISIBLE
+                        if (null != staffMemberDetailsResponse) {
+                            Log.d(TAG, "StaticInstances.sPermissionHashMap: ${StaticInstances.sPermissionHashMap}")
+                            StaticInstances.sPermissionHashMap = null
+                            StaticInstances.sPermissionHashMap = staffMemberDetailsResponse.permissionsMap
+                            stopProgress()
+                            staffMemberDetailsResponse.permissionsMap?.let { map -> launchScreenFromPermissionMap(map) }
+                        } else {
+                            launchFragment(LoginFragmentV2.newInstance(), true)
+                        }
                     }
                     Log.i("PermissionMapSplash", StaticInstances.sPermissionHashMap.toString())
                 }

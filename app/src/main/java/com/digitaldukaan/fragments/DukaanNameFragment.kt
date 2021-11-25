@@ -23,7 +23,6 @@ import com.digitaldukaan.models.request.CreateStoreRequest
 import com.digitaldukaan.models.response.BusinessNameStaticText
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.CreateStoreResponse
-import com.digitaldukaan.models.response.StaffInvitationResponse
 import com.digitaldukaan.services.DukaanNameService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.ICreateStoreServiceInterface
@@ -40,15 +39,11 @@ class DukaanNameFragment : BaseFragment(), ICreateStoreServiceInterface {
     private var mCurrentLatitude = 0.0
     private var mCurrentLongitude = 0.0
     private var lastLocation: Location? = null
-    private var mStaffInvitation: StaffInvitationResponse? = null
-    private var mIsInvitationShown: Boolean = false
     private var mUserId: String = ""
 
     companion object {
-        fun newInstance(isInvitationShown: Boolean, staffInvitation: StaffInvitationResponse?, userId: String): DukaanNameFragment {
+        fun newInstance(userId: String): DukaanNameFragment {
             val fragment = DukaanNameFragment()
-            fragment.mIsInvitationShown = isInvitationShown
-            fragment.mStaffInvitation = staffInvitation
             fragment.mUserId = userId
             return fragment
         }
@@ -102,7 +97,6 @@ class DukaanNameFragment : BaseFragment(), ICreateStoreServiceInterface {
             }
         })
         setupUIFromStaticData()
-        showInvitationDialog()
     }
 
     private fun setupUIFromStaticData() {
@@ -207,23 +201,16 @@ class DukaanNameFragment : BaseFragment(), ICreateStoreServiceInterface {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         Log.i(TAG, "onRequestPermissionResult")
         if (requestCode == Constants.LOCATION_REQUEST_CODE) {
+            if (true == mIsInvitationShown) showStaffInvitationDialog()
             when {
-                grantResults.isEmpty() -> Log.i(TAG, "User interaction was cancelled.")
+                grantResults.isEmpty() -> Log.d(TAG, "User interaction was cancelled.")
                 grantResults[0] == PackageManager.PERMISSION_GRANTED -> {
-                    //showInvitationDialog()
                     getLastLocation()
                 }
                 else -> {
-                    //showInvitationDialog()
                     showToast("Permission was denied")
                 }
             }
-        }
-    }
-
-    private fun showInvitationDialog() {
-        if (mIsInvitationShown) {
-            showStaffInvitationDialog(mStaffInvitation)
         }
     }
 

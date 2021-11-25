@@ -131,7 +131,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     fun checkBottomNavBarFeatureVisibility() {
         StaticInstances.sPermissionHashMap?.forEach { (key, value) ->
             runOnUiThread {
-                println("$key = $value")
+                Log.d(TAG, "$key = $value")
                 if (Constants.PAGE_ORDER == key && !value) {
                     blurBottomNavBarContainer?.visibility = View.VISIBLE
                     blurBottomNavBarOrders?.visibility = View.VISIBLE

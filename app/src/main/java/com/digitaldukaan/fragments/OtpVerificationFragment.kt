@@ -35,6 +35,7 @@ import com.google.android.gms.auth.api.phone.SmsRetriever
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import kotlinx.android.synthetic.main.activity_main2.*
 import kotlinx.android.synthetic.main.otp_verification_fragment.*
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
@@ -313,8 +314,11 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
             stopProgress()
             if (commonResponse.mIsSuccessStatus) {
                 mCheckStaffInviteResponse = Gson().fromJson<StaffMemberDetailsResponse>(commonResponse.mCommonDataStr, StaffMemberDetailsResponse::class.java)
+                blurBottomNavBarContainer?.visibility = View.INVISIBLE
                 if (null == mValidateOtpResponse?.mStore && mIsNewUser) {
-                    launchFragment(DukaanNameFragment.newInstance(mCheckStaffInviteResponse?.mIsInvitationAvailable ?: false, mCheckStaffInviteResponse?.mStaffInvitation, mValidateOtpResponse?.mUserId ?: ""), true)
+                    mIsInvitationShown = mCheckStaffInviteResponse?.mIsInvitationAvailable ?: false
+                    StaticInstances.sStaffInvitation = mCheckStaffInviteResponse?.mStaffInvitation
+                    launchFragment(DukaanNameFragment.newInstance(mValidateOtpResponse?.mUserId ?: ""), true)
                 } else StaticInstances.sPermissionHashMap?.let { it1 -> launchScreenFromPermissionMap(it1) }
             }
         }

@@ -79,14 +79,9 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
             showNoInternetConnectionDialog()
             return
         }
-
-        if(StaticInstances.sIsInvitationShown == true){
-            showStaffInvitationDialog(StaticInstances.sStaffInvitation)
-        }else{
-            showProgressDialog(mActivity)
-            mService?.getMarketingPageInfo()
-            WebViewBridge.mWebViewListener = this
-        }
+        showProgressDialog(mActivity)
+        mService?.getMarketingPageInfo()
+        WebViewBridge.mWebViewListener = this
     }
 
     override fun onClick(view: View?) {
