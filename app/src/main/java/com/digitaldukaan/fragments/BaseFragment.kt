@@ -2064,13 +2064,13 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                                     staffInvitation?.invitationList?.get(position)?.isSelected = true
                                     selectedId = when (staffInvitation?.invitationList?.get(position)?.id) {
                                         Constants.STAFF_INVITATION_CODE_EXIT -> {
-                                            staffInvitation.invitationList[position]?.id ?: 0
+                                            staffInvitation.invitationList[position]?.id ?: Constants.STAFF_INVITATION_CODE_EXIT
                                         }
                                         Constants.STAFF_INVITATION_CODE_REJECT -> {
-                                            staffInvitation.invitationList[position]?.id ?: 2
+                                            staffInvitation.invitationList[position]?.id ?: Constants.STAFF_INVITATION_CODE_REJECT
                                         }
                                         else -> {
-                                            staffInvitation?.invitationList?.get(position)?.id ?: 1
+                                            staffInvitation?.invitationList?.get(position)?.id ?: Constants.STAFF_INVITATION_CODE_ACCEPT
                                         }
                                     }
                                     mMultiUserAdapter?.notifyDataSetChanged()
@@ -2084,7 +2084,6 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                             layoutManager = LinearLayoutManager(context)
                             adapter = mMultiUserAdapter
                         }
-                        Log.i("SelectedID", selectedId.toString())
                         nextTextView.apply {
                             text = staffInvitation?.cta?.text
                             setOnClickListener {
@@ -2101,13 +2100,14 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                                                             sStaffInvitationDialog?.dismiss()
                                                             showShortSnackBar(it.mMessage, true, R.drawable.ic_check_circle)
                                                             when (selectedId) {
-                                                                1 -> {
+                                                                Constants.STAFF_INVITATION_CODE_ACCEPT -> {
                                                                     StaticInstances.sIsInvitationShown = updateInvitationResponse.mIsInvitationAvailable
+                                                                    StaticInstances.sPermissionHashMap = null
                                                                     StaticInstances.sPermissionHashMap = updateInvitationResponse.permissionsMap
-                                                                    StaticInstances.sPermissionHashMap?.let { it1 -> launchScreenFromPermissionMap(it1) }
                                                                     storeStringDataInSharedPref(Constants.STORE_ID, updateInvitationResponse.storeId)
+                                                                    StaticInstances.sPermissionHashMap?.let { map -> launchScreenFromPermissionMap(map) }
                                                                 }
-                                                                0 -> mActivity?.finish()
+                                                                Constants.STAFF_INVITATION_CODE_EXIT -> mActivity?.finish()
                                                                 else -> checkStaffInvite()
                                                             }
                                                         } else showShortSnackBar(it.mMessage, true, R.drawable.ic_close_red)
@@ -2134,8 +2134,6 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                 val checkStaffInviteResponse2 = Gson().fromJson<StaffMemberDetailsResponse>(it.body()?.mCommonDataStr , StaffMemberDetailsResponse::class.java)
                 StaticInstances.sIsInvitationShown = checkStaffInviteResponse2?.mIsInvitationAvailable
                 StaticInstances.sStaffInvitation = checkStaffInviteResponse2?.mStaffInvitation
-                Log.i("isInvitationSplash", checkStaffInviteResponse2?.mIsInvitationAvailable.toString())
-                Log.i("isStaffInvitationSplash", checkStaffInviteResponse2?.mStaffInvitation.toString())
             }
         }
     }

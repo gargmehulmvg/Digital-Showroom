@@ -16,10 +16,6 @@ import com.digitaldukaan.R
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.models.response.*
 import com.digitaldukaan.network.RetrofitApi
-import com.digitaldukaan.models.response.AppVersionResponse
-import com.digitaldukaan.models.response.CommonApiResponse
-import com.digitaldukaan.models.response.HelpScreenItemResponse
-import com.digitaldukaan.models.response.StaticTextResponse
 import com.digitaldukaan.services.SplashService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.ISplashServiceInterface
@@ -111,6 +107,7 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
                     response?.let { it ->
                         val staffMemberDetailsResponse = Gson().fromJson<StaffMemberDetailsResponse>(it.body()?.mCommonDataStr, StaffMemberDetailsResponse::class.java)
                         Log.d(TAG, "StaticInstances.sPermissionHashMap: ${StaticInstances.sPermissionHashMap?.toString()}")
+                        StaticInstances.sPermissionHashMap = null
                         StaticInstances.sPermissionHashMap = staffMemberDetailsResponse?.permissionsMap
                         stopProgress()
                         staffMemberDetailsResponse?.permissionsMap?.let { map -> launchScreenFromPermissionMap(map) }

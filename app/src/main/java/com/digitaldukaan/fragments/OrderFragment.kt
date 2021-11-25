@@ -101,7 +101,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
         fun newInstance(isNewUserLogin: Boolean = false, isClearOrderPageResponse: Boolean = false): OrderFragment {
             val fragment = OrderFragment()
             fragment.mIsNewUserLogin = isNewUserLogin
-            if (isClearOrderPageResponse) sOrderPageInfoResponse = null
+            if (isClearOrderPageResponse) this.sOrderPageInfoResponse = null
             return fragment
         }
     }
