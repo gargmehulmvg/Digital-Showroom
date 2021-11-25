@@ -112,10 +112,12 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
                             Log.d(TAG, "StaticInstances.sPermissionHashMap: ${StaticInstances.sPermissionHashMap}")
                             StaticInstances.sPermissionHashMap = null
                             StaticInstances.sPermissionHashMap = staffMemberDetailsResponse.permissionsMap
+                            StaticInstances.sStaffInvitation = staffMemberDetailsResponse.mStaffInvitation
+                            StaticInstances.sMerchantMobileNumber = staffMemberDetailsResponse.ownerPhone ?: ""
                             stopProgress()
-                            if (staffMemberDetailsResponse.mIsInvitationAvailable)
+                            if (staffMemberDetailsResponse.mIsInvitationAvailable) {
                                 launchFragment(OrderFragment.newInstance(), true)
-                            else staffMemberDetailsResponse.permissionsMap?.let { map -> launchScreenFromPermissionMap(map) }
+                            } else staffMemberDetailsResponse.permissionsMap?.let { map -> launchScreenFromPermissionMap(map) }
                         } else {
                             launchFragment(LoginFragmentV2.newInstance(), true)
                         }

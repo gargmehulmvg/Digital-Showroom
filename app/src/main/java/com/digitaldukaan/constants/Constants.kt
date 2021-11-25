@@ -233,6 +233,7 @@ class Constants {
         const val STORE_PROFILE                                 = "store_profile"
         const val LANDING_CARDS                                 = "landing_cards"
         const val MY_SHORTCUTS                                  = "my_shortcuts"
+        const val PREMIUM_USER                                  = "premium_user"
         //BILL_TYPE
         const val BILL_TYPE_PDF                                 = "pdf"
         //STAFF_INVITATION_CODE

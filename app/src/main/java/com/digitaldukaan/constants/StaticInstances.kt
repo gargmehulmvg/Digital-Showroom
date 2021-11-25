@@ -27,4 +27,5 @@ object StaticInstances {
     var sSuggestedDomainsList: ArrayList<PrimaryDomainItemResponse>? = null
     var sStaffInvitation: StaffInvitationResponse? = null
     var sPermissionHashMap: HashMap<String, Boolean>? = null
+    var sMerchantMobileNumber: String = ""
 }

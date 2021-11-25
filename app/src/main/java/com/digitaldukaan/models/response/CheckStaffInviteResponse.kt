@@ -7,6 +7,7 @@ data class CheckStaffInviteResponse(
         @SerializedName("staff_invitation")         var mStaffInvitation: StaffInvitationResponse,
         @SerializedName("store_id")                 var storeId: String?,
         @SerializedName("user_phone")               var userPhone: String?,
+        @SerializedName("owner_phone")              var ownerPhone: String?,
         @SerializedName("name")                     var name: String?,
         @SerializedName("role")                     var role: String?,
         @SerializedName("permissions")              var permissions: ArrayList<Int>?,

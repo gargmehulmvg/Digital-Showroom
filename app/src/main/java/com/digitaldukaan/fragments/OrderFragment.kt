@@ -227,6 +227,9 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
             adapter = mCompletedOrderAdapter
             addItemDecoration(StickyRecyclerHeadersDecoration(mCompletedOrderAdapter))
         }
+        Log.d(TAG, "mehul onViewCreated: OrderFragment called")
+        Log.d(TAG, "mehul onViewCreated: OrderFragment sIsInvitationAvailable :: $sIsInvitationAvailable")
+        if (sIsInvitationAvailable) showStaffInvitationDialog()
     }
 
     override fun onUserAuthenticationResponse(authenticationUserResponse: ValidateOtpResponse) {
@@ -312,7 +315,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
             stopProgress()
             if (commonResponse.mIsSuccessStatus) {
                 sOrderPageInfoResponse = Gson().fromJson<OrderPageInfoResponse>(commonResponse.mCommonDataStr, OrderPageInfoResponse::class.java)
-                checkPendingStaffInvitationDialog()
+                setupOrderPageInfoUI()
                 pushProfileToCleverTap()
             }
         }
@@ -387,7 +390,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                 val domainExpiryContainer: View? = mContentView?.findViewById(R.id.domainExpiryContainer)
                 if (mIsAllStepsCompleted) {
                     zeroOrderItemsRecyclerView?.visibility = View.GONE
-                    if(true == StaticInstances.sPermissionHashMap?.get(Constants.MY_SHORTCUTS)){
+                    if (true == StaticInstances.sPermissionHashMap?.get(Constants.MY_SHORTCUTS)) {
                         myShortcutsRecyclerView?.visibility = View.VISIBLE
                         myShortcutsRecyclerView?.apply {
                             layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
@@ -727,15 +730,6 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                     grantResults[0] == PackageManager.PERMISSION_GRANTED -> openCameraWithoutCrop()
                 }
             }
-        }
-    }
-
-    private fun checkPendingStaffInvitationDialog() {
-        Log.d(TAG, "StaticInstances.sIsInvitationShown :: $sIsInvitationAvailable")
-        if (sIsInvitationAvailable) {
-            showStaffInvitationDialog()
-        } else {
-            setupOrderPageInfoUI()
         }
     }
 
@@ -1119,13 +1113,5 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
         }
     }
 
-    override fun checkStaffInviteResponse(commonResponse: CommonApiResponse) {
-        CoroutineScopeUtils().runTaskOnCoroutineMain {
-            if (commonResponse.mIsSuccessStatus) {
-                val checkStaffInviteResponse = Gson().fromJson<CheckStaffInviteResponse>(commonResponse.mCommonDataStr, CheckStaffInviteResponse::class.java)
-                sIsInvitationAvailable = checkStaffInviteResponse.mIsInvitationAvailable
-                Log.i("isInvitationShownOrders", checkStaffInviteResponse?.mIsInvitationAvailable.toString())
-            }
-        }
-    }
+    override fun checkStaffInviteResponse(commonResponse: CommonApiResponse) = Unit
 }

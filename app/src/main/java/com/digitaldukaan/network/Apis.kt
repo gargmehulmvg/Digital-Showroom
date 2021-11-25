@@ -50,8 +50,8 @@ interface Apis {
     @POST("api/dotk/vc1/user/updateInvitationStatus")
     suspend fun updateInvitationStatus(@Body request: UpdateInvitationRequest) : Response<CommonApiResponse>
 
-    @GET("api/dotk/vc1/user/getStaffMemberDetails/{store_id}")
-    suspend fun getStaffMembersDetails(@Path("store_id") store_id: String) : Response<CommonApiResponse>
+    @GET("api/dotk/vc1/user/getStaffMemberDetails/{storeId}")
+    suspend fun getStaffMembersDetails(@Path("storeId") store_id: String) : Response<CommonApiResponse>
 
     /* ----------------------       Settings         ---------------------- */
     @GET("api/dotk/vm1/settings/getOrderTypePageInfo")

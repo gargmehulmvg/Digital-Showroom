@@ -68,6 +68,7 @@ import com.google.gson.Gson
 import com.squareup.picasso.Picasso
 import com.yalantis.ucrop.UCrop
 import id.zelory.compressor.Compressor
+import id.zelory.compressor.constraint.quality
 import io.sentry.Sentry
 import kotlinx.android.synthetic.main.activity_main2.*
 import kotlinx.android.synthetic.main.bottom_sheet_custom_domain_selection.view.*
@@ -101,7 +102,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     companion object {
         private var sStaffInvitationDialog: Dialog? = null
         private var mCurrentPhotoPath = ""
-        var sIsInvitationAvailable: Boolean = false
+        var sIsInvitationAvailable: Boolean = true
     }
 
     override fun onAttach(context: Context) {
@@ -839,7 +840,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         var file = File(mCurrentPhotoPath)
         mActivity?.run {
             Log.d(TAG, "ORIGINAL :: ${file.length() / (1024)} KB")
-            file = Compressor.compress(this, file)
+            file = Compressor.compress(this, file) { quality(if (true == StaticInstances.sPermissionHashMap?.get(Constants.PREMIUM_USER)) (mActivity?.resources?.getInteger(R.integer.premium_compression_value) ?: 80) else 100) }
             Log.d(TAG, "COMPRESSED :: ${file.length() / (1024)} KB")
         }
         if (file.length() / (1024 * 1024) >= mActivity?.resources?.getInteger(R.integer.image_mb_size) ?: 0) {
@@ -866,7 +867,9 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         var file = getImageFileFromBitmap(bitmap, mActivity)
         file?.let {
             Log.d(TAG, "ORIGINAL :: ${it.length() / (1024)} KB")
-            mActivity?.run { file = Compressor.compress(this, it) }
+            mActivity?.run { file = Compressor.compress(this, it) {
+                quality(if (true == StaticInstances.sPermissionHashMap?.get(Constants.PREMIUM_USER)) (mActivity?.resources?.getInteger(R.integer.premium_compression_value) ?: 80) else 100)
+            } }
             Log.d(TAG, "COMPRESSED :: ${it.length() / (1024)} KB")
             if (it.length() / (1024 * 1024) >= mActivity?.resources?.getInteger(R.integer.image_mb_size) ?: 0) {
                 showToast("Images more than ${mActivity?.resources?.getInteger(R.integer.image_mb_size)} are not allowed")
@@ -949,7 +952,9 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                             var file = getImageFileFromBitmap(it, mActivity)
                             file?.let { f ->
                                 Log.d(TAG, "ORIGINAL :: ${f.length() / (1024)} KB")
-                                mActivity?.let { context -> file = Compressor.compress(context, f) }
+                                mActivity?.let { context ->
+                                    file = Compressor.compress(context, f) {
+                                        quality(if (true == StaticInstances.sPermissionHashMap?.get(Constants.PREMIUM_USER)) (mActivity?.resources?.getInteger(R.integer.premium_compression_value) ?: 80) else 100) } }
                                 Log.d(TAG, "COMPRESSED :: ${f.length() / (1024)} KB")
                                 if (f.length() / (1024 * 1024) >= mActivity?.resources?.getInteger(R.integer.image_mb_size) ?: 0) {
                                     showToast("Images more than ${mActivity?.resources?.getInteger(R.integer.image_mb_size)} are not allowed")
@@ -1367,13 +1372,13 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
 
     fun logoutFromApplication(isAppLogout: Boolean = false) {
         if (!isAppLogout) showToast(mActivity?.getString(R.string.logout_message))
-        mActivity?.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE)?.edit()?.clear()?.apply()
-        clearFragmentBackStack()
+        mActivity?.getSharedPreferences(Constants.SHARED_PREF_NAME, MODE_PRIVATE)?.edit()?.clear()?.apply()
         storeStringDataInSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN, "")
         storeStringDataInSharedPref(Constants.USER_AUTH_TOKEN, "")
         storeStringDataInSharedPref(Constants.STORE_NAME, "")
         storeStringDataInSharedPref(Constants.USER_MOBILE_NUMBER, "")
         storeStringDataInSharedPref(Constants.STORE_ID, "")
+        clearFragmentBackStack()
         launchFragment(LoginFragmentV2.newInstance(isAppLogout), true)
     }
 
@@ -1388,10 +1393,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                         it.body()?.let {
                             withContext(Dispatchers.Main) {
                                 if (it.mIsSuccessStatus) shareOnWhatsApp(
-                                    Gson().fromJson<String>(
-                                        it.mCommonDataStr,
-                                        String::class.java
-                                    )
+                                    Gson().fromJson<String>(it.mCommonDataStr, String::class.java)
                                 ) else showShortSnackBar(it.mMessage, true, R.drawable.ic_close_red)
                             }
                         }
@@ -1413,9 +1415,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                     if (it.isSuccessful) {
                         it.body()?.let {
                             withContext(Dispatchers.Main) {
-                                if (it.mIsSuccessStatus) shareOnWhatsApp(
-                                    Gson().fromJson<String>(it.mCommonDataStr, String::class.java)
-                                ) else showShortSnackBar(it.mMessage, true, R.drawable.ic_close_red)
+                                if (it.mIsSuccessStatus) shareDataOnWhatsAppByNumber(Gson().fromJson<String>(it.mCommonDataStr, String::class.java), StaticInstances.sMerchantMobileNumber) else showShortSnackBar(it.mMessage, true, R.drawable.ic_close_red)
                             }
                         }
                     }
@@ -2035,7 +2035,9 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
 
     fun showStaffInvitationDialog() {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
+            Log.d(TAG, "showStaffInvitationDialog: called")
             if (null != sStaffInvitationDialog && true == sStaffInvitationDialog?.isShowing) return@runTaskOnCoroutineMain
+            if (null == StaticInstances.sStaffInvitation) return@runTaskOnCoroutineMain
             mActivity?.let { context ->
                 sStaffInvitationDialog = Dialog(context)
                 val view = LayoutInflater.from(context).inflate(R.layout.multi_user_selection_dialog, null)
@@ -2062,7 +2064,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                             mMultiUserAdapter = StaffInvitationAdapter(staffInvitation.invitationList, object : IAdapterItemClickListener {
                                 override fun onAdapterItemClickListener(position: Int) {
                                     staffInvitation.invitationList.forEachIndexed { _, item -> item?.isSelected = false }
-                                    staffInvitation.invitationList.get(position)?.isSelected = true
+                                    staffInvitation.invitationList[position]?.isSelected = true
                                     selectedId = when (staffInvitation.invitationList[position]?.id) {
                                         Constants.STAFF_INVITATION_CODE_EXIT -> {
                                             staffInvitation.invitationList[position]?.id ?: Constants.STAFF_INVITATION_CODE_EXIT
@@ -2109,7 +2111,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                                                                     storeStringDataInSharedPref(Constants.STORE_ID, updateInvitationResponse.storeId)
                                                                     StaticInstances.sPermissionHashMap?.let { map -> launchScreenFromPermissionMap(map) }
                                                                 }
-                                                                Constants.STAFF_INVITATION_CODE_EXIT -> mActivity?.finish()
+                                                                Constants.STAFF_INVITATION_CODE_EXIT -> logoutFromApplication(isAppLogout = true)
                                                                 else -> checkStaffInvite()
                                                             }
                                                         } else showShortSnackBar(it.mMessage, true, R.drawable.ic_close_red)
@@ -2135,6 +2137,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
             checkStaffInviteResponse?.let { it ->
                 val staffInviteResponse = Gson().fromJson<CheckStaffInviteResponse>(it.body()?.mCommonDataStr, CheckStaffInviteResponse::class.java)
                 Log.d(TAG, "sIsInvitationAvailable :: staffInviteResponse?.mIsInvitationAvailable ${staffInviteResponse?.mIsInvitationAvailable}")
+                Log.d(TAG, "mehul checkStaffInvite: response set sIsInvitationAvailable :: ${staffInviteResponse?.mIsInvitationAvailable ?: false} ")
                 sIsInvitationAvailable = staffInviteResponse?.mIsInvitationAvailable ?: false
                 StaticInstances.sStaffInvitation = staffInviteResponse?.mStaffInvitation
                 onCheckStaffInviteResponse()
@@ -2146,7 +2149,6 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         clearFragmentBackStack()
         Log.d(TAG, "$permissionMap")
         Log.d(TAG, "sIsInvitationAvailable :: $sIsInvitationAvailable")
-        if (sIsInvitationAvailable) showStaffInvitationDialog()
         when {
             true == permissionMap[Constants.PAGE_ORDER] -> {
                 launchFragment(OrderFragment.newInstance(isClearOrderPageResponse = true), true)
@@ -2165,6 +2167,8 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
             }
         }
         mActivity?.checkBottomNavBarFeatureVisibility()
+        Log.d(TAG, " sIsInvitationAvailable :: launchScreenFromPermissionMap: called")
+        if (sIsInvitationAvailable) showStaffInvitationDialog()
     }
 
     fun showStaffFeatureLockedBottomSheet(id: Int) {
