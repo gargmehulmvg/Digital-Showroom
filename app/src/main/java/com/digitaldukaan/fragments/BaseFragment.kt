@@ -2137,7 +2137,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                 Log.d(TAG, "sIsInvitationAvailable :: staffInviteResponse?.mIsInvitationAvailable ${staffInviteResponse?.mIsInvitationAvailable}")
                 sIsInvitationAvailable = staffInviteResponse?.mIsInvitationAvailable ?: false
                 StaticInstances.sStaffInvitation = staffInviteResponse?.mStaffInvitation
-                onCheckStaffInviteResponse(staffInviteResponse)
+                onCheckStaffInviteResponse()
             }
         }
     }

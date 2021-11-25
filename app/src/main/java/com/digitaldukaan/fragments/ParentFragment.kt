@@ -3,7 +3,6 @@ package com.digitaldukaan.fragments
 import android.net.Uri
 import androidx.fragment.app.Fragment
 import com.digitaldukaan.interfaces.IWebViewCallbacks
-import com.digitaldukaan.models.response.CheckStaffInviteResponse
 import com.digitaldukaan.models.response.LockedStoreShareResponse
 import com.digitaldukaan.models.response.OrderItemResponse
 import com.digitaldukaan.models.response.TransactionDetailResponse
@@ -47,7 +46,7 @@ open class ParentFragment : Fragment(), IWebViewCallbacks {
 
     open fun onLocationChanged(lat: Double, lng: Double) = Unit
 
-    open fun onCheckStaffInviteResponse(checkStaffInviteResponse: CheckStaffInviteResponse) = Unit
+    open fun onCheckStaffInviteResponse() = Unit
 
     open fun onShipmentCtaClicked(initiateServerCall: Boolean) = Unit
 
