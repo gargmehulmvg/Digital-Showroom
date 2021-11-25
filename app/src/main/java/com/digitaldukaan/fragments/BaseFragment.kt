@@ -840,7 +840,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         var file = File(mCurrentPhotoPath)
         mActivity?.run {
             Log.d(TAG, "ORIGINAL :: ${file.length() / (1024)} KB")
-            file = Compressor.compress(this, file) { quality(if (true == StaticInstances.sPermissionHashMap?.get(Constants.PREMIUM_USER)) (mActivity?.resources?.getInteger(R.integer.premium_compression_value) ?: 80) else 100) }
+            file = Compressor.compress(this, file) { quality(if (false == StaticInstances.sPermissionHashMap?.get(Constants.PREMIUM_USER)) (mActivity?.resources?.getInteger(R.integer.premium_compression_value) ?: 80) else 100) }
             Log.d(TAG, "COMPRESSED :: ${file.length() / (1024)} KB")
         }
         if (file.length() / (1024 * 1024) >= mActivity?.resources?.getInteger(R.integer.image_mb_size) ?: 0) {
@@ -868,7 +868,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         file?.let {
             Log.d(TAG, "ORIGINAL :: ${it.length() / (1024)} KB")
             mActivity?.run { file = Compressor.compress(this, it) {
-                quality(if (true == StaticInstances.sPermissionHashMap?.get(Constants.PREMIUM_USER)) (mActivity?.resources?.getInteger(R.integer.premium_compression_value) ?: 80) else 100)
+                quality(if (false == StaticInstances.sPermissionHashMap?.get(Constants.PREMIUM_USER)) (mActivity?.resources?.getInteger(R.integer.premium_compression_value) ?: 80) else 100)
             } }
             Log.d(TAG, "COMPRESSED :: ${it.length() / (1024)} KB")
             if (it.length() / (1024 * 1024) >= mActivity?.resources?.getInteger(R.integer.image_mb_size) ?: 0) {
@@ -954,7 +954,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                                 Log.d(TAG, "ORIGINAL :: ${f.length() / (1024)} KB")
                                 mActivity?.let { context ->
                                     file = Compressor.compress(context, f) {
-                                        quality(if (true == StaticInstances.sPermissionHashMap?.get(Constants.PREMIUM_USER)) (mActivity?.resources?.getInteger(R.integer.premium_compression_value) ?: 80) else 100) } }
+                                        quality(if (false == StaticInstances.sPermissionHashMap?.get(Constants.PREMIUM_USER)) (mActivity?.resources?.getInteger(R.integer.premium_compression_value) ?: 80) else 100) } }
                                 Log.d(TAG, "COMPRESSED :: ${f.length() / (1024)} KB")
                                 if (f.length() / (1024 * 1024) >= mActivity?.resources?.getInteger(R.integer.image_mb_size) ?: 0) {
                                     showToast("Images more than ${mActivity?.resources?.getInteger(R.integer.image_mb_size)} are not allowed")
