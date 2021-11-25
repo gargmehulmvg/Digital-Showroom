@@ -44,6 +44,7 @@ import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration
+import kotlinx.android.synthetic.main.activity_main2.*
 import kotlinx.android.synthetic.main.layout_analytics.*
 import kotlinx.android.synthetic.main.layout_home_fragment.*
 import kotlinx.android.synthetic.main.layout_home_fragment.analyticsContainer
@@ -720,8 +721,8 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
     }
 
     private fun checkPendingStaffInvitationDialog() {
-        Log.d(TAG, "StaticInstances.sIsInvitationShown :: $mIsInvitationShown")
-        if (true == mIsInvitationShown) {
+        Log.d(TAG, "StaticInstances.sIsInvitationShown :: $sIsInvitationAvailable")
+        if (sIsInvitationAvailable) {
             showStaffInvitationDialog()
         } else {
             setupOrderPageInfoUI()
@@ -776,9 +777,9 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                 searchImageView?.visibility = if (pageInfoResponse.mIsSearchOrder) View.VISIBLE else View.GONE
                 takeOrderTextView?.visibility = if (pageInfoResponse.mIsTakeOrder) View.VISIBLE else View.GONE
             }
-            if(StaticInstances.sPermissionHashMap?.get("landing_cards") == true){
+            if (true == StaticInstances.sPermissionHashMap?.get(Constants.LANDING_CARDS)) {
                 mService?.getLandingPageCards()
-            }else {
+            } else {
                 myShortcutsRecyclerView?.visibility = View.GONE
                 zeroOrderItemsRecyclerView?.visibility = View.GONE
                 nextStepTextView?.visibility = View.GONE
@@ -944,7 +945,6 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
             mPendingPageCount
         )
         mService?.getOrderPageInfo()
-
         mService?.getAnalyticsData()
     }
 
@@ -1088,13 +1088,34 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
 
     override fun onLockedStoreShareSuccessResponse(lockedShareResponse: LockedStoreShareResponse) = showLockedStoreShareBottomSheet(lockedShareResponse)
 
-    override fun checkStaffInviteResponse(commonResponse: CommonApiResponse) {
-        /*CoroutineScopeUtils().runTaskOnCoroutineMain {
-            if (commonResponse.mIsSuccessStatus) {
-                var sCheckStaffInviteResponse = Gson().fromJson<StaffMemberDetailsResponse>(commonResponse.mCommonDataStr, StaffMemberDetailsResponse::class.java)
-                mIsInvitationShown = sCheckStaffInviteResponse.mIsInvitationAvailable
-                Log.i("isInvitationShownOrders", sCheckStaffInviteResponse?.mIsInvitationAvailable.toString())
+    override fun onCheckStaffInviteResponse(checkStaffInviteResponse: CheckStaffInviteResponse) {
+        showProgressDialog(mActivity)
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            val response = RetrofitApi().getServerCallObject()?.getStaffMembersDetails(getStringDataFromSharedPref(Constants.STORE_ID))
+            response?.let { it ->
+                val staffMemberDetailsResponse = Gson().fromJson<CheckStaffInviteResponse>(it.body()?.mCommonDataStr, CheckStaffInviteResponse::class.java)
+                blurBottomNavBarContainer?.visibility = View.INVISIBLE
+                stopProgress()
+                if (null != staffMemberDetailsResponse) {
+                    Log.d(TAG, "StaticInstances.sPermissionHashMap: ${StaticInstances.sPermissionHashMap}")
+                    StaticInstances.sPermissionHashMap = null
+                    StaticInstances.sPermissionHashMap = staffMemberDetailsResponse.permissionsMap
+                    staffMemberDetailsResponse.permissionsMap?.let { map -> launchScreenFromPermissionMap(map) }
+                } else {
+                    launchFragment(newInstance(), true)
+                }
             }
-        }*/
+            Log.d(TAG, "StaticInstances.sPermissionHashMap :: ${StaticInstances.sPermissionHashMap}")
+        }
+    }
+
+    override fun checkStaffInviteResponse(commonResponse: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            if (commonResponse.mIsSuccessStatus) {
+                val checkStaffInviteResponse = Gson().fromJson<CheckStaffInviteResponse>(commonResponse.mCommonDataStr, CheckStaffInviteResponse::class.java)
+                sIsInvitationAvailable = checkStaffInviteResponse.mIsInvitationAvailable
+                Log.i("isInvitationShownOrders", checkStaffInviteResponse?.mIsInvitationAvailable.toString())
+            }
+        }
     }
 }

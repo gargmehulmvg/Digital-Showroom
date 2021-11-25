@@ -340,7 +340,7 @@ class LoginFragmentV2 : BaseFragment(), ILoginServiceInterface {
                     "${it.address1}, ${it.googleAddress}, ${it.pinCode}"
                 }
                 AppEventsManager.pushCleverTapProfile(cleverTapProfile)
-                mIsInvitationShown = userResponse?.mIsInvitationShown ?: false
+                sIsInvitationAvailable = userResponse?.mIsInvitationShown ?: false
                 StaticInstances.sStaffInvitation = userResponse?.mStaffInvitation
                 if (null == userResponse.store && userResponse.user.isNewUser) launchFragment(DukaanNameFragment.newInstance(userResponse?.user?.userId ?: ""), true) else launchFragment(OrderFragment.newInstance(), true)
             } else showShortSnackBar(validateUserResponse.mMessage, true, R.drawable.ic_close_red)

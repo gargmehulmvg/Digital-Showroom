@@ -201,7 +201,7 @@ class DukaanNameFragment : BaseFragment(), ICreateStoreServiceInterface {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         Log.i(TAG, "onRequestPermissionResult")
         if (requestCode == Constants.LOCATION_REQUEST_CODE) {
-            if (true == mIsInvitationShown) showStaffInvitationDialog()
+            if (sIsInvitationAvailable) showStaffInvitationDialog()
             when {
                 grantResults.isEmpty() -> Log.d(TAG, "User interaction was cancelled.")
                 grantResults[0] == PackageManager.PERMISSION_GRANTED -> {

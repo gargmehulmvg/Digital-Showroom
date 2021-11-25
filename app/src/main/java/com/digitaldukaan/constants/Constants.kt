@@ -231,6 +231,7 @@ class Constants {
         const val STORE_LOGO                                    = "store_logo"
         const val STORE_CONTROLS                                = "store_controls"
         const val STORE_PROFILE                                 = "store_profile"
+        const val LANDING_CARDS                                 = "landing_cards"
         //BILL_TYPE
         const val BILL_TYPE_PDF                                 = "pdf"
         //STAFF_INVITATION_CODE

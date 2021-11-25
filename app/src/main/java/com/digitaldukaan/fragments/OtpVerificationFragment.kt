@@ -54,7 +54,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
     private var mIsServerCallInitiated = false
     private var mOtpStaticResponseData: VerifyOtpStaticResponseData? = null
     private var mTimerCompleted = false
-    private var mCheckStaffInviteResponse: StaffMemberDetailsResponse? = null
+    private var mCheckStaffInviteResponse: CheckStaffInviteResponse? = null
     private var mValidateOtpResponse: ValidateOtpResponse? = null
     private var mOtpModesList: ArrayList<CommonCtaResponse>? = null
 
@@ -313,10 +313,10 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             if (commonResponse.mIsSuccessStatus) {
-                mCheckStaffInviteResponse = Gson().fromJson<StaffMemberDetailsResponse>(commonResponse.mCommonDataStr, StaffMemberDetailsResponse::class.java)
+                mCheckStaffInviteResponse = Gson().fromJson<CheckStaffInviteResponse>(commonResponse.mCommonDataStr, CheckStaffInviteResponse::class.java)
                 blurBottomNavBarContainer?.visibility = View.INVISIBLE
                 if (null == mValidateOtpResponse?.mStore && mIsNewUser) {
-                    mIsInvitationShown = mCheckStaffInviteResponse?.mIsInvitationAvailable ?: false
+                    sIsInvitationAvailable = mCheckStaffInviteResponse?.mIsInvitationAvailable ?: false
                     StaticInstances.sStaffInvitation = mCheckStaffInviteResponse?.mStaffInvitation
                     launchFragment(DukaanNameFragment.newInstance(mValidateOtpResponse?.mUserId ?: ""), true)
                 } else StaticInstances.sPermissionHashMap?.let { it1 -> launchScreenFromPermissionMap(it1) }

@@ -106,14 +106,16 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
                 CoroutineScopeUtils().runTaskOnCoroutineBackground {
                     val response = RetrofitApi().getServerCallObject()?.getStaffMembersDetails(getStringDataFromSharedPref(Constants.STORE_ID))
                     response?.let { it ->
-                        val staffMemberDetailsResponse = Gson().fromJson<StaffMemberDetailsResponse>(it.body()?.mCommonDataStr, StaffMemberDetailsResponse::class.java)
+                        val staffMemberDetailsResponse = Gson().fromJson<CheckStaffInviteResponse>(it.body()?.mCommonDataStr, CheckStaffInviteResponse::class.java)
                         blurBottomNavBarContainer?.visibility = View.INVISIBLE
                         if (null != staffMemberDetailsResponse) {
                             Log.d(TAG, "StaticInstances.sPermissionHashMap: ${StaticInstances.sPermissionHashMap}")
                             StaticInstances.sPermissionHashMap = null
                             StaticInstances.sPermissionHashMap = staffMemberDetailsResponse.permissionsMap
                             stopProgress()
-                            staffMemberDetailsResponse.permissionsMap?.let { map -> launchScreenFromPermissionMap(map) }
+                            if (staffMemberDetailsResponse.mIsInvitationAvailable)
+                                launchFragment(OrderFragment.newInstance(), true)
+                            else staffMemberDetailsResponse.permissionsMap?.let { map -> launchScreenFromPermissionMap(map) }
                         } else {
                             launchFragment(LoginFragmentV2.newInstance(), true)
                         }
