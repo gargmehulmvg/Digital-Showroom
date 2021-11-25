@@ -361,8 +361,10 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
 
     override fun onCustomDomainBottomSheetDataResponse(commonResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
             if (commonResponse.mIsSuccessStatus) {
                 val customDomainBottomSheetResponse = Gson().fromJson<CustomDomainBottomSheetResponse>(commonResponse.mCommonDataStr, CustomDomainBottomSheetResponse::class.java)
+                StaticInstances.sCustomDomainBottomSheetResponse = customDomainBottomSheetResponse
                 showDomainPurchasedBottomSheet(customDomainBottomSheetResponse, false)
             }
         }
@@ -555,6 +557,13 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                 if (StaticInstances.sIsShareStoreLocked) {
                     getLockedStoreShareDataServerCall(Constants.MODE_SHARE_STORE)
                 } else shareStoreOverWhatsAppServerCall()
+            }
+            domainExpiryContainer?.id -> {
+                if (null == StaticInstances.sCustomDomainBottomSheetResponse) {
+                    showProgressDialog(mActivity)
+                    mService?.getCustomDomainBottomSheetData()
+                } else
+                    StaticInstances.sCustomDomainBottomSheetResponse?.let { response -> showDomainPurchasedBottomSheet(response, false) }
             }
             searchImageView?.id -> {
                 AppEventsManager.pushAppEvents(
