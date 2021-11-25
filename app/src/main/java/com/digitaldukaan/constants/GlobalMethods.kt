@@ -5,6 +5,7 @@ import android.app.DownloadManager
 import android.content.ContentValues
 import android.content.Context
 import android.content.Context.WINDOW_SERVICE
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.database.Cursor
@@ -30,6 +31,7 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.TranslateAnimation
 import android.webkit.CookieManager
 import android.webkit.URLUtil
+import android.widget.Toast
 import androidmads.library.qrgenearator.QRGContents
 import androidmads.library.qrgenearator.QRGEncoder
 import com.digitaldukaan.BuildConfig
@@ -566,5 +568,20 @@ fun isYoutubeUrlValid(youTubeUrl: String): Boolean {
         return matcher.find()
     } catch (e: Exception) {
         return false
+    }
+}
+
+fun openAppByPackageName(packageName: String, context: Context?) {
+    if (isEmpty(packageName)) {
+        Toast.makeText(context, "No Package Name Found", Toast.LENGTH_SHORT).show()
+        return
+    }
+    context?.let { ctx ->
+        val launchIntent: Intent? = ctx.packageManager?.getLaunchIntentForPackage(packageName)
+        if (null != launchIntent) {
+            ctx.startActivity(launchIntent)
+        } else {
+            ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=$packageName")))
+        }
     }
 }

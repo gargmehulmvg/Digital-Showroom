@@ -176,8 +176,7 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
             }
             jsonData.optBoolean("openAppByPackage") -> {
                 val packageName = jsonData.optString("data")
-                val intent = mActivity?.packageManager?.getLaunchIntentForPackage(packageName)
-                startActivity(intent)
+                openAppByPackageName(packageName, mActivity)
             }
             jsonData.optBoolean("openUPIIntent") -> {
                 val intent = Intent()
