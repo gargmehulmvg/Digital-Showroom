@@ -3,8 +3,6 @@ package com.digitaldukaan.fragments
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -173,17 +171,11 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
         return try {
             Log.d(TAG, "onBackPressed :: called")
             if(null != fragmentManager && 1 == fragmentManager?.backStackEntryCount) {
+                clearFragmentBackStack()
                 if (true == StaticInstances.sPermissionHashMap?.get(Constants.PAGE_ORDER)) {
-                    clearFragmentBackStack()
                     launchFragment(OrderFragment.newInstance(), true)
                 } else {
-                    if (mIsDoublePressToExit) mActivity?.finish()
-                    showShortSnackBar(getString(R.string.msg_back_press))
-                    mIsDoublePressToExit = true
-                    Handler(Looper.getMainLooper()).postDelayed(
-                        { mIsDoublePressToExit = false },
-                        Constants.BACK_PRESS_INTERVAL
-                    )
+                    launchFragment(SettingsFragment.newInstance(), true)
                 }
                 return true
             } else {
