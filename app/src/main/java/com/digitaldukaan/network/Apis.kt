@@ -51,7 +51,7 @@ interface Apis {
     suspend fun updateInvitationStatus(@Body request: UpdateInvitationRequest) : Response<CommonApiResponse>
 
     @GET("api/dotk/vc1/user/getStaffMemberDetails/{storeId}")
-    suspend fun getStaffMembersDetails(@Path("storeId") store_id: String) : Response<CommonApiResponse>
+    suspend fun getStaffMembersDetails(@Path("storeId") storeId: String) : Response<CommonApiResponse>
 
     /* ----------------------       Settings         ---------------------- */
     @GET("api/dotk/vm1/settings/getOrderTypePageInfo")
