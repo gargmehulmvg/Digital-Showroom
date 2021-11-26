@@ -15,7 +15,7 @@ android {
         applicationId "com.digitaldukaan"
         minSdkVersion 24
         targetSdkVersion 30
-        versionCode 82
+        versionCode 83
         versionName "4.4.0"
         multiDexEnabled true
 
