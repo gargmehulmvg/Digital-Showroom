@@ -6,6 +6,8 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Typeface
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.StyleSpan
@@ -63,6 +65,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
     private var mReferEarnOverWhatsAppResponse: ReferEarnOverWhatsAppResponse? = null
     private var mAccountPageInfoResponse: AccountInfoResponse? = null
     private var mNewReleaseItemClickResponse: TrendingListResponse? = null
+    private var mIsDoublePressToExit = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         TAG = "SettingsFragment"
@@ -94,6 +97,19 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         swipeRefreshLayout?.setOnRefreshListener(this)
         mStoreLogo = ""
         fetchUserProfile()
+        setupLockedPermissionUI()
+    }
+
+    private fun setupLockedPermissionUI() {
+        mActivity?.let { context ->
+            imageView5?.setImageDrawable(ContextCompat.getDrawable(context, if (false == StaticInstances.sPermissionHashMap?.get(Constants.STORE_CONTROLS)) R.drawable.ic_subscription_locked_black_small else R.drawable.ic_half_arrow_forward))
+            shapeableImageView?.setImageDrawable(ContextCompat.getDrawable(context, if (false == StaticInstances.sPermissionHashMap?.get(Constants.STORE_PROFILE)) R.drawable.ic_subscription_locked_black_small else R.drawable.round_black_background))
+            editProfileTextView?.apply {
+                setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, if (false == StaticInstances.sPermissionHashMap?.get(Constants.STORE_PROFILE)) R.drawable.ic_subscription_locked_black_small else R.drawable.ic_round_green_arrow_small, 0)
+                setTextColor(ContextCompat.getColor(context, if (true == StaticInstances.sPermissionHashMap?.get(Constants.STORE_PROFILE)) R.color.open_green else R.color.black))
+            }
+            lockedProfilePhotoGroup?.visibility = if (true == StaticInstances.sPermissionHashMap?.get(Constants.STORE_LOGO)) View.GONE else View.VISIBLE
+        }
     }
 
     override fun onClick(view: View?) {
@@ -102,7 +118,13 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         StaticInstances.sAppStoreServicesResponse = mAppStoreServicesResponse
         StaticInstances.sPaymentMethodStr = mAccountPageInfoResponse?.mOnlinePaymentType
         when (view?.id) {
-            storeControlView?.id -> launchFragment(MoreControlsFragment.newInstance(mAccountPageInfoResponse), true)
+            storeControlView?.id -> {
+                if (false == StaticInstances.sPermissionHashMap?.get(Constants.STORE_CONTROLS)) {
+                    showStaffFeatureLockedBottomSheet(Constants.NAV_BAR_SETTINGS)
+                    return
+                }
+                launchFragment(MoreControlsFragment.newInstance(mAccountPageInfoResponse), true)
+            }
             dukaanNameTextView?.id -> launchProfilePreviewFragment()
             editProfileTextView?.id -> launchProfilePreviewFragment()
             profileStatusRecyclerView?.id -> launchProfilePreviewFragment()
@@ -110,15 +132,25 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             completeProfileTextView?.id -> launchProfilePreviewFragment()
             shapeableImageView?.id -> launchProfilePreviewFragment()
             linearLayout?.id -> {
+                if (false == StaticInstances.sPermissionHashMap?.get(Constants.STORE_LOGO)) {
+                    showStaffFeatureLockedBottomSheet(Constants.NAV_BAR_SETTINGS)
+                    return
+                }
                 var storeLogo = mAccountInfoResponse?.mStoreInfo?.storeInfo?.logoImage
-                if (mStoreLogo?.isNotEmpty() == true) storeLogo = mStoreLogo
-                if (storeLogo?.isNotEmpty() == true) launchFragment(ProfilePhotoFragment.newInstance(storeLogo), true, storePhotoImageView) else askCameraPermission()
+                if (isNotEmpty(mStoreLogo)) storeLogo = mStoreLogo
+                if (isNotEmpty(storeLogo)) launchFragment(ProfilePhotoFragment.newInstance(storeLogo), true, storePhotoImageView) else askCameraPermission()
             }
             viewAllHeading?.id -> launchFragment(NewReleaseFragment.newInstance(mAccountInfoResponse?.mTrendingList, mAccountInfoResponse?.mAccountStaticText), true)
         }
     }
 
-    private fun launchProfilePreviewFragment() = launchFragment(ProfilePreviewFragment.newInstance(mAccountPageInfoResponse?.mStoreInfo?.storeInfo?.name), true)
+    private fun launchProfilePreviewFragment() {
+        if (false == StaticInstances.sPermissionHashMap?.get(Constants.STORE_PROFILE)) {
+            showStaffFeatureLockedBottomSheet(Constants.NAV_BAR_SETTINGS)
+            return
+        }
+        launchFragment(ProfilePreviewFragment.newInstance(mAccountPageInfoResponse?.mStoreInfo?.storeInfo?.name), true)
+    }
 
     override fun onImageSelectionResultFile(file: File?, mode: String) {
         if (mode == Constants.MODE_CROP) {
@@ -373,7 +405,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             }
         }
         settingStoreOptionRecyclerView?.apply {
-            val settingsAdapter = SettingsStoreAdapter(this@SettingsFragment, this@SettingsFragment)
+            val settingsAdapter = SettingsStoreAdapter(mActivity, this@SettingsFragment)
             val linearLayoutManager = LinearLayoutManager(mActivity)
             layoutManager = linearLayoutManager
             adapter = settingsAdapter
@@ -407,6 +439,10 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
 
     private fun checkStoreOptionClick(response: StoreOptionsResponse) {
         Log.d(TAG, "checkStoreOptionClick: $response")
+        if (response.mIsStaffFeatureLocked) {
+            showStaffFeatureLockedBottomSheet(Constants.NAV_BAR_SETTINGS)
+            return
+        }
         when (response.mPage) {
             Constants.PAGE_REFER -> {
                 if (mReferAndEarnResponse != null) {
@@ -450,6 +486,10 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
 
     override fun onNewReleaseItemClicked(responseItem: TrendingListResponse?) {
         Log.d(TAG, "onNewReleaseItemClicked: ${responseItem?.mAction}")
+        if (true == responseItem?.isStaffFeatureLocked) {
+            showStaffFeatureLockedBottomSheet(Constants.NAV_BAR_SETTINGS)
+            return
+        }
         when (responseItem?.mAction) {
             Constants.NEW_RELEASE_TYPE_WEBVIEW -> {
                 if (Constants.NEW_RELEASE_TYPE_GOOGLE_ADS == responseItem.mType) {
@@ -518,8 +558,19 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
 
     override fun onBackPressed(): Boolean {
         Log.d(TAG, "onBackPressed: called")
-        if(fragmentManager != null && fragmentManager?.backStackEntryCount == 1) {
-            launchFragment(OrderFragment.newInstance(), true)
+        if (null != fragmentManager && 1 == fragmentManager?.backStackEntryCount) {
+            if (true == StaticInstances.sPermissionHashMap?.get(Constants.PAGE_ORDER)) {
+                clearFragmentBackStack()
+                launchFragment(OrderFragment.newInstance(), true)
+            } else {
+                if (mIsDoublePressToExit) mActivity?.finish()
+                showShortSnackBar(getString(R.string.msg_back_press))
+                mIsDoublePressToExit = true
+                Handler(Looper.getMainLooper()).postDelayed(
+                    { mIsDoublePressToExit = false },
+                    Constants.BACK_PRESS_INTERVAL
+                )
+            }
             return true
         }
         return false

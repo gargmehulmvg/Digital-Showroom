@@ -82,11 +82,44 @@
             android:layout_height="@dimen/_20sdp"
             android:background="@drawable/ic_new_with_text"
             android:clickable="false"
+            android:contentDescription="@string/image_view_content_description"
             android:gravity="center"
             android:visibility="gone"
             app:layout_constraintStart_toStartOf="@+id/itemLayout"
-            app:layout_constraintTop_toTopOf="@+id/itemLayout"
-            android:contentDescription="@string/image_view_content_description" />
+            app:layout_constraintTop_toTopOf="@+id/itemLayout" />
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/newReleaseLockGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:constraint_referenced_ids="paymentModesLockedBackground,paymentModesUnlockNowTextView" />
+
+        <ImageView
+            android:id="@+id/paymentModesLockedBackground"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:alpha="0.5"
+            android:background="@drawable/slight_curve_black_background"
+            android:clickable="false"
+            android:contentDescription="@string/image_view_content_description"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/paymentModesUnlockNowTextView"
+            android:layout_width="@dimen/_20sdp"
+            android:layout_height="@dimen/_20sdp"
+            android:layout_margin="@dimen/_5sdp"
+            android:background="@drawable/curve_white_background2"
+            android:clickable="false"
+            android:contentDescription="@string/image_view_content_description"
+            android:padding="@dimen/_5sdp"
+            android:src="@drawable/ic_subscription_locked_black_small"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

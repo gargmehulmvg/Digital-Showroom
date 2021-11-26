@@ -71,6 +71,10 @@ class NewReleaseFragment: BaseFragment(), IStoreSettingsItemClicked {
 
     override fun onNewReleaseItemClicked(responseItem: TrendingListResponse?) {
         Log.d(TAG, "onNewReleaseItemClicked :: responseItem?.mAction :: ${responseItem?.mAction}")
+        if (true == responseItem?.isStaffFeatureLocked) {
+            showStaffFeatureLockedBottomSheet(Constants.NAV_BAR_SETTINGS)
+            return
+        }
         when (responseItem?.mAction) {
             Constants.NEW_RELEASE_TYPE_WEBVIEW -> {
                 if (Constants.NEW_RELEASE_TYPE_GOOGLE_ADS == responseItem.mType) {

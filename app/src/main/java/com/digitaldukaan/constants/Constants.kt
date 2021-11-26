@@ -24,6 +24,7 @@ class Constants {
         //ERROR_CODE
         const val ERROR_CODE_UN_AUTHORIZED_ACCESS               = 401
         const val ERROR_CODE_FORBIDDEN_ACCESS                   = 403
+        const val ERROR_CODE_FORCE_UPDATE                       = 410
         const val ERROR_MESSAGE_UN_AUTHORIZED_ACCESS            = "unauthorized access"
         const val SHARED_PREF_NAME                              = "DigitalDukaanPrefs"
         const val USER_AUTH_TOKEN                               = "USER_AUTH_TOKEN"
@@ -88,6 +89,10 @@ class Constants {
         const val ACTION_ADD_PRODUCT                            = "add-products"
         const val ACTION_MY_PROFILE                             = "my-profile"
         const val ACTION_STORE_CONTROLS                         = "store-controls"
+        const val ACTION_GST_ADD                                = "gst-add"
+        const val ACTION_GST_PENDING                            = "gst-pending"
+        const val ACTION_GST_VERIFIED                           = "gst-verified"
+        const val ACTION_GST_REJECTED                           = "gst-rejected"
         //PAGES
         const val PAGE_REFER                                    = "refer"
         const val PAGE_HELP                                     = "help"
@@ -211,5 +216,29 @@ class Constants {
         //MODE DELIVERY CHARGE
         const val MEDIA_TYPE_IMAGES                             = 1
         const val MEDIA_TYPE_VIDEOS                             = 2
+        //MODE BOTTOM NAV BAR
+        const val NAV_BAR_ORDERS                                = 1
+        const val NAV_BAR_CATALOG                               = 2
+        const val NAV_BAR_PREMIUM                               = 3
+        const val NAV_BAR_MARKETING                             = 4
+        const val NAV_BAR_SETTINGS                              = 5
+        //NAV_PAGE
+        const val PAGE_ORDER                                    = "page_order"
+        const val PAGE_CATALOG                                  = "page_catalog"
+        const val PAGE_PREMIUM                                  = "page_premium"
+        const val PAGE_MARKETING                                = "page_marketing"
+        const val PAGE_SETTINGS                                 = "page_settings"
+        const val STORE_LOGO                                    = "store_logo"
+        const val STORE_CONTROLS                                = "store_controls"
+        const val STORE_PROFILE                                 = "store_profile"
+        const val LANDING_CARDS                                 = "landing_cards"
+        const val MY_SHORTCUTS                                  = "my_shortcuts"
+        const val PREMIUM_USER                                  = "premium_user"
+        //BILL_TYPE
+        const val BILL_TYPE_PDF                                 = "pdf"
+        //STAFF_INVITATION_CODE
+        const val STAFF_INVITATION_CODE_EXIT                    = 0
+        const val STAFF_INVITATION_CODE_ACCEPT                  = 1
+        const val STAFF_INVITATION_CODE_REJECT                  = 2
     }
 }

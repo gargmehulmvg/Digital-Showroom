@@ -1,6 +1,5 @@
 package com.digitaldukaan.adapters
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,7 +11,7 @@ import com.bumptech.glide.Glide
 import com.digitaldukaan.MainActivity
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
-import com.digitaldukaan.constants.isEmpty
+import com.digitaldukaan.constants.isNotEmpty
 import com.digitaldukaan.interfaces.IStoreSettingsItemClicked
 import com.digitaldukaan.models.response.TrendingListResponse
 
@@ -25,6 +24,7 @@ class NewReleaseAdapter(
 
     inner class AppSettingsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val itemLayout: View = itemView.findViewById(R.id.itemLayout)
+        val newReleaseLockGroup: View = itemView.findViewById(R.id.newReleaseLockGroup)
         val trendingTextView: TextView = itemView.findViewById(R.id.trendingTextView)
         val imageView: ImageView = itemView.findViewById(R.id.imageView)
         val textView: TextView = itemView.findViewById(R.id.textView)
@@ -46,14 +46,8 @@ class NewReleaseAdapter(
         val responseItem = newReleaseList?.get(position)
         holder.run {
             textView.text = responseItem?.mText
-            imageView.let {view ->
-                try {
-                    activity?.let { context -> Glide.with(context).load(responseItem?.mCDN).into(view) }
-                } catch (e: Exception) {
-                    Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
-                }
-            }
-            if (!isEmpty(responseItem?.mNewImageUrl)) {
+            imageView.let {view -> activity?.let { context -> Glide.with(context).load(responseItem?.mCDN).into(view) } }
+            if (isNotEmpty(responseItem?.mNewImageUrl)) {
                 newTextView.visibility = View.VISIBLE
                 newTextView.background = null
                 activity?.let { context -> Glide.with(context).load(responseItem?.mNewImageUrl).into(newTextView) }
@@ -75,6 +69,7 @@ class NewReleaseAdapter(
                 }
                 else -> {}
             }
+            newReleaseLockGroup.visibility = if (true == responseItem?.isStaffFeatureLocked) View.VISIBLE else View.GONE
         }
     }
 
