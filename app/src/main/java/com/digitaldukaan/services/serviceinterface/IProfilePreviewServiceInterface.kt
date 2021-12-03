@@ -23,4 +23,6 @@ interface IProfilePreviewServiceInterface {
     fun onStoreUserPageInfoResponse(apiResponse: CommonApiResponse)
 
     fun onSetStoreUserDetailsResponse(apiResponse: CommonApiResponse)
+
+    fun onSetGstResponse(apiResponse: CommonApiResponse)
 }

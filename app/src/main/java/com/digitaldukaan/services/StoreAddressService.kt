@@ -20,4 +20,10 @@ class StoreAddressService {
         }
     }
 
+    fun getStoreLocation() {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.getStoreLocationServerCall(mServiceInterface)
+        }
+    }
+
 }

@@ -32,13 +32,14 @@
             android:layout_height="match_parent"
             android:gravity="center"
             android:minHeight="@dimen/_115sdp"
-            android:orientation="vertical"
-            android:padding="@dimen/_10sdp">
+            android:orientation="vertical">
 
             <ImageView
                 android:id="@+id/singleSpanImageView"
                 android:layout_width="@dimen/_48sdp"
                 android:layout_height="@dimen/_48sdp"
+                tools:src="@drawable/ic_whatsapp"
+                android:layout_margin="@dimen/_12sdp"
                 android:contentDescription="@string/image_view_content_description"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -47,6 +48,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:clickable="false"
+                android:layout_marginEnd="@dimen/_12sdp"
                 app:cardCornerRadius="@dimen/_10sdp"
                 app:layout_constraintBottom_toBottomOf="@+id/singleSpanImageView"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -70,7 +72,10 @@
                 android:id="@+id/singleSpanTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:layout_marginEnd="@dimen/_10sdp"
+                android:layout_marginBottom="@dimen/_5sdp"
                 android:gravity="start"
                 android:minLines="@integer/min_lines_two"
                 android:paddingTop="@dimen/_4sdp"
@@ -83,6 +88,50 @@
                 app:layout_constraintStart_toStartOf="@+id/singleSpanImageView"
                 app:layout_constraintTop_toBottomOf="@+id/singleSpanImageView"
                 tools:text="Create And Run Google Ads" />
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/singleSpanLockGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:constraint_referenced_ids="paymentModesLockedBackground,singleSpanLockNowTextView" />
+
+            <ImageView
+                android:id="@+id/paymentModesLockedBackground"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:clickable="false"
+                android:scaleType="fitXY"
+                android:background="@drawable/lower_curve_black_background"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:alpha="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:contentDescription="@string/image_view_content_description" />
+
+            <TextView
+                android:id="@+id/singleSpanLockNowTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/_10sdp"
+                android:background="@drawable/curve_white_background2"
+                android:clickable="false"
+                android:drawablePadding="@dimen/_5sdp"
+                android:fontFamily="@font/roboto_medium"
+                android:gravity="center"
+                android:paddingStart="@dimen/_10sdp"
+                android:paddingTop="@dimen/_8sdp"
+                android:paddingEnd="@dimen/_10sdp"
+                android:paddingBottom="@dimen/_8sdp"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_12sdp"
+                app:drawableStartCompat="@drawable/ic_subscription_locked_black_small"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/paymentModesLockedBackground"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Unlock Now" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -226,6 +275,49 @@
                     tools:text="Get Now" />
 
             </androidx.cardview.widget.CardView>
+
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/doubleSpanLockGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:constraint_referenced_ids="paymentModesLockedBackground2,doubleSpanLockNowTextView" />
+
+            <ImageView
+                android:id="@+id/paymentModesLockedBackground2"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:clickable="false"
+                android:scaleType="fitXY"
+                android:background="@drawable/lower_curve_black_background"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                android:alpha="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:contentDescription="@string/image_view_content_description" />
+
+            <TextView
+                android:id="@+id/doubleSpanLockNowTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/_10sdp"
+                android:background="@drawable/curve_white_background2"
+                android:clickable="false"
+                android:drawablePadding="@dimen/_5sdp"
+                android:fontFamily="@font/roboto_medium"
+                android:gravity="center"
+                android:paddingStart="@dimen/_10sdp"
+                android:paddingTop="@dimen/_8sdp"
+                android:paddingEnd="@dimen/_10sdp"
+                android:paddingBottom="@dimen/_8sdp"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_12sdp"
+                app:drawableStartCompat="@drawable/ic_subscription_locked_black_small"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Unlock Now" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

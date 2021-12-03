@@ -1,6 +1,7 @@
 package com.digitaldukaan.models.response
 
 import com.google.gson.annotations.SerializedName
+import java.util.*
 
 data class StaticTextResponse(
     @SerializedName("auth_new")                         var mAuthNew: AuthNewResponseData,
@@ -12,7 +13,9 @@ data class StaticTextResponse(
     @SerializedName("onboarding_step_two")              var mOnBoardStep2StaticData: OnBoardStep2StaticResponseData,
     @SerializedName("merchant_address")                 var mMapStaticData: MapLocationStaticResponseData,
     @SerializedName("subscription_lock")                var mSubscriptionLockStaticData: SubscriptionLockStaticData,
-    @SerializedName("catalog_add")                      var mCatalogStaticData: CatalogStaticData
+    @SerializedName("staff_lock_bottomsheet")           var mStaffLockBottomSheet: StaffLockBottomSheetStaticData,
+    @SerializedName("catalog_add")                      var mCatalogStaticData: CatalogStaticData,
+    @SerializedName("otp_modes_list")                   var mOtpModesList: ArrayList<CommonCtaResponse>
 )
 
 data class ProfileStaticData(
@@ -30,6 +33,7 @@ data class CatalogStaticData(
 )
 
 data class MapLocationStaticResponseData(
+    @SerializedName("heading_page")                     var headingPage: String?,
     @SerializedName("address_error")                    var addressError: String?,
     @SerializedName("city_text_hint")                   var cityTextHint: String?,
     @SerializedName("complete_address_text_hint")       var completeAddressHint: String?,
@@ -86,7 +90,9 @@ data class VerifyOtpStaticResponseData(
     @SerializedName("text_did_not_receive_otp")         var text_did_not_receive_otp: String?,
     @SerializedName("error_mandatory_field")            var error_mandatory_field: String?,
     @SerializedName("error_otp_not_valid")              var error_otp_not_valid: String?,
-    @SerializedName("hint_enter_4_digit_otp")           var hint_enter_4_digit_otp: String?
+    @SerializedName("hint_enter_4_digit_otp")           var hint_enter_4_digit_otp: String?,
+    @SerializedName("text_resend_otp")                  var text_resend_otp: String?,
+    @SerializedName("text_sent_on")                     var text_sent_on: String?
 )
 
 data class OnBoardStep1StaticResponseData(
@@ -115,4 +121,9 @@ data class SubscriptionLockStaticData(
     @SerializedName("message")      var message: String?,
     @SerializedName("cta_text")     var ctaText: String?,
     @SerializedName("page_url")     var pageUrl: String?
+)
+
+data class StaffLockBottomSheetStaticData(
+    @SerializedName("heading")      var heading: String?,
+    @SerializedName("cta")          var cta: CommonCtaResponse?
 )

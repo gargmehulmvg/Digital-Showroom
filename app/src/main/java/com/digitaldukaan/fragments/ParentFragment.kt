@@ -46,6 +46,8 @@ open class ParentFragment : Fragment(), IWebViewCallbacks {
 
     open fun onLocationChanged(lat: Double, lng: Double) = Unit
 
+    open fun onCheckStaffInviteResponse() = Unit
+
     open fun onShipmentCtaClicked(initiateServerCall: Boolean) = Unit
 
 }

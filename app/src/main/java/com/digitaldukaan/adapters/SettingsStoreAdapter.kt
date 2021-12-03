@@ -1,21 +1,22 @@
 package com.digitaldukaan.adapters
 
-import android.util.Log
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.CoroutineScopeUtils
-import com.digitaldukaan.fragments.BaseFragment
+import com.digitaldukaan.constants.isNotEmpty
 import com.digitaldukaan.interfaces.IStoreSettingsItemClicked
 import com.digitaldukaan.models.response.StoreOptionsResponse
 
 class SettingsStoreAdapter(
-    private val mContext: BaseFragment?,
+    private val mContext: Context?,
     private val listener: IStoreSettingsItemClicked
 ) :
     RecyclerView.Adapter<SettingsStoreAdapter.AppSettingsViewHolder>() {
@@ -35,7 +36,7 @@ class SettingsStoreAdapter(
         val settingSubTitleTextView: TextView = itemView.findViewById(R.id.settingSubTitleTextView)
         val settingTitleTextView: TextView = itemView.findViewById(R.id.settingTitleTextView)
         val settingImageView: ImageView = itemView.findViewById(R.id.settingImageView)
-        val settingArrowImageView: View = itemView.findViewById(R.id.settingArrowImageView)
+        val settingArrowImageView: ImageView = itemView.findViewById(R.id.settingArrowImageView)
         val appSettingLayout: View = itemView.findViewById(R.id.appSettingLayout)
     }
 
@@ -53,17 +54,29 @@ class SettingsStoreAdapter(
         holder.run {
             settingTitleTextView.text = response.mText
             settingImageView.let {
-                try {
-                    mContext?.let { context -> Glide.with(context).load(response.mLogo).into(it) }
-                } catch (e: Exception) {
-                    Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
-                }
+                mContext?.let { context -> Glide.with(context).load(response.mLogo).into(it) }
             }
-            if (response.mBannerText?.isEmpty() == false) {
+            if (isNotEmpty(response.mBannerText)) {
                 settingSubTitleTextView.visibility = View.VISIBLE
                 settingSubTitleTextView.text = response.mBannerText
             }
-            if (response.mIsShowMore) settingArrowImageView.visibility = View.VISIBLE
+            mContext?.let { context ->
+                when {
+                    response.mIsStaffFeatureLocked -> {
+                        settingArrowImageView.apply {
+                            visibility = View.VISIBLE
+                            setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_subscription_locked_black_small))
+                        }
+                    }
+                    response.mIsShowMore -> {
+                        settingArrowImageView.apply {
+                            visibility = View.VISIBLE
+                            setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_half_arrow_forward))
+                        }
+                    }
+                    else -> settingArrowImageView.visibility = View.GONE
+                }
+            }
         }
     }
 

@@ -28,6 +28,7 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
 
     private var mPremiumPageInfoResponse: PremiumPageInfoResponse? = null
     private val mService: PremiumPageInfoService = PremiumPageInfoService()
+    private var mIsDoublePressToExit = false
 
     companion object {
         private var mStaticText: PremiumPageInfoStaticTextResponse? = null
@@ -134,6 +135,16 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
             jsonData.optBoolean("refreshToken") -> {
                 //mService.getPremiumPageInfo()
             }
+            jsonData.optBoolean("openDomainPurchaseBottomSheet") -> {
+                openDomainPurchaseBottomSheetServerCall()
+            }
+            jsonData.optBoolean("addAddress") -> {
+                launchFragment(StoreMapLocationFragment.newInstance(0, true), true)
+            }
+            jsonData.optBoolean("openAppByPackage") -> {
+                val packageName = jsonData.optString("data")
+                openAppByPackageName(packageName, mActivity)
+            }
             jsonData.optBoolean("stopLoader") -> {
                 stopProgress()
             }
@@ -156,12 +167,16 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
     override fun onBackPressed(): Boolean {
         return try {
             Log.d(TAG, "onBackPressed :: called")
-            if(fragmentManager != null && fragmentManager?.backStackEntryCount == 1) {
+            if(null != fragmentManager && 1 == fragmentManager?.backStackEntryCount) {
                 clearFragmentBackStack()
-                launchFragment(OrderFragment.newInstance(), true)
-                true
+                if (true == StaticInstances.sPermissionHashMap?.get(Constants.PAGE_ORDER)) {
+                    launchFragment(OrderFragment.newInstance(), true)
+                } else {
+                    launchFragment(SettingsFragment.newInstance(), true)
+                }
+                return true
             } else {
-                if (commonWebView?.canGoBack() == true) {
+                if (true == commonWebView?.canGoBack()) {
                     commonWebView?.goBack()
                     true
                 } else false

@@ -23,6 +23,7 @@
     <color name="google_ads_bg">#388BDF</color>
     <color name="red_alpha">#FDA8A8</color>
     <color name="red_light_alpha">#FFF7F7</color>
+    <color name="red_light_alpha_v2">#FFE9E9</color>
     <color name="red_switch_off">#D93716</color>
     <color name="red_text_color_marketing">#FF0000</color>
     <color name="open_green">#1E9848</color>
@@ -48,4 +49,6 @@
     <color name="gmail_color">#F44336</color>
     <color name="tooltip_background">#FFE9CB</color>
     <color name="pink">#FF4D4D</color>
+    <color name="gst_pending_text_color">#D09B0B</color>
+    <color name="gst_pending_curve_bg_color">#FFF5DA</color>
 </resources>

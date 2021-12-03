@@ -39,9 +39,14 @@ class DukaanNameFragment : BaseFragment(), ICreateStoreServiceInterface {
     private var mCurrentLatitude = 0.0
     private var mCurrentLongitude = 0.0
     private var lastLocation: Location? = null
+    private var mUserId: String = ""
 
     companion object {
-        fun newInstance(): DukaanNameFragment = DukaanNameFragment()
+        fun newInstance(userId: String): DukaanNameFragment {
+            val fragment = DukaanNameFragment()
+            fragment.mUserId = userId
+            return fragment
+        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -92,6 +97,7 @@ class DukaanNameFragment : BaseFragment(), ICreateStoreServiceInterface {
             }
         })
         setupUIFromStaticData()
+        if (sIsInvitationAvailable) showStaffInvitationDialog()
     }
 
     private fun setupUIFromStaticData() {
@@ -196,10 +202,15 @@ class DukaanNameFragment : BaseFragment(), ICreateStoreServiceInterface {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         Log.i(TAG, "onRequestPermissionResult")
         if (requestCode == Constants.LOCATION_REQUEST_CODE) {
+            if (sIsInvitationAvailable) showStaffInvitationDialog()
             when {
-                grantResults.isEmpty() -> Log.i(TAG, "User interaction was cancelled.")
-                grantResults[0] == PackageManager.PERMISSION_GRANTED -> getLastLocation()
-                else -> showToast("Permission was denied")
+                grantResults.isEmpty() -> Log.d(TAG, "User interaction was cancelled.")
+                grantResults[0] == PackageManager.PERMISSION_GRANTED -> {
+                    getLastLocation()
+                }
+                else -> {
+                    showToast("Permission was denied")
+                }
             }
         }
     }
