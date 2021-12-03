@@ -1,9 +1,11 @@
 package com.digitaldukaan.constants
 
 import android.app.Activity
+import android.app.DownloadManager
 import android.content.ContentValues
 import android.content.Context
 import android.content.Context.WINDOW_SERVICE
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.database.Cursor
@@ -27,6 +29,9 @@ import android.view.View.MeasureSpec
 import android.view.WindowManager
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.TranslateAnimation
+import android.webkit.CookieManager
+import android.webkit.URLUtil
+import android.widget.Toast
 import androidmads.library.qrgenearator.QRGContents
 import androidmads.library.qrgenearator.QRGEncoder
 import com.digitaldukaan.BuildConfig
@@ -186,6 +191,21 @@ fun downloadBillInGallery(bitmap: Bitmap, orderId: String?): File? {
         e.printStackTrace()
         null
     }
+}
+
+fun downloadPdfInGallery(context: Context?, url: String?) {
+    val request = DownloadManager.Request(Uri.parse(url))
+    val fileTitle = URLUtil.guessFileName(url, null, null)
+    val cookies = CookieManager.getInstance().getCookie(url)
+    request.apply {
+        setTitle(fileTitle)
+        setDescription("Downloading...")
+        addRequestHeader("cookie", cookies)
+        setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+        setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileTitle)
+    }
+    val downloadManager = context?.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+    downloadManager.enqueue(request)
 }
 
 fun getBitmapFromBase64(base64Str: String?): Bitmap? {
@@ -548,5 +568,20 @@ fun isYoutubeUrlValid(youTubeUrl: String): Boolean {
         return matcher.find()
     } catch (e: Exception) {
         return false
+    }
+}
+
+fun openAppByPackageName(packageName: String, context: Context?) {
+    if (isEmpty(packageName)) {
+        Toast.makeText(context, "No Package Name Found", Toast.LENGTH_SHORT).show()
+        return
+    }
+    context?.let { ctx ->
+        val launchIntent: Intent? = ctx.packageManager?.getLaunchIntentForPackage(packageName)
+        if (null != launchIntent) {
+            ctx.startActivity(launchIntent)
+        } else {
+            ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=$packageName")))
+        }
     }
 }

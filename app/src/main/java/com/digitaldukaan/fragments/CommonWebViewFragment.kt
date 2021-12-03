@@ -132,6 +132,9 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
             jsonData.optBoolean("redirectBrowser") -> {
                 openUrlInBrowser(jsonData.optString("data"))
             }
+            jsonData.optBoolean("openDomainPurchaseBottomSheet") -> {
+                openDomainPurchaseBottomSheetServerCall()
+            }
             jsonData.optBoolean("shareTextOnWhatsApp") -> {
                 val text = jsonData.optString("data")
                 val mobileNumber = jsonData.optString("mobileNumber")
@@ -167,6 +170,13 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
             }
             jsonData.optBoolean("unauthorizedAccess") -> {
                 logoutFromApplication()
+            }
+            jsonData.optBoolean("addAddress") -> {
+                launchFragment(StoreMapLocationFragment.newInstance(0, true), true)
+            }
+            jsonData.optBoolean("openAppByPackage") -> {
+                val packageName = jsonData.optString("data")
+                openAppByPackageName(packageName, mActivity)
             }
             jsonData.optBoolean("openUPIIntent") -> {
                 val intent = Intent()

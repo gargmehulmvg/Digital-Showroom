@@ -17,15 +17,10 @@ import android.widget.EditText
 import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.recyclerview.widget.GridLayoutManager
 import com.digitaldukaan.R
-import com.digitaldukaan.adapters.ProfileStatusAdapter2
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.models.request.StoreAddressRequest
-import com.digitaldukaan.models.response.CommonApiResponse
-import com.digitaldukaan.models.response.MapLocationStaticResponseData
-import com.digitaldukaan.models.response.ProfileInfoResponse
-import com.digitaldukaan.models.response.ProfilePreviewSettingsKeyResponse
+import com.digitaldukaan.models.response.*
 import com.digitaldukaan.services.StoreAddressService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IStoreAddressServiceInterface
@@ -39,12 +34,12 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.textfield.TextInputLayout
+import com.google.gson.Gson
 import kotlinx.android.synthetic.main.layout_store_map_location_fragment.*
 import java.util.*
 
 class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddressServiceInterface {
 
-    private var mProfilePreviewResponse: ProfilePreviewSettingsKeyResponse? = null
     private var mPosition: Int = 0
     private var mGoogleMap: GoogleMap? = null
     private var mIsSingleStep: Boolean = false
@@ -59,24 +54,16 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
     private var setLocationTextView: TextView? = null
     private var stateTextView: TextView? = null
     private var mCurrentMarker: Marker? = null
-    private var mProfileInfoResponse: ProfileInfoResponse? = null
     private var mGoogleDrivenAddress :String ? = ""
+    private var mService = StoreAddressService()
+    private var mStoreLocationResponse: GetStoreLocationResponse? = null
 
     companion object {
 
-        fun newInstance(
-            profilePreviewResponse: ProfilePreviewSettingsKeyResponse,
-            position: Int,
-            isSingleStep: Boolean,
-            profileInfoResponse: ProfileInfoResponse?
-        ): StoreMapLocationFragment {
+        fun newInstance(position: Int, isSingleStep: Boolean): StoreMapLocationFragment {
             val fragment = StoreMapLocationFragment()
-            fragment.mProfilePreviewResponse = profilePreviewResponse
             fragment.mPosition = position
             fragment.mIsSingleStep = isSingleStep
-            fragment.mProfileInfoResponse = profileInfoResponse
-            fragment.mCurrentLatitude = profileInfoResponse?.mStoreItemResponse?.storeAddress?.latitude ?: 0.0
-            fragment.mCurrentLongitude = profileInfoResponse?.mStoreItemResponse?.storeAddress?.longitude ?: 0.0
             return fragment
         }
     }
@@ -85,24 +72,14 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
         TAG = "StoreMapLocationFragment"
         mContentView = inflater.inflate(R.layout.layout_store_map_location_fragment, container, false)
         locationManager = mActivity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        mMapStaticData = StaticInstances.sStaticData?.mMapStaticData
+        mService.setServiceInterface(this)
         return mContentView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        ToolBarManager.getInstance().apply {
-            hideToolBar(mActivity, false)
-            val stepStr = if (mIsSingleStep) "" else "Step $mPosition : "
-            headerTitle = "$stepStr${mProfilePreviewResponse?.mHeadingText}"
-            onBackPressed(this@StoreMapLocationFragment)
-            hideBackPressFromToolBar(mActivity, false)
-        }
-        supportMapFragment = childFragmentManager.findFragmentById(R.id.mapFragment) as SupportMapFragment
-        mGoogleApiClient = LocationServices.getFusedLocationProviderClient(mActivity)
-        if (checkLocationPermissionWithDialog()) return
-        getLastLocation()
-        setupLocationUI()
+        showProgressDialog(mActivity)
+        mService.getStoreLocation()
     }
 
     private fun setupLocationUI() {
@@ -134,8 +111,6 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
             if (!isInternetConnectionAvailable(mActivity)) {
                 showNoInternetConnectionDialog()
             } else {
-                val service = StoreAddressService()
-                service.setServiceInterface(this)
                 val address = completeAddressEditText?.text?.trim().toString()
                 if (isEmpty(address)) {
                     completeAddressEditText?.error =  getString(R.string.mandatory_field_message)
@@ -158,21 +133,14 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                     data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
                 )
-                service.updateStoreAddress(request)
+                mService.updateStoreAddress(request)
             }
         }
-        mProfileInfoResponse?.mStoreItemResponse?.storeAddress?.run {
-            pinCodeEditText?.setText(pinCode)
-            cityEditText?.setText(city)
-            completeAddressEditText?.setText(address1)
-            stateTextView?.text = if (isEmpty(state)) getString(R.string.select_state) else state
-        }
-        if (mIsSingleStep)  statusRecyclerView?.visibility = View.GONE else {
-            statusRecyclerView?.apply {
-                visibility = View.VISIBLE
-                layoutManager = GridLayoutManager(mActivity, mProfileInfoResponse?.mTotalSteps?.toInt() ?: 1)
-                adapter = ProfileStatusAdapter2(mProfileInfoResponse?.mTotalSteps?.toInt(), mPosition)
-            }
+        mStoreLocationResponse?.storeAddress?.let { address ->
+            pinCodeEditText?.setText(address.pinCode)
+            cityEditText?.setText(address.city)
+            completeAddressEditText?.setText(address.address1)
+            stateTextView?.text = if (isEmpty(address.state)) getString(R.string.select_state) else address.state
         }
     }
 
@@ -245,8 +213,8 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
                 }
             } else {
                 if (!isLocationEnabledInSettings(mActivity)) openLocationSettings(true)
-                mCurrentLatitude = mProfileInfoResponse?.mStoreItemResponse?.storeAddress?.latitude ?: 0.0
-                mCurrentLongitude = mProfileInfoResponse?.mStoreItemResponse?.storeAddress?.longitude ?: 0.0
+                mCurrentLatitude = mStoreLocationResponse?.storeAddress?.latitude ?: 0.0
+                mCurrentLongitude = mStoreLocationResponse?.storeAddress?.longitude ?: 0.0
                 showCurrentLocationMarkers(mCurrentLatitude, mCurrentLongitude)
             }
         }
@@ -257,7 +225,7 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (Constants.LOCATION_REQUEST_CODE == requestCode) {
                 when {
-                    grantResults.isEmpty() -> Log.i(TAG, "User interaction was cancelled.")
+                    grantResults.isEmpty() -> Log.d(TAG, "User interaction was cancelled.")
                     PackageManager.PERMISSION_GRANTED == grantResults[0] -> {
                         getLastLocation()
                         setupLocationUI()
@@ -305,18 +273,32 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (response.mIsSuccessStatus) {
                 showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
-                if (!mIsSingleStep) {
-                    StaticInstances.sStepsCompletedList?.run {
-                        for (completedItem in this) {
-                            if (Constants.ACTION_LOCATION == completedItem.action) {
-                                completedItem.isCompleted = true
-                                break
-                            }
-                        }
-                        switchToInCompleteProfileFragment(mProfileInfoResponse)
-                    }
-                } else mActivity?.onBackPressed()
+                mActivity?.onBackPressed()
             } else showToast(response.mMessage)
+        }
+    }
+
+    override fun onGetStoreLocationResponse(commonApiResponse: CommonApiResponse) {
+        stopProgress()
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            if (commonApiResponse.mIsSuccessStatus) {
+                mStoreLocationResponse = Gson().fromJson(commonApiResponse.mCommonDataStr, GetStoreLocationResponse::class.java)
+                mCurrentLatitude = mStoreLocationResponse?.storeAddress?.latitude ?: 0.0
+                mCurrentLongitude = mStoreLocationResponse?.storeAddress?.longitude ?: 0.0
+                ToolBarManager.getInstance().apply {
+                    hideToolBar(mActivity, false)
+                    val stepStr = if (mIsSingleStep) "" else "Step $mPosition : "
+                    headerTitle = "$stepStr${mStoreLocationResponse?.mMapStaticData?.headingPage}"
+                    onBackPressed(this@StoreMapLocationFragment)
+                    hideBackPressFromToolBar(mActivity, false)
+                }
+                mMapStaticData = mStoreLocationResponse?.mMapStaticData
+                supportMapFragment = childFragmentManager.findFragmentById(R.id.mapFragment) as SupportMapFragment
+                mGoogleApiClient = LocationServices.getFusedLocationProviderClient(mActivity)
+                if (checkLocationPermissionWithDialog()) return@runTaskOnCoroutineMain
+                getLastLocation()
+                setupLocationUI()
+            }
         }
     }
 
@@ -338,8 +320,8 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
         return false
     }
 
-    override fun onProviderEnabled(provider: String) {}
+    override fun onProviderEnabled(provider: String) = Unit
 
-    override fun onProviderDisabled(provider: String) {}
+    override fun onProviderDisabled(provider: String) = Unit
 
 }

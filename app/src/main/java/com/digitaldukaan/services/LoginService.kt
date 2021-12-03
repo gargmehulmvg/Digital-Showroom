@@ -15,9 +15,9 @@ class LoginService {
         mLoginServiceInterface = loginServiceInterface
     }
 
-    fun generateOTP(mobileNumber: String) {
+    fun generateOTP(mobileNumber: String, otpMode: Int) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mLoginNetworkService.generateOTPServerCall(mobileNumber, mLoginServiceInterface)
+            mLoginNetworkService.generateOTPServerCall(mobileNumber, otpMode, mLoginServiceInterface)
         }
     }
 

@@ -7,4 +7,5 @@ interface ICreateStoreServiceInterface {
     fun onCreateStoreResponse(commonApiResponse: CommonApiResponse)
 
     fun onCreateStoreServerException(e: Exception)
+
 }

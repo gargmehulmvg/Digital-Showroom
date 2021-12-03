@@ -72,4 +72,10 @@ class OrderFragmentService {
         }
     }
 
+    fun checkStaffInvite() {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.checkStaffInviteServerCall(mServiceInterface)
+        }
+    }
+
 }

@@ -3,33 +3,34 @@ package com.digitaldukaan.models.response
 import com.google.gson.annotations.SerializedName
 
 data class OrderDetailsResponse (
-    @SerializedName("store_id")                 var storeId: Int?,
-    @SerializedName("order_id")                 var orderId: Int?,
-    @SerializedName("merchant_id")              var merchantId: Int?,
-    @SerializedName("payment_status")           var paymentStatus: Int?,
-    @SerializedName("status")                   var status: Int?,
-    @SerializedName("order_type")               var orderType: Int?,
-    @SerializedName("amount")                   var amount: Double?,                    // Original Amount
-    @SerializedName("pay_amount")               var payAmount: Double?,                 // Amount to be paid to server (Discounted Price)
-    @SerializedName("discount")                 var discount: Double?,
-    @SerializedName("promo_discount")           var promoDiscount: Double?,
-    @SerializedName("delivery_charge")          var deliveryCharge: Double?,
-    @SerializedName("extra_charges")            var extraCharges: Double?,
-    @SerializedName("extra_charge_name")        var extraChargesName: String?,
-    @SerializedName("instruction")              var instruction: String?,
-    @SerializedName("phone")                    var phone: String?,
-    @SerializedName("display_status")           var displayStatus: String?,
-    @SerializedName("status_message")           var statusMessage: String?,
-    @SerializedName("order_hash")               var orderHash: String?,
-    @SerializedName("transaction_id")           var transactionId: String,
-    @SerializedName("image_link")               var imageLink: String?,
-    @SerializedName("created_at")               var createdAt: String?,
-    @SerializedName("updated_at")               var updatedAt: String?,
-    @SerializedName("prepaid_flag")             var prepaidFlag: Int,
-    @SerializedName("order_payment_status")     var orderPaymentStatus: OrderPaymentStatusResponse?,
-    @SerializedName("digital_receipt")          var digitalReceipt: String?,
-    @SerializedName("items")                    var orderDetailsItemsList: ArrayList<OrderDetailItemResponse>?,
-    @SerializedName("delivery_info")            var deliveryInfo: DeliveryInfoItemResponse?
+    @SerializedName("store_id")                     var storeId: Int?,
+    @SerializedName("order_id")                     var orderId: Int?,
+    @SerializedName("merchant_id")                  var merchantId: Int?,
+    @SerializedName("payment_status")               var paymentStatus: Int?,
+    @SerializedName("status")                       var status: Int?,
+    @SerializedName("order_type")                   var orderType: Int?,
+    @SerializedName("amount")                       var amount: Double?,
+    @SerializedName("pay_amount")                   var payAmount: Double?,
+    @SerializedName("discount")                     var discount: Double?,
+    @SerializedName("promo_discount")               var promoDiscount: Double?,
+    @SerializedName("delivery_charge")              var deliveryCharge: Double?,
+    @SerializedName("extra_charges")                var extraCharges: Double?,
+    @SerializedName("extra_charge_name")            var extraChargesName: String?,
+    @SerializedName("instruction")                  var instruction: String?,
+    @SerializedName("phone")                        var phone: String?,
+    @SerializedName("display_status")               var displayStatus: String?,
+    @SerializedName("status_message")               var statusMessage: String?,
+    @SerializedName("order_hash")                   var orderHash: String?,
+    @SerializedName("transaction_id")               var transactionId: String,
+    @SerializedName("image_link")                   var imageLink: String?,
+    @SerializedName("created_at")                   var createdAt: String?,
+    @SerializedName("updated_at")                   var updatedAt: String?,
+    @SerializedName("prepaid_flag")                 var prepaidFlag: Int,
+    @SerializedName("order_payment_status")         var orderPaymentStatus: OrderPaymentStatusResponse?,
+    @SerializedName("digital_receipt")              var digitalReceipt: String?,
+    @SerializedName("digital_receipt_extension")    var digitalReceiptExtension: String?,
+    @SerializedName("items")                        var orderDetailsItemsList: ArrayList<OrderDetailItemResponse>?,
+    @SerializedName("delivery_info")                var deliveryInfo: DeliveryInfoItemResponse?
 )
 
 data class OrderDetailItemResponse(
@@ -37,10 +38,10 @@ data class OrderDetailItemResponse(
     @SerializedName("item_id")                  var item_id: Int?,
     @SerializedName("item_name")                var item_name: String?,
     @SerializedName("quantity")                 var quantity: Int,
-    @SerializedName("item_quantity")            var item_quantity: String?,                            //  remove
-    @SerializedName("item_price")               var item_price: Double?,                                  //  remove
-    @SerializedName("amount")                   var amount: Double?,                                          //  item price replace with this as this is my net amount
-    @SerializedName("actual_amount")            var actualAmount: Double?,                             //  item price replace with this as this is my net amount
+    @SerializedName("item_quantity")            var item_quantity: String?,
+    @SerializedName("item_price")               var item_price: Double?,
+    @SerializedName("amount")                   var amount: Double?,
+    @SerializedName("actual_amount")            var actualAmount: Double?,
     @SerializedName("discounted_price")         var discountedPrice: Double?,
     @SerializedName("item_status")              var item_status: Int?,
     @SerializedName("item_type")                var item_type: String?,
