@@ -5,7 +5,6 @@ import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.PrefsManager
 import com.digitaldukaan.constants.StaticInstances
-import io.sentry.Sentry
 import okhttp3.*
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -32,7 +31,6 @@ class RetrofitApi {
             mAppService
         } catch (e: Exception) {
             Log.e(mTag, "getServerCallObject: ${e.message}", e)
-            Sentry.captureException(e, "$mTag getServerCallObject")
             throw IOException(e.message)
         }
     }
@@ -50,7 +48,6 @@ class RetrofitApi {
             mAppAnalyticsService
         } catch (e: Exception) {
             Log.e(mTag, "getServerCallObject: ${e.message}", e)
-            Sentry.captureException(e, "$mTag getServerCallObject")
             throw IOException(e.message)
         }
     }
