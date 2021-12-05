@@ -57,7 +57,7 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
         }, Constants.TIMER_INTERVAL)
         fetchContactsIfPermissionGranted()
         mSplashService.setSplashServiceInterface(this)
-        if (!isInternetConnectionAvailable(mActivity)) { return } else checkStaffInvite()
+        if (!isInternetConnectionAvailable(mActivity)) return else checkStaffInvite()
     }
 
     private fun fetchContactsIfPermissionGranted() {
@@ -78,7 +78,7 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
     override fun onStaticDataResponse(staticDataResponse: CommonApiResponse) {
         val staticData = Gson().fromJson<StaticTextResponse>(staticDataResponse.mCommonDataStr, StaticTextResponse::class.java)
         StaticInstances.sStaticData = staticData
-        if (!isInternetConnectionAvailable(mActivity)) { return } else mSplashService.getAppVersion()
+        if (!isInternetConnectionAvailable(mActivity)) return else mSplashService.getAppVersion()
     }
 
     override fun onHelpScreenResponse(commonResponse: CommonApiResponse) {
@@ -96,7 +96,7 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
             if (commonResponse.mIsSuccessStatus) {
                 val playStoreLinkStr = Gson().fromJson<AppVersionResponse>(commonResponse.mCommonDataStr, AppVersionResponse::class.java)
                 if (playStoreLinkStr.mIsActive) {
-                    if (!isInternetConnectionAvailable(mActivity)) { return@runTaskOnCoroutineMain } else mSplashService.getHelpScreens()
+                    if (!isInternetConnectionAvailable(mActivity)) return@runTaskOnCoroutineMain else mSplashService.getHelpScreens()
                 } else showVersionUpdateDialog()
             } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
         }
