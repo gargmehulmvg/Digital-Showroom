@@ -62,33 +62,35 @@ class RetrofitApi {
                 false -> HttpLoggingInterceptor.Level.NONE
             }
         }
-        return OkHttpClient.Builder().apply {
-            connectTimeout(1, TimeUnit.MINUTES)
-            callTimeout(1, TimeUnit.MINUTES)
-            readTimeout(30, TimeUnit.SECONDS)
-            writeTimeout(30, TimeUnit.SECONDS)
-            addInterceptor {
-                try {
-                    customizeCustomRequest(it)
-                } catch (e: Exception) {
-                    Log.e(mTag, "getHttpClient: ${e.message}", e)
-                    Sentry.captureException(e, "Exception in getHttpClient Request :: ${it.request()} Message :: ${e.message}")
-                    throw IOException()
+        return try {
+            OkHttpClient.Builder().apply {
+                connectTimeout(1, TimeUnit.MINUTES)
+                callTimeout(1, TimeUnit.MINUTES)
+                readTimeout(30, TimeUnit.SECONDS)
+                writeTimeout(30, TimeUnit.SECONDS)
+                addInterceptor {
+                    try {
+                        customizeCustomRequest(it)
+                    } catch (e: Exception) {
+                        Log.e(mTag, "getHttpClient: ${e.message}", e)
+                        throw IOException()
+                    }
                 }
-            }
-            addInterceptor(loggingInterface)
-            protocols(arrayListOf(Protocol.HTTP_1_1, Protocol.HTTP_2))
-        }.build()
+                addInterceptor(loggingInterface)
+                protocols(arrayListOf(Protocol.HTTP_1_1, Protocol.HTTP_2))
+            }.build()
+        } catch (e: Exception) {
+            throw IOException(e.message)
+        }
     }
 
     private fun customizeCustomRequest(it: Interceptor.Chain): Response {
         try {
             val originalRequest = it.request()
             val newRequest = getNewRequest(originalRequest)
-            return if (newRequest == null) it.proceed(originalRequest) else it.proceed(newRequest)
+            return if (null == newRequest) it.proceed(originalRequest) else it.proceed(newRequest)
         } catch (e: Exception) {
             Log.e(mTag, "customizeCustomRequest: ${e.message}", e)
-            Sentry.captureException(e, "Exception in customizeCustomRequest Request :: ${it.request()} Message :: ${e.message}")
             throw IOException()
         }
     }
