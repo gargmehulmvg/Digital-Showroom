@@ -108,7 +108,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
             mOptionsMenuResponse = productResponse?.optionMenuList
             commonWebView?.apply {
                 settings.javaScriptEnabled = true
-                addJavascriptInterface(WebViewBridge(), "Android")
+                addJavascriptInterface(WebViewBridge(), Constants.KEY_ANDROID)
                 url = BuildConfig.WEB_VIEW_URL + productResponse?.product_page_url + "?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&app_version=${BuildConfig.VERSION_NAME}"
                 Log.d(TAG, "onProductResponse: WebView URL $url")
                 loadUrl(url)

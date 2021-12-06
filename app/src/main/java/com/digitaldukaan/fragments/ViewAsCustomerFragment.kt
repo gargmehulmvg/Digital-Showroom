@@ -63,7 +63,7 @@ class ViewAsCustomerFragment: BaseFragment() {
             settings.javaScriptEnabled = true
             settings.domStorageEnabled = true
             settings.javaScriptCanOpenWindowsAutomatically = true
-            addJavascriptInterface(WebViewBridge(), "Android")
+            addJavascriptInterface(WebViewBridge(), Constants.KEY_ANDROID)
             Log.d(TAG, "onViewCreated: $mDomainName")
             loadUrl(mDomainName)
         }

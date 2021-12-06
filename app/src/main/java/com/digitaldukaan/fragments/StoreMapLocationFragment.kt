@@ -83,7 +83,6 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
     }
 
     private fun setupLocationUI() {
-        currentLocationImageView.setOnClickListener { getCurrentLocationOfDevice() }
         val completeAddressEditText: EditText? = mContentView?.findViewById(R.id.completeAddressEditText)
         val pinCodeEditText: EditText? = mContentView?.findViewById(R.id.pinCodeEditText)
         val cityEditText: EditText? = mContentView?.findViewById(R.id.cityEditText)
@@ -142,6 +141,7 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
             completeAddressEditText?.setText(address.address1)
             stateTextView?.text = if (isEmpty(address.state)) getString(R.string.select_state) else address.state
         }
+        currentLocationImageView?.setOnClickListener { getCurrentLocationOfDevice() }
     }
 
     private fun checkLocationPermission(): Boolean {
@@ -281,23 +281,27 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
     override fun onGetStoreLocationResponse(commonApiResponse: CommonApiResponse) {
         stopProgress()
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            if (commonApiResponse.mIsSuccessStatus) {
-                mStoreLocationResponse = Gson().fromJson(commonApiResponse.mCommonDataStr, GetStoreLocationResponse::class.java)
-                mCurrentLatitude = mStoreLocationResponse?.storeAddress?.latitude ?: 0.0
-                mCurrentLongitude = mStoreLocationResponse?.storeAddress?.longitude ?: 0.0
-                ToolBarManager.getInstance().apply {
-                    hideToolBar(mActivity, false)
-                    val stepStr = if (mIsSingleStep) "" else "Step $mPosition : "
-                    headerTitle = "$stepStr${mStoreLocationResponse?.mMapStaticData?.headingPage}"
-                    onBackPressed(this@StoreMapLocationFragment)
-                    hideBackPressFromToolBar(mActivity, false)
+            try {
+                if (commonApiResponse.mIsSuccessStatus) {
+                    mStoreLocationResponse = Gson().fromJson(commonApiResponse.mCommonDataStr, GetStoreLocationResponse::class.java)
+                    mCurrentLatitude = mStoreLocationResponse?.storeAddress?.latitude ?: 0.0
+                    mCurrentLongitude = mStoreLocationResponse?.storeAddress?.longitude ?: 0.0
+                    ToolBarManager.getInstance().apply {
+                        hideToolBar(mActivity, false)
+                        val stepStr = if (mIsSingleStep) "" else "Step $mPosition : "
+                        headerTitle = "$stepStr${mStoreLocationResponse?.mMapStaticData?.headingPage}"
+                        onBackPressed(this@StoreMapLocationFragment)
+                        hideBackPressFromToolBar(mActivity, false)
+                    }
+                    mMapStaticData = mStoreLocationResponse?.mMapStaticData
+                    supportMapFragment = childFragmentManager.findFragmentById(R.id.mapFragment) as SupportMapFragment
+                    mGoogleApiClient = LocationServices.getFusedLocationProviderClient(mActivity)
+                    if (checkLocationPermissionWithDialog()) return@runTaskOnCoroutineMain
+                    getLastLocation()
+                    setupLocationUI()
                 }
-                mMapStaticData = mStoreLocationResponse?.mMapStaticData
-                supportMapFragment = childFragmentManager.findFragmentById(R.id.mapFragment) as SupportMapFragment
-                mGoogleApiClient = LocationServices.getFusedLocationProviderClient(mActivity)
-                if (checkLocationPermissionWithDialog()) return@runTaskOnCoroutineMain
-                getLastLocation()
-                setupLocationUI()
+            } catch (e: Exception) {
+                Log.e(TAG, "onGetStoreLocationResponse: ${e.message}", e)
             }
         }
     }

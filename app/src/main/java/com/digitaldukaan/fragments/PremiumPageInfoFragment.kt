@@ -76,7 +76,7 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
                     domStorageEnabled = true
                     javaScriptCanOpenWindowsAutomatically = true
                 }
-                addJavascriptInterface(WebViewBridge(), "Android")
+                addJavascriptInterface(WebViewBridge(), Constants.KEY_ANDROID)
                 val isBottomNavBarActive = mPremiumPageInfoResponse?.mIsBottomNavBarActive ?: false
                 hideBottomNavigationView(!isBottomNavBarActive)
                 val url = BuildConfig.WEB_VIEW_URL + mPremiumPageInfoResponse?.premium?.mUrl + "?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&app_version=${BuildConfig.VERSION_NAME}"
