@@ -2,16 +2,13 @@ package com.digitaldukaan.network
 
 import android.util.Log
 import com.digitaldukaan.BuildConfig
-import com.digitaldukaan.constants.*
-import io.sentry.Sentry
+import com.digitaldukaan.constants.Constants
+import com.digitaldukaan.constants.PrefsManager
+import com.digitaldukaan.constants.StaticInstances
 import okhttp3.*
-import okhttp3.ResponseBody.Companion.toResponseBody
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.io.IOException
-import java.net.SocketTimeoutException
-import java.net.UnknownHostException
 import java.util.concurrent.TimeUnit
 
 class RetrofitApi {
@@ -30,37 +27,27 @@ class RetrofitApi {
     }
 
     fun getServerCallObject(): Apis? {
-        return try {
-            if (null == mAppService) {
-                val retrofit = Retrofit.Builder().apply {
-                    baseUrl(BuildConfig.BASE_URL)
-                    addConverterFactory(GsonConverterFactory.create())
-                    client(getHttpClient())
-                }.build()
-                mAppService = retrofit.create(Apis::class.java)
-            }
-            mAppService
-        } catch (e: Exception) {
-            Log.e(TAG, "getServerCallObject: ${e.message}", e)
-            throw IOException(e.message)
+        if (null == mAppService) {
+            val retrofit = Retrofit.Builder().apply {
+                baseUrl(BuildConfig.BASE_URL)
+                addConverterFactory(GsonConverterFactory.create())
+                client(getHttpClient())
+            }.build()
+            mAppService = retrofit.create(Apis::class.java)
         }
+        return mAppService
     }
 
     fun getAnalyticsServerCallObject(): Apis? {
-        return try {
-            if (null == mAppAnalyticsService) {
-                val retrofit = Retrofit.Builder().apply {
-                    baseUrl(if (BuildConfig.DEBUG) BuildConfig.BASE_URL else Constants.ANALYTICS_PRODUCTION_URL)
-                    addConverterFactory(GsonConverterFactory.create())
-                    client(getHttpClient())
-                }.build()
-                mAppAnalyticsService = retrofit.create(Apis::class.java)
-            }
-            mAppAnalyticsService
-        } catch (e: Exception) {
-            Log.e(TAG, "getServerCallObject: ${e.message}", e)
-            throw IOException(e.message)
+        if (null == mAppAnalyticsService) {
+            val retrofit = Retrofit.Builder().apply {
+                baseUrl(if (BuildConfig.DEBUG) BuildConfig.BASE_URL else Constants.ANALYTICS_PRODUCTION_URL)
+                addConverterFactory(GsonConverterFactory.create())
+                client(getHttpClient())
+            }.build()
+            mAppAnalyticsService = retrofit.create(Apis::class.java)
         }
+        return mAppAnalyticsService
     }
 
     private fun getHttpClient(): OkHttpClient {
@@ -70,58 +57,23 @@ class RetrofitApi {
                 false -> HttpLoggingInterceptor.Level.NONE
             }
         }
-        return try {
-            OkHttpClient.Builder().apply {
-                connectTimeout(1, TimeUnit.MINUTES)
-                callTimeout(1, TimeUnit.MINUTES)
-                readTimeout(30, TimeUnit.SECONDS)
-                writeTimeout(30, TimeUnit.SECONDS)
-                addInterceptor { chain ->
-                    try {
-                        val response = customizeCustomRequest(chain)
-                        val bodyString = response.body?.string() ?: ""
-                        response.newBuilder().body(bodyString.toResponseBody(response.body?.contentType())).build()
-                    } catch (e: Exception) {
-                        val msg: String = when (e) {
-                            is SocketTimeoutException -> "Timeout - Please check your internet connection"
-                            is UnknownHostException -> "Unable to make a connection. Please check your internet connection"
-                            is IOException -> "Server is unreachable, please try again later."
-                            else -> "${e.message}"
-                        }
-                        Log.e(TAG, "getHttpClient: $msg", e)
-                        Sentry.captureException(e, "$TAG getHttpClient: $msg")
-                        AppEventsManager.pushAppEvents(
-                            eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
-                            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = false,
-                            data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), "Exception Point" to "$TAG getHttpClient: $msg", "Exception Message" to msg, "Exception Logs" to e.toString())
-                        )
-                        Response.Builder().apply {
-                            request(chain.request())
-                            protocol(Protocol.HTTP_1_1)
-                            protocol(Protocol.HTTP_2)
-                            code(999)
-                            message(msg)
-                            body("{${e}}".toResponseBody(null))
-                        }.build()
-                    }
-                }
-                addInterceptor(loggingInterface)
-                protocols(arrayListOf(Protocol.HTTP_1_1, Protocol.HTTP_2))
-            }.build()
-        } catch (e: Exception) {
-            throw Exception(e.message)
-        }
+        return OkHttpClient.Builder().apply {
+            connectTimeout(1, TimeUnit.MINUTES)
+            callTimeout(1, TimeUnit.MINUTES)
+            readTimeout(30, TimeUnit.SECONDS)
+            writeTimeout(30, TimeUnit.SECONDS)
+            addInterceptor {
+                customizeCustomRequest(it)
+            }
+            addInterceptor(loggingInterface)
+            protocols(arrayListOf(Protocol.HTTP_1_1, Protocol.HTTP_2))
+        }.build()
     }
 
-    private fun customizeCustomRequest(chain: Interceptor.Chain): Response {
-        try {
-            val originalRequest = chain.request()
-            val newRequest = getNewRequest(originalRequest)
-            return if (null == newRequest) chain.proceed(originalRequest) else chain.proceed(newRequest)
-        } catch (e: Exception) {
-            Log.e(TAG, "customizeCustomRequest: ${e.message}", e)
-            throw Exception(e.message)
-        }
+    private fun customizeCustomRequest(it: Interceptor.Chain): Response {
+        val originalRequest = it.request()
+        val newRequest = getNewRequest(originalRequest)
+        return if (null == newRequest) it.proceed(originalRequest) else it.proceed(newRequest)
     }
 
     private fun getNewRequest(originalRequest: Request): Request? {

@@ -79,7 +79,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
                     Log.e(TAG, e.message, e)
                     AppEventsManager.pushAppEvents(
                         eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
-                        isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                        isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = false,
                         data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), "Exception Point" to "handlingFirebaseToken", "Exception Message" to e.message, "Exception Logs" to e.toString())
                     )
                 }
@@ -88,7 +88,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             Log.e(TAG, e.message, e)
             AppEventsManager.pushAppEvents(
                 eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
-                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = false,
                 data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), "Exception Point" to "handlingFirebaseToken", "Exception Message" to e.message, "Exception Logs" to e.toString())
             )
         }
@@ -102,7 +102,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             Log.e(TAG, "onStart: ${e.message}", e)
             AppEventsManager.pushAppEvents(
                 eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
-                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = false,
                 data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), "Exception Point" to "Main Activity : onStart", "Exception Message" to e.message, "Exception Logs" to e.toString())
             )
         }
@@ -116,7 +116,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             Log.e(TAG, "onStop: ${e.message}", e)
             AppEventsManager.pushAppEvents(
                 eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
-                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = false,
                 data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), "Exception Point" to "Main Activity : onStop", "Exception Message" to e.message, "Exception Logs" to e.toString())
             )
         }
@@ -196,7 +196,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         } catch (e: Exception) {
             AppEventsManager.pushAppEvents(
                 eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
-                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = false,
                 data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), "Exception Point" to "getCurrentFragment", "Exception Message" to e.message, "Exception Logs" to e.toString())
             )
             null
