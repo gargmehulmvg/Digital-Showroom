@@ -231,14 +231,10 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
         }
     }
 
-    override fun onGenerateStorePdfResponse(response: CommonApiResponse) {
+    override fun onGenerateStorePdfResponse(commonResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
-            showShortSnackBar(
-                response.mMessage,
-                true,
-                if (response.mIsSuccessStatus) R.drawable.ic_check_circle else R.drawable.ic_close_red
-            )
+            showShortSnackBar(commonResponse.mMessage, true, if (commonResponse.mIsSuccessStatus) R.drawable.ic_check_circle else R.drawable.ic_close_red)
         }
     }
 
@@ -258,15 +254,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                     val bottomSheetHeadingTextView: TextView = findViewById(R.id.bottomSheetHeadingTextView)
                     val verifyTextView: TextView = findViewById(R.id.verifyTextView)
                     val referAndEarnRecyclerView: RecyclerView = findViewById(R.id.referAndEarnRecyclerView)
-                    if (isNotEmpty(response?.imageUrl)) {
-                        bottomSheetUpperImageView.let { view ->
-                            try {
-                                Glide.with(this@ProductFragment).load(response?.imageUrl).into(view)
-                            } catch (e: Exception) {
-                                Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
-                            }
-                        }
-                    }
+                    if (isNotEmpty(response?.imageUrl)) { bottomSheetUpperImageView.let { view -> Glide.with(this@ProductFragment).load(response?.imageUrl).into(view) } }
                     bottomSheetUpperImageView.setImageDrawable(ContextCompat.getDrawable(it, R.drawable.ic_share_pdf_whatsapp))
                     bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
                     bottomSheetHeadingTextView.text = response?.heading

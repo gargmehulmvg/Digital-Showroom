@@ -263,7 +263,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             showNoInternetConnectionDialog()
             return
         }
-        showProgressDialog(mActivity, "Fetching user profile...")
+        showProgressDialog(mActivity)
         mProfileService.getUserProfile()
     }
 
