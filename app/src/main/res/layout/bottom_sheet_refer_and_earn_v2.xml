@@ -38,7 +38,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.25"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/bottomSheetClose"
+            app:layout_constraintTop_toBottomOf="@id/bottomSheetClose"
             android:src="@drawable/ic_app_logo" />
 
         <com.google.android.material.textview.MaterialTextView
@@ -51,8 +51,8 @@
             android:fontFamily="@font/roboto_light"
             android:layout_marginStart="@dimen/_10sdp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/bottomSheetUpperImageView"
-            app:layout_constraintTop_toTopOf="@+id/bottomSheetUpperImageView"
+            app:layout_constraintStart_toEndOf="@id/bottomSheetUpperImageView"
+            app:layout_constraintTop_toTopOf="@id/bottomSheetUpperImageView"
             tools:text="digital" />
 
         <com.google.android.material.textview.MaterialTextView
@@ -65,15 +65,15 @@
             app:textAllCaps="true"
             android:fontFamily="@font/roboto_bold"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/bottomSheetHeadingTextView"
-            app:layout_constraintTop_toBottomOf="@+id/bottomSheetHeadingTextView"
+            app:layout_constraintStart_toStartOf="@id/bottomSheetHeadingTextView"
+            app:layout_constraintTop_toBottomOf="@id/bottomSheetHeadingTextView"
             tools:text="SHOWROOM" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="370dp"
             android:background="@drawable/ic_semi_circle_white"
-            app:layout_constraintTop_toTopOf="@+id/bottomSheetUpperImageView">
+            app:layout_constraintTop_toTopOf="@id/bottomSheetUpperImageView">
 
             <TextView
                 android:id="@+id/messageTextView"
@@ -87,7 +87,7 @@
                 android:lineSpacingMultiplier="1.1"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_18sdp"
-                app:layout_constraintBottom_toTopOf="@+id/appName" />
+                app:layout_constraintBottom_toTopOf="@id/appName" />
 
             <TextView
                 android:id="@+id/appName"
@@ -99,7 +99,7 @@
                 android:textColor="@color/black"
                 android:textSize="@dimen/_20sdp"
                 android:layout_marginBottom="@dimen/_20sdp"
-                app:layout_constraintBottom_toTopOf="@+id/verifyTextView"
+                app:layout_constraintBottom_toTopOf="@id/verifyTextView"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent" />
 

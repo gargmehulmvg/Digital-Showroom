@@ -111,7 +111,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         Log.d(TAG, "onAttach :: called in Application")
     }
 
-    protected fun showProgressDialog(context: Context?, message: String? = "Please wait...") {
+    protected fun showProgressDialog(context: Context?) {
         Thread.dumpStack()
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             context?.let {
@@ -119,10 +119,6 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                     mProgressDialog = Dialog(it)
                     mProgressDialog?.apply {
                         val view = LayoutInflater.from(context).inflate(R.layout.progress_dialog, null)
-                        message?.let { msg ->
-                            val messageTextView: TextView = view.findViewById(R.id.progressDialogTextView)
-                            messageTextView.text = msg
-                        }
                         setContentView(view)
                         setCancelable(false)
                         window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -154,20 +150,13 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
 
     open fun onBackPressed(): Boolean = false
 
-    protected fun showCancellableProgressDialog(
-        context: Context?,
-        message: String? = "Please wait..."
-    ) {
+    protected fun showCancellableProgressDialog(context: Context?) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             context?.let {
                 try {
                     mProgressDialog = Dialog(it)
                     val inflate = LayoutInflater.from(it).inflate(R.layout.progress_dialog, null)
                     mProgressDialog?.setContentView(inflate)
-                    message?.run {
-                        val messageTextView: TextView = inflate.findViewById(R.id.progressDialogTextView)
-                        messageTextView.text = this
-                    }
                     mProgressDialog?.setCancelable(true)
                     mProgressDialog?.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
                     mProgressDialog?.show()
@@ -182,7 +171,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     fun stopProgress() {
         mActivity?.runOnUiThread {
             try {
-                if (mProgressDialog != null) {
+                if (null != mProgressDialog) {
                     mProgressDialog?.dismiss()
                     mProgressDialog = null
                 }
@@ -2079,7 +2068,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                                     mMultiUserAdapter?.notifyDataSetChanged()
                                 }
                             })
-                        }
+                        } else return@runTaskOnCoroutineMain
                         moreOptionsContainer.setOnClickListener {
                             moreOptionsContainer.visibility = View.GONE
                             mMultiUserAdapter?.showCompleteList()
