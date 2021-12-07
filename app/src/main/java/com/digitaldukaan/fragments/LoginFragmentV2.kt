@@ -20,7 +20,6 @@ import androidx.viewpager.widget.ViewPager
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.LoginHelpPageAdapter
 import com.digitaldukaan.constants.*
-import com.digitaldukaan.constants.StaticInstances.sHelpScreenList
 import com.digitaldukaan.models.dto.CleverTapProfile
 import com.digitaldukaan.models.request.ValidateUserRequest
 import com.digitaldukaan.models.response.CommonApiResponse
@@ -143,7 +142,7 @@ class LoginFragmentV2 : BaseFragment(), ILoginServiceInterface {
         val timerTask = object : TimerTask() {
             override fun run() {
                 viewPager?.post {
-                    viewPager.currentItem = ((viewPager.currentItem + 1) % (sHelpScreenList.size))
+                    viewPager.currentItem = ((viewPager.currentItem + 1) % (if (isEmpty(StaticInstances.sHelpScreenList)) 1 else StaticInstances.sHelpScreenList.size))
                 }
             }
         }

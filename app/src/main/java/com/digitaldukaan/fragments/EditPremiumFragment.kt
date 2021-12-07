@@ -79,7 +79,7 @@ class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
         editPremiumWebView?.apply {
             settings.javaScriptEnabled = true
             settings.domStorageEnabled = true
-            addJavascriptInterface(WebViewBridge(), "Android")
+            addJavascriptInterface(WebViewBridge(), Constants.KEY_ANDROID)
             val url = "${BuildConfig.WEB_VIEW_PREVIEW_URL}${mPremiumPageInfoResponse?.domain}"
             Log.d(EditPremiumFragment::class.simpleName, "onViewCreated: $url")
             webViewClient = object : WebViewClient() {

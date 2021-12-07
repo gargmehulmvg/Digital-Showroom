@@ -15,7 +15,16 @@ class RetrofitApi {
 
     private var mAppService: Apis? = null
     private var mAppAnalyticsService: Apis? = null
-    private val mTag = "RetrofitApi"
+
+    companion object {
+        private const val TAG = "RetrofitApi"
+        private const val APP_OS_VALUE = "android_native"
+        private const val APP_OS_KEY = "app_os"
+        private const val AUTH_TOKEN = "auth_token"
+        private const val SESSION_ID = "session_id"
+        private const val INSTALL_ID = "install_id"
+        private const val APP_VERSION = "app_version"
+    }
 
     fun getServerCallObject(): Apis? {
         if (null == mAppService) {
@@ -70,14 +79,14 @@ class RetrofitApi {
     private fun getNewRequest(originalRequest: Request): Request? {
         return try {
             originalRequest.newBuilder().apply {
-                addHeader("auth_token", PrefsManager.getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
-                addHeader("session_id", StaticInstances.sAppSessionId ?: "")
-                addHeader("install_id", PrefsManager.getStringDataFromSharedPref(PrefsManager.APP_INSTANCE_ID))
-                addHeader("app_os", "android_native")
-                addHeader("app_version", BuildConfig.VERSION_NAME)
+                addHeader(AUTH_TOKEN, PrefsManager.getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN))
+                addHeader(SESSION_ID, StaticInstances.sAppSessionId ?: "")
+                addHeader(INSTALL_ID, PrefsManager.getStringDataFromSharedPref(PrefsManager.APP_INSTANCE_ID))
+                addHeader(APP_OS_KEY, APP_OS_VALUE)
+                addHeader(APP_VERSION, BuildConfig.VERSION_NAME)
             }.build()
         } catch (e: Exception) {
-            Log.e(mTag, "getNewRequest: ${e.message}", e)
+            Log.e(TAG, "getNewRequest: ${e.message}", e)
             null
         }
     }

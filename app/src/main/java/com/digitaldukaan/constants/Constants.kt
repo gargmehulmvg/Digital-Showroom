@@ -42,6 +42,7 @@ class Constants {
         const val APP_SECRET_KEY                                = "wFqjaY2jR85nMmgI7wqvPHd6mYaEN9a1"
         const val ANALYTICS_PRODUCTION_URL                      = "https://api.dotshowroom.in/"
         //KEYS
+        const val KEY_ANDROID                                   = "Android"
         const val KEY_BUY_DOMAIN                                = "buy-domain"
         const val KEY_BUY_THEMES                                = "buy-themes"
         const val KEY_ADD_PRODUCT                               = "add-product"
