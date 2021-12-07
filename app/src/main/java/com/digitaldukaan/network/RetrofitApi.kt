@@ -9,7 +9,6 @@ import okhttp3.*
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.io.IOException
 import java.util.concurrent.TimeUnit
 
 class RetrofitApi {
@@ -19,37 +18,27 @@ class RetrofitApi {
     private val mTag = "RetrofitApi"
 
     fun getServerCallObject(): Apis? {
-        return try {
-            if (null == mAppService) {
-                val retrofit = Retrofit.Builder().apply {
-                    baseUrl(BuildConfig.BASE_URL)
-                    addConverterFactory(GsonConverterFactory.create())
-                    client(getHttpClient())
-                }.build()
-                mAppService = retrofit.create(Apis::class.java)
-            }
-            mAppService
-        } catch (e: Exception) {
-            Log.e(mTag, "getServerCallObject: ${e.message}", e)
-            throw IOException(e.message)
+        if (null == mAppService) {
+            val retrofit = Retrofit.Builder().apply {
+                baseUrl(BuildConfig.BASE_URL)
+                addConverterFactory(GsonConverterFactory.create())
+                client(getHttpClient())
+            }.build()
+            mAppService = retrofit.create(Apis::class.java)
         }
+        return mAppService
     }
 
     fun getAnalyticsServerCallObject(): Apis? {
-        return try {
-            if (null == mAppAnalyticsService) {
-                val retrofit = Retrofit.Builder().apply {
-                    baseUrl(if (BuildConfig.DEBUG) BuildConfig.BASE_URL else Constants.ANALYTICS_PRODUCTION_URL)
-                    addConverterFactory(GsonConverterFactory.create())
-                    client(getHttpClient())
-                }.build()
-                mAppAnalyticsService = retrofit.create(Apis::class.java)
-            }
-            mAppAnalyticsService
-        } catch (e: Exception) {
-            Log.e(mTag, "getServerCallObject: ${e.message}", e)
-            throw IOException(e.message)
+        if (null == mAppAnalyticsService) {
+            val retrofit = Retrofit.Builder().apply {
+                baseUrl(if (BuildConfig.DEBUG) BuildConfig.BASE_URL else Constants.ANALYTICS_PRODUCTION_URL)
+                addConverterFactory(GsonConverterFactory.create())
+                client(getHttpClient())
+            }.build()
+            mAppAnalyticsService = retrofit.create(Apis::class.java)
         }
+        return mAppAnalyticsService
     }
 
     private fun getHttpClient(): OkHttpClient {
@@ -59,37 +48,23 @@ class RetrofitApi {
                 false -> HttpLoggingInterceptor.Level.NONE
             }
         }
-        return try {
-            OkHttpClient.Builder().apply {
-                connectTimeout(1, TimeUnit.MINUTES)
-                callTimeout(1, TimeUnit.MINUTES)
-                readTimeout(30, TimeUnit.SECONDS)
-                writeTimeout(30, TimeUnit.SECONDS)
-                addInterceptor {
-                    try {
-                        customizeCustomRequest(it)
-                    } catch (e: Exception) {
-                        Log.e(mTag, "getHttpClient: ${e.message}", e)
-                        throw IOException()
-                    }
-                }
-                addInterceptor(loggingInterface)
-                protocols(arrayListOf(Protocol.HTTP_1_1, Protocol.HTTP_2))
-            }.build()
-        } catch (e: Exception) {
-            throw IOException(e.message)
-        }
+        return OkHttpClient.Builder().apply {
+            connectTimeout(1, TimeUnit.MINUTES)
+            callTimeout(1, TimeUnit.MINUTES)
+            readTimeout(30, TimeUnit.SECONDS)
+            writeTimeout(30, TimeUnit.SECONDS)
+            addInterceptor {
+                customizeCustomRequest(it)
+            }
+            addInterceptor(loggingInterface)
+            protocols(arrayListOf(Protocol.HTTP_1_1, Protocol.HTTP_2))
+        }.build()
     }
 
     private fun customizeCustomRequest(it: Interceptor.Chain): Response {
-        try {
-            val originalRequest = it.request()
-            val newRequest = getNewRequest(originalRequest)
-            return if (null == newRequest) it.proceed(originalRequest) else it.proceed(newRequest)
-        } catch (e: Exception) {
-            Log.e(mTag, "customizeCustomRequest: ${e.message}", e)
-            throw IOException()
-        }
+        val originalRequest = it.request()
+        val newRequest = getNewRequest(originalRequest)
+        return if (null == newRequest) it.proceed(originalRequest) else it.proceed(newRequest)
     }
 
     private fun getNewRequest(originalRequest: Request): Request? {
