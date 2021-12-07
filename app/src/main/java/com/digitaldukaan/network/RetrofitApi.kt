@@ -2,12 +2,10 @@ package com.digitaldukaan.network
 
 import android.util.Log
 import com.digitaldukaan.BuildConfig
-import com.digitaldukaan.constants.Constants
-import com.digitaldukaan.constants.PrefsManager
-import com.digitaldukaan.constants.StaticInstances
+import com.digitaldukaan.constants.*
+import io.sentry.Sentry
 import okhttp3.*
 import okhttp3.ResponseBody.Companion.toResponseBody
-import okhttp3.internal.http2.ConnectionShutdownException
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -86,13 +84,17 @@ class RetrofitApi {
                     } catch (e: Exception) {
                         val msg: String = when (e) {
                             is SocketTimeoutException -> "Timeout - Please check your internet connection"
-                            is UnknownHostException -> "Unable to make a connection. Please check your internet"
-                            is ConnectionShutdownException -> "Connection shutdown. Please check your internet"
+                            is UnknownHostException -> "Unable to make a connection. Please check your internet connection"
                             is IOException -> "Server is unreachable, please try again later."
-                            is IllegalStateException -> "${e.message}"
                             else -> "${e.message}"
                         }
                         Log.e(TAG, "getHttpClient: $msg", e)
+                        Sentry.captureException(e, "$TAG getHttpClient: $msg")
+                        AppEventsManager.pushAppEvents(
+                            eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
+                            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = false,
+                            data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), "Exception Point" to "$TAG getHttpClient: $msg", "Exception Message" to msg, "Exception Logs" to e.toString())
+                        )
                         Response.Builder().apply {
                             request(chain.request())
                             protocol(Protocol.HTTP_1_1)
