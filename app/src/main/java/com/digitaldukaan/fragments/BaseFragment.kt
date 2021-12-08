@@ -7,10 +7,7 @@ import android.app.PendingIntent
 import android.content.*
 import android.content.Context.MODE_PRIVATE
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Color
-import android.graphics.Paint
+import android.graphics.*
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.location.Location
@@ -20,11 +17,8 @@ import android.net.Uri
 import android.os.*
 import android.provider.MediaStore
 import android.provider.Settings
-import android.text.Editable
-import android.text.Html
-import android.text.InputFilter
+import android.text.*
 import android.text.InputFilter.LengthFilter
-import android.text.TextWatcher
 import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
@@ -314,8 +308,8 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
 
     open fun copyDataToClipboard(string: String?) {
         try {
-            val clipboard: ClipboardManager = mActivity?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            val clip: ClipData = ClipData.newPlainText(Constants.CLIPBOARD_LABEL, string)
+            val clipboard = mActivity?.getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+            val clip = ClipData.newPlainText(Constants.CLIPBOARD_LABEL, string)
             clipboard.setPrimaryClip(clip)
             showToast(getString(R.string.link_copied))
         } catch (e: Exception) {
@@ -2323,6 +2317,42 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                                         }
                                     }
                                 })
+                        }
+                    }
+                }.show()
+            }
+        }
+    }
+
+    open fun openWebConsoleBottomSheet(webConsoleBottomSheet: WebConsoleBottomSheetResponse?) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            mActivity?.let { context ->
+                val bottomSheetDialog = BottomSheetDialog(context, R.style.BottomSheetDialogTheme)
+                val view = LayoutInflater.from(context).inflate(R.layout.bottom_sheet_web_console, context.findViewById(R.id.bottomSheetContainer))
+                bottomSheetDialog.apply {
+                    setContentView(view)
+                    behavior.state = BottomSheetBehavior.STATE_EXPANDED
+                    view?.run {
+                        val bottomSheetUrlTextView: TextView = findViewById(R.id.bottomSheetUrlTextView)
+                        val bottomSheetLaptop: ImageView = findViewById(R.id.bottomSheetLaptop)
+                        val bottomSheetBrowserImageView: ImageView = findViewById(R.id.bottomSheetBrowserImageView)
+                        val bottomSheetBrowserText: TextView = findViewById(R.id.bottomSheetBrowserText)
+                        val bottomSheetHeadingTextView: TextView = findViewById(R.id.bottomSheetHeadingTextView)
+                        val bottomSheetSubHeadingTextView: TextView = findViewById(R.id.bottomSheetSubHeadingTextView)
+                        webConsoleBottomSheet?.let { response ->
+                            with(response) {
+                                bottomSheetHeadingTextView.text = heading
+                                bottomSheetSubHeadingTextView.text = subHeading
+                                bottomSheetBrowserText.text = textBestViewedOn
+                                Glide.with(context).load(primaryCdn).into(bottomSheetLaptop)
+                                Glide.with(context).load(secondaryCdn).into(bottomSheetBrowserImageView)
+                                bottomSheetUrlTextView.apply {
+                                    setBackgroundColor(Color.parseColor(cta.bgColor))
+                                    setTextColor(Color.parseColor(cta.textColor))
+                                    setHtmlData(cta.text)
+                                    setOnClickListener { copyDataToClipboard(Constants.DOTPE_OFFICIAL_URL_CLIPBOARD) }
+                                }
+                            }
                         }
                     }
                 }.show()
