@@ -26,7 +26,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import io.sentry.Sentry
 import kotlinx.android.synthetic.main.layout_edit_premium_fragment.*
 
 class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
@@ -156,7 +155,6 @@ class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
                                 shareOnWhatsApp(mShareDataOverWhatsAppText)
                             }
                         } catch (e: Exception) {
-                            Sentry.captureException(e, "$TAG onClick: exception")
                             exceptionHandlingForAPIResponse(e)
                         }
                     }

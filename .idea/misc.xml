@@ -52,6 +52,7 @@
         <entry key="app/src/main/res/layout/activity_main2.xml" value="0.22269736842105264" />
         <entry key="app/src/main/res/layout/add_bank_bottom_sheet_item.xml" value="0.4027777777777778" />
         <entry key="app/src/main/res/layout/add_product_images_item.xml" value="0.35260416666666666" />
+        <entry key="app/src/main/res/layout/app_setting_item.xml" value="0.2299342105263158" />
         <entry key="app/src/main/res/layout/bottom_layout_send_bill.xml" value="0.22269736842105264" />
         <entry key="app/src/main/res/layout/bottom_sheet_category_product.xml" value="0.4027777777777778" />
         <entry key="app/src/main/res/layout/bottom_sheet_cod_confirmation.xml" value="0.4244791666666667" />
@@ -88,6 +89,7 @@
         <entry key="app/src/main/res/layout/landing_page_custom_domain_item.xml" value="0.2299342105263158" />
         <entry key="app/src/main/res/layout/landing_page_shortcut_item.xml" value="0.2299342105263158" />
         <entry key="app/src/main/res/layout/layout_add_product_fragment.xml" value="0.335" />
+        <entry key="app/src/main/res/layout/layout_app_setting_fragment.xml" value="0.2299342105263158" />
         <entry key="app/src/main/res/layout/layout_business_type_fragment.xml" value="0.22269736842105264" />
         <entry key="app/src/main/res/layout/layout_common_webview_fragment.xml" value="0.4027777777777778" />
         <entry key="app/src/main/res/layout/layout_create_store_fragment.xml" value="0.35260416666666666" />

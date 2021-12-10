@@ -35,7 +35,7 @@
             android:id="@+id/businessTypeTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/montserrat"
+            android:fontFamily="@font/roboto"
             android:gravity="center"
             android:clickable="false"
             android:maxLines="@integer/min_lines_two"

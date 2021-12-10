@@ -25,7 +25,6 @@ import com.google.android.play.core.review.ReviewManager
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.google.firebase.messaging.FirebaseMessaging
 import com.truecaller.android.sdk.TruecallerSDK
-import io.sentry.Sentry
 import kotlinx.android.synthetic.main.activity_main2.*
 import java.util.*
 
@@ -167,7 +166,6 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             val manager = supportFragmentManager
             if (manager.backStackEntryCount > 0) super.onBackPressed()
         } catch (e: Exception) {
-            Sentry.captureException(e, "$TAG :: onBackPressed")
             Log.e(TAG, "onBackPressed: ${e.message}", e)
         }
     }

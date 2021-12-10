@@ -63,7 +63,6 @@ import com.squareup.picasso.Picasso
 import com.yalantis.ucrop.UCrop
 import id.zelory.compressor.Compressor
 import id.zelory.compressor.constraint.quality
-import io.sentry.Sentry
 import kotlinx.android.synthetic.main.activity_main2.*
 import kotlinx.android.synthetic.main.bottom_sheet_custom_domain_selection.view.*
 import kotlinx.coroutines.Dispatchers
@@ -157,7 +156,6 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                     mProgressDialog?.show()
                 } catch (e: Exception) {
                     Log.e(TAG, "showCancellableProgressDialog: ${e.message}", e)
-                    Sentry.captureException(e, "$TAG showCancellableProgressDialog")
                 }
             }
         }
@@ -673,7 +671,6 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                                     }
                                 }
                             } catch (e: Exception) {
-                                Sentry.captureException(e, "showImagePickerBottomSheet: exception")
                                 exceptionHandlingForAPIResponse(e)
                             }
                         }
@@ -1790,7 +1787,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                 }
             }
         } catch (e: Exception) {
-            Sentry.captureException(e, "$TAG getLocationFromGoogleMap")
+            Log.e(TAG, "getLocationFromGoogleMap: ${e.message}", e)
         }
     }
 
