@@ -33,6 +33,7 @@ import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IMarketingServiceInterface
 import com.digitaldukaan.webviews.WebViewBridge
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.sentry.Sentry
@@ -61,6 +62,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
         TAG = "MarketingFragment"
         mService = MarketingService()
         mService?.setMarketingServiceListener(this)
+        FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
         mContentView = inflater.inflate(R.layout.layout_marketing_fragment, container, false)
         return mContentView
     }

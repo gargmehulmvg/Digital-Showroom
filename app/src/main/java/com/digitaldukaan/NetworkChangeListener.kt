@@ -21,7 +21,7 @@ class NetworkChangeListener : BroadcastReceiver() {
         Log.d(TAG, "onReceive: called")
         try {
             context?.run {
-                if (noInternetDialog == null) {
+                if (null == noInternetDialog) {
                     noInternetDialog = Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen)
                 }
                 if (!isInternetConnectionAvailable(this)) {
@@ -31,7 +31,7 @@ class NetworkChangeListener : BroadcastReceiver() {
                         setCancelable(false)
                         window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
                     }?.show()
-                } else if (noInternetDialog?.isShowing == true) noInternetDialog?.dismiss()
+                } else if (true == noInternetDialog?.isShowing) noInternetDialog?.dismiss()
                 else noInternetDialog?.dismiss()
             }
         } catch (e: Exception) {

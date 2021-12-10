@@ -23,6 +23,7 @@ import com.digitaldukaan.services.PaymentModesService
 import com.digitaldukaan.services.serviceinterface.IPaymentModesServiceInterface
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.switchmaterial.SwitchMaterial
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.layout_payment_modes.*
 
@@ -50,6 +51,7 @@ class PaymentModesFragment: BaseFragment(), IPaymentModesServiceInterface,
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         TAG = "PaymentModesFragment"
+        FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
         mContentView = inflater.inflate(R.layout.layout_payment_modes, container, false)
         initializeUI()
         mService.setServiceInterface(this)

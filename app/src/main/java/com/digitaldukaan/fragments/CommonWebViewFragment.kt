@@ -18,6 +18,7 @@ import com.digitaldukaan.interfaces.IOnToolbarIconClick
 import com.digitaldukaan.models.dto.ConvertMultiImageDTO
 import com.digitaldukaan.models.response.LockedStoreShareResponse
 import com.digitaldukaan.webviews.WebViewBridge
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.layout_common_webview_fragment.*
@@ -43,6 +44,7 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         TAG = "CommonWebViewFragment"
+        FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
         mContentView = inflater.inflate(R.layout.layout_common_webview_fragment, container, false)
         hideBottomNavigationView(true)
         return mContentView

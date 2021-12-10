@@ -24,4 +24,5 @@
     <integer name="custom_domain_count">4</integer>
     <integer name="gst_count">15</integer>
     <integer name="premium_compression_value">100</integer>
+    <integer name="item_name_length">80</integer>
 </resources>

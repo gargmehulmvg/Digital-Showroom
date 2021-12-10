@@ -178,7 +178,7 @@
                             android:focusable="true"
                             android:importantForAutofill="no"
                             android:inputType="textCapWords"
-                            android:maxLength="@integer/description_name_length"
+                            android:maxLength="@integer/item_name_length"
                             android:textColor="@color/black"
                             android:textColorHint="@color/default_text_light_grey"
                             android:textSize="@dimen/_12sdp" />

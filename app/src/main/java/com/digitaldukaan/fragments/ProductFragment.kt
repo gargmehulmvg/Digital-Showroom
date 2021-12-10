@@ -32,6 +32,7 @@ import com.digitaldukaan.services.serviceinterface.IProductServiceInterface
 import com.digitaldukaan.webviews.WebViewBridge
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.textfield.TextInputLayout
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.product_fragment.*
@@ -51,6 +52,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
     private var mDeleteCategoryItemList: ArrayList<DeleteCategoryItemResponse?>? = null
     private val mTempProductCategoryList: ArrayList<StoreCategoryItem> = ArrayList()
     private var mIsDoublePressToExit = false
+    private var mProductPageInfoResponse: ProductPageResponse? = null
 
     companion object {
         private var addProductStaticData: AddProductStaticText? = null
@@ -68,6 +70,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         TAG = "ProductFragment"
+        FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
         mContentView = inflater.inflate(R.layout.product_fragment, container, false)
         if (!isInternetConnectionAvailable(mActivity)) showNoInternetConnectionDialog() else {
             showCancellableProgressDialog(mActivity)
@@ -99,17 +102,17 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
 
     override fun onProductPageInfoResponse(commonResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            val productResponse = Gson().fromJson(commonResponse.mCommonDataStr, ProductPageResponse::class.java)
-            StaticInstances.sIsShareStoreLocked = productResponse?.isShareStoreLocked ?: false
-            bottomContainer?.visibility = if (productResponse?.isZeroProduct == true) View.GONE else View.VISIBLE
-            addProductStaticData = productResponse?.static_text
+            mProductPageInfoResponse = Gson().fromJson(commonResponse.mCommonDataStr, ProductPageResponse::class.java)
+            StaticInstances.sIsShareStoreLocked = mProductPageInfoResponse?.isShareStoreLocked ?: false
+            bottomContainer?.visibility = if (mProductPageInfoResponse?.isZeroProduct == true) View.GONE else View.VISIBLE
+            addProductStaticData = mProductPageInfoResponse?.staticText
             var url: String
-            ToolBarManager.getInstance()?.headerTitle = productResponse?.static_text?.product_page_heading
-            mOptionsMenuResponse = productResponse?.optionMenuList
+            ToolBarManager.getInstance()?.headerTitle = mProductPageInfoResponse?.staticText?.product_page_heading
+            mOptionsMenuResponse = mProductPageInfoResponse?.optionMenuList
             commonWebView?.apply {
                 settings.javaScriptEnabled = true
                 addJavascriptInterface(WebViewBridge(), Constants.KEY_ANDROID)
-                url = BuildConfig.WEB_VIEW_URL + productResponse?.product_page_url + "?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&app_version=${BuildConfig.VERSION_NAME}"
+                url = BuildConfig.WEB_VIEW_URL + mProductPageInfoResponse?.productPageUrl + "?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&app_version=${BuildConfig.VERSION_NAME}"
                 Log.d(TAG, "onProductResponse: WebView URL $url")
                 loadUrl(url)
                 webViewClient = object : WebViewClient() {
@@ -118,7 +121,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                     }
                 }
             }
-            productResponse?.shareShop?.run {
+            mProductPageInfoResponse?.shareShop?.run {
                 shareButtonTextView?.text = this.mText
                 if (isNotEmpty(mCDN) && null != shareButtonImageView) {
                     try {
@@ -128,7 +131,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                     }
                 }
             }
-            productResponse?.addProduct?.run {
+            mProductPageInfoResponse?.addProduct?.run {
                 addProductTextView?.text = this.mText
                 if (isNotEmpty(mCDN) && null != addProductImageView) {
                     try {
@@ -158,10 +161,10 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
         }
     }
 
-    override fun onProductPDFGenerateResponse(response: CommonApiResponse) {
+    override fun onProductPDFGenerateResponse(commonResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
-            showShortSnackBar(response.mMessage, true, if (response.mIsSuccessStatus) R.drawable.ic_check_circle else R.drawable.ic_close_red)
+            showShortSnackBar(commonResponse.mMessage, true, if (commonResponse.mIsSuccessStatus) R.drawable.ic_check_circle else R.drawable.ic_close_red)
         }
     }
 
@@ -366,10 +369,6 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                     mService?.getAddOrderBottomSheetData()
                 } else showMasterCatalogBottomSheet(addProductBannerStaticDataResponse, addProductStaticData, Constants.MODE_PRODUCT_LIST)
             }
-            jsonData.optBoolean("catalogCategoryEdit") -> {
-                val jsonDataObject = JSONObject(jsonData.optString("data"))
-                showUpdateCategoryBottomSheet(jsonDataObject.optString("name"), jsonDataObject.optInt("id"))
-            }
             jsonData.optBoolean("catalogItemEdit") -> {
                 val jsonDataObject = JSONObject(jsonData.optString("data"))
                 launchFragment(AddProductFragment.newInstance(jsonDataObject.optInt("id"), false), true)
@@ -382,6 +381,13 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
             }
             jsonData.optBoolean("stopLoader") -> {
                 stopProgress()
+            }
+            jsonData.optBoolean("catalogCategoryEdit") -> {
+                val jsonDataObject = JSONObject(jsonData.optString("data"))
+                showUpdateCategoryBottomSheet(jsonDataObject.optString("name"), jsonDataObject.optInt("id"))
+            }
+            jsonData.optBoolean("editProductTag") -> {
+                openWebConsoleBottomSheet(mProductPageInfoResponse?.webConsoleBottomSheet)
             }
             jsonData.optBoolean("shareTextOnWhatsApp") -> {
                 val text = jsonData.optString("data")
@@ -428,7 +434,6 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
             }
         }
     }
-
 
     private fun showOutOfStockDialog(jsonDataObject: JSONObject) {
         mActivity?.let {
