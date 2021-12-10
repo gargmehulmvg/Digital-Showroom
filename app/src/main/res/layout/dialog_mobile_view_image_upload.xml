@@ -128,7 +128,7 @@
             android:layout_marginEnd="@dimen/_10sdp"
             android:background="@drawable/curve_black_background_selector"
             android:drawablePadding="@dimen/_10sdp"
-            android:fontFamily="@font/montserrat_bold"
+            android:fontFamily="@font/roboto_bold"
             android:gravity="center"
             android:onClick="onClick"
             android:paddingTop="@dimen/_10sdp"

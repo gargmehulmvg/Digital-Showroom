@@ -43,5 +43,3 @@
 -keep class com.bumptech.glide.load.data.ParcelFileDescriptorRewinder$InternalRewinder {
   *** rewind();
 }
--keep class io.sentry.android.core.SentryAndroidOptions
--keep class io.sentry.android.ndk.SentryNdk

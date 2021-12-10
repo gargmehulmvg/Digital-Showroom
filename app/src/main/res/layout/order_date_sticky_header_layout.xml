@@ -27,7 +27,7 @@
             android:paddingStart="@dimen/_8sdp"
             android:paddingEnd="@dimen/_8sdp"
             android:textColor="@color/black"
-            android:fontFamily="@font/montserrat"
+            android:fontFamily="@font/roboto"
             android:text="@string/app_name"
             android:textSize="@dimen/_9sdp" />
 

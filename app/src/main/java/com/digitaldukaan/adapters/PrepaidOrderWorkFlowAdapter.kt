@@ -11,7 +11,6 @@ import com.digitaldukaan.R
 import com.digitaldukaan.constants.isEmpty
 import com.digitaldukaan.models.response.HowItWorksItemResponse
 import com.squareup.picasso.Picasso
-import io.sentry.Sentry
 
 class PrepaidOrderWorkFlowAdapter(
     private var mHowItGoesList: ArrayList<HowItWorksItemResponse>?
@@ -46,7 +45,6 @@ class PrepaidOrderWorkFlowAdapter(
                     Picasso.get().load(item?.url).into(imageView)
                 } catch (e: Exception) {
                     Log.e("PrepaidOrderWorkFlowAdapter", "onBindViewHolder: ", e)
-                    Sentry.captureException(e, "PrepaidOrderWorkFlowAdapter :: onBindViewHolder")
                 }
             }
         }

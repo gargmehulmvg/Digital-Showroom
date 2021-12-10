@@ -146,7 +146,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
                         return
                     }
                     val otpInt: Int = if (isEmpty(mEnteredOtpStr)) 0 else mEnteredOtpStr.toInt()
-                    showProgressDialog(mActivity, mOtpStaticResponseData?.mVerifyingText)
+                    showProgressDialog(mActivity)
                     mOtpVerificationService?.verifyOTP(mMobileNumberStr, otpInt)
                     verifyTextView?.text = mOtpStaticResponseData?.mVerifyingText
                     verifyProgressBar?.apply {

@@ -20,6 +20,7 @@ import com.digitaldukaan.models.response.*
 import com.digitaldukaan.services.MyPaymentsService
 import com.digitaldukaan.services.serviceinterface.IMyPaymentsServiceInterface
 import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration
 import kotlinx.android.synthetic.main.layout_transactions.*
@@ -50,6 +51,7 @@ class TransactionsFragment: BaseFragment(), IMyPaymentsServiceInterface, ITransa
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         TAG = "TransactionsFragment"
+        FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
         mContentView = inflater.inflate(R.layout.layout_transactions, container, false)
         transactionRecyclerView = mContentView?.findViewById(R.id.transactionRecyclerView)
         startDateTextView = mContentView?.findViewById(R.id.startDateTextView)

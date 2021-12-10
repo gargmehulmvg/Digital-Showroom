@@ -7,10 +7,7 @@ import android.app.PendingIntent
 import android.content.*
 import android.content.Context.MODE_PRIVATE
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Color
-import android.graphics.Paint
+import android.graphics.*
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.location.Location
@@ -20,11 +17,8 @@ import android.net.Uri
 import android.os.*
 import android.provider.MediaStore
 import android.provider.Settings
-import android.text.Editable
-import android.text.Html
-import android.text.InputFilter
+import android.text.*
 import android.text.InputFilter.LengthFilter
-import android.text.TextWatcher
 import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
@@ -69,7 +63,6 @@ import com.squareup.picasso.Picasso
 import com.yalantis.ucrop.UCrop
 import id.zelory.compressor.Compressor
 import id.zelory.compressor.constraint.quality
-import io.sentry.Sentry
 import kotlinx.android.synthetic.main.activity_main2.*
 import kotlinx.android.synthetic.main.bottom_sheet_custom_domain_selection.view.*
 import kotlinx.coroutines.Dispatchers
@@ -98,6 +91,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     private var mCurrentLatitude = 0.0
     private var mCurrentLongitude = 0.0
     private var mMultiUserAdapter: StaffInvitationAdapter? = null
+    private var webConsoleBottomSheetDialog: BottomSheetDialog? = null
 
     companion object {
         private var sStaffInvitationDialog: Dialog? = null
@@ -111,7 +105,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         Log.d(TAG, "onAttach :: called in Application")
     }
 
-    protected fun showProgressDialog(context: Context?, message: String? = "Please wait...") {
+    protected fun showProgressDialog(context: Context?) {
         Thread.dumpStack()
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             context?.let {
@@ -119,10 +113,6 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                     mProgressDialog = Dialog(it)
                     mProgressDialog?.apply {
                         val view = LayoutInflater.from(context).inflate(R.layout.progress_dialog, null)
-                        message?.let { msg ->
-                            val messageTextView: TextView = view.findViewById(R.id.progressDialogTextView)
-                            messageTextView.text = msg
-                        }
                         setContentView(view)
                         setCancelable(false)
                         window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -154,26 +144,18 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
 
     open fun onBackPressed(): Boolean = false
 
-    protected fun showCancellableProgressDialog(
-        context: Context?,
-        message: String? = "Please wait..."
-    ) {
+    protected fun showCancellableProgressDialog(context: Context?) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             context?.let {
                 try {
                     mProgressDialog = Dialog(it)
                     val inflate = LayoutInflater.from(it).inflate(R.layout.progress_dialog, null)
                     mProgressDialog?.setContentView(inflate)
-                    message?.run {
-                        val messageTextView: TextView = inflate.findViewById(R.id.progressDialogTextView)
-                        messageTextView.text = this
-                    }
                     mProgressDialog?.setCancelable(true)
                     mProgressDialog?.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
                     mProgressDialog?.show()
                 } catch (e: Exception) {
                     Log.e(TAG, "showCancellableProgressDialog: ${e.message}", e)
-                    Sentry.captureException(e, "$TAG showCancellableProgressDialog")
                 }
             }
         }
@@ -182,7 +164,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     fun stopProgress() {
         mActivity?.runOnUiThread {
             try {
-                if (mProgressDialog != null) {
+                if (null != mProgressDialog) {
                     mProgressDialog?.dismiss()
                     mProgressDialog = null
                 }
@@ -325,8 +307,8 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
 
     open fun copyDataToClipboard(string: String?) {
         try {
-            val clipboard: ClipboardManager = mActivity?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            val clip: ClipData = ClipData.newPlainText(Constants.CLIPBOARD_LABEL, string)
+            val clipboard = mActivity?.getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+            val clip = ClipData.newPlainText(Constants.CLIPBOARD_LABEL, string)
             clipboard.setPrimaryClip(clip)
             showToast(getString(R.string.link_copied))
         } catch (e: Exception) {
@@ -689,7 +671,6 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                                     }
                                 }
                             } catch (e: Exception) {
-                                Sentry.captureException(e, "showImagePickerBottomSheet: exception")
                                 exceptionHandlingForAPIResponse(e)
                             }
                         }
@@ -1806,7 +1787,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                 }
             }
         } catch (e: Exception) {
-            Sentry.captureException(e, "$TAG getLocationFromGoogleMap")
+            Log.e(TAG, "getLocationFromGoogleMap: ${e.message}", e)
         }
     }
 
@@ -2079,7 +2060,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                                     mMultiUserAdapter?.notifyDataSetChanged()
                                 }
                             })
-                        }
+                        } else return@runTaskOnCoroutineMain
                         moreOptionsContainer.setOnClickListener {
                             moreOptionsContainer.visibility = View.GONE
                             mMultiUserAdapter?.showCompleteList()
@@ -2337,6 +2318,43 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                         }
                     }
                 }.show()
+            }
+        }
+    }
+
+    open fun openWebConsoleBottomSheet(webConsoleBottomSheet: WebConsoleBottomSheetResponse?) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            if (null != webConsoleBottomSheetDialog && true == webConsoleBottomSheetDialog?.isShowing) return@runTaskOnCoroutineMain
+            mActivity?.let { context ->
+                webConsoleBottomSheetDialog = BottomSheetDialog(context, R.style.BottomSheetDialogTheme)
+                val view = LayoutInflater.from(context).inflate(R.layout.bottom_sheet_web_console, context.findViewById(R.id.bottomSheetContainer))
+                webConsoleBottomSheetDialog?.apply {
+                    setContentView(view)
+                    behavior.state = BottomSheetBehavior.STATE_EXPANDED
+                    view?.run {
+                        val bottomSheetUrlTextView: TextView = findViewById(R.id.bottomSheetUrlTextView)
+                        val bottomSheetLaptop: ImageView = findViewById(R.id.bottomSheetLaptop)
+                        val bottomSheetBrowserImageView: ImageView = findViewById(R.id.bottomSheetBrowserImageView)
+                        val bottomSheetBrowserText: TextView = findViewById(R.id.bottomSheetBrowserText)
+                        val bottomSheetHeadingTextView: TextView = findViewById(R.id.bottomSheetHeadingTextView)
+                        val bottomSheetSubHeadingTextView: TextView = findViewById(R.id.bottomSheetSubHeadingTextView)
+                        webConsoleBottomSheet?.let { response ->
+                            with(response) {
+                                bottomSheetHeadingTextView.text = heading
+                                bottomSheetSubHeadingTextView.text = subHeading
+                                bottomSheetBrowserText.text = textBestViewedOn
+                                Glide.with(context).load(primaryCdn).into(bottomSheetLaptop)
+                                Glide.with(context).load(secondaryCdn).into(bottomSheetBrowserImageView)
+                                bottomSheetUrlTextView.apply {
+                                    setBackgroundColor(Color.parseColor(cta.bgColor))
+                                    setTextColor(Color.parseColor(cta.textColor))
+                                    setHtmlData(cta.text)
+                                    setOnClickListener { copyDataToClipboard(Constants.DOTPE_OFFICIAL_URL_CLIPBOARD) }
+                                }
+                            }
+                        }
+                    }
+                }?.show()
             }
         }
     }

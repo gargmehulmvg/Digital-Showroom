@@ -27,6 +27,7 @@ import com.digitaldukaan.models.response.StoreOptionsResponse
 import com.digitaldukaan.models.response.TrendingListResponse
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 
 class NewReleaseFragment: BaseFragment(), IStoreSettingsItemClicked {
 
@@ -48,6 +49,7 @@ class NewReleaseFragment: BaseFragment(), IStoreSettingsItemClicked {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         TAG = "NewReleaseFragment"
+        FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
         mContentView = inflater.inflate(R.layout.layout_new_release_fragment, container, false)
         ToolBarManager.getInstance().apply {
             hideToolBar(mActivity, false)

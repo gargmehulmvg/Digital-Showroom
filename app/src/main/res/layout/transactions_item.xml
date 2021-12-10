@@ -68,7 +68,7 @@
         android:layout_height="wrap_content"
         android:clickable="false"
         android:drawablePadding="@dimen/_5sdp"
-        android:fontFamily="@font/montserrat_bold"
+        android:fontFamily="@font/roboto_bold"
         android:padding="@dimen/_2sdp"
         tools:text="₹ 470"
         android:textColor="@color/black"

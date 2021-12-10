@@ -33,9 +33,9 @@ import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IMarketingServiceInterface
 import com.digitaldukaan.webviews.WebViewBridge
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import io.sentry.Sentry
 import kotlinx.android.synthetic.main.layout_marketing_fragment.*
 
 class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingServiceInterface, LocationListener,
@@ -61,6 +61,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
         TAG = "MarketingFragment"
         mService = MarketingService()
         mService?.setMarketingServiceListener(this)
+        FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
         mContentView = inflater.inflate(R.layout.layout_marketing_fragment, container, false)
         return mContentView
     }
@@ -402,7 +403,6 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
             }
         } catch (e: Exception) {
             Log.e(TAG, "showPDFShareBottomSheet: ${e.message}", e)
-            Sentry.captureException(e, "showPDFShareBottomSheet: exception")
         }
     }
 

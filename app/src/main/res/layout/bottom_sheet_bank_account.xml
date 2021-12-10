@@ -89,7 +89,7 @@
         android:layout_marginTop="@dimen/_25sdp"
         android:layout_height="wrap_content"
         android:textSize="@dimen/_15sdp"
-        android:fontFamily="@font/montserrat"
+        android:fontFamily="@font/roboto"
         android:text="@string/i_will_do_later"
         android:textColor="@color/dark_blackish" />
 

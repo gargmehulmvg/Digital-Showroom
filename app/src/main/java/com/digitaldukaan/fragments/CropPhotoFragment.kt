@@ -11,6 +11,7 @@ import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.constants.getImageFileFromBitmap
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import kotlinx.android.synthetic.main.layout_crop_photo.*
 import kotlinx.android.synthetic.main.layout_edit_photo_fragment.cropImageView
 
@@ -28,6 +29,7 @@ class CropPhotoFragment: BaseFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         TAG = "CropPhotoFragment"
+        FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
         mContentView = inflater.inflate(R.layout.layout_crop_photo, container, false)
         return mContentView
     }

@@ -38,6 +38,7 @@ import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IOrderDetailServiceInterface
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.skydoves.balloon.showAlignTop
@@ -83,6 +84,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         TAG = "OrderDetailFragment"
+        FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
         mOrderDetailService = OrderDetailService()
         mOrderDetailService?.setOrderDetailServiceListener(this)
         mContentView = inflater.inflate(R.layout.layout_order_detail_fragment, container, false)
