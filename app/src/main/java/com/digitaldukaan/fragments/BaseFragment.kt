@@ -92,6 +92,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     private var mCurrentLatitude = 0.0
     private var mCurrentLongitude = 0.0
     private var mMultiUserAdapter: StaffInvitationAdapter? = null
+    private var webConsoleBottomSheetDialog: BottomSheetDialog? = null
 
     companion object {
         private var sStaffInvitationDialog: Dialog? = null
@@ -2326,10 +2327,11 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
 
     open fun openWebConsoleBottomSheet(webConsoleBottomSheet: WebConsoleBottomSheetResponse?) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
+            if (null != webConsoleBottomSheetDialog && true == webConsoleBottomSheetDialog?.isShowing) return@runTaskOnCoroutineMain
             mActivity?.let { context ->
-                val bottomSheetDialog = BottomSheetDialog(context, R.style.BottomSheetDialogTheme)
+                webConsoleBottomSheetDialog = BottomSheetDialog(context, R.style.BottomSheetDialogTheme)
                 val view = LayoutInflater.from(context).inflate(R.layout.bottom_sheet_web_console, context.findViewById(R.id.bottomSheetContainer))
-                bottomSheetDialog.apply {
+                webConsoleBottomSheetDialog?.apply {
                     setContentView(view)
                     behavior.state = BottomSheetBehavior.STATE_EXPANDED
                     view?.run {
@@ -2355,7 +2357,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                             }
                         }
                     }
-                }.show()
+                }?.show()
             }
         }
     }
