@@ -19,7 +19,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/light_grey_background"
-            android:fontFamily="@font/montserrat_bold"
+            android:fontFamily="@font/roboto_bold"
             android:padding="@dimen/_10sdp"
             android:textColor="@color/black"
             android:textSize="@dimen/_12sdp"

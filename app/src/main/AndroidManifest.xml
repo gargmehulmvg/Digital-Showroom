@@ -77,10 +77,6 @@
             android:resource="@array/preloaded_fonts" />
 
         <meta-data
-            android:name="io.sentry.dsn"
-            android:value="https://7a27795e36e441a6a13ba51cd48368aa@o375379.ingest.sentry.io/5750450" />
-
-        <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/map_api_key" />
 

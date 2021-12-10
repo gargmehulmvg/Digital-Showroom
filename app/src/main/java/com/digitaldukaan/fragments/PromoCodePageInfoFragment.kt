@@ -31,7 +31,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import com.squareup.picasso.Picasso
-import io.sentry.Sentry
 import kotlinx.android.synthetic.main.layout_promo_code_page_info_fragment.*
 
 
@@ -306,7 +305,6 @@ class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInter
                                         }
                                     }
                                 } catch (e: Exception) {
-                                    Sentry.captureException(e, "showPromoCouponDetailBottomSheet: exception")
                                     exceptionHandlingForAPIResponse(e)
                                 }
                             }
@@ -359,7 +357,6 @@ class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInter
                                         }
                                     }
                                 } catch (e: Exception) {
-                                    Sentry.captureException(e, "showPromoCouponDetailBottomSheet: exception")
                                     exceptionHandlingForAPIResponse(e)
                                 }
                             }

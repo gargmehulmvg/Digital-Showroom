@@ -4,7 +4,6 @@ plugins {
     id 'kotlin-android-extensions'
     id 'com.google.gms.google-services'
     id 'com.google.firebase.crashlytics'
-    id "io.sentry.android.gradle" version "2.0.1"
 }
 
 android {
@@ -28,9 +27,6 @@ android {
             storePassword '8377844923'
             storeFile file('dotpe-release-key.keystore')
         }
-    }
-    sentry {
-        autoUpload.set(true)
     }
     buildTypes {
         applicationVariants.all { variant ->
@@ -151,8 +147,6 @@ dependencies {
     implementation 'com.google.firebase:firebase-analytics-ktx'
     //  Circular Dots
     implementation 'com.tbuonomo:dotsindicator:4.2'
-    //  Add Sentry's SDK as a dependency
-    implementation 'io.sentry:sentry-android:5.0.1'
     //  Image compression
     implementation 'id.zelory:compressor:3.0.1'
     //  Glide

@@ -45,7 +45,6 @@ import com.digitaldukaan.models.response.ProfilePreviewSettingsKeyResponse
 import com.skydoves.balloon.Balloon
 import com.skydoves.balloon.BalloonAnimation
 import com.skydoves.balloon.createBalloon
-import io.sentry.Sentry
 import org.shadow.apache.commons.lang3.StringUtils
 import java.io.*
 import java.net.HttpURLConnection
@@ -233,7 +232,7 @@ fun openWebViewFragment(fragment: BaseFragment, title: String, webViewType: Stri
     try {
         fragment.launchFragment(CommonWebViewFragment().newInstance(title, BuildConfig.WEB_VIEW_URL + webViewType + "?storeid=${fragment.getStringDataFromSharedPref(Constants.STORE_ID)}&redirectFrom=$redirectFromStr&token=${fragment.getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"), true)
     } catch (e: Exception) {
-        Sentry.captureException(e, "openWebViewFragment :: fragment: BaseFragment, title: String, webViewType: String?, redirectFromStr: String")
+        Log.e("GlobalMethods", "openWebViewFragment: ${e.message}", e)
     }
 }
 
@@ -241,7 +240,7 @@ fun openWebViewFragmentV2(fragment: BaseFragment?, title: String, webViewType: S
     try {
         fragment?.launchFragment(CommonWebViewFragment().newInstance(title, webViewType + "?storeid=${fragment.getStringDataFromSharedPref(Constants.STORE_ID)}&redirectFrom=$redirectFromStr&token=${fragment.getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"), true)
     } catch (e: Exception) {
-        Sentry.captureException(e, "openWebViewFragment :: fragment: BaseFragment, title: String, webViewType: String, redirectFromStr: String")
+        Log.e("GlobalMethods", "openWebViewFragmentV2: ${e.message}", e)
     }
 }
 
@@ -249,7 +248,7 @@ fun openWebViewFragment(fragment: BaseFragment?, title: String, webViewUrl: Stri
     try {
         fragment?.launchFragment(CommonWebViewFragment().newInstance(title, webViewUrl + "?storeid=${fragment.getStringDataFromSharedPref(Constants.STORE_ID)}&token=${fragment.getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"), true)
     } catch (e: Exception) {
-        Sentry.captureException(e, "openWebViewFragment :: fragment: BaseFragment, title: String, webViewType: String?")
+        Log.e("GlobalMethods", "openWebViewFragment: ${e.message}", e)
     }
 }
 
@@ -257,7 +256,7 @@ fun openWebViewFragmentV3(fragment: BaseFragment?, title: String, webViewUrl: St
     try {
         fragment?.launchFragment(CommonWebViewFragment().newInstance(title, webViewUrl ?: ""), true)
     } catch (e: Exception) {
-        Sentry.captureException(e, "openWebViewFragment :: fragment: BaseFragment, title: String, webViewType: String?")
+        Log.e("GlobalMethods", "openWebViewFragmentV3: ${e.message}", e)
     }
 }
 
@@ -265,7 +264,7 @@ fun openWebViewFragmentWithLocation(fragment: BaseFragment?, title: String, webV
     try {
         fragment?.launchFragment(CommonWebViewFragment().newInstance(title, webViewType ?: ""), true)
     } catch (e: Exception) {
-        Sentry.captureException(e, "openWebViewFragment :: fragment: BaseFragment, title: String, webViewType: String?")
+        Log.e("GlobalMethods", "openWebViewFragmentWithLocation: ${e.message}", e)
     }
 }
 

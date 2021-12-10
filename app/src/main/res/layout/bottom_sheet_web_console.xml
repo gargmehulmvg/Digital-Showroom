@@ -33,7 +33,7 @@
             android:id="@+id/bottomSheetHeadingTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_18sdp"
+            android:layout_marginTop="@dimen/_28sdp"
             android:fontFamily="@font/roboto_bold"
             android:gravity="center"
             android:padding="@dimen/_2sdp"
@@ -49,7 +49,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:padding="@dimen/_5sdp"
+            android:paddingStart="@dimen/_5sdp"
+            android:paddingEnd="@dimen/_5sdp"
             android:fontFamily="@font/roboto"
             android:textSize="@dimen/_13sdp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -62,7 +63,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:cardCornerRadius="@dimen/_20sdp"
-            android:layout_marginTop="@dimen/_25sdp"
+            android:layout_marginTop="@dimen/_20sdp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/bottomSheetSubHeadingTextView">
@@ -84,8 +85,9 @@
         <ImageView
             android:id="@+id/bottomSheetLaptop"
             android:layout_width="wrap_content"
-            android:layout_height="@dimen/_240sdp"
-            android:layout_marginTop="@dimen/_8sdp"
+            android:layout_height="@dimen/_190sdp"
+            android:paddingStart="@dimen/_10sdp"
+            android:paddingEnd="@dimen/_10sdp"
             android:contentDescription="@string/image_view_content_description"
             tools:src="@drawable/ic_laptop"
             app:layout_constraintEnd_toEndOf="parent"
@@ -95,35 +97,39 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/white"
-            android:padding="@dimen/_5sdp"
+            android:paddingStart="@dimen/_5sdp"
+            android:paddingEnd="@dimen/_5sdp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/bottomSheetLaptop">
 
             <ImageView
                 android:id="@+id/bottomSheetBrowserImageView"
-                android:layout_width="100dp"
+                android:layout_width="60dp"
                 android:layout_height="@dimen/_13sdp"
                 android:contentDescription="@string/image_view_content_description"
-                tools:src="@drawable/ic_browsers"
                 app:layout_constraintBottom_toBottomOf="@id/bottomSheetBrowserText"
-                app:layout_constraintStart_toEndOf="@id/bottomSheetBrowserText"
-                app:layout_constraintTop_toTopOf="@id/bottomSheetBrowserText" />
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/bottomSheetBrowserText"
+                tools:src="@drawable/ic_browsers" />
 
             <TextView
                 android:id="@+id/bottomSheetBrowserText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/roboto"
                 android:layout_margin="@dimen/_5sdp"
-                tools:text="@string/best_viewed_on"
+                android:fontFamily="@font/roboto"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_12sdp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.3"
+                app:layout_constraintEnd_toStartOf="@+id/bottomSheetBrowserImageView"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintHorizontal_chainStyle="packed"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="@string/best_viewed_on" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
