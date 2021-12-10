@@ -28,6 +28,7 @@ import com.digitaldukaan.services.CustomCouponsService
 import com.digitaldukaan.services.serviceinterface.IPromoCodePageInfoServiceInterface
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import com.squareup.picasso.Picasso
 import io.sentry.Sentry
@@ -58,6 +59,7 @@ class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         TAG = "CreateCouponsFragment"
+        FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
         mContentView = inflater.inflate(R.layout.layout_promo_code_page_info_fragment, container, false)
         hideBottomNavigationView(true)
         ToolBarManager.getInstance()?.hideToolBar(mActivity, true)

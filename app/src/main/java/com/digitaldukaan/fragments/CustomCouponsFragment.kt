@@ -23,18 +23,10 @@ import com.digitaldukaan.services.serviceinterface.ICustomCouponsServiceInterfac
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.textfield.TextInputLayout
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import java.util.*
 
 class CustomCouponsFragment : BaseFragment(), ICustomCouponsServiceInterface {
-
-    companion object {
-
-        fun newInstance(staticText: PromoCodePageStaticTextResponse?): CustomCouponsFragment {
-            val fragment = CustomCouponsFragment()
-            fragment.mStaticText = staticText
-            return fragment
-        }
-    }
 
     private var createCouponsTextView: TextView? = null
     private var percentageDiscountTextView: TextView? = null
@@ -62,8 +54,18 @@ class CustomCouponsFragment : BaseFragment(), ICustomCouponsServiceInterface {
     private var mStaticText: PromoCodePageStaticTextResponse? = null
     private var mStoreName = ""
 
+    companion object {
+
+        fun newInstance(staticText: PromoCodePageStaticTextResponse?): CustomCouponsFragment {
+            val fragment = CustomCouponsFragment()
+            fragment.mStaticText = staticText
+            return fragment
+        }
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         TAG = "CustomCouponsFragment"
+        FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
         mContentView = inflater.inflate(R.layout.layout_custom_coupons_fragment, container, false)
         initializeUI()
         mService.setCustomCouponsServiceListener(this)

@@ -23,6 +23,7 @@ import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IEditPremiumServiceInterface
 import com.digitaldukaan.webviews.WebViewBridge
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import io.sentry.Sentry
@@ -62,6 +63,7 @@ class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
         TAG = "EditPremiumFragment"
         mService.setServiceInterface(this)
         mEditPremiumColorList = ArrayList()
+        FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
         mContentView = inflater.inflate(R.layout.layout_edit_premium_fragment, container, false)
         return mContentView
     }

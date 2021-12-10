@@ -10,6 +10,7 @@ import com.digitaldukaan.R
 import com.digitaldukaan.adapters.MyPaymentsPagerAdapter
 import com.digitaldukaan.constants.ToolBarManager
 import com.google.android.material.tabs.TabLayout
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 
 
 class MyPaymentsFragment: BaseFragment(), TabLayout.OnTabSelectedListener,
@@ -26,6 +27,7 @@ class MyPaymentsFragment: BaseFragment(), TabLayout.OnTabSelectedListener,
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         TAG = "MyPaymentsFragment"
+        FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
         mContentView = inflater.inflate(R.layout.layout_my_payment, container, false)
         initializeUI()
         return mContentView

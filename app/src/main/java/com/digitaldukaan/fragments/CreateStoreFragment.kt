@@ -16,6 +16,7 @@ import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.CustomDomainBottomSheetResponse
 import com.digitaldukaan.services.CreateStoreService
 import com.digitaldukaan.services.serviceinterface.ICreateStoreServiceInterface
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.layout_create_store_fragment.*
 
@@ -28,6 +29,8 @@ class CreateStoreFragment : BaseFragment(), ICreateStoreServiceInterface {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        TAG = "CreateStoreFragment"
+        FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
         mContentView = inflater.inflate(R.layout.layout_create_store_fragment, container, false)
         return mContentView
     }
@@ -39,7 +42,6 @@ class CreateStoreFragment : BaseFragment(), ICreateStoreServiceInterface {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        TAG = "CreateStoreFragment"
         mService = CreateStoreService()
         mService?.setServiceInterface(this)
         mService?.getCustomDomainBottomSheetData()

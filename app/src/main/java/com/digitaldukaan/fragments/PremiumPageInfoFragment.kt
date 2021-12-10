@@ -19,6 +19,7 @@ import com.digitaldukaan.services.PremiumPageInfoService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IPremiumPageInfoServiceInterface
 import com.digitaldukaan.webviews.WebViewBridge
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.layout_premium_fragment.*
 import org.json.JSONObject
@@ -38,6 +39,7 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         TAG = "PremiumPageInfoFragment"
+        FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
         mContentView = inflater.inflate(R.layout.layout_premium_fragment, container, false)
         mService.setServiceInterface(this)
         return mContentView
