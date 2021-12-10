@@ -10,7 +10,6 @@ import com.digitaldukaan.models.dto.CleverTapProfile
 import com.digitaldukaan.models.request.AndroidEventLogRequest
 import com.digitaldukaan.network.RetrofitApi
 import com.google.firebase.analytics.FirebaseAnalytics
-import io.sentry.Sentry
 
 class AppEventsManager {
 
@@ -55,7 +54,7 @@ class AppEventsManager {
                     val response = RetrofitApi().getAnalyticsServerCallObject()?.androidEventLog(request)
                     Log.d(TAG, "pushServerCallEvent: $response")
                 } catch (e: Exception) {
-                    Sentry.captureException(e, "pushServerCallEvent: exception")
+                    Log.e(TAG, "pushServerCallEvent: ${e.message}", e)
                 }
             }
         }
@@ -66,7 +65,7 @@ class AppEventsManager {
                 mCleverTapAPI?.pushEvent(eventName, data)
                 Log.d(TAG, "pushCleverTapEvent: DONE")
             } catch (e: Exception) {
-                Sentry.captureException(e, "pushCleverTapEvent: exception")
+                Log.e(TAG, "pushCleverTapEvent: ${e.message}", e)
                 pushServerCallEvent(AFInAppEventType.EVENT_CLERVERTAP_EXCEPTION, mapOf("exception" to e.toString()))
             }
         }
@@ -78,7 +77,7 @@ class AppEventsManager {
                 mActivityInstance?.let { context -> appFlyerInstance?.logEvent(context,  eventName, data) }
                 Log.d(TAG, "pushAppFlyerEvent: DONE")
             } catch (e: Exception) {
-                Sentry.captureException(e, "pushAppFlyerEvent: exception")
+                Log.e(TAG, "pushAppFlyerEvent: ${e.message}", e)
                 pushServerCallEvent(AFInAppEventType.EVENT_APPFLYER_EXCEPTION, mapOf("exception" to e.toString()))
             }
             try {
@@ -92,7 +91,6 @@ class AppEventsManager {
                 Log.d(TAG, "FIREBASE ANALYTICS: DONE")
             } catch (e: Exception) {
                 Log.e(TAG, "pushAppFlyerEvent: FIREBASE ANALYTICS Exception", e)
-                Sentry.captureException(e, "FIREBASE ANALYTICS: exception")
                 pushServerCallEvent(AFInAppEventType.EVENT_APPFLYER_EXCEPTION, mapOf("exception" to e.toString()))
             }
         }

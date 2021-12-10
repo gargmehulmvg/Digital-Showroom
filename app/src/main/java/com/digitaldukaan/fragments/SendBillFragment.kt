@@ -12,8 +12,8 @@ import android.widget.TextView
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.network.RetrofitApi
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
-import io.sentry.Sentry
 import kotlinx.android.synthetic.main.layout_send_bill.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -41,6 +41,7 @@ class SendBillFragment : BaseFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         TAG = "SendBillFragment"
+        FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
         mContentView = inflater.inflate(R.layout.layout_send_bill, container, false)
         hideBottomNavigationView(true)
         ToolBarManager.getInstance()?.apply { hideToolBar(mActivity, true) }
@@ -129,7 +130,6 @@ class SendBillFragment : BaseFragment() {
                     }
                 }
             } catch (e: Exception) {
-                Sentry.captureException(e, "$TAG uploadImageToGetCDNLink: exception")
                 exceptionHandlingForAPIResponse(e)
             }
         }

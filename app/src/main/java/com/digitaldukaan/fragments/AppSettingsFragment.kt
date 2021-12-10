@@ -16,6 +16,7 @@ import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.interfaces.IAppSettingsItemClicked
 import com.digitaldukaan.models.response.AccountStaticTextResponse
 import com.digitaldukaan.models.response.SubPagesResponse
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import kotlinx.android.synthetic.main.layout_app_setting_fragment.*
 
 class AppSettingsFragment : BaseFragment(), IAppSettingsItemClicked {
@@ -34,6 +35,7 @@ class AppSettingsFragment : BaseFragment(), IAppSettingsItemClicked {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         TAG = "AppSettingsFragment"
+        FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
         mContentView = inflater.inflate(R.layout.layout_app_setting_fragment, container, false)
         return mContentView
     }

@@ -927,7 +927,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
     }
 
     private fun fetchLatestOrders(mode: String, fetchingOrderStr: String?, page: Int = 1, showProgressDialog: Boolean = true) {
-        if (showProgressDialog) if (isNotEmpty(fetchingOrderStr)) showCancellableProgressDialog(mActivity, fetchingOrderStr)
+        if (showProgressDialog) if (isNotEmpty(fetchingOrderStr)) showCancellableProgressDialog(mActivity)
         val request = OrdersRequest(mode, page)
         mService?.getOrders(request)
     }
@@ -944,10 +944,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
         sCompletedOrderList.clear()
         mCompletedPageCount = 1
         mPendingPageCount = 1
-        fetchLatestOrders(Constants.MODE_PENDING,
-            sFetchingOrdersStr,
-            mPendingPageCount
-        )
+        fetchLatestOrders(Constants.MODE_PENDING, sFetchingOrdersStr, mPendingPageCount)
         mService?.getOrderPageInfo()
         mService?.getAnalyticsData()
     }

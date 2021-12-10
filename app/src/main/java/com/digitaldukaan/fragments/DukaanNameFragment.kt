@@ -28,6 +28,7 @@ import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.ICreateStoreServiceInterface
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.layout_dukaan_name_fragment.*
 
@@ -51,13 +52,14 @@ class DukaanNameFragment : BaseFragment(), ICreateStoreServiceInterface {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        TAG = "DukaanNameFragment"
         sharedElementEnterTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.move)
         locationManager = mActivity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         mActivity?.let { context -> fusedLocationClient = LocationServices.getFusedLocationProviderClient(context) }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        TAG = "DukaanNameFragment"
+        FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
         mContentView = inflater.inflate(R.layout.layout_dukaan_name_fragment, container, false)
         mDukaanNameStaticData = StaticInstances.sStaticData?.mBusinessNameStaticText
         if (checkLocationPermissionWithDialog()) getLastLocation()

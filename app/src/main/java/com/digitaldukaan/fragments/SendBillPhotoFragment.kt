@@ -25,6 +25,7 @@ import com.digitaldukaan.services.SendBillPhotoService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.ISendBillPhotoServiceInterface
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.send_bill_photo_fragment.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -68,6 +69,7 @@ class SendBillPhotoFragment: BaseFragment(), ISendBillPhotoServiceInterface {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         TAG = "SendBillPhotoFragment"
         mService.setServiceListener(this)
+        FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
         mContentView = inflater.inflate(R.layout.send_bill_photo_fragment, container, false)
         return mContentView
     }

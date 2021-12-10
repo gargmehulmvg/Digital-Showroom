@@ -35,10 +35,10 @@ import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IAddProductServiceInterface
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.textfield.TextInputLayout
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import com.squareup.picasso.Picasso
 import com.theartofdev.edmodo.cropper.CropImageView
-import io.sentry.Sentry
 import kotlinx.android.synthetic.main.layout_add_product_fragment.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -134,6 +134,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         TAG = "AddProductFragment"
+        FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
         mContentView = inflater.inflate(R.layout.layout_add_product_fragment, container, false)
         ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, false)
@@ -449,7 +450,6 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                             price = if (isNotEmpty(priceStr)) priceStr.toDoubleOrNull() else 0.0
                         } catch (e: Exception) {
                             Log.e(TAG, "AddProductFragment onClick request: ", e)
-                            Sentry.captureException(e, "AddProductFragment onClick request: ")
                         }
                         val discountPrice = if (discountedStr.isNotEmpty()) {
                             if (discountedStr.startsWith(".")) {
@@ -756,7 +756,6 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                                     }
                                 }
                             } catch (e: Exception) {
-                                Sentry.captureException(e, "showAddProductImagePickerBottomSheet: exception")
                                 exceptionHandlingForAPIResponse(e)
                             }
                         }

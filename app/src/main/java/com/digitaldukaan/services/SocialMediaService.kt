@@ -33,4 +33,10 @@ class SocialMediaService {
         }
     }
 
+    fun getMarketingPageInfo() {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.getMarketingPageInfoServerCall(mServiceInterface)
+        }
+    }
+
 }
