@@ -30,6 +30,8 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
     private val mSplashService: SplashService = SplashService()
 
     companion object {
+        private const val DEEP_LINK_STR = "digitaldukaan://"
+
         fun newInstance(intentUri: Uri?): SplashFragment {
             val fragment = SplashFragment()
             fragment.mIntentUri = intentUri
@@ -62,8 +64,8 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
 
     private fun fetchContactsIfPermissionGranted() {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mActivity?.let {
-                if (ActivityCompat.checkSelfPermission(it, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
+            mActivity?.let { context ->
+                if (PackageManager.PERMISSION_GRANTED == ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS)) {
                     getContactsFromStorage2(mActivity)
                 }
             }
@@ -141,21 +143,20 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
     private fun switchToFragmentByDeepLink() {
         val intentUriStr = mIntentUri.toString()
         Log.d(TAG, "switchToFragmentByDeepLink:: $intentUriStr")
-        val deepLinkStr = "digitaldukaan://"
         clearFragmentBackStack()
         when {
-            intentUriStr.contains("${deepLinkStr}Settings") -> launchFragment(SettingsFragment.newInstance(), true)
-            intentUriStr.contains("${deepLinkStr}ProfilePage") -> launchFragment(ProfilePreviewFragment.newInstance(), true)
-            intentUriStr.contains("${deepLinkStr}ProductList") -> launchFragment(OrderFragment.newInstance(), true)
-            intentUriStr.contains("${deepLinkStr}OrderList") -> launchFragment(OrderFragment.newInstance(), true)
-            intentUriStr.contains("${deepLinkStr}ProductAdd") -> launchFragment(ProductFragment.newInstance(), true)
-            intentUriStr.contains("${deepLinkStr}MarketingBroadCast") -> launchFragment(MarketingFragment.newInstance(), true)
-            intentUriStr.contains("${deepLinkStr}OTP") -> launchFragment(LoginFragmentV2.newInstance(), true)
-            intentUriStr.contains("${deepLinkStr}PaymentOptions") -> launchFragment(PaymentModesFragment.newInstance(), true)
-            intentUriStr.contains("${deepLinkStr}SocialMedia") -> launchFragment(SocialMediaFragment.newInstance(null), true)
-            intentUriStr.contains("${deepLinkStr}Webview") -> {
+            intentUriStr.contains("${DEEP_LINK_STR}Settings") -> launchFragment(SettingsFragment.newInstance(), true)
+            intentUriStr.contains("${DEEP_LINK_STR}ProfilePage") -> launchFragment(ProfilePreviewFragment.newInstance(), true)
+            intentUriStr.contains("${DEEP_LINK_STR}ProductList") -> launchFragment(OrderFragment.newInstance(), true)
+            intentUriStr.contains("${DEEP_LINK_STR}OrderList") -> launchFragment(OrderFragment.newInstance(), true)
+            intentUriStr.contains("${DEEP_LINK_STR}ProductAdd") -> launchFragment(ProductFragment.newInstance(), true)
+            intentUriStr.contains("${DEEP_LINK_STR}MarketingBroadCast") -> launchFragment(MarketingFragment.newInstance(), true)
+            intentUriStr.contains("${DEEP_LINK_STR}OTP") -> launchFragment(LoginFragmentV2.newInstance(), true)
+            intentUriStr.contains("${DEEP_LINK_STR}PaymentOptions") -> launchFragment(PaymentModesFragment.newInstance(), true)
+            intentUriStr.contains("${DEEP_LINK_STR}SocialMedia") -> launchFragment(SocialMediaFragment.newInstance(null), true)
+            intentUriStr.contains("${DEEP_LINK_STR}Webview") -> {
                 try {
-                    var webViewUrl = intentUriStr.split("${deepLinkStr}Webview?webURL=")[1]
+                    var webViewUrl = intentUriStr.split("${DEEP_LINK_STR}Webview?webURL=")[1]
                     if (webViewUrl.contains("&")) webViewUrl = webViewUrl.split("&")[0]
                     openWebViewFragment(this, "", "${BuildConfig.WEB_VIEW_URL}$webViewUrl")
                 } catch (e: Exception) {
