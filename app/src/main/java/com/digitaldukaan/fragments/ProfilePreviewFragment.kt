@@ -46,6 +46,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.layout_profile_preview_fragment.*
 import kotlinx.android.synthetic.main.layout_profile_preview_fragment.hiddenImageView
@@ -98,6 +99,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         TAG = "ProfilePreviewFragment"
+        FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
         mContentView = inflater.inflate(R.layout.layout_profile_preview_fragment, container, false)
         mService.setServiceInterface(this)
         mActivity?.let { cancelWarningDialog = Dialog(it) }

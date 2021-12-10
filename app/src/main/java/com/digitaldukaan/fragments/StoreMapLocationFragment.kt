@@ -34,6 +34,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.textfield.TextInputLayout
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.layout_store_map_location_fragment.*
 import java.util.*
@@ -70,6 +71,7 @@ class StoreMapLocationFragment : BaseFragment(), LocationListener, IStoreAddress
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         TAG = "StoreMapLocationFragment"
+        FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
         mContentView = inflater.inflate(R.layout.layout_store_map_location_fragment, container, false)
         locationManager = mActivity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         mService.setServiceInterface(this)

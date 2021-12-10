@@ -28,6 +28,7 @@ import com.digitaldukaan.models.response.*
 import com.digitaldukaan.services.SocialMediaService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.ISocialMediaServiceInterface
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.layout_edit_social_media_template_fragment.*
 import kotlinx.android.synthetic.main.layout_home_fragment.*
@@ -63,6 +64,7 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         TAG = "SocialMediaFragment"
+        FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
         mContentView = inflater.inflate(R.layout.layout_social_media, container, false)
         hideBottomNavigationView(true)
         ToolBarManager.getInstance()?.apply {

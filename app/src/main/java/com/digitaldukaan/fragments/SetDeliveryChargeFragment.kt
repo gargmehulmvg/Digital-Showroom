@@ -14,6 +14,7 @@ import com.digitaldukaan.models.response.StoreServicesResponse
 import com.digitaldukaan.services.MoreControlsService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IMoreControlsServiceInterface
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.set_delivery_charge_fragment.*
 
@@ -34,6 +35,7 @@ class SetDeliveryChargeFragment : BaseFragment(), IMoreControlsServiceInterface 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         TAG = "SetDeliveryChargeFragment"
+        FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
         mContentView = inflater.inflate(R.layout.set_delivery_charge_fragment, container, false)
         return mContentView
     }

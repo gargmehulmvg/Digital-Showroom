@@ -19,6 +19,7 @@ import com.digitaldukaan.services.BankDetailsService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IBankDetailsServiceInterface
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.layout_bank_account_fragment.*
 
@@ -41,6 +42,7 @@ class OnBoardScreenBankDetailsFragment : BaseFragment(), IBankDetailsServiceInte
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         TAG = "OnBoardScreenBankDetailsFragment"
+        FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
         mContentView = inflater.inflate(R.layout.layout_bank_account_fragment, container, false)
         mService = BankDetailsService()
         mService?.setServiceInterface(this)
