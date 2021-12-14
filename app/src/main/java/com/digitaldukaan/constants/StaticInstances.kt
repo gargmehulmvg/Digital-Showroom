@@ -17,6 +17,7 @@ object StaticInstances {
     var sAppSessionId: String? = ""
     var sCleverTapId: String? = ""
     var sFireBaseMessagingToken: String? = ""
+    var sFireBaseAppInstanceId: String? = ""
     var sIsShareStoreLocked: Boolean = false
     var sAppStoreServicesResponse: StoreServicesResponse? = null
     var sPaymentMethodStr: String? = null

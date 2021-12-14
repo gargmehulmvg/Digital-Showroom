@@ -89,9 +89,7 @@ class OrderDetailNetworkService {
                             responseBody.string(),
                             CommonApiResponse::class.java
                         )
-                        serviceInterface.onUpdateOrderResponse(
-                            errorResponse
-                        )
+                        serviceInterface.onUpdateOrderResponse(errorResponse)
                     }
                 }
             }

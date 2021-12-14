@@ -241,6 +241,7 @@ class LoginFragmentV2 : BaseFragment(), ILoginServiceInterface {
                 response.signature,
                 StaticInstances.sCleverTapId,
                 StaticInstances.sFireBaseMessagingToken,
+                StaticInstances.sFireBaseAppInstanceId,
                 if (response.phoneNumber.length >= (mActivity?.resources?.getInteger(R.integer.mobile_number_length) ?: 10)) response.phoneNumber.substring(response.phoneNumber.length - (mActivity?.resources?.getInteger(R.integer.mobile_number_length) ?: 10)) else ""
             )
             mLoginService?.validateUser(request)
