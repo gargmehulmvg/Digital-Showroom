@@ -6,9 +6,14 @@ import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.PrefsManager
 import com.digitaldukaan.constants.StaticInstances
 import okhttp3.*
+import okhttp3.ResponseBody.Companion.toResponseBody
+import okhttp3.internal.http2.ConnectionShutdownException
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.io.IOException
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 import java.util.concurrent.TimeUnit
 
 class RetrofitApi {
@@ -62,8 +67,30 @@ class RetrofitApi {
             callTimeout(1, TimeUnit.MINUTES)
             readTimeout(30, TimeUnit.SECONDS)
             writeTimeout(30, TimeUnit.SECONDS)
-            addInterceptor {
-                customizeCustomRequest(it)
+            addInterceptor { chain ->
+                val originalRequest = chain.request()
+                try {
+                    val response = customizeCustomRequest(chain)
+                    val bodyString = response.body?.string()
+                    response.newBuilder().body((bodyString ?: "").toResponseBody(response.body?.contentType())).build()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    val msg: String = when (e) {
+                        is SocketTimeoutException -> "Timeout - Please check your internet connection"
+                        is UnknownHostException -> "Unable to make a connection. Please check your internet"
+                        is ConnectionShutdownException -> "Connection shutdown. Please check your internet"
+                        is IOException -> "Server is unreachable, please try again later."
+                        is IllegalStateException -> "${e.message}"
+                        else -> "${e.message}"
+                    }
+                    Response.Builder().apply {
+                        request(originalRequest)
+                        protocol(Protocol.HTTP_1_1)
+                        code(999)
+                        message(msg)
+                        body("{${e}}".toResponseBody(null))
+                    }.build()
+                }
             }
             addInterceptor(loggingInterface)
             protocols(arrayListOf(Protocol.HTTP_1_1, Protocol.HTTP_2))
