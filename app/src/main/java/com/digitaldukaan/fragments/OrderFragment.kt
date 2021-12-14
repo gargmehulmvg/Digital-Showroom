@@ -227,8 +227,8 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
             adapter = mCompletedOrderAdapter
             addItemDecoration(StickyRecyclerHeadersDecoration(mCompletedOrderAdapter))
         }
-        Log.d(TAG, "mehul onViewCreated: OrderFragment called")
-        Log.d(TAG, "mehul onViewCreated: OrderFragment sIsInvitationAvailable :: $sIsInvitationAvailable")
+        Log.d(TAG, "onViewCreated: OrderFragment called")
+        Log.d(TAG, "onViewCreated: OrderFragment sIsInvitationAvailable :: $sIsInvitationAvailable")
         if (sIsInvitationAvailable) showStaffInvitationDialog()
     }
 
@@ -1092,21 +1092,25 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
     override fun onCheckStaffInviteResponse() {
         showProgressDialog(mActivity)
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            val response = RetrofitApi().getServerCallObject()?.getStaffMembersDetails(getStringDataFromSharedPref(Constants.STORE_ID))
-            response?.let { it ->
-                val staffMemberDetailsResponse = Gson().fromJson<CheckStaffInviteResponse>(it.body()?.mCommonDataStr, CheckStaffInviteResponse::class.java)
-                blurBottomNavBarContainer?.visibility = View.INVISIBLE
-                stopProgress()
-                if (null != staffMemberDetailsResponse) {
-                    Log.d(TAG, "StaticInstances.sPermissionHashMap: ${StaticInstances.sPermissionHashMap}")
-                    StaticInstances.sPermissionHashMap = null
-                    StaticInstances.sPermissionHashMap = staffMemberDetailsResponse.permissionsMap
-                    staffMemberDetailsResponse.permissionsMap?.let { map -> launchScreenFromPermissionMap(map) }
-                } else {
-                    launchFragment(newInstance(), true)
+            try {
+                val response = RetrofitApi().getServerCallObject()?.getStaffMembersDetails(getStringDataFromSharedPref(Constants.STORE_ID))
+                response?.let { it ->
+                    val staffMemberDetailsResponse = Gson().fromJson<CheckStaffInviteResponse>(it.body()?.mCommonDataStr, CheckStaffInviteResponse::class.java)
+                    blurBottomNavBarContainer?.visibility = View.INVISIBLE
+                    stopProgress()
+                    if (null != staffMemberDetailsResponse) {
+                        Log.d(TAG, "StaticInstances.sPermissionHashMap: ${StaticInstances.sPermissionHashMap}")
+                        StaticInstances.sPermissionHashMap = null
+                        StaticInstances.sPermissionHashMap = staffMemberDetailsResponse.permissionsMap
+                        staffMemberDetailsResponse.permissionsMap?.let { map -> launchScreenFromPermissionMap(map) }
+                    } else {
+                        launchFragment(newInstance(), true)
+                    }
                 }
+                Log.d(TAG, "StaticInstances.sPermissionHashMap :: ${StaticInstances.sPermissionHashMap}")
+            } catch (e: Exception) {
+                exceptionHandlingForAPIResponse(e)
             }
-            Log.d(TAG, "StaticInstances.sPermissionHashMap :: ${StaticInstances.sPermissionHashMap}")
         }
     }
 

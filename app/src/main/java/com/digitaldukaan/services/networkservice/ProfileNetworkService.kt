@@ -127,32 +127,4 @@ ProfileNetworkService {
         }
     }
 
-    suspend fun getProductShareStoreDataServerCall(
-        serviceInterface: IProfileServiceInterface
-    ) {
-        try {
-            val response = RetrofitApi().getServerCallObject()?.getProductShareStoreData()
-            response?.let {
-                if (it.isSuccessful) {
-                    it.body()?.let { commonApiResponse -> serviceInterface.onProductShareStoreWAResponse(commonApiResponse)
-                    }
-                } else {
-                    if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
-                    if (Constants.ERROR_CODE_FORCE_UPDATE == it.code()) throw DeprecateAppVersionException()
-                    val responseBody = it.errorBody()
-                    responseBody?.let {
-                        val errorResponse = Gson().fromJson(
-                            responseBody.string(),
-                            CommonApiResponse::class.java
-                        )
-                        serviceInterface.onProductShareStoreWAResponse(errorResponse)
-                    }
-                }
-            }
-        } catch (e: Exception) {
-            Log.e(ProductNetworkService::class.java.simpleName, "getProductShareStoreDataServerCall: ", e)
-            serviceInterface.onProfileDataException(e)
-        }
-    }
-
 }

@@ -106,7 +106,6 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     }
 
     protected fun showProgressDialog(context: Context?) {
-        Thread.dumpStack()
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             context?.let {
                 try {
@@ -188,14 +187,16 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     }
 
     open fun exceptionHandlingForAPIResponse(e: Exception) {
-        stopProgress()
-        when (e) {
-            is IllegalStateException -> showToast("System Error :: IllegalStateException :: Unable to reach Server")
-            is IOException -> Log.e(TAG, "$TAG exceptionHandlingForAPIResponse: ${e.message}", e)
-            is UnknownHostException -> showToast(e.message)
-            is UnAuthorizedAccessException -> logoutFromApplication()
-            is DeprecateAppVersionException -> showVersionUpdateDialog()
-            else -> showToast(mActivity?.getString(R.string.something_went_wrong))
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            when (e) {
+                is IllegalStateException -> showToast("System Error :: IllegalStateException :: Unable to reach Server")
+                is IOException -> Log.e(TAG, "$TAG exceptionHandlingForAPIResponse: ${e.message}", e)
+                is UnknownHostException -> showToast(e.message)
+                is UnAuthorizedAccessException -> logoutFromApplication()
+                is DeprecateAppVersionException -> showVersionUpdateDialog()
+                else -> showToast(mActivity?.getString(R.string.something_went_wrong))
+            }
         }
     }
 
@@ -2114,14 +2115,18 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
 
     fun checkStaffInvite() {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            val checkStaffInviteResponse = RetrofitApi().getServerCallObject()?.checkStaffInvite()
-            checkStaffInviteResponse?.let { it ->
-                val staffInviteResponse = Gson().fromJson<CheckStaffInviteResponse>(it.body()?.mCommonDataStr, CheckStaffInviteResponse::class.java)
-                Log.d(TAG, "sIsInvitationAvailable :: staffInviteResponse?.mIsInvitationAvailable ${staffInviteResponse?.mIsInvitationAvailable}")
-                Log.d(TAG, "mehul checkStaffInvite: response set sIsInvitationAvailable :: ${staffInviteResponse?.mIsInvitationAvailable ?: false} ")
-                sIsInvitationAvailable = staffInviteResponse?.mIsInvitationAvailable ?: false
-                StaticInstances.sStaffInvitation = staffInviteResponse?.mStaffInvitation
-                onCheckStaffInviteResponse()
+            try {
+                val checkStaffInviteResponse = RetrofitApi().getServerCallObject()?.checkStaffInvite()
+                checkStaffInviteResponse?.let { it ->
+                    val staffInviteResponse = Gson().fromJson<CheckStaffInviteResponse>(it.body()?.mCommonDataStr, CheckStaffInviteResponse::class.java)
+                    Log.d(TAG, "sIsInvitationAvailable :: staffInviteResponse?.mIsInvitationAvailable ${staffInviteResponse?.mIsInvitationAvailable}")
+                    Log.d(TAG, "checkStaffInvite: response set sIsInvitationAvailable :: ${staffInviteResponse?.mIsInvitationAvailable ?: false} ")
+                    sIsInvitationAvailable = staffInviteResponse?.mIsInvitationAvailable ?: false
+                    StaticInstances.sStaffInvitation = staffInviteResponse?.mStaffInvitation
+                    onCheckStaffInviteResponse()
+                }
+            } catch (e: Exception) {
+                exceptionHandlingForAPIResponse(e)
             }
         }
     }
@@ -2210,11 +2215,15 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     fun openDomainPurchaseBottomSheetServerCall() {
         showProgressDialog(mActivity)
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            val customDomainBottomSheetResponse = RetrofitApi().getServerCallObject()?.getCustomDomainBottomSheetData()
-            customDomainBottomSheetResponse?.body()?.let { body ->
-                stopProgress()
-                val bottomSheetResponse = Gson().fromJson<CustomDomainBottomSheetResponse>(body.mCommonDataStr, CustomDomainBottomSheetResponse::class.java)
-                showDomainPurchasedBottomSheet(bottomSheetResponse, isNoDomainFoundLayout = true)
+            try {
+                val customDomainBottomSheetResponse = RetrofitApi().getServerCallObject()?.getCustomDomainBottomSheetData()
+                customDomainBottomSheetResponse?.body()?.let { body ->
+                    stopProgress()
+                    val bottomSheetResponse = Gson().fromJson<CustomDomainBottomSheetResponse>(body.mCommonDataStr, CustomDomainBottomSheetResponse::class.java)
+                    showDomainPurchasedBottomSheet(bottomSheetResponse, isNoDomainFoundLayout = true)
+                }
+            } catch (e: Exception) {
+                exceptionHandlingForAPIResponse(e)
             }
         }
     }

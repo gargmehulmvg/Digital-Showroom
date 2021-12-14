@@ -9,7 +9,6 @@ import com.digitaldukaan.models.request.ValidateOtpRequest
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.ValidateOtpErrorResponse
 import com.digitaldukaan.network.RetrofitApi
-import com.digitaldukaan.services.serviceinterface.IHomeServiceInterface
 import com.digitaldukaan.services.serviceinterface.IOtpVerificationServiceInterface
 import com.google.gson.Gson
 
@@ -21,7 +20,7 @@ class OtpVerificationNetworkService {
         otpVerificationServiceInterface: IOtpVerificationServiceInterface
     ) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.validateOTP(ValidateOtpRequest(otpStr, StaticInstances.sCleverTapId, StaticInstances.sFireBaseMessagingToken, mobileNumber))
+            val response = RetrofitApi().getServerCallObject()?.validateOTP(ValidateOtpRequest(otpStr, StaticInstances.sCleverTapId, StaticInstances.sFireBaseMessagingToken, StaticInstances.sFireBaseAppInstanceId, mobileNumber))
             response?.let {
                 if (it.isSuccessful) {
                     it.body()?.let { validateOtpSuccessResponse -> otpVerificationServiceInterface.onOTPVerificationSuccessResponse(validateOtpSuccessResponse) }

@@ -291,11 +291,10 @@ class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInter
                                         )
                                     )
                                     activeCouponResponse?.let {
+                                        stopProgress()
                                         if (it.isSuccessful) {
-                                            it.body()?.let { stopProgress() }
                                             checkActiveCouponUI(activeCouponSwitch, setting2Heading, setting2Message, checkBox, bulbImageView)
                                         } else {
-                                            stopProgress()
                                             val errorResponseBody = it.errorBody()
                                             errorResponseBody?.let {
                                                 val errorResponse = Gson().fromJson(errorResponseBody.string(), CommonApiResponse::class.java)
@@ -333,21 +332,12 @@ class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInter
                                             AFInAppEventParameterName.STATUS to if (isActive) "1" else "0"
                                         )
                                     )
-                                    val activeCouponResponse = RetrofitApi().getServerCallObject()?.updatePromoCodeStatus(
-                                            UpdatePromoCodeRequest(
-                                                promoCode = promoCodeDetailResponse.mPromoCoupon?.promoCode ?: "",
-                                                status = if (isActive) Constants.MODE_PROMO_CODE_DE_ACTIVE else Constants.MODE_PROMO_CODE_ACTIVE,
-                                                isWebsiteVisible = checkBox.isChecked
-                                            )
-                                        )
+                                    val activeCouponResponse = RetrofitApi().getServerCallObject()?.updatePromoCodeStatus(UpdatePromoCodeRequest(promoCode = promoCodeDetailResponse.mPromoCoupon?.promoCode ?: "", status = if (isActive) Constants.MODE_PROMO_CODE_DE_ACTIVE else Constants.MODE_PROMO_CODE_ACTIVE, isWebsiteVisible = checkBox.isChecked))
                                     activeCouponResponse?.let {
+                                        stopProgress()
                                         if (it.isSuccessful) {
-                                            it.body()?.let {
-                                                stopProgress()
-                                            }
                                             checkActiveCouponUI(activeCouponSwitch, setting2Heading, setting2Message, checkBox, bulbImageView)
                                         } else {
-                                            stopProgress()
                                             val errorResponseBody = it.errorBody()
                                             errorResponseBody?.let {
                                                 val errorResponse = Gson().fromJson(errorResponseBody.string(), CommonApiResponse::class.java)
@@ -396,8 +386,10 @@ class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInter
                     zeroCouponAvailableTextView?.text = if (Constants.MODE_PROMO_CODE_ACTIVE == mPromoCodeMode) mStaticText?.text_no_coupons_are_active else mStaticText?.text_no_coupons_are_inactive
                 } else {
                     zeroCouponAvailableLayout?.visibility = View.GONE
-                    activeTextView?.text = "${mStaticText?.active_text} (${promoCodeListResponse?.mTotalActiveCount})"
-                    inActiveTextView?.text = "${mStaticText?.inactive_text} (${promoCodeListResponse?.mTotalInActiveCount})"
+                    var messageStr = "${mStaticText?.active_text} (${promoCodeListResponse?.mTotalActiveCount})"
+                    activeTextView?.text = messageStr
+                    messageStr = "${mStaticText?.inactive_text} (${promoCodeListResponse?.mTotalInActiveCount})"
+                    inActiveTextView?.text = messageStr
                 }
             }
         }

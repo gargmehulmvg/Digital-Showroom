@@ -110,25 +110,29 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
             "" == getStringDataFromSharedPref(Constants.STORE_ID) -> launchFragment(LoginFragmentV2.newInstance(), true)
             else -> {
                 CoroutineScopeUtils().runTaskOnCoroutineBackground {
-                    val response = RetrofitApi().getServerCallObject()?.getStaffMembersDetails(getStringDataFromSharedPref(Constants.STORE_ID))
-                    response?.let { it ->
-                        val staffMemberDetailsResponse = Gson().fromJson<CheckStaffInviteResponse>(it.body()?.mCommonDataStr, CheckStaffInviteResponse::class.java)
-                        blurBottomNavBarContainer?.visibility = View.INVISIBLE
-                        if (null != staffMemberDetailsResponse) {
-                            Log.d(TAG, "StaticInstances.sPermissionHashMap: ${StaticInstances.sPermissionHashMap}")
-                            StaticInstances.sPermissionHashMap = null
-                            StaticInstances.sPermissionHashMap = staffMemberDetailsResponse.permissionsMap
-                            StaticInstances.sStaffInvitation = staffMemberDetailsResponse.mStaffInvitation
-                            StaticInstances.sMerchantMobileNumber = staffMemberDetailsResponse.ownerPhone ?: ""
-                            stopProgress()
-                            if (staffMemberDetailsResponse.mIsInvitationAvailable) {
-                                launchFragment(OrderFragment.newInstance(), true)
-                            } else staffMemberDetailsResponse.permissionsMap?.let { map -> launchScreenFromPermissionMap(map) }
-                        } else {
-                            launchFragment(LoginFragmentV2.newInstance(), true)
+                    try {
+                        val response = RetrofitApi().getServerCallObject()?.getStaffMembersDetails(getStringDataFromSharedPref(Constants.STORE_ID))
+                        response?.let { it ->
+                            val staffMemberDetailsResponse = Gson().fromJson<CheckStaffInviteResponse>(it.body()?.mCommonDataStr, CheckStaffInviteResponse::class.java)
+                            blurBottomNavBarContainer?.visibility = View.INVISIBLE
+                            if (null != staffMemberDetailsResponse) {
+                                Log.d(TAG, "StaticInstances.sPermissionHashMap: ${StaticInstances.sPermissionHashMap}")
+                                StaticInstances.sPermissionHashMap = null
+                                StaticInstances.sPermissionHashMap = staffMemberDetailsResponse.permissionsMap
+                                StaticInstances.sStaffInvitation = staffMemberDetailsResponse.mStaffInvitation
+                                StaticInstances.sMerchantMobileNumber = staffMemberDetailsResponse.ownerPhone ?: ""
+                                stopProgress()
+                                if (staffMemberDetailsResponse.mIsInvitationAvailable) {
+                                    launchFragment(OrderFragment.newInstance(), true)
+                                } else staffMemberDetailsResponse.permissionsMap?.let { map -> launchScreenFromPermissionMap(map) }
+                            } else {
+                                launchFragment(LoginFragmentV2.newInstance(), true)
+                            }
                         }
+                        Log.d(TAG, StaticInstances.sPermissionHashMap.toString())
+                    } catch (e: Exception) {
+                        exceptionHandlingForAPIResponse(e)
                     }
-                    Log.i("PermissionMapSplash", StaticInstances.sPermissionHashMap.toString())
                 }
             }
         }
