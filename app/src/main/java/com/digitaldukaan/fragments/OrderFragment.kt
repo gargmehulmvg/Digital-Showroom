@@ -227,8 +227,8 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
             adapter = mCompletedOrderAdapter
             addItemDecoration(StickyRecyclerHeadersDecoration(mCompletedOrderAdapter))
         }
-        Log.d(TAG, "mehul onViewCreated: OrderFragment called")
-        Log.d(TAG, "mehul onViewCreated: OrderFragment sIsInvitationAvailable :: $sIsInvitationAvailable")
+        Log.d(TAG, "onViewCreated: OrderFragment called")
+        Log.d(TAG, "onViewCreated: OrderFragment sIsInvitationAvailable :: $sIsInvitationAvailable")
         if (sIsInvitationAvailable) showStaffInvitationDialog()
     }
 

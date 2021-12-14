@@ -74,7 +74,7 @@ class RetrofitApi {
                     val bodyString = response.body?.string()
                     response.newBuilder().body((bodyString ?: "").toResponseBody(response.body?.contentType())).build()
                 } catch (e: Exception) {
-                    e.printStackTrace()
+                    Log.e(TAG, "RetrofitAPI() :: getHttpClient: ${e.message}", e)
                     val msg: String = when (e) {
                         is SocketTimeoutException -> "Timeout - Please check your internet connection"
                         is UnknownHostException -> "Unable to make a connection. Please check your internet"

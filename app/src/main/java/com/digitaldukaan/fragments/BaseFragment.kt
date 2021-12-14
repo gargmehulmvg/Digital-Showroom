@@ -106,7 +106,6 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     }
 
     protected fun showProgressDialog(context: Context?) {
-        Thread.dumpStack()
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             context?.let {
                 try {
@@ -2121,7 +2120,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                 checkStaffInviteResponse?.let { it ->
                     val staffInviteResponse = Gson().fromJson<CheckStaffInviteResponse>(it.body()?.mCommonDataStr, CheckStaffInviteResponse::class.java)
                     Log.d(TAG, "sIsInvitationAvailable :: staffInviteResponse?.mIsInvitationAvailable ${staffInviteResponse?.mIsInvitationAvailable}")
-                    Log.d(TAG, "mehul checkStaffInvite: response set sIsInvitationAvailable :: ${staffInviteResponse?.mIsInvitationAvailable ?: false} ")
+                    Log.d(TAG, "checkStaffInvite: response set sIsInvitationAvailable :: ${staffInviteResponse?.mIsInvitationAvailable ?: false} ")
                     sIsInvitationAvailable = staffInviteResponse?.mIsInvitationAvailable ?: false
                     StaticInstances.sStaffInvitation = staffInviteResponse?.mStaffInvitation
                     onCheckStaffInviteResponse()
