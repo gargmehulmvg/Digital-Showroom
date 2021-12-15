@@ -25,6 +25,7 @@ import com.digitaldukaan.R
 import com.digitaldukaan.adapters.*
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.*
+import com.digitaldukaan.models.dto.InventoryEnableDTO
 import com.digitaldukaan.models.request.AddProductItemCategory
 import com.digitaldukaan.models.request.AddProductRequest
 import com.digitaldukaan.models.request.DeleteItemRequest
@@ -76,6 +77,8 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     private var mProductDescriptionPriceStr: String? = ""
     private var mIsOrderEdited = false
     private var mIsOrderDeleted = false
+    private var mIsVariantAvailable = false
+    private var mIsInventoryEnabled = false
     private var mAddProductResponse: AddProductResponse? = null
     private var discountPriceEditText: EditText? = null
     private var productDescriptionEditText: EditText? = null
@@ -101,6 +104,8 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     private var mActiveVariantList: ArrayList<VariantItemResponse>? = null
     private var mDeletedVariantList: ArrayList<VariantItemResponse>? = null
     private var mYoutubeItemResponse: AddProductImagesResponse? = null
+    private var mInventoryAdapter: InventoryEnableAdapter? = null
+    private var mInventoryCountStr = "xxx"
 
     companion object {
 
@@ -171,10 +176,10 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         discountPriceEditText?.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 val str = s?.toString()
-                if (true == str?.isNotEmpty()) {
+                if (isNotEmpty(str)) {
                     val priceStr = priceEditText?.text.toString()
                     when {
-                        priceStr.isEmpty() -> {
+                        isEmpty(priceStr) -> {
                             if (str != "0.0") {
                                 priceEditText?.apply {
                                     error = mAddProductStaticData?.error_mandatory_field
@@ -192,14 +197,14 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                                 requestFocus()
                             }
                         }
-                        priceStr.toDouble() < str.toDouble() -> {
+                        priceStr.toDouble() < (str?.toDouble() ?: 0.0) -> {
                             discountPriceEditText?.apply {
                                 error = mAddProductStaticData?.error_discount_price_less_then_original_price
                                 text = null
                                 requestFocus()
                             }
                         }
-                        0.0 == str.toDoubleOrNull() -> {
+                        0.0 == str?.toDoubleOrNull() -> {
                             originalPriceTextView?.text = null
                             discountedPriceTextView?.apply {
                                 visibility = View.INVISIBLE
@@ -211,7 +216,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                             mIsOrderEdited = true
                             discountedPriceTextView?.apply {
                                 visibility = View.VISIBLE
-                                val discountStr = "${mAddProductStaticData?.text_rupees_symbol} ${str.toDouble()}"
+                                val discountStr = "${mAddProductStaticData?.text_rupees_symbol} ${str?.toDouble()}"
                                 text = discountStr
                             }
                             originalPriceTextView?.apply {
@@ -220,7 +225,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                                 showStrikeOffText()
                             }
                             val priceDouble = priceStr.toDouble()
-                            val discountedPriceDouble = str.toDouble()
+                            val discountedPriceDouble = str?.toDouble() ?: 0.0
                             val percentage = ((priceDouble - discountedPriceDouble) / priceDouble) * 100
                             val percentageOffStr = "${percentage.toInt()}% OFF"
                             pricePercentageOffTextView?.text = percentageOffStr
@@ -270,6 +275,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 discountContainer?.visibility = View.VISIBLE
             }
             setupYoutubeUI()
+            setupManageInventoryUI()
         }
         return mContentView
     }
@@ -302,7 +308,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         priceEditText?.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 val str = s?.toString()
-                if (true == str?.trim()?.isNotEmpty()) {
+                if (isNotEmpty(str?.trim())) {
                     mIsOrderEdited = true
                     if (View.VISIBLE != discountContainer?.visibility) addDiscountLabel?.visibility = View.VISIBLE
                     showAddProductContainer()
@@ -323,7 +329,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             override fun afterTextChanged(s: Editable?) {
                 mProductNameStr = s?.toString()
                 val str = s?.toString()
-                if (true == str?.trim()?.isNotEmpty()) {
+                if (isNotEmpty(str?.trim())) {
                     mIsOrderEdited = true
                     showAddProductContainer()
                 }
@@ -341,7 +347,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         productDescriptionEditText?.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 val str = s?.toString()
-                if (true == str?.trim()?.isNotEmpty()) {
+                if (isNotEmpty(str?.trim())) {
                     mIsOrderEdited = true
                     showAddProductContainer()
                     mProductDescriptionPriceStr = str
@@ -506,15 +512,17 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                             mYoutubeItemResponse?.let { youtube -> imageListRequest.add(youtube) }
                         }
                         val request = AddProductRequest(
-                            mItemId,
-                            1,
-                            if (isNotEmpty(mActiveVariantList)) mActiveVariantList?.get(0)?.price else price,
-                            if (isNotEmpty(mActiveVariantList)) mActiveVariantList?.get(0)?.discountedPrice ?: 0.0 else discountPrice,
-                            descriptionStr.trim(),
-                            if (isEmpty(categoryStr.trim())) AddProductItemCategory(0, "") else AddProductItemCategory(mItemCategoryId, categoryStr),
-                            imageListRequest,
-                            nameStr.trim(),
-                            finalList
+                            id = mItemId,
+                            available = 1,
+                            price = if (isNotEmpty(mActiveVariantList)) mActiveVariantList?.get(0)?.price else price,
+                            discountedPrice = if (isNotEmpty(mActiveVariantList)) mActiveVariantList?.get(0)?.discountedPrice ?: 0.0 else discountPrice,
+                            description = descriptionStr.trim(),
+                            itemCategory = if (isEmpty(categoryStr.trim())) AddProductItemCategory(0, "") else AddProductItemCategory(mItemCategoryId, categoryStr),
+                            imageList = imageListRequest,
+                            name = nameStr.trim(),
+                            variantsList = finalList,
+                            managedInventory = if (mIsInventoryEnabled) Constants.ENABLE_INVENTORY else Constants.DISABLE_INVENTORY,
+                            inventoryCount = if (mIsInventoryEnabled && !mIsVariantAvailable) mInventoryAdapter?.getDataSource()?.get(0)?.inventoryCount ?: 0 else 0
                         )
                         showProgressDialog(mActivity)
                         AppEventsManager.pushAppEvents(
@@ -542,14 +550,6 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     manageInventoryBottomContainer?.visibility -> {
                         manageInventoryArrowImageView?.animate()?.rotation(0f)?.setDuration(Constants.ARROW_ANIMATION_TIMER)?.start()
                         manageInventoryBottomContainer?.visibility = View.VISIBLE
-                        manageInventoryMessageTextView?.text = mAddProductStaticData?.sub_heading_inventory
-                        manageInventoryFooterTextView?.text = mAddProductStaticData?.footer_text_low_stock_alert
-                        manageInventorySwitch?.setOnCheckedChangeListener { _, isChecked ->
-                            when {
-                                isChecked -> manageInventoryRecyclerView?.visibility = View.VISIBLE
-                                else -> manageInventoryRecyclerView?.visibility = View.GONE
-                            }
-                        }
                     }
                     else -> {
                         manageInventoryArrowImageView?.animate()?.rotation(90f)?.setDuration(Constants.ARROW_ANIMATION_TIMER)?.start()
@@ -558,6 +558,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 }
             }
             addVariantsTextView?.id -> {
+                mIsVariantAvailable = true
                 if (isEmpty(mActiveVariantList)) {
                     addNewVariantInList()
                     setupVariantRecyclerView()
@@ -566,8 +567,13 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     mActiveVariantAdapter?.notifyDataSetChanged()
                 }
                 showAddProductContainer()
+                if (mIsVariantAvailable) showVariantRecyclerView()
             }
         }
+    }
+
+    private fun showVariantRecyclerView() {
+
     }
 
     private fun showLearnYouTubeBottomSheet() {
@@ -953,6 +959,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 setStaticDataFromResponse()
                 setupOptionsMenu()
                 setupYoutubeUI()
+                setupManageInventoryUI()
                 if (isNotEmpty(mAddProductResponse?.storeItem?.variantsList)) {
                     mActiveVariantList = ArrayList()
                     mActiveVariantList = mAddProductResponse?.storeItem?.variantsList
@@ -998,9 +1005,58 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         }
     }
 
+    private fun setupManageInventoryUI() {
+        mAddProductStaticData?.let { staticText ->
+            manageInventoryHeadingTextView?.text = staticText.heading_manage_inventory
+            manageInventoryMessageTextView?.text = staticText.sub_heading_inventory
+            manageInventoryFooterTextView?.text = staticText.footer_text_low_stock_alert
+        }
+        Log.d(TAG, "setupManageInventoryUI: ")
+        val inventoryList = ArrayList<InventoryEnableDTO>()
+        if (isEmpty(mActiveVariantList)) {
+            val item = InventoryEnableDTO(isVariantEnabled = false, isEnabled = Constants.DISABLE_INVENTORY != mAddProductResponse?.storeItem?.managedInventory, inventoryCount = mAddProductResponse?.storeItem?.availableQuantity, inventoryName = mAddProductStaticData?.hint_available_quantity)
+            inventoryList.add(item)
+        }
+        Log.d(TAG, "setupManageInventoryUI: inventoryList :: $inventoryList")
+        if (null == mInventoryAdapter) {
+            mInventoryAdapter = InventoryEnableAdapter(mAddProductStaticData?.error_text_inventory_limit, inventoryList, object : IProductInventoryListener {
+
+                override fun onItemInventoryChangeListener(inventoryCount: String) {
+                    CoroutineScopeUtils().runTaskOnCoroutineMain {
+                        if (isEmpty(inventoryCount)) return@runTaskOnCoroutineMain
+                        val footerMessage = manageInventoryFooterTextView?.text
+                        val newMessage = footerMessage?.replace(Regex(mInventoryCountStr), inventoryCount)
+                        mInventoryCountStr = inventoryCount
+                        manageInventoryFooterTextView?.text = newMessage
+                    }
+                }
+
+            })
+            manageInventoryRecyclerView?.apply {
+                layoutManager = LinearLayoutManager(mActivity)
+                adapter = mInventoryAdapter
+            }
+        }
+        manageInventorySwitch?.setOnCheckedChangeListener { _, isChecked ->
+            showAddProductContainer()
+            mIsOrderEdited = true
+            when {
+                isChecked -> {
+                    mIsInventoryEnabled = true
+                    mInventoryAdapter?.getDataSource()?.forEachIndexed { _, item -> item.isEnabled = true }
+                }
+                else -> {
+                    mIsInventoryEnabled = false
+                    mInventoryAdapter?.getDataSource()?.forEachIndexed { _, item -> item.isEnabled = false }
+                }
+            }
+            mInventoryAdapter?.notifyDataSetChanged()
+        }
+    }
+
     private fun setupOptionsMenu() {
         mOptionsMenuResponse = mAddProductResponse?.addProductStoreOptionsMenu
-        if (true == mOptionsMenuResponse?.isEmpty()) ToolBarManager.getInstance()?.setSideIconVisibility(false)
+        if (isEmpty(mOptionsMenuResponse)) ToolBarManager.getInstance()?.setSideIconVisibility(false)
     }
 
     private fun setupCategoryChipRecyclerView() {
@@ -1035,7 +1091,6 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         try {
             mAddProductStaticData?.run {
                 ToolBarManager.getInstance()?.headerTitle = heading_add_product_page
-                val manageInventoryHeadingTextView: TextView? = mContentView?.findViewById(R.id.manageInventoryHeadingTextView)
                 val addItemTextView: TextView? = mContentView?.findViewById(R.id.addItemTextView)
                 val tryNowTextView: TextView? = mContentView?.findViewById(R.id.tryNowTextView)
                 val textView2: TextView? = mContentView?.findViewById(R.id.textView2)
@@ -1044,7 +1099,6 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 val priceInputLayout: TextInputLayout? = mContentView?.findViewById(R.id.priceInputLayout)
                 val discountedPriceInputLayout: TextInputLayout? = mContentView?.findViewById(R.id.discountedPriceInputLayout)
                 val enterCategoryInputLayout: TextInputLayout? = mContentView?.findViewById(R.id.enterCategoryInputLayout)
-                manageInventoryHeadingTextView?.text = heading_manage_inventory
                 tryNowTextView?.text = text_try_now
                 addDiscountLabel?.text = text_add_discount_on_this_item
                 textView2?.text = heading_add_product_banner

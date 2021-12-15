@@ -629,10 +629,13 @@
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/manageInventoryRecyclerView"
                             android:layout_width="match_parent"
-                            android:layout_height="150dp"
+                            android:layout_height="wrap_content"
                             android:paddingTop="@dimen/_12sdp"
+                            android:visibility="visible"
+                            tools:itemCount="1"
+                            tools:listitem="@layout/inventory_enable_item"
                             android:paddingBottom="@dimen/_12sdp"
-                            app:layout_constraintTop_toBottomOf="@+id/manageInventoryMessageTextView" />
+                            app:layout_constraintTop_toBottomOf="@id/manageInventoryMessageTextView" />
 
                         <TextView
                             android:id="@+id/manageInventoryFooterTextView"
@@ -643,7 +646,7 @@
                             android:textSize="@dimen/_10sdp"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toBottomOf="@+id/manageInventoryRecyclerView"
+                            app:layout_constraintTop_toBottomOf="@id/manageInventoryRecyclerView"
                             tools:text="Low stock alert is set to 5, to change Low stock alert, Login to web.dotpe.in" />
 
                         <com.google.android.material.switchmaterial.SwitchMaterial
@@ -651,9 +654,9 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:theme="@style/InventoryCustomAppSwitch"
-                            app:layout_constraintBottom_toBottomOf="@+id/manageInventoryMessageTextView"
+                            app:layout_constraintBottom_toBottomOf="@id/manageInventoryMessageTextView"
                             app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintTop_toTopOf="@+id/manageInventoryMessageTextView" />
+                            app:layout_constraintTop_toTopOf="@id/manageInventoryMessageTextView" />
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
