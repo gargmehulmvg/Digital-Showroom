@@ -15,8 +15,11 @@
         <entry key="app/src/main/res/drawable/curve_light_red_background.xml" value="0.23061889250814332" />
         <entry key="app/src/main/res/drawable/curve_light_yellow_background.xml" value="0.23061889250814332" />
         <entry key="app/src/main/res/drawable/curve_purple_background.xml" value="0.31851851851851853" />
+        <entry key="app/src/main/res/drawable/curve_white_background.xml" value="0.24013157894736842" />
+        <entry key="app/src/main/res/drawable/curve_white_background2.xml" value="0.24013157894736842" />
         <entry key="app/src/main/res/drawable/curve_white_selector.xml" value="0.24111842105263157" />
         <entry key="app/src/main/res/drawable/custom_green_horizontal_progress_bar.xml" value="0.36875" />
+        <entry key="app/src/main/res/drawable/ic_camera_plus.xml" value="0.24013157894736842" />
         <entry key="app/src/main/res/drawable/ic_favourite.xml" value="0.36875" />
         <entry key="app/src/main/res/drawable/ic_on_board_dukaan_name.xml" value="0.36875" />
         <entry key="app/src/main/res/drawable/ic_premium_icon_background.xml" value="0.24111842105263157" />
@@ -86,9 +89,12 @@
         <entry key="app/src/main/res/layout/dialog_mobile_view_image_upload.xml" value="0.22269736842105264" />
         <entry key="app/src/main/res/layout/dialog_payment_link_success.xml" value="0.335" />
         <entry key="app/src/main/res/layout/dialog_user_consent.xml" value="0.35260416666666666" />
+        <entry key="app/src/main/res/layout/dont_show_again_dialog.xml" value="0.2299342105263158" />
         <entry key="app/src/main/res/layout/google_work_space_item.xml" value="0.23092105263157894" />
+        <entry key="app/src/main/res/layout/image_dialog.xml" value="0.2299342105263158" />
         <entry key="app/src/main/res/layout/landing_page_custom_domain_item.xml" value="0.2299342105263158" />
         <entry key="app/src/main/res/layout/landing_page_shortcut_item.xml" value="0.2299342105263158" />
+        <entry key="app/src/main/res/layout/layout_active_variant_item_v2.xml" value="0.2299342105263158" />
         <entry key="app/src/main/res/layout/layout_add_product_fragment.xml" value="0.335" />
         <entry key="app/src/main/res/layout/layout_app_setting_fragment.xml" value="0.2299342105263158" />
         <entry key="app/src/main/res/layout/layout_business_type_fragment.xml" value="0.22269736842105264" />

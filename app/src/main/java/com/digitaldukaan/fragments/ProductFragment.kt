@@ -1,5 +1,8 @@
 package com.digitaldukaan.fragments
 
+import android.app.Dialog
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -8,7 +11,6 @@ import android.view.*
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.*
-import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -436,35 +438,40 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
     }
 
     private fun showOutOfStockDialog(jsonDataObject: JSONObject) {
-        mActivity?.let {
-            val builder = AlertDialog.Builder(it)
-            val view: View = layoutInflater.inflate(R.layout.dont_show_again_dialog, null)
-            var isCheckBoxVisible = "" == PrefsManager.getStringDataFromSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN_STOCK) || Constants.TEXT_NO == PrefsManager.getStringDataFromSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN_STOCK)
-            builder.apply {
-                setMessage(getString(R.string.out_of_stock_message))
-                if (isCheckBoxVisible) setView(view)
-                setPositiveButton(getString(R.string.txt_yes)) { dialogInterface, _ ->
-                    dialogInterface.dismiss()
+        mActivity?.let { context ->
+            Dialog(context).apply {
+                setCancelable(true)
+                window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                setContentView(R.layout.dont_show_again_dialog)
+                var isCheckBoxVisible = ("" == PrefsManager.getStringDataFromSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN_STOCK) || Constants.TEXT_NO == PrefsManager.getStringDataFromSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN_STOCK))
+                val noTextView: TextView = findViewById(R.id.noTextView)
+                val yesTextView: TextView = findViewById(R.id.yesTextView)
+                val headingTextView: TextView = findViewById(R.id.headingTextView)
+                val messageTextView: TextView = findViewById(R.id.messageTextView)
+                headingTextView.text = addProductStaticData?.dialog_heading_mark_inventory
+                messageTextView.text = addProductStaticData?.dialog_sub_heading_mark_inventory
+                yesTextView.text = addProductStaticData?.text_yes
+                noTextView.text = addProductStaticData?.text_no
+                if (isCheckBoxVisible) {
+                    val checkBox: CheckBox = findViewById(R.id.checkBox)
+                    checkBox.visibility = View.VISIBLE
+                    checkBox.text = addProductStaticData?.dialog_stock_dont_show_this_again
+                    checkBox.setOnCheckedChangeListener { _, isChecked -> isCheckBoxVisible = isChecked }
+                    isCheckBoxVisible = false
+                }
+                noTextView.setOnClickListener {
+                    this.dismiss()
+                }
+                yesTextView.setOnClickListener {
+                    this.dismiss()
                     storeStringDataInSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN_STOCK, if (isCheckBoxVisible) Constants.TEXT_YES else Constants.TEXT_NO)
                     val request = UpdateStockRequest(jsonDataObject.optInt("id"), 0)
-                    if (!isInternetConnectionAvailable(it)) {
+                    if (!isInternetConnectionAvailable(context)) {
                         showNoInternetConnectionDialog()
                     } else {
-                        showProgressDialog(it)
+                        showProgressDialog(context)
                         mService?.updateStock(request)
                     }
-                }
-                setNegativeButton(getString(R.string.text_no)) { dialogInterface, _ ->
-                    run {
-                        dialogInterface.dismiss()
-                        if (isCheckBoxVisible) storeStringDataInSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN, Constants.TEXT_NO)
-                    }
-                }
-                view.run {
-                    val checkBox: CheckBox = view.findViewById(R.id.checkBox)
-                    checkBox.text = getString(R.string.dont_show_again_message)
-                    isCheckBoxVisible = false
-                    checkBox.setOnCheckedChangeListener { _, isChecked -> isCheckBoxVisible = isChecked }
                 }
             }.show()
         }
