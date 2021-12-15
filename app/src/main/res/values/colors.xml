@@ -14,6 +14,7 @@
     <color name="yellow_strip">#F7A81E</color>
     <color name="white">#FFFFFFFF</color>
     <color name="default_text_light_grey">#919191</color>
+    <color name="disable_inventory_switch">#AFAFAF</color>
     <color name="enable_false_bg">#C8C8C8</color>
     <color name="chip_non_select_color">#F7F5F5</color>
     <color name="light_grey_background">#F6F7F7</color>

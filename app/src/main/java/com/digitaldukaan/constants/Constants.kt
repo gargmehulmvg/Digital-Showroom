@@ -13,6 +13,7 @@ class Constants {
         const val TIMER_INTERVAL                                = 500L
         const val ORDER_DELAY_INTERVAL                          = 150L
         const val TOOL_TIP_TIMER_INTERVAL                       = 3_000L
+        const val ARROW_ANIMATION_TIMER                         = 250L
         //REQUEST_CODE
         const val CREDENTIAL_PICKER_REQUEST                     = 1001
         const val IMAGE_PICK_REQUEST_CODE                       = 1002

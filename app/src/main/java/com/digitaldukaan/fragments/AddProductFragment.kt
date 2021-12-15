@@ -537,6 +537,26 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             updateCameraImageView?.id -> showAddProductImagePickerBottomSheet(0)
             updateCameraTextView?.id -> showAddProductImagePickerBottomSheet(0)
             learnYouTubeLinkHelpTextView?.id -> showLearnYouTubeBottomSheet()
+            manageInventoryContainer?.id -> {
+                when (View.GONE) {
+                    manageInventoryBottomContainer?.visibility -> {
+                        manageInventoryArrowImageView?.animate()?.rotation(0f)?.setDuration(Constants.ARROW_ANIMATION_TIMER)?.start()
+                        manageInventoryBottomContainer?.visibility = View.VISIBLE
+                        manageInventoryMessageTextView?.text = mAddProductStaticData?.sub_heading_inventory
+                        manageInventoryFooterTextView?.text = mAddProductStaticData?.footer_text_low_stock_alert
+                        manageInventorySwitch?.setOnCheckedChangeListener { _, isChecked ->
+                            when {
+                                isChecked -> manageInventoryRecyclerView?.visibility = View.VISIBLE
+                                else -> manageInventoryRecyclerView?.visibility = View.GONE
+                            }
+                        }
+                    }
+                    else -> {
+                        manageInventoryArrowImageView?.animate()?.rotation(90f)?.setDuration(Constants.ARROW_ANIMATION_TIMER)?.start()
+                        manageInventoryBottomContainer?.visibility = View.GONE
+                    }
+                }
+            }
             addVariantsTextView?.id -> {
                 if (isEmpty(mActiveVariantList)) {
                     addNewVariantInList()
@@ -1015,6 +1035,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         try {
             mAddProductStaticData?.run {
                 ToolBarManager.getInstance()?.headerTitle = heading_add_product_page
+                val manageInventoryHeadingTextView: TextView? = mContentView?.findViewById(R.id.manageInventoryHeadingTextView)
                 val addItemTextView: TextView? = mContentView?.findViewById(R.id.addItemTextView)
                 val tryNowTextView: TextView? = mContentView?.findViewById(R.id.tryNowTextView)
                 val textView2: TextView? = mContentView?.findViewById(R.id.textView2)
@@ -1023,6 +1044,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 val priceInputLayout: TextInputLayout? = mContentView?.findViewById(R.id.priceInputLayout)
                 val discountedPriceInputLayout: TextInputLayout? = mContentView?.findViewById(R.id.discountedPriceInputLayout)
                 val enterCategoryInputLayout: TextInputLayout? = mContentView?.findViewById(R.id.enterCategoryInputLayout)
+                manageInventoryHeadingTextView?.text = heading_manage_inventory
                 tryNowTextView?.text = text_try_now
                 addDiscountLabel?.text = text_add_discount_on_this_item
                 textView2?.text = heading_add_product_banner
