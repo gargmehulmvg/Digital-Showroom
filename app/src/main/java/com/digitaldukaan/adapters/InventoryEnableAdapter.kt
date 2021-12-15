@@ -37,47 +37,48 @@ class InventoryEnableAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): InventoryEnableViewHolder {
-        val view = InventoryEnableViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.inventory_enable_item, parent, false))
-        view.editText.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                Log.d(TAG, "beforeTextChanged: ")
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                Log.d(TAG, "onTextChanged: ")
-            }
-
-            override fun afterTextChanged(editable: Editable?) {
-                val position = view.adapterPosition
-                if (isEmpty(mItemList) || position < 0) return
-                val str = editable?.toString()?.trim() ?: ""
-                if (str.length <= 3) {
-                    if (!mItemList[position].isVariantEnabled) {
-                        mListener.onItemInventoryChangeListener(if (isNotEmpty(str)) {
-                            mItemList[position].inventoryCount = str.toInt()
-                            str
-                        } else {
-                            mItemList[position].inventoryCount = 0
-                            "0"
-                        })
-                    }
-                } else {
-                    view.editText.error = mQuantityErrorMessage
-                    view.editText.text = null
-                }
-            }
-
-        })
-        return view
+        return InventoryEnableViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.inventory_enable_item, parent, false))
     }
 
     override fun getItemCount(): Int = mItemList.size
 
     override fun onBindViewHolder(holder: InventoryEnableAdapter.InventoryEnableViewHolder, position: Int) {
-        val item = mItemList[position]
+        val pos = position ?: 0
+        val item = mItemList[pos]
         holder.textInputLayout.hint = item.inventoryName
-        val countValue = if (0 == item.inventoryCount) null else "${item.inventoryCount}"
-        holder.editText.setText(countValue)
+        holder.editText.apply {
+            val countValue = if (0 == item.inventoryCount) null else "${item.inventoryCount}"
+            setText(countValue)
+            addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                    Log.d(TAG, "beforeTextChanged: ")
+                }
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                    Log.d(TAG, "onTextChanged: ")
+                }
+
+                override fun afterTextChanged(editable: Editable?) {
+                    if (isEmpty(mItemList) || pos < 0) return
+                    val str = editable?.toString()?.trim() ?: ""
+                    if (str.length <= 3) {
+                        if (!mItemList[pos].isVariantEnabled) {
+                            mListener.onItemInventoryChangeListener(if (isNotEmpty(str)) {
+                                mItemList[pos].inventoryCount = str.toInt()
+                                str
+                            } else {
+                                mItemList[pos].inventoryCount = 0
+                                "0"
+                            })
+                        }
+                    } else {
+                        error = mQuantityErrorMessage
+                        text = null
+                    }
+                }
+
+            })
+        }
         holder.checkBox.apply {
             if (item.isVariantEnabled) {
                 visibility = View.VISIBLE

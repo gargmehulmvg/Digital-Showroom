@@ -521,7 +521,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                             imageList = imageListRequest,
                             name = nameStr.trim(),
                             variantsList = finalList,
-                            managedInventory = if (mIsInventoryEnabled) Constants.ENABLE_INVENTORY else Constants.DISABLE_INVENTORY,
+                            managedInventory = if (mIsInventoryEnabled) Constants.INVENTORY_ENABLE else Constants.INVENTORY_DISABLE,
                             inventoryCount = if (mIsInventoryEnabled && !mIsVariantAvailable) mInventoryAdapter?.getDataSource()?.get(0)?.inventoryCount ?: 0 else 0
                         )
                         showProgressDialog(mActivity)
@@ -1014,7 +1014,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         Log.d(TAG, "setupManageInventoryUI: ")
         val inventoryList = ArrayList<InventoryEnableDTO>()
         if (isEmpty(mActiveVariantList)) {
-            val item = InventoryEnableDTO(isVariantEnabled = false, isEnabled = Constants.DISABLE_INVENTORY != mAddProductResponse?.storeItem?.managedInventory, inventoryCount = mAddProductResponse?.storeItem?.availableQuantity, inventoryName = mAddProductStaticData?.hint_available_quantity)
+            val item = InventoryEnableDTO(isVariantEnabled = false, isEnabled = Constants.INVENTORY_ENABLE == mAddProductResponse?.storeItem?.managedInventory, inventoryCount = mAddProductResponse?.storeItem?.availableQuantity, inventoryName = mAddProductStaticData?.hint_available_quantity)
             inventoryList.add(item)
         }
         Log.d(TAG, "setupManageInventoryUI: inventoryList :: $inventoryList")
@@ -1028,6 +1028,8 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                         val newMessage = footerMessage?.replace(Regex(mInventoryCountStr), inventoryCount)
                         mInventoryCountStr = inventoryCount
                         manageInventoryFooterTextView?.text = newMessage
+                        mIsOrderEdited = true
+                        showAddProductContainer()
                     }
                 }
 
@@ -1037,6 +1039,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 adapter = mInventoryAdapter
             }
         }
+        manageInventorySwitch?.isChecked = (Constants.INVENTORY_ENABLE == mAddProductResponse?.storeItem?.managedInventory)
         manageInventorySwitch?.setOnCheckedChangeListener { _, isChecked ->
             showAddProductContainer()
             mIsOrderEdited = true

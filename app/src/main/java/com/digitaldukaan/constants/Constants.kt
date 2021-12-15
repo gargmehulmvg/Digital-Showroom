@@ -243,7 +243,7 @@ class Constants {
         const val STAFF_INVITATION_CODE_ACCEPT                  = 1
         const val STAFF_INVITATION_CODE_REJECT                  = 2
         //MANAGE_INVENTORY
-        const val DISABLE_INVENTORY                             = 0
-        const val ENABLE_INVENTORY                              = 1
+        const val INVENTORY_DISABLE                             = 0
+        const val INVENTORY_ENABLE                              = 1
     }
 }
