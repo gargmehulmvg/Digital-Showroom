@@ -61,7 +61,7 @@ class InventoryEnableAdapter(
                 override fun afterTextChanged(editable: Editable?) {
                     if (isEmpty(mItemList) || pos < 0) return
                     val str = editable?.toString()?.trim() ?: ""
-                    if (str.length <= 3) {
+                    if (str.length <= (context?.resources?.getInteger(R.integer.inventory_count) ?: 3)) {
                         if (!mItemList[pos].isVariantEnabled) {
                             mListener.onItemInventoryChangeListener(if (isNotEmpty(str)) {
                                 mItemList[pos].inventoryCount = str.toInt()

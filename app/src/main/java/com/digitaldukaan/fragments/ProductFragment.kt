@@ -581,7 +581,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                         layoutManager = LinearLayoutManager(mActivity)
                         adapter = DeleteCategoryAdapter(mDeleteCategoryItemList, object : IChipItemClickListener {
                             override fun onChipItemClickListener(position: Int) {
-                                if (mDeleteCategoryItemList?.get(position)?.action?.isEmpty() == true) {
+                                if (isEmpty(mDeleteCategoryItemList?.get(position)?.action)) {
                                     bottomSheetDialog.dismiss()
                                 } else {
                                     val request = DeleteCategoryRequest(categoryId, mDeleteCategoryItemList?.get(position)?.action == "true")
@@ -620,6 +620,40 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
             return true
         }
         return false
+    }
+
+    private fun showUpdateInventoryBottomSheet() {
+        mActivity?.run {
+            val bottomSheetDialog = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
+            val view = LayoutInflater.from(mActivity).inflate(
+                R.layout.bottom_sheet_update_inventory,
+                findViewById(R.id.bottomSheetContainer)
+            )
+            bottomSheetDialog.apply {
+                setContentView(view)
+                setBottomSheetCommonProperty()
+                view.run {
+                    val cancelTextView: TextView = findViewById(R.id.cancelTextView)
+                    val saveTextView: TextView = findViewById(R.id.saveTextView)
+                    val headingTextView: TextView = findViewById(R.id.headingTextView)
+                    val quantityContainer: TextInputLayout = findViewById(R.id.quantityContainer)
+                    val quantityEdiText: EditText = findViewById(R.id.quantityTextView)
+                    saveTextView.text = addProductStaticData?.text_save
+                    cancelTextView.text = addProductStaticData?.text_cancel
+                    headingTextView.text = addProductStaticData?.dialog_heading_add_inventory
+                    quantityContainer.hint = addProductStaticData?.hint_available_quantity
+                    cancelTextView.setOnClickListener { bottomSheetDialog.dismiss() }
+                    saveTextView.setOnClickListener {
+                        val quantity = quantityEdiText.text?.toString()
+                        if (isEmpty(quantity)) {
+                            quantityEdiText.error = addProductStaticData?.error_mandatory_field
+                            return@setOnClickListener
+                        }
+                        bottomSheetDialog.dismiss()
+                    }
+                }
+            }.show()
+        }
     }
 
     override fun onLockedStoreShareSuccessResponse(lockedShareResponse: LockedStoreShareResponse) = showLockedStoreShareBottomSheet(lockedShareResponse)
