@@ -6,6 +6,7 @@
         <entry key="app/src/main/res/drawable/curve_black_background.xml" value="0.4338461538461538" />
         <entry key="app/src/main/res/drawable/curve_black_background_selected.xml" value="0.36875" />
         <entry key="app/src/main/res/drawable/curve_black_background_selector.xml" value="0.4338461538461538" />
+        <entry key="app/src/main/res/drawable/curve_blue_dotted_border_blue_background.xml" value="0.23680555555555555" />
         <entry key="app/src/main/res/drawable/curve_green_border.xml" value="0.23289473684210527" />
         <entry key="app/src/main/res/drawable/curve_green_border_without_padding.xml" value="0.23061889250814332" />
         <entry key="app/src/main/res/drawable/curve_green_dotted_border_green_background.xml" value="0.36875" />
@@ -95,7 +96,7 @@
         <entry key="app/src/main/res/layout/landing_page_custom_domain_item.xml" value="0.2299342105263158" />
         <entry key="app/src/main/res/layout/landing_page_shortcut_item.xml" value="0.2299342105263158" />
         <entry key="app/src/main/res/layout/layout_active_variant_item_v2.xml" value="0.2299342105263158" />
-        <entry key="app/src/main/res/layout/layout_add_product_fragment.xml" value="0.335" />
+        <entry key="app/src/main/res/layout/layout_add_product_fragment.xml" value="0.25" />
         <entry key="app/src/main/res/layout/layout_app_setting_fragment.xml" value="0.2299342105263158" />
         <entry key="app/src/main/res/layout/layout_business_type_fragment.xml" value="0.22269736842105264" />
         <entry key="app/src/main/res/layout/layout_common_webview_fragment.xml" value="0.4027777777777778" />

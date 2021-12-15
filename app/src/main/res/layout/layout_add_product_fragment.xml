@@ -236,7 +236,7 @@
                         android:paddingTop="@dimen/_2sdp"
                         android:paddingBottom="@dimen/_2sdp"
                         android:text="@string/add_variants_optional"
-                        android:textColor="@color/open_green"
+                        android:textColor="@color/inventory_blue"
                         android:textSize="@dimen/_13sdp" />
 
                 </LinearLayout>
@@ -294,7 +294,7 @@
                         android:layout_marginTop="@dimen/_14sdp"
                         android:visibility="gone"
                         android:background="?selectableItemBackground"
-                        android:textColor="@color/open_green"
+                        android:textColor="@color/inventory_blue"
                         tools:text="Add discount on this item (Optional)" />
 
                     <androidx.constraintlayout.widget.ConstraintLayout
@@ -516,7 +516,7 @@
                         android:onClick="onClick"
                         android:paddingTop="@dimen/_2sdp"
                         android:paddingBottom="@dimen/_2sdp"
-                        android:textColor="@color/open_green"
+                        android:textColor="@color/inventory_blue"
                         android:textSize="@dimen/_13sdp"
                         tools:text="+ Add Item Description" />
 
