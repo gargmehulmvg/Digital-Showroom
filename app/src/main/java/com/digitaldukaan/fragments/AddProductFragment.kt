@@ -12,10 +12,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.*
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.PopupMenu
-import android.widget.TextView
+import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -35,6 +32,7 @@ import com.digitaldukaan.services.AddProductService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IAddProductServiceInterface
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
@@ -78,7 +76,6 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     private var mIsOrderEdited = false
     private var mIsOrderDeleted = false
     private var mIsVariantAvailable = false
-    private var mIsInventoryEnabled = false
     private var mAddProductResponse: AddProductResponse? = null
     private var discountPriceEditText: EditText? = null
     private var productDescriptionEditText: EditText? = null
@@ -521,8 +518,8 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                             imageList = imageListRequest,
                             name = nameStr.trim(),
                             variantsList = finalList,
-                            managedInventory = if (mIsInventoryEnabled) Constants.INVENTORY_ENABLE else Constants.INVENTORY_DISABLE,
-                            inventoryCount = if (mIsInventoryEnabled && !mIsVariantAvailable) mInventoryAdapter?.getDataSource()?.get(0)?.inventoryCount ?: 0 else 0
+                            managedInventory = if (true == manageInventorySwitch?.isChecked) Constants.INVENTORY_ENABLE else Constants.INVENTORY_DISABLE,
+                            inventoryCount = if ((true == manageInventorySwitch?.isChecked) && !mIsVariantAvailable) mInventoryAdapter?.getDataSource()?.get(0)?.inventoryCount ?: 0 else 0
                         )
                         showProgressDialog(mActivity)
                         AppEventsManager.pushAppEvents(
@@ -896,6 +893,10 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     }
                     false
                 }
+                ((true == manageInventorySwitch?.isChecked) && (null == mInventoryAdapter?.getDataSource()?.get(0)?.inventoryCount || 0 == mInventoryAdapter?.getDataSource()?.get(0)?.inventoryCount)) -> {
+                    showEmptyInventoryDialog()
+                    false
+                }
                 else -> true
             }
         } catch (e: Exception) {
@@ -1044,16 +1045,13 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             showAddProductContainer()
             mIsOrderEdited = true
             when {
-                isChecked -> {
-                    mIsInventoryEnabled = true
-                    mInventoryAdapter?.getDataSource()?.forEachIndexed { _, item -> item.isEnabled = true }
-                }
-                else -> {
-                    mIsInventoryEnabled = false
-                    mInventoryAdapter?.getDataSource()?.forEachIndexed { _, item -> item.isEnabled = false }
+                isChecked -> mInventoryAdapter?.getDataSource()?.forEachIndexed { _, item -> item.isEnabled = true }
+                else -> mInventoryAdapter?.getDataSource()?.forEachIndexed { _, item ->
+                    item.isEnabled = false
+                    item.inventoryCount = 0
                 }
             }
-            mInventoryAdapter?.notifyDataSetChanged()
+            mInventoryAdapter?.notifyItemRangeChanged(0, mInventoryAdapter?.getDataSource()?.size ?: 0)
         }
     }
 
@@ -1368,4 +1366,32 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     }
 
     override fun onLockedStoreShareSuccessResponse(lockedShareResponse: LockedStoreShareResponse) = showLockedStoreShareBottomSheet(lockedShareResponse)
+
+    private fun showEmptyInventoryDialog() {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            mActivity?.let { context ->
+                Dialog(context).apply {
+                    setCancelable(true)
+                    window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                    setContentView(R.layout.empty_inventory_dialog)
+                    val addTextView: TextView = findViewById(R.id.addTextView)
+                    val disableTextView: TextView = findViewById(R.id.disableTextView)
+                    val headingTextView: TextView = findViewById(R.id.headingTextView)
+                    val messageTextView: TextView = findViewById(R.id.messageTextView)
+                    headingTextView.text = mAddProductStaticData?.dialog_heading_inventory
+                    messageTextView.text = mAddProductStaticData?.dialog_sub_heading_inventory
+                    disableTextView.text = mAddProductStaticData?.dialog_cta_disable_inventory
+                    addTextView.text = mAddProductStaticData?.dialog_cta_add_inventory
+                    addTextView.setOnClickListener { this.dismiss() }
+                    disableTextView.setOnClickListener {
+                        val manageInventorySwitch: SwitchMaterial? = mContentView?.findViewById(R.id.manageInventorySwitch)
+                        val continueTextView: View? = mContentView?.findViewById(R.id.continueTextView)
+                        manageInventorySwitch?.isChecked = false
+                        continueTextView?.callOnClick()
+                        this.dismiss()
+                    }
+                }.show()
+            }
+        }
+    }
 }
