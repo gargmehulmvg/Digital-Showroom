@@ -589,13 +589,9 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                             }
                         }
 
-                        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                            Log.d(TAG, "beforeTextChanged: do nothing")
-                        }
+                        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
 
-                        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                            Log.d(TAG, "onTextChanged: do nothing")
-                        }
+                        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
 
                     })
                     if (isErrorResponse) {
@@ -653,13 +649,9 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                     bottomSheetEditStoreSaveTextView.isEnabled = string.isNotEmpty()
                 }
 
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                    Log.d(TAG, "beforeTextChanged: ")
-                }
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
 
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                    Log.d(TAG, "onTextChanged: ")
-                }
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
             })
             mStoreNameEditBottomSheet?.show()
         }
@@ -709,13 +701,10 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
             bottomSheetEditStoreLinkEditText.apply {
                 hint = mProfilePreviewStaticData?.bottom_sheet_gst_hint
                 addTextChangedListener(object : TextWatcher {
-                    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                        Log.d(TAG, "beforeTextChanged: ")
-                    }
 
-                    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                        Log.d(TAG, "onTextChanged: ")
-                    }
+                    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+
+                    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
 
                     override fun afterTextChanged(s: Editable?) {
                         val str = s?.toString()?.trim()

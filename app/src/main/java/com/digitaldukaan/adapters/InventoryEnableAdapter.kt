@@ -45,18 +45,15 @@ class InventoryEnableAdapter(
     override fun onBindViewHolder(holder: InventoryEnableAdapter.InventoryEnableViewHolder, position: Int) {
         val pos = position ?: 0
         val item = mItemList[pos]
+        Log.d(TAG, "onBindViewHolder: $item")
         holder.textInputLayout.hint = item.inventoryName
         holder.editText.apply {
             val countValue = if (0 == item.inventoryCount) null else "${item.inventoryCount}"
             setText(countValue)
             addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                    Log.d(TAG, "beforeTextChanged: ")
-                }
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
 
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                    Log.d(TAG, "onTextChanged: ")
-                }
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
 
                 override fun afterTextChanged(editable: Editable?) {
                     if (isEmpty(mItemList) || pos < 0) return
@@ -70,6 +67,14 @@ class InventoryEnableAdapter(
                                 mItemList[pos].inventoryCount = 0
                                 "0"
                             })
+                        } else {
+                            mListener.onVariantInventoryChangeListener(if (isNotEmpty(str)) {
+                                mItemList[pos].inventoryCount = str.toInt()
+                                str
+                            } else {
+                                mItemList[pos].inventoryCount = 0
+                                "0"
+                            }, pos)
                         }
                     } else {
                         error = mQuantityErrorMessage
@@ -82,12 +87,16 @@ class InventoryEnableAdapter(
         holder.checkBox.apply {
             if (item.isVariantEnabled) {
                 visibility = View.VISIBLE
-                isEnabled = (item.isEnabled)
-                alpha = if (item.isEnabled) 1f else 0.25f
+                isEnabled = (item.isCheckBoxEnabled)
+                alpha = if (item.isCheckBoxEnabled) 1f else 0.25f
+                isChecked = (isEnabled && item.isCheckboxSelected)
+                setOnCheckedChangeListener { _, isChecked ->
+                    mListener.onVariantInventoryItemCheckChange(isCheck = isChecked, inventoryItem = item, position = pos)
+                }
             } else
                 visibility = View.GONE
         }
-        holder.textInputLayout.isEnabled = (item.isEnabled)
+        holder.textInputLayout.isEnabled = (item.isEditTextEnabled)
     }
 
 }

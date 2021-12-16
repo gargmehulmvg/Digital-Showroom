@@ -14,6 +14,7 @@ data class AddProductRequest(
     @SerializedName("images")               var imageList: ArrayList<AddProductImagesResponse>,
     @SerializedName("name")                 var name: String,
     @SerializedName("variants")             var variantsList: ArrayList<VariantItemResponse>?,
+    @SerializedName("low_quantity")         var lowQuantity: Int,
     @SerializedName("managed_inventory")    var managedInventory: Int,
     @SerializedName("available_quantity")   var inventoryCount: Int
 )

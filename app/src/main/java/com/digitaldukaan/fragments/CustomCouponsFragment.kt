@@ -3,7 +3,6 @@ package com.digitaldukaan.fragments
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -150,13 +149,9 @@ class CustomCouponsFragment : BaseFragment(), ICustomCouponsServiceInterface {
                 } else pdDiscountPreviewLayout?.visibility = View.GONE
             }
 
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                Log.d(TAG, "beforeTextChanged: do nothing")
-            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
 
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                Log.d(TAG, "onTextChanged: do nothing")
-            }
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
 
         })
         fdDiscountEditText?.addTextChangedListener(object : TextWatcher {
@@ -175,13 +170,9 @@ class CustomCouponsFragment : BaseFragment(), ICustomCouponsServiceInterface {
                 } else fdCouponCodeEditText?.text = null
             }
 
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                Log.d(TAG, "beforeTextChanged: do nothing")
-            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
 
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                Log.d(TAG, "onTextChanged: do nothing")
-            }
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
 
         })
         pdPercentageEditText?.addTextChangedListener(object : TextWatcher {
@@ -200,13 +191,9 @@ class CustomCouponsFragment : BaseFragment(), ICustomCouponsServiceInterface {
                 } else pdCouponCodeEditText?.text = null
             }
 
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                Log.d(TAG, "beforeTextChanged: do nothing")
-            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
 
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                Log.d(TAG, "onTextChanged: do nothing")
-            }
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
 
         })
     }

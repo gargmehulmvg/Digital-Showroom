@@ -102,7 +102,6 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     private var mDeletedVariantList: ArrayList<VariantItemResponse>? = null
     private var mYoutubeItemResponse: AddProductImagesResponse? = null
     private var mInventoryAdapter: InventoryEnableAdapter? = null
-    private var mInventoryCountStr = "xxx"
 
     companion object {
 
@@ -313,13 +312,9 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 mProductPriceStr = str
             }
 
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                Log.d(TAG, "beforeTextChanged: priceEditText :: do nothing")
-            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
 
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                Log.d(TAG, "onTextChanged: priceEditText :: do nothing")
-            }
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
 
         })
         nameEditText?.addTextChangedListener(object : TextWatcher {
@@ -332,13 +327,9 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 }
             }
 
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                Log.d(TAG, "beforeTextChanged: nameEditText :: do nothing")
-            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
 
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                Log.d(TAG, "onTextChanged: nameEditText :: do nothing")
-            }
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
 
         })
         productDescriptionEditText?.addTextChangedListener(object : TextWatcher {
@@ -351,13 +342,9 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 }
             }
 
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                Log.d(TAG, "beforeTextChanged: productDescriptionEditText :: do nothing")
-            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
 
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                Log.d(TAG, "onTextChanged: productDescriptionEditText :: do nothing")
-            }
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
 
         })
         enterCategoryEditText?.addTextChangedListener(object : TextWatcher {
@@ -366,13 +353,9 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 showAddProductContainer()
             }
 
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                Log.d(TAG, "beforeTextChanged: enterCategoryEditText :: do nothing")
-            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
 
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                Log.d(TAG, "onTextChanged: enterCategoryEditText :: do nothing")
-            }
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
 
         })
         youtubeLinkEditText?.addTextChangedListener(object : TextWatcher {
@@ -381,13 +364,9 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 showAddProductContainer()
             }
 
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                Log.d(TAG, "beforeTextChanged: youtubeLinkEditText :: do nothing")
-            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
 
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                Log.d(TAG, "onTextChanged: youtubeLinkEditText :: do nothing")
-            }
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
 
         })
     }
@@ -409,13 +388,9 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                         mProductDiscountedPriceStr = str
                     }
 
-                    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                        Log.d(TAG, "beforeTextChanged: priceEditText :: do nothing")
-                    }
+                    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
 
-                    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                        Log.d(TAG, "onTextChanged: priceEditText :: do nothing")
-                    }
+                    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
 
                 })
             }
@@ -519,7 +494,8 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                             name = nameStr.trim(),
                             variantsList = finalList,
                             managedInventory = if (true == manageInventorySwitch?.isChecked) Constants.INVENTORY_ENABLE else Constants.INVENTORY_DISABLE,
-                            inventoryCount = if ((true == manageInventorySwitch?.isChecked) && !mIsVariantAvailable) mInventoryAdapter?.getDataSource()?.get(0)?.inventoryCount ?: 0 else 0
+                            inventoryCount = if ((true == manageInventorySwitch?.isChecked) && !mIsVariantAvailable) mInventoryAdapter?.getDataSource()?.get(0)?.inventoryCount ?: 0 else 0,
+                            lowQuantity = if (mIsAddNewProduct) 5 else mAddProductResponse?.storeItem?.lowQuantity ?: 5
                         )
                         showProgressDialog(mActivity)
                         AppEventsManager.pushAppEvents(
@@ -564,13 +540,13 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     mActiveVariantAdapter?.notifyDataSetChanged()
                 }
                 showAddProductContainer()
-                if (mIsVariantAvailable) showVariantRecyclerView()
+                if (mIsVariantAvailable) updateVariantInventoryList()
             }
         }
     }
 
-    private fun showVariantRecyclerView() {
-
+    private fun updateVariantInventoryList(position: Int = 0) {
+        mInventoryAdapter?.notifyItemChanged(0)
     }
 
     private fun showLearnYouTubeBottomSheet() {
@@ -605,15 +581,17 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         if (mActivity?.resources?.getInteger(R.integer.variant_count) ?: 0 > mActiveVariantList?.size ?: 0) {
             mActiveVariantList?.add(
                 VariantItemResponse(
-                    0,
-                    "",
-                    if (isEmpty(priceEditText?.text?.toString())) 0.0 else priceEditText?.text?.toString()?.toDouble() ?: 0.0,
-                    if (isEmpty(discountPriceEditText?.text?.toString())) 0.0 else discountPriceEditText?.text?.toString()?.toDouble() ?: 0.0,
-                    1,
-                    0,
-                    1,
-                    null,
-                    false
+                    variantId = 0,
+                    variantName = "",
+                    price = if (isEmpty(priceEditText?.text?.toString())) 0.0 else priceEditText?.text?.toString()?.toDouble() ?: 0.0,
+                    discountedPrice = if (isEmpty(discountPriceEditText?.text?.toString())) 0.0 else discountPriceEditText?.text?.toString()?.toDouble() ?: 0.0,
+                    status = 1,
+                    masterId = 0,
+                    available = 1,
+                    variantImagesList = null,
+                    managedInventory = Constants.INVENTORY_ENABLE,
+                    availableQuantity = 0,
+                    isVariantNameEmptyError = false
                 )
             )
         } else showToast("Only ${mActivity?.resources?.getInteger(R.integer.variant_count)} Variants are allowed.")
@@ -960,12 +938,13 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 setStaticDataFromResponse()
                 setupOptionsMenu()
                 setupYoutubeUI()
-                setupManageInventoryUI()
                 if (isNotEmpty(mAddProductResponse?.storeItem?.variantsList)) {
+                    mIsVariantAvailable = true
                     mActiveVariantList = ArrayList()
                     mActiveVariantList = mAddProductResponse?.storeItem?.variantsList
                     setupVariantRecyclerView()
                 }
+                setupManageInventoryUI()
                 shareProductContainer?.setOnClickListener {
                     if (StaticInstances.sIsShareStoreLocked) {
                         getLockedStoreShareDataServerCall(Constants.MODE_SHARE_STORE)
@@ -1015,8 +994,27 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         Log.d(TAG, "setupManageInventoryUI: ")
         val inventoryList = ArrayList<InventoryEnableDTO>()
         if (isEmpty(mActiveVariantList)) {
-            val item = InventoryEnableDTO(isVariantEnabled = false, isEnabled = Constants.INVENTORY_ENABLE == mAddProductResponse?.storeItem?.managedInventory, inventoryCount = mAddProductResponse?.storeItem?.availableQuantity, inventoryName = mAddProductStaticData?.hint_available_quantity)
+            val item = InventoryEnableDTO(
+                isVariantEnabled = false,
+                isCheckBoxEnabled = Constants.INVENTORY_ENABLE == mAddProductResponse?.storeItem?.managedInventory,
+                isEditTextEnabled = Constants.INVENTORY_ENABLE == mAddProductResponse?.storeItem?.managedInventory,
+                isCheckboxSelected = (true == manageInventorySwitch?.isChecked),
+                inventoryCount = mAddProductResponse?.storeItem?.availableQuantity,
+                inventoryName = mAddProductStaticData?.hint_available_quantity
+            )
             inventoryList.add(item)
+        } else {
+            mActiveVariantList?.forEachIndexed { _, variantItem ->
+                val item = InventoryEnableDTO(
+                    isVariantEnabled = true,
+                    isCheckBoxEnabled = Constants.INVENTORY_ENABLE == mAddProductResponse?.storeItem?.managedInventory,
+                    isCheckboxSelected = Constants.INVENTORY_ENABLE == variantItem.managedInventory,
+                    isEditTextEnabled = Constants.INVENTORY_ENABLE == variantItem.managedInventory,
+                    inventoryCount = variantItem.availableQuantity,
+                    inventoryName = variantItem.variantName
+                )
+                inventoryList.add(item)
+            }
         }
         Log.d(TAG, "setupManageInventoryUI: inventoryList :: $inventoryList")
         if (null == mInventoryAdapter) {
@@ -1025,12 +1023,46 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 override fun onItemInventoryChangeListener(inventoryCount: String) {
                     CoroutineScopeUtils().runTaskOnCoroutineMain {
                         if (isEmpty(inventoryCount)) return@runTaskOnCoroutineMain
-                        val footerMessage = manageInventoryFooterTextView?.text
-                        val newMessage = footerMessage?.replace(Regex(mInventoryCountStr), inventoryCount)
-                        mInventoryCountStr = inventoryCount
-                        manageInventoryFooterTextView?.text = newMessage
                         mIsOrderEdited = true
                         showAddProductContainer()
+                    }
+                }
+
+                override fun onVariantInventoryChangeListener(inventoryCount: String, position: Int) {
+                    CoroutineScopeUtils().runTaskOnCoroutineMain {
+                        if (isEmpty(inventoryCount)) return@runTaskOnCoroutineMain
+                        if (isEmpty(mActiveVariantList)) return@runTaskOnCoroutineMain
+                        mActiveVariantList?.get(position)?.availableQuantity = inventoryCount.toInt()
+                        mIsOrderEdited = true
+                        showAddProductContainer()
+                    }
+                }
+
+                override fun onVariantInventoryItemCheckChange(isCheck: Boolean, inventoryItem: InventoryEnableDTO, position: Int) {
+                    CoroutineScopeUtils().runTaskOnCoroutineMain {
+                        if (isEmpty(mActiveVariantList)) return@runTaskOnCoroutineMain
+                        if (position < 0) return@runTaskOnCoroutineMain
+                        inventoryItem.isCheckboxSelected = isCheck
+                        inventoryItem.isEditTextEnabled = isCheck
+                        inventoryItem.inventoryCount = 0
+                        mActiveVariantList?.get(position)?.managedInventory = if (isCheck) Constants.INVENTORY_ENABLE else Constants.INVENTORY_DISABLE
+                        updateVariantInventoryList(position)
+                        mIsOrderEdited = true
+                        showAddProductContainer()
+                        if (!isCheck) {
+                            var isAllCheckBoxUnChecked = true
+                            mActiveVariantList?.forEachIndexed { _, itemResponse ->
+                                if (Constants.INVENTORY_ENABLE == itemResponse.managedInventory) {
+                                    isAllCheckBoxUnChecked = true
+                                    return@forEachIndexed
+                                }
+                            }
+
+                            if (isAllCheckBoxUnChecked) {
+                                val manageInventorySwitch: SwitchMaterial? = mContentView?.findViewById(R.id.manageInventorySwitch)
+                                manageInventorySwitch?.isChecked = false
+                            }
+                        }
                     }
                 }
 
@@ -1045,9 +1077,15 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             showAddProductContainer()
             mIsOrderEdited = true
             when {
-                isChecked -> mInventoryAdapter?.getDataSource()?.forEachIndexed { _, item -> item.isEnabled = true }
+                isChecked -> mInventoryAdapter?.getDataSource()?.forEachIndexed { _, item ->
+                    item.isCheckboxSelected = true
+                    item.isCheckBoxEnabled = true
+                    item.isEditTextEnabled = true
+                }
                 else -> mInventoryAdapter?.getDataSource()?.forEachIndexed { _, item ->
-                    item.isEnabled = false
+                    item.isCheckboxSelected = false
+                    item.isCheckBoxEnabled = false
+                    item.isEditTextEnabled = false
                     item.inventoryCount = 0
                 }
             }

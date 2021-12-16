@@ -1091,13 +1091,9 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                                 if (isNotEmpty(str)) errorTextView.visibility = View.GONE
                             }
 
-                            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                                Log.d(TAG, "beforeTextChanged: do nothing")
-                            }
+                            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
 
-                            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                                Log.d(TAG, "onTextChanged: do nothing")
-                            }
+                            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
 
                         })
                         if (isError) {
@@ -1678,13 +1674,9 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                                 }
                             }
 
-                            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                                Log.d(TAG, "beforeTextChanged: $p0")
-                            }
+                            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
 
-                            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                                Log.d(TAG, "onTextChanged: $p0")
-                            }
+                            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
 
                         })
                         closeImageView.setOnClickListener { this@apply.dismiss() }

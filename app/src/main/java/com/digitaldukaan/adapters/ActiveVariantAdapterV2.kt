@@ -3,7 +3,6 @@ package com.digitaldukaan.adapters
 import android.content.Context
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -72,15 +71,12 @@ class ActiveVariantAdapterV2(
             if (isNotEmpty(item?.variantName)) nameEditText.setText(item?.variantName) else nameEditText.text = null
             if (0.0 != item?.price) priceEditText.setText("${item?.price}") else if (0.0 == item.price && 0.0 == mActiveVariantList?.get(0)?.price) { priceEditText.text = null } else priceEditText.setText("${mActiveVariantList?.get(0)?.price}")
             if (0.0 != item?.discountedPrice) discountPriceEditText.setText("${item?.discountedPrice}") else if (0.0 == item.discountedPrice && 0.0 == mActiveVariantList?.get(0)?.discountedPrice) { discountPriceEditText.text = null } else discountPriceEditText.setText("${mActiveVariantList?.get(0)?.discountedPrice}")
-            variantNameInputLayout.error = if (item?.isVariantNameEmptyError == true) mContext?.getString(R.string.mandatory_field_message) else null
+            variantNameInputLayout.error = if (true == item?.isVariantNameEmptyError) mContext?.getString(R.string.mandatory_field_message) else null
             priceEditText.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                    Log.d(TAG, "beforeTextChanged: ")
-                }
 
-                override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                    Log.d(TAG, "onTextChanged: ")
-                }
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
 
                 override fun afterTextChanged(editable: Editable?) {
                     val str = editable?.toString()
@@ -117,13 +113,10 @@ class ActiveVariantAdapterV2(
 
             })
             nameEditText.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                    Log.d(TAG, "beforeTextChanged: ")
-                }
 
-                override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                    Log.d(TAG, "onTextChanged: ")
-                }
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
 
                 override fun afterTextChanged(editable: Editable?) {
                     val str = editable?.toString()?.trim()
@@ -137,13 +130,10 @@ class ActiveVariantAdapterV2(
 
             })
             discountPriceEditText.addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                    Log.d(TAG, "beforeTextChanged: ")
-                }
 
-                override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                    Log.d(TAG, "onTextChanged: ")
-                }
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
 
                 override fun afterTextChanged(editable: Editable?) {
                     val str = editable?.toString()
