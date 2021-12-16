@@ -10,4 +10,6 @@ interface IVariantItemClickListener {
 
     fun onVariantItemChanged()
 
+    fun onVariantInventoryIconClicked(position: Int)
+
 }

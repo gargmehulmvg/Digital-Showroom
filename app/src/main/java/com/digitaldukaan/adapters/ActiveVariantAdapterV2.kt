@@ -14,6 +14,7 @@ import androidx.appcompat.widget.AppCompatAutoCompleteTextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.digitaldukaan.R
+import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.isDouble
 import com.digitaldukaan.constants.isEmpty
 import com.digitaldukaan.constants.isNotEmpty
@@ -36,6 +37,7 @@ class ActiveVariantAdapterV2(
 
     inner class ActiveVariantViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imageView: ImageView = itemView.findViewById(R.id.imageView)
+        val variantInventoryImageView: ImageView = itemView.findViewById(R.id.variantInventoryImageView)
         val imageViewContainer: View = itemView.findViewById(R.id.imageViewContainer)
         val noImagesLayout: View = itemView.findViewById(R.id.noImagesLayout)
         val priceEditText: EditText = itemView.findViewById(R.id.priceEditText)
@@ -53,6 +55,7 @@ class ActiveVariantAdapterV2(
         val view = ActiveVariantViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.layout_active_variant_item_v2, parent, false))
         view.deleteTextView.setOnClickListener { mListener?.onVariantDeleteClicked(view.adapterPosition) }
         view.imageViewContainer.setOnClickListener { mListener?.onVariantImageClicked(view.adapterPosition) }
+        view.variantInventoryImageView.setOnClickListener { mListener?.onVariantInventoryIconClicked(view.adapterPosition) }
         return view
     }
     override fun getItemCount(): Int = mActiveVariantList?.size ?: 0
@@ -189,6 +192,15 @@ class ActiveVariantAdapterV2(
                         Glide.with(context).load(imageItem?.imageUrl).into(imageView)
                     }
                 }
+            }
+            if (Constants.INVENTORY_DISABLE == item?.managedInventory) {
+                inStockTextView.visibility = View.VISIBLE
+                variantSwitch.visibility = View.VISIBLE
+                variantInventoryImageView.visibility = View.GONE
+            } else {
+                inStockTextView.visibility = View.GONE
+                variantSwitch.visibility = View.GONE
+                variantInventoryImageView.visibility = View.VISIBLE
             }
             variantSwitch.setOnCheckedChangeListener { _, isChecked ->
                 mListener?.onVariantItemChanged()

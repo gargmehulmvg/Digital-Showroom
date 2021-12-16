@@ -17,6 +17,7 @@ import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
+import androidx.core.widget.NestedScrollView
 import androidx.recyclerview.widget.*
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.*
@@ -618,6 +619,14 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             }
 
             override fun onVariantItemChanged() = showAddProductContainer()
+
+            override fun onVariantInventoryIconClicked(position: Int) {
+                CoroutineScopeUtils().runTaskOnCoroutineMain {
+                    val nestedScrollView: NestedScrollView? = mContentView?.findViewById(R.id.addProductNestedScrollView)
+                    val manageInventoryOuterContainer: View? = mContentView?.findViewById(R.id.manageInventoryOuterContainer)
+                    nestedScrollView?.smoothScrollTo(0, manageInventoryOuterContainer?.y?.toInt() ?: 0, 1500)
+                }
+            }
 
         })
         variantRecyclerView?.apply {

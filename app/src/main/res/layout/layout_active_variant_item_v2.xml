@@ -99,7 +99,8 @@
                 android:maxLength="@integer/amount_length"
                 android:textColor="@color/black"
                 android:textColorHint="@color/default_text_light_grey"
-                android:textSize="@dimen/_12sdp" />
+                android:textSize="@dimen/_12sdp"
+                tools:ignore="LabelFor" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -129,7 +130,8 @@
                 android:maxLength="@integer/amount_length"
                 android:textColor="@color/black"
                 android:textColorHint="@color/default_text_light_grey"
-                android:textSize="@dimen/_12sdp" />
+                android:textSize="@dimen/_12sdp"
+                tools:ignore="LabelFor" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -180,6 +182,20 @@
             app:layout_constraintBottom_toBottomOf="@id/inStockTextView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/inStockTextView" />
+
+        <ImageView
+            android:id="@+id/variantInventoryImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/_4sdp"
+            android:visibility="gone"
+            android:background="?selectableItemBackground"
+            android:onClick="onClick"
+            android:src="@drawable/ic_inventory_edit_blue"
+            app:layout_constraintBottom_toBottomOf="@id/deleteTextView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/deleteTextView"
+            android:contentDescription="@string/image_view_content_description" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
