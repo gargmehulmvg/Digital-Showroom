@@ -234,13 +234,9 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 }
             }
 
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                Log.d(TAG, "beforeTextChanged: ")
-            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
 
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                showAddProductContainer()
-            }
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = showAddProductContainer()
 
         })
         if (isEmpty(mImagesStrList)) {
@@ -470,7 +466,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                             return
                         }
                         if (isErrorInVariantList) {
-                            mActiveVariantAdapter?.notifyDataSetChanged()
+                            mActiveVariantAdapter?.notifyItemRangeChanged(0, mActiveVariantAdapter?.getDataSourceList()?.size ?: 0)
                             return
                         }
                         mActiveVariantList?.let { list -> finalList.addAll(list) }
@@ -537,7 +533,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     setupVariantRecyclerView()
                 } else {
                     addNewVariantInList()
-                    mActiveVariantAdapter?.notifyDataSetChanged()
+                    mActiveVariantAdapter?.notifyItemRangeChanged(0, mActiveVariantAdapter?.getDataSourceList()?.size ?: 0)
                 }
                 showAddProductContainer()
 //                if (mIsVariantAvailable) updateVariantInventoryList()
@@ -761,7 +757,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                             }
                         }
                     }
-                    if (searchImageEditText.text.isNotEmpty()) searchImageImageView.callOnClick()
+                    if (isNotEmpty(searchImageEditText.text.toString().trim())) searchImageImageView.callOnClick()
                 }
             }?.show()
         }
@@ -871,9 +867,23 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     }
                     false
                 }
-                ((true == manageInventorySwitch?.isChecked) && (null == mInventoryAdapter?.getDataSource()?.get(0)?.inventoryCount || 0 == mInventoryAdapter?.getDataSource()?.get(0)?.inventoryCount)) -> {
+                ((!mIsVariantAvailable) && (true == manageInventorySwitch?.isChecked) && (null == mInventoryAdapter?.getDataSource()?.get(0)?.inventoryCount || 0 == mInventoryAdapter?.getDataSource()?.get(0)?.inventoryCount)) -> {
                     showEmptyInventoryDialog()
                     false
+                }
+                (mIsVariantAvailable && (true == manageInventorySwitch?.isChecked)) -> {
+                    var isAllCheckboxChecked = true
+                    mInventoryAdapter?.getDataSource()?.forEachIndexed { _, inventory ->
+                        if (inventory.isCheckboxSelected && (0 == inventory.inventoryCount)) {
+                            isAllCheckboxChecked = false
+                            return@forEachIndexed
+                        }
+                    }
+                    if (!isAllCheckboxChecked) {
+                        showEmptyInventoryDialog()
+                        return false
+                    }
+                    true
                 }
                 else -> true
             }
@@ -1048,9 +1058,9 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                             inventoryCount = 0
                         }
                         mActiveVariantList?.get(position)?.managedInventory = if (isCheck) Constants.INVENTORY_ENABLE else Constants.INVENTORY_DISABLE
-                        updateVariantInventoryList(position)
                         mIsOrderEdited = true
                         showAddProductContainer()
+                        updateVariantInventoryList(position)
                         if (!isCheck) {
                             var isAllCheckBoxUnChecked = true
                             mActiveVariantList?.forEachIndexed { _, itemResponse ->
@@ -1313,7 +1323,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             mTempProductCategoryList.forEachIndexed { _, categoryItem -> categoryItem.isSelected = false }
             mTempProductCategoryList[position].isSelected = true
             enterCategoryEditText?.setText(mTempProductCategoryList[position].name)
-            mItemCategoryId = mTempProductCategoryList[position].id ?: 0
+            mItemCategoryId = mTempProductCategoryList[position].id
             enterCategoryEditText?.setSelection(mTempProductCategoryList[position].name?.length ?: 0)
             addProductChipsAdapter?.setAddProductStoreCategoryList(mTempProductCategoryList)
         } catch (e: Exception) {
@@ -1365,8 +1375,8 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             try {
                 mActivity?.let {
-                    val builder: AlertDialog.Builder? = AlertDialog.Builder(it)
-                    builder?.apply {
+                    val builder: AlertDialog.Builder = AlertDialog.Builder(it)
+                    builder.apply {
                         setTitle(mAddProductStaticData?.text_go_back)
                         setMessage(mAddProductStaticData?.text_go_back_message)
                         setCancelable(true)
@@ -1377,7 +1387,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                             fragmentManager?.popBackStack()
                             dialog.dismiss()
                         }
-                    }?.create()?.show()
+                    }.create().show()
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "showGoBackDialog: ${e.message}", e)
@@ -1440,14 +1450,37 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     addTextView.text = mAddProductStaticData?.dialog_cta_add_inventory
                     addTextView.setOnClickListener { this.dismiss() }
                     disableTextView.setOnClickListener {
-                        val manageInventorySwitch: SwitchMaterial? = mContentView?.findViewById(R.id.manageInventorySwitch)
-                        val continueTextView: View? = mContentView?.findViewById(R.id.continueTextView)
-                        manageInventorySwitch?.isChecked = false
-                        continueTextView?.callOnClick()
                         this.dismiss()
+                        if (mIsVariantAvailable) {
+                            var unCheckedCheckBox = 0
+                            mInventoryAdapter?.getDataSource()?.forEachIndexed { position, variantItem ->
+                                if (0 == variantItem.inventoryCount && variantItem.isCheckboxSelected) {
+                                    unCheckedCheckBox++
+                                    variantItem.isCheckboxSelected = false
+                                    variantItem.isEditTextEnabled = false
+                                    mInventoryAdapter?.notifyItemChanged(position)
+                                    mActiveVariantList?.get(position)?.managedInventory = Constants.INVENTORY_DISABLE
+                                }
+                            }
+                            if (unCheckedCheckBox == (mInventoryAdapter?.getDataSource()?.size ?: 0)) {
+                                disableItemInventoryAndContinue()
+                            } else {
+                                val continueTextView: View? = mContentView?.findViewById(R.id.continueTextView)
+                                continueTextView?.callOnClick()
+                            }
+                        } else {
+                            disableItemInventoryAndContinue()
+                        }
                     }
                 }.show()
             }
         }
+    }
+
+    private fun disableItemInventoryAndContinue() {
+        val manageInventorySwitch: SwitchMaterial? = mContentView?.findViewById(R.id.manageInventorySwitch)
+        val continueTextView: View? = mContentView?.findViewById(R.id.continueTextView)
+        manageInventorySwitch?.isChecked = false
+        continueTextView?.callOnClick()
     }
 }

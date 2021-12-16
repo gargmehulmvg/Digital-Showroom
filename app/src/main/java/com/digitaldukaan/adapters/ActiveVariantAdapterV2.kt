@@ -32,9 +32,7 @@ class ActiveVariantAdapterV2(
 ) :
     RecyclerView.Adapter<ActiveVariantAdapterV2.ActiveVariantViewHolder>() {
 
-    companion object {
-        private const val TAG = "ActiveVariantAdapterV2"
-    }
+    fun getDataSourceList(): ArrayList<VariantItemResponse>? = mActiveVariantList
 
     inner class ActiveVariantViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val imageView: ImageView = itemView.findViewById(R.id.imageView)

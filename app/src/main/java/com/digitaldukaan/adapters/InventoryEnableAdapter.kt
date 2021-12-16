@@ -37,7 +37,15 @@ class InventoryEnableAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): InventoryEnableViewHolder {
-        return InventoryEnableViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.inventory_enable_item, parent, false))
+        val view = InventoryEnableViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.inventory_enable_item, parent, false))
+        view.checkBox.apply {
+            setOnClickListener {
+                val pos = view.adapterPosition
+                Log.d(TAG, "setOnCheckedChangeListener: position :: $pos :: isCheck :: $isChecked :: inventoryItem :: ${mItemList[pos]}")
+                mListener.onVariantInventoryItemCheckChange(isCheck = isChecked, inventoryItem = mItemList[pos], position = pos)
+            }
+        }
+        return view
     }
 
     override fun getItemCount(): Int = mItemList.size
@@ -45,7 +53,6 @@ class InventoryEnableAdapter(
     override fun onBindViewHolder(holder: InventoryEnableAdapter.InventoryEnableViewHolder, position: Int) {
         val pos = position ?: 0
         val item = mItemList[pos]
-        Log.d(TAG, "onBindViewHolder: $item")
         holder.textInputLayout.hint = item.inventoryName
         holder.editText.apply {
             val countValue = if (0 == item.inventoryCount) null else "${item.inventoryCount}"
@@ -90,9 +97,6 @@ class InventoryEnableAdapter(
                 isEnabled = (item.isCheckBoxEnabled)
                 alpha = if (item.isCheckBoxEnabled) 1f else 0.25f
                 isChecked = (isEnabled && item.isCheckboxSelected)
-                setOnCheckedChangeListener { _, isChecked ->
-                    mListener.onVariantInventoryItemCheckChange(isCheck = isChecked, inventoryItem = item, position = pos)
-                }
             } else
                 visibility = View.GONE
         }

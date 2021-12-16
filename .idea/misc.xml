@@ -3,6 +3,7 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="../../../../layout/custom_preview.xml" value="0.37916666666666665" />
         <entry key="app/src/main/res/drawable/curve_black_background.xml" value="0.4338461538461538" />
         <entry key="app/src/main/res/drawable/curve_black_background_selected.xml" value="0.36875" />
         <entry key="app/src/main/res/drawable/curve_black_background_selector.xml" value="0.4338461538461538" />
