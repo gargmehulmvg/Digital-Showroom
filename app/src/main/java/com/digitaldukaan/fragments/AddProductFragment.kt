@@ -540,13 +540,13 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     mActiveVariantAdapter?.notifyDataSetChanged()
                 }
                 showAddProductContainer()
-                if (mIsVariantAvailable) updateVariantInventoryList()
+//                if (mIsVariantAvailable) updateVariantInventoryList()
             }
         }
     }
 
-    private fun updateVariantInventoryList(position: Int = 0) {
-        mInventoryAdapter?.notifyItemChanged(0)
+    private fun updateVariantInventoryList(position: Int) {
+        mInventoryAdapter?.notifyItemChanged(position)
     }
 
     private fun showLearnYouTubeBottomSheet() {
@@ -1042,9 +1042,11 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     CoroutineScopeUtils().runTaskOnCoroutineMain {
                         if (isEmpty(mActiveVariantList)) return@runTaskOnCoroutineMain
                         if (position < 0) return@runTaskOnCoroutineMain
-                        inventoryItem.isCheckboxSelected = isCheck
-                        inventoryItem.isEditTextEnabled = isCheck
-                        inventoryItem.inventoryCount = 0
+                        inventoryItem.apply {
+                            isCheckboxSelected = isCheck
+                            isEditTextEnabled = isCheck
+                            inventoryCount = 0
+                        }
                         mActiveVariantList?.get(position)?.managedInventory = if (isCheck) Constants.INVENTORY_ENABLE else Constants.INVENTORY_DISABLE
                         updateVariantInventoryList(position)
                         mIsOrderEdited = true
@@ -1053,7 +1055,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                             var isAllCheckBoxUnChecked = true
                             mActiveVariantList?.forEachIndexed { _, itemResponse ->
                                 if (Constants.INVENTORY_ENABLE == itemResponse.managedInventory) {
-                                    isAllCheckBoxUnChecked = true
+                                    isAllCheckBoxUnChecked = false
                                     return@forEachIndexed
                                 }
                             }
@@ -1077,16 +1079,32 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             showAddProductContainer()
             mIsOrderEdited = true
             when {
-                isChecked -> mInventoryAdapter?.getDataSource()?.forEachIndexed { _, item ->
-                    item.isCheckboxSelected = true
-                    item.isCheckBoxEnabled = true
-                    item.isEditTextEnabled = true
+                isChecked -> {
+                    mInventoryAdapter?.getDataSource()?.forEachIndexed { _, item ->
+                        item.isCheckboxSelected = true
+                        item.isCheckBoxEnabled = true
+                        item.isEditTextEnabled = true
+                    }
+                    if (mIsVariantAvailable) {
+                        mActiveVariantList?.forEachIndexed { _, itemResponse ->
+                            itemResponse.availableQuantity = 0
+                            itemResponse.managedInventory = Constants.INVENTORY_ENABLE
+                        }
+                    }
                 }
-                else -> mInventoryAdapter?.getDataSource()?.forEachIndexed { _, item ->
-                    item.isCheckboxSelected = false
-                    item.isCheckBoxEnabled = false
-                    item.isEditTextEnabled = false
-                    item.inventoryCount = 0
+                else -> {
+                    mInventoryAdapter?.getDataSource()?.forEachIndexed { _, item ->
+                        item.isCheckboxSelected = false
+                        item.isCheckBoxEnabled = false
+                        item.isEditTextEnabled = false
+                        item.inventoryCount = 0
+                    }
+                    if (mIsVariantAvailable) {
+                        mActiveVariantList?.forEachIndexed { _, itemResponse ->
+                            itemResponse.availableQuantity = 0
+                            itemResponse.managedInventory = Constants.INVENTORY_DISABLE
+                        }
+                    }
                 }
             }
             mInventoryAdapter?.notifyItemRangeChanged(0, mInventoryAdapter?.getDataSource()?.size ?: 0)
