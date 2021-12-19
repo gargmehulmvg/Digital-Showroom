@@ -283,7 +283,7 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
                     behavior.state = BottomSheetBehavior.STATE_EXPANDED
                     window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
                     setOnDismissListener {
-                        Handler(Looper.getMainLooper()).postDelayed({ hideSoftKeyboard() }, Constants.TIMER_INTERVAL)
+                        Handler(Looper.getMainLooper()).postDelayed({ hideSoftKeyboard() }, Constants.TIMER_DELAY)
                         if (!mIsItemSelectedFromBottomSheet) mActivity?.onBackPressed()
                     }
                     setContentView(view)
@@ -510,7 +510,7 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
                 Handler(Looper.getMainLooper()).postDelayed({
                     nestedScrollView?.scrollTo(0, 150)
                     stopProgress()
-                }, Constants.AUTO_DISMISS_PROGRESS_DIALOG_TIMER)
+                }, Constants.TIMER_AUTO_DISMISS_PROGRESS_DIALOG)
                 screenshotContainer?.let { v ->
                     val originalBitmap = getBitmapFromView(v, mActivity)
                     originalBitmap?.let { bitmap -> shareOnWhatsApp("Order From - ${mMarketingPageInfoResponse?.marketingStoreInfo?.domain}", bitmap) }
@@ -526,7 +526,7 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
                 Handler(Looper.getMainLooper()).postDelayed({
                     nestedScrollView?.scrollTo(0, 150)
                     stopProgress()
-                }, Constants.AUTO_DISMISS_PROGRESS_DIALOG_TIMER)
+                }, Constants.TIMER_AUTO_DISMISS_PROGRESS_DIALOG)
                 screenshotContainer?.let { v ->
                     val originalBitmap = getBitmapFromView(v, mActivity)
                     originalBitmap?.let { bitmap -> shareData("Order From - ${mMarketingPageInfoResponse?.marketingStoreInfo?.domain}", bitmap) }

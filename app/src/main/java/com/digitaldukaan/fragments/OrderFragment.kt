@@ -461,8 +461,8 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                                     visibility = View.VISIBLE
                                     text = landingPageCardsResponse.domainExpiryMessage
                                 }
-                            }, Constants.AUTO_DISMISS_PROGRESS_DIALOG_TIMER)
-                        }, Constants.AUTO_DISMISS_PROGRESS_DIALOG_TIMER)
+                            }, Constants.TIMER_AUTO_DISMISS_PROGRESS_DIALOG)
+                        }, Constants.TIMER_AUTO_DISMISS_PROGRESS_DIALOG)
                     View.VISIBLE
                 }
             }
@@ -774,7 +774,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                     noOrderLayout?.visibility = View.GONE
                     ordersLayout?.visibility = View.VISIBLE
                     swipeRefreshLayout?.isEnabled = true
-                    Handler(Looper.getMainLooper()).postDelayed({ fetchLatestOrders(Constants.MODE_PENDING, sFetchingOrdersStr, mPendingPageCount) }, Constants.ORDER_DELAY_INTERVAL)
+                    Handler(Looper.getMainLooper()).postDelayed({ fetchLatestOrders(Constants.MODE_PENDING, sFetchingOrdersStr, mPendingPageCount) }, Constants.TIMER_ORDER_DELAY)
                 }
                 takeOrderTextView?.text = sOrderPageInfoStaticData?.text_payment_link
                 analyticsImageView?.visibility = if (pageInfoResponse.mIsAnalyticsOrder) View.VISIBLE else View.GONE

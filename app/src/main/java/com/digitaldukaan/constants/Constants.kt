@@ -6,14 +6,15 @@ class Constants {
         const val OTP_SUCCESS_TIMER                             = 500L
         const val LOCATION_REQUEST_CODE                         = 1001
         const val BACK_PRESS_INTERVAL                           = 2_000L
-        const val SHINE_ANIMATION_INTERVAL                      = 2_000L
-        const val STORE_CREATION_PROGRESS_ANIMATION_INTERVAL    = 5_000L
-        const val RESEND_OTP_TIMER                              = 30_000L
-        const val AUTO_DISMISS_PROGRESS_DIALOG_TIMER            = 1_000L
-        const val TIMER_INTERVAL                                = 500L
-        const val ORDER_DELAY_INTERVAL                          = 150L
-        const val TOOL_TIP_TIMER_INTERVAL                       = 3_000L
-        const val ARROW_ANIMATION_TIMER                         = 250L
+        const val TIMER_SHINE_ANIMATION                         = 2_000L
+        const val TIMER_STORE_CREATION_PROGRESS_ANIMATION       = 5_000L
+        const val TIMER_RESEND_OTP                              = 30_000L
+        const val TIMER_AUTO_DISMISS_PROGRESS_DIALOG            = 1_000L
+        const val TIMER_DELAY                                   = 500L
+        const val TIMER_ORDER_DELAY                             = 150L
+        const val TIMER_TOOL_TIP                                = 3_000L
+        const val TIMER_ARROW_ANIMATION                         = 250L
+        const val TIMER_MANAGE_INVENTORY_SCROLL                 = 1500L
         //REQUEST_CODE
         const val CREDENTIAL_PICKER_REQUEST                     = 1001
         const val IMAGE_PICK_REQUEST_CODE                       = 1002

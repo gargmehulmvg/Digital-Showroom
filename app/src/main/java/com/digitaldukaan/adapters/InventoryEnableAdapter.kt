@@ -32,9 +32,7 @@ class InventoryEnableAdapter(
         private const val TAG = "InventoryEnableAdapter"
     }
 
-    fun getDataSource(): ArrayList<InventoryEnableDTO> {
-        return mItemList
-    }
+    fun getDataSource(): ArrayList<InventoryEnableDTO> = mItemList
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): InventoryEnableViewHolder {
         val view = InventoryEnableViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.inventory_enable_item, parent, false))

@@ -30,8 +30,9 @@ class ActiveVariantAdapterV2(
     private var mRecentVariantsList: ArrayList<VariantItemResponse>?,
     private var mActiveVariantList: ArrayList<VariantItemResponse>?,
     private var mListener:          IVariantItemClickListener?
-) :
-    RecyclerView.Adapter<ActiveVariantAdapterV2.ActiveVariantViewHolder>() {
+) : RecyclerView.Adapter<ActiveVariantAdapterV2.ActiveVariantViewHolder>() {
+
+    private val mRecentVariantNameListStr = ArrayList<String>()
 
     fun getDataSourceList(): ArrayList<VariantItemResponse>? = mActiveVariantList
 
@@ -60,7 +61,8 @@ class ActiveVariantAdapterV2(
     }
     override fun getItemCount(): Int = mActiveVariantList?.size ?: 0
 
-    override fun onBindViewHolder(holder: ActiveVariantViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ActiveVariantViewHolder, pos: Int) {
+        val position = pos ?: 0
         val item = mActiveVariantList?.get(position)
         holder.apply {
             variantSwitch.isChecked = (1 == item?.available)
@@ -126,7 +128,7 @@ class ActiveVariantAdapterV2(
                         variantNameInputLayout.error = null
                         item?.isVariantNameEmptyError = false
                     }
-                    mListener?.onVariantItemChanged()
+                    mListener?.onVariantNameChangedListener(str, position)
                 }
 
             })
@@ -146,9 +148,7 @@ class ActiveVariantAdapterV2(
                             isEmpty(priceStr) -> {
                                 if ("0.0" != str) {
                                     variantPriceInputLayout.error = mStaticText?.error_mandatory_field
-                                    priceEditText.apply {
-                                        requestFocus()
-                                    }
+                                    priceEditText.requestFocus()
                                     discountPriceEditText.text = null
                                 }
                                 return
@@ -188,9 +188,7 @@ class ActiveVariantAdapterV2(
                 } else {
                     imageView.visibility = View.VISIBLE
                     noImagesLayout.visibility = View.GONE
-                    mContext?.let { context ->
-                        Glide.with(context).load(imageItem?.imageUrl).into(imageView)
-                    }
+                    mContext?.let { context -> Glide.with(context).load(imageItem?.imageUrl).into(imageView) }
                 }
             }
             if (Constants.INVENTORY_DISABLE == item?.managedInventory) {
@@ -226,8 +224,6 @@ class ActiveVariantAdapterV2(
         if (isEmpty(mActiveVariantList)) mListener?.onVariantListEmpty()
         mListener?.onVariantItemChanged()
     }
-
-    private val mRecentVariantNameListStr = ArrayList<String>()
 
     private fun getRecentVariantList(): ArrayList<String> {
         if (isNotEmpty(mRecentVariantNameListStr)) return mRecentVariantNameListStr

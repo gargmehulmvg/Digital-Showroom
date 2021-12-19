@@ -538,7 +538,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         setOnDismissListener {
             Handler(Looper.getMainLooper()).postDelayed(
                 { hideSoftKeyboard() },
-                Constants.TIMER_INTERVAL
+                Constants.TIMER_DELAY
             )
         }
     }

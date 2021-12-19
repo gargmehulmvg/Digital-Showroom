@@ -206,7 +206,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
 
     private fun startCountDownTimer() {
         counterTextView.visibility = View.VISIBLE
-        mCountDownTimer = object: CountDownTimer(Constants.RESEND_OTP_TIMER, Constants.TIMER_INTERVAL) {
+        mCountDownTimer = object: CountDownTimer(Constants.TIMER_RESEND_OTP, Constants.TIMER_DELAY) {
             override fun onTick(millisUntilFinished: Long) {
                 mTimerCompleted = false
                 CoroutineScopeUtils().runTaskOnCoroutineMain {
@@ -393,7 +393,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
             resendOtpContainer?.alpha = 0.3f
             Handler(Looper.getMainLooper()).postDelayed({
                 otpSentOnContainer?.visibility = View.GONE
-            }, Constants.STORE_CREATION_PROGRESS_ANIMATION_INTERVAL)
+            }, Constants.TIMER_STORE_CREATION_PROGRESS_ANIMATION)
             startCountDownTimer()
             mLoginService?.generateOTP(mMobileNumberStr, modeListItem?.id ?: 0)
         }

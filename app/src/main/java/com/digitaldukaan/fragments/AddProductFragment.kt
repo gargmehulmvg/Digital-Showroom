@@ -518,11 +518,11 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             manageInventoryContainer?.id -> {
                 when (View.GONE) {
                     manageInventoryBottomContainer?.visibility -> {
-                        manageInventoryArrowImageView?.animate()?.rotation(0f)?.setDuration(Constants.ARROW_ANIMATION_TIMER)?.start()
+                        manageInventoryArrowImageView?.animate()?.rotation(0f)?.setDuration(Constants.TIMER_ARROW_ANIMATION)?.start()
                         manageInventoryBottomContainer?.visibility = View.VISIBLE
                     }
                     else -> {
-                        manageInventoryArrowImageView?.animate()?.rotation(90f)?.setDuration(Constants.ARROW_ANIMATION_TIMER)?.start()
+                        manageInventoryArrowImageView?.animate()?.rotation(90f)?.setDuration(Constants.TIMER_ARROW_ANIMATION)?.start()
                         manageInventoryBottomContainer?.visibility = View.GONE
                     }
                 }
@@ -611,20 +611,28 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             }
 
             override fun onVariantListEmpty() {
-                variantHeadingTextView?.apply {
-                    visibility = View.GONE
-                }
+                variantHeadingTextView?.visibility = View.GONE
                 priceCardView?.visibility = View.VISIBLE
                 addVariantsTextView?.text = mActivity?.getString(R.string.add_variants_optional)
             }
 
             override fun onVariantItemChanged() = showAddProductContainer()
 
+            override fun onVariantNameChangedListener(variantUpdatedName: String?, variantPosition: Int) {
+                CoroutineScopeUtils().runTaskOnCoroutineMain {
+                    showAddProductContainer()
+                    if (null != mInventoryAdapter && isNotEmpty(mInventoryAdapter?.getDataSource())) {
+                        mInventoryAdapter?.getDataSource()?.get(variantPosition)?.inventoryName = variantUpdatedName
+                        mInventoryAdapter?.notifyItemChanged(variantPosition)
+                    }
+                }
+            }
+
             override fun onVariantInventoryIconClicked(position: Int) {
                 CoroutineScopeUtils().runTaskOnCoroutineMain {
                     val nestedScrollView: NestedScrollView? = mContentView?.findViewById(R.id.addProductNestedScrollView)
                     val manageInventoryOuterContainer: View? = mContentView?.findViewById(R.id.manageInventoryOuterContainer)
-                    nestedScrollView?.smoothScrollTo(0, manageInventoryOuterContainer?.y?.toInt() ?: 0, 1500)
+                    nestedScrollView?.smoothScrollTo(0, manageInventoryOuterContainer?.y?.toInt() ?: 0, Constants.TIMER_MANAGE_INVENTORY_SCROLL.toInt())
                 }
             }
 
@@ -737,7 +745,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     mImageSearchAdapter.setSearchImageListener(this@AddProductFragment)
                     mImageSearchAdapter.setContext(mActivity)
                     searchImageImageView.setOnClickListener {
-                        if (searchImageEditText.text.trim().toString().isEmpty()) {
+                        if (isEmpty(searchImageEditText.text.trim().toString())) {
                             searchImageEditText.error = getString(R.string.mandatory_field_message)
                             searchImageEditText.requestFocus()
                             return@setOnClickListener
@@ -1010,7 +1018,6 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             manageInventoryMessageTextView?.text = staticText.sub_heading_inventory
             manageInventoryFooterTextView?.text = staticText.footer_text_low_stock_alert
         }
-        Log.d(TAG, "setupManageInventoryUI: ")
         val inventoryList = ArrayList<InventoryEnableDTO>()
         if (isEmpty(mActiveVariantList)) {
             val item = InventoryEnableDTO(
