@@ -665,7 +665,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
         return false
     }
 
-    private fun showUpdateInventoryBottomSheet(itemId: Int, id: Int, availableQuantity: Int?) {
+    private fun showUpdateInventoryBottomSheet(itemId: Int, variantId: Int, availableQuantity: Int?) {
         mActivity?.run {
             val bottomSheetDialog = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
             val view = LayoutInflater.from(mActivity).inflate(
@@ -686,7 +686,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                     headingTextView.text = addProductStaticData?.dialog_heading_add_inventory
                     quantityContainer.hint = addProductStaticData?.hint_available_quantity
                     cancelTextView.setOnClickListener { bottomSheetDialog.dismiss() }
-                    quantityEdiText.setText("$availableQuantity")
+                    if (0 != availableQuantity) quantityEdiText.setText("$availableQuantity")
                     saveTextView.setOnClickListener {
                         val quantity = quantityEdiText.text?.toString()
                         if (isEmpty(quantity)) {
@@ -696,7 +696,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                         bottomSheetDialog.dismiss()
                         val request = UpdateItemInventoryRequest(
                             storeItemId = itemId,
-                            variantId = id,
+                            variantId = variantId,
                             managedInventory = 1,
                             availableQuantity = quantity?.toInt() ?: 0
                         )

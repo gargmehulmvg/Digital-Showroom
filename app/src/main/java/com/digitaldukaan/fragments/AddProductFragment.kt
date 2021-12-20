@@ -505,7 +505,8 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                                 AFInAppEventParameterName.DESCRIPTION       to descriptionStr,
                                 AFInAppEventParameterName.CATEGORY          to categoryStr,
                                 AFInAppEventParameterName.DISCOUNTED_PRICE  to discountedStr,
-                                AFInAppEventParameterName.PRICE             to priceStr
+                                AFInAppEventParameterName.PRICE             to priceStr,
+                                AFInAppEventParameterName.VARIANTS          to Gson().toJson(finalList)
                             )
                         )
                         mService?.setItem(request)

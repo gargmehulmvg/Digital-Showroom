@@ -88,6 +88,7 @@ interface AFInAppEventParameterName {
         const val COUPON_CONFIRMS_SCREEN                        =   "confirm_screen"
         const val COUPON_DETAIL_SCREEN                          =   "details_screen"
         const val COUPON_ID                                     =   "coupon_id"
+        const val VARIANTS                                      =   "variants"
         //NOTIFICATION_CHANNEL
         const val NOTIFICATION_GROUP_ID                         =   "DIGITAL_DUKAAN_G_ID"
         const val NOTIFICATION_GROUP_NAME                       =   "DIGITAL_DUKAAN_G_NAME"
