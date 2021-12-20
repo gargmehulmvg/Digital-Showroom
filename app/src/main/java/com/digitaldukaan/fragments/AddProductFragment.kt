@@ -538,11 +538,8 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                         inventoryCount = 0,
                         inventoryName = mAddProductStaticData?.hint_available_quantity
                     )
-                    if (isEmpty(mActiveVariantList))
-                        mInventoryAdapter?.getDataSource()?.set(0, item)
-                    else
-                        mInventoryAdapter?.getDataSource()?.add(item)
-                    mInventoryAdapter?.notifyItemRangeChanged(0, mInventoryAdapter?.getDataSource()?.size ?: 0)
+                    if (isEmpty(mActiveVariantList)) mInventoryAdapter?.getDataSource()?.clear()
+                    mInventoryAdapter?.addInventoryToDataSource(item)
                 }
                 if (isEmpty(mActiveVariantList)) {
                     addNewVariantInList()
@@ -635,7 +632,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     )
                     mInventoryAdapter?.let { adapter ->
                         adapter.getDataSource().clear()
-                        adapter.setDataSource(item)
+                        adapter.addInventoryToDataSource(item)
                     }
                 }
             }

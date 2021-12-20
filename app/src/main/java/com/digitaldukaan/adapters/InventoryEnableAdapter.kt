@@ -35,9 +35,8 @@ class InventoryEnableAdapter(
 
     fun getDataSource(): ArrayList<InventoryEnableDTO> = mItemList
 
-    fun setDataSource(item:InventoryEnableDTO) {
+    fun addInventoryToDataSource(item:InventoryEnableDTO) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            Log.d(TAG, "setDataSource: ")
             this.mItemList.add(item)
             notifyDataSetChanged()
         }

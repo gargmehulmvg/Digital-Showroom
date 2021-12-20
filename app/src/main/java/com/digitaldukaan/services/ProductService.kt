@@ -3,6 +3,7 @@ package com.digitaldukaan.services
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.models.request.DeleteCategoryRequest
 import com.digitaldukaan.models.request.UpdateCategoryRequest
+import com.digitaldukaan.models.request.UpdateItemInventoryRequest
 import com.digitaldukaan.models.request.UpdateStockRequest
 import com.digitaldukaan.services.networkservice.ProductNetworkService
 import com.digitaldukaan.services.serviceinterface.IProductServiceInterface
@@ -80,6 +81,12 @@ class ProductService {
     fun updateStock(request: UpdateStockRequest) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
             mNetworkService.updateStockServerCall(request, mServiceInterface)
+        }
+    }
+
+    fun quickUpdateItemInventory(request: UpdateItemInventoryRequest) {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.quickUpdateItemInventoryServerCall(request, mServiceInterface)
         }
     }
 

@@ -225,7 +225,7 @@ class Constants {
         const val NAV_BAR_PREMIUM                               = 3
         const val NAV_BAR_MARKETING                             = 4
         const val NAV_BAR_SETTINGS                              = 5
-        //NAV_PAGE
+        //PERMISSION_MAP_KEYS
         const val PAGE_ORDER                                    = "page_order"
         const val PAGE_CATALOG                                  = "page_catalog"
         const val PAGE_PREMIUM                                  = "page_premium"
@@ -237,6 +237,7 @@ class Constants {
         const val LANDING_CARDS                                 = "landing_cards"
         const val MY_SHORTCUTS                                  = "my_shortcuts"
         const val PREMIUM_USER                                  = "premium_user"
+        const val MANAGE_INVENTORY                              = "managed_inventory"
         //BILL_TYPE
         const val BILL_TYPE_PDF                                 = "pdf"
         //STAFF_INVITATION_CODE

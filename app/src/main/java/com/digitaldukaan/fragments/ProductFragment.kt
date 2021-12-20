@@ -26,6 +26,7 @@ import com.digitaldukaan.interfaces.IChipItemClickListener
 import com.digitaldukaan.interfaces.IOnToolbarIconClick
 import com.digitaldukaan.models.request.DeleteCategoryRequest
 import com.digitaldukaan.models.request.UpdateCategoryRequest
+import com.digitaldukaan.models.request.UpdateItemInventoryRequest
 import com.digitaldukaan.models.request.UpdateStockRequest
 import com.digitaldukaan.models.response.*
 import com.digitaldukaan.services.ProductService
@@ -236,6 +237,14 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
         }
     }
 
+    override fun onQuickUpdateItemInventoryResponse(commonResponse: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            mService?.getProductPageInfo()
+            showShortSnackBar(commonResponse.mMessage, true, if (commonResponse.mIsSuccessStatus) R.drawable.ic_check_circle else R.drawable.ic_close_red)
+        }
+    }
+
     override fun onGenerateStorePdfResponse(commonResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
@@ -372,8 +381,8 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                 } else showMasterCatalogBottomSheet(addProductBannerStaticDataResponse, addProductStaticData, Constants.MODE_PRODUCT_LIST)
             }
             jsonData.optBoolean("catalogItemEdit") -> {
-                val jsonDataObject = JSONObject(jsonData.optString("data"))
-                launchFragment(AddProductFragment.newInstance(jsonDataObject.optInt("id"), false), true)
+                val jsonDataObject = JSONObject(jsonData.optString(WebViewBridge.DATA))
+                launchFragment(AddProductFragment.newInstance(jsonDataObject.optInt(WebViewBridge.ID), false), true)
             }
             jsonData.optBoolean("catalogAddItem") -> {
                 launchFragment(AddProductFragment.newInstance(0, true), true)
@@ -385,16 +394,27 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                 stopProgress()
             }
             jsonData.optBoolean("catalogCategoryEdit") -> {
-                val jsonDataObject = JSONObject(jsonData.optString("data"))
-                showUpdateCategoryBottomSheet(jsonDataObject.optString("name"), jsonDataObject.optInt("id"))
+                val jsonDataObject = JSONObject(jsonData.optString(WebViewBridge.DATA))
+                showUpdateCategoryBottomSheet(jsonDataObject.optString("name"), jsonDataObject.optInt(WebViewBridge.ID))
             }
             jsonData.optBoolean("editProductTag") -> {
                 openWebConsoleBottomSheet(mProductPageInfoResponse?.webConsoleBottomSheet)
             }
             jsonData.optBoolean("shareTextOnWhatsApp") -> {
-                val text = jsonData.optString("data")
+                val text = jsonData.optString(WebViewBridge.DATA)
                 val mobileNumber = jsonData.optString("mobileNumber")
                 shareDataOnWhatsAppByNumber(mobileNumber, text)
+            }
+            jsonData.optBoolean("updateInventoryQuantity") -> {
+                val itemJsonObject = JSONObject(jsonData.optString(WebViewBridge.DATA))
+                val storeItemId = itemJsonObject.optInt(WebViewBridge.ID)
+                val selectedVariantStr = jsonData.optString(WebViewBridge.SELECTED_VARIANT)
+                if ("null".equals(selectedVariantStr, true)) {
+                    showUpdateInventoryBottomSheet(storeItemId, itemJsonObject.optInt(WebViewBridge.ID), itemJsonObject.optInt(WebViewBridge.AVAILABLE_QUANTITY))
+                } else {
+                    val selectedVariantJsonObject = JSONObject(selectedVariantStr)
+                    showUpdateInventoryBottomSheet(storeItemId, selectedVariantJsonObject.optInt(WebViewBridge.VARIANT_ID),selectedVariantJsonObject.optInt(WebViewBridge.AVAILABLE_QUANTITY) )
+                }
             }
             jsonData.optBoolean("viewShopAsCustomer") -> {
                 AppEventsManager.pushAppEvents(
@@ -406,16 +426,18 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                 launchFragment(ViewAsCustomerFragment.newInstance(jsonData.optString("domain"), isPremiumEnable, addProductStaticData), true)
             }
             jsonData.optBoolean("catalogStockUpdate") -> {
-                val jsonDataObject = JSONObject(jsonData.optString("data"))
+                val jsonDataObject = JSONObject(jsonData.optString(WebViewBridge.DATA))
+                val selectedVariantJsonObject = JSONObject(jsonData.optString("selectedVariant"))
                 val isAvailable = jsonDataObject.optInt("available")
-                val manageInventory = jsonDataObject.optInt("managed_inventory")
+                val manageInventory = jsonDataObject.optInt(WebViewBridge.MANAGED_INVENTORY)
+                val selectedVariantManageInventory = selectedVariantJsonObject.optInt(WebViewBridge.MANAGED_INVENTORY)
                 if (1 == isAvailable) {
                     if (Constants.TEXT_YES == PrefsManager.getStringDataFromSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN_STOCK)) {
-                        val request = UpdateStockRequest(jsonDataObject.optInt("id"), 0)
+                        val request = UpdateStockRequest(jsonDataObject.optInt(WebViewBridge.ID), 0, selectedVariantManageInventory)
                         mService?.updateStock(request)
-                    } else showOutOfStockDialog(jsonDataObject)
+                    } else showOutOfStockDialog(jsonDataObject, selectedVariantJsonObject)
                 } else {
-                    val request = UpdateStockRequest(jsonDataObject.optInt("id"), if (jsonDataObject.optInt("available") == 0) 1 else 0)
+                    val request = UpdateStockRequest(jsonDataObject.optInt(WebViewBridge.ID), if (0 == jsonDataObject.optInt("available")) 1 else 0, selectedVariantManageInventory)
                     if (!isInternetConnectionAvailable(mActivity)) {
                         showNoInternetConnectionDialog()
                         return
@@ -438,7 +460,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
         }
     }
 
-    private fun showOutOfStockDialog(jsonDataObject: JSONObject) {
+    private fun showOutOfStockDialog(jsonDataObject: JSONObject, selectedVariantJsonObject: JSONObject) {
         mActivity?.let { context ->
             Dialog(context).apply {
                 setCancelable(true)
@@ -466,7 +488,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                 yesTextView.setOnClickListener {
                     this.dismiss()
                     storeStringDataInSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN_STOCK, if (isCheckBoxVisible) Constants.TEXT_YES else Constants.TEXT_NO)
-                    val request = UpdateStockRequest(jsonDataObject.optInt("id"), 0)
+                    val request = UpdateStockRequest(jsonDataObject.optInt(WebViewBridge.ID), 0, selectedVariantJsonObject.optInt(WebViewBridge.MANAGED_INVENTORY))
                     if (!isInternetConnectionAvailable(context)) {
                         showNoInternetConnectionDialog()
                     } else {
@@ -623,7 +645,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
         return false
     }
 
-    private fun showUpdateInventoryBottomSheet() {
+    private fun showUpdateInventoryBottomSheet(itemId: Int, id: Int, availableQuantity: Int?) {
         mActivity?.run {
             val bottomSheetDialog = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
             val view = LayoutInflater.from(mActivity).inflate(
@@ -644,6 +666,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                     headingTextView.text = addProductStaticData?.dialog_heading_add_inventory
                     quantityContainer.hint = addProductStaticData?.hint_available_quantity
                     cancelTextView.setOnClickListener { bottomSheetDialog.dismiss() }
+                    quantityEdiText.setText("$availableQuantity")
                     saveTextView.setOnClickListener {
                         val quantity = quantityEdiText.text?.toString()
                         if (isEmpty(quantity)) {
@@ -651,6 +674,13 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                             return@setOnClickListener
                         }
                         bottomSheetDialog.dismiss()
+                        val request = UpdateItemInventoryRequest(
+                            storeItemId = itemId,
+                            variantId = id,
+                            managedInventory = 1,
+                            availableQuantity = quantity?.toInt() ?: 0
+                        )
+                        mService?.quickUpdateItemInventory(request)
                     }
                 }
             }.show()

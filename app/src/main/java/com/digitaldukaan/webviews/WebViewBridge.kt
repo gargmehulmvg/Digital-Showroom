@@ -9,6 +9,12 @@ class WebViewBridge {
     companion object {
         var mWebViewListener: IWebViewCallbacks? = null
         private const val TAG = "WebViewBridge"
+        const val MANAGED_INVENTORY = "managed_inventory"
+        const val ID = "id"
+        const val VARIANT_ID = "variant_id"
+        const val DATA = "data"
+        const val SELECTED_VARIANT = "selectedVariant"
+        const val AVAILABLE_QUANTITY = "available_quantity"
     }
 
     @JavascriptInterface
