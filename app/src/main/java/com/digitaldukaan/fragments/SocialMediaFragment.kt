@@ -306,7 +306,7 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
 
     override fun onDestroy() {
         super.onDestroy()
-        sSocialMediaPageInfoResponse = null
+        if (false == mActivity?.isDestroyed) sSocialMediaPageInfoResponse = null
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {

@@ -347,8 +347,10 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     override fun onDestroy() {
         super.onDestroy()
         Log.d("MainActivity", "onDestroy :: called for application")
-        StaticInstances.sAppSessionId = ""
-        TruecallerSDK.clear()
+        if (!isDestroyed) {
+            StaticInstances.sAppSessionId = ""
+            TruecallerSDK.clear()
+        }
     }
 
     override fun onNotificationClickedPayloadReceived(payload: HashMap<String, Any>?) {

@@ -250,7 +250,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
 
     override fun onDestroy() {
         super.onDestroy()
-        mCountDownTimer?.cancel()
+        if (false == mActivity?.isDestroyed) mCountDownTimer?.cancel()
     }
 
     override fun onOTPFilledListener(otpStr: String) {

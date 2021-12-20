@@ -914,7 +914,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
 
     override fun onDestroy() {
         super.onDestroy()
-        sOrderPageInfoResponse = null
+        if (false == mActivity?.isDestroyed) sOrderPageInfoResponse = null
     }
 
     private fun showPaymentLinkBottomSheet() {

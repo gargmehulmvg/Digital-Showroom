@@ -284,7 +284,7 @@ class LoginFragmentV2 : BaseFragment(), ILoginServiceInterface {
         }
 
     override fun onDestroy() {
-        mViewPagerTimer?.cancel()
+        if (false == mActivity?.isDestroyed) mViewPagerTimer?.cancel()
         super.onDestroy()
     }
 
