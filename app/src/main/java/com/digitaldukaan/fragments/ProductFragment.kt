@@ -409,11 +409,11 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                 val itemJsonObject = JSONObject(jsonData.optString(WebViewBridge.DATA))
                 val storeItemId = itemJsonObject.optInt(WebViewBridge.ID)
                 val selectedVariantStr = jsonData.optString(WebViewBridge.SELECTED_VARIANT)
-                if ("null".equals(selectedVariantStr, true)) {
+                if ("null".equals(selectedVariantStr, true) || isEmpty(selectedVariantStr)) {
                     showUpdateInventoryBottomSheet(storeItemId, itemJsonObject.optInt(WebViewBridge.ID), itemJsonObject.optInt(WebViewBridge.AVAILABLE_QUANTITY))
                 } else {
                     val selectedVariantJsonObject = JSONObject(selectedVariantStr)
-                    showUpdateInventoryBottomSheet(storeItemId, selectedVariantJsonObject.optInt(WebViewBridge.VARIANT_ID),selectedVariantJsonObject.optInt(WebViewBridge.AVAILABLE_QUANTITY) )
+                     showUpdateInventoryBottomSheet(storeItemId, selectedVariantJsonObject.optInt(WebViewBridge.VARIANT_ID),selectedVariantJsonObject.optInt(WebViewBridge.AVAILABLE_QUANTITY) )
                 }
             }
             jsonData.optBoolean("viewShopAsCustomer") -> {
@@ -426,24 +426,43 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                 launchFragment(ViewAsCustomerFragment.newInstance(jsonData.optString("domain"), isPremiumEnable, addProductStaticData), true)
             }
             jsonData.optBoolean("catalogStockUpdate") -> {
-                val jsonDataObject = JSONObject(jsonData.optString(WebViewBridge.DATA))
-                val selectedVariantJsonObject = JSONObject(jsonData.optString("selectedVariant"))
-                val isAvailable = jsonDataObject.optInt("available")
-                val manageInventory = jsonDataObject.optInt(WebViewBridge.MANAGED_INVENTORY)
-                val selectedVariantManageInventory = selectedVariantJsonObject.optInt(WebViewBridge.MANAGED_INVENTORY)
-                if (1 == isAvailable) {
-                    if (Constants.TEXT_YES == PrefsManager.getStringDataFromSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN_STOCK)) {
-                        val request = UpdateStockRequest(jsonDataObject.optInt(WebViewBridge.ID), 0, selectedVariantManageInventory)
-                        mService?.updateStock(request)
-                    } else showOutOfStockDialog(jsonDataObject, selectedVariantJsonObject)
-                } else {
-                    val request = UpdateStockRequest(jsonDataObject.optInt(WebViewBridge.ID), if (0 == jsonDataObject.optInt("available")) 1 else 0, selectedVariantManageInventory)
-                    if (!isInternetConnectionAvailable(mActivity)) {
-                        showNoInternetConnectionDialog()
-                        return
+                val selectedItemObject = JSONObject(jsonData.optString(WebViewBridge.DATA))
+                val selectedVariantStr = jsonData.optString(WebViewBridge.SELECTED_VARIANT)
+                val isAvailable: Int
+                val manageInventory: Int
+                when {
+                    isEmpty(selectedVariantStr) -> {
+                        manageInventory = selectedItemObject.optInt(WebViewBridge.MANAGED_INVENTORY)
+                        isAvailable = selectedItemObject.optInt(WebViewBridge.AVAILABLE)
+                        if (1 == isAvailable) {
+                            if (Constants.TEXT_YES == PrefsManager.getStringDataFromSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN_STOCK)) {
+                                val request = UpdateStockRequest(selectedItemObject.optInt(WebViewBridge.ID), 0, 0)
+                                mService?.updateStock(request)
+                            } else showOutOfStockDialog(selectedItemObject, 0, Constants.INVENTORY_ENABLE == manageInventory)
+                        } else {
+                            val request = UpdateStockRequest(selectedItemObject.optInt(WebViewBridge.ID), if (0 == selectedItemObject.optInt("available")) 1 else 0, 0)
+                            if (!isInternetConnectionAvailable(mActivity)) {
+                                showNoInternetConnectionDialog()
+                                return
+                            }
+                            showProgressDialog(mActivity)
+                            mService?.updateStock(request)
+                        }
                     }
-                    showProgressDialog(mActivity)
-                    mService?.updateStock(request)
+                    else -> {
+                        val selectedVariantObject = JSONObject(selectedVariantStr)
+                        manageInventory = selectedVariantObject.optInt(WebViewBridge.MANAGED_INVENTORY)
+                        isAvailable = selectedVariantObject.optInt(WebViewBridge.AVAILABLE)
+                        if (1 == isAvailable) {
+                            if (Constants.TEXT_YES == PrefsManager.getStringDataFromSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN_STOCK)) {
+                                val request = UpdateStockRequest(selectedItemObject.optInt(WebViewBridge.ID), 0, selectedVariantObject.optInt(WebViewBridge.VARIANT_ID))
+                                mService?.updateStock(request)
+                            } else showOutOfStockDialog(selectedItemObject, selectedVariantObject.optInt(WebViewBridge.VARIANT_ID), Constants.INVENTORY_ENABLE == manageInventory)
+                        } else {
+                            showUpdateInventoryBottomSheet(selectedItemObject.optInt(WebViewBridge.ID), selectedVariantObject.optInt(WebViewBridge.VARIANT_ID), selectedVariantObject.optInt(WebViewBridge.AVAILABLE_QUANTITY))
+                        }
+
+                    }
                 }
             }
             jsonData.optBoolean("trackEventData") -> {
@@ -460,7 +479,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
         }
     }
 
-    private fun showOutOfStockDialog(jsonDataObject: JSONObject, selectedVariantJsonObject: JSONObject) {
+    private fun showOutOfStockDialog(jsonDataObject: JSONObject, variantId: Int, manageInventory: Boolean) {
         mActivity?.let { context ->
             Dialog(context).apply {
                 setCancelable(true)
@@ -471,8 +490,9 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                 val yesTextView: TextView = findViewById(R.id.yesTextView)
                 val headingTextView: TextView = findViewById(R.id.headingTextView)
                 val messageTextView: TextView = findViewById(R.id.messageTextView)
-                headingTextView.text = addProductStaticData?.dialog_heading_mark_inventory
-                messageTextView.text = addProductStaticData?.dialog_sub_heading_mark_inventory
+                headingTextView.text = if (manageInventory) addProductStaticData?.dialog_heading_mark_inventory else null
+                headingTextView.visibility = if (manageInventory) View.VISIBLE else View.GONE
+                messageTextView.text = if (manageInventory) addProductStaticData?.dialog_sub_heading_mark_inventory else addProductStaticData?.dialog_stock_message
                 yesTextView.text = addProductStaticData?.text_yes
                 noTextView.text = addProductStaticData?.text_no
                 if (isCheckBoxVisible) {
@@ -488,7 +508,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                 yesTextView.setOnClickListener {
                     this.dismiss()
                     storeStringDataInSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN_STOCK, if (isCheckBoxVisible) Constants.TEXT_YES else Constants.TEXT_NO)
-                    val request = UpdateStockRequest(jsonDataObject.optInt(WebViewBridge.ID), 0, selectedVariantJsonObject.optInt(WebViewBridge.MANAGED_INVENTORY))
+                    val request = UpdateStockRequest(jsonDataObject.optInt(WebViewBridge.ID), 0, variantId)
                     if (!isInternetConnectionAvailable(context)) {
                         showNoInternetConnectionDialog()
                     } else {
