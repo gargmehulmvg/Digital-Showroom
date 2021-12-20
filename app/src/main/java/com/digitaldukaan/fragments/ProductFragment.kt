@@ -666,44 +666,52 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
     }
 
     private fun showUpdateInventoryBottomSheet(itemId: Int, variantId: Int, availableQuantity: Int?) {
-        mActivity?.run {
-            val bottomSheetDialog = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
-            val view = LayoutInflater.from(mActivity).inflate(
-                R.layout.bottom_sheet_update_inventory,
-                findViewById(R.id.bottomSheetContainer)
-            )
-            bottomSheetDialog.apply {
-                setContentView(view)
-                setBottomSheetCommonProperty()
-                view.run {
-                    val cancelTextView: TextView = findViewById(R.id.cancelTextView)
-                    val saveTextView: TextView = findViewById(R.id.saveTextView)
-                    val headingTextView: TextView = findViewById(R.id.headingTextView)
-                    val quantityContainer: TextInputLayout = findViewById(R.id.quantityContainer)
-                    val quantityEdiText: EditText = findViewById(R.id.quantityTextView)
-                    saveTextView.text = addProductStaticData?.text_save
-                    cancelTextView.text = addProductStaticData?.text_cancel
-                    headingTextView.text = addProductStaticData?.dialog_heading_add_inventory
-                    quantityContainer.hint = addProductStaticData?.hint_available_quantity
-                    cancelTextView.setOnClickListener { bottomSheetDialog.dismiss() }
-                    if (0 != availableQuantity) quantityEdiText.setText("$availableQuantity")
-                    saveTextView.setOnClickListener {
-                        val quantity = quantityEdiText.text?.toString()
-                        if (isEmpty(quantity)) {
-                            quantityEdiText.error = addProductStaticData?.error_mandatory_field
-                            return@setOnClickListener
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            mActivity?.run {
+                val bottomSheetDialog = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
+                val view = LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet_update_inventory, findViewById(R.id.bottomSheetContainer))
+                bottomSheetDialog.apply {
+                    setContentView(view)
+                    setBottomSheetCommonProperty()
+                    view.run {
+                        val cancelTextView: TextView = findViewById(R.id.cancelTextView)
+                        val saveTextView: TextView = findViewById(R.id.saveTextView)
+                        val headingTextView: TextView = findViewById(R.id.headingTextView)
+                        val quantityContainer: TextInputLayout = findViewById(R.id.quantityContainer)
+                        val quantityEdiText: EditText = findViewById(R.id.quantityTextView)
+                        saveTextView.text = addProductStaticData?.text_save
+                        cancelTextView.text = addProductStaticData?.text_cancel
+                        headingTextView.text = addProductStaticData?.dialog_heading_add_inventory
+                        quantityContainer.hint = addProductStaticData?.hint_available_quantity
+                        cancelTextView.setOnClickListener { bottomSheetDialog.dismiss() }
+                        if (0 != availableQuantity) quantityEdiText.setText("$availableQuantity")
+                        saveTextView.setOnClickListener {
+                            val quantity = quantityEdiText.text?.toString()
+                            if (isEmpty(quantity)) {
+                                quantityEdiText.error = addProductStaticData?.error_mandatory_field
+                                return@setOnClickListener
+                            }
+                            bottomSheetDialog.dismiss()
+                            val request = UpdateItemInventoryRequest(
+                                storeItemId = itemId,
+                                variantId = variantId,
+                                managedInventory = 1,
+                                availableQuantity = quantity?.toInt() ?: 0
+                            )
+                            mService?.quickUpdateItemInventory(request)
+                            AppEventsManager.pushAppEvents(
+                                eventName = AFInAppEventType.EVENT_INVENTORY_QUANTITY_MODIFY, isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                                data = mapOf(
+                                    AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                                    AFInAppEventParameterName.VARIANT_ID to "$variantId",
+                                    AFInAppEventParameterName.QUANTITY to "$quantity",
+                                    AFInAppEventParameterName.ITEM_ID to "$itemId"
+                                )
+                            )
                         }
-                        bottomSheetDialog.dismiss()
-                        val request = UpdateItemInventoryRequest(
-                            storeItemId = itemId,
-                            variantId = variantId,
-                            managedInventory = 1,
-                            availableQuantity = quantity?.toInt() ?: 0
-                        )
-                        mService?.quickUpdateItemInventory(request)
                     }
-                }
-            }.show()
+                }.show()
+            }
         }
     }
 

@@ -1143,6 +1143,14 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         } else mInventoryAdapter?.notifyItemRangeChanged(0, mInventoryAdapter?.getDataSource()?.size ?: 0)
         manageInventorySwitch?.isChecked = (Constants.INVENTORY_ENABLE == mAddProductResponse?.storeItem?.managedInventory)
         manageInventorySwitch?.setOnCheckedChangeListener { _, isChecked ->
+            AppEventsManager.pushAppEvents(
+                eventName = AFInAppEventType.EVENT_INVENTORY_TOGGLE, isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                data = mapOf(
+                    AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                    AFInAppEventParameterName.INVENTORY to "${if (isChecked) Constants.INVENTORY_ENABLE else Constants.INVENTORY_DISABLE}",
+                    AFInAppEventParameterName.ITEM_ID to "${mAddProductResponse?.storeItem?.id}"
+                )
+            )
             showAddProductContainer()
             mIsManageInventoryToggleChanged = true
             mIsOrderEdited = true
