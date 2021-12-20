@@ -16,10 +16,19 @@ data class AddProductRequest(
     @SerializedName("variants")             var variantsList: ArrayList<VariantItemResponse>?,
     @SerializedName("low_quantity")         var lowQuantity: Int,
     @SerializedName("managed_inventory")    var managedInventory: Int,
-    @SerializedName("available_quantity")   var inventoryCount: Int
+    @SerializedName("available_quantity")   var inventoryCount: Int,
+    @SerializedName("tags")                 var tags: ArrayList<ProductTagsItemCategory>?
 )
 
 data class AddProductItemCategory(
     @SerializedName("id")                   var id: Int,
+    @SerializedName("name")                 var name: String
+)
+
+data class ProductTagsItemCategory(
+    @SerializedName("id")                   var id: Int,
+    @SerializedName("is_active")            var isActive: Int,
+    @SerializedName("isCustomTag")          var isCustomTag: Int,
+    @SerializedName("tag_color")            var tagColor: String,
     @SerializedName("name")                 var name: String
 )

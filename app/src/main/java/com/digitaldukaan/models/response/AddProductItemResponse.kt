@@ -1,5 +1,6 @@
 package com.digitaldukaan.models.response
 
+import com.digitaldukaan.models.request.ProductTagsItemCategory
 import com.google.gson.annotations.SerializedName
 
 data class AddProductItemResponse(
@@ -16,7 +17,8 @@ data class AddProductItemResponse(
     @SerializedName("description")              var description: String,
     @SerializedName("low_quantity")             var lowQuantity: Int,
     @SerializedName("managed_inventory")        var managedInventory: Int,
-    @SerializedName("available_quantity")       var availableQuantity: Int
+    @SerializedName("available_quantity")       var availableQuantity: Int,
+    @SerializedName("tags")                     var productTagsArray: ArrayList<ProductTagsItemCategory>?
 )
 
 data class AddProductImagesResponse(

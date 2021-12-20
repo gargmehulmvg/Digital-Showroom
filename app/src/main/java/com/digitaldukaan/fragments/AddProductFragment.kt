@@ -496,7 +496,8 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                             variantsList = finalList,
                             managedInventory = if (true == manageInventorySwitch?.isChecked) Constants.INVENTORY_ENABLE else Constants.INVENTORY_DISABLE,
                             inventoryCount = if ((true == manageInventorySwitch?.isChecked) && !mIsVariantAvailable) mInventoryAdapter?.getDataSource()?.get(0)?.inventoryCount ?: 0 else 0,
-                            lowQuantity = if (mIsAddNewProduct || mIsManageInventoryToggleChanged) 5 else mAddProductResponse?.storeItem?.lowQuantity ?: 5
+                            lowQuantity = if (mIsAddNewProduct || mIsManageInventoryToggleChanged) 5 else mAddProductResponse?.storeItem?.lowQuantity ?: 5,
+                            tags = mAddProductResponse?.storeItem?.productTagsArray
                         )
                         showProgressDialog(mActivity)
                         AppEventsManager.pushAppEvents(
