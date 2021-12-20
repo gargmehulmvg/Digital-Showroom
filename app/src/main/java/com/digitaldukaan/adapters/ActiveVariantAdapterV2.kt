@@ -97,17 +97,13 @@ class ActiveVariantAdapterV2(
                                 variantDiscountPriceInputLayout.error = mStaticText?.error_mandatory_field
                             }
                             (if (isEmpty(discountPriceStr)) 0.0 else discountPriceStr.toDouble()) > str?.toDouble() ?: 0.0 -> {
-                                discountPriceEditText.apply {
-                                    text = null
-                                }
+                                discountPriceEditText.text = null
                                 item?.discountedPrice = 0.0
                             }
                             else -> item?.price = str?.toDouble() ?: 0.0
                         }
                     } else {
-                        discountPriceEditText.apply {
-                            text = null
-                        }
+                        discountPriceEditText.text = null
                         item?.price = 0.0
                         item?.discountedPrice = 0.0
                     }

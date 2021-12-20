@@ -408,6 +408,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
             jsonData.optBoolean("catalogStockUpdate") -> {
                 val jsonDataObject = JSONObject(jsonData.optString("data"))
                 val isAvailable = jsonDataObject.optInt("available")
+                val manageInventory = jsonDataObject.optInt("managed_inventory")
                 if (1 == isAvailable) {
                     if (Constants.TEXT_YES == PrefsManager.getStringDataFromSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN_STOCK)) {
                         val request = UpdateStockRequest(jsonDataObject.optInt("id"), 0)

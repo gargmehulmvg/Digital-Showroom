@@ -10,6 +10,7 @@ import android.widget.CheckBox
 import android.widget.EditText
 import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
+import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.isEmpty
 import com.digitaldukaan.constants.isNotEmpty
 import com.digitaldukaan.interfaces.IProductInventoryListener
@@ -33,6 +34,14 @@ class InventoryEnableAdapter(
     }
 
     fun getDataSource(): ArrayList<InventoryEnableDTO> = mItemList
+
+    fun setDataSource(item:InventoryEnableDTO) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            Log.d(TAG, "setDataSource: ")
+            this.mItemList.add(item)
+            notifyDataSetChanged()
+        }
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): InventoryEnableViewHolder {
         val view = InventoryEnableViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.inventory_enable_item, parent, false))
@@ -61,29 +70,33 @@ class InventoryEnableAdapter(
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
 
                 override fun afterTextChanged(editable: Editable?) {
-                    if (isEmpty(mItemList) || pos < 0) return
-                    val str = editable?.toString()?.trim() ?: ""
-                    if (str.length <= (context?.resources?.getInteger(R.integer.inventory_count) ?: 3)) {
-                        if (!mItemList[pos].isVariantEnabled) {
-                            mListener.onItemInventoryChangeListener(if (isNotEmpty(str)) {
-                                mItemList[pos].inventoryCount = str.toInt()
-                                str
+                    try {
+                        if (isEmpty(mItemList) || pos < 0) return
+                        val str = editable?.toString()?.trim() ?: ""
+                        if (str.length <= (context?.resources?.getInteger(R.integer.inventory_count) ?: 3)) {
+                            if (!mItemList[pos].isVariantEnabled) {
+                                mListener.onItemInventoryChangeListener(if (isNotEmpty(str)) {
+                                    mItemList[pos].inventoryCount = str.toInt()
+                                    str
+                                } else {
+                                    mItemList[pos].inventoryCount = 0
+                                    "0"
+                                })
                             } else {
-                                mItemList[pos].inventoryCount = 0
-                                "0"
-                            })
+                                mListener.onVariantInventoryChangeListener(if (isNotEmpty(str)) {
+                                    mItemList[pos].inventoryCount = str.toInt()
+                                    str
+                                } else {
+                                    mItemList[pos].inventoryCount = 0
+                                    "0"
+                                }, pos)
+                            }
                         } else {
-                            mListener.onVariantInventoryChangeListener(if (isNotEmpty(str)) {
-                                mItemList[pos].inventoryCount = str.toInt()
-                                str
-                            } else {
-                                mItemList[pos].inventoryCount = 0
-                                "0"
-                            }, pos)
+                            error = mQuantityErrorMessage
+                            text = null
                         }
-                    } else {
-                        error = mQuantityErrorMessage
-                        text = null
+                    } catch (e: Exception) {
+                        Log.e(TAG, "afterTextChanged: ${e.message}", e)
                     }
                 }
 
