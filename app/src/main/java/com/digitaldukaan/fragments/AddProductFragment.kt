@@ -69,14 +69,16 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     private var addProductChipsAdapter: AddProductsChipsAdapter? = null
     private var mOptionsMenuResponse: ArrayList<TrendingListResponse>? = null
     private var mImageAddAdapter: AddProductsImagesAdapter? = null
-    private var mIsAddNewProduct: Boolean = false
     private var mProductNameStr: String? = ""
     private var mProductPriceStr: String? = ""
     private var mProductDiscountedPriceStr: String? = ""
     private var mProductDescriptionPriceStr: String? = ""
+    private var mIsAddNewProduct: Boolean = false
     private var mIsOrderEdited = false
     private var mIsOrderDeleted = false
     private var mIsVariantAvailable = false
+    private var mIsManageInventoryAvailable = false
+    private var mIsManageInventoryToggleChanged = false
     private var mAddProductResponse: AddProductResponse? = null
     private var discountPriceEditText: EditText? = null
     private var productDescriptionEditText: EditText? = null
@@ -138,6 +140,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         TAG = "AddProductFragment"
         FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
         mContentView = inflater.inflate(R.layout.layout_add_product_fragment, container, false)
+        mIsManageInventoryAvailable = StaticInstances.sPermissionHashMap?.get(Constants.MANAGE_INVENTORY) ?: false
         ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, false)
             hideBackPressFromToolBar(mActivity, false)
@@ -492,7 +495,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                             variantsList = finalList,
                             managedInventory = if (true == manageInventorySwitch?.isChecked) Constants.INVENTORY_ENABLE else Constants.INVENTORY_DISABLE,
                             inventoryCount = if ((true == manageInventorySwitch?.isChecked) && !mIsVariantAvailable) mInventoryAdapter?.getDataSource()?.get(0)?.inventoryCount ?: 0 else 0,
-                            lowQuantity = if (mIsAddNewProduct) 5 else mAddProductResponse?.storeItem?.lowQuantity ?: 5
+                            lowQuantity = if (mIsAddNewProduct || mIsManageInventoryToggleChanged) 5 else mAddProductResponse?.storeItem?.lowQuantity ?: 5
                         )
                         showProgressDialog(mActivity)
                         AppEventsManager.pushAppEvents(
@@ -594,7 +597,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     masterId = 0,
                     available = 1,
                     variantImagesList = null,
-                    managedInventory = Constants.INVENTORY_ENABLE,
+                    managedInventory = if (true == manageInventorySwitch?.isChecked) Constants.INVENTORY_ENABLE else Constants.INVENTORY_DISABLE,
                     availableQuantity = 0,
                     isVariantNameEmptyError = false
                 )
@@ -619,21 +622,23 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             }
 
             override fun onVariantListEmpty() {
-                variantHeadingTextView?.visibility = View.GONE
-                priceCardView?.visibility = View.VISIBLE
-                addVariantsTextView?.text = mActivity?.getString(R.string.add_variants_optional)
-                if (isEmpty(mActiveVariantList)) {
-                    val item = InventoryEnableDTO(
-                        isVariantEnabled = false,
-                        isCheckBoxEnabled = Constants.INVENTORY_ENABLE == mAddProductResponse?.storeItem?.managedInventory,
-                        isEditTextEnabled = Constants.INVENTORY_ENABLE == mAddProductResponse?.storeItem?.managedInventory,
-                        isCheckboxSelected = (true == manageInventorySwitch?.isChecked),
-                        inventoryCount = mAddProductResponse?.storeItem?.availableQuantity,
-                        inventoryName = mAddProductStaticData?.hint_available_quantity
-                    )
-                    mInventoryAdapter?.let { adapter ->
-                        adapter.getDataSource().clear()
-                        adapter.addInventoryToDataSource(item)
+                CoroutineScopeUtils().runTaskOnCoroutineMain {
+                    variantHeadingTextView?.visibility = View.GONE
+                    priceCardView?.visibility = View.VISIBLE
+                    addVariantsTextView?.text = mActivity?.getString(R.string.add_variants_optional)
+                    if (isEmpty(mActiveVariantList)) {
+                        val item = InventoryEnableDTO(
+                            isVariantEnabled = false,
+                            isCheckBoxEnabled = Constants.INVENTORY_ENABLE == mAddProductResponse?.storeItem?.managedInventory,
+                            isEditTextEnabled = Constants.INVENTORY_ENABLE == mAddProductResponse?.storeItem?.managedInventory,
+                            isCheckboxSelected = (true == manageInventorySwitch?.isChecked),
+                            inventoryCount = 0,
+                            inventoryName = mAddProductStaticData?.hint_available_quantity
+                        )
+                        mInventoryAdapter?.let { adapter ->
+                            adapter.getDataSource().clear()
+                            adapter.addInventoryToDataSource(item)
+                        }
                     }
                 }
             }
@@ -1041,10 +1046,14 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     }
 
     private fun setupManageInventoryUI() {
+        if (!mIsManageInventoryAvailable) {
+            manageInventoryOuterContainer?.visibility = View.GONE
+            return
+        }
         mAddProductStaticData?.let { staticText ->
             manageInventoryHeadingTextView?.text = staticText.heading_manage_inventory
             manageInventoryMessageTextView?.text = staticText.sub_heading_inventory
-            val availableQuantity = mAddProductStaticData?.footer_text_low_stock_alert
+            val availableQuantity = if (0 == mAddProductResponse?.storeItem?.lowQuantity) mAddProductStaticData?.footer_text_low_stock_disabled_alert else mAddProductStaticData?.footer_text_low_stock_alert
             val availableQuantityStr = availableQuantity?.replace("xxx", "${mAddProductResponse?.storeItem?.lowQuantity}", true)
             manageInventoryFooterTextView?.text = availableQuantityStr
         }
@@ -1066,7 +1075,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     isCheckBoxEnabled = Constants.INVENTORY_ENABLE == mAddProductResponse?.storeItem?.managedInventory,
                     isCheckboxSelected = Constants.INVENTORY_ENABLE == variantItem.managedInventory,
                     isEditTextEnabled = Constants.INVENTORY_ENABLE == variantItem.managedInventory,
-                    inventoryCount = variantItem.availableQuantity,
+                    inventoryCount = if (Constants.INVENTORY_ENABLE == variantItem.managedInventory) variantItem.availableQuantity else 0,
                     inventoryName = variantItem.variantName
                 )
                 inventoryList.add(item)
@@ -1121,6 +1130,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                                 manageInventorySwitch?.isChecked = false
                             }
                         }
+                        mActiveVariantAdapter?.notifyItemChanged(position)
                     }
                 }
 
@@ -1133,6 +1143,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         manageInventorySwitch?.isChecked = (Constants.INVENTORY_ENABLE == mAddProductResponse?.storeItem?.managedInventory)
         manageInventorySwitch?.setOnCheckedChangeListener { _, isChecked ->
             showAddProductContainer()
+            mIsManageInventoryToggleChanged = true
             mIsOrderEdited = true
             when {
                 isChecked -> {
@@ -1147,7 +1158,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                             itemResponse.managedInventory = Constants.INVENTORY_ENABLE
                         }
                     }
-                    val availableQuantity = mAddProductStaticData?.footer_text_low_stock_alert
+                    val availableQuantity = if (0 == mAddProductResponse?.storeItem?.lowQuantity) mAddProductStaticData?.footer_text_low_stock_disabled_alert else mAddProductStaticData?.footer_text_low_stock_alert
                     val availableQuantityStr = availableQuantity?.replace("xxx", "5", true)
                     manageInventoryFooterTextView?.text = availableQuantityStr
                 }
@@ -1164,7 +1175,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                             itemResponse.managedInventory = Constants.INVENTORY_DISABLE
                         }
                     }
-                    val availableQuantity = mAddProductStaticData?.footer_text_low_stock_alert
+                    val availableQuantity = if (0 == mAddProductResponse?.storeItem?.lowQuantity) mAddProductStaticData?.footer_text_low_stock_disabled_alert else mAddProductStaticData?.footer_text_low_stock_alert
                     val availableQuantityStr = availableQuantity?.replace("xxx", "${mAddProductResponse?.storeItem?.lowQuantity}", true)
                     manageInventoryFooterTextView?.text = availableQuantityStr
                 }
@@ -1502,7 +1513,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                                     variantItem.isCheckboxSelected = false
                                     variantItem.isEditTextEnabled = false
                                     mInventoryAdapter?.notifyItemChanged(position)
-                                    mActiveVariantList?.get(position)?.managedInventory = Constants.INVENTORY_DISABLE
+                                    if (isNotEmpty(mActiveVariantList)) mActiveVariantList?.get(position)?.managedInventory = Constants.INVENTORY_DISABLE
                                 }
                             }
                             if (unCheckedCheckBox == (mInventoryAdapter?.getDataSource()?.size ?: 0)) {

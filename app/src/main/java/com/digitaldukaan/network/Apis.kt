@@ -198,7 +198,7 @@ interface Apis {
     @POST("api/dotk/vm1/products/quickUpdateItem")
     suspend fun quickUpdateItemInventory(@Body request: UpdateItemInventoryRequest): Response<CommonApiResponse>
 
-    @POST("api/dotk/vm1/products/setItem")
+    @POST("api/dotk/vm1/products/setItemV2")
     suspend fun setItem(@Body request: AddProductRequest): Response<CommonApiResponse>
 
     @POST("api/dotk/vm1/products/searchItems")

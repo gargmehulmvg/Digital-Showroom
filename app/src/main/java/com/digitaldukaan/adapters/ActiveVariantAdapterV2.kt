@@ -190,16 +190,16 @@ class ActiveVariantAdapterV2(
             if (Constants.INVENTORY_DISABLE == item?.managedInventory) {
                 inStockTextView.visibility = View.VISIBLE
                 variantSwitch.visibility = View.VISIBLE
+                variantSwitch.setOnCheckedChangeListener { _, isChecked ->
+                    mListener?.onVariantItemChanged()
+                    item.available = if (isChecked) 1 else 0
+                    inStockTextView.text = if (isChecked) mStaticText?.text_in_stock else mContext?.getString(R.string.out_of_stock)
+                }
                 variantInventoryImageView.visibility = View.GONE
             } else {
                 inStockTextView.visibility = View.GONE
                 variantSwitch.visibility = View.GONE
                 variantInventoryImageView.visibility = View.VISIBLE
-            }
-            variantSwitch.setOnCheckedChangeListener { _, isChecked ->
-                mListener?.onVariantItemChanged()
-                item?.available = if (isChecked) 1 else 0
-                inStockTextView.text = if (isChecked) mStaticText?.text_in_stock else mContext?.getString(R.string.out_of_stock)
             }
             mContext?.let { context ->
                 val adapter = ArrayAdapter(context, android.R.layout.simple_list_item_1, getRecentVariantList())

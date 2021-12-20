@@ -96,6 +96,7 @@ data class AddProductStaticText(
     @SerializedName("heading_manage_inventory")                                 var heading_manage_inventory: String?,
     @SerializedName("sub_heading_inventory")                                    var sub_heading_inventory: String?,
     @SerializedName("footer_text_low_stock_alert")                              var footer_text_low_stock_alert: String?,
+    @SerializedName("footer_text_low_stock_disabled_alert")                     var footer_text_low_stock_disabled_alert: String?,
     @SerializedName("dialog_heading_inventory")                                 var dialog_heading_inventory: String?,
     @SerializedName("dialog_sub_heading_inventory")                             var dialog_sub_heading_inventory: String?,
     @SerializedName("dialog_cta_disable_inventory")                             var dialog_cta_disable_inventory: String?,
