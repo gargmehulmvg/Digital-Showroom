@@ -483,6 +483,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                                 mYoutubeItemResponse?.imageUrl = youtubeLink ?: ""
                             mYoutubeItemResponse?.let { youtube -> imageListRequest.add(youtube) }
                         }
+                        finalList.forEachIndexed { _, itemResponse -> if (Constants.INVENTORY_DISABLE == itemResponse.managedInventory) itemResponse.availableQuantity = 0 }
                         val request = AddProductRequest(
                             id = mItemId,
                             available = 1,
@@ -1512,18 +1513,16 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                                     unCheckedCheckBox++
                                     variantItem.isCheckboxSelected = false
                                     variantItem.isEditTextEnabled = false
+                                    variantItem.inventoryCount = 0
                                     mInventoryAdapter?.notifyItemChanged(position)
                                     if (isNotEmpty(mActiveVariantList)) mActiveVariantList?.get(position)?.managedInventory = Constants.INVENTORY_DISABLE
                                 }
                             }
                             if (unCheckedCheckBox == (mInventoryAdapter?.getDataSource()?.size ?: 0)) {
-                                disableItemInventoryAndContinue()
-                            } else {
-                                val continueTextView: View? = mContentView?.findViewById(R.id.continueTextView)
-                                continueTextView?.callOnClick()
+                                disableInventorySwitch()
                             }
                         } else {
-                            disableItemInventoryAndContinue()
+                            disableInventorySwitch()
                         }
                     }
                 }.show()
@@ -1531,10 +1530,8 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         }
     }
 
-    private fun disableItemInventoryAndContinue() {
+    private fun disableInventorySwitch() {
         val manageInventorySwitch: SwitchMaterial? = mContentView?.findViewById(R.id.manageInventorySwitch)
-        val continueTextView: View? = mContentView?.findViewById(R.id.continueTextView)
         manageInventorySwitch?.isChecked = false
-        continueTextView?.callOnClick()
     }
 }
