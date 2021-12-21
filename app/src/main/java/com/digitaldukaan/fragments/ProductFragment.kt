@@ -115,7 +115,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
             commonWebView?.apply {
                 settings.javaScriptEnabled = true
                 addJavascriptInterface(WebViewBridge(), Constants.KEY_ANDROID)
-                url = BuildConfig.WEB_VIEW_URL + mProductPageInfoResponse?.productPageUrl + "?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&app_version=${BuildConfig.VERSION_NAME}&app_version_code${BuildConfig.VERSION_CODE}"
+                url = BuildConfig.WEB_VIEW_URL + mProductPageInfoResponse?.productPageUrl + "?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&app_version=${BuildConfig.VERSION_NAME}&app_version_code=${BuildConfig.VERSION_CODE}"
                 Log.d(TAG, "onProductResponse: WebView URL $url")
                 loadUrl(url)
                 webViewClient = object : WebViewClient() {

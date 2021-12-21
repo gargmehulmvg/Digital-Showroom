@@ -37,7 +37,7 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
         val fragment = CommonWebViewFragment()
         fragment.mHeaderText = headerText
         fragment.mLoadUrl = loadUrl
-        fragment.mLoadUrl = "${fragment.mLoadUrl}&app_version=${BuildConfig.VERSION_NAME}&app_version_code${BuildConfig.VERSION_CODE}"
+        fragment.mLoadUrl = "${fragment.mLoadUrl}&app_version=${BuildConfig.VERSION_NAME}&app_version_code=${BuildConfig.VERSION_CODE}"
         Log.d(mTagName, "CommonWebViewFragment :: URL :: ${fragment.mLoadUrl}")
         return fragment
     }
