@@ -570,7 +570,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                     }
                     saveTextView.setOnClickListener {
                         val categoryNameInputByUser = categoryNameEditText.text.toString()
-                        if (categoryNameInputByUser.trim().isEmpty()) {
+                        if (isEmpty(categoryNameInputByUser.trim())) {
                             categoryNameEditText.apply {
                                 error = addProductStaticData?.error_mandatory_field
                                 requestFocus()
