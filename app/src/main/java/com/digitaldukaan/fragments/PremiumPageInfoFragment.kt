@@ -81,7 +81,7 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
                 addJavascriptInterface(WebViewBridge(), Constants.KEY_ANDROID)
                 val isBottomNavBarActive = mPremiumPageInfoResponse?.mIsBottomNavBarActive ?: false
                 hideBottomNavigationView(!isBottomNavBarActive)
-                val url = BuildConfig.WEB_VIEW_URL + mPremiumPageInfoResponse?.premium?.mUrl + "?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&app_version=${BuildConfig.VERSION_NAME}"
+                val url = BuildConfig.WEB_VIEW_URL + mPremiumPageInfoResponse?.premium?.mUrl + "?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&app_version=${BuildConfig.VERSION_NAME}&app_version_code${BuildConfig.VERSION_CODE}"
                 Log.d(PremiumPageInfoFragment::class.simpleName, "onViewCreated: $url")
                 webViewClient = object : WebViewClient() {
                     override fun onPageFinished(view: WebView, url: String) {

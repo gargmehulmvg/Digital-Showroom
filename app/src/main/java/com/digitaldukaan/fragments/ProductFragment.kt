@@ -115,7 +115,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
             commonWebView?.apply {
                 settings.javaScriptEnabled = true
                 addJavascriptInterface(WebViewBridge(), Constants.KEY_ANDROID)
-                url = BuildConfig.WEB_VIEW_URL + mProductPageInfoResponse?.productPageUrl + "?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&app_version=${BuildConfig.VERSION_NAME}"
+                url = BuildConfig.WEB_VIEW_URL + mProductPageInfoResponse?.productPageUrl + "?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&app_version=${BuildConfig.VERSION_NAME}&app_version_code${BuildConfig.VERSION_CODE}"
                 Log.d(TAG, "onProductResponse: WebView URL $url")
                 loadUrl(url)
                 webViewClient = object : WebViewClient() {
@@ -487,7 +487,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
             Dialog(context).apply {
                 setCancelable(true)
                 window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-                setContentView(R.layout.dont_show_again_dialog)
+                setContentView(R.layout.out_of_stock_dialog)
                 var isCheckBoxVisible = ("" == PrefsManager.getStringDataFromSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN_STOCK) || Constants.TEXT_NO == PrefsManager.getStringDataFromSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN_STOCK))
                 val noTextView: TextView = findViewById(R.id.noTextView)
                 val yesTextView: TextView = findViewById(R.id.yesTextView)
