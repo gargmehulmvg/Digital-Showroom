@@ -56,6 +56,10 @@ class InventoryEnableAdapter(
 
     override fun getItemCount(): Int = mItemList.size
 
+    override fun getItemId(position: Int): Long = position.toLong()
+
+    override fun getItemViewType(position: Int): Int = position
+
     override fun onBindViewHolder(holder: InventoryEnableAdapter.InventoryEnableViewHolder, position: Int) {
         val pos = position ?: 0
         val item = mItemList[pos]

@@ -1096,8 +1096,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 }
 
                 override fun onVariantInventoryChangeListener(inventoryCount: String, position: Int) {
-                    CoroutineScopeUtils().runTaskOnCoroutineMain {
-                        if (isEmpty(inventoryCount)) return@runTaskOnCoroutineMain
+                    CoroutineScopeUtils().runTaskOnCoroutineMain { if (isEmpty(inventoryCount)) return@runTaskOnCoroutineMain
                         if (isEmpty(mActiveVariantList)) return@runTaskOnCoroutineMain
                         mActiveVariantList?.get(position)?.availableQuantity = inventoryCount.toInt()
                         mIsOrderEdited = true
@@ -1190,7 +1189,8 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     manageInventoryFooterTextView?.text = availableQuantityStr
                 }
             }
-            mInventoryAdapter?.notifyItemRangeChanged(0, mInventoryAdapter?.getDataSource()?.size ?: 0)
+            mInventoryAdapter?.notifyDataSetChanged()
+            mActiveVariantAdapter?.notifyDataSetChanged()
         }
     }
 
