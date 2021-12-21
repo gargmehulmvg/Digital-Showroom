@@ -130,13 +130,9 @@ class OrderDetailsAdapter(
                         mListener?.onOrderDetailListUpdateListener()
                     }
 
-                    override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                        Log.d(mTag, "beforeTextChanged: ")
-                    }
+                    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
 
-                    override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                        Log.d(mTag, "onTextChanged: ")
-                    }
+                    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
 
                 })
             }

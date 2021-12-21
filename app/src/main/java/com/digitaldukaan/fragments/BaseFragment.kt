@@ -105,11 +105,15 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         Log.d(TAG, "onAttach :: called in Application")
     }
 
+    open fun onClick(view: View?) = Unit
+
+    open fun onBackPressed(): Boolean = false
+
     protected fun showProgressDialog(context: Context?) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            context?.let {
+            context?.let { context ->
                 try {
-                    mProgressDialog = Dialog(it)
+                    mProgressDialog = Dialog(context)
                     mProgressDialog?.apply {
                         val view = LayoutInflater.from(context).inflate(R.layout.progress_dialog, null)
                         setContentView(view)
@@ -128,31 +132,19 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         }
     }
 
-    open fun hideBottomNavigationView(isHidden: Boolean) {
-        CoroutineScopeUtils().runTaskOnCoroutineMain {
-            mActivity?.run {
-                bottomNavigationView.visibility = if (isHidden) View.GONE else View.VISIBLE
-                premiumImageView.visibility = if (isHidden) View.GONE else View.VISIBLE
-                premiumTextView.visibility = if (isHidden) View.GONE else View.VISIBLE
-                separator.visibility = if (isHidden) View.GONE else View.VISIBLE
-            }
-        }
-    }
-
-    open fun onClick(view: View?) = Unit
-
-    open fun onBackPressed(): Boolean = false
-
     protected fun showCancellableProgressDialog(context: Context?) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            context?.let {
+            context?.let { context ->
                 try {
-                    mProgressDialog = Dialog(it)
-                    val inflate = LayoutInflater.from(it).inflate(R.layout.progress_dialog, null)
-                    mProgressDialog?.setContentView(inflate)
-                    mProgressDialog?.setCancelable(true)
-                    mProgressDialog?.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-                    mProgressDialog?.show()
+                    mProgressDialog = Dialog(context)
+                    val inflate = LayoutInflater.from(context).inflate(R.layout.progress_dialog, null)
+                    val view: View = inflate.findViewById(R.id.container)
+                    view.setOnClickListener { mProgressDialog?.dismiss() }
+                    mProgressDialog?.apply {
+                        setContentView(inflate)
+                        setCancelable(true)
+                        window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                    }?.show()
                 } catch (e: Exception) {
                     Log.e(TAG, "showCancellableProgressDialog: ${e.message}", e)
                 }
@@ -178,6 +170,17 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                         "Exception Logs" to e.toString()
                     )
                 )
+            }
+        }
+    }
+
+    open fun hideBottomNavigationView(isHidden: Boolean) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            mActivity?.run {
+                bottomNavigationView.visibility = if (isHidden) View.GONE else View.VISIBLE
+                premiumImageView.visibility = if (isHidden) View.GONE else View.VISIBLE
+                premiumTextView.visibility = if (isHidden) View.GONE else View.VISIBLE
+                separator.visibility = if (isHidden) View.GONE else View.VISIBLE
             }
         }
     }
@@ -535,7 +538,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         setOnDismissListener {
             Handler(Looper.getMainLooper()).postDelayed(
                 { hideSoftKeyboard() },
-                Constants.TIMER_INTERVAL
+                Constants.TIMER_DELAY
             )
         }
     }
@@ -1088,13 +1091,9 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                                 if (isNotEmpty(str)) errorTextView.visibility = View.GONE
                             }
 
-                            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                                Log.d(TAG, "beforeTextChanged: do nothing")
-                            }
+                            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
 
-                            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                                Log.d(TAG, "onTextChanged: do nothing")
-                            }
+                            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
 
                         })
                         if (isError) {
@@ -1675,13 +1674,9 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                                 }
                             }
 
-                            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                                Log.d(TAG, "beforeTextChanged: $p0")
-                            }
+                            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
 
-                            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                                Log.d(TAG, "onTextChanged: $p0")
-                            }
+                            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
 
                         })
                         closeImageView.setOnClickListener { this@apply.dismiss() }

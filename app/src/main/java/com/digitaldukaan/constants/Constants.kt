@@ -6,13 +6,15 @@ class Constants {
         const val OTP_SUCCESS_TIMER                             = 500L
         const val LOCATION_REQUEST_CODE                         = 1001
         const val BACK_PRESS_INTERVAL                           = 2_000L
-        const val SHINE_ANIMATION_INTERVAL                      = 2_000L
-        const val STORE_CREATION_PROGRESS_ANIMATION_INTERVAL    = 5_000L
-        const val RESEND_OTP_TIMER                              = 30_000L
-        const val AUTO_DISMISS_PROGRESS_DIALOG_TIMER            = 1_000L
-        const val TIMER_INTERVAL                                = 500L
-        const val ORDER_DELAY_INTERVAL                          = 150L
-        const val TOOL_TIP_TIMER_INTERVAL                       = 3_000L
+        const val TIMER_SHINE_ANIMATION                         = 2_000L
+        const val TIMER_STORE_CREATION_PROGRESS_ANIMATION       = 5_000L
+        const val TIMER_RESEND_OTP                              = 30_000L
+        const val TIMER_AUTO_DISMISS_PROGRESS_DIALOG            = 1_000L
+        const val TIMER_DELAY                                   = 500L
+        const val TIMER_ORDER_DELAY                             = 150L
+        const val TIMER_TOOL_TIP                                = 3_000L
+        const val TIMER_ARROW_ANIMATION                         = 250L
+        const val TIMER_MANAGE_INVENTORY_SCROLL                 = 1500L
         //REQUEST_CODE
         const val CREDENTIAL_PICKER_REQUEST                     = 1001
         const val IMAGE_PICK_REQUEST_CODE                       = 1002
@@ -223,7 +225,7 @@ class Constants {
         const val NAV_BAR_PREMIUM                               = 3
         const val NAV_BAR_MARKETING                             = 4
         const val NAV_BAR_SETTINGS                              = 5
-        //NAV_PAGE
+        //PERMISSION_MAP_KEYS
         const val PAGE_ORDER                                    = "page_order"
         const val PAGE_CATALOG                                  = "page_catalog"
         const val PAGE_PREMIUM                                  = "page_premium"
@@ -235,11 +237,15 @@ class Constants {
         const val LANDING_CARDS                                 = "landing_cards"
         const val MY_SHORTCUTS                                  = "my_shortcuts"
         const val PREMIUM_USER                                  = "premium_user"
+        const val MANAGE_INVENTORY                              = "managed_inventory"
         //BILL_TYPE
         const val BILL_TYPE_PDF                                 = "pdf"
         //STAFF_INVITATION_CODE
         const val STAFF_INVITATION_CODE_EXIT                    = 0
         const val STAFF_INVITATION_CODE_ACCEPT                  = 1
         const val STAFF_INVITATION_CODE_REJECT                  = 2
+        //MANAGE_INVENTORY
+        const val INVENTORY_DISABLE                             = 0
+        const val INVENTORY_ENABLE                              = 1
     }
 }

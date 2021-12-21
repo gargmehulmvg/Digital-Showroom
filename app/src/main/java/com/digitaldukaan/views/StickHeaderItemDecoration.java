@@ -8,16 +8,16 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.digitaldukaan.interfaces.StickyHeaderInterface;
+import com.digitaldukaan.interfaces.IStickyHeaderInterface;
 
 import org.jetbrains.annotations.NotNull;
 
 public class StickHeaderItemDecoration extends RecyclerView.ItemDecoration {
 
-    private final StickyHeaderInterface mListener;
+    private final IStickyHeaderInterface mListener;
     private int mStickyHeaderHeight;
 
-    public StickHeaderItemDecoration(@NonNull StickyHeaderInterface listener) {
+    public StickHeaderItemDecoration(@NonNull IStickyHeaderInterface listener) {
         mListener = listener;
     }
 

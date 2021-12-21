@@ -478,7 +478,7 @@ fun startShinningAnimation(view: View) {
             }
             view.startAnimation(animation)
         }
-    },Constants.SHINE_ANIMATION_INTERVAL, Constants.SHINE_ANIMATION_INTERVAL, TimeUnit.MILLISECONDS)
+    },Constants.TIMER_SHINE_ANIMATION, Constants.TIMER_SHINE_ANIMATION, TimeUnit.MILLISECONDS)
 }
 
 fun getToolTipBalloon(mContext: Context?, text: String? = "Sample Testing", arrowPosition: Float = 0.5f): Balloon? {
@@ -496,7 +496,7 @@ fun getToolTipBalloon(mContext: Context?, text: String? = "Sample Testing", arro
             setTextColorResource(R.color.black)
             setBackgroundColorResource(R.color.tooltip_background)
             setBalloonAnimation(BalloonAnimation.CIRCULAR)
-            setAutoDismissDuration(Constants.TOOL_TIP_TIMER_INTERVAL)
+            setAutoDismissDuration(Constants.TIMER_TOOL_TIP)
         }
     }
     return null

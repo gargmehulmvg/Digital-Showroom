@@ -38,9 +38,10 @@ class MasterCatalogItemsConfirmationAdapter(
         LayoutInflater.from(parent.context).inflate(R.layout.master_catalog_confirmation_item, parent, false)
     )
         view.priceEditText.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
 
-            override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {}
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
 
             override fun afterTextChanged(editable: Editable) {
                 val str = editable.toString()
