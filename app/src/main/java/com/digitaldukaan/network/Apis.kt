@@ -141,17 +141,9 @@ interface Apis {
     suspend fun searchImagesFromBing(@Query("search_text") searchText: String, @Query("store_id") storeId: String) : Response<ImagesSearchResponse>
 
     /* ----------------------       Marketing         ---------------------- */
-    @GET("api/dotk/vm1/products/getItemsBasicDetailsByStoreId")
-    suspend fun getItemsBasicDetailsByStoreId(): Response<CommonApiResponse>
 
     @GET("api/dotk/vm1/marketing/getTemplatesBackground/{id}")
     suspend fun getSocialMediaTemplateBackgrounds(@Path("id") id: String): Response<CommonApiResponse>
-
-    @GET("api/dotk/vm1/products/getItemsBasicDetails/{id}")
-    suspend fun getProductsByCategoryId(@Path("id") id: Int): Response<CommonApiResponse>
-
-    @GET("api/dotk/vm1/products/getUserCategories")
-    suspend fun getProductsCategories(): Response<CommonApiResponse>
 
     @GET("api/dotk/vm1/marketing/getSuggestedDomainsInfo")
     suspend fun getMarketingSuggestedDomains(): Response<CommonApiResponse>
@@ -181,6 +173,16 @@ interface Apis {
     suspend fun generateProductStorePdf(): Response<CommonApiResponse>
 
     /* ----------------------       Products         ---------------------- */
+
+    @GET("api/dotk/vm1/products/getItemsBasicDetailsByStoreId")
+    suspend fun getItemsBasicDetailsByStoreId(): Response<CommonApiResponse>
+
+    @GET("api/dotk/vm1/products/getItemsBasicDetails/{id}")
+    suspend fun getProductsByCategoryId(@Path("id") id: Int): Response<CommonApiResponse>
+
+    @GET("api/dotk/vm1/products/getUserCategories")
+    suspend fun getProductsCategories(): Response<CommonApiResponse>
+
     @POST("api/dotk/vm1/products/shareStore")
     suspend fun getProductShareStoreData(): Response<CommonApiResponse>
 
@@ -193,7 +195,10 @@ interface Apis {
     @GET("api/dotk/vm1/products/getItemInfo/{itemId}")
     suspend fun getItemInfo(@Path("itemId") itemId: Int): Response<CommonApiResponse>
 
-    @POST("api/dotk/vm1/products/setItem")
+    @POST("api/dotk/vm1/products/quickUpdateItem")
+    suspend fun quickUpdateItemInventory(@Body request: UpdateItemInventoryRequest): Response<CommonApiResponse>
+
+    @POST("api/dotk/vm1/products/setItemV2")
     suspend fun setItem(@Body request: AddProductRequest): Response<CommonApiResponse>
 
     @POST("api/dotk/vm1/products/searchItems")

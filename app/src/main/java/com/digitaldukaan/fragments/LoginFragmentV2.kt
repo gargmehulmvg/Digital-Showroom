@@ -88,13 +88,10 @@ class LoginFragmentV2 : BaseFragment(), ILoginServiceInterface {
         setupViewPager()
         mobileNumberEditText?.apply {
             addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                    Log.d(TAG, "beforeTextChanged: mobileNumberEditText")
-                }
 
-                override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                    Log.d(TAG, "onTextChanged: mobileNumberEditText")
-                }
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
 
                 override fun afterTextChanged(editable: Editable?) {
                     mMobileNumber = editable?.toString() ?: ""
@@ -287,7 +284,7 @@ class LoginFragmentV2 : BaseFragment(), ILoginServiceInterface {
         }
 
     override fun onDestroy() {
-        mViewPagerTimer?.cancel()
+        if (false == mActivity?.isDestroyed) mViewPagerTimer?.cancel()
         super.onDestroy()
     }
 

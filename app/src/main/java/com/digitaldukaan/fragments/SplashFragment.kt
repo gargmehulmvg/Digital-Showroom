@@ -56,7 +56,7 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
                 return@postDelayed
             }
             mSplashService.getStaticData("1")
-        }, Constants.TIMER_INTERVAL)
+        }, Constants.TIMER_DELAY)
         fetchContactsIfPermissionGranted()
         mSplashService.setSplashServiceInterface(this)
         if (!isInternetConnectionAvailable(mActivity)) return else checkStaffInvite()

@@ -283,7 +283,7 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
                     behavior.state = BottomSheetBehavior.STATE_EXPANDED
                     window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
                     setOnDismissListener {
-                        Handler(Looper.getMainLooper()).postDelayed({ hideSoftKeyboard() }, Constants.TIMER_INTERVAL)
+                        Handler(Looper.getMainLooper()).postDelayed({ hideSoftKeyboard() }, Constants.TIMER_DELAY)
                         if (!mIsItemSelectedFromBottomSheet) mActivity?.onBackPressed()
                     }
                     setContentView(view)
@@ -303,13 +303,10 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
                         editText.hint = mMarketingPageInfoResponse?.marketingStaticTextResponse?.hint_search_product
                         val categoryProductAdapter = CategoryProductAdapter(mActivity, mMarketingPageInfoResponse?.marketingStaticTextResponse, mProductCategoryCombineList, this@EditSocialMediaTemplateFragment)
                         editText.addTextChangedListener(object : TextWatcher {
-                            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                                Log.d(TAG, "beforeTextChanged: do nothing")
-                            }
 
-                            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                                Log.d(TAG, "onTextChanged: do nothing")
-                            }
+                            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+
+                            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
 
                             override fun afterTextChanged(editable: Editable?) {
                                 val str = editable?.toString() ?: ""
@@ -513,7 +510,7 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
                 Handler(Looper.getMainLooper()).postDelayed({
                     nestedScrollView?.scrollTo(0, 150)
                     stopProgress()
-                }, Constants.AUTO_DISMISS_PROGRESS_DIALOG_TIMER)
+                }, Constants.TIMER_AUTO_DISMISS_PROGRESS_DIALOG)
                 screenshotContainer?.let { v ->
                     val originalBitmap = getBitmapFromView(v, mActivity)
                     originalBitmap?.let { bitmap -> shareOnWhatsApp("Order From - ${mMarketingPageInfoResponse?.marketingStoreInfo?.domain}", bitmap) }
@@ -529,7 +526,7 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
                 Handler(Looper.getMainLooper()).postDelayed({
                     nestedScrollView?.scrollTo(0, 150)
                     stopProgress()
-                }, Constants.AUTO_DISMISS_PROGRESS_DIALOG_TIMER)
+                }, Constants.TIMER_AUTO_DISMISS_PROGRESS_DIALOG)
                 screenshotContainer?.let { v ->
                     val originalBitmap = getBitmapFromView(v, mActivity)
                     originalBitmap?.let { bitmap -> shareData("Order From - ${mMarketingPageInfoResponse?.marketingStoreInfo?.domain}", bitmap) }
