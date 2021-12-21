@@ -454,12 +454,17 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                         manageInventory = selectedVariantObject.optInt(WebViewBridge.MANAGED_INVENTORY)
                         isAvailable = selectedVariantObject.optInt(WebViewBridge.AVAILABLE)
                         if (1 == isAvailable) {
-                            if (Constants.TEXT_YES == PrefsManager.getStringDataFromSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN_STOCK)) {
-                                val request = UpdateStockRequest(selectedItemObject.optInt(WebViewBridge.ID), 0, selectedVariantObject.optInt(WebViewBridge.VARIANT_ID))
-                                mService?.updateStock(request)
-                            } else showOutOfStockDialog(selectedItemObject, selectedVariantObject.optInt(WebViewBridge.VARIANT_ID), Constants.INVENTORY_ENABLE == manageInventory)
+                            if (Constants.INVENTORY_DISABLE == manageInventory) {
+                                if (Constants.TEXT_YES == PrefsManager.getStringDataFromSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN_STOCK)) {
+                                    val request = UpdateStockRequest(selectedItemObject.optInt(WebViewBridge.ID), 0, selectedVariantObject.optInt(WebViewBridge.VARIANT_ID))
+                                    mService?.updateStock(request)
+                                } else showOutOfStockDialog(selectedItemObject, selectedVariantObject.optInt(WebViewBridge.VARIANT_ID), Constants.INVENTORY_ENABLE == manageInventory)
+                            }
                         } else {
-                            showUpdateInventoryBottomSheet(selectedItemObject.optInt(WebViewBridge.ID), selectedVariantObject.optInt(WebViewBridge.VARIANT_ID), selectedVariantObject.optInt(WebViewBridge.AVAILABLE_QUANTITY))
+                            if (Constants.INVENTORY_DISABLE == manageInventory) {
+                                val request = UpdateStockRequest(selectedItemObject.optInt(WebViewBridge.ID), 1, selectedVariantObject.optInt(WebViewBridge.VARIANT_ID))
+                                mService?.updateStock(request)
+                            } else showUpdateInventoryBottomSheet(selectedItemObject.optInt(WebViewBridge.ID), selectedVariantObject.optInt(WebViewBridge.VARIANT_ID), selectedVariantObject.optInt(WebViewBridge.AVAILABLE_QUANTITY))
                         }
 
                     }
