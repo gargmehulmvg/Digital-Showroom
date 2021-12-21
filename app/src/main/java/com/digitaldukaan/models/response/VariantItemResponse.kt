@@ -3,14 +3,16 @@ package com.digitaldukaan.models.response
 import com.google.gson.annotations.SerializedName
 
 data class VariantItemResponse(
-    @SerializedName("variant_id")       var variantId: Int,
-    @SerializedName("variant_name")     var variantName: String?,
-    @SerializedName("price")            var price: Double,
-    @SerializedName("discounted_price") var discountedPrice: Double,
-    @SerializedName("status")           var status: Int,
-    @SerializedName("master_id")        var masterId: Int?,
-    @SerializedName("available")        var available: Int,
-    @SerializedName("images")           var variantImagesList: ArrayList<VariantItemImageResponse>?,
+    @SerializedName("variant_id")               var variantId: Int,
+    @SerializedName("variant_name")             var variantName: String?,
+    @SerializedName("price")                    var price: Double,
+    @SerializedName("discounted_price")         var discountedPrice: Double,
+    @SerializedName("status")                   var status: Int,
+    @SerializedName("master_id")                var masterId: Int?,
+    @SerializedName("available")                var available: Int,
+    @SerializedName("images")                   var variantImagesList: ArrayList<VariantItemImageResponse>?,
+    @SerializedName("managed_inventory")        var managedInventory: Int,
+    @SerializedName("available_quantity")       var availableQuantity: Int,
     var isVariantNameEmptyError: Boolean
 )
 

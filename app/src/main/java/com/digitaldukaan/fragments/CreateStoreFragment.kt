@@ -54,7 +54,7 @@ class CreateStoreFragment : BaseFragment(), ICreateStoreServiceInterface {
         progressAnimation?.apply {
             setAutoCancel(true)
             repeatCount = 1
-            duration = Constants.STORE_CREATION_PROGRESS_ANIMATION_INTERVAL
+            duration = Constants.TIMER_STORE_CREATION_PROGRESS_ANIMATION
         }
         progressAnimation?.addListener(object : Animator.AnimatorListener {
             override fun onAnimationRepeat(animation: Animator?) {

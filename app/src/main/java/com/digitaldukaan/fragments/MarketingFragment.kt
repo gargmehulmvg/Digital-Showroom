@@ -95,7 +95,13 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
         }
     }
 
-    override fun onToolbarSideIconClicked() = openWebViewFragment(this, getString(R.string.help), WebViewUrls.WEB_VIEW_HELP, Constants.SETTINGS)
+    override fun onToolbarSideIconClicked() {
+        try {
+            if (this.isAdded) openWebViewFragment(this, getString(R.string.help), WebViewUrls.WEB_VIEW_HELP, Constants.SETTINGS)
+        } catch (e: Exception) {
+            Log.e(TAG, "onToolbarSideIconClicked: ${e.message}", e)
+        }
+    }
 
     override fun onMarketingErrorResponse(e: Exception) = exceptionHandlingForAPIResponse(e)
 

@@ -5,17 +5,17 @@
     android:viewportHeight="30">
   <path
       android:pathData="M18.396,23.125L5.613,23.125a2,2 0,0 1,-2 -2L3.613,9.114a2,2 0,0 1,2 -2l2.919,0 1.15,-2.3A0.669,0.669 0,0 1,10.278 4.439h8.009a0.666,0.666 0,0 1,0.6 0.368l1.151,2.3h2.923a2,2 0,0 1,2 2l0,7.184a0.6,0.6 0,0 0,-0.087 -0.006L23.633,16.285L23.633,9.109A0.672,0.672 0,0 0,22.958 8.439L19.622,8.439a0.663,0.663 0,0 1,-0.6 -0.369l-1.151,-2.3L10.69,5.77l-1.149,2.3a0.664,0.664 0,0 1,-0.6 0.369L5.613,8.446a0.669,0.669 0,0 0,-0.666 0.668L4.947,21.123A0.669,0.669 0,0 0,5.613 21.791L18.277,21.791v0.979a0.582,0.582 0,0 0,0.118 0.353ZM14.291,19.789a5.339,5.339 0,1 1,5.338 -5.339A5.346,5.346 0,0 1,14.291 19.789ZM14.291,10.446a4,4 0,1 0,4 4A4.009,4.009 0,0 0,14.291 10.445Z"
-      android:fillColor="#1e9848"/>
+      android:fillColor="@color/inventory_blue"/>
   <path
       android:pathData="M24.253,18.921v7.172"
       android:strokeWidth="1.5"
-      android:fillColor="#1e9848"
-      android:strokeColor="#1e9848"
+      android:fillColor="@color/inventory_blue"
+      android:strokeColor="@color/inventory_blue"
       android:strokeLineCap="round"/>
   <path
       android:pathData="M27.838,22.506L20.668,22.506"
       android:strokeWidth="1.5"
-      android:fillColor="#1e9848"
-      android:strokeColor="#1e9848"
+      android:fillColor="@color/inventory_blue"
+      android:strokeColor="@color/inventory_blue"
       android:strokeLineCap="round"/>
 </vector>
