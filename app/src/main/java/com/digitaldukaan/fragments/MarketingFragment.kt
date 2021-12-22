@@ -36,7 +36,9 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import kotlinx.android.synthetic.main.bottom_sheet_marketing_know_more.*
 import kotlinx.android.synthetic.main.layout_marketing_fragment.*
+import kotlinx.android.synthetic.main.layout_marketing_fragment.domainTextView
 
 class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingServiceInterface, LocationListener,
     IAppSettingsItemClicked, IMarketingMoreOptionsItemClicked {
@@ -45,6 +47,8 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
     private var mCurrentLatitude = 0.0
     private var mCurrentLongitude = 0.0
     private var mKnowMoreCustomDomainRecyclerView: RecyclerView? = null
+    private var searchDomainContainerView: View? = null
+    private var mSearchDomainTextView: TextView? = null
     private var mKnowMoreBottomSheetDialog: BottomSheetDialog? = null
     private var mProgressBarView: View? = null
     private var mMarketingPageInfoResponse: MarketingPageInfoResponse? = null
@@ -334,6 +338,19 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
             if (response.mIsSuccessStatus) {
                 val listType = object : TypeToken<ArrayList<MarketingSuggestedDomainItemResponse?>>() {}.type
                 val list = Gson().fromJson<ArrayList<MarketingSuggestedDomainItemResponse?>>(response.mCommonDataStr, listType)
+                if (true == list?.isEmpty()) {
+                    searchDomainContainerView?.apply {
+                        visibility = View.VISIBLE
+                        setOnClickListener {
+                            mKnowMoreBottomSheetDialog?.dismiss()
+                            if (Constants.NEW_RELEASE_TYPE_WEBVIEW == mMarketingPageInfoResponse?.searchCta?.action) {
+                                val url = "${BuildConfig.WEB_VIEW_URL}${mMarketingPageInfoResponse?.searchCta?.pageUrl}?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&${AFInAppEventParameterName.CHANNEL}=${AFInAppEventParameterName.LANDING_PAGE}"
+                                openWebViewFragmentV3(this@MarketingFragment, "", url)
+                            }
+                        }
+                    }
+                    mSearchDomainTextView?.text = mMarketingPageInfoResponse?.marketingStaticTextResponse?.text_search
+                } else searchDomainContainerView?.visibility = View.GONE
                 mKnowMoreCustomDomainRecyclerView?.visibility = View.VISIBLE
                 mKnowMoreCustomDomainRecyclerView?.apply {
                     layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
@@ -599,10 +616,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
         try {
             mActivity?.let {
                 mKnowMoreBottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
-                val view = LayoutInflater.from(it).inflate(
-                    R.layout.bottom_sheet_marketing_know_more,
-                    it.findViewById(R.id.bottomSheetContainer)
-                )
+                val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_marketing_know_more, it.findViewById(R.id.bottomSheetContainer))
                 mKnowMoreBottomSheetDialog?.apply {
                     setContentView(view)
                     view.run {
@@ -613,9 +627,9 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                         val offerMessageTextView: TextView = findViewById(R.id.offerMessageTextView)
                         val expiryMessageTextView: TextView = findViewById(R.id.expiryMessageTextView)
                         mKnowMoreCustomDomainRecyclerView = findViewById(R.id.recyclerView)
-                        bottomSheetClose.setOnClickListener {
-                            mKnowMoreBottomSheetDialog?.dismiss()
-                        }
+                        searchDomainContainerView = findViewById(R.id.searchDomainContainer)
+                        mSearchDomainTextView = findViewById(R.id.searchDomainTextView)
+                        bottomSheetClose.setOnClickListener { mKnowMoreBottomSheetDialog?.dismiss() }
                         mProgressBarView?.visibility = View.VISIBLE
                         mService?.getMarketingSuggestedDomains()
                         headingTextView.text = itemResponse?.headingYourDomain
@@ -630,9 +644,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
         }
     }
 
-    override fun onAppSettingItemClicked(subPagesResponse: SubPagesResponse) {
-        Log.d(TAG, "onAppSettingItemClicked: ${subPagesResponse.mAction}")
-    }
+    override fun onAppSettingItemClicked(subPagesResponse: SubPagesResponse) = Unit
 
     override fun onLockedStoreShareSuccessResponse(lockedShareResponse: LockedStoreShareResponse) = showLockedStoreShareBottomSheet(lockedShareResponse)
 

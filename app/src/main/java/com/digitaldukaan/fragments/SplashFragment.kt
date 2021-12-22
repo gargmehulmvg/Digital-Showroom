@@ -44,6 +44,7 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
         FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
         mContentView = inflater.inflate(R.layout.layout_splash_fragment, container, false)
         hideBottomNavigationView(true)
+        initializeStaticInstances()
         return mContentView
     }
 
