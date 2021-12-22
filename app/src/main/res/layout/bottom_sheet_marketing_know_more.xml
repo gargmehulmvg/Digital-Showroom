@@ -127,7 +127,7 @@
             android:fontFamily="@font/roboto_medium"
             android:paddingTop="@dimen/_8sdp"
             android:paddingBottom="@dimen/_8sdp"
-            android:text="@string/search_domain"
+            tools:text="@string/search_domain"
             android:textColor="@color/white"
             android:textSize="@dimen/_10sdp"
             app:layout_constraintBottom_toBottomOf="parent"

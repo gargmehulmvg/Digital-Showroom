@@ -22,13 +22,14 @@ class RetrofitApi {
     private var mAppAnalyticsService: Apis? = null
 
     companion object {
-        private const val TAG = "RetrofitApi"
-        private const val APP_OS_VALUE = "android_native"
-        private const val APP_OS_KEY = "app_os"
-        private const val AUTH_TOKEN = "auth_token"
-        private const val SESSION_ID = "session_id"
-        private const val INSTALL_ID = "install_id"
-        private const val APP_VERSION = "app_version"
+        private const val TAG                   = "RetrofitApi"
+        private const val APP_OS_VALUE          = "android_native"
+        private const val APP_OS_KEY            = "app_os"
+        private const val AUTH_TOKEN            = "auth_token"
+        private const val SESSION_ID            = "session_id"
+        private const val INSTALL_ID            = "install_id"
+        private const val APP_VERSION           = "app_version"
+        private const val APP_VERSION_CODE      = "app_version_code"
     }
 
     fun getServerCallObject(): Apis? {
@@ -111,6 +112,7 @@ class RetrofitApi {
                 addHeader(INSTALL_ID, PrefsManager.getStringDataFromSharedPref(PrefsManager.APP_INSTANCE_ID))
                 addHeader(APP_OS_KEY, APP_OS_VALUE)
                 addHeader(APP_VERSION, BuildConfig.VERSION_NAME)
+                addHeader(APP_VERSION_CODE, "${BuildConfig.VERSION_CODE}")
             }.build()
         } catch (e: Exception) {
             Log.e(TAG, "getNewRequest: ${e.message}", e)

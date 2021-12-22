@@ -48,6 +48,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
     private var mCurrentLongitude = 0.0
     private var mKnowMoreCustomDomainRecyclerView: RecyclerView? = null
     private var searchDomainContainerView: View? = null
+    private var mSearchDomainTextView: TextView? = null
     private var mKnowMoreBottomSheetDialog: BottomSheetDialog? = null
     private var mProgressBarView: View? = null
     private var mMarketingPageInfoResponse: MarketingPageInfoResponse? = null
@@ -348,7 +349,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                             }
                         }
                     }
-                    searchDomainTextView?.text = mMarketingPageInfoResponse?.marketingStaticTextResponse?.text_search
+                    mSearchDomainTextView?.text = mMarketingPageInfoResponse?.marketingStaticTextResponse?.text_search
                 } else searchDomainContainerView?.visibility = View.GONE
                 mKnowMoreCustomDomainRecyclerView?.visibility = View.VISIBLE
                 mKnowMoreCustomDomainRecyclerView?.apply {
@@ -627,6 +628,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                         val expiryMessageTextView: TextView = findViewById(R.id.expiryMessageTextView)
                         mKnowMoreCustomDomainRecyclerView = findViewById(R.id.recyclerView)
                         searchDomainContainerView = findViewById(R.id.searchDomainContainer)
+                        mSearchDomainTextView = findViewById(R.id.searchDomainTextView)
                         bottomSheetClose.setOnClickListener { mKnowMoreBottomSheetDialog?.dismiss() }
                         mProgressBarView?.visibility = View.VISIBLE
                         mService?.getMarketingSuggestedDomains()
