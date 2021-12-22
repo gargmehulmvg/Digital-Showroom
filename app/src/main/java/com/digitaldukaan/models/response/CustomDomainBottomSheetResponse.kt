@@ -37,7 +37,7 @@ data class CustomDomainInfoTextResponse(
 
 data class CustomDomainBottomSheetStaticTextResponse(
     @SerializedName("heading_last_step")                    var heading_last_step: String,
-    @SerializedName("subheading_budiness_needs_domain")     var subheading_budiness_needs_domain: String,
+    @SerializedName("subheading_budiness_needs_domain")     var subheading_business_needs_domain: String,
     @SerializedName("text_cant_find")                       var text_cant_find: String,
     @SerializedName("text_more_suggestions")                var text_more_suggestions: String,
     @SerializedName("text_best_pick_for_you")               var text_best_pick_for_you: String,

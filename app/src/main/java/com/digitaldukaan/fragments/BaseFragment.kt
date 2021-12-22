@@ -65,6 +65,7 @@ import id.zelory.compressor.Compressor
 import id.zelory.compressor.constraint.quality
 import kotlinx.android.synthetic.main.activity_main2.*
 import kotlinx.android.synthetic.main.bottom_sheet_custom_domain_selection.view.*
+import kotlinx.android.synthetic.main.bottom_sheet_marketing_know_more.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
@@ -2257,7 +2258,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                             val subHeadingTextView: TextView = findViewById(R.id.subHeadingTextView)
                             val searchMessageTextView: TextView = findViewById(R.id.searchMessageTextView)
                             val moreSuggestionsTextView: TextView = findViewById(R.id.moreSuggestionsTextView)
-                            subHeadingTextView.text = staticText.subheading_budiness_needs_domain
+                            subHeadingTextView.text = staticText.subheading_business_needs_domain
                             headingTextView2.text = staticText.heading_last_step
                             if (hideTopView) headingTextView2.text = null
                             moreSuggestionsTextView.text = staticText.text_more_suggestions
@@ -2270,6 +2271,33 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                                     openWebViewFragmentV3(this@BaseFragment, "", url)
                                 }
                             }
+                        }
+                        if (null == customDomainBottomSheetResponse.primaryDomain) {
+                            val searchDomainTextView: TextView = findViewById(R.id.searchDomainTextView)
+                            val searchDomainContainer: View = findViewById(R.id.searchDomainContainer)
+                            val container: View = findViewById(R.id.container)
+                            val searchTextView: View = findViewById(R.id.searchTextView)
+                            val searchMessageTextView: View = findViewById(R.id.searchMessageTextView)
+                            val moreSuggestionsTextView: View = findViewById(R.id.moreSuggestionsTextView)
+                            val suggestedDomainRecyclerView: View = findViewById(R.id.suggestedDomainRecyclerView)
+                            with(View.GONE) {
+                                container.visibility = this
+                                searchTextView.visibility = this
+                                searchMessageTextView.visibility = this
+                                moreSuggestionsTextView.visibility = this
+                                suggestedDomainRecyclerView.visibility = this
+                            }
+                            searchDomainContainer.apply {
+                                visibility = View.VISIBLE
+                                setOnClickListener {
+                                    bottomSheetDialog.dismiss()
+                                    if (Constants.NEW_RELEASE_TYPE_WEBVIEW == customDomainBottomSheetResponse.searchCta?.action) {
+                                        val url = "${BuildConfig.WEB_VIEW_URL}${customDomainBottomSheetResponse.searchCta?.pageUrl}?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&${AFInAppEventParameterName.CHANNEL}=${AFInAppEventParameterName.LANDING_PAGE}"
+                                        openWebViewFragmentV3(this@BaseFragment, "", url)
+                                    }
+                                }
+                            }
+                            searchDomainTextView.text = customDomainBottomSheetResponse.staticText?.text_search
                         }
                         customDomainBottomSheetResponse.primaryDomain?.let { primaryDomain ->
                             val premiumHeadingTextView: TextView = findViewById(R.id.premiumHeadingTextView)
@@ -2290,8 +2318,8 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                             originalPriceTextView.showStrikeOffText()
                             buyNowTextView.apply {
                                 text = primaryDomain.cta?.text
-                                setTextColor(Color.parseColor(primaryDomain.cta?.textColor))
-                                setBackgroundColor(Color.parseColor(primaryDomain.cta?.textBg))
+                                if (isNotEmpty(primaryDomain.cta?.textColor)) setTextColor(Color.parseColor(primaryDomain.cta?.textColor))
+                                if (isNotEmpty(primaryDomain.cta?.textBg)) setBackgroundColor(Color.parseColor(primaryDomain.cta?.textBg))
                                 setOnClickListener {
                                     bottomSheetDialog.dismiss()
                                     if (Constants.NEW_RELEASE_TYPE_WEBVIEW == primaryDomain.cta?.action) {

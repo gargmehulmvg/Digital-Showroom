@@ -61,8 +61,7 @@ class LandingPageCardsAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LandingPageCardsViewHolder =
-        LandingPageCardsViewHolder(LayoutInflater.from(parent.context)
-            .inflate(R.layout.landing_page_cards_item, parent, false))
+        LandingPageCardsViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.landing_page_cards_item, parent, false))
 
     override fun getItemCount(): Int = mItemList?.size ?: 0
 
@@ -158,26 +157,19 @@ class LandingPageCardsAdapter(
                     zeroOrderItemsResponse.suggestedDomainsList?.add(PrimaryDomainItemResponse("", "","","","", "","",null,null))
                     adapter = LandingPageCustomDomainAdapter(mFragment, StaticInstances.sSuggestedDomainsList, object : ILandingPageAdapterListener {
 
-                        override fun onLandingPageAdapterIsPrimaryDetected(position: Int, item: ZeroOrderItemsResponse?) {
-                            Log.d(TAG, "onLandingPageAdapterIsPrimaryDetected: ")
-                        }
+                        override fun onLandingPageAdapterIsPrimaryDetected(position: Int, item: ZeroOrderItemsResponse?) = Unit
 
                         override fun onLandingPageAdapterCustomDomainApplyItemClicked(item: PrimaryDomainItemResponse?) {
                             mListener?.onLandingPageAdapterCustomDomainApplyItemClicked(item)
                         }
 
-                        override fun onLandingPageAdapterAddProductItemClicked() {
-                            Log.d(TAG, "onLandingPageAdapterAddProductItemClicked: ")
-                        }
+                        override fun onLandingPageAdapterAddProductItemClicked() = Unit
 
-                        override fun onLandingPageAdapterCtaClicked(item: ZeroOrderItemsResponse?) {
-                            Log.d(TAG, "onLandingPageAdapterCtaClicked: ")
-                        }
+                        override fun onLandingPageAdapterCtaClicked(item: ZeroOrderItemsResponse?) = Unit
 
                         override fun onLandingPageCustomCtaClicked(url: String?) {
                             mListener?.onLandingPageCustomCtaClicked(url)
                         }
-
 
                     })
                 }
