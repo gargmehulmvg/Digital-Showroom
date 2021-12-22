@@ -264,6 +264,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                 OrderFragment.sOrderPageInfoResponse = null
                 StaticInstances.sSuggestedDomainsListFetchedFromServer = false
                 StaticInstances.sSuggestedDomainsList = null
+                StaticInstances.sCustomDomainBottomSheetResponse = null
                 onRefresh()
             } else showToast(response.mMessage)
         }

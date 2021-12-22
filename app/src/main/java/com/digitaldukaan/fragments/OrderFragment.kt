@@ -540,6 +540,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                 StaticInstances.sSuggestedDomainsList = mLandingPageAdapterItem?.suggestedDomainsList
                 mLandingPageAdapter?.setItemToPosition(mLandingPageAdapterPosition, mLandingPageAdapterItem)
             } else {
+                StaticInstances.sCustomDomainBottomSheetResponse = null
                 StaticInstances.sSuggestedDomainsList = null
                 mLandingPageAdapter?.setItemToPosition(mLandingPageAdapterPosition, mLandingPageAdapterItem)
             }

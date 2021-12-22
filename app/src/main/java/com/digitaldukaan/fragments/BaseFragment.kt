@@ -2394,6 +2394,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     fun initializeStaticInstances() {
         StaticInstances.sSuggestedDomainsListFetchedFromServer = false
         StaticInstances.sSuggestedDomainsList = null
+        StaticInstances.sCustomDomainBottomSheetResponse = null
         StaticInstances.sPermissionHashMap = null
     }
 
