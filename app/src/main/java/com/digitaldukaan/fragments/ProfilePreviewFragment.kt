@@ -261,6 +261,10 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                 mStoreName = storeNameResponse.storeInfo.name
                 PrefsManager.storeStringDataInSharedPref(Constants.STORE_NAME, mStoreName)
                 showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
+                OrderFragment.sOrderPageInfoResponse = null
+                StaticInstances.sSuggestedDomainsListFetchedFromServer = false
+                StaticInstances.sSuggestedDomainsList = null
+                StaticInstances.sCustomDomainBottomSheetResponse = null
                 onRefresh()
             } else showToast(response.mMessage)
         }
