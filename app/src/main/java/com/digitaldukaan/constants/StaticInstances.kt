@@ -26,6 +26,7 @@ object StaticInstances {
     var sMyPaymentPageInfoResponse: MyPaymentsPageInfoResponse? = null
     var sCustomDomainBottomSheetResponse: CustomDomainBottomSheetResponse? = null
     var sSuggestedDomainsList: ArrayList<PrimaryDomainItemResponse>? = null
+    var sSuggestedDomainsListFetchedFromServer = false
     var sStaffInvitation: StaffInvitationResponse? = null
     var sPermissionHashMap: HashMap<String, Boolean>? = null
     var sMerchantMobileNumber: String = ""

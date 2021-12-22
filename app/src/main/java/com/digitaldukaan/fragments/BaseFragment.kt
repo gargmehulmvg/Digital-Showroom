@@ -2391,4 +2391,10 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         }
     }
 
+    fun initializeStaticInstances() {
+        StaticInstances.sSuggestedDomainsListFetchedFromServer = false
+        StaticInstances.sSuggestedDomainsList = null
+        StaticInstances.sPermissionHashMap = null
+    }
+
 }

@@ -82,7 +82,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
     private var mIsCustomDomainTopViewHide: Boolean = false
 
     companion object {
-        private var sOrderPageInfoResponse: OrderPageInfoResponse? = null
+        var sOrderPageInfoResponse: OrderPageInfoResponse? = null
         private var sOrderPageInfoStaticData: OrderPageStaticTextResponse? = null
         private var sAnalyticsResponse: AnalyticsResponse? = null
         private var sDoubleClickToExitStr: String? = ""
@@ -477,8 +477,10 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                     mLandingPageAdapterItem = item
                     when (item?.id) {
                         Constants.KEY_BUY_DOMAIN -> {
-                            if (isEmpty(StaticInstances.sSuggestedDomainsList))
+                            if (!StaticInstances.sSuggestedDomainsListFetchedFromServer) {
+                                StaticInstances.sSuggestedDomainsListFetchedFromServer = true
                                 mService?.getDomainSuggestionList(mActivity?.resources?.getInteger(R.integer.custom_domain_count) ?: 4)
+                            }
                         }
                     }
                 }
@@ -536,6 +538,9 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                 mLandingPageAdapterItem?.suggestedDomainsList = customDomainList
                 StaticInstances.sSuggestedDomainsList = ArrayList()
                 StaticInstances.sSuggestedDomainsList = mLandingPageAdapterItem?.suggestedDomainsList
+                mLandingPageAdapter?.setItemToPosition(mLandingPageAdapterPosition, mLandingPageAdapterItem)
+            } else {
+                StaticInstances.sSuggestedDomainsList = null
                 mLandingPageAdapter?.setItemToPosition(mLandingPageAdapterPosition, mLandingPageAdapterItem)
             }
         }

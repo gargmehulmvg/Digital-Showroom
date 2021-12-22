@@ -11,7 +11,6 @@ import com.digitaldukaan.R
 import com.digitaldukaan.adapters.AppSettingsAdapter
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
-import com.digitaldukaan.constants.StaticInstances
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.interfaces.IAppSettingsItemClicked
 import com.digitaldukaan.models.response.AccountStaticTextResponse
@@ -58,11 +57,6 @@ class AppSettingsFragment : BaseFragment(), IAppSettingsItemClicked {
         appVersionTextView?.text = versionStr
         versionStr = "${mAppSettingsResponseStaticData?.mStoreId} ${getStringDataFromSharedPref(Constants.STORE_ID)}"
         storeIdTextView?.text = versionStr
-    }
-
-    private fun initializeStaticInstances() {
-        StaticInstances.sSuggestedDomainsList = null
-        StaticInstances.sPermissionHashMap = null
     }
 
     private fun showLogoutDialog() {

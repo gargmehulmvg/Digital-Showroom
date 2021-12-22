@@ -146,7 +146,7 @@ class LandingPageCardsAdapter(
         when(zeroOrderItemsResponse?.id) {
             Constants.KEY_BUY_DOMAIN -> {
                 if (isEmpty(StaticInstances.sSuggestedDomainsList)) {
-                    progressBar.visibility = View.VISIBLE
+                    progressBar.visibility = if (StaticInstances.sSuggestedDomainsListFetchedFromServer) View.GONE else View.VISIBLE
                     messageRecyclerView.visibility = View.GONE
                 } else {
                     progressBar.visibility = View.GONE
