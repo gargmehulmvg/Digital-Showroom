@@ -115,7 +115,7 @@
                     android:textColor="@color/black"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/bottomSheetUpperContainerRecyclerView"
+                    app:layout_constraintTop_toBottomOf="@id/bottomSheetUpperContainerRecyclerView"
                     tools:text="No Domain Found!" />
 
                 <TextView
@@ -297,7 +297,7 @@
                 android:fontFamily="@font/roboto_medium"
                 android:padding="@dimen/_2sdp"
                 android:textSize="@dimen/_11sdp"
-                app:layout_constraintStart_toStartOf="@+id/container"
+                app:layout_constraintStart_toStartOf="@id/container"
                 app:layout_constraintTop_toBottomOf="@id/container"
                 tools:text="More Suggestions" />
 
@@ -310,7 +310,7 @@
                 android:orientation="vertical"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintTop_toBottomOf="@id/moreSuggestionsTextView"
-                tools:itemCount="5"
+                tools:itemCount="1"
                 tools:listitem="@layout/custom_domain_selection_item" />
 
             <TextView
@@ -322,7 +322,7 @@
                 android:padding="@dimen/_2sdp"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_9sdp"
-                app:layout_constraintStart_toStartOf="@+id/moreSuggestionsTextView"
+                app:layout_constraintStart_toStartOf="@id/moreSuggestionsTextView"
                 app:layout_constraintTop_toBottomOf="@id/suggestedDomainRecyclerView"
                 tools:text="Can’t find what you are looking for?" />
 
@@ -341,9 +341,59 @@
                 android:textColor="@color/black"
                 app:drawableStartCompat="@drawable/ic_search"
                 app:drawableTint="@color/black"
-                app:layout_constraintStart_toStartOf="@+id/moreSuggestionsTextView"
+                app:layout_constraintStart_toStartOf="@id/moreSuggestionsTextView"
                 app:layout_constraintTop_toBottomOf="@id/searchMessageTextView"
                 tools:text="Search" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/searchDomainContainer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ripple_curve_grey_black_background"
+                android:onClick="onClick"
+                android:layout_margin="@dimen/_20sdp"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/bottomSheetUpperContainer">
+
+                <ImageView
+                    android:id="@+id/searchImageImageView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:clickable="false"
+                    android:contentDescription="@string/image_view_content_description"
+                    android:paddingTop="@dimen/_8sdp"
+                    android:paddingBottom="@dimen/_8sdp"
+                    android:src="@drawable/ic_search"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@id/searchDomainTextView"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/searchDomainTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:layout_marginEnd="@dimen/_15sdp"
+                    android:clickable="false"
+                    android:fontFamily="@font/roboto_medium"
+                    android:paddingTop="@dimen/_8sdp"
+                    android:paddingBottom="@dimen/_8sdp"
+                    android:text="@string/search_domain"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_10sdp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.5"
+                    app:layout_constraintStart_toEndOf="@id/searchImageImageView"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 

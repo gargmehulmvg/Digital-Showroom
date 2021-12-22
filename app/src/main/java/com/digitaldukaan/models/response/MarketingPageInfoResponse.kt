@@ -3,28 +3,29 @@ package com.digitaldukaan.models.response
 import com.google.gson.annotations.SerializedName
 
 data class MarketingPageInfoResponse(
-    @SerializedName("store_share")              var marketingStoreShare: MarketingStoreShareResponse?,
-    @SerializedName("store_info")               var marketingStoreInfo: MarketingStoreInfoResponse?,
-    @SerializedName("static_text")              var marketingStaticTextResponse: MarketingStaticTextResponse?,
-    @SerializedName("more_options_list")        var marketingMoreOptionsList: ArrayList<MarketingMoreOptionsItemResponse?>,
-    @SerializedName("marketing_item_list")      var marketingItemList: ArrayList<MarketingCardsItemResponse?>,
-    @SerializedName("is_share_store_locked")    var isShareStoreLocked: Boolean,
-    @SerializedName("help_page")                var marketingHelpPage: HelpPageResponse?
+    @SerializedName("store_share")                              var marketingStoreShare: MarketingStoreShareResponse?,
+    @SerializedName("store_info")                               var marketingStoreInfo: MarketingStoreInfoResponse?,
+    @SerializedName("static_text")                              var marketingStaticTextResponse: MarketingStaticTextResponse?,
+    @SerializedName("more_options_list")                        var marketingMoreOptionsList: ArrayList<MarketingMoreOptionsItemResponse?>,
+    @SerializedName("marketing_item_list")                      var marketingItemList: ArrayList<MarketingCardsItemResponse?>,
+    @SerializedName("is_share_store_locked")                    var isShareStoreLocked: Boolean,
+    @SerializedName("help_page")                                var marketingHelpPage: HelpPageResponse?,
+    @SerializedName("search_cta")                               var searchCta: CTAItemResponse?
 )
 
 data class MarketingStoreShareResponse(
-    @SerializedName("heading")                  var heading: String?,
-    @SerializedName("left_icon_cdn")            var leftIconCdn: String?,
-    @SerializedName("right_icon_cdn")           var rightIconCdn: String?,
-    @SerializedName("right_icon_text")          var rightIconText: String?,
-    @SerializedName("domain_expiry_message")    var domainExpiryMessage: String?,
-    @SerializedName("domain_expiry_cdn")        var domainExpiryCdn: String?,
-    @SerializedName("heading_know_more")        var headingKnowMore: String?,
-    @SerializedName("domain")                   var domain: String?,
-    @SerializedName("domain_know_more")         var knowMore: MarketingDomainKnowMoreResponse?,
-    @SerializedName("is_enabled")               var isEnabled: Boolean,
-    @SerializedName("is_know_more_enable")      var isKnowMoreEnable: Boolean,
-    @SerializedName("is_clickable")             var isClickable: Boolean
+    @SerializedName("heading")                                  var heading: String?,
+    @SerializedName("left_icon_cdn")                            var leftIconCdn: String?,
+    @SerializedName("right_icon_cdn")                           var rightIconCdn: String?,
+    @SerializedName("right_icon_text")                          var rightIconText: String?,
+    @SerializedName("domain_expiry_message")                    var domainExpiryMessage: String?,
+    @SerializedName("domain_expiry_cdn")                        var domainExpiryCdn: String?,
+    @SerializedName("heading_know_more")                        var headingKnowMore: String?,
+    @SerializedName("domain")                                   var domain: String?,
+    @SerializedName("domain_know_more")                         var knowMore: MarketingDomainKnowMoreResponse?,
+    @SerializedName("is_enabled")                               var isEnabled: Boolean,
+    @SerializedName("is_know_more_enable")                      var isKnowMoreEnable: Boolean,
+    @SerializedName("is_clickable")                             var isClickable: Boolean
 )
 
 data class MarketingStaticTextResponse(
@@ -50,7 +51,8 @@ data class MarketingStaticTextResponse(
     @SerializedName("text_order_at")                            var text_order_at: String?,
     @SerializedName("text_locked")                              var text_locked: String?,
     @SerializedName("message_please_note")                      var message_please_note: String?,
-    @SerializedName("text_more_options")                        var text_more_options: String
+    @SerializedName("text_more_options")                        var text_more_options: String,
+    @SerializedName("text_search")                              var text_search: String
 )
 
 data class MarketingStoreInfoResponse(
