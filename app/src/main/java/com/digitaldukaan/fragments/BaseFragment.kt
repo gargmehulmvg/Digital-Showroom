@@ -1522,11 +1522,16 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                         ctaTextView.visibility = View.INVISIBLE
                         displayMessage.visibility = View.GONE
                     }
-                    txnChargeTextView.text = "${staticText?.transaction_charges} (${response?.transactionCharges}%)"
-                    bottomSheetHeadingTextView.text = "${staticText?.order_number} ${response?.orderId}"
-                    billAmountValueTextView.text = "${getString(R.string.rupee_symbol)} ${response?.amount}"
-                    txnChargeValueTextView.text = "${getString(R.string.rupee_symbol)} ${response?.transactionChargeAmount}"
-                    amountSettleValueTextView.text = "${getString(R.string.rupee_symbol)} ${response?.settlementAmount}"
+                    var displayTextMessage = "${staticText?.transaction_charges} (${response?.transactionCharges}%)"
+                    txnChargeTextView.text = displayTextMessage
+                    displayTextMessage = "${staticText?.order_number} ${response?.orderId}"
+                    bottomSheetHeadingTextView.text = displayTextMessage
+                    displayTextMessage = "${getString(R.string.rupee_symbol)} ${response?.amount}"
+                    billAmountValueTextView.text = displayTextMessage
+                    displayTextMessage = "${getString(R.string.rupee_symbol)} ${response?.transactionChargeAmount}"
+                    txnChargeValueTextView.text = displayTextMessage
+                    displayTextMessage = "${getString(R.string.rupee_symbol)} ${response?.settlementAmount}"
+                    amountSettleValueTextView.text = displayTextMessage
                     if (isNotEmpty(response?.paymentImage)) mActivity?.let { context -> Glide.with(context).load(response?.paymentImage).into(paymentModeImageView) }
                     if (isNotEmpty(response?.settlementCdn)) mActivity?.let { context -> Glide.with(context).load(response?.settlementCdn).into(imageViewBottom) }
                     closeImageView.setOnClickListener { bottomSheetDialog.dismiss() }
@@ -1637,7 +1642,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     open fun showContactPickerBottomSheet(amount: String, imageCdn: String = "") {
         if (!askContactPermission()) {
             mActivity?.let {
-                val mContactPickerBottomSheet: BottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
+                val mContactPickerBottomSheet = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
                 val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_contact_pick, it.findViewById(R.id.bottomSheetContainer))
                 mContactPickerBottomSheet.apply {
                     val staticText = StaticInstances.sOrderPageInfoStaticData
@@ -1740,7 +1745,8 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                 idHeading.text = idStr
                 val amountStr = "₹ ${smsObj?.amount}"
                 amountTextView.text = amountStr
-                linkSentToTextView.text = "${smsObj?.staticText?.text_your_link_sent_to} $contactName"
+                val displayMessageStr = "${smsObj?.staticText?.text_your_link_sent_to} $contactName"
+                linkSentToTextView.text = displayMessageStr
                 dateHeading.text = smsObj?.staticText?.text_date
                 timeTextView.text = smsObj?.time
                 dateTextView.text = smsObj?.date
@@ -2067,11 +2073,11 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                             adapter = mMultiUserAdapter
                         }
                         nextTextView.apply {
-                            text = staffInvitation?.cta?.text
+                            text = staffInvitation.cta?.text
                             setOnClickListener {
                                 CoroutineScopeUtils().runTaskOnCoroutineBackground {
                                     try {
-                                        val response = RetrofitApi().getServerCallObject()?.updateInvitationStatus(UpdateInvitationRequest(status = selectedId, StoreId = staffInvitation?.invitedStoreId ?: 0, userId = getStringDataFromSharedPref(Constants.USER_ID).toInt(), languageId = 1))
+                                        val response = RetrofitApi().getServerCallObject()?.updateInvitationStatus(UpdateInvitationRequest(status = selectedId, StoreId = staffInvitation.invitedStoreId, userId = getStringDataFromSharedPref(Constants.USER_ID).toInt(), languageId = 1))
                                         response?.let {
                                             stopProgress()
                                             if (it.isSuccessful) {
