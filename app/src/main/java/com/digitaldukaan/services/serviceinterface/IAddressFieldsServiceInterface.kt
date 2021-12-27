@@ -6,5 +6,7 @@ interface IAddressFieldsServiceInterface {
 
     fun onAddressFieldsPageInfoResponse(response: CommonApiResponse)
 
+    fun onAddressFieldsChangedResponse(response: CommonApiResponse)
+
     fun onAddressFieldsServerException(e: Exception)
 }
