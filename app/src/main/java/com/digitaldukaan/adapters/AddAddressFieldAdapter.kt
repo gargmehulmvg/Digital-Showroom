@@ -8,10 +8,14 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.isNotEmpty
+import com.digitaldukaan.interfaces.IAdapterItemNotifyListener
 import com.digitaldukaan.models.response.AddressFieldsItemResponse
 import com.google.android.material.switchmaterial.SwitchMaterial
 
-class AddAddressFieldAdapter(private var mItemList: ArrayList<AddressFieldsItemResponse?>?) : RecyclerView.Adapter<AddAddressFieldAdapter.AddAddressFieldViewHolder>() {
+class AddAddressFieldAdapter(
+    private var mItemList: ArrayList<AddressFieldsItemResponse?>?,
+    private var mListener: IAdapterItemNotifyListener?
+    ) : RecyclerView.Adapter<AddAddressFieldAdapter.AddAddressFieldViewHolder>() {
 
     inner class AddAddressFieldViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val mandatorySwitch: SwitchMaterial = itemView.findViewById(R.id.mandatorySwitch)
@@ -42,12 +46,19 @@ class AddAddressFieldAdapter(private var mItemList: ArrayList<AddressFieldsItemR
             checkBox.apply {
                 isChecked = item?.isFieldSelected ?: false
                 isEnabled = item?.isFieldEnabled ?: false
-                setOnCheckedChangeListener { _, isChecked -> item?.isFieldSelected = isChecked }
+                setOnCheckedChangeListener { _, isChecked ->
+                    mListener?.onAdapterItemNotifyListener(position)
+                    item?.isFieldSelected = isChecked
+                }
             }
             mandatorySwitch.apply {
                 isChecked = item?.isMandatory ?: false
                 isEnabled = item?.isMandatoryEnabled ?: false
                 setOnCheckedChangeListener { _, isChecked -> item?.isMandatory = isChecked }
+            }
+            headingTextView.setOnClickListener {
+                item?.isFieldSelected = !(checkBox.isChecked)
+                checkBox.isChecked = !(checkBox.isChecked)
             }
         }
     }

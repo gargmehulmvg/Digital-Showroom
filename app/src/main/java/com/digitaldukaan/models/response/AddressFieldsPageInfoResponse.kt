@@ -9,6 +9,7 @@ data class AddressFieldsPageInfoResponse (
 
 data class AddressFieldsStaticTextResponse(
     @SerializedName("heading_page")             var heading_page: String?,
+    @SerializedName("error_select_1_field")     var error_select_1_field: String?,
     @SerializedName("text_save_changes")        var text_save_changes: String?
 )
 

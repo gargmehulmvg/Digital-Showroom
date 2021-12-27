@@ -12,6 +12,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.AddAddressFieldAdapter
 import com.digitaldukaan.constants.*
+import com.digitaldukaan.interfaces.IAdapterItemNotifyListener
 import com.digitaldukaan.models.request.AddressFieldItemRequest
 import com.digitaldukaan.models.request.AddressFieldRequest
 import com.digitaldukaan.models.response.AddressFieldsPageInfoResponse
@@ -21,6 +22,7 @@ import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IAddressFieldsServiceInterface
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
+import kotlinx.android.synthetic.main.layout_address_fields.view.*
 import kotlinx.android.synthetic.main.layout_common_webview_fragment.*
 import kotlinx.android.synthetic.main.layout_view_as_customer.*
 
@@ -94,16 +96,26 @@ class AddressFieldsFragment: BaseFragment(), IAddressFieldsServiceInterface,
                     text = staticText.text_save_changes
                     setOnClickListener {
                         if (!isInternetConnectionAvailable(mActivity)) return@setOnClickListener
-                        showCancellableProgressDialog(mActivity)
                         val requestList: ArrayList<AddressFieldItemRequest?> = ArrayList()
+                        var isCheckBoxChecked = false
                         mAddressFieldsPageInfoResponse?.addressFieldsList?.forEachIndexed { _, itemResponse ->
                             val item = AddressFieldItemRequest(
                                 id = itemResponse?.id ?: 0,
                                 isMandatory = itemResponse?.isMandatory ?: false,
                                 isFieldSelected = itemResponse?.isFieldSelected ?: false
                             )
+                            if (true == itemResponse?.isFieldSelected && !isCheckBoxChecked) isCheckBoxChecked = true
                             requestList.add(item)
                         }
+                        val errorTextView: TextView? = mContentView?.findViewById(R.id.errorTextView)
+                        if (!isCheckBoxChecked) {
+                            errorTextView?.apply {
+                                visibility = View.VISIBLE
+                                text = mAddressFieldsPageInfoResponse?.staticText?.error_select_1_field
+                            }
+                            return@setOnClickListener
+                        } else errorTextView?.visibility = View.GONE
+                        showCancellableProgressDialog(mActivity)
                         mService?.setAddressFields(AddressFieldRequest(requestList))
                     }
                 }
@@ -111,7 +123,16 @@ class AddressFieldsFragment: BaseFragment(), IAddressFieldsServiceInterface,
             val recyclerView: RecyclerView? = mContentView?.findViewById(R.id.recyclerView)
             recyclerView?.apply {
                 layoutManager = LinearLayoutManager(mActivity)
-                adapter = AddAddressFieldAdapter(mAddressFieldsPageInfoResponse?.addressFieldsList)
+                adapter = AddAddressFieldAdapter(mAddressFieldsPageInfoResponse?.addressFieldsList, object : IAdapterItemNotifyListener {
+
+                    override fun onAdapterItemNotifyListener(position: Int) {
+                        CoroutineScopeUtils().runTaskOnCoroutineMain {
+                            val errorTextView: TextView? = mContentView?.findViewById(R.id.errorTextView)
+                            errorTextView?.visibility = View.GONE
+                        }
+                    }
+
+                })
             }
         }
     }
