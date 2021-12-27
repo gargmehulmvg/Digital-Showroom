@@ -51,6 +51,7 @@
         <entry key="app/src/main/res/drawable/slight_curve_black_dotted_border_grey_background.xml" value="0.23289473684210527" />
         <entry key="app/src/main/res/drawable/slight_curve_green_background_without_padding_v2.xml" value="0.36875" />
         <entry key="app/src/main/res/drawable/slight_curve_grey_background_without_padding.xml" value="0.24111842105263157" />
+        <entry key="app/src/main/res/drawable/slight_curve_red_background_with_padding.xml" value="0.282943143812709" />
         <entry key="app/src/main/res/drawable/upper_curve_black_background.xml" value="0.165" />
         <entry key="app/src/main/res/drawable/upper_curve_light_red_background.xml" value="0.31851851851851853" />
         <entry key="app/src/main/res/drawable/upper_curve_white_background.xml" value="0.31851851851851853" />
@@ -117,7 +118,7 @@
         <entry key="app/src/main/res/layout/layout_login_fragment.xml" value="0.3020833333333333" />
         <entry key="app/src/main/res/layout/layout_login_fragment_v2.xml" value="0.318359375" />
         <entry key="app/src/main/res/layout/layout_marketing_fragment.xml" value="0.25" />
-        <entry key="app/src/main/res/layout/layout_more_control_fragment.xml" value="0.165" />
+        <entry key="app/src/main/res/layout/layout_more_control_fragment.xml" value="0.25" />
         <entry key="app/src/main/res/layout/layout_on_board_help_screen.xml" value="0.3020833333333333" />
         <entry key="app/src/main/res/layout/layout_on_board_screen_dukaan_fragment.xml" value="0.35260416666666666" />
         <entry key="app/src/main/res/layout/layout_order_detail_fragment.xml" value="0.25" />

@@ -545,16 +545,20 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     }
 
     protected open fun showStateSelectionDialog() {
-        mActivity?.let {
-            AlertDialog.Builder(it).apply {
-                setTitle("Select State")
-                setItems(R.array.state_array) { dialogInterface: DialogInterface, i: Int ->
-                    val stateList = resources.getStringArray(R.array.state_array).toList()
-                    onAlertDialogItemClicked(stateList[i], id, i)
-                    dialogInterface.dismiss()
-                }
-                setCancelable(false)
-            }.create().show()
+        try {
+            mActivity?.let {
+                AlertDialog.Builder(it).apply {
+                    setTitle("Select State")
+                    setCancelable(false)
+                    setItems(R.array.state_array) { dialogInterface: DialogInterface, i: Int ->
+                        val stateList = it.resources?.getStringArray(R.array.state_array)?.toList() ?: ArrayList<String>()
+                        onAlertDialogItemClicked(stateList[i], id, i)
+                        dialogInterface.dismiss()
+                    }
+                }.create().show()
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "showStateSelectionDialog: ${e.message}", e)
         }
     }
 
@@ -2345,11 +2349,15 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                                 object : IAdapterItemClickListener {
 
                                     override fun onAdapterItemClickListener(position: Int) {
-                                        bottomSheetDialog.dismiss()
-                                        val item = customDomainBottomSheetResponse.suggestedDomainsList?.get(position)
-                                        if (Constants.NEW_RELEASE_TYPE_WEBVIEW == item?.cta?.action) {
-                                            val url = BuildConfig.WEB_VIEW_URL + "${item.cta?.pageUrl}?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&domain_name=${item.domainName}&purchase_price=${item.originalPrice}&renewal_price=${item.renewalPrice}&${AFInAppEventParameterName.CHANNEL}=${AFInAppEventParameterName.ON_BOARDING}"
-                                            openWebViewFragment(this@BaseFragment, "", url)
+                                        try {
+                                            bottomSheetDialog.dismiss()
+                                            val item = customDomainBottomSheetResponse.suggestedDomainsList?.get(position)
+                                            if (Constants.NEW_RELEASE_TYPE_WEBVIEW == item?.cta?.action) {
+                                                val url = BuildConfig.WEB_VIEW_URL + "${item.cta?.pageUrl}?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&domain_name=${item.domainName}&purchase_price=${item.originalPrice}&renewal_price=${item.renewalPrice}&${AFInAppEventParameterName.CHANNEL}=${AFInAppEventParameterName.ON_BOARDING}"
+                                                openWebViewFragment(this@BaseFragment, "", url)
+                                            }
+                                        } catch (e: Exception) {
+                                            Log.e(TAG, "onAdapterItemClickListener: ${e.message}", e)
                                         }
                                     }
                                 })
