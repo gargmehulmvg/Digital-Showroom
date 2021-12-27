@@ -56,6 +56,7 @@
         <entry key="app/src/main/res/drawable/upper_curve_light_red_background.xml" value="0.31851851851851853" />
         <entry key="app/src/main/res/drawable/upper_curve_white_background.xml" value="0.31851851851851853" />
         <entry key="app/src/main/res/layout/activity_main2.xml" value="0.22269736842105264" />
+        <entry key="app/src/main/res/layout/add_address_field_item.xml" value="0.23614864864864865" />
         <entry key="app/src/main/res/layout/add_bank_bottom_sheet_item.xml" value="0.4027777777777778" />
         <entry key="app/src/main/res/layout/add_product_images_item.xml" value="0.35260416666666666" />
         <entry key="app/src/main/res/layout/app_setting_item.xml" value="0.2299342105263158" />
@@ -105,6 +106,7 @@
         <entry key="app/src/main/res/layout/landing_page_shortcut_item.xml" value="0.2299342105263158" />
         <entry key="app/src/main/res/layout/layout_active_variant_item_v2.xml" value="0.2299342105263158" />
         <entry key="app/src/main/res/layout/layout_add_product_fragment.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/layout_address_fields.xml" value="0.23614864864864865" />
         <entry key="app/src/main/res/layout/layout_app_setting_fragment.xml" value="0.2299342105263158" />
         <entry key="app/src/main/res/layout/layout_business_type_fragment.xml" value="0.22269736842105264" />
         <entry key="app/src/main/res/layout/layout_common_webview_fragment.xml" value="0.4027777777777778" />
