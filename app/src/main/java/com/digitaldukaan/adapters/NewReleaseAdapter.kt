@@ -25,6 +25,7 @@ class NewReleaseAdapter(
     inner class AppSettingsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val itemLayout: View = itemView.findViewById(R.id.itemLayout)
         val newReleaseLockGroup: View = itemView.findViewById(R.id.newReleaseLockGroup)
+        val trendingNewTextView: TextView = itemView.findViewById(R.id.trendingNewTextView)
         val trendingTextView: TextView = itemView.findViewById(R.id.trendingTextView)
         val imageView: ImageView = itemView.findViewById(R.id.imageView)
         val textView: TextView = itemView.findViewById(R.id.textView)
@@ -64,8 +65,11 @@ class NewReleaseAdapter(
                 Constants.NEW_RELEASE_TYPE_PAYMENT_MODES -> newTextView.visibility = View.VISIBLE
                 Constants.NEW_RELEASE_TYPE_TRENDING -> {
                     newTextView.visibility = View.GONE
-                    trendingTextView.text = responseItem.mType
-                    trendingTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_trending, 0, 0, 0)
+                    trendingTextView.text = null
+                    trendingNewTextView.apply {
+                        visibility = View.VISIBLE
+                        text = responseItem.mType
+                    }
                 }
                 else -> {}
             }

@@ -6,6 +6,8 @@ data class BillingPosPageInfoResponse (
     @SerializedName("main_features_list")       var mainFeaturesList: ArrayList<BillingPosFeatureListItemResponse?>?,
     @SerializedName("other_features_list")      var otherFeaturesList: ArrayList<String>?,
     @SerializedName("cta")                      var cta: CommonCtaResponse,
+    @SerializedName("cdn_hero")                 var cdnHero: String,
+    @SerializedName("cdn_background")           var cdnBackground: String,
     @SerializedName("static_text")              var staticText: BillingPosStaticTextResponse?
 )
 

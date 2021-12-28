@@ -5,15 +5,18 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.MainFeaturesPosAdapter
 import com.digitaldukaan.adapters.OtherFeaturesPosAdapter
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.ToolBarManager
+import com.digitaldukaan.constants.isNotEmpty
 import com.digitaldukaan.models.response.BillingPosPageInfoResponse
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.services.BillingPosService
@@ -87,6 +90,8 @@ class BillingPosFragment: BaseFragment(), IBillingPosServiceInterface {
             val otherFeaturesRecyclerView: RecyclerView? = mContentView?.findViewById(R.id.otherFeaturesRecyclerView)
             val mainFeaturesRecyclerView: RecyclerView? = mContentView?.findViewById(R.id.retailSolutionRecyclerView)
             val headingTextView: TextView? = mContentView?.findViewById(R.id.headingTextView)
+            val upperImageView: ImageView? = mContentView?.findViewById(R.id.upperImageView)
+            val imageViewBackground: ImageView? = mContentView?.findViewById(R.id.imageViewBackground)
             val otherFeaturesTextView: TextView? = mContentView?.findViewById(R.id.otherFeaturesTextView)
             val subHeadingTextView: TextView? = mContentView?.findViewById(R.id.subHeadingTextView)
             val retailManagementSolutionTextView: TextView? = mContentView?.findViewById(R.id.retailManagementSolutionTextView)
@@ -94,6 +99,14 @@ class BillingPosFragment: BaseFragment(), IBillingPosServiceInterface {
             subHeadingTextView?.text = pageInfoResponse.staticText?.sub_heading_page
             retailManagementSolutionTextView?.text = pageInfoResponse.staticText?.heading_main_features
             otherFeaturesTextView?.text = pageInfoResponse.staticText?.heading_other_features
+            mActivity?.let { context ->
+                if (isNotEmpty(pageInfoResponse.cdnHero)) {
+                    upperImageView?.let { view -> Glide.with(context).load(pageInfoResponse.cdnHero).into(view) }
+                }
+                if (isNotEmpty(pageInfoResponse.cdnBackground)) {
+                    imageViewBackground?.let { view -> Glide.with(context).load(pageInfoResponse.cdnBackground).into(view) }
+                }
+            }
             otherFeaturesRecyclerView?.apply {
                 layoutManager = LinearLayoutManager(mActivity)
                 adapter = OtherFeaturesPosAdapter(pageInfoResponse.otherFeaturesList)

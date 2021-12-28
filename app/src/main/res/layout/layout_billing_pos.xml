@@ -21,6 +21,17 @@
                 android:layout_height="match_parent">
 
                 <ImageView
+                    android:id="@+id/imageViewBackground"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_270sdp"
+                    android:contentDescription="@string/image_view_content_description"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:scaleType="fitXY"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:background="#38C1C7" />
+
+                <ImageView
                     android:id="@+id/backButtonToolbar"
                     android:layout_width="@dimen/_45sdp"
                     android:layout_height="@dimen/_40sdp"
@@ -62,12 +73,12 @@
                     android:id="@+id/upperImageView"
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/_180sdp"
-                    android:layout_marginTop="@dimen/_20sdp"
                     android:contentDescription="@string/image_view_content_description"
-                    android:src="@drawable/ic_laptop"
+                    app:layout_constraintBottom_toBottomOf="@+id/imageViewBackground"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/subHeadingTextView" />
+                    app:layout_constraintTop_toBottomOf="@+id/imageViewBackground"
+                    tools:src="@drawable/ic_laptop" />
 
                 <TextView
                     android:id="@+id/retailManagementSolutionTextView"
