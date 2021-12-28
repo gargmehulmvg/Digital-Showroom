@@ -3,7 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:background="#38C1C7"
     android:layout_height="match_parent">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -25,11 +24,11 @@
                     android:id="@+id/backButtonToolbar"
                     android:layout_width="@dimen/_45sdp"
                     android:layout_height="@dimen/_40sdp"
+                    android:background="?selectableItemBackgroundBorderless"
                     android:contentDescription="@string/image_view_content_description"
+                    android:onClick="onClick"
                     android:padding="@dimen/_8sdp"
                     android:rotation="180"
-                    android:onClick="onClick"
-                    android:background="?selectableItemBackgroundBorderless"
                     android:src="@drawable/ic_arrow_forward_white"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
@@ -39,23 +38,23 @@
                     android:id="@+id/headingTextView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textColor="@color/white"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:fontFamily="@font/roboto_bold"
                     android:gravity="center"
                     android:padding="@dimen/_6sdp"
-                    android:layout_marginTop="@dimen/_10sdp"
+                    android:textColor="@color/white"
                     android:textSize="@dimen/_23sdp"
-                    android:fontFamily="@font/roboto_bold"
-                    tools:text="The Retail POS\nfor all business types"
-                    app:layout_constraintTop_toBottomOf="@id/backButtonToolbar" />
+                    app:layout_constraintTop_toBottomOf="@id/backButtonToolbar"
+                    tools:text="The Retail POS\nfor all business types" />
 
                 <TextView
                     android:id="@+id/subHeadingTextView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:fontFamily="@font/roboto"
                     android:gravity="center"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_16sdp"
-                    android:fontFamily="@font/roboto"
                     app:layout_constraintTop_toBottomOf="@id/headingTextView"
                     tools:text="Hassle free In-Store selling" />
 
@@ -63,42 +62,48 @@
                     android:id="@+id/upperImageView"
                     android:layout_width="wrap_content"
                     android:layout_height="@dimen/_180sdp"
-                    android:src="@drawable/ic_laptop"
                     android:layout_marginTop="@dimen/_20sdp"
+                    android:contentDescription="@string/image_view_content_description"
+                    android:src="@drawable/ic_laptop"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/subHeadingTextView"
-                    android:contentDescription="@string/image_view_content_description" />
+                    app:layout_constraintTop_toBottomOf="@id/subHeadingTextView" />
 
                 <TextView
                     android:id="@+id/retailManagementSolutionTextView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="@dimen/_16sdp"
-                    android:gravity="center"
-                    android:textColor="@color/black"
-                    android:padding="@dimen/_10sdp"
                     android:layout_marginTop="@dimen/_10sdp"
                     android:fontFamily="@font/roboto_bold"
+                    android:gravity="center"
+                    android:padding="@dimen/_10sdp"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_16sdp"
                     app:layout_constraintTop_toBottomOf="@id/upperImageView"
                     tools:text="Get a complete retail\nmanagement solution" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/retailSolutionRecyclerView"
                     android:layout_width="match_parent"
-                    android:layout_height="100dp"
-                    tools:itemCount="1"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_20sdp"
+                    android:layout_marginEnd="@dimen/_20sdp"
                     android:background="@color/white"
-                    app:layout_constraintTop_toBottomOf="@id/retailManagementSolutionTextView" />
+                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                    app:layout_constraintTop_toBottomOf="@id/retailManagementSolutionTextView"
+                    app:spanCount="2"
+                    tools:itemCount="10"
+                    tools:listitem="@layout/main_feature_pos_item" />
 
                 <TextView
                     android:id="@+id/otherFeaturesTextView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="@color/white"
                     android:fontFamily="@font/roboto_medium"
                     android:paddingStart="@dimen/_12sdp"
+                    android:paddingTop="@dimen/_12sdp"
                     android:paddingEnd="@dimen/_8sdp"
-                    android:background="@color/white"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_13sdp"
                     app:layout_constraintStart_toStartOf="parent"
@@ -109,14 +114,14 @@
                     android:id="@+id/otherFeaturesRecyclerView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    tools:itemCount="10"
-                    android:paddingTop="@dimen/_12sdp"
-                    android:paddingBottom="@dimen/_38sdp"
-                    android:paddingStart="@dimen/_12sdp"
-                    android:paddingEnd="@dimen/_12sdp"
                     android:background="@color/white"
-                    tools:listitem="@layout/other_feature_pos_item"
-                    app:layout_constraintTop_toBottomOf="@id/otherFeaturesTextView" />
+                    android:paddingStart="@dimen/_12sdp"
+                    android:paddingTop="@dimen/_12sdp"
+                    android:paddingEnd="@dimen/_12sdp"
+                    android:paddingBottom="@dimen/_38sdp"
+                    app:layout_constraintTop_toBottomOf="@id/otherFeaturesTextView"
+                    tools:itemCount="10"
+                    tools:listitem="@layout/other_feature_pos_item" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -137,9 +142,9 @@
                 android:id="@+id/requestCallbackContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:elevation="@dimen/_3sdp"
                 android:layout_margin="@dimen/_5sdp"
                 android:background="@drawable/ripple_curve_grey_black_background"
+                android:elevation="@dimen/_3sdp"
                 android:onClick="onClick"
                 android:paddingTop="@dimen/_8sdp"
                 android:paddingBottom="@dimen/_8sdp"
@@ -166,19 +171,19 @@
                     android:id="@+id/addProductTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:clickable="false"
                     android:layout_marginStart="@dimen/_8sdp"
                     android:layout_marginEnd="@dimen/_8sdp"
-                    android:padding="@dimen/_2sdp"
+                    android:clickable="false"
                     android:fontFamily="@font/roboto_bold"
+                    android:padding="@dimen/_2sdp"
+                    android:text="@string/app_name"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_14sdp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toEndOf="@id/addProductImageView"
-                    app:layout_constraintTop_toTopOf="parent"
-                    android:text="@string/app_name" />
+                    app:layout_constraintTop_toTopOf="parent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

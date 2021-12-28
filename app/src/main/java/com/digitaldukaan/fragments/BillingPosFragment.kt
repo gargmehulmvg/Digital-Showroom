@@ -6,9 +6,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
+import com.digitaldukaan.adapters.MainFeaturesPosAdapter
 import com.digitaldukaan.adapters.OtherFeaturesPosAdapter
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.ToolBarManager
@@ -83,6 +85,7 @@ class BillingPosFragment: BaseFragment(), IBillingPosServiceInterface {
     private fun setupUIFromResponse(pageInfoResponse: BillingPosPageInfoResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             val otherFeaturesRecyclerView: RecyclerView? = mContentView?.findViewById(R.id.otherFeaturesRecyclerView)
+            val mainFeaturesRecyclerView: RecyclerView? = mContentView?.findViewById(R.id.retailSolutionRecyclerView)
             val headingTextView: TextView? = mContentView?.findViewById(R.id.headingTextView)
             val otherFeaturesTextView: TextView? = mContentView?.findViewById(R.id.otherFeaturesTextView)
             val subHeadingTextView: TextView? = mContentView?.findViewById(R.id.subHeadingTextView)
@@ -94,6 +97,10 @@ class BillingPosFragment: BaseFragment(), IBillingPosServiceInterface {
             otherFeaturesRecyclerView?.apply {
                 layoutManager = LinearLayoutManager(mActivity)
                 adapter = OtherFeaturesPosAdapter(pageInfoResponse.otherFeaturesList)
+            }
+            mainFeaturesRecyclerView?.apply {
+                layoutManager = GridLayoutManager(mActivity, 2)
+                adapter = MainFeaturesPosAdapter(pageInfoResponse.mainFeaturesList, mActivity)
             }
         }
     }
