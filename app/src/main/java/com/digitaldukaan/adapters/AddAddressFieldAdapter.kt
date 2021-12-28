@@ -54,7 +54,10 @@ class AddAddressFieldAdapter(
             mandatorySwitch.apply {
                 isChecked = item?.isMandatory ?: false
                 isEnabled = item?.isMandatoryEnabled ?: false
-                setOnCheckedChangeListener { _, isChecked -> item?.isMandatory = isChecked }
+                setOnCheckedChangeListener { _, isChecked ->
+                    item?.isMandatory = isChecked
+                    if (isChecked) headingTextView.callOnClick()
+                }
             }
             headingTextView.setOnClickListener {
                 item?.isFieldSelected = !(checkBox.isChecked)

@@ -153,6 +153,7 @@
         <entry key="app/src/main/res/layout/products_item.xml" value="0.35260416666666666" />
         <entry key="app/src/main/res/layout/profile_preview_item.xml" value="0.25" />
         <entry key="app/src/main/res/layout/progress_dialog.xml" value="0.2299342105263158" />
+        <entry key="app/src/main/res/layout/request_call_success_dialog.xml" value="0.23614864864864865" />
         <entry key="app/src/main/res/layout/request_permission_tooltip.xml" value="0.2680921052631579" />
         <entry key="app/src/main/res/layout/resend_otp_item_layout.xml" value="0.45" />
         <entry key="app/src/main/res/layout/search_order_fragment.xml" value="0.35260416666666666" />
