@@ -135,6 +135,9 @@ interface Apis {
     @GET("api/dotk/vm1/settings/getAddressFieldsPageInfo")
     suspend fun getAddressFieldsPageInfo(): Response<CommonApiResponse>
 
+    @GET("api/dotk/vm1/settings/getPosBillingPageInfo")
+    suspend fun getPosBillingPageInfo(): Response<CommonApiResponse>
+
     @POST("api/dotk/vm1/settings/setStoreAddressConfigs")
     suspend fun setAddressFields(@Body request: AddressFieldRequest): Response<CommonApiResponse>
 
@@ -303,6 +306,9 @@ interface Apis {
 
     @POST("api/dotk/vm1/premium/setStoreThemeColorPalette")
     suspend fun setStoreThemeColorPalette(@Body request: EditPremiumColorRequest): Response<CommonApiResponse>
+
+    @POST("api/dotk/vm1/premium/updateCallbackFlag")
+    suspend fun updateCallbackFlag(@Body request: UpdatePaymentMethodRequest): Response<CommonApiResponse>
 
     @POST("api/dotk/vm1/premium/setStoreThemeBanner")
     suspend fun setStoreThemeBanner(@Body request: StoreThemeBannerRequest): Response<CommonApiResponse>

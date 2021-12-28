@@ -484,14 +484,14 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
 
     override fun onRefresh() = fetchUserProfile()
 
-    override fun onStoreSettingItemClicked(storeResponse: StoreOptionsResponse) = checkStoreOptionClick(storeResponse)
+    override fun onStoreSettingItemClicked(subPagesResponse: StoreOptionsResponse) = checkStoreOptionClick(subPagesResponse)
 
     override fun onNewReleaseItemClicked(responseItem: TrendingListResponse?) {
         Log.d(TAG, "onNewReleaseItemClicked: ${responseItem?.mAction}")
-        if (true == responseItem?.isStaffFeatureLocked) {
-            showStaffFeatureLockedBottomSheet(Constants.NAV_BAR_SETTINGS)
-            return
-        }
+//        if (true == responseItem?.isStaffFeatureLocked) {
+//            showStaffFeatureLockedBottomSheet(Constants.NAV_BAR_SETTINGS)
+//            return
+//        }
         when (responseItem?.mAction) {
             Constants.NEW_RELEASE_TYPE_WEBVIEW -> {
                 if (Constants.NEW_RELEASE_TYPE_GOOGLE_ADS == responseItem.mType) {
@@ -553,6 +553,9 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                     else -> openUrlInBrowser(responseItem.mPage)
                 }
 
+            }
+            Constants.ACTION_BILLING_POS -> {
+                launchFragment(BillingPosFragment.newInstance(), true)
             }
             else -> showTrendingOffersBottomSheet()
         }
