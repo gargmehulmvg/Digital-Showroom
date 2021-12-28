@@ -6,6 +6,7 @@ import com.digitaldukaan.exceptions.DeprecateAppVersionException
 import com.digitaldukaan.exceptions.UnAuthorizedAccessException
 import com.digitaldukaan.models.request.*
 import com.digitaldukaan.models.response.CommonApiResponse
+import com.digitaldukaan.models.response.GenerateOtpResponse
 import com.digitaldukaan.network.RetrofitApi
 import com.digitaldukaan.services.serviceinterface.IProfilePreviewServiceInterface
 import com.google.gson.Gson
@@ -13,6 +14,10 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody
 
 class ProfilePreviewNetworkService {
+
+    companion object {
+        private const val OTP_MODE_SMS = 0
+    }
 
     suspend fun getProfilePreviewServerCall(
         serviceInterface: IProfilePreviewServiceInterface
@@ -133,7 +138,7 @@ class ProfilePreviewNetworkService {
                 }
             }
         } catch (e: Exception) {
-            Log.e(ProfilePhotoNetworkService::class.java.simpleName, "getImageUploadCdnLinkServerCall: ", e)
+            Log.e(ProfilePreviewNetworkService::class.java.simpleName, "getImageUploadCdnLinkServerCall: ", e)
             serviceInterface.onProfilePreviewServerException(e)
         }
     }
@@ -181,7 +186,7 @@ class ProfilePreviewNetworkService {
                 }
             }
         } catch (e : Exception) {
-            Log.e(MarketingNetworkService::class.java.simpleName, "getShareStoreDataServerCall: ", e)
+            Log.e(ProfilePreviewNetworkService::class.java.simpleName, "getShareStoreDataServerCall: ", e)
             serviceInterface.onProfilePreviewServerException(e)
         }
     }
@@ -208,7 +213,7 @@ class ProfilePreviewNetworkService {
                 }
             }
         } catch (e: Exception) {
-            Log.e(ProductNetworkService::class.java.simpleName, "getStoreUserPageInfoServerCall: ", e)
+            Log.e(ProfilePreviewNetworkService::class.java.simpleName, "getStoreUserPageInfoServerCall: ", e)
             serviceInterface.onProfilePreviewServerException(e)
         }
     }
@@ -236,7 +241,7 @@ class ProfilePreviewNetworkService {
                 }
             }
         } catch (e: Exception) {
-            Log.e(ProductNetworkService::class.java.simpleName, "setStoreUserGmailDetailsServerCall: ", e)
+            Log.e(ProfilePreviewNetworkService::class.java.simpleName, "setStoreUserGmailDetailsServerCall: ", e)
             serviceInterface.onProfilePreviewServerException(e)
         }
     }
@@ -264,7 +269,57 @@ class ProfilePreviewNetworkService {
                 }
             }
         } catch (e: Exception) {
-            Log.e(ProductNetworkService::class.java.simpleName, "setGSTServerCall: ", e)
+            Log.e(ProfilePreviewNetworkService::class.java.simpleName, "setGSTServerCall: ", e)
+            serviceInterface.onProfilePreviewServerException(e)
+        }
+    }
+
+    suspend fun generateOTPServerCall(
+        mobileNumber: String,
+        serviceInterface: IProfilePreviewServiceInterface
+    ) {
+        try {
+            val response = RetrofitApi().getServerCallObject()?.generateOTP(mobileNumber, GenerateOtpRequest(OTP_MODE_SMS))
+            response?.let {
+                if (it.isSuccessful) {
+                    it.body()?.let { generateOtpResponse -> serviceInterface.onGenerateOTPResponse(generateOtpResponse) }
+                } else {
+                    if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    if (Constants.ERROR_CODE_FORCE_UPDATE == it.code()) throw DeprecateAppVersionException()
+                    val errorResponseBody = it.errorBody()
+                    errorResponseBody?.let {
+                        val errorResponse = Gson().fromJson(errorResponseBody.string(), GenerateOtpResponse::class.java)
+                        serviceInterface.onGenerateOTPResponse(errorResponse)
+                    }
+                }
+            }
+        } catch (e : Exception) {
+            Log.e(ProfilePreviewNetworkService::class.java.simpleName, "generateOTPServerCall: ", e)
+            serviceInterface.onProfilePreviewServerException(e)
+        }
+    }
+
+    suspend fun verifyDisplayPhoneNumberServerCall(
+        request: VerifyDisplayPhoneNumberRequest,
+        serviceInterface: IProfilePreviewServiceInterface
+    ) {
+        try {
+            val response = RetrofitApi().getServerCallObject()?.verifyDisplayPhoneNumber(request)
+            response?.let {
+                if (it.isSuccessful) {
+                    it.body()?.let { commonApiResponse -> serviceInterface.onVerifyDisplayPhoneNumberResponse(commonApiResponse) }
+                } else {
+                    if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    if (Constants.ERROR_CODE_FORCE_UPDATE == it.code()) throw DeprecateAppVersionException()
+                    val errorResponseBody = it.errorBody()
+                    errorResponseBody?.let {
+                        val errorResponse = Gson().fromJson(errorResponseBody.string(), CommonApiResponse::class.java)
+                        serviceInterface.onVerifyDisplayPhoneNumberResponse(errorResponse)
+                    }
+                }
+            }
+        } catch (e : Exception) {
+            Log.e(ProfilePreviewNetworkService::class.java.simpleName, "verifyDisplayPhoneNumberServerCall: ", e)
             serviceInterface.onProfilePreviewServerException(e)
         }
     }

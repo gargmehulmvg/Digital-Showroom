@@ -8,7 +8,7 @@ class Constants {
         const val BACK_PRESS_INTERVAL                           = 2_000L
         const val TIMER_SHINE_ANIMATION                         = 2_000L
         const val TIMER_STORE_CREATION_PROGRESS_ANIMATION       = 5_000L
-        const val TIMER_RESEND_OTP                              = 30_000L
+        const val TIMER_RESEND_OTP                              = 10_000L
         const val TIMER_AUTO_DISMISS_PROGRESS_DIALOG            = 1_000L
         const val TIMER_DELAY                                   = 500L
         const val TIMER_ORDER_DELAY                             = 150L
@@ -66,6 +66,7 @@ class Constants {
         const val ACTION_THEME_DISCOVER                         = "theme-discover"
         const val ACTION_THEME_EXPLORE                          = "theme-explore"
         const val ACTION_KYC_STATUS                             = "kyc_status"
+        const val ACTION_DISPLAY_NUMBER                         = "display-number"
         const val ACTION_ADD_BANK                               = "add-bank"
         const val ACTION_REJECT_ORDER                           = "reject-order"
         const val ACTION_SHARE_BILL                             = "share-bill"
