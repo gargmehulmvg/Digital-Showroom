@@ -1009,7 +1009,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                     val continueTextView: TextView = view.findViewById(R.id.continueTextView)
                     val displayNameEditText: EditText = view.findViewById(R.id.displayNameEditText)
                     val displayNameLayout: TextInputLayout = view.findViewById(R.id.displayNameLayout)
-                    val otpMessageStr = "${mProfilePreviewStaticData?.hint_bottom_sheet_otp} $mDisplayPhoneStr"
+                    val otpMessageStr = "${mProfilePreviewStaticData?.text_otp_sent_to} $mDisplayPhoneStr"
                     otpSentToTextView.apply {
                         visibility = View.VISIBLE
                         text = otpMessageStr
