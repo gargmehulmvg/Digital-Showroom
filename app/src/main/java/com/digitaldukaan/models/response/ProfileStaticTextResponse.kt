@@ -38,11 +38,21 @@ data class ProfileStaticTextResponse(
     @SerializedName("error_invalid_mobile_number_field") var error_invalid_mobile_number: String?,
     @SerializedName("error_invalid_account_number") var error_invalid_account_number: String?,
     @SerializedName("error_both_account_number_verify_account_number_must_be_same") var error_both_account_number_verify_account_number_must_be_same: String?,
+    @SerializedName("message_bottom_sheet_display_number_success")  var message_bottom_sheet_display_number_success: String?,
+    @SerializedName("text_close")                                   var text_close: String?,
+    @SerializedName("text_get_otp")                                 var text_get_otp: String?,
+    @SerializedName("text_resend_otp")                              var text_resend_otp: String?,
     @SerializedName("text_no")                                      var mNoText: String?,
+    @SerializedName("text_verified")                                var text_verified: String?,
+    @SerializedName("text_verify")                                  var text_verify: String?,
+    @SerializedName("hint_bottom_sheet_otp")                        var hint_bottom_sheet_otp: String?,
+    @SerializedName("text_otp_sent_to")                             var text_otp_sent_to: String?,
     @SerializedName("text_re_enter_gst")                            var text_re_enter_gst: String?,
     @SerializedName("text_kyc_verified")                            var text_kyc_verified: String?,
     @SerializedName("bottom_sheet_gst_heading")                     var bottom_sheet_gst_heading: String?,
     @SerializedName("bottom_sheet_gst_cta_text")                    var bottom_sheet_gst_cta_text: String?,
     @SerializedName("bottom_sheet_gst_error_invalid_input")         var bottom_sheet_gst_error_invalid_input: String?,
-    @SerializedName("bottom_sheet_gst_hint")                        var bottom_sheet_gst_hint: String?
+    @SerializedName("bottom_sheet_gst_hint")                        var bottom_sheet_gst_hint: String?,
+    @SerializedName("sub_heading_bottom_sheet_display_number")      var sub_heading_bottom_sheet_display_number: String?,
+    @SerializedName("heading_bottom_sheet_display_number")          var heading_bottom_sheet_display_number: String?
 )

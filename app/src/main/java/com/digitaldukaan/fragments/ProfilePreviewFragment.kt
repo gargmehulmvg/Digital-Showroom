@@ -937,17 +937,21 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                         setContentView(view)
                         setBottomSheetCommonProperty()
                         mResendOtpBottomSheetTextView = view.findViewById(R.id.resendOtpTextView)
+                        val headingTextView: TextView = view.findViewById(R.id.headingTextView)
+                        val subHeadingTextView: TextView = view.findViewById(R.id.subHeadingTextView)
                         val verifyTextView: TextView = view.findViewById(R.id.verifyTextView)
                         val continueTextView: TextView = view.findViewById(R.id.continueTextView)
                         val displayNameEditText: EditText = view.findViewById(R.id.displayNameEditText)
                         val displayNameLayout: TextInputLayout = view.findViewById(R.id.displayNameLayout)
+                        continueTextView.text = mProfilePreviewStaticData?.text_get_otp
+                        verifyTextView.text = mProfilePreviewStaticData?.text_verified
                         mResendOtpBottomSheetTextView?.setOnClickListener {
-                            if ("Resend OTP".equals(mResendOtpBottomSheetTextView?.text.toString(), true)) {
+                            if (mProfilePreviewStaticData?.text_resend_otp.equals(mResendOtpBottomSheetTextView?.text.toString(), true)) {
                                 showProgressDialog(mActivity)
                                 mService.generateOTP(mDisplayPhoneStr)
                             }
                         }
-                        displayNameLayout.hint = "Enter Display Number"
+                        displayNameLayout.hint = profilePreviewResponse.mHeadingText
                         displayNameEditText.apply {
                             setText(profilePreviewResponse.mValue)
                             continueTextView.isEnabled = false
@@ -958,7 +962,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
 
                                 override fun afterTextChanged(s: Editable?) {
                                     val str = s?.toString() ?: ""
-                                    if (context.resources.getText(R.string.get_otp) == continueTextView.text) {
+                                    if (mProfilePreviewStaticData?.text_get_otp == continueTextView.text) {
                                         continueTextView.isEnabled = (context.resources?.getInteger(R.integer.mobile_number_length) == str.length && str != profilePreviewResponse.mValue)
                                         verifyTextView.visibility = View.INVISIBLE
                                     } else {
@@ -987,6 +991,10 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                                 mService.verifyDisplayPhoneNumber(VerifyDisplayPhoneNumberRequest(phone = mDisplayPhoneStr, otp = userInput.toInt()))
                             }
                         }
+                        mProfilePreviewStaticData?.let { staticText ->
+                            headingTextView.text = staticText.heading_bottom_sheet_display_number
+                            subHeadingTextView.text = staticText.sub_heading_bottom_sheet_display_number
+                        }
                     }
                 }?.show()
             }
@@ -1001,15 +1009,15 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                     val continueTextView: TextView = view.findViewById(R.id.continueTextView)
                     val displayNameEditText: EditText = view.findViewById(R.id.displayNameEditText)
                     val displayNameLayout: TextInputLayout = view.findViewById(R.id.displayNameLayout)
-                    val otpMessageStr = "Otp sent to $mDisplayPhoneStr"
+                    val otpMessageStr = "${mProfilePreviewStaticData?.hint_bottom_sheet_otp} $mDisplayPhoneStr"
                     otpSentToTextView.apply {
                         visibility = View.VISIBLE
                         text = otpMessageStr
                     }
-                    continueTextView.text = "Verify"
+                    continueTextView.text = mProfilePreviewStaticData?.text_verify
                     displayNameEditText.setMaxLength(context?.resources?.getInteger(R.integer.otp_length) ?: 4)
                     displayNameEditText.text = null
-                    displayNameLayout.hint = "Enter OTP here"
+                    displayNameLayout.hint = mProfilePreviewStaticData?.hint_bottom_sheet_otp
                     if (mIsTimerCompleted) startCountDownTimer()
                 }
             } else showToast(generateOtpResponse.mMessage)
@@ -1049,7 +1057,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                 CoroutineScopeUtils().runTaskOnCoroutineMain {
                     try {
                         mIsTimerCompleted = true
-                        mResendOtpBottomSheetTextView?.text = "Resend OTP"
+                        mResendOtpBottomSheetTextView?.text = mProfilePreviewStaticData?.text_resend_otp
                     } catch (e: Exception) {
                         Log.e(TAG, "onFinish: ${e.message}", e)
                     }
@@ -1068,8 +1076,9 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                 setCancelable(false)
                 val messageTextView: TextView = view.findViewById(R.id.messageTextView)
                 val ctaTextView: TextView = view.findViewById(R.id.ctaTextView)
+                messageTextView.text = mProfilePreviewStaticData?.message_bottom_sheet_display_number_success
                 ctaTextView.apply {
-                    text = "Close"
+                    text = mProfilePreviewStaticData?.text_close
                     setOnClickListener {
                         successBottomSheet.dismiss()
                         onRefresh()
