@@ -959,7 +959,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                                 override fun afterTextChanged(s: Editable?) {
                                     val str = s?.toString() ?: ""
                                     if (context.resources.getText(R.string.get_otp) == continueTextView.text) {
-                                        continueTextView.isEnabled = (context.resources?.getInteger(R.integer.mobile_number_length) == str.length)
+                                        continueTextView.isEnabled = (context.resources?.getInteger(R.integer.mobile_number_length) == str.length && str != profilePreviewResponse.mValue)
                                         verifyTextView.visibility = View.INVISIBLE
                                     } else {
                                         continueTextView.isEnabled = (context.resources?.getInteger(R.integer.otp_length) == str.length)
@@ -1021,9 +1021,8 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (apiResponse.mIsSuccessStatus) {
                 stopProgress()
-                showToast(apiResponse.mMessage)
                 mDisplayPhoneBottomSheet?.dismiss()
-                onRefresh()
+                showDisplayPhoneSuccessBottomSheet()
             } else showToast(apiResponse.mMessage)
             stopProgress()
         }
@@ -1058,6 +1057,26 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
             }
         }
         mCountDownTimer?.start()
+    }
+
+    private fun showDisplayPhoneSuccessBottomSheet() {
+        mActivity?.let {
+            val successBottomSheet = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
+            val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_display_number_success, it.findViewById(R.id.bottomSheetContainer))
+            successBottomSheet.apply {
+                setContentView(view)
+                setCancelable(false)
+                val messageTextView: TextView = view.findViewById(R.id.messageTextView)
+                val ctaTextView: TextView = view.findViewById(R.id.ctaTextView)
+                ctaTextView.apply {
+                    text = "Close"
+                    setOnClickListener {
+                        successBottomSheet.dismiss()
+                        onRefresh()
+                    }
+                }
+            }.show()
+        }
     }
 
     override fun onDestroy() {
