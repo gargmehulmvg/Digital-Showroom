@@ -15,19 +15,19 @@ import com.digitaldukaan.models.response.BillingPosFeatureListItemResponse
 class MainFeaturesPosAdapter(
     private var mItemList: ArrayList<BillingPosFeatureListItemResponse?>?,
     private var mContext: MainActivity?
-    ) : RecyclerView.Adapter<MainFeaturesPosAdapter.LearnYoutubeViewHolder>() {
+    ) : RecyclerView.Adapter<MainFeaturesPosAdapter.MainFeaturesPosViewHolder>() {
 
-    inner class LearnYoutubeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class MainFeaturesPosViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val textView: TextView = itemView.findViewById(R.id.textView)
         val imageView: ImageView = itemView.findViewById(R.id.imageView)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LearnYoutubeViewHolder =
-        LearnYoutubeViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.main_feature_pos_item, parent, false))
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MainFeaturesPosViewHolder =
+        MainFeaturesPosViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.main_feature_pos_item, parent, false))
 
     override fun getItemCount(): Int = mItemList?.size ?: 0
 
-    override fun onBindViewHolder(holder: LearnYoutubeViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: MainFeaturesPosViewHolder, position: Int) {
         val item = mItemList?.get(position)
         holder.textView.text =  item?.text
         if (isNotEmpty(item?.url)) mContext?.let { context -> Glide.with(context).load(item?.url).into(holder.imageView) }

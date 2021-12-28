@@ -8,18 +8,18 @@ import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
 
 class OtherFeaturesPosAdapter(private var mItemList: ArrayList<String>?) :
-    RecyclerView.Adapter<OtherFeaturesPosAdapter.LearnYoutubeViewHolder>() {
+    RecyclerView.Adapter<OtherFeaturesPosAdapter.OtherFeaturesPosViewHolder>() {
 
-    inner class LearnYoutubeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class OtherFeaturesPosViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val textView: TextView = itemView.findViewById(R.id.textView)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LearnYoutubeViewHolder =
-        LearnYoutubeViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.other_feature_pos_item, parent, false))
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OtherFeaturesPosViewHolder =
+        OtherFeaturesPosViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.other_feature_pos_item, parent, false))
 
     override fun getItemCount(): Int = mItemList?.size ?: 0
 
-    override fun onBindViewHolder(holder: LearnYoutubeViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: OtherFeaturesPosViewHolder, position: Int) {
         holder.textView.text = mItemList?.get(position)
     }
 

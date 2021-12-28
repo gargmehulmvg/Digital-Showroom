@@ -8,7 +8,7 @@ class Constants {
         const val BACK_PRESS_INTERVAL                           = 2_000L
         const val TIMER_SHINE_ANIMATION                         = 2_000L
         const val TIMER_STORE_CREATION_PROGRESS_ANIMATION       = 5_000L
-        const val TIMER_RESEND_OTP                              = 10_000L
+        const val TIMER_RESEND_OTP                              = 30_000L
         const val TIMER_AUTO_DISMISS_PROGRESS_DIALOG            = 1_000L
         const val TIMER_DELAY                                   = 500L
         const val TIMER_ORDER_DELAY                             = 150L
