@@ -67,6 +67,7 @@
         <entry key="app/src/main/res/layout/bottom_sheet_complete_your_kyc.xml" value="0.35260416666666666" />
         <entry key="app/src/main/res/layout/bottom_sheet_custom_domain_selection.xml" value="0.25" />
         <entry key="app/src/main/res/layout/bottom_sheet_delete_category.xml" value="0.2299342105263158" />
+        <entry key="app/src/main/res/layout/bottom_sheet_display_number_success.xml" value="0.23614864864864865" />
         <entry key="app/src/main/res/layout/bottom_sheet_edit_category.xml" value="0.25" />
         <entry key="app/src/main/res/layout/bottom_sheet_edit_product_category_details.xml" value="0.35260416666666666" />
         <entry key="app/src/main/res/layout/bottom_sheet_edit_store_link.xml" value="0.23614864864864865" />
