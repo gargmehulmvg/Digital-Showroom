@@ -127,8 +127,16 @@ class AddressFieldsFragment: BaseFragment(), IAddressFieldsServiceInterface,
 
                     override fun onAdapterItemNotifyListener(position: Int) {
                         CoroutineScopeUtils().runTaskOnCoroutineMain {
+                            val item = mAddressFieldsPageInfoResponse?.addressFieldsList?.get(position)
                             val errorTextView: TextView? = mContentView?.findViewById(R.id.errorTextView)
-                            errorTextView?.visibility = View.GONE
+                            if (false == item?.isFieldEnabled) {
+                                errorTextView?.apply {
+                                    visibility = View.VISIBLE
+                                    val str = "${item.heading} ${mAddressFieldsPageInfoResponse?.staticText?.error_field_is_mandatory}"
+                                    text = str
+                                }
+                            } else
+                                errorTextView?.visibility = View.GONE
                         }
                     }
 

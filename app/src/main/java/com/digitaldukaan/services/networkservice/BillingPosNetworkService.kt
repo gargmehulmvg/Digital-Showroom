@@ -4,7 +4,7 @@ import android.util.Log
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.exceptions.DeprecateAppVersionException
 import com.digitaldukaan.exceptions.UnAuthorizedAccessException
-import com.digitaldukaan.models.request.UpdatePaymentMethodRequest
+import com.digitaldukaan.models.request.RequestToCallbackRequest
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.network.RetrofitApi
 import com.digitaldukaan.services.serviceinterface.IBillingPosServiceInterface
@@ -12,9 +12,11 @@ import com.google.gson.Gson
 
 class BillingPosNetworkService {
 
-    suspend fun getPosBillingPageInfoServerCall(
-        serviceInterface: IBillingPosServiceInterface
-    ) {
+    companion object {
+        private const val BILLING_POS = "billing_pos"
+    }
+
+    suspend fun getPosBillingPageInfoServerCall(serviceInterface: IBillingPosServiceInterface) {
         try {
             val response = RetrofitApi().getServerCallObject()?.getPosBillingPageInfo()
             response?.let {
@@ -36,11 +38,9 @@ class BillingPosNetworkService {
         }
     }
 
-    suspend fun requestACallBackServerCall(
-        serviceInterface: IBillingPosServiceInterface
-    ) {
+    suspend fun requestACallBackServerCall(serviceInterface: IBillingPosServiceInterface) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.updateCallbackFlag(UpdatePaymentMethodRequest(flag = 1))
+            val response = RetrofitApi().getServerCallObject()?.updateCallbackFlag(RequestToCallbackRequest(text = BILLING_POS))
             response?.let {
                 if (it.isSuccessful) {
                     it.body()?.let { storeNameResponse -> serviceInterface.onRequestCallBackResponse(storeNameResponse) }

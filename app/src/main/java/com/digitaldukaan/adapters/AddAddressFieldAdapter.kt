@@ -55,6 +55,7 @@ class AddAddressFieldAdapter(
                 }
             }
             mandatorySwitch.apply {
+                mListener?.onAdapterItemNotifyListener(position)
                 isChecked = item?.isMandatory ?: false
                 isEnabled = item?.isMandatoryEnabled ?: false
                 setOnCheckedChangeListener { _, isChecked ->
@@ -63,10 +64,19 @@ class AddAddressFieldAdapter(
                 }
             }
             headingTextView.setOnClickListener {
-                item?.isFieldSelected = !(checkBox.isChecked)
-                checkBox.isChecked = !(checkBox.isChecked)
+                mListener?.onAdapterItemNotifyListener(position)
+                if (true == item?.isFieldEnabled) updateCheckBoxAndSwitch(item)
+            }
+            subHeadingTextView.setOnClickListener {
+                mListener?.onAdapterItemNotifyListener(position)
+                if (true == item?.isFieldEnabled) updateCheckBoxAndSwitch(item)
             }
         }
+    }
+
+    private fun AddAddressFieldViewHolder.updateCheckBoxAndSwitch(item: AddressFieldsItemResponse?) {
+        item?.isFieldSelected = !(checkBox.isChecked)
+        checkBox.isChecked = !(checkBox.isChecked)
     }
 
 }
