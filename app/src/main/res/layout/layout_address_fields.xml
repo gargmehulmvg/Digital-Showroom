@@ -23,7 +23,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingTop="@dimen/_10sdp"
-                app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
+                app:layout_constraintBottom_toTopOf="@id/constraintLayout"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -35,17 +35,17 @@
                 android:id="@+id/errorTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:drawableStartCompat="@drawable/ic_exclamation_small"
-                app:drawableTint="@color/red"
+                app:drawableStartCompat="@drawable/ic_address_field_red_exclamation_mark"
                 android:visibility="gone"
                 tools:text="Please select at least 1 Field"
                 android:drawablePadding="@dimen/_5sdp"
                 android:fontFamily="@font/roboto"
-                android:textSize="@dimen/_11sdp"
+                android:textSize="@dimen/_10sdp"
                 android:textColor="@color/red"
+                android:layout_marginTop="@dimen/_5sdp"
                 android:layout_marginStart="@dimen/_20sdp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/recyclerView" />
+                app:layout_constraintTop_toBottomOf="@id/recyclerView" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/constraintLayout"

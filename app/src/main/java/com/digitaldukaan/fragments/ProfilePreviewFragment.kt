@@ -962,6 +962,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
 
                                 override fun afterTextChanged(s: Editable?) {
                                     val str = s?.toString() ?: ""
+                                    displayNameLayout.error = null
                                     if (mProfilePreviewStaticData?.text_get_otp == continueTextView.text) {
                                         continueTextView.isEnabled = (context.resources?.getInteger(R.integer.mobile_number_length) == str.length && str != profilePreviewResponse.mValue)
                                         verifyTextView.visibility = View.INVISIBLE
@@ -1031,7 +1032,12 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                 stopProgress()
                 mDisplayPhoneBottomSheet?.dismiss()
                 showDisplayPhoneSuccessBottomSheet()
-            } else showToast(apiResponse.mMessage)
+            } else {
+                mDisplayPhoneContentView?.let { view ->
+                    val displayNameLayout: TextInputLayout = view.findViewById(R.id.displayNameLayout)
+                    displayNameLayout.error = apiResponse.mMessage
+                }
+            }
             stopProgress()
         }
     }

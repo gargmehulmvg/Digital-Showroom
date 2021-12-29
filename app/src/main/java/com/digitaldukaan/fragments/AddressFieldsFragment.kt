@@ -1,6 +1,8 @@
 package com.digitaldukaan.fragments
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -79,7 +81,9 @@ class AddressFieldsFragment: BaseFragment(), IAddressFieldsServiceInterface,
             try {
                 if (response.mIsSuccessStatus) {
                     showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
-                    onRefresh()
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        mActivity?.onBackPressed()
+                    }, Constants.TIMER_ARROW_ANIMATION)
                 } else showShortSnackBar(response.mMessage, true, R.drawable.ic_close_red)
             } catch (e: Exception) {
                 Log.e(TAG, "onAddressFieldsPageInfoResponse: ${e.message}", e)
