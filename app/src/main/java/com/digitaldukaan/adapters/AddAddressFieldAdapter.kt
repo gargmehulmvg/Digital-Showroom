@@ -45,11 +45,15 @@ class AddAddressFieldAdapter(
             mandatoryTextView.text = item?.textMandatory
             checkBox.apply {
                 isChecked = item?.isFieldSelected ?: false
-                isEnabled = item?.isFieldEnabled ?: false
-                setOnCheckedChangeListener { _, isChecked ->
+                alpha = if (true == item?.isFieldEnabled) 1f else 0.2f
+                setOnClickListener {
                     mListener?.onAdapterItemNotifyListener(position)
-                    item?.isFieldSelected = isChecked
-                    if (!isChecked) {
+                    if (false == item?.isFieldEnabled) {
+                        checkBox.isChecked = !checkBox.isChecked
+                        return@setOnClickListener
+                    }
+                    item?.isFieldSelected = checkBox.isChecked
+                    if (!checkBox.isChecked) {
                         mandatorySwitch.isChecked = false
                     }
                 }
