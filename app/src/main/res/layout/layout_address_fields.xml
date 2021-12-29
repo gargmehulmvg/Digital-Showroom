@@ -23,7 +23,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingTop="@dimen/_10sdp"
-                app:layout_constraintBottom_toTopOf="@id/constraintLayout"
+                app:layout_constraintBottom_toTopOf="@id/verifyTextView"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -47,36 +47,24 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/recyclerView" />
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/constraintLayout"
-                android:layout_width="match_parent"
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/verifyTextView"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@color/white"
-                android:elevation="@dimen/_10sdp"
-                android:padding="@dimen/_10sdp"
+                android:background="@drawable/curve_black_background_selector"
+                android:fontFamily="@font/roboto_medium"
+                android:onClick="onClick"
+                android:layout_margin="@dimen/_15sdp"
+                android:paddingStart="@dimen/_18sdp"
+                android:paddingTop="@dimen/_8sdp"
+                android:paddingEnd="@dimen/_18sdp"
+                android:paddingBottom="@dimen/_8sdp"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_14sdp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent">
+                tools:text="@string/save_n_continue" />
 
-                <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/verifyTextView"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/ripple_curve_grey_black_background"
-                    android:fontFamily="@font/roboto_medium"
-                    android:onClick="onClick"
-                    android:paddingStart="@dimen/_18sdp"
-                    android:paddingTop="@dimen/_8sdp"
-                    android:paddingEnd="@dimen/_18sdp"
-                    android:paddingBottom="@dimen/_8sdp"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/_14sdp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:text="@string/save_n_continue" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
