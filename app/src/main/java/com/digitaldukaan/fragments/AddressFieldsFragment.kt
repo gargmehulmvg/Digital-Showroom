@@ -102,8 +102,8 @@ class AddressFieldsFragment: BaseFragment(), IAddressFieldsServiceInterface,
     private fun setupUIFromResponse() {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             mAddressFieldsPageInfoResponse?.staticText?.let { staticText ->
-                val verifyTextView: TextView? = mContentView?.findViewById(R.id.verifyTextView)
                 ToolBarManager.getInstance().headerTitle = staticText.heading_page
+                val verifyTextView: TextView? = mContentView?.findViewById(R.id.verifyTextView)
                 verifyTextView?.apply {
                     text = staticText.text_save_changes
                     setOnClickListener {
@@ -204,11 +204,14 @@ class AddressFieldsFragment: BaseFragment(), IAddressFieldsServiceInterface,
                         messageTextView.text = null
                         noTextView.setOnClickListener {
                             this.dismiss()
+                            mIsItemUpdated = false
+                            mActivity?.onBackPressed()
                         }
                         yesTextView.setOnClickListener {
                             this.dismiss()
                             mIsItemUpdated = false
-                            mActivity?.onBackPressed()
+                            val verifyTextView: TextView? = mContentView?.findViewById(R.id.verifyTextView)
+                            verifyTextView?.callOnClick()
                         }
                     }.show()
                 }
