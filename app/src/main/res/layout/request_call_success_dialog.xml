@@ -5,7 +5,7 @@
     android:layout_height="wrap_content"
     android:background="@drawable/curve_white_background"
     android:gravity="center_horizontal"
-    android:minWidth="@dimen/_260sdp"
+    android:minWidth="@dimen/_280sdp"
     android:orientation="vertical"
     android:padding="@dimen/_20sdp">
 
@@ -20,12 +20,13 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fontFamily="@font/roboto_medium"
-        android:padding="@dimen/_15sdp"
-        android:lineSpacingMultiplier="1.2"
+        android:paddingTop="@dimen/_12sdp"
+        android:paddingBottom="@dimen/_12sdp"
+        android:lineSpacingMultiplier="1.1"
         android:gravity="center"
         android:textColor="@color/black"
         android:textSize="@dimen/_14sdp"
-        tools:text="Display number will be visible on your website Display number will be visible on your website" />
+        tools:text="Display number will be visible on your Display number will be visible on your Display number will be visible on your Display number will be visible on your" />
 
     <TextView
         android:id="@+id/subHeadingTextView"
