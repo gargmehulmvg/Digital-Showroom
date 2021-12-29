@@ -17,6 +17,11 @@ class AddAddressFieldAdapter(
     private var mListener: IAdapterItemNotifyListener?
     ) : RecyclerView.Adapter<AddAddressFieldAdapter.AddAddressFieldViewHolder>() {
 
+    companion object {
+        private const val VISIBILITY_FULL = 1f
+        private const val VISIBILITY_BLUR = 0.28f
+    }
+
     inner class AddAddressFieldViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val mandatorySwitch: SwitchMaterial = itemView.findViewById(R.id.mandatorySwitch)
         val checkBox: CheckBox = itemView.findViewById(R.id.checkBox)
@@ -43,10 +48,10 @@ class AddAddressFieldAdapter(
                 text = item?.subHeading
             }
             mandatoryTextView.text = item?.textMandatory
-            mandatoryTextView.alpha = if (true == item?.isFieldSelected) 1f else 0.28f
+            mandatoryTextView.alpha = if (true == item?.isFieldSelected) VISIBILITY_FULL else VISIBILITY_BLUR
             checkBox.apply {
                 isChecked = item?.isFieldSelected ?: false
-                alpha = if (true == item?.isFieldEnabled) 1f else 0.28f
+                alpha = if (true == item?.isFieldEnabled) VISIBILITY_FULL else VISIBILITY_BLUR
                 setOnClickListener {
                     mListener?.onAdapterItemNotifyListener(position)
                     if (false == item?.isFieldEnabled) {
@@ -54,18 +59,16 @@ class AddAddressFieldAdapter(
                         return@setOnClickListener
                     }
                     item?.isFieldSelected = checkBox.isChecked
-                    mandatoryTextView.alpha = if (checkBox.isChecked) 1f else 0.28f
+                    mandatoryTextView.alpha = if (checkBox.isChecked) VISIBILITY_FULL else VISIBILITY_BLUR
                     if (!checkBox.isChecked) {
                         mandatorySwitch.isChecked = false
                     }
                 }
             }
             mandatorySwitch.apply {
-                mListener?.onAdapterItemNotifyListener(position)
                 isChecked = item?.isMandatory ?: false
-                mandatorySwitch.alpha = if (true == item?.isFieldEnabled) 1f else 0.28f
-                checkBox.alpha = if (false == item?.isFieldEnabled) 0.28f else 1f
-
+                mandatorySwitch.alpha = if (true == item?.isFieldEnabled) VISIBILITY_FULL else VISIBILITY_BLUR
+                checkBox.alpha = if (false == item?.isFieldEnabled) VISIBILITY_BLUR else VISIBILITY_FULL
                 setOnClickListener {
                     mListener?.onAdapterItemNotifyListener(position)
                     if (false == item?.isFieldEnabled) {
@@ -76,7 +79,7 @@ class AddAddressFieldAdapter(
                     if (mandatorySwitch.isChecked) {
                         checkBox.isChecked = true
                     }
-                    mandatoryTextView.alpha = if (checkBox.isChecked) 1f else 0.28f
+                    mandatoryTextView.alpha = if (checkBox.isChecked) VISIBILITY_FULL else VISIBILITY_BLUR
                 }
             }
             headingTextView.setOnClickListener {

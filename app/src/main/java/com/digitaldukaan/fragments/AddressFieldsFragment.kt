@@ -1,5 +1,8 @@
 package com.digitaldukaan.fragments
 
+import android.app.Dialog
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -34,6 +37,8 @@ class AddressFieldsFragment: BaseFragment(), IAddressFieldsServiceInterface,
     private var mService: AddressFieldsService? = AddressFieldsService()
     private var swipeRefreshLayout: SwipeRefreshLayout? = null
     private var mAddressFieldsPageInfoResponse: AddressFieldsPageInfoResponse? = null
+    private var mIsItemUpdated = false
+    private var saveChangesCtaTextView: View? = null
 
     companion object {
         fun newInstance(): AddressFieldsFragment = AddressFieldsFragment()
@@ -44,9 +49,11 @@ class AddressFieldsFragment: BaseFragment(), IAddressFieldsServiceInterface,
         FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
         mContentView = inflater.inflate(R.layout.layout_address_fields, container, false)
         swipeRefreshLayout = mContentView?.findViewById(R.id.swipeRefreshLayout)
+        saveChangesCtaTextView = mContentView?.findViewById(R.id.verifyTextView)
         swipeRefreshLayout?.setOnRefreshListener(this)
         mService?.setServiceInterface(this)
         mService?.getAddressFieldsPageInfo()
+        saveChangesCtaTextView?.isEnabled = false
         return mContentView
     }
 
@@ -80,6 +87,7 @@ class AddressFieldsFragment: BaseFragment(), IAddressFieldsServiceInterface,
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             try {
                 if (response.mIsSuccessStatus) {
+                    mIsItemUpdated = false
                     showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
                     Handler(Looper.getMainLooper()).postDelayed({
                         mActivity?.onBackPressed()
@@ -131,6 +139,9 @@ class AddressFieldsFragment: BaseFragment(), IAddressFieldsServiceInterface,
 
                     override fun onAdapterItemNotifyListener(position: Int) {
                         CoroutineScopeUtils().runTaskOnCoroutineMain {
+                            Log.d(TAG, "onAdapterItemNotifyListener: ")
+                            mIsItemUpdated = true
+                            saveChangesCtaTextView?.isEnabled = true
                             val item = mAddressFieldsPageInfoResponse?.addressFieldsList?.get(position)
                             val errorTextView: TextView? = mContentView?.findViewById(R.id.errorTextView)
                             if (false == item?.isFieldEnabled) {
@@ -158,6 +169,53 @@ class AddressFieldsFragment: BaseFragment(), IAddressFieldsServiceInterface,
 
     override fun onRefresh() {
         mService?.getAddressFieldsPageInfo()
+    }
+
+    override fun onBackPressed(): Boolean {
+        return try {
+            Log.d(TAG, "onBackPressed :: called")
+            if(mIsItemUpdated) {
+                showGoBackDialog()
+                true
+            } else {
+                fragmentManager?.popBackStack()
+                true
+            }
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    private fun showGoBackDialog() {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            try {
+                mActivity?.let { context ->
+                    Dialog(context).apply {
+                        setCancelable(true)
+                        window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                        setContentView(R.layout.dialog_common_back_pressed)
+                        val noTextView: TextView = findViewById(R.id.noTextView)
+                        val yesTextView: TextView = findViewById(R.id.yesTextView)
+                        val headingTextView: TextView = findViewById(R.id.headingTextView)
+                        val messageTextView: TextView = findViewById(R.id.messageTextView)
+                        yesTextView.text = mAddressFieldsPageInfoResponse?.staticText?.text_yes
+                        noTextView.text = mAddressFieldsPageInfoResponse?.staticText?.text_no
+                        headingTextView.text = mAddressFieldsPageInfoResponse?.staticText?.text_confirm_back
+                        messageTextView.text = null
+                        noTextView.setOnClickListener {
+                            this.dismiss()
+                        }
+                        yesTextView.setOnClickListener {
+                            this.dismiss()
+                            mIsItemUpdated = false
+                            mActivity?.onBackPressed()
+                        }
+                    }.show()
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "showGoBackDialog: ${e.message}", e)
+            }
+        }
     }
 
 }
