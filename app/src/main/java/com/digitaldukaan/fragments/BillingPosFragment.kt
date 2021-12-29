@@ -17,9 +17,7 @@ import com.bumptech.glide.Glide
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.MainFeaturesPosAdapter
 import com.digitaldukaan.adapters.OtherFeaturesPosAdapter
-import com.digitaldukaan.constants.CoroutineScopeUtils
-import com.digitaldukaan.constants.ToolBarManager
-import com.digitaldukaan.constants.isNotEmpty
+import com.digitaldukaan.constants.*
 import com.digitaldukaan.models.response.BillingPosPageInfoResponse
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.services.BillingPosService
@@ -50,6 +48,10 @@ class BillingPosFragment: BaseFragment(), IBillingPosServiceInterface {
         hideBottomNavigationView(true)
         showProgressDialog(mActivity)
         mService?.getAddressFieldsPageInfo()
+        AppEventsManager.pushAppEvents(
+            eventName = AFInAppEventType.EVENT_BILLING_POS, isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+            data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
+        )
     }
 
     override fun onBillingPosPageInfoResponse(response: CommonApiResponse) {
@@ -81,6 +83,10 @@ class BillingPosFragment: BaseFragment(), IBillingPosServiceInterface {
         when(view?.id) {
             backButtonToolbar?.id -> mActivity?.onBackPressed()
             requestCallbackContainer?.id -> {
+                AppEventsManager.pushAppEvents(
+                    eventName = AFInAppEventType.EVENT_BILLING_POS_CALLBACK, isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
+                )
                 showProgressDialog(mActivity)
                 mService?.requestACallBack()
             }
