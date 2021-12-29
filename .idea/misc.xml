@@ -94,7 +94,7 @@
         <entry key="app/src/main/res/layout/bottom_sheet_update_inventory.xml" value="0.23614864864864865" />
         <entry key="app/src/main/res/layout/bottom_sheet_web_console.xml" value="0.2299342105263158" />
         <entry key="app/src/main/res/layout/category_product_item.xml" value="0.35260416666666666" />
-        <entry key="app/src/main/res/layout/custom_domain_selection_item.xml" value="0.4244791666666667" />
+        <entry key="app/src/main/res/layout/custom_domain_selection_item.xml" value="0.25" />
         <entry key="app/src/main/res/layout/dialog_app_update.xml" value="0.22269736842105264" />
         <entry key="app/src/main/res/layout/dialog_mobile_view_image_upload.xml" value="0.22269736842105264" />
         <entry key="app/src/main/res/layout/dialog_payment_link_success.xml" value="0.335" />
@@ -105,7 +105,7 @@
         <entry key="app/src/main/res/layout/image_dialog.xml" value="0.2299342105263158" />
         <entry key="app/src/main/res/layout/inventory_enable_item.xml" value="0.23614864864864865" />
         <entry key="app/src/main/res/layout/landing_page_cards_item.xml" value="0.23614864864864865" />
-        <entry key="app/src/main/res/layout/landing_page_custom_domain_item.xml" value="0.2299342105263158" />
+        <entry key="app/src/main/res/layout/landing_page_custom_domain_item.xml" value="0.25" />
         <entry key="app/src/main/res/layout/landing_page_shortcut_item.xml" value="0.2299342105263158" />
         <entry key="app/src/main/res/layout/layout_active_variant_item_v2.xml" value="0.2299342105263158" />
         <entry key="app/src/main/res/layout/layout_add_product_fragment.xml" value="0.25" />
