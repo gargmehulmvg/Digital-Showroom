@@ -1,6 +1,7 @@
 package com.digitaldukaan.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -151,6 +152,8 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
         minOrderValueOptionalTextView?.text = if (0.0 == mMinOrderValue) mMoreControlsStaticData?.text_optional else "${mMoreControlsStaticData?.sub_heading_success_set_min_order_value_for_delivery} "
         minOrderValueAmountTextView?.text = if (0.0 != mMinOrderValue) "${mMoreControlsStaticData?.text_ruppee_symbol} $mMinOrderValue" else ""
         deliveryChargeHeadingTextView?.text = mMoreControlsStaticData?.heading_set_delivery_charge
+        editCustomerAddressHeadingTextView?.text = mMoreControlsStaticData?.heading_edit_customer_address
+        editCustomerAddressNewTextView?.text = mMoreControlsStaticData?.mNewText
         deliveryChargeTypeTextView?.text = mMoreControlsStaticData?.sub_heading_set_delivery_charge
         onlinePaymentsTextView?.text = mMoreControlsStaticData?.text_online_payments
         deliveryHeadingTextView?.text = mMoreControlsStaticData?.mDeliveryText
@@ -221,6 +224,9 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
                     return
                 }
                 launchFragment(PaymentModesFragment.newInstance(), true)
+            }
+            editCustomerAddressContainer?.id -> {
+                launchFragment(AddressFieldsFragment.newInstance(), true)
             }
             notificationsContainer?.id -> getOrderNotificationBottomSheet(AFInAppEventParameterName.STORE_CONTROLS)
             storeImageView?.id -> {
@@ -350,14 +356,18 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
     override fun onChangeStoreAndDeliveryStatusResponse(response: CommonApiResponse) {
         stopProgress()
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            if (response.mIsSuccessStatus) {
-                val storeDeliveryService = Gson().fromJson<StoreServicesResponse>(response.mCommonDataStr, StoreServicesResponse::class.java)
-                showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
-                StaticInstances.sAppStoreServicesResponse = storeDeliveryService
-                updateStoreServiceInstances()
-                setUIDataFromResponse()
-                setupPickupDeliveryUI()
-            } else showShortSnackBar(response.mMessage, true, R.drawable.ic_close_red)
+            try {
+                if (response.mIsSuccessStatus) {
+                    val storeDeliveryService = Gson().fromJson<StoreServicesResponse>(response.mCommonDataStr, StoreServicesResponse::class.java)
+                    showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
+                    StaticInstances.sAppStoreServicesResponse = storeDeliveryService
+                    updateStoreServiceInstances()
+                    setUIDataFromResponse()
+                    setupPickupDeliveryUI()
+                } else showShortSnackBar(response.mMessage, true, R.drawable.ic_close_red)
+            } catch (e: Exception) {
+                Log.e(TAG, "onChangeStoreAndDeliveryStatusResponse: ${e.message}", e)
+            }
         }
     }
 

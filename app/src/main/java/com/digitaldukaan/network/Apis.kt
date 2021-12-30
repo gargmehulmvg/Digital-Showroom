@@ -60,6 +60,9 @@ interface Apis {
     @POST("api/dotk/vm1/settings/setGST")
     suspend fun setGST(@Body request: SetGstRequest) : Response<CommonApiResponse>
 
+    @POST("api/dotk/vm1/settings/verifyDisplayPhoneNumber")
+    suspend fun verifyDisplayPhoneNumber(@Body request: VerifyDisplayPhoneNumberRequest) : Response<CommonApiResponse>
+
     @GET("api/dotk/vm1/settings/getStoreLocation")
     suspend fun getStoreLocation() : Response<CommonApiResponse>
 
@@ -128,6 +131,15 @@ interface Apis {
 
     @POST("api/dotk/vm1/settings/updateNotificationFlag")
     suspend fun updateNotificationFlag(@Body request: UpdatePaymentMethodRequest): Response<CommonApiResponse>
+
+    @GET("api/dotk/vm1/settings/getAddressFieldsPageInfo")
+    suspend fun getAddressFieldsPageInfo(): Response<CommonApiResponse>
+
+    @GET("api/dotk/vm1/settings/getPosBillingPageInfo")
+    suspend fun getPosBillingPageInfo(): Response<CommonApiResponse>
+
+    @POST("api/dotk/vm1/settings/setStoreAddressConfigs")
+    suspend fun setAddressFields(@Body request: AddressFieldRequest): Response<CommonApiResponse>
 
     /* ----------------------       Images         ---------------------- */
     @POST("api/dotk/vm1/media/setStoreLogo")
@@ -294,6 +306,9 @@ interface Apis {
 
     @POST("api/dotk/vm1/premium/setStoreThemeColorPalette")
     suspend fun setStoreThemeColorPalette(@Body request: EditPremiumColorRequest): Response<CommonApiResponse>
+
+    @POST("api/dotk/vm1/premium/addRequestToCallback")
+    suspend fun updateCallbackFlag(@Body request: RequestToCallbackRequest): Response<CommonApiResponse>
 
     @POST("api/dotk/vm1/premium/setStoreThemeBanner")
     suspend fun setStoreThemeBanner(@Body request: StoreThemeBannerRequest): Response<CommonApiResponse>

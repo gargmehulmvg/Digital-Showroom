@@ -10,9 +10,9 @@
         android:id="@+id/separator"
         android:layout_width="@dimen/_15sdp"
         android:layout_height="100dp"
-        app:layout_constraintBottom_toBottomOf="@+id/constraintLayout7"
+        app:layout_constraintBottom_toBottomOf="@id/constraintLayout7"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/constraintLayout7" />
+        app:layout_constraintTop_toTopOf="@id/constraintLayout7" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout7"
@@ -23,7 +23,7 @@
         android:background="@drawable/ripple_slight_curve_white_background_grey_border"
         android:padding="@dimen/_14sdp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/separator"
+        app:layout_constraintStart_toEndOf="@id/separator"
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
@@ -55,9 +55,9 @@
             android:textColor="@color/black"
             android:textSize="@dimen/_10sdp"
             app:layout_constraintHorizontal_chainStyle="packed"
-            app:layout_constraintStart_toStartOf="@+id/domainTextView"
-            app:layout_constraintTop_toBottomOf="@+id/promoCodeTextView"
-            tools:text="₹1500" />
+            app:layout_constraintStart_toStartOf="@id/domainTextView"
+            app:layout_constraintTop_toBottomOf="@id/promoCodeTextView"
+            tools:text="₹150015001500" />
 
         <TextView
             android:id="@+id/originalPriceTextView"
@@ -68,9 +68,9 @@
             android:paddingStart="@dimen/_4sdp"
             android:paddingEnd="@dimen/_4sdp"
             android:textSize="@dimen/_8sdp"
-            app:layout_constraintBaseline_toBaselineOf="@+id/priceTextView"
-            app:layout_constraintStart_toEndOf="@+id/priceTextView"
-            tools:text="₹1500" />
+            app:layout_constraintBaseline_toBaselineOf="@id/priceTextView"
+            app:layout_constraintStart_toEndOf="@id/priceTextView"
+            tools:text="₹15001500150015001500" />
 
         <TextView
             android:id="@+id/promoCodeTextView"
@@ -87,8 +87,8 @@
             android:paddingBottom="@dimen/_1sdp"
             android:textColor="@color/white"
             android:textSize="@dimen/_9sdp"
-            app:layout_constraintStart_toStartOf="@+id/domainTextView"
-            app:layout_constraintTop_toBottomOf="@+id/domainTextView"
+            app:layout_constraintStart_toStartOf="@id/domainTextView"
+            app:layout_constraintTop_toBottomOf="@id/domainTextView"
             tools:text="FREE" />
 
         <TextView
@@ -104,7 +104,7 @@
             app:drawableEndCompat="@drawable/ic_exclamation_circle_black_small"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/originalPriceTextView"
+            app:layout_constraintTop_toBottomOf="@id/originalPriceTextView"
             tools:text="for one year" />
 
         <TextView
@@ -114,15 +114,16 @@
             android:background="@drawable/ripple_curve_grey_black_background"
             android:fontFamily="@font/roboto_medium"
             android:gravity="center"
+            android:maxLines="1"
             android:onClick="onClick"
             android:paddingStart="@dimen/_18sdp"
             android:paddingTop="@dimen/_8sdp"
             android:paddingEnd="@dimen/_18sdp"
             android:paddingBottom="@dimen/_8sdp"
             android:textSize="@dimen/_10sdp"
-            app:layout_constraintBottom_toBottomOf="@+id/messageTextView"
+            app:layout_constraintBottom_toBottomOf="@id/messageTextView"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/priceTextView"
+            app:layout_constraintTop_toTopOf="@id/priceTextView"
             tools:text="APPLY"
             tools:textColor="@color/white" />
 
@@ -134,10 +135,10 @@
         android:layout_height="0dp"
         android:visibility="gone"
         android:background="@drawable/ripple_slight_curve_white_background_grey_border"
-        app:layout_constraintBottom_toBottomOf="@+id/constraintLayout7"
-        app:layout_constraintEnd_toEndOf="@+id/constraintLayout7"
-        app:layout_constraintStart_toEndOf="@+id/separator"
-        app:layout_constraintTop_toTopOf="@+id/constraintLayout7">
+        app:layout_constraintBottom_toBottomOf="@id/constraintLayout7"
+        app:layout_constraintEnd_toEndOf="@id/constraintLayout7"
+        app:layout_constraintStart_toEndOf="@id/separator"
+        app:layout_constraintTop_toTopOf="@id/constraintLayout7">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/searchDomainContainer"
@@ -146,8 +147,8 @@
             android:background="@drawable/ripple_curve_grey_black_background"
             android:onClick="onClick"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="@+id/alreadyHaveADomainTextView"
-            app:layout_constraintStart_toStartOf="@+id/alreadyHaveADomainTextView"
+            app:layout_constraintEnd_toEndOf="@id/alreadyHaveADomainTextView"
+            app:layout_constraintStart_toStartOf="@id/alreadyHaveADomainTextView"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.25">
 
@@ -162,7 +163,7 @@
                 android:paddingBottom="@dimen/_8sdp"
                 android:src="@drawable/ic_search"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/searchDomainTextView"
+                app:layout_constraintEnd_toStartOf="@id/searchDomainTextView"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -183,7 +184,7 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toEndOf="@+id/searchImageImageView"
+                app:layout_constraintStart_toEndOf="@id/searchImageImageView"
                 app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -214,10 +215,10 @@
         android:layout_width="@dimen/_15sdp"
         android:layout_height="100dp"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@+id/lastViewContainer"
+        app:layout_constraintBottom_toBottomOf="@id/lastViewContainer"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/constraintLayout7"
-        app:layout_constraintTop_toTopOf="@+id/lastViewContainer" />
+        app:layout_constraintStart_toEndOf="@id/constraintLayout7"
+        app:layout_constraintTop_toTopOf="@id/lastViewContainer" />
 
 
 

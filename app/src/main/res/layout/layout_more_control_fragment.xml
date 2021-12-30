@@ -41,7 +41,7 @@
                     android:layout_height="@dimen/_1sdp"
                     android:layout_marginTop="@dimen/_10sdp"
                     android:background="@color/default_bg"
-                    app:layout_constraintTop_toBottomOf="@+id/storeServiceContainerHeading" />
+                    app:layout_constraintTop_toBottomOf="@id/storeServiceContainerHeading" />
 
                 <TextView
                     android:id="@+id/storeServiceContainerHeading"
@@ -73,7 +73,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.15"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/separator" />
+                    app:layout_constraintTop_toBottomOf="@id/separator" />
 
                 <ImageView
                     android:id="@+id/deliveryImageView"
@@ -86,7 +86,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.501"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/storeImageView" />
+                    app:layout_constraintTop_toTopOf="@id/storeImageView" />
 
                 <ImageView
                     android:id="@+id/pickupImageView"
@@ -99,7 +99,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.85"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="@+id/storeImageView" />
+                    app:layout_constraintTop_toTopOf="@id/storeImageView" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/storeStatusTextView"
@@ -108,8 +108,8 @@
                     android:background="?selectableItemBackgroundBorderless"
                     android:fontFamily="@font/roboto"
                     android:onClick="onClick"
-                    android:paddingTop="@dimen/_5sdp"
                     android:paddingStart="@dimen/_5sdp"
+                    android:paddingTop="@dimen/_5sdp"
                     android:paddingEnd="@dimen/_1sdp"
                     android:paddingBottom="@dimen/_5sdp"
                     android:textColor="@color/black"
@@ -130,13 +130,13 @@
                     android:background="?selectableItemBackgroundBorderless"
                     android:fontFamily="@font/roboto_medium"
                     android:onClick="onClick"
-                    android:paddingTop="@dimen/_5sdp"
                     android:paddingStart="@dimen/_1sdp"
+                    android:paddingTop="@dimen/_5sdp"
                     android:paddingEnd="@dimen/_5sdp"
                     android:paddingBottom="@dimen/_5sdp"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_10sdp"
-                    app:layout_constraintBaseline_toBaselineOf="@+id/storeStatusTextView"
+                    app:layout_constraintBaseline_toBaselineOf="@id/storeStatusTextView"
                     app:layout_constraintEnd_toEndOf="@id/storeImageView"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toEndOf="@id/storeStatusTextView"
@@ -155,7 +155,7 @@
                     android:paddingBottom="@dimen/_5sdp"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_10sdp"
-                    app:layout_constraintBaseline_toBaselineOf="@+id/storeStatusTextView"
+                    app:layout_constraintBaseline_toBaselineOf="@id/storeStatusTextView"
                     app:layout_constraintEnd_toStartOf="@id/deliveryStatusValueTextView"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintHorizontal_chainStyle="packed"
@@ -169,13 +169,13 @@
                     android:background="?selectableItemBackgroundBorderless"
                     android:fontFamily="@font/roboto_medium"
                     android:onClick="onClick"
-                    android:paddingTop="@dimen/_5sdp"
                     android:paddingStart="@dimen/_1sdp"
+                    android:paddingTop="@dimen/_5sdp"
                     android:paddingEnd="@dimen/_5sdp"
                     android:paddingBottom="@dimen/_5sdp"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_10sdp"
-                    app:layout_constraintBaseline_toBaselineOf="@+id/deliveryStatusTextView"
+                    app:layout_constraintBaseline_toBaselineOf="@id/deliveryStatusTextView"
                     app:layout_constraintEnd_toEndOf="@id/deliveryImageView"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toEndOf="@id/deliveryStatusTextView"
@@ -194,7 +194,7 @@
                     android:paddingBottom="@dimen/_5sdp"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_10sdp"
-                    app:layout_constraintBaseline_toBaselineOf="@+id/storeStatusTextView"
+                    app:layout_constraintBaseline_toBaselineOf="@id/storeStatusTextView"
                     app:layout_constraintEnd_toStartOf="@id/pickupStatusValueTextView"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintHorizontal_chainStyle="packed"
@@ -208,13 +208,13 @@
                     android:background="?selectableItemBackgroundBorderless"
                     android:fontFamily="@font/roboto_medium"
                     android:onClick="onClick"
-                    android:paddingTop="@dimen/_5sdp"
                     android:paddingStart="@dimen/_1sdp"
+                    android:paddingTop="@dimen/_5sdp"
                     android:paddingEnd="@dimen/_5sdp"
                     android:paddingBottom="@dimen/_5sdp"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_10sdp"
-                    app:layout_constraintBaseline_toBaselineOf="@+id/pickupStatusTextView"
+                    app:layout_constraintBaseline_toBaselineOf="@id/pickupStatusTextView"
                     app:layout_constraintEnd_toEndOf="@id/pickupImageView"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toEndOf="@id/pickupStatusTextView"
@@ -233,7 +233,7 @@
                 android:textColor="@color/black"
                 android:textSize="@dimen/_14sdp"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/storeServiceContainer"
+                app:layout_constraintTop_toBottomOf="@id/storeServiceContainer"
                 tools:text="Delivery" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -317,7 +317,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="0.5dp"
-                android:background="@drawable/ripple_lower_curve_grey_white_background"
+                android:background="@drawable/ripple_rect_grey_white_background"
                 android:elevation="@dimen/_5sdp"
                 android:onClick="onClick"
                 android:paddingStart="@dimen/_20sdp"
@@ -413,6 +413,65 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/editCustomerAddressContainer"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="0.5dp"
+                android:background="@drawable/ripple_lower_curve_grey_white_background"
+                android:elevation="@dimen/_5sdp"
+                android:onClick="onClick"
+                app:layout_constraintEnd_toEndOf="@id/onlinePaymentsContainer"
+                app:layout_constraintStart_toStartOf="@id/onlinePaymentsContainer"
+                app:layout_constraintTop_toBottomOf="@id/deliveryChargeContainer"
+                tools:targetApi="lollipop">
+
+                <ImageView
+                    android:id="@+id/editCustomerAddressImageView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/_20sdp"
+                    android:clickable="false"
+                    android:contentDescription="@string/image_view_content_description"
+                    android:src="@drawable/ic_half_arrow_forward"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/editCustomerAddressHeadingTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_20sdp"
+                    android:layout_marginTop="@dimen/_20sdp"
+                    android:layout_marginBottom="@dimen/_20sdp"
+                    android:clickable="false"
+                    tools:text="Edit Customer Address Fields"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_11sdp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/editCustomerAddressNewTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:background="@drawable/slight_curve_red_background_with_padding"
+                    android:clickable="false"
+                    android:fontFamily="@font/roboto_medium"
+                    tools:text="@string/text_new"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_8sdp"
+                    app:layout_constraintBottom_toBottomOf="@id/editCustomerAddressHeadingTextView"
+                    app:layout_constraintEnd_toStartOf="@id/editCustomerAddressImageView"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toEndOf="@id/editCustomerAddressHeadingTextView"
+                    app:layout_constraintTop_toTopOf="@id/editCustomerAddressHeadingTextView" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
             <TextView
                 android:id="@+id/onlinePaymentsTextView"
                 android:layout_width="wrap_content"
@@ -423,7 +482,7 @@
                 android:textColor="@color/black"
                 android:textSize="@dimen/_14sdp"
                 app:layout_constraintStart_toStartOf="@id/deliveryHeadingTextView"
-                app:layout_constraintTop_toBottomOf="@id/deliveryChargeContainer"
+                app:layout_constraintTop_toBottomOf="@id/editCustomerAddressContainer"
                 tools:text="Online Payments" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -443,8 +502,8 @@
                     android:id="@+id/onlinePaymentsImageView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:clickable="false"
                     android:layout_marginEnd="@dimen/_20sdp"
+                    android:clickable="false"
                     android:contentDescription="@string/image_view_content_description"
                     android:src="@drawable/ic_half_arrow_forward"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -455,9 +514,9 @@
                     android:id="@+id/onlinePaymentsHeadingTextView"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:clickable="false"
-                    android:layout_marginTop="@dimen/_15sdp"
                     android:layout_marginStart="@dimen/_20sdp"
+                    android:layout_marginTop="@dimen/_15sdp"
+                    android:clickable="false"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_11sdp"
                     app:layout_constraintEnd_toStartOf="@id/onlinePaymentsImageView"
@@ -491,7 +550,7 @@
                     android:textColor="@color/open_green"
                     android:textSize="@dimen/_9sdp"
                     android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="@+id/onlinePaymentsOptionalTextView"
+                    app:layout_constraintBottom_toBottomOf="@id/onlinePaymentsOptionalTextView"
                     app:layout_constraintEnd_toStartOf="@id/onlinePaymentsImageView"
                     app:layout_constraintStart_toEndOf="@id/onlinePaymentsOptionalTextView"
                     app:layout_constraintTop_toTopOf="@id/onlinePaymentsOptionalTextView"
@@ -508,25 +567,25 @@
                     android:id="@+id/onlinePaymentsLockedBackground"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:clickable="false"
+                    android:alpha="0.5"
                     android:background="@drawable/upper_curve_black_background"
+                    android:clickable="false"
+                    android:contentDescription="@string/image_view_content_description"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    android:alpha="0.5"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    android:contentDescription="@string/image_view_content_description" />
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
                     android:id="@+id/onlinePaymentsUnlockNowTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/curve_white_background2"
-                    android:drawablePadding="@dimen/_5sdp"
-                    android:gravity="center"
-                    android:clickable="false"
-                    android:fontFamily="@font/roboto_medium"
                     android:layout_marginEnd="@dimen/_10sdp"
+                    android:background="@drawable/curve_white_background2"
+                    android:clickable="false"
+                    android:drawablePadding="@dimen/_5sdp"
+                    android:fontFamily="@font/roboto_medium"
+                    android:gravity="center"
                     android:paddingStart="@dimen/_5sdp"
                     android:paddingTop="@dimen/_5sdp"
                     android:paddingEnd="@dimen/_5sdp"
@@ -570,9 +629,9 @@
                     android:id="@+id/paymentModesHeadingTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:clickable="false"
-                    android:layout_marginTop="@dimen/_15sdp"
                     android:layout_marginStart="@dimen/_20sdp"
+                    android:layout_marginTop="@dimen/_15sdp"
+                    android:clickable="false"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_11sdp"
                     app:layout_constraintStart_toStartOf="parent"
@@ -589,11 +648,11 @@
                     android:fontFamily="@font/roboto_medium"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_8sdp"
-                    app:layout_constraintBottom_toBottomOf="@+id/paymentModesHeadingTextView"
-                    app:layout_constraintEnd_toStartOf="@+id/paymentModesImageView"
+                    app:layout_constraintBottom_toBottomOf="@id/paymentModesHeadingTextView"
+                    app:layout_constraintEnd_toStartOf="@id/paymentModesImageView"
                     app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toEndOf="@+id/paymentModesHeadingTextView"
-                    app:layout_constraintTop_toTopOf="@+id/paymentModesHeadingTextView"
+                    app:layout_constraintStart_toEndOf="@id/paymentModesHeadingTextView"
+                    app:layout_constraintTop_toTopOf="@id/paymentModesHeadingTextView"
                     tools:text="@string/text_new" />
 
                 <com.google.android.material.textview.MaterialTextView
@@ -601,8 +660,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_2sdp"
-                    android:clickable="false"
                     android:layout_marginBottom="@dimen/_15sdp"
+                    android:clickable="false"
                     android:paddingTop="@dimen/_2sdp"
                     android:textColor="@color/default_text_light_grey"
                     android:textSize="@dimen/_9sdp"
@@ -622,26 +681,26 @@
                     android:id="@+id/paymentModesLockedBackground"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
-                    android:clickable="false"
+                    android:alpha="0.5"
                     android:background="@drawable/lower_curve_black_background"
+                    android:clickable="false"
+                    android:contentDescription="@string/image_view_content_description"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    android:alpha="0.5"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    android:contentDescription="@string/image_view_content_description" />
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
                     android:id="@+id/paymentModesUnlockNowTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/curve_white_background2"
-                    android:drawablePadding="@dimen/_5sdp"
-                    android:gravity="center"
-                    android:fontFamily="@font/roboto_medium"
                     android:layout_marginEnd="@dimen/_10sdp"
-                    android:paddingStart="@dimen/_5sdp"
+                    android:background="@drawable/curve_white_background2"
                     android:clickable="false"
+                    android:drawablePadding="@dimen/_5sdp"
+                    android:fontFamily="@font/roboto_medium"
+                    android:gravity="center"
+                    android:paddingStart="@dimen/_5sdp"
                     android:paddingTop="@dimen/_5sdp"
                     android:paddingEnd="@dimen/_5sdp"
                     android:paddingBottom="@dimen/_5sdp"
@@ -723,11 +782,11 @@
                     android:fontFamily="@font/roboto_medium"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_8sdp"
-                    app:layout_constraintBottom_toBottomOf="@+id/notificationsHeadingTextView"
-                    app:layout_constraintEnd_toStartOf="@+id/notificationsImageView"
+                    app:layout_constraintBottom_toBottomOf="@id/notificationsHeadingTextView"
+                    app:layout_constraintEnd_toStartOf="@id/notificationsImageView"
                     app:layout_constraintHorizontal_bias="0.0"
-                    app:layout_constraintStart_toEndOf="@+id/notificationsHeadingTextView"
-                    app:layout_constraintTop_toTopOf="@+id/notificationsHeadingTextView"
+                    app:layout_constraintStart_toEndOf="@id/notificationsHeadingTextView"
+                    app:layout_constraintTop_toTopOf="@id/notificationsHeadingTextView"
                     tools:text="@string/text_new" />
 
                 <com.google.android.material.textview.MaterialTextView

@@ -66,6 +66,7 @@ class Constants {
         const val ACTION_THEME_DISCOVER                         = "theme-discover"
         const val ACTION_THEME_EXPLORE                          = "theme-explore"
         const val ACTION_KYC_STATUS                             = "kyc_status"
+        const val ACTION_DISPLAY_NUMBER                         = "display-number"
         const val ACTION_ADD_BANK                               = "add-bank"
         const val ACTION_REJECT_ORDER                           = "reject-order"
         const val ACTION_SHARE_BILL                             = "share-bill"
@@ -96,6 +97,7 @@ class Constants {
         const val ACTION_GST_PENDING                            = "gst-pending"
         const val ACTION_GST_VERIFIED                           = "gst-verified"
         const val ACTION_GST_REJECTED                           = "gst-rejected"
+        const val ACTION_BILLING_POS                            = "billing-pos"
         //PAGES
         const val PAGE_REFER                                    = "refer"
         const val PAGE_HELP                                     = "help"

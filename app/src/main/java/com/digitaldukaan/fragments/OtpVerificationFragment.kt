@@ -207,6 +207,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
     private fun startCountDownTimer() {
         counterTextView.visibility = View.VISIBLE
         mCountDownTimer = object: CountDownTimer(Constants.TIMER_RESEND_OTP, Constants.TIMER_DELAY) {
+
             override fun onTick(millisUntilFinished: Long) {
                 mTimerCompleted = false
                 CoroutineScopeUtils().runTaskOnCoroutineMain {
