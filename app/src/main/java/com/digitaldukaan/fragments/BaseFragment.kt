@@ -545,16 +545,20 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     }
 
     protected open fun showStateSelectionDialog() {
-        mActivity?.let {
-            AlertDialog.Builder(it).apply {
-                setTitle("Select State")
-                setItems(R.array.state_array) { dialogInterface: DialogInterface, i: Int ->
-                    val stateList = resources.getStringArray(R.array.state_array).toList()
-                    onAlertDialogItemClicked(stateList[i], id, i)
-                    dialogInterface.dismiss()
-                }
-                setCancelable(false)
-            }.create().show()
+        try {
+            mActivity?.let { context ->
+                AlertDialog.Builder(context).apply {
+                    setTitle("Select State")
+                    setCancelable(false)
+                    setItems(R.array.state_array) { dialogInterface: DialogInterface, i: Int ->
+                        val stateList = context.resources?.getStringArray(R.array.state_array)?.toList() ?: ArrayList<String>()
+                        onAlertDialogItemClicked(stateList[i], id, i)
+                        dialogInterface.dismiss()
+                    }
+                }.create().show()
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "showStateSelectionDialog: ${e.message}", e)
         }
     }
 
@@ -1522,11 +1526,16 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                         ctaTextView.visibility = View.INVISIBLE
                         displayMessage.visibility = View.GONE
                     }
-                    txnChargeTextView.text = "${staticText?.transaction_charges} (${response?.transactionCharges}%)"
-                    bottomSheetHeadingTextView.text = "${staticText?.order_number} ${response?.orderId}"
-                    billAmountValueTextView.text = "${getString(R.string.rupee_symbol)} ${response?.amount}"
-                    txnChargeValueTextView.text = "${getString(R.string.rupee_symbol)} ${response?.transactionChargeAmount}"
-                    amountSettleValueTextView.text = "${getString(R.string.rupee_symbol)} ${response?.settlementAmount}"
+                    var displayTextMessage = "${staticText?.transaction_charges} (${response?.transactionCharges}%)"
+                    txnChargeTextView.text = displayTextMessage
+                    displayTextMessage = "${staticText?.order_number} ${response?.orderId}"
+                    bottomSheetHeadingTextView.text = displayTextMessage
+                    displayTextMessage = "${getString(R.string.rupee_symbol)} ${response?.amount}"
+                    billAmountValueTextView.text = displayTextMessage
+                    displayTextMessage = "${getString(R.string.rupee_symbol)} ${response?.transactionChargeAmount}"
+                    txnChargeValueTextView.text = displayTextMessage
+                    displayTextMessage = "${getString(R.string.rupee_symbol)} ${response?.settlementAmount}"
+                    amountSettleValueTextView.text = displayTextMessage
                     if (isNotEmpty(response?.paymentImage)) mActivity?.let { context -> Glide.with(context).load(response?.paymentImage).into(paymentModeImageView) }
                     if (isNotEmpty(response?.settlementCdn)) mActivity?.let { context -> Glide.with(context).load(response?.settlementCdn).into(imageViewBottom) }
                     closeImageView.setOnClickListener { bottomSheetDialog.dismiss() }
@@ -1637,7 +1646,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     open fun showContactPickerBottomSheet(amount: String, imageCdn: String = "") {
         if (!askContactPermission()) {
             mActivity?.let {
-                val mContactPickerBottomSheet: BottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
+                val mContactPickerBottomSheet = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
                 val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_contact_pick, it.findViewById(R.id.bottomSheetContainer))
                 mContactPickerBottomSheet.apply {
                     val staticText = StaticInstances.sOrderPageInfoStaticData
@@ -1740,7 +1749,8 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                 idHeading.text = idStr
                 val amountStr = "₹ ${smsObj?.amount}"
                 amountTextView.text = amountStr
-                linkSentToTextView.text = "${smsObj?.staticText?.text_your_link_sent_to} $contactName"
+                val displayMessageStr = "${smsObj?.staticText?.text_your_link_sent_to} $contactName"
+                linkSentToTextView.text = displayMessageStr
                 dateHeading.text = smsObj?.staticText?.text_date
                 timeTextView.text = smsObj?.time
                 dateTextView.text = smsObj?.date
@@ -2017,94 +2027,98 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
             if (null != sStaffInvitationDialog && true == sStaffInvitationDialog?.isShowing) return@runTaskOnCoroutineMain
             if (null == StaticInstances.sStaffInvitation) return@runTaskOnCoroutineMain
             mActivity?.let { context ->
-                sStaffInvitationDialog = Dialog(context)
-                val view = LayoutInflater.from(context).inflate(R.layout.multi_user_selection_dialog, null)
-                var selectedId = 1
-                sStaffInvitationDialog?.apply {
-                    setContentView(view)
-                    setCancelable(false)
-                    window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-                    view?.run {
-                        val dialogImageView: ImageView = findViewById(R.id.dialogImageView)
-                        val moreOptionsContainer: View = findViewById(R.id.moreOptionsContainer)
-                        val dialogOptionsRecyclerView: RecyclerView = findViewById(R.id.dialogOptionsRecyclerView)
-                        val nextTextView: TextView = findViewById(R.id.nextTextView)
-                        val moreOptionsTextView: TextView = findViewById(R.id.moreOptionsTextView)
-                        val dialogHeadingTextView: TextView = findViewById(R.id.dialogHeadingTextView)
-                        val staffInvitation = StaticInstances.sStaffInvitation
-                        mActivity?.let { context ->
-                            Glide.with(context).load(staffInvitation?.cdn).into(dialogImageView)
-                        }
-                        dialogHeadingTextView.text = staffInvitation?.heading
-                        moreOptionsTextView.setHtmlData(staffInvitation?.textMoreOptions)
-                        if (true == staffInvitation?.invitationList?.isNotEmpty()) {
-                            staffInvitation.invitationList[0]?.isSelected = true
-                            mMultiUserAdapter = StaffInvitationAdapter(staffInvitation.invitationList, object : IAdapterItemClickListener {
-                                override fun onAdapterItemClickListener(position: Int) {
-                                    staffInvitation.invitationList.forEachIndexed { _, item -> item?.isSelected = false }
-                                    staffInvitation.invitationList[position]?.isSelected = true
-                                    selectedId = when (staffInvitation.invitationList[position]?.id) {
-                                        Constants.STAFF_INVITATION_CODE_EXIT -> {
-                                            staffInvitation.invitationList[position]?.id ?: Constants.STAFF_INVITATION_CODE_EXIT
+                try {
+                    sStaffInvitationDialog = Dialog(context)
+                    val view = LayoutInflater.from(context).inflate(R.layout.multi_user_selection_dialog, null)
+                    var selectedId = 1
+                    sStaffInvitationDialog?.apply {
+                        setContentView(view)
+                        setCancelable(false)
+                        window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                        view?.run {
+                            val dialogImageView: ImageView = findViewById(R.id.dialogImageView)
+                            val moreOptionsContainer: View = findViewById(R.id.moreOptionsContainer)
+                            val dialogOptionsRecyclerView: RecyclerView = findViewById(R.id.dialogOptionsRecyclerView)
+                            val nextTextView: TextView = findViewById(R.id.nextTextView)
+                            val moreOptionsTextView: TextView = findViewById(R.id.moreOptionsTextView)
+                            val dialogHeadingTextView: TextView = findViewById(R.id.dialogHeadingTextView)
+                            val staffInvitation = StaticInstances.sStaffInvitation
+                            mActivity?.let { context ->
+                                Glide.with(context).load(staffInvitation?.cdn).into(dialogImageView)
+                            }
+                            dialogHeadingTextView.text = staffInvitation?.heading
+                            moreOptionsTextView.setHtmlData(staffInvitation?.textMoreOptions)
+                            if (true == staffInvitation?.invitationList?.isNotEmpty()) {
+                                staffInvitation.invitationList[0]?.isSelected = true
+                                mMultiUserAdapter = StaffInvitationAdapter(staffInvitation.invitationList, object : IAdapterItemClickListener {
+                                    override fun onAdapterItemClickListener(position: Int) {
+                                        staffInvitation.invitationList.forEachIndexed { _, item -> item?.isSelected = false }
+                                        staffInvitation.invitationList[position]?.isSelected = true
+                                        selectedId = when (staffInvitation.invitationList[position]?.id) {
+                                            Constants.STAFF_INVITATION_CODE_EXIT -> {
+                                                staffInvitation.invitationList[position]?.id ?: Constants.STAFF_INVITATION_CODE_EXIT
+                                            }
+                                            Constants.STAFF_INVITATION_CODE_REJECT -> {
+                                                staffInvitation.invitationList[position]?.id ?: Constants.STAFF_INVITATION_CODE_REJECT
+                                            }
+                                            else -> {
+                                                staffInvitation.invitationList[position]?.id ?: Constants.STAFF_INVITATION_CODE_ACCEPT
+                                            }
                                         }
-                                        Constants.STAFF_INVITATION_CODE_REJECT -> {
-                                            staffInvitation.invitationList[position]?.id ?: Constants.STAFF_INVITATION_CODE_REJECT
-                                        }
-                                        else -> {
-                                            staffInvitation.invitationList[position]?.id ?: Constants.STAFF_INVITATION_CODE_ACCEPT
-                                        }
+                                        mMultiUserAdapter?.notifyDataSetChanged()
                                     }
-                                    mMultiUserAdapter?.notifyDataSetChanged()
-                                }
-                            })
-                        } else return@runTaskOnCoroutineMain
-                        moreOptionsContainer.setOnClickListener {
-                            moreOptionsContainer.visibility = View.GONE
-                            mMultiUserAdapter?.showCompleteList()
-                        }
-                        dialogOptionsRecyclerView.apply {
-                            layoutManager = LinearLayoutManager(context)
-                            adapter = mMultiUserAdapter
-                        }
-                        nextTextView.apply {
-                            text = staffInvitation?.cta?.text
-                            setOnClickListener {
-                                CoroutineScopeUtils().runTaskOnCoroutineBackground {
-                                    try {
-                                        val response = RetrofitApi().getServerCallObject()?.updateInvitationStatus(UpdateInvitationRequest(status = selectedId, StoreId = staffInvitation?.invitedStoreId ?: 0, userId = getStringDataFromSharedPref(Constants.USER_ID).toInt(), languageId = 1))
-                                        response?.let {
-                                            stopProgress()
-                                            if (it.isSuccessful) {
-                                                val updateInvitationResponse = Gson().fromJson<CheckStaffInviteResponse>(it.body()?.mCommonDataStr, CheckStaffInviteResponse::class.java)
-                                                it.body()?.let {
-                                                    withContext(Dispatchers.Main) {
-                                                        if (it.mIsSuccessStatus) {
-                                                            sStaffInvitationDialog?.dismiss()
-                                                            showShortSnackBar(it.mMessage, true, R.drawable.ic_check_circle)
-                                                            when (selectedId) {
-                                                                Constants.STAFF_INVITATION_CODE_ACCEPT -> {
-                                                                    sIsInvitationAvailable = updateInvitationResponse.mIsInvitationAvailable
-                                                                    StaticInstances.sPermissionHashMap = null
-                                                                    StaticInstances.sPermissionHashMap = updateInvitationResponse.permissionsMap
-                                                                    storeStringDataInSharedPref(Constants.STORE_ID, updateInvitationResponse.storeId)
-                                                                    StaticInstances.sPermissionHashMap?.let { map -> launchScreenFromPermissionMap(map) }
+                                })
+                            } else return@runTaskOnCoroutineMain
+                            moreOptionsContainer.setOnClickListener {
+                                moreOptionsContainer.visibility = View.GONE
+                                mMultiUserAdapter?.showCompleteList()
+                            }
+                            dialogOptionsRecyclerView.apply {
+                                layoutManager = LinearLayoutManager(context)
+                                adapter = mMultiUserAdapter
+                            }
+                            nextTextView.apply {
+                                text = staffInvitation.cta?.text
+                                setOnClickListener {
+                                    CoroutineScopeUtils().runTaskOnCoroutineBackground {
+                                        try {
+                                            val response = RetrofitApi().getServerCallObject()?.updateInvitationStatus(UpdateInvitationRequest(status = selectedId, StoreId = staffInvitation.invitedStoreId, userId = getStringDataFromSharedPref(Constants.USER_ID).toInt(), languageId = 1))
+                                            response?.let {
+                                                stopProgress()
+                                                if (it.isSuccessful) {
+                                                    val updateInvitationResponse = Gson().fromJson<CheckStaffInviteResponse>(it.body()?.mCommonDataStr, CheckStaffInviteResponse::class.java)
+                                                    it.body()?.let {
+                                                        withContext(Dispatchers.Main) {
+                                                            if (it.mIsSuccessStatus) {
+                                                                sStaffInvitationDialog?.dismiss()
+                                                                showShortSnackBar(it.mMessage, true, R.drawable.ic_check_circle)
+                                                                when (selectedId) {
+                                                                    Constants.STAFF_INVITATION_CODE_ACCEPT -> {
+                                                                        sIsInvitationAvailable = updateInvitationResponse.mIsInvitationAvailable
+                                                                        StaticInstances.sPermissionHashMap = null
+                                                                        StaticInstances.sPermissionHashMap = updateInvitationResponse.permissionsMap
+                                                                        storeStringDataInSharedPref(Constants.STORE_ID, updateInvitationResponse.storeId)
+                                                                        StaticInstances.sPermissionHashMap?.let { map -> launchScreenFromPermissionMap(map) }
+                                                                    }
+                                                                    Constants.STAFF_INVITATION_CODE_EXIT -> logoutFromApplication(isAppLogout = true)
+                                                                    else -> checkStaffInvite()
                                                                 }
-                                                                Constants.STAFF_INVITATION_CODE_EXIT -> logoutFromApplication(isAppLogout = true)
-                                                                else -> checkStaffInvite()
-                                                            }
-                                                        } else showShortSnackBar(it.mMessage, true, R.drawable.ic_close_red)
+                                                            } else showShortSnackBar(it.mMessage, true, R.drawable.ic_close_red)
+                                                        }
                                                     }
                                                 }
                                             }
+                                        } catch (e: Exception) {
+                                            exceptionHandlingForAPIResponse(e)
                                         }
-                                    } catch (e: Exception) {
-                                        exceptionHandlingForAPIResponse(e)
                                     }
                                 }
                             }
                         }
-                    }
-                }?.show()
+                    }?.show()
+                } catch (e: Exception) {
+                    Log.e(TAG, "showStaffInvitationDialog: ${e.message}", e)
+                }
             }
         }
     }
@@ -2130,7 +2144,6 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     fun launchScreenFromPermissionMap(permissionMap: HashMap<String, Boolean>) {
         clearFragmentBackStack()
         Log.d(TAG, "$permissionMap")
-        Log.d(TAG, "sIsInvitationAvailable :: $sIsInvitationAvailable")
         when {
             true == permissionMap[Constants.PAGE_ORDER] -> {
                 launchFragment(OrderFragment.newInstance(isClearOrderPageResponse = true), true)
@@ -2149,7 +2162,6 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
             }
         }
         mActivity?.checkBottomNavBarFeatureVisibility()
-        Log.d(TAG, " sIsInvitationAvailable :: launchScreenFromPermissionMap: called")
         if (sIsInvitationAvailable) showStaffInvitationDialog()
     }
 
@@ -2339,11 +2351,15 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                                 object : IAdapterItemClickListener {
 
                                     override fun onAdapterItemClickListener(position: Int) {
-                                        bottomSheetDialog.dismiss()
-                                        val item = customDomainBottomSheetResponse.suggestedDomainsList?.get(position)
-                                        if (Constants.NEW_RELEASE_TYPE_WEBVIEW == item?.cta?.action) {
-                                            val url = BuildConfig.WEB_VIEW_URL + "${item.cta?.pageUrl}?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&domain_name=${item.domainName}&purchase_price=${item.originalPrice}&renewal_price=${item.renewalPrice}&${AFInAppEventParameterName.CHANNEL}=${AFInAppEventParameterName.ON_BOARDING}"
-                                            openWebViewFragment(this@BaseFragment, "", url)
+                                        try {
+                                            bottomSheetDialog.dismiss()
+                                            val item = customDomainBottomSheetResponse.suggestedDomainsList?.get(position)
+                                            if (Constants.NEW_RELEASE_TYPE_WEBVIEW == item?.cta?.action) {
+                                                val url = BuildConfig.WEB_VIEW_URL + "${item.cta?.pageUrl}?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&domain_name=${item.domainName}&purchase_price=${item.originalPrice}&renewal_price=${item.renewalPrice}&${AFInAppEventParameterName.CHANNEL}=${AFInAppEventParameterName.ON_BOARDING}"
+                                                openWebViewFragment(this@BaseFragment, "", url)
+                                            }
+                                        } catch (e: Exception) {
+                                            Log.e(TAG, "onAdapterItemClickListener: ${e.message}", e)
                                         }
                                     }
                                 })

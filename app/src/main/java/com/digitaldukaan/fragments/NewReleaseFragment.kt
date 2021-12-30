@@ -67,12 +67,10 @@ class NewReleaseFragment: BaseFragment(), IStoreSettingsItemClicked {
         return mContentView
     }
 
-    override fun onStoreSettingItemClicked(subPagesResponse: StoreOptionsResponse) {
-        Log.d(TAG, "onStoreSettingItemClicked: do nothing")
-    }
+    override fun onStoreSettingItemClicked(subPagesResponse: StoreOptionsResponse) = Unit
 
     override fun onNewReleaseItemClicked(responseItem: TrendingListResponse?) {
-        Log.d(TAG, "onNewReleaseItemClicked :: responseItem?.mAction :: ${responseItem?.mAction}")
+        Log.d(TAG, "onNewReleaseItemClicked :: responseItem :: $responseItem")
         if (true == responseItem?.isStaffFeatureLocked) {
             showStaffFeatureLockedBottomSheet(Constants.NAV_BAR_SETTINGS)
             return
@@ -132,6 +130,9 @@ class NewReleaseFragment: BaseFragment(), IStoreSettingsItemClicked {
                 }
 
             }
+            Constants.ACTION_BILLING_POS -> {
+                launchFragment(BillingPosFragment.newInstance(), true)
+            }
             else -> showTrendingOffersBottomSheet()
         }
     }
@@ -184,9 +185,8 @@ class NewReleaseFragment: BaseFragment(), IStoreSettingsItemClicked {
         getLocationFromGoogleMap()
     }
 
-    override fun onLocationChanged(lat: Double, lng: Double) {
+    override fun onLocationChanged(lat: Double, lng: Double) =
         openWebViewFragmentWithLocation(this, "", BuildConfig.WEB_VIEW_URL + mNewReleaseItemClickResponse?.mPage + "?storeid=${PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)}&token=${PrefsManager.getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&lat=$lat&lng=$lng")
-    }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         Log.i(TAG, "onRequestPermissionResult")

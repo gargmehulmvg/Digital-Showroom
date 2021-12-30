@@ -210,19 +210,19 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                 orderDetailList?.forEachIndexed { _, itemResponse -> if (Constants.ITEM_TYPE_DELIVERY_CHARGE == itemResponse.item_type || Constants.ITEM_TYPE_CHARGE == itemResponse.item_type) orderDetailsItemsList?.remove(itemResponse) }
             }
             val request = UpdateOrderRequest(
-                orderId,
-                getActualAmountOfOrder(),
-                false,
-                deliveryInfo?.deliveryTo,
-                deliveryInfo?.deliveryFrom,
-                mDeliveryTimeStr,
-                orderDetailsItemsList,
-                "",
-                if (true == otherChargesEditText.text?.isNotEmpty()) otherChargesEditText.text.toString() else "" ,
-                if (true == otherChargesValueEditText.text?.isNotEmpty()) otherChargesValueEditText.text.toString().toDouble() else 0.0,
-                if (true == discountsValueEditText.text?.isNotEmpty()) discountsValueEditText.text.toString().toDouble() else 0.0,
-                payAmount,
-                mDeliveryChargeAmount
+                orderId = orderId,
+                amount = getActualAmountOfOrder(),
+                cash_paid = false,
+                deliveryTo = deliveryInfo?.deliveryTo,
+                deliveryFrom = deliveryInfo?.deliveryFrom,
+                customDeliveryTime = mDeliveryTimeStr,
+                itemsList = orderDetailsItemsList,
+                billUrl = "",
+                extraChargeName = if (true == otherChargesEditText.text?.isNotEmpty()) otherChargesEditText.text.toString() else "" ,
+                extraCharges = if (true == otherChargesValueEditText.text?.isNotEmpty()) otherChargesValueEditText.text.toString().toDouble() else 0.0,
+                discount = if (true == discountsValueEditText.text?.isNotEmpty()) discountsValueEditText.text.toString().toDouble() else 0.0,
+                payAmount = payAmount,
+                deliveryCharge = mDeliveryChargeAmount
             )
             Log.d(OrderDetailFragment::class.java.simpleName, "initiateSendBillServerCall: $request")
             showProgressDialog(mActivity)
@@ -290,6 +290,21 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                 mActivity?.let { context ->
                     promoPercentageImageView?.let { it -> Glide.with(context).load(orderDetailMainResponse?.promoCodeDetails?.percentageCdn).into(it) }
                 }
+                setAmountToEditText()
+            }
+            if (isNotEmpty(deliveryChargeValueEditText?.text.toString().trim())) {
+                val str = deliveryChargeValueEditText?.text.toString()
+                mDeliveryChargeAmount = if (isNotEmpty(str)) { str.toDouble() } else 0.0
+                setAmountToEditText()
+            }
+            if (isNotEmpty(otherChargesValueEditText?.text.toString().trim())) {
+                val str = otherChargesValueEditText?.text.toString()
+                mOtherChargeAmount = if (isNotEmpty(str)) { str.toDouble() } else 0.0
+                setAmountToEditText()
+            }
+            if (isNotEmpty(discountsValueEditText?.text.toString().trim())) {
+                val str = discountsValueEditText?.text.toString()
+                mDiscountAmount = if (isNotEmpty(str)) { str.toDouble() } else 0.0
                 setAmountToEditText()
             }
         }
@@ -529,6 +544,8 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
     }
 
     private fun setupOrderDetailItemRecyclerView(orderDetailResponse: OrderDetailsResponse?, isCreateListItemAdded: Boolean, displayStatus: String?): Boolean {
+        mTotalPayAmount = 0.0
+        mTotalActualAmount = 0.0
         var isCreateListItemAdded1 = isCreateListItemAdded
         orderDetailItemRecyclerView?.apply {
             layoutManager = LinearLayoutManager(mActivity)
@@ -639,7 +656,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
         deliveryChargeValueEditText?.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(editable: Editable?) {
                 val str = editable?.toString()
-                mDeliveryChargeAmount = if (true == str?.isNotEmpty()) { str.toDouble() } else 0.0
+                mDeliveryChargeAmount = if (isNotEmpty(str)) { str?.toDouble() ?: 0.0 } else 0.0
                 setAmountToEditText()
 
             }
@@ -651,7 +668,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
         otherChargesValueEditText?.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(editable: Editable?) {
                 val str = editable?.toString()
-                mOtherChargeAmount = if (true == str?.isNotEmpty()) { str.toDouble() } else 0.0
+                mOtherChargeAmount = if (isNotEmpty(str)) { str?.toDouble() ?: 0.0 } else 0.0
                 setAmountToEditText()
             }
 
@@ -662,7 +679,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
         discountsValueEditText?.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(editable: Editable?) {
                 val str = editable?.toString()
-                mDiscountAmount = if (true == str?.isNotEmpty()) { str.toDouble() } else 0.0
+                mDiscountAmount = if (isNotEmpty(str)) { str?.toDouble() ?: 0.0 } else 0.0
                 setAmountToEditText()
             }
 
@@ -722,9 +739,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
         amountEditText?.setText("$amount")
     }
 
-    private fun getActualAmountOfOrder() : Double {
-        return mTotalActualAmount + mDeliveryChargeAmount + mOtherChargeAmount
-    }
+    private fun getActualAmountOfOrder() : Double = mTotalActualAmount + mDeliveryChargeAmount + mOtherChargeAmount
 
     private fun setStaticDataToUI(orderDetailResponse: OrderDetailsResponse?) {
         mOrderDetailStaticData?.run {
@@ -869,10 +884,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
     private fun showDeliveryTimeBottomSheet(deliveryTimeResponse: DeliveryTimeResponse?, isCallSendBillServerCall: Boolean, isPrepaidOrder: Boolean) {
         mActivity?.run {
             val bottomSheetDialog = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
-            val view = LayoutInflater.from(this).inflate(
-                R.layout.bottom_sheet_delivery_time,
-                findViewById(R.id.bottomSheetContainer)
-            )
+            val view = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_delivery_time, findViewById(R.id.bottomSheetContainer))
             bottomSheetDialog.apply {
                 setContentView(view)
                 setBottomSheetCommonProperty()
@@ -897,7 +909,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                     bottomSheetSendBillText.setOnClickListener {
                         if (true == mDeliveryTimeStr?.equals(CUSTOM, true)) {
                             mDeliveryTimeStr = deliveryTimeEditText?.text.toString()
-                            if (true == mDeliveryTimeStr?.isEmpty()) {
+                            if (isEmpty(mDeliveryTimeStr)) {
                                 deliveryTimeEditText?.apply {
                                     error = getString(R.string.mandatory_field_message)
                                     requestFocus()
@@ -942,10 +954,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
     private fun showOrderRejectBottomSheet() {
         mActivity?.run {
             val bottomSheetDialog = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
-            val view = LayoutInflater.from(this).inflate(
-                R.layout.bottom_sheet_order_reject,
-                findViewById(R.id.bottomSheetContainer)
-            )
+            val view = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_order_reject, findViewById(R.id.bottomSheetContainer))
             bottomSheetDialog.apply {
                 setContentView(view)
                 setBottomSheetCommonProperty()
@@ -1129,7 +1138,6 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                 val ctaTextView: TextView = findViewById(R.id.ctaTextView)
                 val imageViewBottom: ImageView = findViewById(R.id.imageViewBottom)
                 val paymentModeImageView: ImageView = findViewById(R.id.paymentModeImageView)
-
                 val staticText = transactionItem?.staticText
                 textViewTop.text = transactionItem?.transactionMessage
                 textViewBottom.text = transactionItem?.settlementMessage

@@ -1,6 +1,7 @@
 package com.digitaldukaan.services.serviceinterface
 
 import com.digitaldukaan.models.response.CommonApiResponse
+import com.digitaldukaan.models.response.GenerateOtpResponse
 
 interface IProfilePreviewServiceInterface {
 
@@ -25,4 +26,8 @@ interface IProfilePreviewServiceInterface {
     fun onSetStoreUserDetailsResponse(apiResponse: CommonApiResponse)
 
     fun onSetGstResponse(apiResponse: CommonApiResponse)
+
+    fun onGenerateOTPResponse(generateOtpResponse: GenerateOtpResponse)
+
+    fun onVerifyDisplayPhoneNumberResponse(apiResponse: CommonApiResponse)
 }

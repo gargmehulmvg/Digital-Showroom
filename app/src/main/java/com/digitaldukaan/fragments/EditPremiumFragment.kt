@@ -149,10 +149,14 @@ class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
                         try {
                             val response = RetrofitApi().getServerCallObject()?.getProductShareStoreData()
                             CoroutineScopeUtils().runTaskOnCoroutineMain {
-                                val commonResponse = response?.body()
-                                stopProgress()
-                                mShareDataOverWhatsAppText = Gson().fromJson<String>(commonResponse?.mCommonDataStr, String::class.java)
-                                shareOnWhatsApp(mShareDataOverWhatsAppText)
+                                try {
+                                    val commonResponse = response?.body()
+                                    stopProgress()
+                                    mShareDataOverWhatsAppText = Gson().fromJson<String>(commonResponse?.mCommonDataStr, String::class.java)
+                                    shareOnWhatsApp(mShareDataOverWhatsAppText)
+                                } catch (e: Exception) {
+                                    exceptionHandlingForAPIResponse(e)
+                                }
                             }
                         } catch (e: Exception) {
                             exceptionHandlingForAPIResponse(e)
