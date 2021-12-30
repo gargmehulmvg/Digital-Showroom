@@ -110,5 +110,7 @@ interface AFInAppEventType {
         const val EVENT_DELIVERY_SHIPPING_MODE                      =   "delivery_shipping_mode"
         const val EVENT_INVENTORY_TOGGLE                            =   "inventory_set"
         const val EVENT_INVENTORY_QUANTITY_MODIFY                   =   "inventory_quantity_modify"
+        const val EVENT_BILLING_POS                                 =   "Billing_POS"
+        const val EVENT_BILLING_POS_CALLBACK                        =   "Billing_POS_Callback"
     }
 }

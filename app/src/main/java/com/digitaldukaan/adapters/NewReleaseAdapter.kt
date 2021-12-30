@@ -25,6 +25,7 @@ class NewReleaseAdapter(
     inner class AppSettingsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val itemLayout: View = itemView.findViewById(R.id.itemLayout)
         val newReleaseLockGroup: View = itemView.findViewById(R.id.newReleaseLockGroup)
+        val trendingNewTextView: TextView = itemView.findViewById(R.id.trendingNewTextView)
         val trendingTextView: TextView = itemView.findViewById(R.id.trendingTextView)
         val imageView: ImageView = itemView.findViewById(R.id.imageView)
         val textView: TextView = itemView.findViewById(R.id.textView)
@@ -51,7 +52,7 @@ class NewReleaseAdapter(
                 newTextView.visibility = View.VISIBLE
                 newTextView.background = null
                 activity?.let { context -> Glide.with(context).load(responseItem?.mNewImageUrl).into(newTextView) }
-            }
+            } else newTextView.visibility = View.INVISIBLE
             when (responseItem?.mType) {
                 Constants.NEW_RELEASE_TYPE_GOOGLE_ADS -> activity?.let {
                     itemLayout.background = ContextCompat.getDrawable(it, R.drawable.slight_curve_google_ads_background)
@@ -60,12 +61,13 @@ class NewReleaseAdapter(
                 Constants.NEW_RELEASE_TYPE_CUSTOM_DOMAIN -> activity?.let { itemLayout.background = ContextCompat.getDrawable(it, R.drawable.curve_premium_selector) }
                 Constants.NEW_RELEASE_TYPE_PREPAID_ORDER -> newTextView.visibility = View.VISIBLE
                 Constants.NEW_RELEASE_TYPE_PREMIUM -> activity?.let { itemLayout.background = ContextCompat.getDrawable(it, R.drawable.curve_premium_selector) }
-                Constants.NEW_RELEASE_TYPE_NEW -> newTextView.visibility = View.VISIBLE
                 Constants.NEW_RELEASE_TYPE_PAYMENT_MODES -> newTextView.visibility = View.VISIBLE
                 Constants.NEW_RELEASE_TYPE_TRENDING -> {
-                    newTextView.visibility = View.GONE
-                    trendingTextView.text = responseItem.mType
-                    trendingTextView.setCompoundDrawablesWithIntrinsicBounds(R.drawable.ic_trending, 0, 0, 0)
+                    trendingTextView.text = null
+                    trendingNewTextView.apply {
+                        visibility = View.VISIBLE
+                        text = responseItem.mType
+                    }
                 }
                 else -> {}
             }
