@@ -584,3 +584,5 @@ fun openAppByPackageName(packageName: String, context: Context?) {
         }
     }
 }
+
+fun getSharedPreferenceName(): String = if (BuildConfig.DEBUG) Constants.SHARED_PREF_NAME_STAGING else Constants.SHARED_PREF_NAME

@@ -353,14 +353,14 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
 
     open fun storeStringDataInSharedPref(keyName: String, value: String?) {
         mActivity?.run {
-            val editor = getSharedPreferences(Constants.SHARED_PREF_NAME, MODE_PRIVATE).edit()
+            val editor = getSharedPreferences(getSharedPreferenceName(), MODE_PRIVATE).edit()
             editor.putString(keyName, value)
             editor.apply()
         }
     }
 
     open fun getStringDataFromSharedPref(keyName: String?): String {
-        val prefs = mActivity?.getSharedPreferences(Constants.SHARED_PREF_NAME, MODE_PRIVATE)
+        val prefs = mActivity?.getSharedPreferences(getSharedPreferenceName(), MODE_PRIVATE)
         return prefs?.getString(keyName, "").toString()
     }
 
@@ -1358,7 +1358,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
 
     fun logoutFromApplication(isAppLogout: Boolean = false) {
         if (!isAppLogout) showToast(mActivity?.getString(R.string.logout_message))
-        mActivity?.getSharedPreferences(Constants.SHARED_PREF_NAME, MODE_PRIVATE)?.edit()?.clear()?.apply()
+        mActivity?.getSharedPreferences(getSharedPreferenceName(), MODE_PRIVATE)?.edit()?.clear()?.apply()
         storeStringDataInSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN, "")
         storeStringDataInSharedPref(Constants.USER_AUTH_TOKEN, "")
         storeStringDataInSharedPref(Constants.STORE_NAME, "")

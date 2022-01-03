@@ -60,9 +60,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
     companion object {
         private var addProductStaticData: AddProductStaticText? = null
 
-        fun newInstance(): ProductFragment {
-            return ProductFragment()
-        }
+        fun newInstance(): ProductFragment = ProductFragment()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -127,21 +125,13 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
             mProductPageInfoResponse?.shareShop?.run {
                 shareButtonTextView?.text = this.mText
                 if (isNotEmpty(mCDN) && null != shareButtonImageView) {
-                    try {
-                        Glide.with(this@ProductFragment).load(mCDN).into(shareButtonImageView)
-                    } catch (e: Exception) {
-                        Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
-                    }
+                    Glide.with(this@ProductFragment).load(mCDN).into(shareButtonImageView)
                 }
             }
             mProductPageInfoResponse?.addProduct?.run {
                 addProductTextView?.text = this.mText
                 if (isNotEmpty(mCDN) && null != addProductImageView) {
-                    try {
-                        Glide.with(this@ProductFragment).load(mCDN).into(addProductImageView)
-                    } catch (e: Exception) {
-                        Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
-                    }
+                    Glide.with(this@ProductFragment).load(mCDN).into(addProductImageView)
                 }
             }
         }
@@ -689,28 +679,30 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
                         cancelTextView.setOnClickListener { bottomSheetDialog.dismiss() }
                         if (0 != availableQuantity) quantityEdiText.setText("$availableQuantity")
                         saveTextView.setOnClickListener {
-                            val quantity = quantityEdiText.text?.toString()
-                            if (isEmpty(quantity)) {
-                                quantityEdiText.error = addProductStaticData?.error_mandatory_field
-                                return@setOnClickListener
-                            }
-                            bottomSheetDialog.dismiss()
-                            val request = UpdateItemInventoryRequest(
-                                storeItemId = itemId,
-                                variantId = variantId,
-                                managedInventory = 1,
-                                availableQuantity = quantity?.toInt() ?: 0
-                            )
-                            mService?.quickUpdateItemInventory(request)
-                            AppEventsManager.pushAppEvents(
-                                eventName = AFInAppEventType.EVENT_INVENTORY_QUANTITY_MODIFY, isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                                data = mapOf(
-                                    AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                                    AFInAppEventParameterName.VARIANT_ID to "$variantId",
-                                    AFInAppEventParameterName.QUANTITY to "$quantity",
-                                    AFInAppEventParameterName.ITEM_ID to "$itemId"
+                            CoroutineScopeUtils().runTaskOnCoroutineMain {
+                                val quantity = quantityEdiText.text?.toString()
+                                if (isEmpty(quantity)) {
+                                    quantityEdiText.error = addProductStaticData?.error_mandatory_field
+                                    return@runTaskOnCoroutineMain
+                                }
+                                bottomSheetDialog.dismiss()
+                                val request = UpdateItemInventoryRequest(
+                                    storeItemId = itemId,
+                                    variantId = variantId,
+                                    managedInventory = 1,
+                                    availableQuantity = quantity?.toInt() ?: 0
                                 )
-                            )
+                                mService?.quickUpdateItemInventory(request)
+                                AppEventsManager.pushAppEvents(
+                                    eventName = AFInAppEventType.EVENT_INVENTORY_QUANTITY_MODIFY, isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                                    data = mapOf(
+                                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                                        AFInAppEventParameterName.VARIANT_ID to "$variantId",
+                                        AFInAppEventParameterName.QUANTITY to "$quantity",
+                                        AFInAppEventParameterName.ITEM_ID to "$itemId"
+                                    )
+                                )
+                            }
                         }
                     }
                 }.show()

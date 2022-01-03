@@ -304,11 +304,7 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
         mService.getMasterItems(mCategoryId, mPageCount)
     }
 
-    override fun onExploreCategoryServerException(e: Exception) {
-        exceptionHandlingForAPIResponse(e)
-    }
+    override fun onExploreCategoryServerException(e: Exception) = exceptionHandlingForAPIResponse(e)
 
-    override fun onToolbarSideIconClicked() {
-        Log.d(TAG, "onToolbarSideIconClicked: do nothing")
-    }
+    override fun onToolbarSideIconClicked() = Unit
 }
