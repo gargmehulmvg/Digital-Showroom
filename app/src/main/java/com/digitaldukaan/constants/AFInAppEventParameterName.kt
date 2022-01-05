@@ -93,6 +93,9 @@ interface AFInAppEventParameterName {
         const val INVENTORY                                     =   "inventory"
         const val VARIANTS                                      =   "variants"
         const val QUANTITY                                      =   "quantity"
+        const val FIELD                                         =   "field"
+        const val SHOW                                          =   "show"
+        const val MANDATORY                                     =   "mandatory"
         //NOTIFICATION_CHANNEL
         const val NOTIFICATION_GROUP_ID                         =   "DIGITAL_DUKAAN_G_ID"
         const val NOTIFICATION_GROUP_NAME                       =   "DIGITAL_DUKAAN_G_NAME"
