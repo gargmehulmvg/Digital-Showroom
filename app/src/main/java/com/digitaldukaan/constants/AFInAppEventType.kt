@@ -115,5 +115,7 @@ interface AFInAppEventType {
         const val EVENT_CUSTOMER_ADDRESS_FIELDS                     =   "edit_customer_address_fields"
         const val EVENT_SHOW_FIELD                                  =   "show_field"
         const val EVENT_MARK_FIELD_MANDATORY                        =   "mark_mandatory"
+        const val EVENT_EDIT_DISPLAY_PHONE                          =   "edit_display_phone"
+        const val EVENT_VERIFY_OTP                                  =   "verify_otp"
     }
 }

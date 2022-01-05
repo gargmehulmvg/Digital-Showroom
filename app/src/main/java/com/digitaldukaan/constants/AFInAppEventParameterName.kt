@@ -38,6 +38,7 @@ interface AFInAppEventParameterName {
         const val STORE_TYPE                                    =   "store_type"
         const val STORE_URL                                     =   "store_url"
         const val VERIFY_PHONE                                  =   "verify_phone"
+        const val VERIFY                                        =   "verify"
         const val STORE_TYPE_DUKAAN                             =   "Dukaan"
         const val ADDRESS                                       =   "address"
         const val AMOUNT                                        =   "Amount"
