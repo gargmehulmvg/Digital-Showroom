@@ -2,9 +2,11 @@ package com.digitaldukaan.services.networkservice
 
 import android.util.Log
 import com.digitaldukaan.constants.Constants
+import com.digitaldukaan.exceptions.DeprecateAppVersionException
 import com.digitaldukaan.exceptions.UnAuthorizedAccessException
 import com.digitaldukaan.models.request.DeleteCategoryRequest
 import com.digitaldukaan.models.request.UpdateCategoryRequest
+import com.digitaldukaan.models.request.UpdateItemInventoryRequest
 import com.digitaldukaan.models.request.UpdateStockRequest
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.network.RetrofitApi
@@ -13,26 +15,18 @@ import com.google.gson.Gson
 
 class ProductNetworkService {
 
-    suspend fun getAddOrderBottomSheetDataServerCall(
-        serviceInterface: IProductServiceInterface
-    ) {
+    suspend fun getAddOrderBottomSheetDataServerCall(serviceInterface: IProductServiceInterface) {
         try {
             val response = RetrofitApi().getServerCallObject()?.getMasterCatalogStaticText()
             response?.let {
-                if (it.isSuccessful) {
-                    it.body()?.let { commonApiResponse -> serviceInterface.onAddProductBannerStaticDataResponse(commonApiResponse)
-                    }
+                if (it.isSuccessful) { it.body()?.let { commonApiResponse -> serviceInterface.onAddProductBannerStaticDataResponse(commonApiResponse) }
                 } else {
                     if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    if (Constants.ERROR_CODE_FORCE_UPDATE == it.code()) throw DeprecateAppVersionException()
                     val responseBody = it.errorBody()
                     responseBody?.let {
-                        val errorResponse = Gson().fromJson(
-                            responseBody.string(),
-                            CommonApiResponse::class.java
-                        )
-                        serviceInterface.onAddProductBannerStaticDataResponse(
-                            errorResponse
-                        )
+                        val errorResponse = Gson().fromJson(responseBody.string(), CommonApiResponse::class.java)
+                        serviceInterface.onAddProductBannerStaticDataResponse(errorResponse)
                     }
                 }
             }
@@ -42,17 +36,14 @@ class ProductNetworkService {
         }
     }
 
-    suspend fun getProductPageInfoServerCall(
-        serviceInterface: IProductServiceInterface
-    ) {
+    suspend fun getProductPageInfoServerCall(serviceInterface: IProductServiceInterface) {
         try {
             val response = RetrofitApi().getServerCallObject()?.getProductPageInfo()
             response?.let {
-                if (it.isSuccessful) {
-                    it.body()?.let { commonApiResponse -> serviceInterface.onProductPageInfoResponse(commonApiResponse)
-                    }
+                if (it.isSuccessful) { it.body()?.let { commonApiResponse -> serviceInterface.onProductPageInfoResponse(commonApiResponse) }
                 } else {
                     if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    if (Constants.ERROR_CODE_FORCE_UPDATE == it.code()) throw DeprecateAppVersionException()
                     val responseBody = it.errorBody()
                     responseBody?.let {
                         val errorResponse = Gson().fromJson(responseBody.string(), CommonApiResponse::class.java)
@@ -66,9 +57,7 @@ class ProductNetworkService {
         }
     }
 
-    suspend fun generateStorePdfServerCall(
-        serviceInterface: IProductServiceInterface
-    ) {
+    suspend fun generateStorePdfServerCall(serviceInterface: IProductServiceInterface) {
         try {
             val response = RetrofitApi().getServerCallObject()?.generateStorePdf()
             response?.let {
@@ -76,6 +65,7 @@ class ProductNetworkService {
                     it.body()?.let { responseBody -> serviceInterface.onGenerateStorePdfResponse(responseBody) }
                 } else {
                     if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    if (Constants.ERROR_CODE_FORCE_UPDATE == it.code()) throw DeprecateAppVersionException()
                     serviceInterface.onProductException(Exception(response.message()))
                 }
             }
@@ -85,9 +75,7 @@ class ProductNetworkService {
         }
     }
 
-    suspend fun getShareStorePdfTextServerCall(
-        serviceInterface: IProductServiceInterface
-    ) {
+    suspend fun getShareStorePdfTextServerCall(serviceInterface: IProductServiceInterface) {
         try {
             val response = RetrofitApi().getServerCallObject()?.getShareStorePdfText()
             response?.let {
@@ -95,6 +83,7 @@ class ProductNetworkService {
                     it.body()?.let { responseBody -> serviceInterface.onShareStorePdfDataResponse(responseBody) }
                 } else {
                     if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    if (Constants.ERROR_CODE_FORCE_UPDATE == it.code()) throw DeprecateAppVersionException()
                     serviceInterface.onProductException(Exception(response.message()))
                 }
             }
@@ -104,23 +93,17 @@ class ProductNetworkService {
         }
     }
 
-    suspend fun generateProductStorePdfServerCall(
-        serviceInterface: IProductServiceInterface
-    ) {
+    suspend fun generateProductStorePdfServerCall(serviceInterface: IProductServiceInterface) {
         try {
             val response = RetrofitApi().getServerCallObject()?.generateProductStorePdf()
             response?.let {
-                if (it.isSuccessful) {
-                    it.body()?.let { commonApiResponse -> serviceInterface.onProductPDFGenerateResponse(commonApiResponse)
-                    }
-                } else {
+                if (it.isSuccessful) { it.body()?.let { commonApiResponse -> serviceInterface.onProductPDFGenerateResponse(commonApiResponse) } }
+                else {
                     if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    if (Constants.ERROR_CODE_FORCE_UPDATE == it.code()) throw DeprecateAppVersionException()
                     val responseBody = it.errorBody()
                     responseBody?.let {
-                        val errorResponse = Gson().fromJson(
-                            responseBody.string(),
-                            CommonApiResponse::class.java
-                        )
+                        val errorResponse = Gson().fromJson(responseBody.string(), CommonApiResponse::class.java)
                         serviceInterface.onProductPDFGenerateResponse(errorResponse)
                     }
                 }
@@ -131,23 +114,17 @@ class ProductNetworkService {
         }
     }
 
-    suspend fun getProductShareStoreDataServerCall(
-        serviceInterface: IProductServiceInterface
-    ) {
+    suspend fun getProductShareStoreDataServerCall(serviceInterface: IProductServiceInterface) {
         try {
             val response = RetrofitApi().getServerCallObject()?.getProductShareStoreData()
             response?.let {
-                if (it.isSuccessful) {
-                    it.body()?.let { commonApiResponse -> serviceInterface.onProductShareStoreWAResponse(commonApiResponse)
-                    }
-                } else {
+                if (it.isSuccessful) { it.body()?.let { commonApiResponse -> serviceInterface.onProductShareStoreWAResponse(commonApiResponse) } }
+                else {
                     if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    if (Constants.ERROR_CODE_FORCE_UPDATE == it.code()) throw DeprecateAppVersionException()
                     val responseBody = it.errorBody()
                     responseBody?.let {
-                        val errorResponse = Gson().fromJson(
-                            responseBody.string(),
-                            CommonApiResponse::class.java
-                        )
+                        val errorResponse = Gson().fromJson(responseBody.string(), CommonApiResponse::class.java)
                         serviceInterface.onProductShareStoreWAResponse(errorResponse)
                     }
                 }
@@ -158,23 +135,17 @@ class ProductNetworkService {
         }
     }
 
-    suspend fun getUserCategoriesServerCall(
-        serviceInterface: IProductServiceInterface
-    ) {
+    suspend fun getUserCategoriesServerCall(serviceInterface: IProductServiceInterface) {
         try {
             val response = RetrofitApi().getServerCallObject()?.getProductsCategories()
             response?.let {
-                if (it.isSuccessful) {
-                    it.body()?.let { commonApiResponse -> serviceInterface.onUserCategoryResponse(commonApiResponse)
-                    }
-                } else {
+                if (it.isSuccessful) { it.body()?.let { commonApiResponse -> serviceInterface.onUserCategoryResponse(commonApiResponse) } }
+                else {
                     if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    if (Constants.ERROR_CODE_FORCE_UPDATE == it.code()) throw DeprecateAppVersionException()
                     val responseBody = it.errorBody()
                     responseBody?.let {
-                        val errorResponse = Gson().fromJson(
-                            responseBody.string(),
-                            CommonApiResponse::class.java
-                        )
+                        val errorResponse = Gson().fromJson(responseBody.string(), CommonApiResponse::class.java)
                         serviceInterface.onUserCategoryResponse(errorResponse)
                     }
                 }
@@ -185,23 +156,17 @@ class ProductNetworkService {
         }
     }
 
-    suspend fun getDeleteCategoriesServerCall(
-        serviceInterface: IProductServiceInterface
-    ) {
+    suspend fun getDeleteCategoriesServerCall(serviceInterface: IProductServiceInterface) {
         try {
             val response = RetrofitApi().getServerCallObject()?.getDeleteCategoryInfo()
             response?.let {
-                if (it.isSuccessful) {
-                    it.body()?.let { commonApiResponse -> serviceInterface.onDeleteCategoryInfoResponse(commonApiResponse)
-                    }
+                if (it.isSuccessful) { it.body()?.let { commonApiResponse -> serviceInterface.onDeleteCategoryInfoResponse(commonApiResponse) }
                 } else {
                     if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    if (Constants.ERROR_CODE_FORCE_UPDATE == it.code()) throw DeprecateAppVersionException()
                     val responseBody = it.errorBody()
                     responseBody?.let {
-                        val errorResponse = Gson().fromJson(
-                            responseBody.string(),
-                            CommonApiResponse::class.java
-                        )
+                        val errorResponse = Gson().fromJson(responseBody.string(), CommonApiResponse::class.java)
                         serviceInterface.onDeleteCategoryInfoResponse(errorResponse)
                     }
                 }
@@ -219,17 +184,13 @@ class ProductNetworkService {
         try {
             val response = RetrofitApi().getServerCallObject()?.updateCategory(request)
             response?.let {
-                if (it.isSuccessful) {
-                    it.body()?.let { commonApiResponse -> serviceInterface.onUpdateCategoryResponse(commonApiResponse)
-                    }
+                if (it.isSuccessful) { it.body()?.let { commonApiResponse -> serviceInterface.onUpdateCategoryResponse(commonApiResponse) }
                 } else {
                     if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    if (Constants.ERROR_CODE_FORCE_UPDATE == it.code()) throw DeprecateAppVersionException()
                     val responseBody = it.errorBody()
                     responseBody?.let {
-                        val errorResponse = Gson().fromJson(
-                            responseBody.string(),
-                            CommonApiResponse::class.java
-                        )
+                        val errorResponse = Gson().fromJson(responseBody.string(), CommonApiResponse::class.java)
                         serviceInterface.onUpdateCategoryResponse(errorResponse)
                     }
                 }
@@ -247,17 +208,13 @@ class ProductNetworkService {
         try {
             val response = RetrofitApi().getServerCallObject()?.deleteCategory(request)
             response?.let {
-                if (it.isSuccessful) {
-                    it.body()?.let { commonApiResponse -> serviceInterface.onDeleteCategoryResponse(commonApiResponse)
-                    }
+                if (it.isSuccessful) { it.body()?.let { commonApiResponse -> serviceInterface.onDeleteCategoryResponse(commonApiResponse) }
                 } else {
                     if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    if (Constants.ERROR_CODE_FORCE_UPDATE == it.code()) throw DeprecateAppVersionException()
                     val responseBody = it.errorBody()
                     responseBody?.let {
-                        val errorResponse = Gson().fromJson(
-                            responseBody.string(),
-                            CommonApiResponse::class.java
-                        )
+                        val errorResponse = Gson().fromJson(responseBody.string(), CommonApiResponse::class.java)
                         serviceInterface.onDeleteCategoryResponse(errorResponse)
                     }
                 }
@@ -275,23 +232,43 @@ class ProductNetworkService {
         try {
             val response = RetrofitApi().getServerCallObject()?.updateStock(request)
             response?.let {
-                if (it.isSuccessful) {
-                    it.body()?.let { commonApiResponse -> serviceInterface.onUpdateStockResponse(commonApiResponse)
-                    }
+                if (it.isSuccessful) { it.body()?.let { commonApiResponse -> serviceInterface.onUpdateStockResponse(commonApiResponse) }
                 } else {
                     if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    if (Constants.ERROR_CODE_FORCE_UPDATE == it.code()) throw DeprecateAppVersionException()
                     val responseBody = it.errorBody()
                     responseBody?.let {
-                        val errorResponse = Gson().fromJson(
-                            responseBody.string(),
-                            CommonApiResponse::class.java
-                        )
+                        val errorResponse = Gson().fromJson(responseBody.string(), CommonApiResponse::class.java)
                         serviceInterface.onUpdateStockResponse(errorResponse)
                     }
                 }
             }
         } catch (e: Exception) {
             Log.e(ProductNetworkService::class.java.simpleName, "updateStockServerCall: ", e)
+            serviceInterface.onProductException(e)
+        }
+    }
+
+    suspend fun quickUpdateItemInventoryServerCall(
+        request: UpdateItemInventoryRequest,
+        serviceInterface: IProductServiceInterface
+    ) {
+        try {
+            val response = RetrofitApi().getServerCallObject()?.quickUpdateItemInventory(request)
+            response?.let {
+                if (it.isSuccessful) { it.body()?.let { commonApiResponse -> serviceInterface.onQuickUpdateItemInventoryResponse(commonApiResponse) }
+                } else {
+                    if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    if (Constants.ERROR_CODE_FORCE_UPDATE == it.code()) throw DeprecateAppVersionException()
+                    val responseBody = it.errorBody()
+                    responseBody?.let {
+                        val errorResponse = Gson().fromJson(responseBody.string(), CommonApiResponse::class.java)
+                        serviceInterface.onQuickUpdateItemInventoryResponse(errorResponse)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(ProductNetworkService::class.java.simpleName, "quickUpdateItemInventoryServerCall: ", e)
             serviceInterface.onProductException(e)
         }
     }

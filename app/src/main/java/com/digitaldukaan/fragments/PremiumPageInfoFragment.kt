@@ -3,8 +3,6 @@ package com.digitaldukaan.fragments
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -21,6 +19,7 @@ import com.digitaldukaan.services.PremiumPageInfoService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IPremiumPageInfoServiceInterface
 import com.digitaldukaan.webviews.WebViewBridge
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.layout_premium_fragment.*
 import org.json.JSONObject
@@ -40,6 +39,7 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         TAG = "PremiumPageInfoFragment"
+        FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
         mContentView = inflater.inflate(R.layout.layout_premium_fragment, container, false)
         mService.setServiceInterface(this)
         return mContentView
@@ -52,17 +52,12 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
         }
         WebViewBridge.mWebViewListener = this
         hideBottomNavigationView(false)
-
-        if (StaticInstances.sIsInvitationShown == true) {
-            showStaffInvitationDialog(StaticInstances.sStaffInvitation)
-        } else {
-            if (!isInternetConnectionAvailable(mActivity)) {
-                showNoInternetConnectionDialog()
-                return
-            }
-            showProgressDialog(mActivity)
-            mService.getPremiumPageInfo()
+        if (!isInternetConnectionAvailable(mActivity)) {
+            showNoInternetConnectionDialog()
+            return
         }
+        showProgressDialog(mActivity)
+        mService.getPremiumPageInfo()
     }
 
     override fun onNativeBackPressed() {
@@ -83,10 +78,10 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
                     domStorageEnabled = true
                     javaScriptCanOpenWindowsAutomatically = true
                 }
-                addJavascriptInterface(WebViewBridge(), "Android")
+                addJavascriptInterface(WebViewBridge(), Constants.KEY_ANDROID)
                 val isBottomNavBarActive = mPremiumPageInfoResponse?.mIsBottomNavBarActive ?: false
                 hideBottomNavigationView(!isBottomNavBarActive)
-                val url = BuildConfig.WEB_VIEW_URL + mPremiumPageInfoResponse?.premium?.mUrl + "?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&app_version=${BuildConfig.VERSION_NAME}"
+                val url = BuildConfig.WEB_VIEW_URL + mPremiumPageInfoResponse?.premium?.mUrl + "?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&app_version=${BuildConfig.VERSION_NAME}&app_version_code${BuildConfig.VERSION_CODE}"
                 Log.d(PremiumPageInfoFragment::class.simpleName, "onViewCreated: $url")
                 webViewClient = object : WebViewClient() {
                     override fun onPageFinished(view: WebView, url: String) {
@@ -142,6 +137,16 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
             jsonData.optBoolean("refreshToken") -> {
                 //mService.getPremiumPageInfo()
             }
+            jsonData.optBoolean("openDomainPurchaseBottomSheet") -> {
+                openDomainPurchaseBottomSheetServerCall()
+            }
+            jsonData.optBoolean("addAddress") -> {
+                launchFragment(StoreMapLocationFragment.newInstance(0, true), true)
+            }
+            jsonData.optBoolean("openAppByPackage") -> {
+                val packageName = jsonData.optString("data")
+                openAppByPackageName(packageName, mActivity)
+            }
             jsonData.optBoolean("stopLoader") -> {
                 stopProgress()
             }
@@ -165,17 +170,11 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
         return try {
             Log.d(TAG, "onBackPressed :: called")
             if(null != fragmentManager && 1 == fragmentManager?.backStackEntryCount) {
+                clearFragmentBackStack()
                 if (true == StaticInstances.sPermissionHashMap?.get(Constants.PAGE_ORDER)) {
-                    clearFragmentBackStack()
                     launchFragment(OrderFragment.newInstance(), true)
                 } else {
-                    if (mIsDoublePressToExit) mActivity?.finish()
-                    showShortSnackBar(getString(R.string.msg_back_press))
-                    mIsDoublePressToExit = true
-                    Handler(Looper.getMainLooper()).postDelayed(
-                        { mIsDoublePressToExit = false },
-                        Constants.BACK_PRESS_INTERVAL
-                    )
+                    launchFragment(SettingsFragment.newInstance(), true)
                 }
                 return true
             } else {

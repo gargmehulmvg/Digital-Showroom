@@ -10,5 +10,7 @@ interface ISocialMediaServiceInterface {
 
     fun onSocialMediaTemplateFavouriteResponse(commonApiResponse: CommonApiResponse)
 
+    fun onMarketingPageInfoResponse(commonApiResponse: CommonApiResponse)
+
     fun onSocialMediaException(e: Exception)
 }

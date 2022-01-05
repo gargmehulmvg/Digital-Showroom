@@ -23,12 +23,12 @@ import com.digitaldukaan.models.request.CreateStoreRequest
 import com.digitaldukaan.models.response.BusinessNameStaticText
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.CreateStoreResponse
-import com.digitaldukaan.models.response.StaffInvitationResponse
 import com.digitaldukaan.services.DukaanNameService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.ICreateStoreServiceInterface
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.layout_dukaan_name_fragment.*
 
@@ -40,15 +40,11 @@ class DukaanNameFragment : BaseFragment(), ICreateStoreServiceInterface {
     private var mCurrentLatitude = 0.0
     private var mCurrentLongitude = 0.0
     private var lastLocation: Location? = null
-    private var mStaffInvitation: StaffInvitationResponse? = null
-    private var mIsInvitationShown: Boolean = false
     private var mUserId: String = ""
 
     companion object {
-        fun newInstance(isInvitationShown: Boolean, staffInvitation: StaffInvitationResponse?, userId: String): DukaanNameFragment {
+        fun newInstance(userId: String): DukaanNameFragment {
             val fragment = DukaanNameFragment()
-            fragment.mIsInvitationShown = isInvitationShown
-            fragment.mStaffInvitation = staffInvitation
             fragment.mUserId = userId
             return fragment
         }
@@ -56,13 +52,14 @@ class DukaanNameFragment : BaseFragment(), ICreateStoreServiceInterface {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        TAG = "DukaanNameFragment"
         sharedElementEnterTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.move)
         locationManager = mActivity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         mActivity?.let { context -> fusedLocationClient = LocationServices.getFusedLocationProviderClient(context) }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        TAG = "DukaanNameFragment"
+        FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
         mContentView = inflater.inflate(R.layout.layout_dukaan_name_fragment, container, false)
         mDukaanNameStaticData = StaticInstances.sStaticData?.mBusinessNameStaticText
         if (checkLocationPermissionWithDialog()) getLastLocation()
@@ -93,16 +90,12 @@ class DukaanNameFragment : BaseFragment(), ICreateStoreServiceInterface {
                 nextTextView?.isEnabled = str.isNotBlank()
             }
 
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                Log.d(TAG, "beforeTextChanged: ")
-            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
 
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                Log.d(TAG, "onTextChanged: ")
-            }
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
         })
         setupUIFromStaticData()
-        showInvitationDialog()
+        if (sIsInvitationAvailable) showStaffInvitationDialog()
     }
 
     private fun setupUIFromStaticData() {
@@ -207,23 +200,16 @@ class DukaanNameFragment : BaseFragment(), ICreateStoreServiceInterface {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         Log.i(TAG, "onRequestPermissionResult")
         if (requestCode == Constants.LOCATION_REQUEST_CODE) {
+            if (sIsInvitationAvailable) showStaffInvitationDialog()
             when {
-                grantResults.isEmpty() -> Log.i(TAG, "User interaction was cancelled.")
+                grantResults.isEmpty() -> Log.d(TAG, "User interaction was cancelled.")
                 grantResults[0] == PackageManager.PERMISSION_GRANTED -> {
-                    //showInvitationDialog()
                     getLastLocation()
                 }
                 else -> {
-                    //showInvitationDialog()
                     showToast("Permission was denied")
                 }
             }
-        }
-    }
-
-    private fun showInvitationDialog() {
-        if (mIsInvitationShown) {
-            showStaffInvitationDialog(mStaffInvitation)
         }
     }
 

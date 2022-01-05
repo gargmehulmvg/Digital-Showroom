@@ -50,12 +50,21 @@ interface Apis {
     @POST("api/dotk/vc1/user/updateInvitationStatus")
     suspend fun updateInvitationStatus(@Body request: UpdateInvitationRequest) : Response<CommonApiResponse>
 
-    @GET("api/dotk/vc1/user/getStaffMemberDetails/{store_id}")
-    suspend fun getStaffMembersDetails(@Path("store_id") store_id: String) : Response<CommonApiResponse>
+    @GET("api/dotk/vc1/user/getStaffMemberDetails/{storeId}")
+    suspend fun getStaffMembersDetails(@Path("storeId") storeId: String) : Response<CommonApiResponse>
 
     /* ----------------------       Settings         ---------------------- */
     @GET("api/dotk/vm1/settings/getOrderTypePageInfo")
     suspend fun getOrderTypePageInfo() : Response<CommonApiResponse>
+
+    @POST("api/dotk/vm1/settings/setGST")
+    suspend fun setGST(@Body request: SetGstRequest) : Response<CommonApiResponse>
+
+    @POST("api/dotk/vm1/settings/verifyDisplayPhoneNumber")
+    suspend fun verifyDisplayPhoneNumber(@Body request: VerifyDisplayPhoneNumberRequest) : Response<CommonApiResponse>
+
+    @GET("api/dotk/vm1/settings/getStoreLocation")
+    suspend fun getStoreLocation() : Response<CommonApiResponse>
 
     @POST("api/dotk/vm1/settings/getTransactionsList")
     suspend fun getTransactionsList(@Body request: TransactionRequest) : Response<CommonApiResponse>
@@ -123,6 +132,15 @@ interface Apis {
     @POST("api/dotk/vm1/settings/updateNotificationFlag")
     suspend fun updateNotificationFlag(@Body request: UpdatePaymentMethodRequest): Response<CommonApiResponse>
 
+    @GET("api/dotk/vm1/settings/getAddressFieldsPageInfo")
+    suspend fun getAddressFieldsPageInfo(): Response<CommonApiResponse>
+
+    @GET("api/dotk/vm1/settings/getPosBillingPageInfo")
+    suspend fun getPosBillingPageInfo(): Response<CommonApiResponse>
+
+    @POST("api/dotk/vm1/settings/setStoreAddressConfigs")
+    suspend fun setAddressFields(@Body request: AddressFieldRequest): Response<CommonApiResponse>
+
     /* ----------------------       Images         ---------------------- */
     @POST("api/dotk/vm1/media/setStoreLogo")
     suspend fun setStoreLogo(@Body request: StoreLogoRequest) : Response<CommonApiResponse>
@@ -135,17 +153,9 @@ interface Apis {
     suspend fun searchImagesFromBing(@Query("search_text") searchText: String, @Query("store_id") storeId: String) : Response<ImagesSearchResponse>
 
     /* ----------------------       Marketing         ---------------------- */
-    @GET("api/dotk/vm1/products/getItemsBasicDetailsByStoreId")
-    suspend fun getItemsBasicDetailsByStoreId(): Response<CommonApiResponse>
 
     @GET("api/dotk/vm1/marketing/getTemplatesBackground/{id}")
     suspend fun getSocialMediaTemplateBackgrounds(@Path("id") id: String): Response<CommonApiResponse>
-
-    @GET("api/dotk/vm1/products/getItemsBasicDetails/{id}")
-    suspend fun getProductsByCategoryId(@Path("id") id: Int): Response<CommonApiResponse>
-
-    @GET("api/dotk/vm1/products/getUserCategories")
-    suspend fun getProductsCategories(): Response<CommonApiResponse>
 
     @GET("api/dotk/vm1/marketing/getSuggestedDomainsInfo")
     suspend fun getMarketingSuggestedDomains(): Response<CommonApiResponse>
@@ -175,6 +185,16 @@ interface Apis {
     suspend fun generateProductStorePdf(): Response<CommonApiResponse>
 
     /* ----------------------       Products         ---------------------- */
+
+    @GET("api/dotk/vm1/products/getItemsBasicDetailsByStoreId")
+    suspend fun getItemsBasicDetailsByStoreId(): Response<CommonApiResponse>
+
+    @GET("api/dotk/vm1/products/getItemsBasicDetails/{id}")
+    suspend fun getProductsByCategoryId(@Path("id") id: Int): Response<CommonApiResponse>
+
+    @GET("api/dotk/vm1/products/getUserCategories")
+    suspend fun getProductsCategories(): Response<CommonApiResponse>
+
     @POST("api/dotk/vm1/products/shareStore")
     suspend fun getProductShareStoreData(): Response<CommonApiResponse>
 
@@ -187,7 +207,10 @@ interface Apis {
     @GET("api/dotk/vm1/products/getItemInfo/{itemId}")
     suspend fun getItemInfo(@Path("itemId") itemId: Int): Response<CommonApiResponse>
 
-    @POST("api/dotk/vm1/products/setItem")
+    @POST("api/dotk/vm1/products/quickUpdateItem")
+    suspend fun quickUpdateItemInventory(@Body request: UpdateItemInventoryRequest): Response<CommonApiResponse>
+
+    @POST("api/dotk/vm1/products/setItemV2")
     suspend fun setItem(@Body request: AddProductRequest): Response<CommonApiResponse>
 
     @POST("api/dotk/vm1/products/searchItems")
@@ -283,6 +306,9 @@ interface Apis {
 
     @POST("api/dotk/vm1/premium/setStoreThemeColorPalette")
     suspend fun setStoreThemeColorPalette(@Body request: EditPremiumColorRequest): Response<CommonApiResponse>
+
+    @POST("api/dotk/vm1/premium/addRequestToCallback")
+    suspend fun updateCallbackFlag(@Body request: RequestToCallbackRequest): Response<CommonApiResponse>
 
     @POST("api/dotk/vm1/premium/setStoreThemeBanner")
     suspend fun setStoreThemeBanner(@Body request: StoreThemeBannerRequest): Response<CommonApiResponse>

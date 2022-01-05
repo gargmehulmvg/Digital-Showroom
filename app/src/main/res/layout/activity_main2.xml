@@ -170,16 +170,16 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:orientation="horizontal"
-        android:visibility="visible"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/premiumImageView">
+        app:layout_constraintTop_toTopOf="@id/premiumImageView">
 
         <ImageView
             android:id="@+id/blurBottomNavBarOrders"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_12sdp"
             android:alpha="0.75"
             android:background="@drawable/slight_curve_white_background"
             android:contentDescription="@string/image_view_content_description"
@@ -212,7 +212,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_12sdp"
             android:alpha="0.75"
             android:background="@drawable/slight_curve_white_background"
             android:contentDescription="@string/image_view_content_description"
@@ -223,7 +223,7 @@
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:layout_marginTop="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_12sdp"
             android:alpha="0.75"
             android:background="@drawable/slight_curve_white_background"
             android:contentDescription="@string/image_view_content_description"

@@ -1,10 +1,7 @@
 package com.digitaldukaan.services
 
 import com.digitaldukaan.constants.CoroutineScopeUtils
-import com.digitaldukaan.models.request.StoreLinkRequest
-import com.digitaldukaan.models.request.StoreLogoRequest
-import com.digitaldukaan.models.request.StoreNameRequest
-import com.digitaldukaan.models.request.StoreUserMailDetailsRequest
+import com.digitaldukaan.models.request.*
 import com.digitaldukaan.services.networkservice.ProfilePreviewNetworkService
 import com.digitaldukaan.services.serviceinterface.IProfilePreviewServiceInterface
 import okhttp3.MultipartBody
@@ -70,6 +67,24 @@ class ProfilePreviewService {
     fun setStoreUserGmailDetails(request: StoreUserMailDetailsRequest) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
             mNetworkService.setStoreUserGmailDetailsServerCall(request, mServiceInterface)
+        }
+    }
+
+    fun setGST(text: String) {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.setGSTServerCall(text, mServiceInterface)
+        }
+    }
+
+    fun generateOTP(mobileNumber: String) {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.generateOTPServerCall(mobileNumber, mServiceInterface)
+        }
+    }
+
+    fun verifyDisplayPhoneNumber(request: VerifyDisplayPhoneNumberRequest) {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.verifyDisplayPhoneNumberServerCall(request, mServiceInterface)
         }
     }
 

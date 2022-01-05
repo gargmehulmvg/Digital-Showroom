@@ -27,6 +27,7 @@ import com.digitaldukaan.models.response.SetOrderTypePageStaticTextResponse
 import com.digitaldukaan.services.SetOrderTypeService
 import com.digitaldukaan.services.serviceinterface.ISetOrderTypeServiceInterface
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.layout_set_order_type_fragment.*
 
@@ -54,6 +55,7 @@ class SetOrderTypeFragment: BaseFragment(), ISetOrderTypeServiceInterface, IRecy
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         TAG = "SetOrderTypeFragment"
+        FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
         mContentView = inflater.inflate(R.layout.layout_set_order_type_fragment, container, false)
         initializeUI()
         mService = SetOrderTypeService()

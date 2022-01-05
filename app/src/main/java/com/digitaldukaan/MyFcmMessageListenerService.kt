@@ -68,7 +68,7 @@ class MyFcmMessageListenerService : FirebaseMessagingService() {
                 val intent = Intent(context, MainActivity::class.java)
                 intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                 val notificationBuilder = NotificationCompat.Builder(context, AFInAppEventParameterName.NOTIFICATION_CHANNEL_NOTIFICATIONS).apply {
-                    setSmallIcon(R.drawable.shortcuticon)
+                    setSmallIcon(R.drawable.ic_small_notification_white)
                     setContentTitle(title)
                     setContentText(message)
                     val soundUri: Uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)

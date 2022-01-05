@@ -6,5 +6,7 @@ interface IStoreAddressServiceInterface {
 
     fun onStoreAddressResponse(response: CommonApiResponse)
 
+    fun onGetStoreLocationResponse(commonApiResponse: CommonApiResponse)
+
     fun onStoreAddressServerException(e: Exception)
 }

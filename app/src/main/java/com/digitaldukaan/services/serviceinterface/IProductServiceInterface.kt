@@ -26,6 +26,8 @@ interface IProductServiceInterface {
 
     fun onUpdateStockResponse(commonResponse: CommonApiResponse)
 
+    fun onQuickUpdateItemInventoryResponse(commonResponse: CommonApiResponse)
+
     fun onGenerateStorePdfResponse(commonResponse: CommonApiResponse)
 
     fun onProductException(e: Exception)

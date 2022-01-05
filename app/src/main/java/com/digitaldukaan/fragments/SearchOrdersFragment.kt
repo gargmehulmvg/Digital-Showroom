@@ -23,6 +23,7 @@ import com.digitaldukaan.models.response.OrdersResponse
 import com.digitaldukaan.services.SearchOrdersService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.ISearchOrderServiceInterface
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.layout_home_fragment.*
 
@@ -55,6 +56,7 @@ class SearchOrdersFragment: BaseFragment(), IOnToolbarIconClick, ISearchOrderSer
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         TAG = "SearchOrdersFragment"
+        FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
         mContentView = inflater.inflate(R.layout.search_order_fragment, container, false)
         mService = SearchOrdersService()
         mService.setHomeFragmentServiceListener(this)
@@ -103,9 +105,7 @@ class SearchOrdersFragment: BaseFragment(), IOnToolbarIconClick, ISearchOrderSer
         }
     }
 
-    override fun onToolbarSideIconClicked() {
-        showSearchDialog(StaticInstances.sOrderPageInfoStaticData, mMobileNumberString, mOrderIdString)
-    }
+    override fun onToolbarSideIconClicked() = showSearchDialog(StaticInstances.sOrderPageInfoStaticData, mMobileNumberString, mOrderIdString)
 
     override fun onSearchDialogContinueButtonClicked(inputOrderId: String, inputMobileNumber: String) {
         mOrderIdString = inputOrderId

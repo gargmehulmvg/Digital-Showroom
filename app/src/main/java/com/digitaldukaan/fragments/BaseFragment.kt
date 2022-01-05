@@ -7,10 +7,7 @@ import android.app.PendingIntent
 import android.content.*
 import android.content.Context.MODE_PRIVATE
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Color
-import android.graphics.Paint
+import android.graphics.*
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.location.Location
@@ -20,11 +17,8 @@ import android.net.Uri
 import android.os.*
 import android.provider.MediaStore
 import android.provider.Settings
-import android.text.Editable
-import android.text.Html
-import android.text.InputFilter
+import android.text.*
 import android.text.InputFilter.LengthFilter
-import android.text.TextWatcher
 import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
@@ -47,6 +41,7 @@ import com.digitaldukaan.MyFcmMessageListenerService
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.*
 import com.digitaldukaan.constants.*
+import com.digitaldukaan.exceptions.DeprecateAppVersionException
 import com.digitaldukaan.exceptions.UnAuthorizedAccessException
 import com.digitaldukaan.interfaces.IAdapterItemClickListener
 import com.digitaldukaan.interfaces.IContactItemClicked
@@ -67,8 +62,10 @@ import com.google.gson.Gson
 import com.squareup.picasso.Picasso
 import com.yalantis.ucrop.UCrop
 import id.zelory.compressor.Compressor
-import io.sentry.Sentry
+import id.zelory.compressor.constraint.quality
 import kotlinx.android.synthetic.main.activity_main2.*
+import kotlinx.android.synthetic.main.bottom_sheet_custom_domain_selection.view.*
+import kotlinx.android.synthetic.main.bottom_sheet_marketing_know_more.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
@@ -83,17 +80,24 @@ import kotlin.collections.ArrayList
 open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener {
 
     protected var mContentView: View? = null
-    protected var TAG: String = ""
     protected var mActivity: MainActivity? = null
+    protected var TAG: String = ""
 
     private var mProgressDialog: Dialog? = null
     private var mImageAdapter = ImagesSearchAdapter()
     private var mImagePickBottomSheet: BottomSheetDialog? = null
+    private var mAppUpdateDialog: Dialog? = null
+    private var mGoogleApiClient: FusedLocationProviderClient? = null
+    private var mLastLocation: Location? = null
+    private var mCurrentLatitude = 0.0
+    private var mCurrentLongitude = 0.0
     private var mMultiUserAdapter: StaffInvitationAdapter? = null
+    private var webConsoleBottomSheetDialog: BottomSheetDialog? = null
 
     companion object {
         private var sStaffInvitationDialog: Dialog? = null
         private var mCurrentPhotoPath = ""
+        var sIsInvitationAvailable: Boolean = true
     }
 
     override fun onAttach(context: Context) {
@@ -102,20 +106,20 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         Log.d(TAG, "onAttach :: called in Application")
     }
 
-    protected fun showProgressDialog(context: Context?, message: String? = "Please wait...") {
+    open fun onClick(view: View?) = Unit
+
+    open fun onBackPressed(): Boolean = false
+
+    protected fun showProgressDialog(context: Context?) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            context?.let {
+            context?.let { context ->
                 try {
-                    mProgressDialog = Dialog(it)
+                    mProgressDialog = Dialog(context)
                     mProgressDialog?.apply {
                         val view = LayoutInflater.from(context).inflate(R.layout.progress_dialog, null)
-                        message?.let { msg ->
-                            val messageTextView : TextView = view.findViewById(R.id.progressDialogTextView)
-                            messageTextView.text = msg
-                        }
                         setContentView(view)
                         setCancelable(false)
-                        window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                        window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
                     }?.show()
                 } catch (e: Exception) {
                     Log.e(TAG, "showProgressDialog: ${e.message}", e)
@@ -129,41 +133,21 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         }
     }
 
-    open fun hideBottomNavigationView(isHidden: Boolean) {
+    protected fun showCancellableProgressDialog(context: Context?) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            mActivity?.run {
-                bottomNavigationView.visibility = if (isHidden) View.GONE else View.VISIBLE
-                premiumImageView.visibility = if (isHidden) View.GONE else View.VISIBLE
-                premiumTextView.visibility = if (isHidden) View.GONE else View.VISIBLE
-                separator.visibility = if (isHidden) View.GONE else View.VISIBLE
-            }
-        }
-    }
-
-    open fun onClick(view: View?) = Unit
-
-    open fun onBackPressed(): Boolean = false
-
-    protected fun showCancellableProgressDialog(
-        context: Context?,
-        message: String? = "Please wait..."
-    ) {
-        CoroutineScopeUtils().runTaskOnCoroutineMain {
-            context?.let {
+            context?.let { context ->
                 try {
-                    mProgressDialog = Dialog(it)
-                    val inflate = LayoutInflater.from(it).inflate(R.layout.progress_dialog, null)
-                    mProgressDialog?.setContentView(inflate)
-                    message?.run {
-                        val messageTextView: TextView = inflate.findViewById(R.id.progressDialogTextView)
-                        messageTextView.text = this
-                    }
-                    mProgressDialog?.setCancelable(true)
-                    mProgressDialog?.window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-                    mProgressDialog?.show()
+                    mProgressDialog = Dialog(context)
+                    val inflate = LayoutInflater.from(context).inflate(R.layout.progress_dialog, null)
+                    val view: View = inflate.findViewById(R.id.container)
+                    view.setOnClickListener { mProgressDialog?.dismiss() }
+                    mProgressDialog?.apply {
+                        setContentView(inflate)
+                        setCancelable(true)
+                        window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                    }?.show()
                 } catch (e: Exception) {
                     Log.e(TAG, "showCancellableProgressDialog: ${e.message}", e)
-                    Sentry.captureException(e, "$TAG showCancellableProgressDialog")
                 }
             }
         }
@@ -172,7 +156,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     fun stopProgress() {
         mActivity?.runOnUiThread {
             try {
-                if (mProgressDialog != null) {
+                if (null != mProgressDialog) {
                     mProgressDialog?.dismiss()
                     mProgressDialog = null
                 }
@@ -191,18 +175,32 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         }
     }
 
+    open fun hideBottomNavigationView(isHidden: Boolean) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            mActivity?.run {
+                bottomNavigationView.visibility = if (isHidden) View.GONE else View.VISIBLE
+                premiumImageView.visibility = if (isHidden) View.GONE else View.VISIBLE
+                premiumTextView.visibility = if (isHidden) View.GONE else View.VISIBLE
+                separator.visibility = if (isHidden) View.GONE else View.VISIBLE
+            }
+        }
+    }
+
     fun showToast(message: String? = "sample testing") {
         mActivity?.showToast(message)
     }
 
     open fun exceptionHandlingForAPIResponse(e: Exception) {
-        stopProgress()
-        when (e) {
-            is IllegalStateException -> showToast("System Error :: IllegalStateException :: Unable to reach Server")
-            is IOException -> Log.e(TAG, "$TAG exceptionHandlingForAPIResponse: ${e.message}", e)
-            is UnknownHostException -> showToast(e.message)
-            is UnAuthorizedAccessException -> logoutFromApplication()
-            else -> showToast(mActivity?.getString(R.string.something_went_wrong))
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            when (e) {
+                is IllegalStateException -> showToast("System Error :: IllegalStateException :: Unable to reach Server")
+                is IOException -> Log.e(TAG, "$TAG exceptionHandlingForAPIResponse: ${e.message}", e)
+                is UnknownHostException -> showToast(e.message)
+                is UnAuthorizedAccessException -> logoutFromApplication()
+                is DeprecateAppVersionException -> showVersionUpdateDialog()
+                else -> showToast(mActivity?.getString(R.string.something_went_wrong))
+            }
         }
     }
 
@@ -233,10 +231,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                     AppEventsManager.pushAppEvents(
                         eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
                         isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                        data = mapOf(
-                            AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(
-                                Constants.STORE_ID
-                            ),
+                        data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
                             "Exception Point" to "showShortSnackBar",
                             "Exception Message" to e.message,
                             "Exception Logs" to e.toString()
@@ -306,10 +301,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
             AppEventsManager.pushAppEvents(
                 eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
                 isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                data = mapOf(
-                    AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(
-                        Constants.STORE_ID
-                    ),
+                data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
                     "Exception Point" to "clearFragmentBackStack",
                     "Exception Message" to e.message,
                     "Exception Logs" to e.toString()
@@ -320,9 +312,8 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
 
     open fun copyDataToClipboard(string: String?) {
         try {
-            val clipboard: ClipboardManager =
-                mActivity?.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            val clip: ClipData = ClipData.newPlainText(Constants.CLIPBOARD_LABEL, string)
+            val clipboard = mActivity?.getSystemService(Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
+            val clip = ClipData.newPlainText(Constants.CLIPBOARD_LABEL, string)
             clipboard.setPrimaryClip(clip)
             showToast(getString(R.string.link_copied))
         } catch (e: Exception) {
@@ -350,10 +341,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                    data = mapOf(
-                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(
-                            Constants.STORE_ID
-                        ),
+                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
                         "Exception Point" to "showNoInternetConnectionDialog",
                         "Exception Message" to e.message,
                         "Exception Logs" to e.toString()
@@ -365,14 +353,14 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
 
     open fun storeStringDataInSharedPref(keyName: String, value: String?) {
         mActivity?.run {
-            val editor = getSharedPreferences(Constants.SHARED_PREF_NAME, MODE_PRIVATE).edit()
+            val editor = getSharedPreferences(getSharedPreferenceName(), MODE_PRIVATE).edit()
             editor.putString(keyName, value)
             editor.apply()
         }
     }
 
     open fun getStringDataFromSharedPref(keyName: String?): String {
-        val prefs = mActivity?.getSharedPreferences(Constants.SHARED_PREF_NAME, MODE_PRIVATE)
+        val prefs = mActivity?.getSharedPreferences(getSharedPreferenceName(), MODE_PRIVATE)
         return prefs?.getString(keyName, "").toString()
     }
 
@@ -384,10 +372,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
             AppEventsManager.pushAppEvents(
                 eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
                 isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                data = mapOf(
-                    AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(
-                        Constants.STORE_ID
-                    ),
+                data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
                     "Exception Point" to "openUrlInBrowser",
                     "Exception Message" to e.message,
                     "Exception Logs" to e.toString()
@@ -399,23 +384,8 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     open fun shareOnWhatsApp(sharingData: String?, image: Bitmap? = null) {
         if (null != image) {
             mActivity?.let {
-                if (ActivityCompat.checkSelfPermission(
-                        it,
-                        Manifest.permission.READ_EXTERNAL_STORAGE
-                    ) != PackageManager.PERMISSION_GRANTED &&
-                    ActivityCompat.checkSelfPermission(
-                        it,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE
-                    ) != PackageManager.PERMISSION_GRANTED
-                ) {
-                    ActivityCompat.requestPermissions(
-                        it,
-                        arrayOf(
-                            Manifest.permission.READ_EXTERNAL_STORAGE,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE
-                        ),
-                        Constants.STORAGE_REQUEST_CODE
-                    )
+                if (ActivityCompat.checkSelfPermission(it, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(it, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                    ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE), Constants.STORAGE_REQUEST_CODE)
                     return
                 }
             }
@@ -463,10 +433,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                    data = mapOf(
-                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(
-                            Constants.STORE_ID
-                        ),
+                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
                         "Exception Point" to "shareDataOnWhatsAppByNumber",
                         "Exception Message" to e.message,
                         "Exception Logs" to e.toString()
@@ -478,12 +445,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
 
     private fun openWhatsAppInBrowser(mobile: String?, data: String?) {
         try {
-            startActivity(
-                Intent(
-                    Intent.ACTION_VIEW,
-                    Uri.parse("whatsapp://send?phone=$mobile&text=$data")
-                )
-            )
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("whatsapp://send?phone=$mobile&text=$data")))
         } catch (e: Exception) {
             Log.e(TAG, "openWhatsApp: ", e)
         }
@@ -492,23 +454,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     open fun shareData(sharingData: String?, image: Bitmap?) {
         if (null == image) {
             mActivity?.let {
-                if (ActivityCompat.checkSelfPermission(
-                        it,
-                        Manifest.permission.READ_EXTERNAL_STORAGE
-                    ) != PackageManager.PERMISSION_GRANTED &&
-                    ActivityCompat.checkSelfPermission(
-                        it,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE
-                    ) != PackageManager.PERMISSION_GRANTED
-                ) {
-                    ActivityCompat.requestPermissions(
-                        it,
-                        arrayOf(
-                            Manifest.permission.READ_EXTERNAL_STORAGE,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE
-                        ),
-                        Constants.STORAGE_REQUEST_CODE
-                    )
+                if (ActivityCompat.checkSelfPermission(it, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(it, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) { ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE), Constants.STORAGE_REQUEST_CODE)
                     return
                 }
             }
@@ -528,10 +474,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
             AppEventsManager.pushAppEvents(
                 eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
                 isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                data = mapOf(
-                    AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(
-                        Constants.STORE_ID
-                    ),
+                data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
                     "Exception Point" to "shareData",
                     "Exception Message" to ex.message,
                     "Exception Logs" to ex.toString()
@@ -576,34 +519,16 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         }
     }
 
-    open fun startViewAnimation(
-        view: View?,
-        technique: Techniques = Techniques.Tada,
-        duration: Long = 300
-    ) {
-        view?.let { v ->
-            YoYo.with(technique)
-                .duration(duration)
-                .playOn(v)
-        }
+    open fun startViewAnimation(view: View?, technique: Techniques = Techniques.Tada, duration: Long = 300) {
+        view?.let { v -> YoYo.with(technique).duration(duration).playOn(v) }
     }
 
     open fun openPlayStore() {
         val appPackageName: String? = mActivity?.packageName
         try {
-            startActivity(
-                Intent(
-                    Intent.ACTION_VIEW,
-                    Uri.parse("market://details?id=$appPackageName")
-                )
-            )
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$appPackageName")))
         } catch (ignore: ActivityNotFoundException) {
-            startActivity(
-                Intent(
-                    Intent.ACTION_VIEW,
-                    Uri.parse("https://play.google.com/store/apps/details?id=$appPackageName")
-                )
-            )
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=$appPackageName")))
         }
     }
 
@@ -614,49 +539,33 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         setOnDismissListener {
             Handler(Looper.getMainLooper()).postDelayed(
                 { hideSoftKeyboard() },
-                Constants.TIMER_INTERVAL
+                Constants.TIMER_DELAY
             )
         }
     }
 
     protected open fun showStateSelectionDialog() {
-        mActivity?.let {
-            AlertDialog.Builder(it).apply {
-                setTitle("Select State")
-                setItems(R.array.state_array) { dialogInterface: DialogInterface, i: Int ->
-                    val stateList = resources.getStringArray(R.array.state_array).toList()
-                    onAlertDialogItemClicked(stateList[i], id, i)
-                    dialogInterface.dismiss()
-                }
-                setCancelable(false)
-            }.create().show()
+        try {
+            mActivity?.let { context ->
+                AlertDialog.Builder(context).apply {
+                    setTitle("Select State")
+                    setCancelable(false)
+                    setItems(R.array.state_array) { dialogInterface: DialogInterface, i: Int ->
+                        val stateList = context.resources?.getStringArray(R.array.state_array)?.toList() ?: ArrayList<String>()
+                        onAlertDialogItemClicked(stateList[i], id, i)
+                        dialogInterface.dismiss()
+                    }
+                }.create().show()
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "showStateSelectionDialog: ${e.message}", e)
         }
     }
 
     open fun askCameraPermission() {
         mActivity?.let {
-            if (ActivityCompat.checkSelfPermission(
-                    it,
-                    Manifest.permission.READ_EXTERNAL_STORAGE
-                ) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(
-                    it,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-                ) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(
-                    it,
-                    Manifest.permission.CAMERA
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                ActivityCompat.requestPermissions(
-                    it,
-                    arrayOf(
-                        Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.CAMERA
-                    ),
-                    Constants.IMAGE_PICK_REQUEST_CODE
-                )
+            if (ActivityCompat.checkSelfPermission(it, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(it, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(it, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA), Constants.IMAGE_PICK_REQUEST_CODE)
                 return
             }
         }
@@ -665,16 +574,8 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
 
     open fun askContactPermission(): Boolean {
         mActivity?.let {
-            if (ActivityCompat.checkSelfPermission(
-                    it,
-                    Manifest.permission.READ_CONTACTS
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                ActivityCompat.requestPermissions(
-                    it,
-                    arrayOf(Manifest.permission.READ_CONTACTS),
-                    Constants.CONTACT_REQUEST_CODE
-                )
+            if (ActivityCompat.checkSelfPermission(it, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.READ_CONTACTS), Constants.CONTACT_REQUEST_CODE)
                 return true
             }
         }
@@ -688,44 +589,29 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         mActivity?.let {
             val imageUploadStaticData = StaticInstances.sStaticData?.mCatalogStaticData
             mImagePickBottomSheet = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
-            val view = LayoutInflater.from(it).inflate(
-                R.layout.bottom_sheet_image_pick,
-                it.findViewById(R.id.bottomSheetContainer)
-            )
+            val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_image_pick, it.findViewById(R.id.bottomSheetContainer))
             mImagePickBottomSheet?.apply {
                 setContentView(view)
                 view?.run {
-                    val bottomSheetUploadImageCloseImageView: ImageView =
-                        findViewById(R.id.bottomSheetUploadImageCloseImageView)
-                    val bottomSheetUploadImageHeading: TextView =
-                        findViewById(R.id.bottomSheetUploadImageHeading)
-                    val bottomSheetUploadImageCamera: View =
-                        findViewById(R.id.bottomSheetUploadImageCamera)
-                    val bottomSheetUploadImageGallery: View =
-                        findViewById(R.id.bottomSheetUploadImageGallery)
-                    val bottomSheetUploadImageCameraTextView: TextView =
-                        findViewById(R.id.bottomSheetUploadImageCameraTextView)
-                    val bottomSheetUploadImageGalleryTextView: TextView =
-                        findViewById(R.id.bottomSheetUploadImageGalleryTextView)
-                    val bottomSheetUploadImageSearchHeading: TextView =
-                        findViewById(R.id.bottomSheetUploadImageSearchHeading)
-                    val bottomSheetUploadImageRemovePhotoTextView: TextView =
-                        findViewById(R.id.bottomSheetUploadImageRemovePhotoTextView)
+                    val bottomSheetUploadImageCloseImageView: ImageView = findViewById(R.id.bottomSheetUploadImageCloseImageView)
+                    val bottomSheetUploadImageHeading: TextView = findViewById(R.id.bottomSheetUploadImageHeading)
+                    val bottomSheetUploadImageCamera: View = findViewById(R.id.bottomSheetUploadImageCamera)
+                    val bottomSheetUploadImageGallery: View = findViewById(R.id.bottomSheetUploadImageGallery)
+                    val bottomSheetUploadImageCameraTextView: TextView = findViewById(R.id.bottomSheetUploadImageCameraTextView)
+                    val bottomSheetUploadImageGalleryTextView: TextView = findViewById(R.id.bottomSheetUploadImageGalleryTextView)
+                    val bottomSheetUploadImageSearchHeading: TextView = findViewById(R.id.bottomSheetUploadImageSearchHeading)
+                    val bottomSheetUploadImageRemovePhotoTextView: TextView = findViewById(R.id.bottomSheetUploadImageRemovePhotoTextView)
                     val searchImageEditText: EditText = findViewById(R.id.searchImageEditText)
                     val searchImageImageView: View = findViewById(R.id.searchImageImageView)
-                    val bottomSheetUploadImageRemovePhoto: View =
-                        findViewById(R.id.bottomSheetUploadImageRemovePhoto)
-                    val searchImageRecyclerView: RecyclerView =
-                        findViewById(R.id.searchImageRecyclerView)
+                    val bottomSheetUploadImageRemovePhoto: View = findViewById(R.id.bottomSheetUploadImageRemovePhoto)
+                    val searchImageRecyclerView: RecyclerView = findViewById(R.id.searchImageRecyclerView)
                     bottomSheetUploadImageGalleryTextView.text = imageUploadStaticData?.addGallery
-                    bottomSheetUploadImageSearchHeading.text =
-                        imageUploadStaticData?.searchImageSubTitle
-                    bottomSheetUploadImageRemovePhotoTextView.text =
-                        imageUploadStaticData?.removeImageText
+                    bottomSheetUploadImageSearchHeading.text = imageUploadStaticData?.searchImageSubTitle
+                    bottomSheetUploadImageRemovePhotoTextView.text = imageUploadStaticData?.removeImageText
                     bottomSheetUploadImageHeading.text = imageUploadStaticData?.uploadImageHeading
                     bottomSheetUploadImageCameraTextView.text = imageUploadStaticData?.takePhoto
                     searchImageEditText.hint = imageUploadStaticData?.searchImageHint
-                    bottomSheetUploadImageCloseImageView.setOnClickListener { if (mImagePickBottomSheet?.isShowing == true) mImagePickBottomSheet?.dismiss() }
+                    bottomSheetUploadImageCloseImageView.setOnClickListener { if (true == mImagePickBottomSheet?.isShowing) mImagePickBottomSheet?.dismiss() }
                     if (!StaticInstances.sIsStoreImageUploaded) {
                         bottomSheetUploadImageRemovePhotoTextView.visibility = View.GONE
                         bottomSheetUploadImageRemovePhoto.visibility = View.GONE
@@ -786,11 +672,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                                                 searchImageRecyclerView?.apply {
                                                     layoutManager = GridLayoutManager(mActivity, 3)
                                                     adapter = mImageAdapter
-                                                    list?.let { arrayList ->
-                                                        mImageAdapter.setSearchImageList(
-                                                            arrayList
-                                                        )
-                                                    }
+                                                    list?.let { arrayList -> mImageAdapter.setSearchImageList(arrayList) }
                                                 }
                                             }
                                         }
@@ -798,7 +680,6 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                                     }
                                 }
                             } catch (e: Exception) {
-                                Sentry.captureException(e, "showImagePickerBottomSheet: exception")
                                 exceptionHandlingForAPIResponse(e)
                             }
                         }
@@ -810,28 +691,8 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
 
     open fun openMobileGalleryWithCrop() {
         mActivity?.let {
-            if (ActivityCompat.checkSelfPermission(
-                    it,
-                    Manifest.permission.READ_EXTERNAL_STORAGE
-                ) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(
-                    it,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-                ) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(
-                    it,
-                    Manifest.permission.CAMERA
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                ActivityCompat.requestPermissions(
-                    it,
-                    arrayOf(
-                        Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.CAMERA
-                    ),
-                    Constants.IMAGE_PICK_REQUEST_CODE
-                )
+            if (ActivityCompat.checkSelfPermission(it, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(it, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(it, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA), Constants.IMAGE_PICK_REQUEST_CODE)
                 return
             }
         }
@@ -841,10 +702,8 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
             try {
                 val imageFile = File.createTempFile(fileName, ".jpg", storageDirectory)
                 mCurrentPhotoPath = imageFile.absolutePath
-                val cameraIntent =
-                    Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
-                val imageUri =
-                    FileProvider.getUriForFile(this, "com.digitaldukaan.fileprovider", imageFile)
+                val cameraIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
+                val imageUri = FileProvider.getUriForFile(this, "com.digitaldukaan.fileprovider", imageFile)
                 cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
                 cameraGalleryWithCropIntentResult.launch(cameraIntent)
             } catch (e: Exception) {
@@ -856,28 +715,8 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
 
     open fun openMobileGalleryWithoutCrop() {
         mActivity?.let {
-            if (ActivityCompat.checkSelfPermission(
-                    it,
-                    Manifest.permission.READ_EXTERNAL_STORAGE
-                ) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(
-                    it,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-                ) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(
-                    it,
-                    Manifest.permission.CAMERA
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                ActivityCompat.requestPermissions(
-                    it,
-                    arrayOf(
-                        Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.CAMERA
-                    ),
-                    Constants.IMAGE_PICK_REQUEST_CODE
-                )
+            if (ActivityCompat.checkSelfPermission(it, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(it, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(it, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA), Constants.IMAGE_PICK_REQUEST_CODE)
                 return
             }
         }
@@ -887,10 +726,8 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
             try {
                 val imageFile = File.createTempFile(fileName, ".jpg", storageDirectory)
                 mCurrentPhotoPath = imageFile.absolutePath
-                val cameraIntent =
-                    Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
-                val imageUri =
-                    FileProvider.getUriForFile(this, "com.digitaldukaan.fileprovider", imageFile)
+                val cameraIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
+                val imageUri = FileProvider.getUriForFile(this, "com.digitaldukaan.fileprovider", imageFile)
                 cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
                 cameraGalleryWithoutCropIntentResult.launch(cameraIntent)
             } catch (e: Exception) {
@@ -902,28 +739,8 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
 
     open fun openCameraWithoutCrop() {
         mActivity?.let {
-            if (ActivityCompat.checkSelfPermission(
-                    it,
-                    Manifest.permission.READ_EXTERNAL_STORAGE
-                ) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(
-                    it,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-                ) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(
-                    it,
-                    Manifest.permission.CAMERA
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                ActivityCompat.requestPermissions(
-                    it,
-                    arrayOf(
-                        Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.CAMERA
-                    ),
-                    Constants.IMAGE_PICK_REQUEST_CODE
-                )
+            if (ActivityCompat.checkSelfPermission(it, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(it, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(it, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA), Constants.IMAGE_PICK_REQUEST_CODE)
                 return
             }
         }
@@ -935,51 +752,20 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                 val imageFile = File.createTempFile(fileName, ".jpg", storageDirectory)
                 mCurrentPhotoPath = imageFile.absolutePath
                 val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                val imageUri =
-                    FileProvider.getUriForFile(this, "com.digitaldukaan.fileprovider", imageFile)
+                val imageUri = FileProvider.getUriForFile(this, "com.digitaldukaan.fileprovider", imageFile)
                 cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
                 cameraGalleryWithoutCropIntentResult.launch(cameraIntent)
             } catch (e: Exception) {
                 Log.e(TAG, "openCamera: ${e.message}", e)
-                mActivity?.let {
-                    ActivityCompat.requestPermissions(
-                        it,
-                        arrayOf(
-                            Manifest.permission.READ_EXTERNAL_STORAGE,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                            Manifest.permission.CAMERA
-                        ),
-                        Constants.IMAGE_PICK_REQUEST_CODE
-                    )
-                }
+                mActivity?.let { ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA), Constants.IMAGE_PICK_REQUEST_CODE) }
             }
         }
     }
 
     open fun openCameraWithCrop() {
         mActivity?.let {
-            if (ActivityCompat.checkSelfPermission(
-                    it,
-                    Manifest.permission.READ_EXTERNAL_STORAGE
-                ) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(
-                    it,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE
-                ) != PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(
-                    it,
-                    Manifest.permission.CAMERA
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                ActivityCompat.requestPermissions(
-                    it,
-                    arrayOf(
-                        Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.CAMERA
-                    ),
-                    Constants.IMAGE_PICK_REQUEST_CODE
-                )
+            if (ActivityCompat.checkSelfPermission(it, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(it, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(it, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA), Constants.IMAGE_PICK_REQUEST_CODE)
                 return
             }
         }
@@ -991,22 +777,13 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                 val imageFile = File.createTempFile(fileName, ".jpg", storageDirectory)
                 mCurrentPhotoPath = imageFile.absolutePath
                 val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                val imageUri =
-                    FileProvider.getUriForFile(this, "com.digitaldukaan.fileprovider", imageFile)
+                val imageUri = FileProvider.getUriForFile(this, "com.digitaldukaan.fileprovider", imageFile)
                 cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
                 cameraGalleryWithCropIntentResult.launch(cameraIntent)
             } catch (e: Exception) {
                 Log.e(TAG, "openCamera: ${e.message}", e)
                 mActivity?.let {
-                    ActivityCompat.requestPermissions(
-                        it,
-                        arrayOf(
-                            Manifest.permission.READ_EXTERNAL_STORAGE,
-                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                            Manifest.permission.CAMERA
-                        ),
-                        Constants.IMAGE_PICK_REQUEST_CODE
-                    )
+                    ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA), Constants.IMAGE_PICK_REQUEST_CODE)
                 }
             }
         }
@@ -1022,10 +799,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                         val bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath)
                         Log.d(TAG, "onActivityResult: bitmap :: $bitmap")
                         stopProgress()
-                        if (null == bitmap) handleGalleryResult(
-                            result,
-                            true
-                        ) else handleCameraResult(bitmap, true)
+                        if (null == bitmap) handleGalleryResult(result, true) else handleCameraResult(bitmap, true)
                     } catch (e: Exception) {
                         Log.e(TAG, "resultLauncherForCamera: ${e.message}", e)
                     }
@@ -1044,10 +818,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                         val bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath)
                         Log.d(TAG, "onActivityResult: bitmap :: $bitmap")
                         stopProgress()
-                        if (null == bitmap) handleGalleryResult(
-                            result,
-                            false
-                        ) else handleCameraResult(bitmap, false)
+                        if (null == bitmap) handleGalleryResult(result, false) else handleCameraResult(bitmap, false)
                     } catch (e: Exception) {
                         Log.e(TAG, "resultLauncherForCamera: ${e.message}", e)
                     }
@@ -1059,7 +830,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         var file = File(mCurrentPhotoPath)
         mActivity?.run {
             Log.d(TAG, "ORIGINAL :: ${file.length() / (1024)} KB")
-            file = Compressor.compress(this, file)
+            file = Compressor.compress(this, file) { quality(if (false == StaticInstances.sPermissionHashMap?.get(Constants.PREMIUM_USER)) (mActivity?.resources?.getInteger(R.integer.premium_compression_value) ?: 80) else 100) }
             Log.d(TAG, "COMPRESSED :: ${file.length() / (1024)} KB")
         }
         if (file.length() / (1024 * 1024) >= mActivity?.resources?.getInteger(R.integer.image_mb_size) ?: 0) {
@@ -1086,7 +857,9 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         var file = getImageFileFromBitmap(bitmap, mActivity)
         file?.let {
             Log.d(TAG, "ORIGINAL :: ${it.length() / (1024)} KB")
-            mActivity?.run { file = Compressor.compress(this, it) }
+            mActivity?.run { file = Compressor.compress(this, it) {
+                quality(if (false == StaticInstances.sPermissionHashMap?.get(Constants.PREMIUM_USER)) (mActivity?.resources?.getInteger(R.integer.premium_compression_value) ?: 80) else 100)
+            } }
             Log.d(TAG, "COMPRESSED :: ${it.length() / (1024)} KB")
             if (it.length() / (1024 * 1024) >= mActivity?.resources?.getInteger(R.integer.image_mb_size) ?: 0) {
                 showToast("Images more than ${mActivity?.resources?.getInteger(R.integer.image_mb_size)} are not allowed")
@@ -1106,15 +879,9 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     private fun startCropping(bitmap: Bitmap?) {
         try {
             mActivity?.let {
-                val originalImgFile = File(
-                    it.getExternalFilesDir(Environment.DIRECTORY_PICTURES),
-                    "${System.currentTimeMillis()}_originalImgFile.jpg"
-                )
+                val originalImgFile = File(it.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "${System.currentTimeMillis()}_originalImgFile.jpg")
                 bitmap?.let { b -> convertBitmapToFile(originalImgFile, b) }
-                val croppedImgFile = File(
-                    it.getExternalFilesDir(Environment.DIRECTORY_PICTURES),
-                    "${System.currentTimeMillis()}_croppedImgFile.jpg"
-                )
+                val croppedImgFile = File(it.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "${System.currentTimeMillis()}_croppedImgFile.jpg")
                 UCrop.of(Uri.fromFile(originalImgFile), Uri.fromFile(croppedImgFile))
                     .withAspectRatio(1f, 1f)
                     .withMaxResultSize(500, 500)
@@ -1175,7 +942,9 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                             var file = getImageFileFromBitmap(it, mActivity)
                             file?.let { f ->
                                 Log.d(TAG, "ORIGINAL :: ${f.length() / (1024)} KB")
-                                mActivity?.let { context -> file = Compressor.compress(context, f) }
+                                mActivity?.let { context ->
+                                    file = Compressor.compress(context, f) {
+                                        quality(if (false == StaticInstances.sPermissionHashMap?.get(Constants.PREMIUM_USER)) (mActivity?.resources?.getInteger(R.integer.premium_compression_value) ?: 80) else 100) } }
                                 Log.d(TAG, "COMPRESSED :: ${f.length() / (1024)} KB")
                                 if (f.length() / (1024 * 1024) >= mActivity?.resources?.getInteger(R.integer.image_mb_size) ?: 0) {
                                     showToast("Images more than ${mActivity?.resources?.getInteger(R.integer.image_mb_size)} are not allowed")
@@ -1206,10 +975,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
             AppEventsManager.pushAppEvents(
                 eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
                 isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                data = mapOf(
-                    AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(
-                        Constants.STORE_ID
-                    ),
+                data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
                     "Exception Point" to "onSearchImageItemClicked",
                     "Exception Message" to e.message,
                     "Exception Logs" to e.toString()
@@ -1245,52 +1011,18 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                 Constants.ACTION_DESCRIPTION -> {
                     if (currentFragment is StoreDescriptionFragment) {
                         launchFragment(OrderFragment.newInstance(), true)
-                    } else launchFragment(
-                        StoreDescriptionFragment.newInstance(
-                            getHeaderByActionInSettingKetList(
-                                profilePreviewResponse,
-                                Constants.ACTION_STORE_DESCRIPTION
-                            ),
-                            incompleteProfilePageNumber,
-                            false,
-                            profilePreviewResponse
-                        ), true
-                    )
+                    } else launchFragment(StoreDescriptionFragment.newInstance(getHeaderByActionInSettingKetList(profilePreviewResponse, Constants.ACTION_STORE_DESCRIPTION), incompleteProfilePageNumber, false, profilePreviewResponse), true)
                 }
                 Constants.ACTION_BUSINESS -> {
-                    if (currentFragment is BusinessTypeFragment) launchFragment(
-                        OrderFragment.newInstance(),
-                        true
-                    ) else launchFragment(
-                        BusinessTypeFragment.newInstance(
-                            getHeaderByActionInSettingKetList(
-                                profilePreviewResponse,
-                                Constants.ACTION_BUSINESS_TYPE
-                            ),
-                            incompleteProfilePageNumber, false, profilePreviewResponse
-                        ), true
-                    )
+                    if (currentFragment is BusinessTypeFragment) launchFragment(OrderFragment.newInstance(), true) else launchFragment(BusinessTypeFragment.newInstance(getHeaderByActionInSettingKetList(profilePreviewResponse, Constants.ACTION_BUSINESS_TYPE), incompleteProfilePageNumber, false, profilePreviewResponse), true)
                 }
-                Constants.ACTION_BANK -> launchFragment(
-                    BankAccountFragment.newInstance(
-                        getHeaderByActionInSettingKetList(
-                            profilePreviewResponse,
-                            Constants.ACTION_BANK_ACCOUNT
-                        ),
-                        incompleteProfilePageNumber, false, profilePreviewResponse
-                    ), true
-                )
+                Constants.ACTION_BANK -> launchFragment(BankAccountFragment.newInstance(getHeaderByActionInSettingKetList(profilePreviewResponse, Constants.ACTION_BANK_ACCOUNT), incompleteProfilePageNumber, false, profilePreviewResponse), true)
                 else -> launchFragment(OrderFragment.newInstance(), true)
             }
         }
     }
 
-    protected fun showSearchDialog(
-        staticData: OrderPageStaticTextResponse?,
-        mobileNumberString: String,
-        orderIdStr: String,
-        isError: Boolean = false
-    ) {
+    protected fun showSearchDialog(staticData: OrderPageStaticTextResponse?, mobileNumberString: String, orderIdStr: String, isError: Boolean = false) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             mActivity?.let {
                 val view = LayoutInflater.from(mActivity).inflate(R.layout.search_dialog, null)
@@ -1301,10 +1033,8 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                     view?.run {
                         val searchRadioGroup: RadioGroup = findViewById(R.id.searchRadioGroup)
                         val orderIdRadioButton: RadioButton = findViewById(R.id.orderIdRadioButton)
-                        val phoneRadioButton: RadioButton =
-                            findViewById(R.id.phoneNumberRadioButton)
-                        val searchInputLayout: TextInputLayout =
-                            findViewById(R.id.searchInputLayout)
+                        val phoneRadioButton: RadioButton = findViewById(R.id.phoneNumberRadioButton)
+                        val searchInputLayout: TextInputLayout = findViewById(R.id.searchInputLayout)
                         val mobileNumberEditText: EditText = findViewById(R.id.mobileNumberEditText)
                         val searchByHeading: TextView = findViewById(R.id.searchByHeading)
                         val confirmTextView: TextView = findViewById(R.id.confirmTextView)
@@ -1315,14 +1045,8 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                         confirmTextView.text = staticData?.search_dialog_button_text
                         searchRadioGroup.setOnCheckedChangeListener { _, checkedId ->
                             when (checkedId) {
-                                orderIdRadioButton.id -> {
-                                    searchInputLayout.hint =
-                                        "${staticData?.heading_search_dialog} ${staticData?.search_dialog_selection_one}"
-                                }
-                                phoneRadioButton.id -> {
-                                    searchInputLayout.hint =
-                                        "${staticData?.heading_search_dialog} ${staticData?.search_dialog_selection_two}"
-                                }
+                                orderIdRadioButton.id -> { searchInputLayout.hint = "${staticData?.heading_search_dialog} ${staticData?.search_dialog_selection_one}" }
+                                phoneRadioButton.id -> { searchInputLayout.hint = "${staticData?.heading_search_dialog} ${staticData?.search_dialog_selection_two}" }
                             }
                             mobileNumberEditText.setText("")
                         }
@@ -1340,14 +1064,14 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                             staticData?.error_mandatory_field = "This field is mandatory"
                             if (orderIdRadioButton.isChecked) {
                                 inputOrderId = mobileNumberEditText.text.trim().toString()
-                                if (inputOrderId.isEmpty()) {
+                                if (isEmpty(inputOrderId)) {
                                     mobileNumberEditText.error = staticData?.error_mandatory_field
                                     mobileNumberEditText.requestFocus()
                                     return@setOnClickListener
                                 }
                             } else {
                                 inputMobileNumber = mobileNumberEditText.text.trim().toString()
-                                if (inputMobileNumber.isEmpty()) {
+                                if (isEmpty(inputMobileNumber)) {
                                     mobileNumberEditText.error = staticData?.error_mandatory_field
                                     mobileNumberEditText.requestFocus()
                                     return@setOnClickListener
@@ -1360,13 +1084,8 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                                 isAppFlyerEvent = true,
                                 isServerCallEvent = true,
                                 data = mapOf(
-                                    AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(
-                                        Constants.STORE_ID
-                                    ),
-                                    AFInAppEventParameterName.SEARCH_BY to if (isEmpty(
-                                            inputMobileNumber
-                                        )
-                                    ) AFInAppEventParameterName.PHONE else AFInAppEventParameterName.ORDER_ID
+                                    AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                                    AFInAppEventParameterName.SEARCH_BY to if (isEmpty(inputMobileNumber)) AFInAppEventParameterName.PHONE else AFInAppEventParameterName.ORDER_ID
                                 )
                             )
                             onSearchDialogContinueButtonClicked(inputOrderId, inputMobileNumber)
@@ -1377,29 +1096,14 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                                 if (isNotEmpty(str)) errorTextView.visibility = View.GONE
                             }
 
-                            override fun beforeTextChanged(
-                                p0: CharSequence?,
-                                p1: Int,
-                                p2: Int,
-                                p3: Int
-                            ) {
-                                Log.d(TAG, "beforeTextChanged: do nothing")
-                            }
+                            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
 
-                            override fun onTextChanged(
-                                p0: CharSequence?,
-                                p1: Int,
-                                p2: Int,
-                                p3: Int
-                            ) {
-                                Log.d(TAG, "onTextChanged: do nothing")
-                            }
+                            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
 
                         })
                         if (isError) {
                             errorTextView.visibility = View.VISIBLE
-                            val message =
-                                "No order found with this ${if (isEmpty(mobileNumberString)) "Order ID" else "Mobile Number"}"
+                            val message = "No order found with this ${if (isEmpty(mobileNumberString)) "Order ID" else "Mobile Number"}"
                             errorTextView.text = message
                         }
                     }
@@ -1411,20 +1115,15 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     open fun convertDateStringOfOrders(list: ArrayList<OrderItemResponse>) {
         list.forEachIndexed { _, itemResponse ->
             itemResponse.updatedDate = getDateFromOrderString(itemResponse.createdAt)
-            itemResponse.updatedCompleteDate =
-                getCompleteDateFromOrderString(itemResponse.createdAt)
+            itemResponse.updatedCompleteDate = getCompleteDateFromOrderString(itemResponse.createdAt)
         }
     }
 
-    open fun showDontShowDialog(
-        item: OrderItemResponse?,
-        staticData: OrderPageStaticTextResponse?
-    ) {
+    open fun showDontShowDialog(item: OrderItemResponse?, staticData: OrderPageStaticTextResponse?) {
         mActivity?.let {
             val builder = AlertDialog.Builder(it)
             val view: View = layoutInflater.inflate(R.layout.dont_show_again_dialog, null)
-            var isCheckBoxVisible =
-                "" == PrefsManager.getStringDataFromSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN)
+            var isCheckBoxVisible = ("" == PrefsManager.getStringDataFromSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN))
             builder.apply {
                 setTitle(staticData?.dialog_text_alert)
                 val message: String? = when (item?.displayStatus) {
@@ -1437,29 +1136,21 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                 setPositiveButton(staticData?.dialog_text_yes) { dialogInterface, _ ->
                     run {
                         dialogInterface.dismiss()
-                        storeStringDataInSharedPref(
-                            Constants.KEY_DONT_SHOW_MESSAGE_AGAIN,
-                            if (isCheckBoxVisible) Constants.TEXT_YES else Constants.TEXT_NO
-                        )
+                        storeStringDataInSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN, if (isCheckBoxVisible) Constants.TEXT_YES else Constants.TEXT_NO)
                         onDontShowDialogPositiveButtonClicked(item)
                     }
                 }
                 setNegativeButton(staticData?.dialog_text_no) { dialogInterface, _ ->
                     run {
                         dialogInterface.dismiss()
-                        if (isCheckBoxVisible) storeStringDataInSharedPref(
-                            Constants.KEY_DONT_SHOW_MESSAGE_AGAIN,
-                            Constants.TEXT_NO
-                        )
+                        if (isCheckBoxVisible) storeStringDataInSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN, Constants.TEXT_NO)
                     }
                 }
                 view.run {
                     val checkBox: CheckBox = view.findViewById(R.id.checkBox)
                     checkBox.text = staticData?.dialog_check_box_text
                     isCheckBoxVisible = false
-                    checkBox.setOnCheckedChangeListener { _, isChecked ->
-                        isCheckBoxVisible = isChecked
-                    }
+                    checkBox.setOnCheckedChangeListener { _, isChecked -> isCheckBoxVisible = isChecked }
                 }
             }.show()
         }
@@ -1482,10 +1173,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                             isCleverTapEvent = true,
                             isAppFlyerEvent = true,
                             isServerCallEvent = true,
-                            data = mapOf(
-                                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(
-                                    Constants.STORE_ID
-                                ),
+                            data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
                                 "Exception Point" to "showImageDialog",
                                 "Exception Message" to e.message,
                                 "Exception Logs" to e.toString()
@@ -1518,9 +1206,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                         eventName = AFInAppEventType.EVENT_PAYMENT_LINK_SENT,
                         isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                         data = mapOf(
-                            AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(
-                                Constants.STORE_ID
-                            ),
+                            AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
                             AFInAppEventParameterName.PATH to AFInAppEventParameterName.SMS
                         )
                     )
@@ -1533,9 +1219,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                         eventName = AFInAppEventType.EVENT_PAYMENT_LINK_SENT,
                         isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                         data = mapOf(
-                            AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(
-                                Constants.STORE_ID
-                            ),
+                            AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
                             AFInAppEventParameterName.PATH to AFInAppEventParameterName.SMS
                         )
                     )
@@ -1548,20 +1232,13 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                         eventName = AFInAppEventType.EVENT_PAYMENT_LINK_SENT,
                         isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                         data = mapOf(
-                            AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(
-                                Constants.STORE_ID
-                            ),
+                            AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
                             AFInAppEventParameterName.PATH to AFInAppEventParameterName.WHATSAPP
                         )
                     )
                     this.dismiss()
                     onWhatsAppIconClicked()
-                    val request = PaymentLinkRequest(
-                        Constants.MODE_WHATS_APP,
-                        amount.toDouble(),
-                        "",
-                        imageCdn
-                    )
+                    val request = PaymentLinkRequest(Constants.MODE_WHATS_APP, amount.toDouble(), "", imageCdn)
                     initiatePaymentLinkServerCall(request)
                 }
                 whatsAppTextView.setOnClickListener {
@@ -1569,20 +1246,13 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                         eventName = AFInAppEventType.EVENT_PAYMENT_LINK_SENT,
                         isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                         data = mapOf(
-                            AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(
-                                Constants.STORE_ID
-                            ),
+                            AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
                             AFInAppEventParameterName.PATH to AFInAppEventParameterName.WHATSAPP
                         )
                     )
                     this.dismiss()
                     onWhatsAppIconClicked()
-                    val request = PaymentLinkRequest(
-                        Constants.MODE_WHATS_APP,
-                        amount.toDouble(),
-                        "",
-                        imageCdn
-                    )
+                    val request = PaymentLinkRequest(Constants.MODE_WHATS_APP, amount.toDouble(), "", imageCdn)
                     initiatePaymentLinkServerCall(request)
                 }
                 bottomSheetClose.setOnClickListener {
@@ -1593,19 +1263,12 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         }
     }
 
-    protected fun showMasterCatalogBottomSheet(
-        addProductBannerStaticDataResponse: AddProductBannerTextResponse?,
-        addProductStaticText: AddProductStaticText?,
-        mode: String
-    ) {
+    protected fun showMasterCatalogBottomSheet(addProductBannerStaticDataResponse: AddProductBannerTextResponse?, addProductStaticText: AddProductStaticText?, mode: String) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             try {
                 mActivity?.run {
                     val bottomSheetDialog = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
-                    val view = LayoutInflater.from(mActivity).inflate(
-                        R.layout.bottom_sheet_add_products_catalog_builder,
-                        findViewById(R.id.bottomSheetContainer)
-                    )
+                    val view = LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet_add_products_catalog_builder, findViewById(R.id.bottomSheetContainer))
                     bottomSheetDialog.apply {
                         setContentView(view)
                         setBottomSheetCommonProperty()
@@ -1621,13 +1284,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                             bodyTextView.text = addProductBannerStaticDataResponse?.body
                             buttonTextView.text = addProductBannerStaticDataResponse?.button_text
                             bannerImageView.let {
-                                try {
-                                    Picasso.get()
-                                        .load(addProductBannerStaticDataResponse?.image_url)
-                                        .into(it)
-                                } catch (e: Exception) {
-                                    Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
-                                }
+                                Picasso.get().load(addProductBannerStaticDataResponse?.image_url).into(it)
                             }
                             closeImageView.setOnClickListener { bottomSheetDialog.dismiss() }
                             buttonTextView.setOnClickListener {
@@ -1638,17 +1295,11 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                                     isAppFlyerEvent = true,
                                     isServerCallEvent = true,
                                     data = mapOf(
-                                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(
-                                            Constants.STORE_ID
-                                        ),
+                                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
                                         AFInAppEventParameterName.PATH to if (mode == Constants.MODE_PRODUCT_LIST) Constants.MODE_PRODUCT_LIST else Constants.MODE_ADD_PRODUCT
                                     )
                                 )
-                                launchFragment(
-                                    ExploreCategoryFragment.newInstance(
-                                        addProductStaticText
-                                    ), true
-                                )
+                                launchFragment(ExploreCategoryFragment.newInstance(addProductStaticText), true)
                             }
                         }
                     }.show()
@@ -1658,10 +1309,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                    data = mapOf(
-                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(
-                            Constants.STORE_ID
-                        ),
+                    data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
                         "Exception Point" to "showMasterCatalogBottomSheet",
                         "Exception Message" to e.message,
                         "Exception Logs" to e.toString()
@@ -1700,14 +1348,8 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
             intent.setDataAndType(Uri.fromFile(file), "image/*")
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
             mActivity?.let {
-                val pendingIntent: PendingIntent =
-                    PendingIntent.getActivity(it, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT)
-                MyFcmMessageListenerService.createNotification(
-                    titleStr,
-                    "Download completed.",
-                    pendingIntent,
-                    it
-                )
+                val pendingIntent: PendingIntent = PendingIntent.getActivity(it, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT)
+                MyFcmMessageListenerService.createNotification(titleStr, "Download completed.", pendingIntent, it)
             }
         } catch (e: Exception) {
             showToast(e.message)
@@ -1716,14 +1358,13 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
 
     fun logoutFromApplication(isAppLogout: Boolean = false) {
         if (!isAppLogout) showToast(mActivity?.getString(R.string.logout_message))
-        mActivity?.getSharedPreferences(Constants.SHARED_PREF_NAME, Context.MODE_PRIVATE)?.edit()
-            ?.clear()?.apply()
-        clearFragmentBackStack()
+        mActivity?.getSharedPreferences(getSharedPreferenceName(), MODE_PRIVATE)?.edit()?.clear()?.apply()
         storeStringDataInSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN, "")
         storeStringDataInSharedPref(Constants.USER_AUTH_TOKEN, "")
         storeStringDataInSharedPref(Constants.STORE_NAME, "")
         storeStringDataInSharedPref(Constants.USER_MOBILE_NUMBER, "")
         storeStringDataInSharedPref(Constants.STORE_ID, "")
+        clearFragmentBackStack()
         launchFragment(LoginFragmentV2.newInstance(isAppLogout), true)
     }
 
@@ -1738,10 +1379,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                         it.body()?.let {
                             withContext(Dispatchers.Main) {
                                 if (it.mIsSuccessStatus) shareOnWhatsApp(
-                                    Gson().fromJson<String>(
-                                        it.mCommonDataStr,
-                                        String::class.java
-                                    )
+                                    Gson().fromJson<String>(it.mCommonDataStr, String::class.java)
                                 ) else showShortSnackBar(it.mMessage, true, R.drawable.ic_close_red)
                             }
                         }
@@ -1763,9 +1401,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                     if (it.isSuccessful) {
                         it.body()?.let {
                             withContext(Dispatchers.Main) {
-                                if (it.mIsSuccessStatus) shareOnWhatsApp(
-                                    Gson().fromJson<String>(it.mCommonDataStr, String::class.java)
-                                ) else showShortSnackBar(it.mMessage, true, R.drawable.ic_close_red)
+                                if (it.mIsSuccessStatus) shareDataOnWhatsAppByNumber(Gson().fromJson<String>(it.mCommonDataStr, String::class.java), StaticInstances.sMerchantMobileNumber) else showShortSnackBar(it.mMessage, true, R.drawable.ic_close_red)
                             }
                         }
                     }
@@ -1787,11 +1423,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                         it.body()?.let {
                             withContext(Dispatchers.Main) {
                                 if (it.mIsSuccessStatus) {
-                                    val lockedShareResponse =
-                                        Gson().fromJson<LockedStoreShareResponse>(
-                                            it.mCommonDataStr,
-                                            LockedStoreShareResponse::class.java
-                                        )
+                                    val lockedShareResponse = Gson().fromJson<LockedStoreShareResponse>(it.mCommonDataStr, LockedStoreShareResponse::class.java)
                                     onLockedStoreShareSuccessResponse(lockedShareResponse)
                                 } else showShortSnackBar(it.mMessage, true, R.drawable.ic_close_red)
                             }
@@ -1810,9 +1442,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                 eventName = AFInAppEventType.EVENT_SET_ORDER_PAYMENT_DETAIL,
                 isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                 data = mapOf(
-                    AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(
-                        Constants.STORE_ID
-                    ),
+                    AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
                     AFInAppEventParameterName.TRANSACTION_ID to txnId,
                     AFInAppEventParameterName.PATH to path
                 )
@@ -1828,13 +1458,8 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                         it.body()?.let {
                             withContext(Dispatchers.Main) {
                                 if (it.mIsSuccessStatus) {
-                                    val responseObj = Gson().fromJson<TransactionDetailResponse>(
-                                        it.mCommonDataStr,
-                                        TransactionDetailResponse::class.java
-                                    )
-                                    if (isEmpty(path)) onTransactionDetailResponse(responseObj) else showTransactionDetailBottomSheet(
-                                        responseObj
-                                    )
+                                    val responseObj = Gson().fromJson<TransactionDetailResponse>(it.mCommonDataStr, TransactionDetailResponse::class.java)
+                                    if (isEmpty(path)) onTransactionDetailResponse(responseObj) else showTransactionDetailBottomSheet(responseObj)
                                 } else showShortSnackBar(it.mMessage, true, R.drawable.ic_close_red)
                             }
                         }
@@ -1849,19 +1474,14 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     private fun showTransactionDetailBottomSheet(response: TransactionDetailResponse?) {
         mActivity?.run {
             val bottomSheetDialog = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
-            val view = LayoutInflater.from(this).inflate(
-                R.layout.bottom_sheet_transaction_detail,
-                findViewById(R.id.bottomSheetContainer)
-            )
+            val view = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_transaction_detail, findViewById(R.id.bottomSheetContainer))
             bottomSheetDialog.apply {
                 setContentView(view)
                 setBottomSheetCommonProperty()
                 view.run {
                     val staticText = response?.staticText
-                    val bottomSheetHeadingTextView: TextView =
-                        findViewById(R.id.bottomSheetHeadingTextView)
-                    val billAmountValueTextView: TextView =
-                        findViewById(R.id.billAmountValueTextView)
+                    val bottomSheetHeadingTextView: TextView = findViewById(R.id.bottomSheetHeadingTextView)
+                    val billAmountValueTextView: TextView = findViewById(R.id.billAmountValueTextView)
                     val txnChargeValueTextView: TextView = findViewById(R.id.txnChargeValueTextView)
                     val textViewTop: TextView = findViewById(R.id.textViewTop)
                     val textViewBottom: TextView = findViewById(R.id.textViewBottom)
@@ -1869,8 +1489,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                     val txnChargeTextView: TextView = findViewById(R.id.txnChargeTextView)
                     val paymentModeTextView: TextView = findViewById(R.id.paymentModeTextView)
                     val amountSettleTextView: TextView = findViewById(R.id.amountSettleTextView)
-                    val amountSettleValueTextView: TextView =
-                        findViewById(R.id.amountSettleValueTextView)
+                    val amountSettleValueTextView: TextView = findViewById(R.id.amountSettleValueTextView)
                     val txnId: TextView = findViewById(R.id.txnId)
                     val bottomDate: TextView = findViewById(R.id.bottomDate)
                     val displayMessage: TextView = findViewById(R.id.displayMessage)
@@ -1883,17 +1502,11 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                     billAmountTextView.text = staticText?.bill_amount
                     amountSettleTextView.text = staticText?.amount_to_settled
                     paymentModeTextView.text = staticText?.payment_mode
-                    txnId.text = getStringDateTimeFromTransactionDetailDate(
-                        getCompleteDateFromOrderString(response?.transactionTimestamp)
-                    )
+                    txnId.text = getStringDateTimeFromTransactionDetailDate(getCompleteDateFromOrderString(response?.transactionTimestamp))
                     when (Constants.ORDER_STATUS_PAYOUT_SUCCESS) {
                         response?.settlementState -> {
                             bottomDate.visibility = View.VISIBLE
-                            val bottomDisplayStr = "${
-                                getStringDateTimeFromTransactionDetailDate(
-                                    getCompleteDateFromOrderString(response.settlementTimestamp)
-                                )
-                            } ${if (!isEmpty(response.utr)) "| UTR : ${response.utr}" else ""}"
+                            val bottomDisplayStr = "${getStringDateTimeFromTransactionDetailDate(getCompleteDateFromOrderString(response.settlementTimestamp))} ${if (!isEmpty(response.utr)) "| UTR : ${response.utr}" else ""}"
                             bottomDate.text = bottomDisplayStr
                         }
                         else -> bottomDate.visibility = View.GONE
@@ -1906,41 +1519,25 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                             when (response.ctaItem?.action) {
                                 Constants.ACTION_ADD_BANK -> {
                                     bottomSheetDialog.dismiss()
-                                    launchFragment(
-                                        BankAccountFragment.newInstance(
-                                            null,
-                                            0,
-                                            false,
-                                            null
-                                        ), false
-                                    )
-                                }
+                                    launchFragment(BankAccountFragment.newInstance(null, 0, false, null), false) }
                             }
                         }
                     } else {
                         ctaTextView.visibility = View.INVISIBLE
                         displayMessage.visibility = View.GONE
                     }
-                    txnChargeTextView.text =
-                        "${staticText?.transaction_charges} (${response?.transactionCharges}%)"
-                    bottomSheetHeadingTextView.text =
-                        "${staticText?.order_number} ${response?.orderId}"
-                    billAmountValueTextView.text =
-                        "${getString(R.string.rupee_symbol)} ${response?.amount}"
-                    txnChargeValueTextView.text =
-                        "${getString(R.string.rupee_symbol)} ${response?.transactionChargeAmount}"
-                    amountSettleValueTextView.text =
-                        "${getString(R.string.rupee_symbol)} ${response?.settlementAmount}"
-                    if (!isEmpty(response?.paymentImage)) mActivity?.let { context ->
-                        Glide.with(
-                            context
-                        ).load(response?.paymentImage).into(paymentModeImageView)
-                    }
-                    if (!isEmpty(response?.settlementCdn)) mActivity?.let { context ->
-                        Glide.with(
-                            context
-                        ).load(response?.settlementCdn).into(imageViewBottom)
-                    }
+                    var displayTextMessage = "${staticText?.transaction_charges} (${response?.transactionCharges}%)"
+                    txnChargeTextView.text = displayTextMessage
+                    displayTextMessage = "${staticText?.order_number} ${response?.orderId}"
+                    bottomSheetHeadingTextView.text = displayTextMessage
+                    displayTextMessage = "${getString(R.string.rupee_symbol)} ${response?.amount}"
+                    billAmountValueTextView.text = displayTextMessage
+                    displayTextMessage = "${getString(R.string.rupee_symbol)} ${response?.transactionChargeAmount}"
+                    txnChargeValueTextView.text = displayTextMessage
+                    displayTextMessage = "${getString(R.string.rupee_symbol)} ${response?.settlementAmount}"
+                    amountSettleValueTextView.text = displayTextMessage
+                    if (isNotEmpty(response?.paymentImage)) mActivity?.let { context -> Glide.with(context).load(response?.paymentImage).into(paymentModeImageView) }
+                    if (isNotEmpty(response?.settlementCdn)) mActivity?.let { context -> Glide.with(context).load(response?.settlementCdn).into(imageViewBottom) }
                     closeImageView.setOnClickListener { bottomSheetDialog.dismiss() }
                 }
             }.show()
@@ -1952,9 +1549,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
             eventName = AFInAppEventType.EVENT_SET_NEW_ORDER_NOTIFICATIONS,
             isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
             data = mapOf(
-                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(
-                    Constants.STORE_ID
-                ),
+                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
                 AFInAppEventParameterName.PATH to path
             )
         )
@@ -1968,10 +1563,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                         it.body()?.let {
                             withContext(Dispatchers.Main) {
                                 if (it.mIsSuccessStatus) {
-                                    val responseObj = Gson().fromJson<OrderNotificationResponse>(
-                                        it.mCommonDataStr,
-                                        OrderNotificationResponse::class.java
-                                    )
+                                    val responseObj = Gson().fromJson<OrderNotificationResponse>(it.mCommonDataStr, OrderNotificationResponse::class.java)
                                     showOrderNotificationBottomSheet(responseObj)
                                 } else showShortSnackBar(it.mMessage, true, R.drawable.ic_close_red)
                             }
@@ -1987,16 +1579,12 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     private fun showOrderNotificationBottomSheet(response: OrderNotificationResponse?) {
         mActivity?.run {
             val bottomSheetDialog = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
-            val view = LayoutInflater.from(this).inflate(
-                R.layout.bottom_sheet_order_notification,
-                findViewById(R.id.bottomSheetContainer)
-            )
+            val view = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_order_notification, findViewById(R.id.bottomSheetContainer))
             bottomSheetDialog.apply {
                 setContentView(view)
                 behavior.state = BottomSheetBehavior.STATE_EXPANDED
                 view.run {
-                    val bottomSheetHeadingTextView: TextView =
-                        findViewById(R.id.bottomSheetHeadingTextView)
+                    val bottomSheetHeadingTextView: TextView = findViewById(R.id.bottomSheetHeadingTextView)
                     val closeImageView: ImageView = findViewById(R.id.closeImageView)
                     val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
                     bottomSheetHeadingTextView.text = response?.headingBottomSheet
@@ -2016,13 +1604,11 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                                         isAppFlyerEvent = true,
                                         isServerCallEvent = true,
                                         data = mapOf(
-                                            AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(
-                                                Constants.STORE_ID
-                                            ),
+                                            AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
                                             AFInAppEventParameterName.SELECTION to item?.eventName
                                         )
                                     )
-                                    if (item?.isSelected != true) {
+                                    if (true != item?.isSelected) {
                                         bottomSheetDialog.dismiss()
                                         setOrderNotificationServerCall(item?.id ?: 0)
                                     }
@@ -2038,8 +1624,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         showProgressDialog(mActivity)
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
             try {
-                val response = RetrofitApi().getServerCallObject()
-                    ?.updateNotificationFlag(UpdatePaymentMethodRequest(flag))
+                val response = RetrofitApi().getServerCallObject()?.updateNotificationFlag(UpdatePaymentMethodRequest(flag))
                 response?.let {
                     stopProgress()
                     if (it.isSuccessful) {
@@ -2061,12 +1646,8 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     open fun showContactPickerBottomSheet(amount: String, imageCdn: String = "") {
         if (!askContactPermission()) {
             mActivity?.let {
-                val mContactPickerBottomSheet: BottomSheetDialog =
-                    BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
-                val view = LayoutInflater.from(it).inflate(
-                    R.layout.bottom_sheet_contact_pick,
-                    it.findViewById(R.id.bottomSheetContainer)
-                )
+                val mContactPickerBottomSheet = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
+                val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_contact_pick, it.findViewById(R.id.bottomSheetContainer))
                 mContactPickerBottomSheet.apply {
                     val staticText = StaticInstances.sOrderPageInfoStaticData
                     setContentView(view)
@@ -2076,45 +1657,25 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                         ContactAdapter(contactList, mActivity, object : IContactItemClicked {
                             override fun onContactItemClicked(contact: ContactModel) {
                                 mContactPickerBottomSheet.dismiss()
-                                val request = PaymentLinkRequest(
-                                    Constants.MODE_SMS,
-                                    amount.toDouble(),
-                                    contact.number ?: "",
-                                    imageCdn
-                                )
+                                val request = PaymentLinkRequest(Constants.MODE_SMS, amount.toDouble(), contact.number ?: "", imageCdn)
                                 initiatePaymentLinkServerCall(request, contact.name ?: "")
                             }
 
                         })
-                    StaticInstances.sUserContactList.forEachIndexed { _, model ->
-                        contactList.add(
-                            model
-                        )
-                    }
+                    StaticInstances.sUserContactList.forEachIndexed { _, model -> contactList.add(model) }
                     view?.run {
-                        val closeImageView: View =
-                            findViewById(R.id.bottomSheetUploadImageCloseImageView)
+                        val closeImageView: View = findViewById(R.id.bottomSheetUploadImageCloseImageView)
                         val bottomSheetHeading: TextView = findViewById(R.id.bottomSheetHeading)
                         val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
                         val searchImageEditText: EditText = findViewById(R.id.searchImageEditText)
                         bottomSheetHeading.setHtmlData(staticText?.bottom_sheet_heading_enter_contact_number)
-                        searchImageEditText.hint =
-                            staticText?.bottom_sheet_hint_enter_contact_number
+                        searchImageEditText.hint = staticText?.bottom_sheet_hint_enter_contact_number
                         searchImageEditText.addTextChangedListener(object : TextWatcher {
                             override fun afterTextChanged(editable: Editable?) {
                                 val string = editable?.toString()
-                                if (!isEmpty(string)) {
+                                if (isNotEmpty(string)) {
                                     val updatedContactList: ArrayList<ContactModel> = ArrayList()
-                                    contactList.forEachIndexed { _, contactModel ->
-                                        if (contactModel.name?.toLowerCase(Locale.getDefault())
-                                                ?.contains(
-                                                    string?.toLowerCase(Locale.getDefault()) ?: ""
-                                                ) == true ||
-                                            contactModel.number?.contains(string ?: "") == true
-                                        ) {
-                                            updatedContactList.add(contactModel)
-                                        }
-                                    }
+                                    contactList.forEachIndexed { _, contactModel -> if (contactModel.name?.toLowerCase(Locale.getDefault())?.contains(string?.toLowerCase(Locale.getDefault()) ?: "") == true || contactModel.number?.contains(string ?: "") == true) { updatedContactList.add(contactModel) } }
                                     if (isEmpty(updatedContactList)) {
                                         val contact = ContactModel(string, string)
                                         updatedContactList.add(contact)
@@ -2123,23 +1684,9 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                                 }
                             }
 
-                            override fun beforeTextChanged(
-                                p0: CharSequence?,
-                                p1: Int,
-                                p2: Int,
-                                p3: Int
-                            ) {
-                                Log.d(TAG, "beforeTextChanged: $p0")
-                            }
+                            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
 
-                            override fun onTextChanged(
-                                p0: CharSequence?,
-                                p1: Int,
-                                p2: Int,
-                                p3: Int
-                            ) {
-                                Log.d(TAG, "onTextChanged: $p0")
-                            }
+                            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
 
                         })
                         closeImageView.setOnClickListener { this@apply.dismiss() }
@@ -2154,10 +1701,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         }
     }
 
-    private fun initiatePaymentLinkServerCall(
-        request: PaymentLinkRequest,
-        contactName: String = ""
-    ) {
+    private fun initiatePaymentLinkServerCall(request: PaymentLinkRequest, contactName: String = "") {
         showProgressDialog(mActivity)
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
             try {
@@ -2168,11 +1712,8 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                         it.body()?.let {
                             withContext(Dispatchers.Main) {
                                 if (it.mIsSuccessStatus) {
-                                    val responseObj = Gson().fromJson<PaymentLinkResponse>(
-                                        it.mCommonDataStr,
-                                        PaymentLinkResponse::class.java
-                                    )
-                                    if (request.mode == Constants.MODE_WHATS_APP) {
+                                    val responseObj = Gson().fromJson<PaymentLinkResponse>(it.mCommonDataStr, PaymentLinkResponse::class.java)
+                                    if (Constants.MODE_WHATS_APP == request.mode) {
                                         shareOnWhatsApp(responseObj?.whatsapp?.text)
                                     } else {
                                         showPaymentLinkSuccessDialog(responseObj?.sms, contactName)
@@ -2208,45 +1749,23 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                 idHeading.text = idStr
                 val amountStr = "₹ ${smsObj?.amount}"
                 amountTextView.text = amountStr
-                linkSentToTextView.text =
-                    "${smsObj?.staticText?.text_your_link_sent_to} $contactName"
+                val displayMessageStr = "${smsObj?.staticText?.text_your_link_sent_to} $contactName"
+                linkSentToTextView.text = displayMessageStr
                 dateHeading.text = smsObj?.staticText?.text_date
                 timeTextView.text = smsObj?.time
                 dateTextView.text = smsObj?.date
                 timeHeading.text = smsObj?.staticText?.text_time
                 amountHeading.text = smsObj?.staticText?.text_amount
-                floatingClose.setOnClickListener {
-                    this.dismiss()
-                }
-                window!!.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                floatingClose.setOnClickListener { this.dismiss() }
+                window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             }.show()
         }
     }
 
-    private var mGoogleApiClient: FusedLocationProviderClient? = null
-    private var lastLocation: Location? = null
-    private var mCurrentLatitude = 0.0
-    private var mCurrentLongitude = 0.0
-
     private fun checkLocationPermission(): Boolean {
         mActivity?.let {
-            if (ContextCompat.checkSelfPermission(
-                    it,
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                ) != PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(
-                    it,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                ActivityCompat.requestPermissions(
-                    it,
-                    arrayOf(
-                        Manifest.permission.ACCESS_COARSE_LOCATION,
-                        Manifest.permission.ACCESS_FINE_LOCATION
-                    ),
-                    Constants.LOCATION_REQUEST_CODE
-                )
+            if (ContextCompat.checkSelfPermission(it, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(it, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION), Constants.LOCATION_REQUEST_CODE)
                 return true
             }
         }
@@ -2256,35 +1775,31 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     protected fun getLocationFromGoogleMap() {
         try {
             if (checkLocationPermission()) return
-            val locationManager =
-                mActivity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            val locationManager = mActivity?.getSystemService(Context.LOCATION_SERVICE) as LocationManager
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 1f, this)
+            mActivity?.let { context -> mGoogleApiClient = LocationServices.getFusedLocationProviderClient(context) }
             mActivity?.let { context ->
-                mGoogleApiClient = LocationServices.getFusedLocationProviderClient(context)
-            }
-            mGoogleApiClient?.lastLocation?.addOnCompleteListener(mActivity) { task ->
-                if (task.isSuccessful && task.result != null) {
-                    lastLocation = task.result
-                    mCurrentLatitude = lastLocation?.latitude ?: 0.0
-                    mCurrentLongitude = lastLocation?.longitude ?: 0.0
-                    onLocationChanged(mCurrentLatitude, mCurrentLongitude)
-                } else {
-                    if (!isLocationEnabledInSettings(mActivity)) openLocationSettings(true)
-                    mCurrentLatitude = 0.0
-                    mCurrentLongitude = 0.0
-                    onLocationChanged(mCurrentLatitude, mCurrentLongitude)
+                mGoogleApiClient?.lastLocation?.addOnCompleteListener(context) { task ->
+                    if (task.isSuccessful && null != task.result) {
+                        mLastLocation = task.result
+                        mCurrentLatitude = mLastLocation?.latitude ?: 0.0
+                        mCurrentLongitude = mLastLocation?.longitude ?: 0.0
+                        onLocationChanged(mCurrentLatitude, mCurrentLongitude)
+                    } else {
+                        if (!isLocationEnabledInSettings(mActivity)) openLocationSettings(true)
+                        mCurrentLatitude = 0.0
+                        mCurrentLongitude =  0.0
+                        onLocationChanged(mCurrentLatitude, mCurrentLongitude)
+                    }
                 }
             }
         } catch (e: Exception) {
-            Sentry.captureException(e, "$TAG getLocationFromGoogleMap")
+            Log.e(TAG, "getLocationFromGoogleMap: ${e.message}", e)
         }
     }
 
     override fun onLocationChanged(location: Location) {
-        Log.d(
-            TAG,
-            "onLocationChanged() Latitude: " + location.latitude + " , Longitude: " + location.longitude
-        )
+        Log.d(TAG, "onLocationChanged() Latitude: " + location.latitude + " , Longitude: " + location.longitude)
         mCurrentLatitude = location.latitude
         mCurrentLongitude = location.longitude
     }
@@ -2293,10 +1808,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         Log.d(TAG, "onStatusChanged :: p0 :: $p0, p1 :: $p1, p2:: $p2")
     }
 
-    open fun RecyclerView.smoothSnapToPosition(
-        position: Int,
-        snapMode: Int = LinearSmoothScroller.SNAP_TO_START
-    ) {
+    open fun RecyclerView.smoothSnapToPosition(position: Int, snapMode: Int = LinearSmoothScroller.SNAP_TO_START) {
         val smoothScroller = object : LinearSmoothScroller(this.context) {
             override fun getVerticalSnapPreference(): Int = snapMode
             override fun getHorizontalSnapPreference(): Int = snapMode
@@ -2305,13 +1817,9 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         layoutManager?.startSmoothScroll(smoothScroller)
     }
 
-    open fun openSubscriptionLockedUrlInBrowser(url: String) =
-        openWebViewFragment(this@BaseFragment, "", url)
+    open fun openSubscriptionLockedUrlInBrowser(url: String) = openWebViewFragment(this@BaseFragment, "", url)
 
-    open fun showShipmentConfirmationBottomSheet(
-        mOrderDetailStaticData: OrderDetailsStaticTextResponse?,
-        orderId: Int?
-    ) {
+    open fun showShipmentConfirmationBottomSheet(mOrderDetailStaticData: OrderDetailsStaticTextResponse?, orderId: Int?) {
         mActivity?.let { context ->
             val bottomSheetDialog = BottomSheetDialog(context, R.style.BottomSheetDialogTheme)
             val view = LayoutInflater.from(context).inflate(
@@ -2323,33 +1831,22 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                 val bottomSheetClose: View = view.findViewById(R.id.bottomSheetClose)
                 val headingTextView: TextView = view.findViewById(R.id.headingTextView)
                 val ctaTextView: TextView = view.findViewById(R.id.ctaTextView)
-                val radioButtonDeliveryPartnerSubHeading: TextView =
-                    view.findViewById(R.id.radioButtonDeliveryPartnerSubHeading)
-                val radioButtonShipMyselfSubHeading: TextView =
-                    view.findViewById(R.id.radioButtonShipMyselfSubHeading)
-                val radioButtonDeliveryPartner: RadioButton =
-                    view.findViewById(R.id.radioButtonDeliveryPartner)
-                val radioButtonShipMyself: RadioButton =
-                    view.findViewById(R.id.radioButtonShipMyself)
+                val radioButtonDeliveryPartnerSubHeading: TextView = view.findViewById(R.id.radioButtonDeliveryPartnerSubHeading)
+                val radioButtonShipMyselfSubHeading: TextView = view.findViewById(R.id.radioButtonShipMyselfSubHeading)
+                val radioButtonDeliveryPartner: RadioButton = view.findViewById(R.id.radioButtonDeliveryPartner)
+                val radioButtonShipMyself: RadioButton = view.findViewById(R.id.radioButtonShipMyself)
                 bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
-                headingTextView.text =
-                    mOrderDetailStaticData?.bottom_sheet_heading_how_will_you_ship
-                radioButtonShipMyselfSubHeading.text =
-                    mOrderDetailStaticData?.bottom_sheet_sub_message2_select_this
-                radioButtonDeliveryPartnerSubHeading.text =
-                    mOrderDetailStaticData?.bottom_sheet_sub_message1_select_this
+                headingTextView.text = mOrderDetailStaticData?.bottom_sheet_heading_how_will_you_ship
+                radioButtonShipMyselfSubHeading.text = mOrderDetailStaticData?.bottom_sheet_sub_message2_select_this
+                radioButtonDeliveryPartnerSubHeading.text = mOrderDetailStaticData?.bottom_sheet_sub_message1_select_this
                 radioButtonDeliveryPartner.apply {
                     text = mOrderDetailStaticData?.bottom_sheet_message1_ship_using_partners
                     isChecked = true
-                    setOnClickListener {
-                        radioButtonShipMyself.isChecked = false
-                    }
+                    setOnClickListener { radioButtonShipMyself.isChecked = false }
                 }
                 radioButtonShipMyself.apply {
                     text = mOrderDetailStaticData?.bottom_sheet_message2_i_will_ship
-                    setOnClickListener {
-                        radioButtonDeliveryPartner.isChecked = false
-                    }
+                    setOnClickListener { radioButtonDeliveryPartner.isChecked = false }
                 }
                 radioButtonDeliveryPartnerSubHeading.setOnClickListener {
                     radioButtonDeliveryPartner.isChecked = true
@@ -2368,9 +1865,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                             isAppFlyerEvent = true,
                             isServerCallEvent = true,
                             data = mapOf(
-                                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(
-                                    Constants.STORE_ID
-                                ),
+                                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
                                 AFInAppEventParameterName.ORDER_ID to "$orderId"
                             )
                         )
@@ -2416,10 +1911,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     open fun showLockedStoreShareBottomSheet(lockedShareResponse: LockedStoreShareResponse) {
         mActivity?.run {
             val bottomSheetDialog = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
-            val view = LayoutInflater.from(this).inflate(
-                R.layout.bottom_sheet_locked_store_share,
-                findViewById(R.id.bottomSheetContainer)
-            )
+            val view = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_locked_store_share, findViewById(R.id.bottomSheetContainer))
             bottomSheetDialog.apply {
                 behavior.state = BottomSheetBehavior.STATE_EXPANDED
                 setContentView(view)
@@ -2444,31 +1936,22 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                     progressBarContainer.visibility = View.VISIBLE
                     CoroutineScopeUtils().runTaskOnCoroutineBackground {
                         try {
-                            val response = RetrofitApi().getServerCallObject()
-                                ?.getCustomDomainBottomSheetData()
+                            val response = RetrofitApi().getServerCallObject()?.getCustomDomainBottomSheetData()
                             response?.let {
                                 stopProgress()
                                 if (it.isSuccessful) {
                                     it.body()?.let {
                                         withContext(Dispatchers.Main) {
                                             if (it.mIsSuccessStatus) {
-                                                val customDomainBottomSheetResponse =
-                                                    Gson().fromJson<CustomDomainBottomSheetResponse>(
-                                                        it.mCommonDataStr,
-                                                        CustomDomainBottomSheetResponse::class.java
-                                                    )
+                                                val customDomainBottomSheetResponse = Gson().fromJson<CustomDomainBottomSheetResponse>(it.mCommonDataStr, CustomDomainBottomSheetResponse::class.java)
                                                 progressBarContainer.visibility = View.GONE
                                                 domainListContainer.visibility = View.VISIBLE
-                                                domainMessageTextView.text =
-                                                    lockedShareResponse.message
-                                                val item =
-                                                    customDomainBottomSheetResponse?.primaryDomain
-                                                offerMessageTextView.text =
-                                                    customDomainBottomSheetResponse?.staticText?.text_best_pick_for_you
+                                                domainMessageTextView.text = lockedShareResponse.message
+                                                val item = customDomainBottomSheetResponse?.primaryDomain
+                                                offerMessageTextView.text = customDomainBottomSheetResponse?.staticText?.text_best_pick_for_you
                                                 domainTextView.text = item?.domainName
                                                 promoCodeTextView.text = item?.promo
-                                                val messageStr =
-                                                    "${item?.infoData?.firstYearText}\n${item?.infoData?.renewsText}"
+                                                val messageStr = "${item?.infoData?.firstYearText}\n${item?.infoData?.renewsText}"
                                                 messageTextView.text = messageStr
                                                 buyNowTextView.apply {
                                                     text = item?.cta?.text
@@ -2476,79 +1959,35 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                                                     setOnClickListener {
                                                         bottomSheetDialog.dismiss()
                                                         if (Constants.NEW_RELEASE_TYPE_WEBVIEW == item?.cta?.action) {
-                                                            val url =
-                                                                "${BuildConfig.WEB_VIEW_URL}${item.cta?.pageUrl}?storeid=${
-                                                                    getStringDataFromSharedPref(
-                                                                        Constants.STORE_ID
-                                                                    )
-                                                                }&token=${
-                                                                    getStringDataFromSharedPref(
-                                                                        Constants.USER_AUTH_TOKEN
-                                                                    )
-                                                                }&domain_name=${item.domainName}&purchase_price=${item.originalPrice}&renewal_price=${item.renewalPrice}&${AFInAppEventParameterName.CHANNEL}=${AFInAppEventParameterName.LANDING_PAGE}"
-                                                            openWebViewFragmentV3(
-                                                                this@BaseFragment,
-                                                                "",
-                                                                url
-                                                            )
+                                                            val url = "${BuildConfig.WEB_VIEW_URL}${item.cta?.pageUrl}?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&domain_name=${item.domainName}&purchase_price=${item.originalPrice}&renewal_price=${item.renewalPrice}&${AFInAppEventParameterName.CHANNEL}=${AFInAppEventParameterName.LANDING_PAGE}"
+                                                            openWebViewFragmentV3(this@BaseFragment, "", url)
                                                         }
                                                     }
                                                 }
                                                 var price = "₹${item?.originalPrice}"
                                                 originalPriceTextView.apply {
                                                     text = price
-                                                    paintFlags =
-                                                        (priceTextView.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG)
+                                                    paintFlags = (priceTextView.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG)
                                                 }
                                                 price = "₹${item?.discountedPrice}"
                                                 priceTextView.text = price
                                                 mActivity?.let { context ->
-                                                    promoCodeTextView.setTextColor(
-                                                        ContextCompat.getColor(
-                                                            context,
-                                                            R.color.open_green
-                                                        )
-                                                    )
-                                                    offerMessageTextView.setBackgroundColor(
-                                                        ContextCompat.getColor(
-                                                            context,
-                                                            R.color.purple_best_offer_bg
-                                                        )
-                                                    )
+                                                    promoCodeTextView.setTextColor(ContextCompat.getColor(context, R.color.open_green))
+                                                    offerMessageTextView.setBackgroundColor(ContextCompat.getColor(context, R.color.purple_best_offer_bg))
                                                 }
-                                                val searchTextView: TextView =
-                                                    findViewById(R.id.searchTextView)
-                                                val moreSuggestionsTextView: TextView =
-                                                    findViewById(R.id.moreSuggestionsTextView)
-                                                val searchMessageTextView: TextView =
-                                                    findViewById(R.id.searchMessageTextView)
-                                                val suggestedDomainRecyclerView =
-                                                    findViewById<RecyclerView>(R.id.suggestedDomainRecyclerView)
-                                                searchMessageTextView.text =
-                                                    customDomainBottomSheetResponse?.staticText?.text_cant_find
-                                                moreSuggestionsTextView.text =
-                                                    customDomainBottomSheetResponse?.staticText?.text_more_suggestions
+                                                val searchTextView: TextView = findViewById(R.id.searchTextView)
+                                                val moreSuggestionsTextView: TextView = findViewById(R.id.moreSuggestionsTextView)
+                                                val searchMessageTextView: TextView = findViewById(R.id.searchMessageTextView)
+                                                val suggestedDomainRecyclerView = findViewById<RecyclerView>(R.id.suggestedDomainRecyclerView)
+                                                searchMessageTextView.text = customDomainBottomSheetResponse?.staticText?.text_cant_find
+                                                moreSuggestionsTextView.text = customDomainBottomSheetResponse?.staticText?.text_more_suggestions
                                                 searchTextView.apply {
-                                                    text =
-                                                        customDomainBottomSheetResponse?.staticText?.text_search
+                                                    text = customDomainBottomSheetResponse?.staticText?.text_search
                                                     setOnClickListener {
                                                         bottomSheetDialog.dismiss()
                                                         if (Constants.NEW_RELEASE_TYPE_WEBVIEW == customDomainBottomSheetResponse.searchCta?.action) {
-                                                            val url =
-                                                                "${BuildConfig.WEB_VIEW_URL}${customDomainBottomSheetResponse.searchCta?.pageUrl}?storeid=${
-                                                                    getStringDataFromSharedPref(
-                                                                        Constants.STORE_ID
-                                                                    )
-                                                                }&token=${
-                                                                    getStringDataFromSharedPref(
-                                                                        Constants.USER_AUTH_TOKEN
-                                                                    )
-                                                                }&${AFInAppEventParameterName.CHANNEL}=${AFInAppEventParameterName.LANDING_PAGE}"
-                                                            openWebViewFragmentV3(
-                                                                this@BaseFragment,
-                                                                "",
-                                                                url
-                                                            )
+                                                            val url = "${BuildConfig.WEB_VIEW_URL}${customDomainBottomSheetResponse.searchCta?.pageUrl}?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&${AFInAppEventParameterName.CHANNEL}=${AFInAppEventParameterName.LANDING_PAGE}"
+                                                            openWebViewFragmentV3(this@BaseFragment, "", url)
                                                         }
                                                     }
                                                 }
@@ -2558,30 +1997,12 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                                                         customDomainBottomSheetResponse.suggestedDomainsList,
                                                         object : IAdapterItemClickListener {
 
-                                                            override fun onAdapterItemClickListener(
-                                                                position: Int
-                                                            ) {
+                                                            override fun onAdapterItemClickListener(position: Int) {
                                                                 bottomSheetDialog.dismiss()
-                                                                val domainItemResponse =
-                                                                    customDomainBottomSheetResponse.suggestedDomainsList?.get(
-                                                                        position
-                                                                    )
+                                                                val domainItemResponse = customDomainBottomSheetResponse.suggestedDomainsList?.get(position)
                                                                 if (Constants.NEW_RELEASE_TYPE_WEBVIEW == domainItemResponse?.cta?.action) {
-                                                                    val url =
-                                                                        "${BuildConfig.WEB_VIEW_URL}${domainItemResponse.cta?.pageUrl}?storeid=${
-                                                                            getStringDataFromSharedPref(
-                                                                                Constants.STORE_ID
-                                                                            )
-                                                                        }&token=${
-                                                                            getStringDataFromSharedPref(
-                                                                                Constants.USER_AUTH_TOKEN
-                                                                            )
-                                                                        }&domain_name=${domainItemResponse.domainName}&purchase_price=${domainItemResponse.originalPrice}&renewal_price=${domainItemResponse.renewalPrice}&${AFInAppEventParameterName.CHANNEL}=${AFInAppEventParameterName.LANDING_PAGE}"
-                                                                    openWebViewFragmentV3(
-                                                                        this@BaseFragment,
-                                                                        "",
-                                                                        url
-                                                                    )
+                                                                    val url = "${BuildConfig.WEB_VIEW_URL}${domainItemResponse.cta?.pageUrl}?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&domain_name=${domainItemResponse.domainName}&purchase_price=${domainItemResponse.originalPrice}&renewal_price=${domainItemResponse.renewalPrice}&${AFInAppEventParameterName.CHANNEL}=${AFInAppEventParameterName.LANDING_PAGE}"
+                                                                    openWebViewFragmentV3(this@BaseFragment, "", url)
                                                                 }
                                                             }
                                                         })
@@ -2600,119 +2021,132 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         }
     }
 
-    override fun onProviderEnabled(provider: String) = Unit
-
-    override fun onProviderDisabled(provider: String) = Unit
-
-    fun showStaffInvitationDialog(staffInvitation: StaffInvitationResponse?) {
+    fun showStaffInvitationDialog() {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            if (true == sStaffInvitationDialog?.isShowing) return@runTaskOnCoroutineMain
+            Log.d(TAG, "showStaffInvitationDialog: called")
+            if (null != sStaffInvitationDialog && true == sStaffInvitationDialog?.isShowing) return@runTaskOnCoroutineMain
+            if (null == StaticInstances.sStaffInvitation) return@runTaskOnCoroutineMain
             mActivity?.let { context ->
-                sStaffInvitationDialog = Dialog(context)
-                val view = LayoutInflater.from(context).inflate(R.layout.multi_user_selection_dialog, null)
-                var selectedId = 1
-                sStaffInvitationDialog?.apply {
-                    setContentView(view)
-                    setCancelable(false)
-                    window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-                    view?.run {
-                        val dialogImageView: ImageView = findViewById(R.id.dialogImageView)
-                        val moreOptionsContainer: View = findViewById(R.id.moreOptionsContainer)
-                        val dialogOptionsRecyclerView: RecyclerView = findViewById(R.id.dialogOptionsRecyclerView)
-                        val nextTextView: TextView = findViewById(R.id.nextTextView)
-                        val moreOptionsTextView: TextView = findViewById(R.id.moreOptionsTextView)
-                        val dialogHeadingTextView: TextView = findViewById(R.id.dialogHeadingTextView)
-                        mActivity?.let { context -> Glide.with(context).load(staffInvitation?.cdn).into(dialogImageView) }
-                        dialogHeadingTextView.text = staffInvitation?.heading
-                        moreOptionsTextView.setHtmlData(staffInvitation?.textMoreOptions)
-                        staffInvitation?.invitationList?.get(0)?.isSelected = true
-                        mMultiUserAdapter = StaffInvitationAdapter(
-                            staffInvitation?.invitationList,
-                            object : IAdapterItemClickListener {
-                                override fun onAdapterItemClickListener(position: Int) {
-                                    staffInvitation?.invitationList?.forEachIndexed { _, item -> item?.isSelected = false }
-                                    staffInvitation?.invitationList?.get(position)?.isSelected = true
-                                    selectedId = when (staffInvitation?.invitationList?.get(position)?.id) {
-                                        Constants.STAFF_INVITATION_CODE_EXIT -> { staffInvitation.invitationList[position]?.id ?: 0 }
-                                        Constants.STAFF_INVITATION_CODE_REJECT -> {
-                                            staffInvitation.invitationList[position]?.id ?: 2
+                try {
+                    sStaffInvitationDialog = Dialog(context)
+                    val view = LayoutInflater.from(context).inflate(R.layout.multi_user_selection_dialog, null)
+                    var selectedId = 1
+                    sStaffInvitationDialog?.apply {
+                        setContentView(view)
+                        setCancelable(false)
+                        window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                        view?.run {
+                            val dialogImageView: ImageView = findViewById(R.id.dialogImageView)
+                            val moreOptionsContainer: View = findViewById(R.id.moreOptionsContainer)
+                            val dialogOptionsRecyclerView: RecyclerView = findViewById(R.id.dialogOptionsRecyclerView)
+                            val nextTextView: TextView = findViewById(R.id.nextTextView)
+                            val moreOptionsTextView: TextView = findViewById(R.id.moreOptionsTextView)
+                            val dialogHeadingTextView: TextView = findViewById(R.id.dialogHeadingTextView)
+                            val staffInvitation = StaticInstances.sStaffInvitation
+                            mActivity?.let { context ->
+                                Glide.with(context).load(staffInvitation?.cdn).into(dialogImageView)
+                            }
+                            dialogHeadingTextView.text = staffInvitation?.heading
+                            moreOptionsTextView.setHtmlData(staffInvitation?.textMoreOptions)
+                            if (true == staffInvitation?.invitationList?.isNotEmpty()) {
+                                staffInvitation.invitationList[0]?.isSelected = true
+                                mMultiUserAdapter = StaffInvitationAdapter(staffInvitation.invitationList, object : IAdapterItemClickListener {
+                                    override fun onAdapterItemClickListener(position: Int) {
+                                        staffInvitation.invitationList.forEachIndexed { _, item -> item?.isSelected = false }
+                                        staffInvitation.invitationList[position]?.isSelected = true
+                                        selectedId = when (staffInvitation.invitationList[position]?.id) {
+                                            Constants.STAFF_INVITATION_CODE_EXIT -> {
+                                                staffInvitation.invitationList[position]?.id ?: Constants.STAFF_INVITATION_CODE_EXIT
+                                            }
+                                            Constants.STAFF_INVITATION_CODE_REJECT -> {
+                                                staffInvitation.invitationList[position]?.id ?: Constants.STAFF_INVITATION_CODE_REJECT
+                                            }
+                                            else -> {
+                                                staffInvitation.invitationList[position]?.id ?: Constants.STAFF_INVITATION_CODE_ACCEPT
+                                            }
                                         }
-                                        else -> {
-                                            staffInvitation?.invitationList?.get(position)?.id ?: 1
-                                        }
+                                        mMultiUserAdapter?.notifyDataSetChanged()
                                     }
-                                    mMultiUserAdapter?.notifyDataSetChanged()
-                                }
-                            })
-                        moreOptionsContainer.setOnClickListener {
-                            moreOptionsContainer.visibility = View.GONE
-                            mMultiUserAdapter?.showCompleteList()
-                        }
-                        dialogOptionsRecyclerView.apply {
-                            layoutManager = LinearLayoutManager(context)
-                            adapter = mMultiUserAdapter
-                        }
-                        nextTextView.apply {
-                            text = staffInvitation?.cta?.text
-                            setOnClickListener {
-                                CoroutineScopeUtils().runTaskOnCoroutineBackground {
-                                    try {
-                                        val response = RetrofitApi().getServerCallObject()?.updateInvitationStatus(UpdateInvitationRequest(status = selectedId, StoreId = staffInvitation?.invitedStoreId ?: 0, userId = getStringDataFromSharedPref(Constants.USER_ID).toInt(), languageId = 1))
-                                        response?.let {
-                                            stopProgress()
-                                            if (it.isSuccessful) {
-                                                val updateInvitationResponse = Gson().fromJson<StaffMemberDetailsResponse>(it.body()?.mCommonDataStr, StaffMemberDetailsResponse::class.java)
-                                                it.body()?.let {
-                                                    withContext(Dispatchers.Main) {
-                                                        if (it.mIsSuccessStatus) {
-                                                            sStaffInvitationDialog?.dismiss()
-                                                            showShortSnackBar(it.mMessage, true, R.drawable.ic_check_circle)
-                                                            when (selectedId) {
-                                                                1 -> {
-                                                                    StaticInstances.sIsInvitationShown = updateInvitationResponse.mIsInvitationAvailable
-                                                                    StaticInstances.sPermissionHashMap = updateInvitationResponse.permissionsMap
-                                                                    StaticInstances.sPermissionHashMap?.let { it1 -> launchScreenFromPermissionMap(it1) }
-                                                                    storeStringDataInSharedPref(Constants.STORE_ID, updateInvitationResponse.storeId)
+                                })
+                            } else return@runTaskOnCoroutineMain
+                            moreOptionsContainer.setOnClickListener {
+                                moreOptionsContainer.visibility = View.GONE
+                                mMultiUserAdapter?.showCompleteList()
+                            }
+                            dialogOptionsRecyclerView.apply {
+                                layoutManager = LinearLayoutManager(context)
+                                adapter = mMultiUserAdapter
+                            }
+                            nextTextView.apply {
+                                text = staffInvitation.cta?.text
+                                setOnClickListener {
+                                    CoroutineScopeUtils().runTaskOnCoroutineBackground {
+                                        try {
+                                            val response = RetrofitApi().getServerCallObject()?.updateInvitationStatus(UpdateInvitationRequest(status = selectedId, StoreId = staffInvitation.invitedStoreId, userId = getStringDataFromSharedPref(Constants.USER_ID).toInt(), languageId = 1))
+                                            response?.let {
+                                                stopProgress()
+                                                if (it.isSuccessful) {
+                                                    val updateInvitationResponse = Gson().fromJson<CheckStaffInviteResponse>(it.body()?.mCommonDataStr, CheckStaffInviteResponse::class.java)
+                                                    it.body()?.let {
+                                                        withContext(Dispatchers.Main) {
+                                                            if (it.mIsSuccessStatus) {
+                                                                sStaffInvitationDialog?.dismiss()
+                                                                showShortSnackBar(it.mMessage, true, R.drawable.ic_check_circle)
+                                                                when (selectedId) {
+                                                                    Constants.STAFF_INVITATION_CODE_ACCEPT -> {
+                                                                        sIsInvitationAvailable = updateInvitationResponse.mIsInvitationAvailable
+                                                                        StaticInstances.sPermissionHashMap = null
+                                                                        StaticInstances.sPermissionHashMap = updateInvitationResponse.permissionsMap
+                                                                        storeStringDataInSharedPref(Constants.STORE_ID, updateInvitationResponse.storeId)
+                                                                        StaticInstances.sPermissionHashMap?.let { map -> launchScreenFromPermissionMap(map) }
+                                                                    }
+                                                                    Constants.STAFF_INVITATION_CODE_EXIT -> logoutFromApplication(isAppLogout = true)
+                                                                    else -> checkStaffInvite()
                                                                 }
-                                                                0 -> mActivity?.finish()
-                                                                else -> checkStaffInvite()
-                                                            }
-                                                        } else showShortSnackBar(it.mMessage, true, R.drawable.ic_close_red)
+                                                            } else showShortSnackBar(it.mMessage, true, R.drawable.ic_close_red)
+                                                        }
                                                     }
                                                 }
                                             }
+                                        } catch (e: Exception) {
+                                            exceptionHandlingForAPIResponse(e)
                                         }
-                                    } catch (e: Exception) {
-                                        exceptionHandlingForAPIResponse(e)
                                     }
                                 }
                             }
                         }
-                    }
-                }?.show()
+                    }?.show()
+                } catch (e: Exception) {
+                    Log.e(TAG, "showStaffInvitationDialog: ${e.message}", e)
+                }
             }
         }
     }
 
-    fun checkStaffInvite(){
+    fun checkStaffInvite() {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            val checkStaffInviteResponse = RetrofitApi().getServerCallObject()?.checkStaffInvite()
-            checkStaffInviteResponse?.let {it ->
-                val checkStaffInviteResponse2 = Gson().fromJson<StaffMemberDetailsResponse>(it.body()?.mCommonDataStr , StaffMemberDetailsResponse::class.java)
-                StaticInstances.sIsInvitationShown = checkStaffInviteResponse2?.mIsInvitationAvailable
-                StaticInstances.sStaffInvitation = checkStaffInviteResponse2?.mStaffInvitation
-                Log.i("isInvitationSplash", checkStaffInviteResponse2?.mIsInvitationAvailable.toString())
-                Log.i("isStaffInvitationSplash", checkStaffInviteResponse2?.mStaffInvitation.toString())
+            try {
+                val checkStaffInviteResponse = RetrofitApi().getServerCallObject()?.checkStaffInvite()
+                checkStaffInviteResponse?.let { it ->
+                    val staffInviteResponse = Gson().fromJson<CheckStaffInviteResponse>(it.body()?.mCommonDataStr, CheckStaffInviteResponse::class.java)
+                    Log.d(TAG, "sIsInvitationAvailable :: staffInviteResponse?.mIsInvitationAvailable ${staffInviteResponse?.mIsInvitationAvailable}")
+                    Log.d(TAG, "checkStaffInvite: response set sIsInvitationAvailable :: ${staffInviteResponse?.mIsInvitationAvailable ?: false} ")
+                    sIsInvitationAvailable = staffInviteResponse?.mIsInvitationAvailable ?: false
+                    StaticInstances.sStaffInvitation = staffInviteResponse?.mStaffInvitation
+                    onCheckStaffInviteResponse()
+                }
+            } catch (e: Exception) {
+                exceptionHandlingForAPIResponse(e)
             }
         }
     }
 
     fun launchScreenFromPermissionMap(permissionMap: HashMap<String, Boolean>) {
         clearFragmentBackStack()
-        Log.d("permissionDialog", permissionMap.toString())
+        Log.d(TAG, "$permissionMap")
         when {
             true == permissionMap[Constants.PAGE_ORDER] -> {
-                launchFragment(OrderFragment.newInstance(), true)
+                launchFragment(OrderFragment.newInstance(isClearOrderPageResponse = true), true)
             }
             true == permissionMap[Constants.PAGE_CATALOG] -> {
                 launchFragment(ProductFragment.newInstance(), true)
@@ -2728,15 +2162,13 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
             }
         }
         mActivity?.checkBottomNavBarFeatureVisibility()
+        if (sIsInvitationAvailable) showStaffInvitationDialog()
     }
 
     fun showStaffFeatureLockedBottomSheet(id: Int) {
         mActivity?.run {
             val bottomSheetDialog = BottomSheetDialog(this, R.style.BottomSheetDialogTheme)
-            val view = LayoutInflater.from(this).inflate(
-                R.layout.bottom_sheet_staff_feature_locked,
-                findViewById(R.id.bottomSheetContainer)
-            )
+            val view = LayoutInflater.from(this).inflate(R.layout.bottom_sheet_staff_feature_locked, findViewById(R.id.bottomSheetContainer))
             bottomSheetDialog.apply {
                 setContentView(view)
                 setBottomSheetCommonProperty()
@@ -2754,13 +2186,232 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                         text = StaticInstances.sStaticData?.mStaffLockBottomSheet?.cta?.text
                         setTextColor(Color.parseColor(StaticInstances.sStaticData?.mStaffLockBottomSheet?.cta?.textColor))
                         mActivity?.let { context ->
-                            Glide.with(context)
-                                .load(StaticInstances.sStaticData?.mStaffLockBottomSheet?.cta?.cdn)
-                                .into(ctaImageView)
+                            Glide.with(context).load(StaticInstances.sStaticData?.mStaffLockBottomSheet?.cta?.cdn).into(ctaImageView)
                         }
                     }
                 }
             }.show()
         }
     }
+
+    open fun showVersionUpdateDialog() {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            if (true == mAppUpdateDialog?.isShowing) return@runTaskOnCoroutineMain
+            mActivity?.let {
+                mAppUpdateDialog = Dialog(it)
+                val view = LayoutInflater.from(mActivity).inflate(R.layout.dialog_app_update, null)
+                mAppUpdateDialog?.apply {
+                    setContentView(view)
+                    setCancelable(false)
+                    window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                    view?.run {
+                        val updateTextView: TextView = findViewById(R.id.updateTextView)
+                        updateTextView.setOnClickListener {
+                            (this@apply).dismiss()
+                            openPlayStore()
+                        }
+                    }
+                }?.show()
+            }
+        }
+    }
+
+    override fun onProviderEnabled(provider: String) = Unit
+
+    override fun onProviderDisabled(provider: String) = Unit
+
+    fun openDomainPurchaseBottomSheetServerCall() {
+        showProgressDialog(mActivity)
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            try {
+                val customDomainBottomSheetResponse = RetrofitApi().getServerCallObject()?.getCustomDomainBottomSheetData()
+                customDomainBottomSheetResponse?.body()?.let { body ->
+                    stopProgress()
+                    val bottomSheetResponse = Gson().fromJson<CustomDomainBottomSheetResponse>(body.mCommonDataStr, CustomDomainBottomSheetResponse::class.java)
+                    showDomainPurchasedBottomSheet(bottomSheetResponse, isNoDomainFoundLayout = true)
+                }
+            } catch (e: Exception) {
+                exceptionHandlingForAPIResponse(e)
+            }
+        }
+    }
+
+    fun showDomainPurchasedBottomSheet(customDomainBottomSheetResponse: CustomDomainBottomSheetResponse, isNoDomainFoundLayout: Boolean = false, hideTopView: Boolean = false) {
+        mActivity?.runOnUiThread {
+            mActivity?.let {
+                val bottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
+                val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_custom_domain_selection, it.findViewById(R.id.bottomSheetContainer))
+                bottomSheetDialog.apply {
+                    setContentView(view)
+                    view?.run {
+                        customDomainBottomSheetResponse.staticText?.let { staticText ->
+                            val domainPurchasedGroup: View = findViewById(R.id.domainPurchasedGroup)
+                            val noDomainFoundGroup: View = findViewById(R.id.noDomainFoundGroup)
+                            val headingTextView2: TextView = findViewById(R.id.headingTextView)
+                            if (isNoDomainFoundLayout) {
+                                noDomainFoundGroup.visibility = View.VISIBLE
+                                domainPurchasedGroup.visibility = View.GONE
+                                val bottomSheetUpperContainerTextView: TextView = findViewById(R.id.bottomSheetUpperContainerTextView)
+                                val noDomainFoundTextView: TextView = findViewById(R.id.noDomainFoundTextView)
+                                val noDomainFoundMessageTextView: TextView = findViewById(R.id.noDomainFoundMessageTextView)
+                                val bottomSheetUpperContainerRecyclerView: RecyclerView = findViewById(R.id.bottomSheetUpperContainerRecyclerView)
+                                bottomSheetUpperContainerTextView.text = staticText.text_get_professional_email
+                                noDomainFoundTextView.text = staticText.text_workspace_heading
+                                noDomainFoundMessageTextView.text = staticText.text_workspace_subheading
+                                bottomSheetUpperContainerRecyclerView.apply {
+                                    layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
+                                    adapter  = GoogleWorkspaceAppsAdapter(mActivity, customDomainBottomSheetResponse.workspaceCdnList)
+                                }
+                            } else {
+                                noDomainFoundGroup.visibility = View.GONE
+                                domainPurchasedGroup.visibility = View.VISIBLE
+                            }
+                            val searchTextView: TextView = findViewById(R.id.searchTextView)
+                            val subHeadingTextView: TextView = findViewById(R.id.subHeadingTextView)
+                            val searchMessageTextView: TextView = findViewById(R.id.searchMessageTextView)
+                            val moreSuggestionsTextView: TextView = findViewById(R.id.moreSuggestionsTextView)
+                            subHeadingTextView.text = staticText.subheading_business_needs_domain
+                            headingTextView2.text = staticText.heading_last_step
+                            if (hideTopView) headingTextView2.text = null
+                            moreSuggestionsTextView.text = staticText.text_more_suggestions
+                            searchMessageTextView.text = staticText.text_cant_find
+                            searchTextView.text = staticText.text_search
+                            searchTextView.setOnClickListener {
+                                bottomSheetDialog.dismiss()
+                                if (Constants.NEW_RELEASE_TYPE_WEBVIEW == customDomainBottomSheetResponse.searchCta?.action) {
+                                    val url = BuildConfig.WEB_VIEW_URL + "${customDomainBottomSheetResponse.searchCta?.pageUrl}?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&${AFInAppEventParameterName.CHANNEL}=${AFInAppEventParameterName.ON_BOARDING}"
+                                    openWebViewFragmentV3(this@BaseFragment, "", url)
+                                }
+                            }
+                        }
+                        if (null == customDomainBottomSheetResponse.primaryDomain) {
+                            val searchDomainTextView: TextView = findViewById(R.id.searchDomainTextView)
+                            val searchDomainContainer: View = findViewById(R.id.searchDomainContainer)
+                            val container: View = findViewById(R.id.container)
+                            val searchTextView: View = findViewById(R.id.searchTextView)
+                            val searchMessageTextView: View = findViewById(R.id.searchMessageTextView)
+                            val moreSuggestionsTextView: View = findViewById(R.id.moreSuggestionsTextView)
+                            val suggestedDomainRecyclerView: View = findViewById(R.id.suggestedDomainRecyclerView)
+                            with(View.GONE) {
+                                container.visibility = this
+                                searchTextView.visibility = this
+                                searchMessageTextView.visibility = this
+                                moreSuggestionsTextView.visibility = this
+                                suggestedDomainRecyclerView.visibility = this
+                            }
+                            searchDomainContainer.apply {
+                                visibility = View.VISIBLE
+                                setOnClickListener {
+                                    bottomSheetDialog.dismiss()
+                                    if (Constants.NEW_RELEASE_TYPE_WEBVIEW == customDomainBottomSheetResponse.searchCta?.action) {
+                                        val url = "${BuildConfig.WEB_VIEW_URL}${customDomainBottomSheetResponse.searchCta?.pageUrl}?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&${AFInAppEventParameterName.CHANNEL}=${AFInAppEventParameterName.LANDING_PAGE}"
+                                        openWebViewFragmentV3(this@BaseFragment, "", url)
+                                    }
+                                }
+                            }
+                            searchDomainTextView.text = customDomainBottomSheetResponse.staticText?.text_search
+                        }
+                        customDomainBottomSheetResponse.primaryDomain?.let { primaryDomain ->
+                            val premiumHeadingTextView: TextView = findViewById(R.id.premiumHeadingTextView)
+                            val domainTextView: TextView = findViewById(R.id.domainTextView)
+                            val priceTextView: TextView = findViewById(R.id.priceTextView)
+                            val promoCodeTextView: TextView = findViewById(R.id.promoCodeTextView)
+                            val messageTextView: TextView = findViewById(R.id.messageTextView)
+                            val message2TextView: TextView = findViewById(R.id.message2TextView)
+                            val originalPriceTextView: TextView = findViewById(R.id.originalPriceTextView)
+                            val buyNowTextView: TextView = findViewById(R.id.buyNowTextView)
+                            premiumHeadingTextView.text = primaryDomain.heading
+                            domainTextView.text = primaryDomain.domainName
+                            promoCodeTextView.text = primaryDomain.promo
+                            var amount = "₹${primaryDomain.discountedPrice}"
+                            priceTextView.text = amount
+                            amount = "₹${primaryDomain.originalPrice}"
+                            originalPriceTextView.text = amount
+                            originalPriceTextView.showStrikeOffText()
+                            buyNowTextView.apply {
+                                text = primaryDomain.cta?.text
+                                if (isNotEmpty(primaryDomain.cta?.textColor)) setTextColor(Color.parseColor(primaryDomain.cta?.textColor))
+                                if (isNotEmpty(primaryDomain.cta?.textBg)) setBackgroundColor(Color.parseColor(primaryDomain.cta?.textBg))
+                                setOnClickListener {
+                                    bottomSheetDialog.dismiss()
+                                    if (Constants.NEW_RELEASE_TYPE_WEBVIEW == primaryDomain.cta?.action) {
+                                        val url = BuildConfig.WEB_VIEW_URL + "${primaryDomain.cta?.pageUrl}?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&domain_name=${primaryDomain.domainName}&purchase_price=${primaryDomain.originalPrice}&renewal_price=${primaryDomain.renewalPrice}&${AFInAppEventParameterName.CHANNEL}=${AFInAppEventParameterName.ON_BOARDING}"
+                                        openWebViewFragmentV3(this@BaseFragment, "", url)
+                                    }
+                                }
+                            }
+                            messageTextView.text = primaryDomain.infoData?.firstYearText?.trim()
+                            message2TextView.text = primaryDomain.infoData?.renewsText?.trim()
+                        }
+                        val suggestedDomainRecyclerView = findViewById<RecyclerView>(R.id.suggestedDomainRecyclerView)
+                        suggestedDomainRecyclerView.apply {
+                            layoutManager = LinearLayoutManager(mActivity)
+                            adapter = CustomDomainSelectionAdapter(
+                                customDomainBottomSheetResponse.suggestedDomainsList,
+                                object : IAdapterItemClickListener {
+
+                                    override fun onAdapterItemClickListener(position: Int) {
+                                        try {
+                                            bottomSheetDialog.dismiss()
+                                            val item = customDomainBottomSheetResponse.suggestedDomainsList?.get(position)
+                                            if (Constants.NEW_RELEASE_TYPE_WEBVIEW == item?.cta?.action) {
+                                                val url = BuildConfig.WEB_VIEW_URL + "${item.cta?.pageUrl}?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&domain_name=${item.domainName}&purchase_price=${item.originalPrice}&renewal_price=${item.renewalPrice}&${AFInAppEventParameterName.CHANNEL}=${AFInAppEventParameterName.ON_BOARDING}"
+                                                openWebViewFragment(this@BaseFragment, "", url)
+                                            }
+                                        } catch (e: Exception) {
+                                            Log.e(TAG, "onAdapterItemClickListener: ${e.message}", e)
+                                        }
+                                    }
+                                })
+                        }
+                    }
+                }.show()
+            }
+        }
+    }
+
+    open fun openWebConsoleBottomSheet(webConsoleBottomSheet: WebConsoleBottomSheetResponse?) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            if (null != webConsoleBottomSheetDialog && true == webConsoleBottomSheetDialog?.isShowing) return@runTaskOnCoroutineMain
+            mActivity?.let { context ->
+                webConsoleBottomSheetDialog = BottomSheetDialog(context, R.style.BottomSheetDialogTheme)
+                val view = LayoutInflater.from(context).inflate(R.layout.bottom_sheet_web_console, context.findViewById(R.id.bottomSheetContainer))
+                webConsoleBottomSheetDialog?.apply {
+                    setContentView(view)
+                    behavior.state = BottomSheetBehavior.STATE_EXPANDED
+                    view?.run {
+                        val bottomSheetUrlTextView: TextView = findViewById(R.id.bottomSheetUrlTextView)
+                        val bottomSheetLaptop: ImageView = findViewById(R.id.bottomSheetLaptop)
+                        val bottomSheetBrowserImageView: ImageView = findViewById(R.id.bottomSheetBrowserImageView)
+                        val bottomSheetBrowserText: TextView = findViewById(R.id.bottomSheetBrowserText)
+                        val bottomSheetHeadingTextView: TextView = findViewById(R.id.bottomSheetHeadingTextView)
+                        val bottomSheetSubHeadingTextView: TextView = findViewById(R.id.bottomSheetSubHeadingTextView)
+                        webConsoleBottomSheet?.let { response ->
+                            with(response) {
+                                bottomSheetHeadingTextView.text = heading
+                                bottomSheetSubHeadingTextView.text = subHeading
+                                bottomSheetBrowserText.text = textBestViewedOn
+                                Glide.with(context).load(primaryCdn).into(bottomSheetLaptop)
+                                Glide.with(context).load(secondaryCdn).into(bottomSheetBrowserImageView)
+                                bottomSheetUrlTextView.apply {
+                                    setBackgroundColor(Color.parseColor(cta.bgColor))
+                                    setTextColor(Color.parseColor(cta.textColor))
+                                    setHtmlData(cta.text)
+                                    setOnClickListener { copyDataToClipboard(Constants.DOTPE_OFFICIAL_URL_CLIPBOARD) }
+                                }
+                            }
+                        }
+                    }
+                }?.show()
+            }
+        }
+    }
+
+    fun initializeStaticInstances() {
+        StaticInstances.sSuggestedDomainsListFetchedFromServer = false
+        StaticInstances.sSuggestedDomainsList = null
+        StaticInstances.sCustomDomainBottomSheetResponse = null
+        StaticInstances.sPermissionHashMap = null
+    }
+
 }

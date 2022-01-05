@@ -67,6 +67,7 @@ data class AccountStaticTextResponse(
     @SerializedName("heading_fixed_delivery_charge")                            var heading_fixed_delivery_charge: String?,
     @SerializedName("heading_free_delivery")                                    var heading_free_delivery: String?,
     @SerializedName("heading_set_delivery_charge")                              var heading_set_delivery_charge: String?,
+    @SerializedName("heading_edit_customer_address")                            var heading_edit_customer_address: String?,
     @SerializedName("heading_set_min_order_value_for_delivery")                 var heading_set_min_order_value_for_delivery: String?,
     @SerializedName("heading_store_link_bottom_sheet")                          var heading_store_link_bottom_sheet: String?,
     @SerializedName("heading_store_link_dialog")                                var heading_store_link_dialog: String?,

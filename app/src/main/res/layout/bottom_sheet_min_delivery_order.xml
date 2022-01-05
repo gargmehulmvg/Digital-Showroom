@@ -50,7 +50,8 @@
             android:minLines="1"
             android:textColor="@color/black"
             android:textColorHint="@color/default_text_light_grey"
-            android:textSize="@dimen/_12sdp" />
+            android:textSize="@dimen/_12sdp"
+            tools:ignore="LabelFor" />
 
     </com.google.android.material.textfield.TextInputLayout>
 

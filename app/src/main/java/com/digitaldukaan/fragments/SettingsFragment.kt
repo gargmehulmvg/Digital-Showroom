@@ -41,6 +41,7 @@ import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IProfileServiceInterface
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.layout_settings_fragment.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -69,6 +70,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         TAG = "SettingsFragment"
+        FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
         mContentView = inflater.inflate(R.layout.layout_settings_fragment, container, false)
         mProfileService.setProfileServiceInterface(this)
         return mContentView
@@ -263,11 +265,17 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             showNoInternetConnectionDialog()
             return
         }
-        showProgressDialog(mActivity, "Fetching user profile...")
+        showProgressDialog(mActivity)
         mProfileService.getUserProfile()
     }
 
-    override fun onToolbarSideIconClicked() = launchFragment(CommonWebViewFragment().newInstance(getString(R.string.help), "${BuildConfig.WEB_VIEW_URL}${WebViewUrls.WEB_VIEW_HELP}?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&redirectFrom=settings&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"), true)
+    override fun onToolbarSideIconClicked() {
+        try {
+            launchFragment(CommonWebViewFragment().newInstance(getString(R.string.help), "${BuildConfig.WEB_VIEW_URL}${WebViewUrls.WEB_VIEW_HELP}?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&redirectFrom=settings&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"), true)
+        } catch (e: Exception) {
+            Log.e(TAG, "onToolbarSideIconClicked: ${e.message}", e)
+        }
+    }
 
     override fun onStop() {
         super.onStop()
@@ -482,7 +490,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
 
     override fun onRefresh() = fetchUserProfile()
 
-    override fun onStoreSettingItemClicked(storeResponse: StoreOptionsResponse) = checkStoreOptionClick(storeResponse)
+    override fun onStoreSettingItemClicked(subPagesResponse: StoreOptionsResponse) = checkStoreOptionClick(subPagesResponse)
 
     override fun onNewReleaseItemClicked(responseItem: TrendingListResponse?) {
         Log.d(TAG, "onNewReleaseItemClicked: ${responseItem?.mAction}")
@@ -551,6 +559,9 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                     else -> openUrlInBrowser(responseItem.mPage)
                 }
 
+            }
+            Constants.ACTION_BILLING_POS -> {
+                launchFragment(BillingPosFragment.newInstance(), true)
             }
             else -> showTrendingOffersBottomSheet()
         }

@@ -5,6 +5,7 @@ import android.app.DownloadManager
 import android.content.ContentValues
 import android.content.Context
 import android.content.Context.WINDOW_SERVICE
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.database.Cursor
@@ -30,6 +31,7 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.TranslateAnimation
 import android.webkit.CookieManager
 import android.webkit.URLUtil
+import android.widget.Toast
 import androidmads.library.qrgenearator.QRGContents
 import androidmads.library.qrgenearator.QRGEncoder
 import com.digitaldukaan.BuildConfig
@@ -43,7 +45,6 @@ import com.digitaldukaan.models.response.ProfilePreviewSettingsKeyResponse
 import com.skydoves.balloon.Balloon
 import com.skydoves.balloon.BalloonAnimation
 import com.skydoves.balloon.createBalloon
-import io.sentry.Sentry
 import org.shadow.apache.commons.lang3.StringUtils
 import java.io.*
 import java.net.HttpURLConnection
@@ -231,7 +232,7 @@ fun openWebViewFragment(fragment: BaseFragment, title: String, webViewType: Stri
     try {
         fragment.launchFragment(CommonWebViewFragment().newInstance(title, BuildConfig.WEB_VIEW_URL + webViewType + "?storeid=${fragment.getStringDataFromSharedPref(Constants.STORE_ID)}&redirectFrom=$redirectFromStr&token=${fragment.getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"), true)
     } catch (e: Exception) {
-        Sentry.captureException(e, "openWebViewFragment :: fragment: BaseFragment, title: String, webViewType: String?, redirectFromStr: String")
+        Log.e("GlobalMethods", "openWebViewFragment: ${e.message}", e)
     }
 }
 
@@ -239,7 +240,7 @@ fun openWebViewFragmentV2(fragment: BaseFragment?, title: String, webViewType: S
     try {
         fragment?.launchFragment(CommonWebViewFragment().newInstance(title, webViewType + "?storeid=${fragment.getStringDataFromSharedPref(Constants.STORE_ID)}&redirectFrom=$redirectFromStr&token=${fragment.getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"), true)
     } catch (e: Exception) {
-        Sentry.captureException(e, "openWebViewFragment :: fragment: BaseFragment, title: String, webViewType: String, redirectFromStr: String")
+        Log.e("GlobalMethods", "openWebViewFragmentV2: ${e.message}", e)
     }
 }
 
@@ -247,7 +248,7 @@ fun openWebViewFragment(fragment: BaseFragment?, title: String, webViewUrl: Stri
     try {
         fragment?.launchFragment(CommonWebViewFragment().newInstance(title, webViewUrl + "?storeid=${fragment.getStringDataFromSharedPref(Constants.STORE_ID)}&token=${fragment.getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"), true)
     } catch (e: Exception) {
-        Sentry.captureException(e, "openWebViewFragment :: fragment: BaseFragment, title: String, webViewType: String?")
+        Log.e("GlobalMethods", "openWebViewFragment: ${e.message}", e)
     }
 }
 
@@ -255,7 +256,7 @@ fun openWebViewFragmentV3(fragment: BaseFragment?, title: String, webViewUrl: St
     try {
         fragment?.launchFragment(CommonWebViewFragment().newInstance(title, webViewUrl ?: ""), true)
     } catch (e: Exception) {
-        Sentry.captureException(e, "openWebViewFragment :: fragment: BaseFragment, title: String, webViewType: String?")
+        Log.e("GlobalMethods", "openWebViewFragmentV3: ${e.message}", e)
     }
 }
 
@@ -263,7 +264,7 @@ fun openWebViewFragmentWithLocation(fragment: BaseFragment?, title: String, webV
     try {
         fragment?.launchFragment(CommonWebViewFragment().newInstance(title, webViewType ?: ""), true)
     } catch (e: Exception) {
-        Sentry.captureException(e, "openWebViewFragment :: fragment: BaseFragment, title: String, webViewType: String?")
+        Log.e("GlobalMethods", "openWebViewFragmentWithLocation: ${e.message}", e)
     }
 }
 
@@ -477,7 +478,7 @@ fun startShinningAnimation(view: View) {
             }
             view.startAnimation(animation)
         }
-    },Constants.SHINE_ANIMATION_INTERVAL, Constants.SHINE_ANIMATION_INTERVAL, TimeUnit.MILLISECONDS)
+    },Constants.TIMER_SHINE_ANIMATION, Constants.TIMER_SHINE_ANIMATION, TimeUnit.MILLISECONDS)
 }
 
 fun getToolTipBalloon(mContext: Context?, text: String? = "Sample Testing", arrowPosition: Float = 0.5f): Balloon? {
@@ -495,7 +496,7 @@ fun getToolTipBalloon(mContext: Context?, text: String? = "Sample Testing", arro
             setTextColorResource(R.color.black)
             setBackgroundColorResource(R.color.tooltip_background)
             setBalloonAnimation(BalloonAnimation.CIRCULAR)
-            setAutoDismissDuration(Constants.TOOL_TIP_TIMER_INTERVAL)
+            setAutoDismissDuration(Constants.TIMER_TOOL_TIP)
         }
     }
     return null
@@ -568,3 +569,20 @@ fun isYoutubeUrlValid(youTubeUrl: String): Boolean {
         return false
     }
 }
+
+fun openAppByPackageName(packageName: String, context: Context?) {
+    if (isEmpty(packageName)) {
+        Toast.makeText(context, "No Package Name Found", Toast.LENGTH_SHORT).show()
+        return
+    }
+    context?.let { ctx ->
+        val launchIntent: Intent? = ctx.packageManager?.getLaunchIntentForPackage(packageName)
+        if (null != launchIntent) {
+            ctx.startActivity(launchIntent)
+        } else {
+            ctx.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=$packageName")))
+        }
+    }
+}
+
+fun getSharedPreferenceName(): String = if (BuildConfig.DEBUG) Constants.SHARED_PREF_NAME_STAGING else Constants.SHARED_PREF_NAME

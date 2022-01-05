@@ -37,6 +37,7 @@ import com.digitaldukaan.webviews.WebViewBridge
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.textfield.TextInputLayout
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.bottom_sheet_show_products_with_category.view.*
@@ -80,6 +81,7 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         TAG = "EditSocialMediaTemplateFragment"
+        FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
         mContentView = inflater.inflate(R.layout.layout_edit_social_media_template_fragment, container, false)
         hideBottomNavigationView(true)
         WebViewBridge.mWebViewListener = this
@@ -95,7 +97,7 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
         editTemplateWebView?.apply {
             settings.javaScriptEnabled = true
             settings.domStorageEnabled = true
-            addJavascriptInterface(WebViewBridge(), "Android")
+            addJavascriptInterface(WebViewBridge(), Constants.KEY_ANDROID)
             mWebViewUrl = "$EDIT_TEMPLATE_WEB_VIEW_URL?store_name=${mMarketingPageInfoResponse?.marketingStoreInfo?.name}&html=${URLEncoder.encode(Gson().toJson(mSocialMediaTemplateResponse?.html), "utf-8")}"
             Log.d(TAG, "onViewCreated: mWebViewUrl :: $mWebViewUrl")
             webViewClient = object : WebViewClient() {
@@ -116,21 +118,21 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
 
     private fun setupBottomNavViewFromStaticText() {
         mMarketingPageInfoResponse?.marketingStaticTextResponse?.let { staticText ->
-            if (ToolBarManager.getInstance().headerTitle == mMarketingPageInfoResponse?.marketingStaticTextResponse?.heading_edit_and_share) {
-                backgroundTextView.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_background, 0, 0)
+            if (ToolBarManager.getInstance().headerTitle.equals(mMarketingPageInfoResponse?.marketingStaticTextResponse?.heading_edit_and_share, true)) {
+                backgroundTextView?.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_background, 0, 0)
                 backgroundTextView?.text = staticText.text_background
                 editTextTextView?.text = staticText.text_edit_text
-                editTextTextView.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_edit_text, 0, 0)
+                editTextTextView?.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_edit_text, 0, 0)
             } else {
                 backgroundTextView?.visibility = View.GONE
-                backgroundTextView.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_background, 0, 0)
+                backgroundTextView?.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_background, 0, 0)
                 editTextTextView?.text = staticText.text_change_product
-                editTextTextView.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_change_product, 0, 0)
+                editTextTextView?.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_change_product, 0, 0)
             }
             shareTextView?.text = staticText.text_share
-            shareTextView.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_social_media_template_share, 0, 0)
+            shareTextView?.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_social_media_template_share, 0, 0)
             whatsappTextView?.text = staticText.text_whatsapp
-            whatsappTextView.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_social_media_template_whatsapp, 0, 0)
+            whatsappTextView?.setCompoundDrawablesWithIntrinsicBounds(0, R.drawable.ic_social_media_template_whatsapp, 0, 0)
         }
     }
 
@@ -161,9 +163,9 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
             mProductCategoryCombineList = ArrayList()
             mProductCategoryCombineList = Gson().fromJson<ArrayList<ProductCategoryCombineResponse>>(response.mCommonDataStr, listType)
             Log.d(TAG, "onItemsBasicDetailsByStoreIdResponse: productCategoryCombineList :: $mProductCategoryCombineList")
-            if (isEmpty(mProductCategoryCombineList)) {
+            if (isEmpty(mProductCategoryCombineList))
                 setupNoTemplateUI()
-            } else {
+            else {
                 setupEditAndShareTemplateUI()
                 val productCategoryTempCombineList: ArrayList<ProductCategoryCombineResponse> = ArrayList()
                 mProductCategoryCombineList?.forEachIndexed { _, categoryCombineResponse -> productCategoryTempCombineList.add(categoryCombineResponse) }
@@ -171,7 +173,7 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
                 productCategoryTempCombineList.forEachIndexed { _, categoryResponse ->
                     val productsList: ArrayList<ProductResponse> = ArrayList()
                     categoryResponse.productsList?.forEachIndexed { _, productsResponse ->
-                        if (ToolBarManager.getInstance().headerTitle == mMarketingPageInfoResponse?.marketingStaticTextResponse?.heading_product_discount) {
+                        if (ToolBarManager.getInstance().headerTitle.equals(mMarketingPageInfoResponse?.marketingStaticTextResponse?.heading_product_discount, true)) {
                             if (productsResponse.discountedPrice != productsResponse.price) productsList.add(productsResponse)
                         } else {
                             productsList.add(productsResponse)
@@ -193,9 +195,9 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
                 val productCategoryResponse = Gson().fromJson<AddProductStoreCategory>(response.mCommonDataStr, AddProductStoreCategory::class.java)
                 mAddProductStoreCategoryList = productCategoryResponse?.storeCategoriesList
                 Log.d(TAG, "onProductCategoryResponse: $productCategoryResponse")
-                if (isEmpty(mAddProductStoreCategoryList)) {
+                if (isEmpty(mAddProductStoreCategoryList))
                     setupNoTemplateUI()
-                } else {
+                else {
                     Log.d(TAG, "onProductCategoryResponse: mAddProductStoreCategoryList :: $mAddProductStoreCategoryList")
                     mProductCategoryCombineList = ArrayList()
                     mAddProductStoreCategoryList?.forEachIndexed { position, categoryItem ->
@@ -230,7 +232,7 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
                                     val listType = object : TypeToken<ArrayList<ProductResponse>>() {}.type
                                     val tempProductsList: ArrayList<ProductResponse> = ArrayList()
                                     val productsList = Gson().fromJson<ArrayList<ProductResponse>>(it.mCommonDataStr, listType)
-                                    if (ToolBarManager.getInstance().headerTitle == mMarketingPageInfoResponse?.marketingStaticTextResponse?.heading_product_discount) {
+                                    if (ToolBarManager.getInstance().headerTitle.equals(mMarketingPageInfoResponse?.marketingStaticTextResponse?.heading_product_discount, true)) {
                                         productsList?.forEachIndexed { _, productResponse -> if (productResponse.discountedPrice != productResponse.price && isNotEmpty(productResponse.imageUrl)) tempProductsList.add(productResponse) }
                                     } else {
                                         productsList?.forEachIndexed { _, productResponse -> tempProductsList.add(productResponse) }
@@ -281,7 +283,7 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
                     behavior.state = BottomSheetBehavior.STATE_EXPANDED
                     window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
                     setOnDismissListener {
-                        Handler(Looper.getMainLooper()).postDelayed({ hideSoftKeyboard() }, Constants.TIMER_INTERVAL)
+                        Handler(Looper.getMainLooper()).postDelayed({ hideSoftKeyboard() }, Constants.TIMER_DELAY)
                         if (!mIsItemSelectedFromBottomSheet) mActivity?.onBackPressed()
                     }
                     setContentView(view)
@@ -289,7 +291,7 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
                         val headingTextView: TextView = findViewById(R.id.headingTextView)
                         val editText: EditText = findViewById(R.id.editText)
                         val searchProductRecyclerView: RecyclerView = findViewById(R.id.searchProductRecyclerView)
-                        if (ToolBarManager.getInstance().headerTitle == mMarketingPageInfoResponse?.marketingStaticTextResponse?.heading_product_discount) {
+                        if (ToolBarManager.getInstance().headerTitle.equals(mMarketingPageInfoResponse?.marketingStaticTextResponse?.heading_product_discount, true)) {
                             val headingStr = mMarketingPageInfoResponse?.marketingStaticTextResponse?.message_please_note ?: ""
                             exclamationImageView?.visibility = View.VISIBLE
                             headingTextView.visibility = View.VISIBLE
@@ -301,13 +303,10 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
                         editText.hint = mMarketingPageInfoResponse?.marketingStaticTextResponse?.hint_search_product
                         val categoryProductAdapter = CategoryProductAdapter(mActivity, mMarketingPageInfoResponse?.marketingStaticTextResponse, mProductCategoryCombineList, this@EditSocialMediaTemplateFragment)
                         editText.addTextChangedListener(object : TextWatcher {
-                            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                                Log.d(TAG, "beforeTextChanged: do nothing")
-                            }
 
-                            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                                Log.d(TAG, "onTextChanged: do nothing")
-                            }
+                            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+
+                            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
 
                             override fun afterTextChanged(editable: Editable?) {
                                 val str = editable?.toString() ?: ""
@@ -315,9 +314,7 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
                                     str.length >= (mActivity?.resources?.getInteger(R.integer.catalog_search_char_count) ?: 3) -> {
                                         CoroutineScopeUtils().runTaskOnCoroutineBackground {
                                             try {
-                                                val response = RetrofitApi().getServerCallObject()?.searchItems(
-                                                    SearchCatalogItemsRequest(1, str)
-                                                )
+                                                val response = RetrofitApi().getServerCallObject()?.searchItems(SearchCatalogItemsRequest(1, str))
                                                 response?.let { res ->
                                                     if (res.isSuccessful) {
                                                         res.body()?.let { body ->
@@ -326,7 +323,7 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
                                                                     val tempProductsList: ArrayList<ProductResponse> = ArrayList()
                                                                     val searchProductsResponse = Gson().fromJson<SearchProductsResponse>(body.mCommonDataStr, SearchProductsResponse::class.java)
                                                                     val productsList = searchProductsResponse?.productList
-                                                                    if (ToolBarManager.getInstance().headerTitle == mMarketingPageInfoResponse?.marketingStaticTextResponse?.heading_product_discount) {
+                                                                    if (ToolBarManager.getInstance().headerTitle.equals(mMarketingPageInfoResponse?.marketingStaticTextResponse?.heading_product_discount, true)) {
                                                                         productsList?.forEachIndexed { _, productResponse -> if (productResponse.discountedPrice != productResponse.price && isNotEmpty(productResponse.imageUrl)) tempProductsList.add(productResponse) }
                                                                     } else {
                                                                         productsList?.forEachIndexed { _, productResponse -> tempProductsList.add(productResponse) }
@@ -454,12 +451,15 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
         val discount = ceil(((((productItem?.price ?: 0.0) - (productItem?.discountedPrice ?: 0.0)) / (productItem?.price ?: 0.0)) * 100)).toInt()
         val discountStr = if (productItem?.price == productItem?.discountedPrice) null else "$discount% OFF"
         promoCodeTextView?.text = discountStr
-        originalPriceTextView?.text = "₹${productItem?.discountedPrice}"
+        var priceStr: String
+        priceStr = "₹${productItem?.discountedPrice}"
+        originalPriceTextView?.text = priceStr
         discountedPriceTextView?.apply {
             if (isNotEmpty(discountStr)) {
                 visibility = View.VISIBLE
                 showStrikeOffText()
-                text = "₹${productItem?.price}"
+                priceStr = "₹${productItem?.price}"
+                text = priceStr
             } else visibility = View.GONE
         }
         mActivity?.let { context ->
@@ -473,7 +473,8 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
             saleTextView?.visibility = View.VISIBLE
             bestsellerTextView?.visibility = View.GONE
             mActivity?.let { context -> saleImageView?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_sale_background)) }
-            percentageTextView?.text = "$discount%"
+            val discountPercentStr = "$discount%"
+            percentageTextView?.text = discountPercentStr
         } else {
             saleImageView?.visibility = View.GONE
             percentageTextView?.visibility = View.GONE
@@ -509,7 +510,7 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
                 Handler(Looper.getMainLooper()).postDelayed({
                     nestedScrollView?.scrollTo(0, 150)
                     stopProgress()
-                }, Constants.AUTO_DISMISS_PROGRESS_DIALOG_TIMER)
+                }, Constants.TIMER_AUTO_DISMISS_PROGRESS_DIALOG)
                 screenshotContainer?.let { v ->
                     val originalBitmap = getBitmapFromView(v, mActivity)
                     originalBitmap?.let { bitmap -> shareOnWhatsApp("Order From - ${mMarketingPageInfoResponse?.marketingStoreInfo?.domain}", bitmap) }
@@ -525,7 +526,7 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
                 Handler(Looper.getMainLooper()).postDelayed({
                     nestedScrollView?.scrollTo(0, 150)
                     stopProgress()
-                }, Constants.AUTO_DISMISS_PROGRESS_DIALOG_TIMER)
+                }, Constants.TIMER_AUTO_DISMISS_PROGRESS_DIALOG)
                 screenshotContainer?.let { v ->
                     val originalBitmap = getBitmapFromView(v, mActivity)
                     originalBitmap?.let { bitmap -> shareData("Order From - ${mMarketingPageInfoResponse?.marketingStoreInfo?.domain}", bitmap) }

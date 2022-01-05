@@ -12,16 +12,14 @@ import androidx.core.net.toUri
 import androidx.transition.TransitionInflater
 import com.bumptech.glide.Glide
 import com.digitaldukaan.R
-import com.digitaldukaan.constants.Constants
-import com.digitaldukaan.constants.CoroutineScopeUtils
-import com.digitaldukaan.constants.StaticInstances
-import com.digitaldukaan.constants.ToolBarManager
+import com.digitaldukaan.constants.*
 import com.digitaldukaan.models.request.StoreLogoRequest
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.StoreResponse
 import com.digitaldukaan.services.ProfilePhotoService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IProfilePhotoServiceInterface
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.layout_profile_photo_fragment.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -52,6 +50,7 @@ class ProfilePhotoFragment : BaseFragment(), View.OnClickListener, IProfilePhoto
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         TAG = "ProfilePhotoFragment"
+        FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
         mContentView = inflater.inflate(R.layout.layout_profile_photo_fragment, container, false)
         service.setServiceInterface(this)
         StaticInstances.sIsStoreImageUploaded = false
@@ -63,12 +62,8 @@ class ProfilePhotoFragment : BaseFragment(), View.OnClickListener, IProfilePhoto
         super.onViewCreated(view, savedInstanceState)
         ToolBarManager.getInstance()?.hideToolBar(mActivity, true)
         profilePhotoImageView?.let {
-            if (mStoreLogoLinkStr?.isEmpty() == false) {
-                try {
-                    Glide.with(this).load(mStoreLogoLinkStr).into(it)
-                } catch (e: Exception) {
-                    Log.e(TAG, "picasso image loading issue: ${e.message}", e)
-                }
+            if (isNotEmpty(mStoreLogoLinkStr)) {
+                Glide.with(this).load(mStoreLogoLinkStr).into(it)
             }
         }
         backImageView?.setOnClickListener(this)
@@ -93,10 +88,10 @@ class ProfilePhotoFragment : BaseFragment(), View.OnClickListener, IProfilePhoto
         grantResults: IntArray
     ) {
         Log.i(TAG, "$TAG onRequestPermissionResult")
-        if (requestCode == Constants.IMAGE_PICK_REQUEST_CODE) {
+        if (Constants.IMAGE_PICK_REQUEST_CODE == requestCode) {
             when {
                 grantResults.isEmpty() -> Log.i(TAG, "User interaction was cancelled.")
-                grantResults[0] == PackageManager.PERMISSION_GRANTED -> {
+                PackageManager.PERMISSION_GRANTED == grantResults[0] -> {
                     showImagePickerBottomSheet()
                 }
             }
@@ -126,13 +121,9 @@ class ProfilePhotoFragment : BaseFragment(), View.OnClickListener, IProfilePhoto
             stopProgress()
             val photoResponse = Gson().fromJson<StoreResponse>(response.mCommonDataStr, StoreResponse::class.java)
             mStoreLogoLinkStr = photoResponse.storeInfo.logoImage
-            if (mStoreLogoLinkStr?.isNotEmpty() == true) {
+            if (isNotEmpty(mStoreLogoLinkStr)) {
                 profilePhotoImageView?.let {
-                    try {
-                        Glide.with(this).load(mStoreLogoLinkStr).into(it)
-                    } catch (e: Exception) {
-                        Log.e(TAG, "picasso image loading issue: ${e.message}", e)
-                    }
+                    Glide.with(this).load(mStoreLogoLinkStr).into(it)
                 }
             } else {
                 StaticInstances.sIsStoreImageUploaded = false
@@ -148,12 +139,10 @@ class ProfilePhotoFragment : BaseFragment(), View.OnClickListener, IProfilePhoto
         }
     }
 
-    override fun onProfilePhotoServerException(e: Exception) {
-        exceptionHandlingForAPIResponse(e)
-    }
+    override fun onProfilePhotoServerException(e: Exception) = exceptionHandlingForAPIResponse(e)
 
     override fun onImageSelectionResultFile(file: File?, mode: String) {
-        if (mode == Constants.MODE_CROP) {
+        if (Constants.MODE_CROP == mode) {
             val fragment = CropPhotoFragment.newInstance(file?.toUri())
             fragment.setTargetFragment(this, Constants.CROP_IMAGE_REQUEST_CODE)
             launchFragment(fragment, true)
@@ -163,7 +152,7 @@ class ProfilePhotoFragment : BaseFragment(), View.OnClickListener, IProfilePhoto
             showNoInternetConnectionDialog()
             return
         }
-        if (file == null) {
+        if (null == file) {
             service.uploadStoreLogo(StoreLogoRequest(""))
         } else {
             val fileRequestBody = MultipartBody.Part.createFormData("media", file.name, RequestBody.create("image/*".toMediaTypeOrNull(), file))
@@ -173,7 +162,7 @@ class ProfilePhotoFragment : BaseFragment(), View.OnClickListener, IProfilePhoto
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == Constants.CROP_IMAGE_REQUEST_CODE) {
+        if (Constants.CROP_IMAGE_REQUEST_CODE == requestCode) {
             val file = data?.getSerializableExtra(Constants.MODE_CROP) as File
             CoroutineScopeUtils().runTaskOnCoroutineMain {
                 onImageSelectionResultFile(file, "")

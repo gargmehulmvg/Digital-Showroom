@@ -23,9 +23,9 @@ import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IEditPremiumServiceInterface
 import com.digitaldukaan.webviews.WebViewBridge
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import io.sentry.Sentry
 import kotlinx.android.synthetic.main.layout_edit_premium_fragment.*
 
 class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
@@ -62,6 +62,7 @@ class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
         TAG = "EditPremiumFragment"
         mService.setServiceInterface(this)
         mEditPremiumColorList = ArrayList()
+        FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
         mContentView = inflater.inflate(R.layout.layout_edit_premium_fragment, container, false)
         return mContentView
     }
@@ -79,7 +80,7 @@ class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
         editPremiumWebView?.apply {
             settings.javaScriptEnabled = true
             settings.domStorageEnabled = true
-            addJavascriptInterface(WebViewBridge(), "Android")
+            addJavascriptInterface(WebViewBridge(), Constants.KEY_ANDROID)
             val url = "${BuildConfig.WEB_VIEW_PREVIEW_URL}${mPremiumPageInfoResponse?.domain}"
             Log.d(EditPremiumFragment::class.simpleName, "onViewCreated: $url")
             webViewClient = object : WebViewClient() {
@@ -148,13 +149,16 @@ class EditPremiumFragment : BaseFragment(), IEditPremiumServiceInterface {
                         try {
                             val response = RetrofitApi().getServerCallObject()?.getProductShareStoreData()
                             CoroutineScopeUtils().runTaskOnCoroutineMain {
-                                val commonResponse = response?.body()
-                                stopProgress()
-                                mShareDataOverWhatsAppText = Gson().fromJson<String>(commonResponse?.mCommonDataStr, String::class.java)
-                                shareOnWhatsApp(mShareDataOverWhatsAppText)
+                                try {
+                                    val commonResponse = response?.body()
+                                    stopProgress()
+                                    mShareDataOverWhatsAppText = Gson().fromJson<String>(commonResponse?.mCommonDataStr, String::class.java)
+                                    shareOnWhatsApp(mShareDataOverWhatsAppText)
+                                } catch (e: Exception) {
+                                    exceptionHandlingForAPIResponse(e)
+                                }
                             }
                         } catch (e: Exception) {
-                            Sentry.captureException(e, "$TAG onClick: exception")
                             exceptionHandlingForAPIResponse(e)
                         }
                     }

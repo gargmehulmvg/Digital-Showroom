@@ -18,6 +18,7 @@ import com.digitaldukaan.interfaces.IOnToolbarIconClick
 import com.digitaldukaan.models.dto.ConvertMultiImageDTO
 import com.digitaldukaan.models.response.LockedStoreShareResponse
 import com.digitaldukaan.webviews.WebViewBridge
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.layout_common_webview_fragment.*
@@ -36,13 +37,14 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
         val fragment = CommonWebViewFragment()
         fragment.mHeaderText = headerText
         fragment.mLoadUrl = loadUrl
-        fragment.mLoadUrl = "${fragment.mLoadUrl}&app_version=${BuildConfig.VERSION_NAME}"
+        fragment.mLoadUrl = "${fragment.mLoadUrl}&app_version=${BuildConfig.VERSION_NAME}&app_version_code=${BuildConfig.VERSION_CODE}"
         Log.d(mTagName, "CommonWebViewFragment :: URL :: ${fragment.mLoadUrl}")
         return fragment
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         TAG = "CommonWebViewFragment"
+        FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
         mContentView = inflater.inflate(R.layout.layout_common_webview_fragment, container, false)
         hideBottomNavigationView(true)
         return mContentView
@@ -68,7 +70,7 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
             setLayerType(View.LAYER_TYPE_HARDWARE, null)
             settings.javaScriptEnabled = true
             settings.domStorageEnabled = true
-            addJavascriptInterface(WebViewBridge(), "Android")
+            addJavascriptInterface(WebViewBridge(), Constants.KEY_ANDROID)
             Log.d(CommonWebViewFragment::class.simpleName, "onViewCreated: $mLoadUrl")
             triggerWebViewOpenEvent()
             loadUrl(mLoadUrl)
@@ -132,6 +134,9 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
             jsonData.optBoolean("redirectBrowser") -> {
                 openUrlInBrowser(jsonData.optString("data"))
             }
+            jsonData.optBoolean("openDomainPurchaseBottomSheet") -> {
+                openDomainPurchaseBottomSheetServerCall()
+            }
             jsonData.optBoolean("shareTextOnWhatsApp") -> {
                 val text = jsonData.optString("data")
                 val mobileNumber = jsonData.optString("mobileNumber")
@@ -167,6 +172,13 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
             }
             jsonData.optBoolean("unauthorizedAccess") -> {
                 logoutFromApplication()
+            }
+            jsonData.optBoolean("addAddress") -> {
+                launchFragment(StoreMapLocationFragment.newInstance(0, true), true)
+            }
+            jsonData.optBoolean("openAppByPackage") -> {
+                val packageName = jsonData.optString("data")
+                openAppByPackageName(packageName, mActivity)
             }
             jsonData.optBoolean("openUPIIntent") -> {
                 val intent = Intent()

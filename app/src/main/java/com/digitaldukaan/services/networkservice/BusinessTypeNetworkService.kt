@@ -2,6 +2,7 @@ package com.digitaldukaan.services.networkservice
 
 import android.util.Log
 import com.digitaldukaan.constants.Constants
+import com.digitaldukaan.exceptions.DeprecateAppVersionException
 import com.digitaldukaan.exceptions.UnAuthorizedAccessException
 import com.digitaldukaan.models.request.BusinessTypeRequest
 import com.digitaldukaan.network.RetrofitApi
@@ -18,8 +19,8 @@ class BusinessTypeNetworkService {
                 if (it.isSuccessful) {
                     it.body()?.let { profilePreviewResponse -> serviceInterface.onBusinessTypeResponse(profilePreviewResponse) }
                 } else {
-                    if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(
-                        Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    if (Constants.ERROR_CODE_FORCE_UPDATE == it.code()) throw DeprecateAppVersionException()
                     serviceInterface.onBusinessTypeServerException(Exception(response.message()))
                 }
             }
@@ -40,6 +41,7 @@ class BusinessTypeNetworkService {
                     it.body()?.let { profilePreviewResponse -> serviceInterface.onSavingBusinessTypeResponse(profilePreviewResponse) }
                 } else {
                     if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    if (Constants.ERROR_CODE_FORCE_UPDATE == it.code()) throw DeprecateAppVersionException()
                     serviceInterface.onBusinessTypeServerException(Exception(response.message()))
                 }
             }

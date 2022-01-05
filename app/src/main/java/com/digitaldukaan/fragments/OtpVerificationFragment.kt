@@ -35,6 +35,7 @@ import com.google.android.gms.auth.api.phone.SmsRetriever
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import kotlinx.android.synthetic.main.activity_main2.*
 import kotlinx.android.synthetic.main.otp_verification_fragment.*
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener
@@ -53,7 +54,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
     private var mIsServerCallInitiated = false
     private var mOtpStaticResponseData: VerifyOtpStaticResponseData? = null
     private var mTimerCompleted = false
-    private var mCheckStaffInviteResponse: StaffMemberDetailsResponse? = null
+    private var mCheckStaffInviteResponse: CheckStaffInviteResponse? = null
     private var mValidateOtpResponse: ValidateOtpResponse? = null
     private var mOtpModesList: ArrayList<CommonCtaResponse>? = null
 
@@ -145,7 +146,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
                         return
                     }
                     val otpInt: Int = if (isEmpty(mEnteredOtpStr)) 0 else mEnteredOtpStr.toInt()
-                    showProgressDialog(mActivity, mOtpStaticResponseData?.mVerifyingText)
+                    showProgressDialog(mActivity)
                     mOtpVerificationService?.verifyOTP(mMobileNumberStr, otpInt)
                     verifyTextView?.text = mOtpStaticResponseData?.mVerifyingText
                     verifyProgressBar?.apply {
@@ -188,13 +189,9 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
         verifyProgressBar?.visibility = View.GONE
         otpEditText?.addTextChangedListener(object : TextWatcher {
 
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                Log.d(TAG, "beforeTextChanged: do nothing")
-            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
 
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                Log.d(TAG, "onTextChanged: do nothing")
-            }
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
 
             override fun afterTextChanged(editable: Editable?) {
                 mEnteredOtpStr = editable?.toString() ?: ""
@@ -209,7 +206,8 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
 
     private fun startCountDownTimer() {
         counterTextView.visibility = View.VISIBLE
-        mCountDownTimer = object: CountDownTimer(Constants.RESEND_OTP_TIMER, Constants.TIMER_INTERVAL) {
+        mCountDownTimer = object: CountDownTimer(Constants.TIMER_RESEND_OTP, Constants.TIMER_DELAY) {
+
             override fun onTick(millisUntilFinished: Long) {
                 mTimerCompleted = false
                 CoroutineScopeUtils().runTaskOnCoroutineMain {
@@ -253,7 +251,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
 
     override fun onDestroy() {
         super.onDestroy()
-        mCountDownTimer?.cancel()
+        if (false == mActivity?.isDestroyed) mCountDownTimer?.cancel()
     }
 
     override fun onOTPFilledListener(otpStr: String) {
@@ -312,9 +310,12 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             if (commonResponse.mIsSuccessStatus) {
-                mCheckStaffInviteResponse = Gson().fromJson<StaffMemberDetailsResponse>(commonResponse.mCommonDataStr, StaffMemberDetailsResponse::class.java)
+                mCheckStaffInviteResponse = Gson().fromJson<CheckStaffInviteResponse>(commonResponse.mCommonDataStr, CheckStaffInviteResponse::class.java)
+                blurBottomNavBarContainer?.visibility = View.INVISIBLE
                 if (null == mValidateOtpResponse?.mStore && mIsNewUser) {
-                    launchFragment(DukaanNameFragment.newInstance(mCheckStaffInviteResponse?.mIsInvitationAvailable ?: false, mCheckStaffInviteResponse?.mStaffInvitation, mValidateOtpResponse?.mUserId ?: ""), true)
+                    sIsInvitationAvailable = mCheckStaffInviteResponse?.mIsInvitationAvailable ?: false
+                    StaticInstances.sStaffInvitation = mCheckStaffInviteResponse?.mStaffInvitation
+                    launchFragment(DukaanNameFragment.newInstance(mValidateOtpResponse?.mUserId ?: ""), true)
                 } else StaticInstances.sPermissionHashMap?.let { it1 -> launchScreenFromPermissionMap(it1) }
             }
         }
@@ -393,7 +394,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
             resendOtpContainer?.alpha = 0.3f
             Handler(Looper.getMainLooper()).postDelayed({
                 otpSentOnContainer?.visibility = View.GONE
-            }, Constants.STORE_CREATION_PROGRESS_ANIMATION_INTERVAL)
+            }, Constants.TIMER_STORE_CREATION_PROGRESS_ANIMATION)
             startCountDownTimer()
             mLoginService?.generateOTP(mMobileNumberStr, modeListItem?.id ?: 0)
         }

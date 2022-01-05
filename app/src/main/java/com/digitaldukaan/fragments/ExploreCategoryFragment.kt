@@ -16,6 +16,7 @@ import com.digitaldukaan.models.response.MasterCatalogItemResponse
 import com.digitaldukaan.services.ExploreCategoryService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IExploreCategoryServiceInterface
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.layout_explore_category_fragment.*
@@ -35,6 +36,7 @@ class ExploreCategoryFragment: BaseFragment(), IExploreCategoryServiceInterface 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         TAG = "ExploreCategoryFragment"
+        FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
         mContentView = inflater.inflate(R.layout.layout_explore_category_fragment, container, false)
         mService.setServiceInterface(this)
         AppEventsManager.pushAppEvents(

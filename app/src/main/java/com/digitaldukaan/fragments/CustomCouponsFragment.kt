@@ -3,7 +3,6 @@ package com.digitaldukaan.fragments
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,18 +22,10 @@ import com.digitaldukaan.services.serviceinterface.ICustomCouponsServiceInterfac
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.textfield.TextInputLayout
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import java.util.*
 
 class CustomCouponsFragment : BaseFragment(), ICustomCouponsServiceInterface {
-
-    companion object {
-
-        fun newInstance(staticText: PromoCodePageStaticTextResponse?): CustomCouponsFragment {
-            val fragment = CustomCouponsFragment()
-            fragment.mStaticText = staticText
-            return fragment
-        }
-    }
 
     private var createCouponsTextView: TextView? = null
     private var percentageDiscountTextView: TextView? = null
@@ -62,8 +53,18 @@ class CustomCouponsFragment : BaseFragment(), ICustomCouponsServiceInterface {
     private var mStaticText: PromoCodePageStaticTextResponse? = null
     private var mStoreName = ""
 
+    companion object {
+
+        fun newInstance(staticText: PromoCodePageStaticTextResponse?): CustomCouponsFragment {
+            val fragment = CustomCouponsFragment()
+            fragment.mStaticText = staticText
+            return fragment
+        }
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         TAG = "CustomCouponsFragment"
+        FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
         mContentView = inflater.inflate(R.layout.layout_custom_coupons_fragment, container, false)
         initializeUI()
         mService.setCustomCouponsServiceListener(this)
@@ -148,13 +149,9 @@ class CustomCouponsFragment : BaseFragment(), ICustomCouponsServiceInterface {
                 } else pdDiscountPreviewLayout?.visibility = View.GONE
             }
 
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                Log.d(TAG, "beforeTextChanged: do nothing")
-            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
 
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                Log.d(TAG, "onTextChanged: do nothing")
-            }
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
 
         })
         fdDiscountEditText?.addTextChangedListener(object : TextWatcher {
@@ -173,13 +170,9 @@ class CustomCouponsFragment : BaseFragment(), ICustomCouponsServiceInterface {
                 } else fdCouponCodeEditText?.text = null
             }
 
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                Log.d(TAG, "beforeTextChanged: do nothing")
-            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
 
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                Log.d(TAG, "onTextChanged: do nothing")
-            }
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
 
         })
         pdPercentageEditText?.addTextChangedListener(object : TextWatcher {
@@ -198,13 +191,9 @@ class CustomCouponsFragment : BaseFragment(), ICustomCouponsServiceInterface {
                 } else pdCouponCodeEditText?.text = null
             }
 
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                Log.d(TAG, "beforeTextChanged: do nothing")
-            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
 
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                Log.d(TAG, "onTextChanged: do nothing")
-            }
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
 
         })
     }

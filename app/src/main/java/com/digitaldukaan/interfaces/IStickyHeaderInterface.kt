@@ -2,7 +2,7 @@ package com.digitaldukaan.interfaces
 
 import android.view.View
 
-interface StickyHeaderInterface {
+interface IStickyHeaderInterface {
     /**
      * This method gets called by [StickHeaderItemDecoration] to fetch the position of the header item in the adapter
      * that is used for (represents) item at specified position.

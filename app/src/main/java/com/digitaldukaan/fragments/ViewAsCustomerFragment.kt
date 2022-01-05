@@ -12,6 +12,7 @@ import com.digitaldukaan.R
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.models.response.AddProductStaticText
 import com.digitaldukaan.webviews.WebViewBridge
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import kotlinx.android.synthetic.main.layout_common_webview_fragment.*
 import kotlinx.android.synthetic.main.layout_view_as_customer.*
 
@@ -33,6 +34,7 @@ class ViewAsCustomerFragment: BaseFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         TAG = "ViewAsCustomerFragment"
+        FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
         mContentView = inflater.inflate(R.layout.layout_view_as_customer, container, false)
         return mContentView
     }
@@ -63,7 +65,7 @@ class ViewAsCustomerFragment: BaseFragment() {
             settings.javaScriptEnabled = true
             settings.domStorageEnabled = true
             settings.javaScriptCanOpenWindowsAutomatically = true
-            addJavascriptInterface(WebViewBridge(), "Android")
+            addJavascriptInterface(WebViewBridge(), Constants.KEY_ANDROID)
             Log.d(TAG, "onViewCreated: $mDomainName")
             loadUrl(mDomainName)
         }

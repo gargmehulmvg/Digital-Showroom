@@ -1,6 +1,7 @@
 package com.digitaldukaan.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,6 +21,7 @@ import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IMoreControlsServiceInterface
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.textfield.TextInputLayout
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.layout_more_control_fragment.*
 
@@ -57,6 +59,7 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         TAG = "MoreControlsFragment"
+        FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
         mContentView = inflater.inflate(R.layout.layout_more_control_fragment, container, false)
         mMoreControlsService = MoreControlsService()
         mMoreControlsService?.setServiceInterface(this)
@@ -149,6 +152,8 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
         minOrderValueOptionalTextView?.text = if (0.0 == mMinOrderValue) mMoreControlsStaticData?.text_optional else "${mMoreControlsStaticData?.sub_heading_success_set_min_order_value_for_delivery} "
         minOrderValueAmountTextView?.text = if (0.0 != mMinOrderValue) "${mMoreControlsStaticData?.text_ruppee_symbol} $mMinOrderValue" else ""
         deliveryChargeHeadingTextView?.text = mMoreControlsStaticData?.heading_set_delivery_charge
+        editCustomerAddressHeadingTextView?.text = mMoreControlsStaticData?.heading_edit_customer_address
+        editCustomerAddressNewTextView?.text = mMoreControlsStaticData?.mNewText
         deliveryChargeTypeTextView?.text = mMoreControlsStaticData?.sub_heading_set_delivery_charge
         onlinePaymentsTextView?.text = mMoreControlsStaticData?.text_online_payments
         deliveryHeadingTextView?.text = mMoreControlsStaticData?.mDeliveryText
@@ -220,6 +225,9 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
                 }
                 launchFragment(PaymentModesFragment.newInstance(), true)
             }
+            editCustomerAddressContainer?.id -> {
+                launchFragment(AddressFieldsFragment.newInstance(), true)
+            }
             notificationsContainer?.id -> getOrderNotificationBottomSheet(AFInAppEventParameterName.STORE_CONTROLS)
             storeImageView?.id -> {
                 startViewAnimation(storeImageView)
@@ -281,7 +289,7 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
                     verifyTextView.text = mMoreControlsStaticData?.save_changes
                     verifyTextView.setOnClickListener {
                         val amount = minDeliveryAmountEditText.text.trim().toString()
-                        if (amount.isNotEmpty() && 0.0 != mFreeDeliveryAbove && amount.toDoubleOrNull() ?: 0.0 > mFreeDeliveryAbove) {
+                        if (isNotEmpty(amount) && 0.0 != mFreeDeliveryAbove && amount.toDoubleOrNull() ?: 0.0 > mFreeDeliveryAbove) {
                             minDeliveryAmountEditText.error = mMoreControlsStaticData?.error_amount_must_greater_than_free_delivery_above
                             minDeliveryAmountEditText.requestFocus()
                             return@setOnClickListener
@@ -294,7 +302,7 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
                             mDeliveryChargeType,
                             mFreeDeliveryAbove,
                             mDeliveryPrice,
-                            if (amount.isEmpty()) 0.0 else if (amount.startsWith(".")) "0$amount".toDoubleOrNull() else amount.toDoubleOrNull()
+                            if (isEmpty(amount)) 0.0 else if (amount.startsWith(".")) "0$amount".toDoubleOrNull() else amount.toDoubleOrNull()
                         )
                         showProgressDialog(mActivity)
                         bottomSheetDialog.dismiss()
@@ -348,14 +356,18 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
     override fun onChangeStoreAndDeliveryStatusResponse(response: CommonApiResponse) {
         stopProgress()
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            if (response.mIsSuccessStatus) {
-                val storeDeliveryService = Gson().fromJson<StoreServicesResponse>(response.mCommonDataStr, StoreServicesResponse::class.java)
-                showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
-                StaticInstances.sAppStoreServicesResponse = storeDeliveryService
-                updateStoreServiceInstances()
-                setUIDataFromResponse()
-                setupPickupDeliveryUI()
-            } else showShortSnackBar(response.mMessage, true, R.drawable.ic_close_red)
+            try {
+                if (response.mIsSuccessStatus) {
+                    val storeDeliveryService = Gson().fromJson<StoreServicesResponse>(response.mCommonDataStr, StoreServicesResponse::class.java)
+                    showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
+                    StaticInstances.sAppStoreServicesResponse = storeDeliveryService
+                    updateStoreServiceInstances()
+                    setUIDataFromResponse()
+                    setupPickupDeliveryUI()
+                } else showShortSnackBar(response.mMessage, true, R.drawable.ic_close_red)
+            } catch (e: Exception) {
+                Log.e(TAG, "onChangeStoreAndDeliveryStatusResponse: ${e.message}", e)
+            }
         }
     }
 

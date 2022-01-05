@@ -33,10 +33,12 @@ import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IMarketingServiceInterface
 import com.digitaldukaan.webviews.WebViewBridge
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import io.sentry.Sentry
+import kotlinx.android.synthetic.main.bottom_sheet_marketing_know_more.*
 import kotlinx.android.synthetic.main.layout_marketing_fragment.*
+import kotlinx.android.synthetic.main.layout_marketing_fragment.domainTextView
 
 class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingServiceInterface, LocationListener,
     IAppSettingsItemClicked, IMarketingMoreOptionsItemClicked {
@@ -45,6 +47,8 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
     private var mCurrentLatitude = 0.0
     private var mCurrentLongitude = 0.0
     private var mKnowMoreCustomDomainRecyclerView: RecyclerView? = null
+    private var searchDomainContainerView: View? = null
+    private var mSearchDomainTextView: TextView? = null
     private var mKnowMoreBottomSheetDialog: BottomSheetDialog? = null
     private var mProgressBarView: View? = null
     private var mMarketingPageInfoResponse: MarketingPageInfoResponse? = null
@@ -61,6 +65,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
         TAG = "MarketingFragment"
         mService = MarketingService()
         mService?.setMarketingServiceListener(this)
+        FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
         mContentView = inflater.inflate(R.layout.layout_marketing_fragment, container, false)
         return mContentView
     }
@@ -79,14 +84,9 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
             showNoInternetConnectionDialog()
             return
         }
-
-        if(StaticInstances.sIsInvitationShown == true){
-            showStaffInvitationDialog(StaticInstances.sStaffInvitation)
-        }else{
-            showProgressDialog(mActivity)
-            mService?.getMarketingPageInfo()
-            WebViewBridge.mWebViewListener = this
-        }
+        showProgressDialog(mActivity)
+        mService?.getMarketingPageInfo()
+        WebViewBridge.mWebViewListener = this
     }
 
     override fun onClick(view: View?) {
@@ -99,7 +99,13 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
         }
     }
 
-    override fun onToolbarSideIconClicked() = openWebViewFragment(this, getString(R.string.help), WebViewUrls.WEB_VIEW_HELP, Constants.SETTINGS)
+    override fun onToolbarSideIconClicked() {
+        try {
+            if (this.isAdded) openWebViewFragment(this, getString(R.string.help), WebViewUrls.WEB_VIEW_HELP, Constants.SETTINGS)
+        } catch (e: Exception) {
+            Log.e(TAG, "onToolbarSideIconClicked: ${e.message}", e)
+        }
+    }
 
     override fun onMarketingErrorResponse(e: Exception) = exceptionHandlingForAPIResponse(e)
 
@@ -132,7 +138,6 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                             }
                         }
                         layoutManager = gridLayoutManager
-                        mMarketingPageInfoResponse?.marketingItemList?.forEachIndexed { _, itemResponse -> itemResponse?.isStaffFeatureLocked = true }
                         adapter = MarketingCardAdapter(this@MarketingFragment, mMarketingPageInfoResponse?.marketingItemList, this@MarketingFragment)
                     }
                 }
@@ -333,6 +338,19 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
             if (response.mIsSuccessStatus) {
                 val listType = object : TypeToken<ArrayList<MarketingSuggestedDomainItemResponse?>>() {}.type
                 val list = Gson().fromJson<ArrayList<MarketingSuggestedDomainItemResponse?>>(response.mCommonDataStr, listType)
+                if (true == list?.isEmpty()) {
+                    searchDomainContainerView?.apply {
+                        visibility = View.VISIBLE
+                        setOnClickListener {
+                            mKnowMoreBottomSheetDialog?.dismiss()
+                            if (Constants.NEW_RELEASE_TYPE_WEBVIEW == mMarketingPageInfoResponse?.searchCta?.action) {
+                                val url = "${BuildConfig.WEB_VIEW_URL}${mMarketingPageInfoResponse?.searchCta?.pageUrl}?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&${AFInAppEventParameterName.CHANNEL}=${AFInAppEventParameterName.LANDING_PAGE}"
+                                openWebViewFragmentV3(this@MarketingFragment, "", url)
+                            }
+                        }
+                    }
+                    mSearchDomainTextView?.text = mMarketingPageInfoResponse?.marketingStaticTextResponse?.text_search
+                } else searchDomainContainerView?.visibility = View.GONE
                 mKnowMoreCustomDomainRecyclerView?.visibility = View.VISIBLE
                 mKnowMoreCustomDomainRecyclerView?.apply {
                     layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
@@ -408,7 +426,6 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
             }
         } catch (e: Exception) {
             Log.e(TAG, "showPDFShareBottomSheet: ${e.message}", e)
-            Sentry.captureException(e, "showPDFShareBottomSheet: exception")
         }
     }
 
@@ -599,10 +616,7 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
         try {
             mActivity?.let {
                 mKnowMoreBottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
-                val view = LayoutInflater.from(it).inflate(
-                    R.layout.bottom_sheet_marketing_know_more,
-                    it.findViewById(R.id.bottomSheetContainer)
-                )
+                val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_marketing_know_more, it.findViewById(R.id.bottomSheetContainer))
                 mKnowMoreBottomSheetDialog?.apply {
                     setContentView(view)
                     view.run {
@@ -613,9 +627,9 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                         val offerMessageTextView: TextView = findViewById(R.id.offerMessageTextView)
                         val expiryMessageTextView: TextView = findViewById(R.id.expiryMessageTextView)
                         mKnowMoreCustomDomainRecyclerView = findViewById(R.id.recyclerView)
-                        bottomSheetClose.setOnClickListener {
-                            mKnowMoreBottomSheetDialog?.dismiss()
-                        }
+                        searchDomainContainerView = findViewById(R.id.searchDomainContainer)
+                        mSearchDomainTextView = findViewById(R.id.searchDomainTextView)
+                        bottomSheetClose.setOnClickListener { mKnowMoreBottomSheetDialog?.dismiss() }
                         mProgressBarView?.visibility = View.VISIBLE
                         mService?.getMarketingSuggestedDomains()
                         headingTextView.text = itemResponse?.headingYourDomain
@@ -630,16 +644,14 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
         }
     }
 
-    override fun onAppSettingItemClicked(subPagesResponse: SubPagesResponse) {
-        Log.d(TAG, "onAppSettingItemClicked: ${subPagesResponse.mAction}")
-    }
+    override fun onAppSettingItemClicked(subPagesResponse: SubPagesResponse) = Unit
 
     override fun onLockedStoreShareSuccessResponse(lockedShareResponse: LockedStoreShareResponse) = showLockedStoreShareBottomSheet(lockedShareResponse)
 
-    override fun onProviderEnabled(provider: String) {}
+    override fun onProviderEnabled(provider: String) = Unit
 
-    override fun onProviderDisabled(provider: String) {}
+    override fun onProviderDisabled(provider: String) = Unit
 
-    override fun onStatusChanged(p0: String?, p1: Int, p2: Bundle?) {}
+    override fun onStatusChanged(p0: String?, p1: Int, p2: Bundle?) = Unit
 
 }

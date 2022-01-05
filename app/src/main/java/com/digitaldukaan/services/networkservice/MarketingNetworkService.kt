@@ -2,6 +2,7 @@ package com.digitaldukaan.services.networkservice
 
 import android.util.Log
 import com.digitaldukaan.constants.Constants
+import com.digitaldukaan.exceptions.DeprecateAppVersionException
 import com.digitaldukaan.exceptions.UnAuthorizedAccessException
 import com.digitaldukaan.network.RetrofitApi
 import com.digitaldukaan.services.serviceinterface.IMarketingServiceInterface
@@ -16,6 +17,7 @@ class MarketingNetworkService {
                     it.body()?.let { generateOtpResponse -> serviceInterface.onMarketingSuggestedDomainsResponse(generateOtpResponse) }
                 } else {
                     if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    if (Constants.ERROR_CODE_FORCE_UPDATE == it.code()) throw DeprecateAppVersionException()
                     serviceInterface.onMarketingErrorResponse(Exception(response.message()))
                 }
             }
@@ -33,6 +35,7 @@ class MarketingNetworkService {
                     it.body()?.let { generateOtpResponse -> serviceInterface.onMarketingPageInfoResponse(generateOtpResponse) }
                 } else {
                     if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    if (Constants.ERROR_CODE_FORCE_UPDATE == it.code()) throw DeprecateAppVersionException()
                     serviceInterface.onMarketingErrorResponse(Exception(response.message()))
                 }
             }
@@ -50,6 +53,7 @@ class MarketingNetworkService {
                     it.body()?.let { responseBody -> serviceInterface.onAppShareDataResponse(responseBody) }
                 } else {
                     if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    if (Constants.ERROR_CODE_FORCE_UPDATE == it.code()) throw DeprecateAppVersionException()
                     serviceInterface.onMarketingErrorResponse(Exception(response.message()))
                 }
             }
@@ -67,6 +71,7 @@ class MarketingNetworkService {
                     it.body()?.let { responseBody -> serviceInterface.onGenerateStorePdfResponse(responseBody) }
                 } else {
                     if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    if (Constants.ERROR_CODE_FORCE_UPDATE == it.code()) throw DeprecateAppVersionException()
                     serviceInterface.onMarketingErrorResponse(Exception(response.message()))
                 }
             }
@@ -84,6 +89,7 @@ class MarketingNetworkService {
                     it.body()?.let { responseBody -> serviceInterface.onShareStorePdfDataResponse(responseBody) }
                 } else {
                     if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    if (Constants.ERROR_CODE_FORCE_UPDATE == it.code()) throw DeprecateAppVersionException()
                     serviceInterface.onMarketingErrorResponse(Exception(response.message()))
                 }
             }

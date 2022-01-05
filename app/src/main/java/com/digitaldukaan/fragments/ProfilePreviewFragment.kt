@@ -7,6 +7,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
+import android.os.CountDownTimer
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -14,6 +15,7 @@ import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
@@ -30,10 +32,7 @@ import com.digitaldukaan.adapters.ProfilePreviewAdapter
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.IAdapterItemClickListener
 import com.digitaldukaan.interfaces.IProfilePreviewItemClicked
-import com.digitaldukaan.models.request.StoreLinkRequest
-import com.digitaldukaan.models.request.StoreLogoRequest
-import com.digitaldukaan.models.request.StoreNameRequest
-import com.digitaldukaan.models.request.StoreUserMailDetailsRequest
+import com.digitaldukaan.models.request.*
 import com.digitaldukaan.models.response.*
 import com.digitaldukaan.services.ProfilePreviewService
 import com.digitaldukaan.services.isInternetConnectionAvailable
@@ -46,7 +45,11 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.textfield.TextInputLayout
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
+import kotlinx.android.synthetic.main.bottom_sheet_add_display_number.*
+import kotlinx.android.synthetic.main.layout_login_fragment_v2.*
 import kotlinx.android.synthetic.main.layout_profile_preview_fragment.*
 import kotlinx.android.synthetic.main.layout_profile_preview_fragment.hiddenImageView
 import kotlinx.android.synthetic.main.layout_profile_preview_fragment.hiddenTextView
@@ -54,6 +57,7 @@ import kotlinx.android.synthetic.main.layout_profile_preview_fragment.lockedProf
 import kotlinx.android.synthetic.main.layout_profile_preview_fragment.storePhotoImageView
 import kotlinx.android.synthetic.main.layout_profile_preview_fragment.swipeRefreshLayout
 import kotlinx.android.synthetic.main.layout_settings_fragment.*
+import kotlinx.android.synthetic.main.otp_verification_fragment.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -77,6 +81,12 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
     private var mIsCompleteProfileImageInitiated = false
     private var mIsEmailAdded = false
     private var mStoreUserPageInfoStaticTextResponse: StoreUserPageInfoStaticTextResponse? = null
+    private var mCountDownTimer: CountDownTimer? = null
+    private var mIsTimerCompleted = true
+    private var mResendOtpBottomSheetTextView: TextView? = null
+    private var mDisplayPhoneBottomSheet: BottomSheetDialog? = null
+    private var mDisplayPhoneContentView: View? = null
+    private var mDisplayPhoneStr = ""
 
     companion object {
 
@@ -98,6 +108,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         TAG = "ProfilePreviewFragment"
+        FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
         mContentView = inflater.inflate(R.layout.layout_profile_preview_fragment, container, false)
         mService.setServiceInterface(this)
         mActivity?.let { cancelWarningDialog = Dialog(it) }
@@ -162,7 +173,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
     override fun onProfilePreviewResponse(commonApiResponse: CommonApiResponse) {
         val response = Gson().fromJson<ProfileInfoResponse>(commonApiResponse.mCommonDataStr, ProfileInfoResponse::class.java)
         mProfilePreviewResponse = response
-        mProfilePreviewStaticData = response?.mProfileStaticText!!
+        mProfilePreviewStaticData = response?.mProfileStaticText
         StaticInstances.sStepsCompletedList = response.mStepsList
         response.mStoreItemResponse?.bankDetails?.run { StaticInstances.sBankDetails = this }
         CoroutineScopeUtils().runTaskOnCoroutineMain {
@@ -225,12 +236,12 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                     storePhotoImageView?.visibility = View.GONE
                 }
             }
-            mProfilePreviewResponse?.mSettingsKeysList?.run {
+            mProfilePreviewResponse?.mSettingsKeysList?.let { list->
                 profilePreviewRecyclerView?.apply {
                     layoutManager = LinearLayoutManager(mActivity)
                     setHasFixedSize(true)
-                    mActivity?.let {
-                        adapter = ProfilePreviewAdapter(it, this@run, this@ProfilePreviewFragment, mProfilePreviewResponse?.mStoreItemResponse?.storeBusiness)
+                    mActivity?.let { context ->
+                        adapter = ProfilePreviewAdapter(context, list, this@ProfilePreviewFragment, mProfilePreviewResponse?.mStoreItemResponse?.storeBusiness, mProfilePreviewStaticData)
                     }
                 }
             }
@@ -259,6 +270,10 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                 mStoreName = storeNameResponse.storeInfo.name
                 PrefsManager.storeStringDataInSharedPref(Constants.STORE_NAME, mStoreName)
                 showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
+                OrderFragment.sOrderPageInfoResponse = null
+                StaticInstances.sSuggestedDomainsListFetchedFromServer = false
+                StaticInstances.sSuggestedDomainsList = null
+                StaticInstances.sCustomDomainBottomSheetResponse = null
                 onRefresh()
             } else showToast(response.mMessage)
         }
@@ -331,12 +346,22 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
         }
     }
 
+    override fun onSetGstResponse(apiResponse: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            if (apiResponse.mIsSuccessStatus) {
+                showShortSnackBar(apiResponse.mMessage, true, R.drawable.ic_check_circle)
+                onRefresh()
+            } else showShortSnackBar(apiResponse.mMessage, true, R.drawable.ic_close_red)
+        }
+    }
+
     override fun onProfilePreviewItemClicked(profilePreviewResponse: ProfilePreviewSettingsKeyResponse, position: Int) {
         Log.d(TAG, "onProfilePreviewItemClicked: $profilePreviewResponse")
         mProfileInfoSettingKeyResponse = profilePreviewResponse
         when (profilePreviewResponse.mAction) {
             Constants.ACTION_STORE_DESCRIPTION -> launchFragment(StoreDescriptionFragment.newInstance(profilePreviewResponse, position, true, mProfilePreviewResponse), true)
-            Constants.ACTION_STORE_LOCATION -> launchFragment(StoreMapLocationFragment.newInstance(profilePreviewResponse, position, true, mProfilePreviewResponse), true)
+            Constants.ACTION_STORE_LOCATION -> launchFragment(StoreMapLocationFragment.newInstance(position, true), true)
             Constants.ACTION_DOMAIN_SUCCESS -> {
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_DOMAIN_DETAIL,
@@ -366,6 +391,9 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                 showProgressDialog(mActivity)
                 mService.getStoreUserPageInfo()
             }
+            Constants.ACTION_GST_ADD -> showGstAdditionBottomSheet()
+            Constants.ACTION_GST_REJECTED -> showGstAdditionBottomSheet()
+            Constants.ACTION_DISPLAY_NUMBER -> showDisplayNumberBottomSheet(profilePreviewResponse)
         }
     }
 
@@ -395,9 +423,9 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
     }
 
     private fun signOut(googleSignInClient: GoogleSignInClient) {
-            googleSignInClient.signOut().addOnCompleteListener {
-                showUserEmailDialog(isServerCall = false)
-            }
+        googleSignInClient.signOut().addOnCompleteListener {
+            showUserEmailDialog(isServerCall = false)
+        }
     }
 
     private fun updateUserAccountInfo(acct: GoogleSignInAccount?, isServerCall: Boolean = false) {
@@ -575,13 +603,9 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                             }
                         }
 
-                        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                            Log.d(TAG, "beforeTextChanged: do nothing")
-                        }
+                        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
 
-                        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                            Log.d(TAG, "onTextChanged: do nothing")
-                        }
+                        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
 
                     })
                     if (isErrorResponse) {
@@ -639,24 +663,78 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                     bottomSheetEditStoreSaveTextView.isEnabled = string.isNotEmpty()
                 }
 
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                    Log.d(TAG, "beforeTextChanged: ")
-                }
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
 
-                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                    Log.d(TAG, "onTextChanged: ")
-                }
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
             })
             mStoreNameEditBottomSheet?.show()
         }
     }
+    private fun showGstAdditionBottomSheet() {
+        mActivity?.let {
+            val gstAdditionBottomSheet = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
+            val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_gst_addition, it.findViewById(R.id.bottomSheetContainer))
+            gstAdditionBottomSheet.apply {
+                setContentView(view)
+                setBottomSheetCommonProperty()
+            }
+            val bottomSheetEditStoreHeading:TextView = view.findViewById(R.id.bottomSheetEditStoreHeading)
+            val bottomSheetEditStoreSaveTextView:TextView = view.findViewById(R.id.bottomSheetEditStoreSaveTextView)
+            val bottomSheetEditStoreLinkEditText: EditText = view.findViewById(R.id.bottomSheetEditStoreLinkEditText)
+            val bottomSheetEditStoreCloseImageView:View = view.findViewById(R.id.bottomSheetEditStoreCloseImageView)
+            bottomSheetEditStoreCloseImageView.setOnClickListener { gstAdditionBottomSheet.dismiss() }
+            bottomSheetEditStoreSaveTextView.apply {
+                text = mProfilePreviewStaticData?.bottom_sheet_gst_cta_text
+                setOnClickListener {
+                    val value = bottomSheetEditStoreLinkEditText.text.trim().toString()
+                    when {
+                        isEmpty(value) -> {
+                            bottomSheetEditStoreLinkEditText.apply {
+                                error = mProfilePreviewStaticData?.error_mandatory_field
+                                requestFocus()
+                            }
+                            return@setOnClickListener
+                        }
+                        value.length < (mActivity?.resources?.getInteger(R.integer.gst_count) ?: 15) -> {
+                            bottomSheetEditStoreLinkEditText.apply {
+                                error = mProfilePreviewStaticData?.bottom_sheet_gst_error_invalid_input
+                                requestFocus()
+                            }
+                            return@setOnClickListener
+                        }
+                        !isInternetConnectionAvailable(mActivity) -> { showNoInternetConnectionDialog() }
+                        else -> {
+                            gstAdditionBottomSheet.dismiss()
+                            showProgressDialog(mActivity)
+                            mService.setGST(value)
+                        }
+                    }
+                }
+            }
+            bottomSheetEditStoreHeading.text = mProfilePreviewStaticData?.bottom_sheet_gst_heading
+            bottomSheetEditStoreLinkEditText.apply {
+                hint = mProfilePreviewStaticData?.bottom_sheet_gst_hint
+                addTextChangedListener(object : TextWatcher {
 
-    override fun onRefresh() {
-        fetchProfilePreviewCall()
+                    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+
+                    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
+
+                    override fun afterTextChanged(s: Editable?) {
+                        val str = s?.toString()?.trim()
+                        bottomSheetEditStoreSaveTextView.isEnabled = isNotEmpty(str)
+                    }
+
+                })
+            }
+            gstAdditionBottomSheet.show()
+        }
     }
 
+    override fun onRefresh() = fetchProfilePreviewCall()
+
     override fun onImageSelectionResultFile(file: File?, mode: String) {
-        if (mode == Constants.MODE_CROP) {
+        if (Constants.MODE_CROP == mode) {
             val fragment = CropPhotoFragment.newInstance(file?.toUri())
             fragment.setTargetFragment(this, Constants.CROP_IMAGE_REQUEST_CODE)
             launchFragment(fragment, true)
@@ -678,7 +756,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
             if (response.mIsSuccessStatus) {
                 val photoResponse = Gson().fromJson<StoreResponse>(response.mCommonDataStr, StoreResponse::class.java)
                 mStoreLogo = photoResponse.storeInfo.logoImage
-                if (mStoreLogo?.isNotEmpty() == true) {
+                if (isNotEmpty(mStoreLogo)) {
                     storePhotoImageView?.visibility = View.VISIBLE
                     hiddenImageView?.visibility = View.INVISIBLE
                     hiddenTextView?.visibility = View.INVISIBLE
@@ -739,8 +817,6 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                 }
             }
             Constants.EMAIL_REQUEST_CODE -> {
-                // The Task returned from this call is always completed, no need to attach
-                // a listener.
                 val task = GoogleSignIn.getSignedInAccountFromIntent(data)
                 handleSignInResult(task)
             }
@@ -848,5 +924,178 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
             return true
         }
         return false
+    }
+
+    private fun showDisplayNumberBottomSheet(profilePreviewResponse: ProfilePreviewSettingsKeyResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            if (true == mDisplayPhoneBottomSheet?.isShowing) return@runTaskOnCoroutineMain
+            mActivity?.let { context ->
+                mDisplayPhoneBottomSheet = BottomSheetDialog(context, R.style.BottomSheetDialogTheme)
+                mDisplayPhoneContentView = LayoutInflater.from(context).inflate(R.layout.bottom_sheet_add_display_number, context.findViewById(R.id.bottomSheetContainer))
+                mDisplayPhoneBottomSheet?.apply {
+                    mDisplayPhoneContentView?.let { view ->
+                        setContentView(view)
+                        setBottomSheetCommonProperty()
+                        mResendOtpBottomSheetTextView = view.findViewById(R.id.resendOtpTextView)
+                        val headingTextView: TextView = view.findViewById(R.id.headingTextView)
+                        val subHeadingTextView: TextView = view.findViewById(R.id.subHeadingTextView)
+                        val verifyTextView: TextView = view.findViewById(R.id.verifyTextView)
+                        val continueTextView: TextView = view.findViewById(R.id.continueTextView)
+                        val displayNameEditText: EditText = view.findViewById(R.id.displayNameEditText)
+                        val displayNameLayout: TextInputLayout = view.findViewById(R.id.displayNameLayout)
+                        continueTextView.text = mProfilePreviewStaticData?.text_get_otp
+                        verifyTextView.text = mProfilePreviewStaticData?.text_verified
+                        mResendOtpBottomSheetTextView?.setOnClickListener {
+                            if (mProfilePreviewStaticData?.text_resend_otp.equals(mResendOtpBottomSheetTextView?.text.toString(), true)) {
+                                showProgressDialog(mActivity)
+                                mService.generateOTP(mDisplayPhoneStr)
+                            }
+                        }
+                        displayNameLayout.hint = profilePreviewResponse.mHeadingText
+                        displayNameEditText.apply {
+                            setText(profilePreviewResponse.mValue)
+                            continueTextView.isEnabled = false
+                            addTextChangedListener(object : TextWatcher {
+                                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+
+                                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
+
+                                override fun afterTextChanged(s: Editable?) {
+                                    val str = s?.toString() ?: ""
+                                    displayNameLayout.error = null
+                                    if (mProfilePreviewStaticData?.text_get_otp == continueTextView.text) {
+                                        continueTextView.isEnabled = (context.resources?.getInteger(R.integer.mobile_number_length) == str.length && str != profilePreviewResponse.mValue)
+                                        verifyTextView.visibility = View.INVISIBLE
+                                    } else {
+                                        continueTextView.isEnabled = (context.resources?.getInteger(R.integer.otp_length) == str.length)
+                                    }
+                                }
+
+                            })
+                            setOnEditorActionListener { _, actionId, _ ->
+                                if (EditorInfo.IME_ACTION_DONE == actionId) continueTextView.callOnClick()
+                                true
+                            }
+                        }
+                        continueTextView.setOnClickListener {
+                            val userInput = displayNameEditText.text.toString().trim()
+                            if (isEmpty(userInput)) {
+                                displayNameEditText.error = mProfilePreviewStaticData?.error_mandatory_field
+                                return@setOnClickListener
+                            }
+                            if (context.resources.getText(R.string.get_otp) == continueTextView.text) {
+                                mDisplayPhoneStr = userInput
+                                showProgressDialog(mActivity)
+                                mService.generateOTP(userInput)
+                            } else {
+                                showProgressDialog(mActivity)
+                                mService.verifyDisplayPhoneNumber(VerifyDisplayPhoneNumberRequest(phone = mDisplayPhoneStr, otp = userInput.toInt()))
+                            }
+                        }
+                        mProfilePreviewStaticData?.let { staticText ->
+                            headingTextView.text = staticText.heading_bottom_sheet_display_number
+                            subHeadingTextView.text = staticText.sub_heading_bottom_sheet_display_number
+                        }
+                    }
+                }?.show()
+            }
+        }
+    }
+
+    override fun onGenerateOTPResponse(generateOtpResponse: GenerateOtpResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            if (generateOtpResponse.mStatus) {
+                mDisplayPhoneContentView?.let { view ->
+                    val otpSentToTextView: TextView = view.findViewById(R.id.otpSentToTextView)
+                    val continueTextView: TextView = view.findViewById(R.id.continueTextView)
+                    val displayNameEditText: EditText = view.findViewById(R.id.displayNameEditText)
+                    val displayNameLayout: TextInputLayout = view.findViewById(R.id.displayNameLayout)
+                    val otpMessageStr = "${mProfilePreviewStaticData?.text_otp_sent_to} $mDisplayPhoneStr"
+                    otpSentToTextView.apply {
+                        visibility = View.VISIBLE
+                        text = otpMessageStr
+                    }
+                    continueTextView.text = mProfilePreviewStaticData?.text_verify
+                    displayNameEditText.setMaxLength(context?.resources?.getInteger(R.integer.otp_length) ?: 4)
+                    displayNameEditText.text = null
+                    displayNameLayout.hint = mProfilePreviewStaticData?.hint_bottom_sheet_otp
+                    if (mIsTimerCompleted) startCountDownTimer()
+                }
+            } else showToast(generateOtpResponse.mMessage)
+            stopProgress()
+        }
+    }
+
+    override fun onVerifyDisplayPhoneNumberResponse(apiResponse: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            if (apiResponse.mIsSuccessStatus) {
+                stopProgress()
+                mDisplayPhoneBottomSheet?.dismiss()
+                showDisplayPhoneSuccessBottomSheet()
+            } else {
+                mDisplayPhoneContentView?.let { view ->
+                    val displayNameLayout: TextInputLayout = view.findViewById(R.id.displayNameLayout)
+                    displayNameLayout.error = apiResponse.mMessage
+                }
+            }
+            stopProgress()
+        }
+    }
+
+    private fun startCountDownTimer() {
+        mResendOtpBottomSheetTextView?.visibility = View.VISIBLE
+        mCountDownTimer = object: CountDownTimer(Constants.TIMER_RESEND_OTP, Constants.TIMER_DELAY) {
+
+            override fun onTick(millisUntilFinished: Long) {
+                mIsTimerCompleted = false
+                CoroutineScopeUtils().runTaskOnCoroutineMain {
+                    try {
+                        val seconds = (millisUntilFinished / 1000)
+                        val secRemaining = "00:${if (isSingleDigitNumber(seconds)) "0$seconds" else "$seconds"}"
+                        mResendOtpBottomSheetTextView?.text = secRemaining
+                    } catch (e: Exception) {
+                        Log.e(TAG, "onTick: ${e.message}", e)
+                    }
+                }
+            }
+
+            override fun onFinish() {
+                CoroutineScopeUtils().runTaskOnCoroutineMain {
+                    try {
+                        mIsTimerCompleted = true
+                        mResendOtpBottomSheetTextView?.text = mProfilePreviewStaticData?.text_resend_otp
+                    } catch (e: Exception) {
+                        Log.e(TAG, "onFinish: ${e.message}", e)
+                    }
+                }
+            }
+        }
+        mCountDownTimer?.start()
+    }
+
+    private fun showDisplayPhoneSuccessBottomSheet() {
+        mActivity?.let {
+            val successBottomSheet = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
+            val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_display_number_success, it.findViewById(R.id.bottomSheetContainer))
+            successBottomSheet.apply {
+                setContentView(view)
+                setCancelable(false)
+                val messageTextView: TextView = view.findViewById(R.id.messageTextView)
+                val ctaTextView: TextView = view.findViewById(R.id.ctaTextView)
+                messageTextView.text = mProfilePreviewStaticData?.message_bottom_sheet_display_number_success
+                ctaTextView.apply {
+                    text = mProfilePreviewStaticData?.text_close
+                    setOnClickListener {
+                        successBottomSheet.dismiss()
+                        onRefresh()
+                    }
+                }
+            }.show()
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (false == mActivity?.isDestroyed) mCountDownTimer?.cancel()
     }
 }

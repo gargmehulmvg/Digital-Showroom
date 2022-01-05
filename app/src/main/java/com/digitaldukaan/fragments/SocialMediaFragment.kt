@@ -28,6 +28,7 @@ import com.digitaldukaan.models.response.*
 import com.digitaldukaan.services.SocialMediaService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.ISocialMediaServiceInterface
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.layout_edit_social_media_template_fragment.*
 import kotlinx.android.synthetic.main.layout_home_fragment.*
@@ -46,6 +47,7 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
     private var mFavoriteCategoryId: Int = 1
     private var mIsNextPage: Boolean = false
     private var mMarketingPageInfoResponse: MarketingPageInfoResponse? = null
+    private var mIsDoublePressToExit = false
 
     companion object {
         private var sSocialMediaPageInfoResponse: SocialMediaPageInfoResponse? = null
@@ -63,6 +65,7 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         TAG = "SocialMediaFragment"
+        FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
         mContentView = inflater.inflate(R.layout.layout_social_media, container, false)
         hideBottomNavigationView(true)
         ToolBarManager.getInstance()?.apply {
@@ -72,6 +75,7 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
         }
         mService = SocialMediaService()
         mService?.setSocialMediaServiceInterface(this)
+        if (null == mMarketingPageInfoResponse) mService?.getMarketingPageInfo()
         return mContentView
     }
 
@@ -171,6 +175,12 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
         }
     }
 
+    override fun onMarketingPageInfoResponse(commonApiResponse: CommonApiResponse) {
+        if (commonApiResponse.mIsSuccessStatus) {
+            mMarketingPageInfoResponse = Gson().fromJson<MarketingPageInfoResponse>(commonApiResponse.mCommonDataStr, MarketingPageInfoResponse::class.java)
+        }
+    }
+
     private fun setupHelpPageUI(marketingHelpPage: HelpPageResponse?) {
         ToolBarManager.getInstance()?.apply {
             if (marketingHelpPage?.mIsActive == true) {
@@ -202,7 +212,13 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
 
     override fun onSocialMediaException(e: Exception) = exceptionHandlingForAPIResponse(e)
 
-    override fun onToolbarSideIconClicked() = openWebViewFragment(this, getString(R.string.help), WebViewUrls.WEB_VIEW_HELP, Constants.SETTINGS)
+    override fun onToolbarSideIconClicked() {
+        try {
+            openWebViewFragment(this, getString(R.string.help), WebViewUrls.WEB_VIEW_HELP, Constants.SETTINGS)
+        } catch (e: Exception) {
+            Log.e(TAG, "onToolbarSideIconClicked: ${e.message}", e)
+        }
+    }
 
     override fun onSocialMediaTemplateCategoryItemClickListener(position: Int, item: SocialMediaCategoryItemResponse?) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
@@ -246,10 +262,10 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
             Handler(Looper.getMainLooper()).postDelayed({
                 val originalBitmap = getBitmapFromView(v, mActivity)
                 originalBitmap?.let { bitmap -> shareData("Order From - ${mMarketingPageInfoResponse?.marketingStoreInfo?.domain}", bitmap) }
-            }, Constants.TIMER_INTERVAL)
+            }, Constants.TIMER_DELAY)
             Handler(Looper.getMainLooper()).postDelayed({
                 stopProgress()
-            }, Constants.AUTO_DISMISS_PROGRESS_DIALOG_TIMER)
+            }, Constants.TIMER_AUTO_DISMISS_PROGRESS_DIALOG)
             showProgressDialog(mActivity)
         }
     }
@@ -267,10 +283,10 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
             Handler(Looper.getMainLooper()).postDelayed({
                 val originalBitmap = getBitmapFromView(v, mActivity)
                 originalBitmap?.let { bitmap -> shareOnWhatsApp("Order From - ${mMarketingPageInfoResponse?.marketingStoreInfo?.domain}", bitmap) }
-            }, Constants.TIMER_INTERVAL)
+            }, Constants.TIMER_DELAY)
             Handler(Looper.getMainLooper()).postDelayed({
                 stopProgress()
-            }, Constants.AUTO_DISMISS_PROGRESS_DIALOG_TIMER)
+            }, Constants.TIMER_AUTO_DISMISS_PROGRESS_DIALOG)
             showProgressDialog(mActivity)
         }
     }
@@ -296,7 +312,7 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
 
     override fun onDestroy() {
         super.onDestroy()
-        sSocialMediaPageInfoResponse = null
+        if (false == mActivity?.isDestroyed) sSocialMediaPageInfoResponse = null
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
@@ -304,7 +320,7 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
         if (Constants.STORAGE_REQUEST_CODE == requestCode) {
             when {
                 grantResults.isEmpty() -> Log.d(TAG, "User interaction was cancelled.")
-                grantResults[0] == PackageManager.PERMISSION_GRANTED -> {
+                PackageManager.PERMISSION_GRANTED == grantResults[0] -> {
                     if (sIsWhatsAppIconClicked) onSocialMediaTemplateWhatsappItemClickListener(sSelectedTemplatePosition, sSelectedTemplateItem) else onSocialMediaTemplateShareItemClickListener(sSelectedTemplatePosition, sSelectedTemplateItem)
                 }
                 else -> showShortSnackBar("Permission was denied", true, R.drawable.ic_close_red)
@@ -313,4 +329,24 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
     }
 
     override fun onLockedStoreShareSuccessResponse(lockedShareResponse: LockedStoreShareResponse) = showLockedStoreShareBottomSheet(lockedShareResponse)
+
+    override fun onBackPressed(): Boolean {
+        Log.d(TAG, "onBackPressed: called")
+        if (null != fragmentManager && 1 == fragmentManager?.backStackEntryCount) {
+            if (true == StaticInstances.sPermissionHashMap?.get(Constants.PAGE_ORDER)) {
+                clearFragmentBackStack()
+                launchFragment(OrderFragment.newInstance(), true)
+            } else {
+                if (mIsDoublePressToExit) mActivity?.finish()
+                showShortSnackBar(getString(R.string.msg_back_press))
+                mIsDoublePressToExit = true
+                Handler(Looper.getMainLooper()).postDelayed(
+                    { mIsDoublePressToExit = false },
+                    Constants.BACK_PRESS_INTERVAL
+                )
+            }
+            return true
+        }
+        return false
+    }
 }

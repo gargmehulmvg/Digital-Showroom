@@ -1,7 +1,6 @@
 package com.digitaldukaan.fragments
 
 import android.content.pm.PackageManager
-import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -17,12 +16,10 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.appsflyer.AppsFlyerLib
 import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
-import com.digitaldukaan.adapters.CustomDomainSelectionAdapter
 import com.digitaldukaan.adapters.LandingPageCardsAdapter
 import com.digitaldukaan.adapters.LandingPageShortcutsAdapter
 import com.digitaldukaan.adapters.OrderAdapterV2
 import com.digitaldukaan.constants.*
-import com.digitaldukaan.constants.StaticInstances.sIsInvitationShown
 import com.digitaldukaan.interfaces.IAdapterItemClickListener
 import com.digitaldukaan.interfaces.ILandingPageAdapterListener
 import com.digitaldukaan.interfaces.IOrderListItemListener
@@ -45,6 +42,7 @@ import com.google.firebase.ktx.Firebase
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration
+import kotlinx.android.synthetic.main.activity_main2.*
 import kotlinx.android.synthetic.main.layout_analytics.*
 import kotlinx.android.synthetic.main.layout_home_fragment.*
 import kotlinx.android.synthetic.main.layout_home_fragment.analyticsContainer
@@ -81,12 +79,10 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
     private var mIsToolbarSearchAvailable: Boolean = false
     private var mPaymentLinkBottomSheet: BottomSheetDialog? = null
     private var mPaymentLinkAmountStr: String? = null
-    private var mStaffInvitation: StaffInvitationResponse? = null
-    private var mIsInvitationShown: Boolean = false
-    private var mUserId: String = ""
+    private var mIsCustomDomainTopViewHide: Boolean = false
 
     companion object {
-        private var sOrderPageInfoResponse: OrderPageInfoResponse? = null
+        var sOrderPageInfoResponse: OrderPageInfoResponse? = null
         private var sOrderPageInfoStaticData: OrderPageStaticTextResponse? = null
         private var sAnalyticsResponse: AnalyticsResponse? = null
         private var sDoubleClickToExitStr: String? = ""
@@ -97,11 +93,11 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
         private var sIsMoreCompletedOrderAvailable = false
         private var sOrderList: ArrayList<OrderItemResponse> = ArrayList()
         private var sCompletedOrderList: ArrayList<OrderItemResponse> = ArrayList()
-        private var sCheckStaffInviteResponse: StaffMemberDetailsResponse? = null
 
-        fun newInstance(isNewUserLogin: Boolean = false): OrderFragment {
+        fun newInstance(isNewUserLogin: Boolean = false, isClearOrderPageResponse: Boolean = false): OrderFragment {
             val fragment = OrderFragment()
             fragment.mIsNewUserLogin = isNewUserLogin
+            if (isClearOrderPageResponse) this.sOrderPageInfoResponse = null
             return fragment
         }
     }
@@ -144,10 +140,11 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
         }
         if (mIsNewUserLogin) {
             mIsNewUserLogin = false
-            if (null == StaticInstances.sCustomDomainBottomSheetResponse)
+            if (null == StaticInstances.sCustomDomainBottomSheetResponse) {
+                mIsCustomDomainTopViewHide = false
                 mService?.getCustomDomainBottomSheetData()
-            else
-                StaticInstances.sCustomDomainBottomSheetResponse?.let { response -> showCustomDomainBottomSheet(response) }
+            } else
+                StaticInstances.sCustomDomainBottomSheetResponse?.let { response -> showDomainPurchasedBottomSheet(response, false) }
         }
         return mContentView
     }
@@ -230,6 +227,9 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
             adapter = mCompletedOrderAdapter
             addItemDecoration(StickyRecyclerHeadersDecoration(mCompletedOrderAdapter))
         }
+        Log.d(TAG, "onViewCreated: OrderFragment called")
+        Log.d(TAG, "onViewCreated: OrderFragment sIsInvitationAvailable :: $sIsInvitationAvailable")
+        if (sIsInvitationAvailable) showStaffInvitationDialog()
     }
 
     override fun onUserAuthenticationResponse(authenticationUserResponse: ValidateOtpResponse) {
@@ -315,7 +315,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
             stopProgress()
             if (commonResponse.mIsSuccessStatus) {
                 sOrderPageInfoResponse = Gson().fromJson<OrderPageInfoResponse>(commonResponse.mCommonDataStr, OrderPageInfoResponse::class.java)
-                showDialogOrNot()
+                setupOrderPageInfoUI()
                 pushProfileToCleverTap()
             }
         }
@@ -366,9 +366,11 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
 
     override fun onCustomDomainBottomSheetDataResponse(commonResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
             if (commonResponse.mIsSuccessStatus) {
                 val customDomainBottomSheetResponse = Gson().fromJson<CustomDomainBottomSheetResponse>(commonResponse.mCommonDataStr, CustomDomainBottomSheetResponse::class.java)
-                showCustomDomainBottomSheet(customDomainBottomSheetResponse)
+                StaticInstances.sCustomDomainBottomSheetResponse = customDomainBottomSheetResponse
+                showDomainPurchasedBottomSheet(customDomainBottomSheetResponse, isNoDomainFoundLayout = false, hideTopView = mIsCustomDomainTopViewHide)
             }
         }
     }
@@ -388,7 +390,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                 val domainExpiryContainer: View? = mContentView?.findViewById(R.id.domainExpiryContainer)
                 if (mIsAllStepsCompleted) {
                     zeroOrderItemsRecyclerView?.visibility = View.GONE
-                    if(StaticInstances.sPermissionHashMap?.get("my_shortcuts") == true){
+                    if (true == StaticInstances.sPermissionHashMap?.get(Constants.MY_SHORTCUTS)) {
                         myShortcutsRecyclerView?.visibility = View.VISIBLE
                         myShortcutsRecyclerView?.apply {
                             layoutManager = LinearLayoutManager(mActivity, LinearLayoutManager.HORIZONTAL, false)
@@ -459,8 +461,8 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                                     visibility = View.VISIBLE
                                     text = landingPageCardsResponse.domainExpiryMessage
                                 }
-                            }, Constants.AUTO_DISMISS_PROGRESS_DIALOG_TIMER)
-                        }, Constants.AUTO_DISMISS_PROGRESS_DIALOG_TIMER)
+                            }, Constants.TIMER_AUTO_DISMISS_PROGRESS_DIALOG)
+                        }, Constants.TIMER_AUTO_DISMISS_PROGRESS_DIALOG)
                     View.VISIBLE
                 }
             }
@@ -475,8 +477,10 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                     mLandingPageAdapterItem = item
                     when (item?.id) {
                         Constants.KEY_BUY_DOMAIN -> {
-                            if (isEmpty(StaticInstances.sSuggestedDomainsList))
+                            if (!StaticInstances.sSuggestedDomainsListFetchedFromServer) {
+                                StaticInstances.sSuggestedDomainsListFetchedFromServer = true
                                 mService?.getDomainSuggestionList(mActivity?.resources?.getInteger(R.integer.custom_domain_count) ?: 4)
+                            }
                         }
                     }
                 }
@@ -535,6 +539,10 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                 StaticInstances.sSuggestedDomainsList = ArrayList()
                 StaticInstances.sSuggestedDomainsList = mLandingPageAdapterItem?.suggestedDomainsList
                 mLandingPageAdapter?.setItemToPosition(mLandingPageAdapterPosition, mLandingPageAdapterItem)
+            } else {
+                StaticInstances.sCustomDomainBottomSheetResponse = null
+                StaticInstances.sSuggestedDomainsList = null
+                mLandingPageAdapter?.setItemToPosition(mLandingPageAdapterPosition, mLandingPageAdapterItem)
             }
         }
     }
@@ -560,6 +568,14 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                 if (StaticInstances.sIsShareStoreLocked) {
                     getLockedStoreShareDataServerCall(Constants.MODE_SHARE_STORE)
                 } else shareStoreOverWhatsAppServerCall()
+            }
+            domainExpiryContainer?.id -> {
+                if (null == StaticInstances.sCustomDomainBottomSheetResponse) {
+                    mIsCustomDomainTopViewHide = true
+                    showProgressDialog(mActivity)
+                    mService?.getCustomDomainBottomSheetData()
+                } else
+                    StaticInstances.sCustomDomainBottomSheetResponse?.let { response -> showDomainPurchasedBottomSheet(response, isNoDomainFoundLayout = false, hideTopView = true) }
             }
             searchImageView?.id -> {
                 AppEventsManager.pushAppEvents(
@@ -615,86 +631,6 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
         }
     }
 
-    private fun showCustomDomainBottomSheet(customDomainBottomSheetResponse: CustomDomainBottomSheetResponse) {
-        mActivity?.let {
-            val bottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
-            val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_custom_domain_selection, it.findViewById(R.id.bottomSheetContainer))
-            bottomSheetDialog.apply {
-                setContentView(view)
-                view?.run {
-                    customDomainBottomSheetResponse.staticText?.let { staticText ->
-                        val searchTextView: TextView = findViewById(R.id.searchTextView)
-                        val headingTextView: TextView = findViewById(R.id.headingTextView)
-                        val subHeadingTextView: TextView = findViewById(R.id.subHeadingTextView)
-                        val searchMessageTextView: TextView = findViewById(R.id.searchMessageTextView)
-                        val moreSuggestionsTextView: TextView = findViewById(R.id.moreSuggestionsTextView)
-                        subHeadingTextView.text = staticText.subheading_budiness_needs_domain
-                        headingTextView.text = staticText.heading_last_step
-                        moreSuggestionsTextView.text = staticText.text_more_suggestions
-                        searchMessageTextView.text = staticText.text_cant_find
-                        searchTextView.text = staticText.text_search
-                        searchTextView.setOnClickListener {
-                            bottomSheetDialog.dismiss()
-                            if (Constants.NEW_RELEASE_TYPE_WEBVIEW == customDomainBottomSheetResponse.searchCta?.action) {
-                                val url = BuildConfig.WEB_VIEW_URL + "${customDomainBottomSheetResponse.searchCta?.pageUrl}?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&${AFInAppEventParameterName.CHANNEL}=${AFInAppEventParameterName.ON_BOARDING}"
-                                openWebViewFragmentV3(this@OrderFragment, "", url)
-                            }
-                        }
-                    }
-                    customDomainBottomSheetResponse.primaryDomain?.let { primaryDomain ->
-                        val premiumHeadingTextView: TextView = findViewById(R.id.premiumHeadingTextView)
-                        val domainTextView: TextView = findViewById(R.id.domainTextView)
-                        val priceTextView: TextView = findViewById(R.id.priceTextView)
-                        val promoCodeTextView: TextView = findViewById(R.id.promoCodeTextView)
-                        val messageTextView: TextView = findViewById(R.id.messageTextView)
-                        val message2TextView: TextView = findViewById(R.id.message2TextView)
-                        val originalPriceTextView: TextView = findViewById(R.id.originalPriceTextView)
-                        val buyNowTextView: TextView = findViewById(R.id.buyNowTextView)
-                        premiumHeadingTextView.text = primaryDomain.heading
-                        domainTextView.text = primaryDomain.domainName
-                        promoCodeTextView.text = primaryDomain.promo
-                        var amount = "₹${primaryDomain.discountedPrice}"
-                        priceTextView.text = amount
-                        amount = "₹${primaryDomain.originalPrice}"
-                        originalPriceTextView.text = amount
-                        originalPriceTextView.showStrikeOffText()
-                        buyNowTextView.apply {
-                            text = primaryDomain.cta?.text
-                            setTextColor(Color.parseColor(primaryDomain.cta?.textColor))
-                            setBackgroundColor(Color.parseColor(primaryDomain.cta?.textBg))
-                            setOnClickListener {
-                                bottomSheetDialog.dismiss()
-                                if (Constants.NEW_RELEASE_TYPE_WEBVIEW == primaryDomain.cta?.action) {
-                                    val url = BuildConfig.WEB_VIEW_URL + "${primaryDomain.cta?.pageUrl}?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&domain_name=${primaryDomain.domainName}&purchase_price=${primaryDomain.originalPrice}&renewal_price=${primaryDomain.renewalPrice}&${AFInAppEventParameterName.CHANNEL}=${AFInAppEventParameterName.ON_BOARDING}"
-                                    openWebViewFragmentV3(this@OrderFragment, "", url)
-                                }
-                            }
-                        }
-                        messageTextView.text = primaryDomain.infoData?.firstYearText?.trim()
-                        message2TextView.text = primaryDomain.infoData?.renewsText?.trim()
-                    }
-                    val suggestedDomainRecyclerView = findViewById<RecyclerView>(R.id.suggestedDomainRecyclerView)
-                    suggestedDomainRecyclerView.apply {
-                        layoutManager = LinearLayoutManager(mActivity)
-                        adapter = CustomDomainSelectionAdapter(
-                            customDomainBottomSheetResponse.suggestedDomainsList,
-                            object : IAdapterItemClickListener {
-
-                                override fun onAdapterItemClickListener(position: Int) {
-                                    bottomSheetDialog.dismiss()
-                                    val item = customDomainBottomSheetResponse.suggestedDomainsList?.get(position)
-                                    if (Constants.NEW_RELEASE_TYPE_WEBVIEW == item?.cta?.action) {
-                                        val url = BuildConfig.WEB_VIEW_URL + "${item.cta?.pageUrl}?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&domain_name=${item.domainName}&purchase_price=${item.originalPrice}&renewal_price=${item.renewalPrice}&${AFInAppEventParameterName.CHANNEL}=${AFInAppEventParameterName.ON_BOARDING}"
-                                        openWebViewFragment(this@OrderFragment, "", url)
-                                    }
-                                }
-                            })
-                    }
-                }
-            }.show()
-        }
-    }
-
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         Log.d(TAG, "$TAG onRequestPermissionResult")
         when (requestCode) {
@@ -720,15 +656,6 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                     grantResults[0] == PackageManager.PERMISSION_GRANTED -> openCameraWithoutCrop()
                 }
             }
-        }
-    }
-
-    private fun showDialogOrNot(){
-        Log.d("inviteBoolOrder", sIsInvitationShown.toString())
-        if (true == sIsInvitationShown) {
-            showStaffInvitationDialog(StaticInstances.sStaffInvitation)
-        } else {
-            setupOrderPageInfoUI()
         }
     }
 
@@ -773,16 +700,16 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                     noOrderLayout?.visibility = View.GONE
                     ordersLayout?.visibility = View.VISIBLE
                     swipeRefreshLayout?.isEnabled = true
-                    Handler(Looper.getMainLooper()).postDelayed({ fetchLatestOrders(Constants.MODE_PENDING, sFetchingOrdersStr, mPendingPageCount) }, Constants.ORDER_DELAY_INTERVAL)
+                    Handler(Looper.getMainLooper()).postDelayed({ fetchLatestOrders(Constants.MODE_PENDING, sFetchingOrdersStr, mPendingPageCount) }, Constants.TIMER_ORDER_DELAY)
                 }
                 takeOrderTextView?.text = sOrderPageInfoStaticData?.text_payment_link
                 analyticsImageView?.visibility = if (pageInfoResponse.mIsAnalyticsOrder) View.VISIBLE else View.GONE
                 searchImageView?.visibility = if (pageInfoResponse.mIsSearchOrder) View.VISIBLE else View.GONE
                 takeOrderTextView?.visibility = if (pageInfoResponse.mIsTakeOrder) View.VISIBLE else View.GONE
             }
-            if(StaticInstances.sPermissionHashMap?.get("landing_cards") == true){
+            if (true == StaticInstances.sPermissionHashMap?.get(Constants.LANDING_CARDS)) {
                 mService?.getLandingPageCards()
-            }else {
+            } else {
                 myShortcutsRecyclerView?.visibility = View.GONE
                 zeroOrderItemsRecyclerView?.visibility = View.GONE
                 nextStepTextView?.visibility = View.GONE
@@ -926,7 +853,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
     }
 
     private fun fetchLatestOrders(mode: String, fetchingOrderStr: String?, page: Int = 1, showProgressDialog: Boolean = true) {
-        if (showProgressDialog) if (isNotEmpty(fetchingOrderStr)) showCancellableProgressDialog(mActivity, fetchingOrderStr)
+        if (showProgressDialog) if (isNotEmpty(fetchingOrderStr)) showCancellableProgressDialog(mActivity)
         val request = OrdersRequest(mode, page)
         mService?.getOrders(request)
     }
@@ -943,12 +870,8 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
         sCompletedOrderList.clear()
         mCompletedPageCount = 1
         mPendingPageCount = 1
-        fetchLatestOrders(Constants.MODE_PENDING,
-            sFetchingOrdersStr,
-            mPendingPageCount
-        )
+        fetchLatestOrders(Constants.MODE_PENDING, sFetchingOrdersStr, mPendingPageCount)
         mService?.getOrderPageInfo()
-
         mService?.getAnalyticsData()
     }
 
@@ -997,7 +920,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
 
     override fun onDestroy() {
         super.onDestroy()
-        sOrderPageInfoResponse = null
+        if (false == mActivity?.isDestroyed) sOrderPageInfoResponse = null
     }
 
     private fun showPaymentLinkBottomSheet() {
@@ -1092,13 +1015,30 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
 
     override fun onLockedStoreShareSuccessResponse(lockedShareResponse: LockedStoreShareResponse) = showLockedStoreShareBottomSheet(lockedShareResponse)
 
-    override fun checkStaffInviteResponse(commonResponse: CommonApiResponse) {
-        CoroutineScopeUtils().runTaskOnCoroutineMain {
-            if (commonResponse.mIsSuccessStatus) {
-                var sCheckStaffInviteResponse = Gson().fromJson<StaffMemberDetailsResponse>(commonResponse.mCommonDataStr, StaffMemberDetailsResponse::class.java)
-                mIsInvitationShown = sCheckStaffInviteResponse.mIsInvitationAvailable
-                Log.i("isInvitationShownOrders", sCheckStaffInviteResponse?.mIsInvitationAvailable.toString())
+    override fun onCheckStaffInviteResponse() {
+        showProgressDialog(mActivity)
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            try {
+                val response = RetrofitApi().getServerCallObject()?.getStaffMembersDetails(getStringDataFromSharedPref(Constants.STORE_ID))
+                response?.let { it ->
+                    val staffMemberDetailsResponse = Gson().fromJson<CheckStaffInviteResponse>(it.body()?.mCommonDataStr, CheckStaffInviteResponse::class.java)
+                    blurBottomNavBarContainer?.visibility = View.INVISIBLE
+                    stopProgress()
+                    if (null != staffMemberDetailsResponse) {
+                        Log.d(TAG, "StaticInstances.sPermissionHashMap: ${StaticInstances.sPermissionHashMap}")
+                        StaticInstances.sPermissionHashMap = null
+                        StaticInstances.sPermissionHashMap = staffMemberDetailsResponse.permissionsMap
+                        staffMemberDetailsResponse.permissionsMap?.let { map -> launchScreenFromPermissionMap(map) }
+                    } else {
+                        launchFragment(newInstance(), true)
+                    }
+                }
+                Log.d(TAG, "StaticInstances.sPermissionHashMap :: ${StaticInstances.sPermissionHashMap}")
+            } catch (e: Exception) {
+                exceptionHandlingForAPIResponse(e)
             }
         }
     }
+
+    override fun checkStaffInviteResponse(commonResponse: CommonApiResponse) = Unit
 }

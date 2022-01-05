@@ -11,11 +11,11 @@ import com.digitaldukaan.R
 import com.digitaldukaan.adapters.AppSettingsAdapter
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
-import com.digitaldukaan.constants.StaticInstances
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.interfaces.IAppSettingsItemClicked
 import com.digitaldukaan.models.response.AccountStaticTextResponse
 import com.digitaldukaan.models.response.SubPagesResponse
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import kotlinx.android.synthetic.main.layout_app_setting_fragment.*
 
 class AppSettingsFragment : BaseFragment(), IAppSettingsItemClicked {
@@ -34,6 +34,7 @@ class AppSettingsFragment : BaseFragment(), IAppSettingsItemClicked {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         TAG = "AppSettingsFragment"
+        FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
         mContentView = inflater.inflate(R.layout.layout_app_setting_fragment, container, false)
         return mContentView
     }
@@ -56,11 +57,6 @@ class AppSettingsFragment : BaseFragment(), IAppSettingsItemClicked {
         appVersionTextView?.text = versionStr
         versionStr = "${mAppSettingsResponseStaticData?.mStoreId} ${getStringDataFromSharedPref(Constants.STORE_ID)}"
         storeIdTextView?.text = versionStr
-    }
-
-    private fun initializeStaticInstances() {
-        StaticInstances.sSuggestedDomainsList = null
-        StaticInstances.sPermissionHashMap = null
     }
 
     private fun showLogoutDialog() {

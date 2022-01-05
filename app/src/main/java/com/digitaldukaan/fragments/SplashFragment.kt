@@ -1,10 +1,7 @@
 package com.digitaldukaan.fragments
 
 import android.Manifest
-import android.app.Dialog
 import android.content.pm.PackageManager
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -13,7 +10,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
@@ -26,14 +22,15 @@ import com.digitaldukaan.services.serviceinterface.ISplashServiceInterface
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import kotlinx.android.synthetic.main.activity_main2.*
 
 class SplashFragment : BaseFragment(), ISplashServiceInterface {
 
     private var mIntentUri: Uri? = null
+    private val mSplashService: SplashService = SplashService()
 
     companion object {
-        private val splashService: SplashService = SplashService()
-        private var appUpdateDialog: Dialog? = null
+        private const val DEEP_LINK_STR = "digitaldukaan://"
 
         fun newInstance(intentUri: Uri?): SplashFragment {
             val fragment = SplashFragment()
@@ -44,9 +41,10 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         TAG = "SplashFragment"
+        FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
         mContentView = inflater.inflate(R.layout.layout_splash_fragment, container, false)
         hideBottomNavigationView(true)
-        FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
+        initializeStaticInstances()
         return mContentView
     }
 
@@ -56,17 +54,19 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
         Handler(Looper.getMainLooper()).postDelayed({
             if (!isInternetConnectionAvailable(mActivity)) {
                 showNoInternetConnectionDialog()
-            } else splashService.getStaticData("1")
-        }, Constants.TIMER_INTERVAL)
+                return@postDelayed
+            }
+            mSplashService.getStaticData("1")
+        }, Constants.TIMER_DELAY)
         fetchContactsIfPermissionGranted()
-        splashService.setSplashServiceInterface(this)
-        checkStaffInvite()
+        mSplashService.setSplashServiceInterface(this)
+        if (!isInternetConnectionAvailable(mActivity)) return else checkStaffInvite()
     }
 
     private fun fetchContactsIfPermissionGranted() {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mActivity?.let {
-                if (ActivityCompat.checkSelfPermission(it, Manifest.permission.READ_CONTACTS) == PackageManager.PERMISSION_GRANTED) {
+            mActivity?.let { context ->
+                if (PackageManager.PERMISSION_GRANTED == ActivityCompat.checkSelfPermission(context, Manifest.permission.READ_CONTACTS)) {
                     getContactsFromStorage2(mActivity)
                 }
             }
@@ -81,7 +81,7 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
     override fun onStaticDataResponse(staticDataResponse: CommonApiResponse) {
         val staticData = Gson().fromJson<StaticTextResponse>(staticDataResponse.mCommonDataStr, StaticTextResponse::class.java)
         StaticInstances.sStaticData = staticData
-        splashService.getAppVersion()
+        if (!isInternetConnectionAvailable(mActivity)) return else mSplashService.getAppVersion()
     }
 
     override fun onHelpScreenResponse(commonResponse: CommonApiResponse) {
@@ -98,7 +98,9 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (commonResponse.mIsSuccessStatus) {
                 val playStoreLinkStr = Gson().fromJson<AppVersionResponse>(commonResponse.mCommonDataStr, AppVersionResponse::class.java)
-                if (playStoreLinkStr.mIsActive) splashService.getHelpScreens() else showVersionUpdateDialog()
+                if (playStoreLinkStr.mIsActive) {
+                    if (!isInternetConnectionAvailable(mActivity)) return@runTaskOnCoroutineMain else mSplashService.getHelpScreens()
+                } else showVersionUpdateDialog()
             } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
         }
     }
@@ -109,15 +111,29 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
             "" == getStringDataFromSharedPref(Constants.STORE_ID) -> launchFragment(LoginFragmentV2.newInstance(), true)
             else -> {
                 CoroutineScopeUtils().runTaskOnCoroutineBackground {
-                    val response = RetrofitApi().getServerCallObject()?.getStaffMembersDetails(getStringDataFromSharedPref(Constants.STORE_ID))
-                    response?.let { it ->
-                        val staffMemberDetailsResponse = Gson().fromJson<StaffMemberDetailsResponse>(it.body()?.mCommonDataStr, StaffMemberDetailsResponse::class.java)
-                        Log.d(TAG, "StaticInstances.sPermissionHashMap: ${StaticInstances.sPermissionHashMap?.toString()}")
-                        StaticInstances.sPermissionHashMap = staffMemberDetailsResponse?.permissionsMap
-                        stopProgress()
-                        staffMemberDetailsResponse?.permissionsMap?.let { map -> launchScreenFromPermissionMap(map) }
+                    try {
+                        val response = RetrofitApi().getServerCallObject()?.getStaffMembersDetails(getStringDataFromSharedPref(Constants.STORE_ID))
+                        response?.let { it ->
+                            val staffMemberDetailsResponse = Gson().fromJson<CheckStaffInviteResponse>(it.body()?.mCommonDataStr, CheckStaffInviteResponse::class.java)
+                            blurBottomNavBarContainer?.visibility = View.INVISIBLE
+                            if (null != staffMemberDetailsResponse) {
+                                Log.d(TAG, "StaticInstances.sPermissionHashMap: ${StaticInstances.sPermissionHashMap}")
+                                StaticInstances.sPermissionHashMap = null
+                                StaticInstances.sPermissionHashMap = staffMemberDetailsResponse.permissionsMap
+                                StaticInstances.sStaffInvitation = staffMemberDetailsResponse.mStaffInvitation
+                                StaticInstances.sMerchantMobileNumber = staffMemberDetailsResponse.ownerPhone ?: ""
+                                stopProgress()
+                                if (staffMemberDetailsResponse.mIsInvitationAvailable) {
+                                    launchFragment(OrderFragment.newInstance(), true)
+                                } else staffMemberDetailsResponse.permissionsMap?.let { map -> launchScreenFromPermissionMap(map) }
+                            } else {
+                                launchFragment(LoginFragmentV2.newInstance(), true)
+                            }
+                        }
+                        Log.d(TAG, StaticInstances.sPermissionHashMap.toString())
+                    } catch (e: Exception) {
+                        exceptionHandlingForAPIResponse(e)
                     }
-                    Log.i("PermissionMapSplash", StaticInstances.sPermissionHashMap.toString())
                 }
             }
         }
@@ -129,45 +145,23 @@ class SplashFragment : BaseFragment(), ISplashServiceInterface {
         mActivity?.finish()
     }
 
-    private fun showVersionUpdateDialog() {
-        CoroutineScopeUtils().runTaskOnCoroutineMain {
-            if (true == appUpdateDialog?.isShowing) return@runTaskOnCoroutineMain
-            mActivity?.let {
-                appUpdateDialog = Dialog(it)
-                val view = LayoutInflater.from(mActivity).inflate(R.layout.dialog_app_update, null)
-                appUpdateDialog?.apply {
-                    setContentView(view)
-                    setCancelable(false)
-                    window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
-                    view?.run {
-                        val updateTextView: TextView = findViewById(R.id.updateTextView)
-                        updateTextView.setOnClickListener {
-                            (this@apply).dismiss()
-                            openPlayStore()
-                        }
-                    }
-                }?.show()
-            }
-        }
-    }
-
     private fun switchToFragmentByDeepLink() {
         val intentUriStr = mIntentUri.toString()
         Log.d(TAG, "switchToFragmentByDeepLink:: $intentUriStr")
-        val deepLinkStr = "digitaldukaan://"
         clearFragmentBackStack()
         when {
-            intentUriStr.contains("${deepLinkStr}Settings") -> launchFragment(SettingsFragment.newInstance(), true)
-            intentUriStr.contains("${deepLinkStr}ProfilePage") -> launchFragment(ProfilePreviewFragment.newInstance(), true)
-            intentUriStr.contains("${deepLinkStr}ProductList") -> launchFragment(OrderFragment.newInstance(), true)
-            intentUriStr.contains("${deepLinkStr}OrderList") -> launchFragment(OrderFragment.newInstance(), true)
-            intentUriStr.contains("${deepLinkStr}ProductAdd") -> launchFragment(ProductFragment.newInstance(), true)
-            intentUriStr.contains("${deepLinkStr}MarketingBroadCast") -> launchFragment(MarketingFragment.newInstance(), true)
-            intentUriStr.contains("${deepLinkStr}OTP") -> launchFragment(LoginFragmentV2.newInstance(), true)
-            intentUriStr.contains("${deepLinkStr}PaymentOptions") -> launchFragment(PaymentModesFragment.newInstance(), true)
-            intentUriStr.contains("${deepLinkStr}Webview") -> {
+            intentUriStr.contains("${DEEP_LINK_STR}Settings") -> launchFragment(SettingsFragment.newInstance(), true)
+            intentUriStr.contains("${DEEP_LINK_STR}ProfilePage") -> launchFragment(ProfilePreviewFragment.newInstance(), true)
+            intentUriStr.contains("${DEEP_LINK_STR}ProductList") -> launchFragment(OrderFragment.newInstance(), true)
+            intentUriStr.contains("${DEEP_LINK_STR}OrderList") -> launchFragment(OrderFragment.newInstance(), true)
+            intentUriStr.contains("${DEEP_LINK_STR}ProductAdd") -> launchFragment(ProductFragment.newInstance(), true)
+            intentUriStr.contains("${DEEP_LINK_STR}MarketingBroadCast") -> launchFragment(MarketingFragment.newInstance(), true)
+            intentUriStr.contains("${DEEP_LINK_STR}OTP") -> launchFragment(LoginFragmentV2.newInstance(), true)
+            intentUriStr.contains("${DEEP_LINK_STR}PaymentOptions") -> launchFragment(PaymentModesFragment.newInstance(), true)
+            intentUriStr.contains("${DEEP_LINK_STR}SocialMedia") -> launchFragment(SocialMediaFragment.newInstance(null), true)
+            intentUriStr.contains("${DEEP_LINK_STR}Webview") -> {
                 try {
-                    var webViewUrl = intentUriStr.split("${deepLinkStr}Webview?webURL=")[1]
+                    var webViewUrl = intentUriStr.split("${DEEP_LINK_STR}Webview?webURL=")[1]
                     if (webViewUrl.contains("&")) webViewUrl = webViewUrl.split("&")[0]
                     openWebViewFragment(this, "", "${BuildConfig.WEB_VIEW_URL}$webViewUrl")
                 } catch (e: Exception) {

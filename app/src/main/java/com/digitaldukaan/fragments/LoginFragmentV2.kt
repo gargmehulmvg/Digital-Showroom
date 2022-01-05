@@ -20,7 +20,6 @@ import androidx.viewpager.widget.ViewPager
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.LoginHelpPageAdapter
 import com.digitaldukaan.constants.*
-import com.digitaldukaan.constants.StaticInstances.sHelpScreenList
 import com.digitaldukaan.models.dto.CleverTapProfile
 import com.digitaldukaan.models.request.ValidateUserRequest
 import com.digitaldukaan.models.response.CommonApiResponse
@@ -89,13 +88,10 @@ class LoginFragmentV2 : BaseFragment(), ILoginServiceInterface {
         setupViewPager()
         mobileNumberEditText?.apply {
             addTextChangedListener(object : TextWatcher {
-                override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                    Log.d(TAG, "beforeTextChanged: mobileNumberEditText")
-                }
 
-                override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
-                    Log.d(TAG, "onTextChanged: mobileNumberEditText")
-                }
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
 
                 override fun afterTextChanged(editable: Editable?) {
                     mMobileNumber = editable?.toString() ?: ""
@@ -143,7 +139,7 @@ class LoginFragmentV2 : BaseFragment(), ILoginServiceInterface {
         val timerTask = object : TimerTask() {
             override fun run() {
                 viewPager?.post {
-                    viewPager.currentItem = ((viewPager.currentItem + 1) % (sHelpScreenList.size))
+                    viewPager.currentItem = ((viewPager.currentItem + 1) % (if (isEmpty(StaticInstances.sHelpScreenList)) 1 else StaticInstances.sHelpScreenList.size))
                 }
             }
         }
@@ -242,6 +238,7 @@ class LoginFragmentV2 : BaseFragment(), ILoginServiceInterface {
                 response.signature,
                 StaticInstances.sCleverTapId,
                 StaticInstances.sFireBaseMessagingToken,
+                StaticInstances.sFireBaseAppInstanceId,
                 if (response.phoneNumber.length >= (mActivity?.resources?.getInteger(R.integer.mobile_number_length) ?: 10)) response.phoneNumber.substring(response.phoneNumber.length - (mActivity?.resources?.getInteger(R.integer.mobile_number_length) ?: 10)) else ""
             )
             mLoginService?.validateUser(request)
@@ -287,7 +284,7 @@ class LoginFragmentV2 : BaseFragment(), ILoginServiceInterface {
         }
 
     override fun onDestroy() {
-        mViewPagerTimer?.cancel()
+        if (false == mActivity?.isDestroyed) mViewPagerTimer?.cancel()
         super.onDestroy()
     }
 
@@ -340,7 +337,9 @@ class LoginFragmentV2 : BaseFragment(), ILoginServiceInterface {
                     "${it.address1}, ${it.googleAddress}, ${it.pinCode}"
                 }
                 AppEventsManager.pushCleverTapProfile(cleverTapProfile)
-                if (null == userResponse.store && userResponse.user.isNewUser) launchFragment(DukaanNameFragment.newInstance(userResponse?.mIsInvitationShown ?: false, userResponse?.mStaffInvitation, userResponse?.user?.userId ?: ""), true) else launchFragment(OrderFragment.newInstance(), true)
+                sIsInvitationAvailable = userResponse?.mIsInvitationShown ?: false
+                StaticInstances.sStaffInvitation = userResponse?.mStaffInvitation
+                if (null == userResponse.store && userResponse.user.isNewUser) launchFragment(DukaanNameFragment.newInstance(userResponse?.user?.userId ?: ""), true) else launchFragment(OrderFragment.newInstance(), true)
             } else showShortSnackBar(validateUserResponse.mMessage, true, R.drawable.ic_close_red)
         }
     }

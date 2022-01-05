@@ -22,6 +22,7 @@ import com.digitaldukaan.models.response.ProfileStaticData
 import com.digitaldukaan.services.StoreDescriptionService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IStoreDescriptionServiceInterface
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import kotlinx.android.synthetic.main.store_description_fragment.*
 
 class StoreDescriptionFragment : BaseFragment(), IStoreDescriptionServiceInterface {
@@ -45,6 +46,7 @@ class StoreDescriptionFragment : BaseFragment(), IStoreDescriptionServiceInterfa
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         TAG = "StoreDescriptionFragment"
+        FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
         mContentView = inflater.inflate(R.layout.store_description_fragment, container, false)
         return mContentView
     }
@@ -71,13 +73,9 @@ class StoreDescriptionFragment : BaseFragment(), IStoreDescriptionServiceInterfa
                 continueTextView.isEnabled = str.isNotEmpty()
             }
 
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                Log.d(TAG, "beforeTextChanged: ")
-            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
 
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                Log.d(TAG, "onTextChanged: ")
-            }
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
 
         })
         storeDescriptionEditText?.setText(mProfilePreviewResponse?.mValue)

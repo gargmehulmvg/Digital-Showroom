@@ -15,8 +15,8 @@ import com.digitaldukaan.models.request.StoreThemeBannerRequest
 import com.digitaldukaan.models.response.PremiumPageInfoResponse
 import com.digitaldukaan.models.response.PremiumPageInfoStaticTextResponse
 import com.digitaldukaan.network.RetrofitApi
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
-import io.sentry.Sentry
 import kotlinx.android.synthetic.main.layout_edit_photo_fragment.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
@@ -54,6 +54,7 @@ class EditPhotoFragment: BaseFragment() {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         TAG = "EditPhotoFragment"
+        FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
         mContentView = inflater.inflate(R.layout.layout_edit_photo_fragment, container, false)
         return mContentView
     }
@@ -118,7 +119,6 @@ class EditPhotoFragment: BaseFragment() {
                     }
                 }
             } catch (e: Exception) {
-                Sentry.captureException(e, "$TAG uploadImageToGetCDNLink: exception")
                 exceptionHandlingForAPIResponse(e)
             }
         }
@@ -160,7 +160,6 @@ class EditPhotoFragment: BaseFragment() {
                     }
                 }
             } catch (e: Exception) {
-                Sentry.captureException(e, "$TAG onDesktopCDNLinkGenerated: exception")
                 exceptionHandlingForAPIResponse(e)
             }
         }

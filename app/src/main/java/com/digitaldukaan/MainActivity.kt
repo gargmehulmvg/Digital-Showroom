@@ -23,9 +23,10 @@ import com.google.android.material.bottomnavigation.LabelVisibilityMode.LABEL_VI
 import com.google.android.play.core.review.ReviewInfo
 import com.google.android.play.core.review.ReviewManager
 import com.google.android.play.core.review.ReviewManagerFactory
+import com.google.firebase.analytics.ktx.analytics
+import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
 import com.truecaller.android.sdk.TruecallerSDK
-import io.sentry.Sentry
 import kotlinx.android.synthetic.main.activity_main2.*
 import java.util.*
 
@@ -37,7 +38,6 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
     companion object {
         private val mNetworkChangeListener = NetworkChangeListener()
-        private const val TAG = "MainActivity"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,12 +51,13 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         AppEventsManager.setAppEventsManager(this)
         if (isEmpty(StaticInstances.sAppSessionId)) StaticInstances.sAppSessionId = RandomStringGenerator(16).nextString()
         if (isEmpty(PrefsManager.getStringDataFromSharedPref(PrefsManager.APP_INSTANCE_ID))) PrefsManager.storeStringDataInSharedPref(PrefsManager.APP_INSTANCE_ID, RandomStringGenerator(16).nextString())
-        Log.d(TAG, "appSessionID :: ${StaticInstances.sAppSessionId}")
-        Log.d(TAG, "appInstanceID :: ${PrefsManager.getStringDataFromSharedPref(PrefsManager.APP_INSTANCE_ID)}")
-        Log.d(TAG, "userMobileNumber :: ${PrefsManager.getStringDataFromSharedPref(Constants.USER_MOBILE_NUMBER)}")
+        Log.d("MainActivity", "appSessionID :: ${StaticInstances.sAppSessionId}")
+        Log.d("MainActivity", "appInstanceID :: ${PrefsManager.getStringDataFromSharedPref(PrefsManager.APP_INSTANCE_ID)}")
+        Log.d("MainActivity", "userMobileNumber :: ${PrefsManager.getStringDataFromSharedPref(Constants.USER_MOBILE_NUMBER)}")
         val intentUri = intent?.data
         launchFragment(SplashFragment.newInstance(intentUri), true)
         handlingFirebaseToken()
+        handlingFirebaseAppInstanceId()
         AppsFlyerLib.getInstance().setCustomerUserId(PrefsManager.getStringDataFromSharedPref(Constants.USER_MOBILE_NUMBER))
         CleverTapAPI.getDefaultInstance(this)?.apply {
             setInAppNotificationButtonListener(this@MainActivity)
@@ -65,30 +66,39 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         StrictMode.setVmPolicy(builder.build())
     }
 
+    private fun handlingFirebaseAppInstanceId() {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            Firebase.analytics.appInstanceId.addOnSuccessListener { userPseudoId ->
+                Log.d("MainActivity", "Firebase :: appInstanceId :: $userPseudoId")
+                StaticInstances.sFireBaseAppInstanceId = userPseudoId
+            }
+        }
+    }
+
     private fun handlingFirebaseToken() {
         try {
             FirebaseMessaging.getInstance().token.addOnCompleteListener {
                 try {
                     if (it.isComplete) {
                         StaticInstances.sFireBaseMessagingToken = it.result.toString()
-                        Log.d(TAG, "onCreate :: FIREBASE TOKEN :: ${it.result}")
+                        Log.d("MainActivity", "onCreate :: FIREBASE TOKEN :: ${it.result}")
                         AppsFlyerLib.getInstance().updateServerUninstallToken(this, StaticInstances.sFireBaseMessagingToken)
                         CleverTapAPI.getDefaultInstance(this)?.pushFcmRegistrationId(StaticInstances.sFireBaseMessagingToken, true)
                     }
                 } catch (e: Exception) {
-                    Log.e(TAG, e.message, e)
+                    Log.e("MainActivity", e.message, e)
                     AppEventsManager.pushAppEvents(
                         eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
-                        isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                        isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = false,
                         data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), "Exception Point" to "handlingFirebaseToken", "Exception Message" to e.message, "Exception Logs" to e.toString())
                     )
                 }
             }
         } catch (e: Exception) {
-            Log.e(TAG, e.message, e)
+            Log.e("MainActivity", e.message, e)
             AppEventsManager.pushAppEvents(
                 eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
-                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = false,
                 data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), "Exception Point" to "handlingFirebaseToken", "Exception Message" to e.message, "Exception Logs" to e.toString())
             )
         }
@@ -99,10 +109,10 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             val intentFiler = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
             registerReceiver(mNetworkChangeListener, intentFiler)
         } catch (e: Exception) {
-            Log.e(TAG, "onStart: ${e.message}", e)
+            Log.e("MainActivity", "onStart: ${e.message}", e)
             AppEventsManager.pushAppEvents(
                 eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
-                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = false,
                 data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), "Exception Point" to "Main Activity : onStart", "Exception Message" to e.message, "Exception Logs" to e.toString())
             )
         }
@@ -113,10 +123,10 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         try {
             unregisterReceiver(mNetworkChangeListener)
         } catch (e: Exception) {
-            Log.e(TAG, "onStop: ${e.message}", e)
+            Log.e("MainActivity", "onStop: ${e.message}", e)
             AppEventsManager.pushAppEvents(
                 eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
-                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = false,
                 data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), "Exception Point" to "Main Activity : onStop", "Exception Message" to e.message, "Exception Logs" to e.toString())
             )
         }
@@ -131,7 +141,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     fun checkBottomNavBarFeatureVisibility() {
         StaticInstances.sPermissionHashMap?.forEach { (key, value) ->
             runOnUiThread {
-                println("$key = $value")
+                Log.d("MainActivity", "$key = $value")
                 if (Constants.PAGE_ORDER == key && !value) {
                     blurBottomNavBarContainer?.visibility = View.VISIBLE
                     blurBottomNavBarOrders?.visibility = View.VISIBLE
@@ -167,8 +177,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             val manager = supportFragmentManager
             if (manager.backStackEntryCount > 0) super.onBackPressed()
         } catch (e: Exception) {
-            Sentry.captureException(e, "$TAG :: onBackPressed")
-            Log.e(TAG, "onBackPressed: ${e.message}", e)
+            Log.e("MainActivity", "onBackPressed: ${e.message}", e)
         }
     }
 
@@ -196,7 +205,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         } catch (e: Exception) {
             AppEventsManager.pushAppEvents(
                 eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
-                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = false,
                 data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), "Exception Point" to "getCurrentFragment", "Exception Message" to e.message, "Exception Logs" to e.toString())
             )
             null
@@ -208,7 +217,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             try {
                 Toast.makeText(applicationContext, message, Toast.LENGTH_SHORT).show()
             } catch (e: Exception) {
-                Log.e(TAG, "showToast: ${e.message}", e)
+                Log.e("MainActivity", "showToast: ${e.message}", e)
                 AppEventsManager.pushAppEvents(
                     eventName = AFInAppEventType.EVENT_SERVER_EXCEPTION,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
@@ -226,6 +235,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     fun launchFragment(fragment: Fragment?, addBackStack: Boolean) = runOnUiThread { doSwitchToScreen(fragment, addBackStack) }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         getCurrentFragment()?.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
@@ -336,17 +346,19 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.d(TAG, "onDestroy :: called for application")
-        StaticInstances.sAppSessionId = ""
-        TruecallerSDK.clear()
+        Log.d("MainActivity", "onDestroy :: called for application")
+        if (!isDestroyed) {
+            StaticInstances.sAppSessionId = ""
+            TruecallerSDK.clear()
+        }
     }
 
     override fun onNotificationClickedPayloadReceived(payload: HashMap<String, Any>?) {
-        Log.d(TAG, "onNotificationClickedPayloadReceived: $payload")
+        Log.d("MainActivity", "onNotificationClickedPayloadReceived: $payload")
     }
 
     override fun onInAppButtonClick(payload: HashMap<String, String>?) {
-        Log.d(TAG, "onInAppButtonClick :: $payload")
+        Log.d("MainActivity", "onInAppButtonClick :: $payload")
     }
 
     private fun requestInAppReviewObject() {
