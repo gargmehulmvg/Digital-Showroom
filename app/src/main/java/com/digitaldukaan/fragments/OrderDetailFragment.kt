@@ -294,17 +294,35 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
             }
             if (isNotEmpty(deliveryChargeValueEditText?.text.toString().trim())) {
                 val str = deliveryChargeValueEditText?.text.toString()
-                mDeliveryChargeAmount = if (isNotEmpty(str)) { str.toDouble() } else 0.0
+                mDeliveryChargeAmount = if (isNotEmpty(str)) {
+                    try {
+                        str.toDouble()
+                    } catch (e: Exception) {
+                        0.0
+                    }
+                } else 0.0
                 setAmountToEditText()
             }
             if (isNotEmpty(otherChargesValueEditText?.text.toString().trim())) {
                 val str = otherChargesValueEditText?.text.toString()
-                mOtherChargeAmount = if (isNotEmpty(str)) { str.toDouble() } else 0.0
+                mOtherChargeAmount = if (isNotEmpty(str)) {
+                    try {
+                        str.toDouble()
+                    } catch (e: Exception) {
+                        0.0
+                    }
+                } else 0.0
                 setAmountToEditText()
             }
             if (isNotEmpty(discountsValueEditText?.text.toString().trim())) {
                 val str = discountsValueEditText?.text.toString()
-                mDiscountAmount = if (isNotEmpty(str)) { str.toDouble() } else 0.0
+                mDiscountAmount = if (isNotEmpty(str)) {
+                    try {
+                        str.toDouble()
+                    } catch (e: Exception) {
+                        0.0
+                    }
+                } else 0.0
                 setAmountToEditText()
             }
         }

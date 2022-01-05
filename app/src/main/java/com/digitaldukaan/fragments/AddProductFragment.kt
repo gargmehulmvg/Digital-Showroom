@@ -589,12 +589,26 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
 
     private fun addNewVariantInList() {
         if (mActivity?.resources?.getInteger(R.integer.variant_count) ?: 0 > mActiveVariantList?.size ?: 0) {
+            var priceStr = priceEditText?.text?.toString()?.trim()
+            priceStr = if (isEmpty(priceStr)) "0.0" else {
+                if (true == priceStr?.startsWith(".")) {
+                    priceStr = "0$priceStr"
+                }
+                priceStr
+            }
+            var discountPriceStr = discountPriceEditText?.text?.toString()?.trim()
+            discountPriceStr = if (isEmpty(discountPriceStr)) "0.0" else {
+                if (true == discountPriceStr?.startsWith(".")) {
+                    discountPriceStr = "0$discountPriceStr"
+                }
+                discountPriceStr
+            }
             mActiveVariantList?.add(
                 VariantItemResponse(
                     variantId = 0,
                     variantName = "",
-                    price = if (isEmpty(priceEditText?.text?.toString())) 0.0 else priceEditText?.text?.toString()?.toDouble() ?: 0.0,
-                    discountedPrice = if (isEmpty(discountPriceEditText?.text?.toString())) 0.0 else discountPriceEditText?.text?.toString()?.toDouble() ?: 0.0,
+                    price = priceStr?.toDouble() ?: 0.0,
+                    discountedPrice = discountPriceStr?.toDouble() ?: 0.0,
                     status = 1,
                     masterId = 0,
                     available = 1,
@@ -1096,8 +1110,10 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 }
 
                 override fun onVariantInventoryChangeListener(inventoryCount: String, position: Int) {
-                    CoroutineScopeUtils().runTaskOnCoroutineMain { if (isEmpty(inventoryCount)) return@runTaskOnCoroutineMain
+                    CoroutineScopeUtils().runTaskOnCoroutineMain {
+                        if (isEmpty(inventoryCount)) return@runTaskOnCoroutineMain
                         if (isEmpty(mActiveVariantList)) return@runTaskOnCoroutineMain
+                        if (position >= (mActiveVariantList?.size ?: 0)) return@runTaskOnCoroutineMain
                         mActiveVariantList?.get(position)?.availableQuantity = inventoryCount.toInt()
                         mIsOrderEdited = true
                         showAddProductContainer()
@@ -1138,6 +1154,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             })
             manageInventoryRecyclerView?.apply {
                 layoutManager = LinearLayoutManager(mActivity)
+                setRecyclerListener { hideSoftKeyboard() }
                 adapter = mInventoryAdapter
             }
         } else mInventoryAdapter?.notifyItemRangeChanged(0, mInventoryAdapter?.getDataSource()?.size ?: 0)

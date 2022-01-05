@@ -269,7 +269,13 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         mProfileService.getUserProfile()
     }
 
-    override fun onToolbarSideIconClicked() = launchFragment(CommonWebViewFragment().newInstance(getString(R.string.help), "${BuildConfig.WEB_VIEW_URL}${WebViewUrls.WEB_VIEW_HELP}?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&redirectFrom=settings&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"), true)
+    override fun onToolbarSideIconClicked() {
+        try {
+            launchFragment(CommonWebViewFragment().newInstance(getString(R.string.help), "${BuildConfig.WEB_VIEW_URL}${WebViewUrls.WEB_VIEW_HELP}?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&redirectFrom=settings&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"), true)
+        } catch (e: Exception) {
+            Log.e(TAG, "onToolbarSideIconClicked: ${e.message}", e)
+        }
+    }
 
     override fun onStop() {
         super.onStop()
