@@ -141,6 +141,9 @@ interface Apis {
     @POST("api/dotk/vm1/settings/setStoreAddressConfigs")
     suspend fun setAddressFields(@Body request: AddressFieldRequest): Response<CommonApiResponse>
 
+    @GET("api/dotk/vm1/settings/getReferralData")
+    suspend fun getReferralData(): Response<CommonApiResponse>
+
     /* ----------------------       Images         ---------------------- */
     @POST("api/dotk/vm1/media/setStoreLogo")
     suspend fun setStoreLogo(@Body request: StoreLogoRequest) : Response<CommonApiResponse>
