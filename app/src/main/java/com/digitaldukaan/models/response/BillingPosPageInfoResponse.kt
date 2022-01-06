@@ -15,7 +15,10 @@ data class BillingPosStaticTextResponse(
     @SerializedName("heading_main_features")    var heading_main_features: String?,
     @SerializedName("heading_other_features")   var heading_other_features: String?,
     @SerializedName("heading_page")             var heading_page: String?,
+    @SerializedName("prompt_heading")           var prompt_heading: String?,
     @SerializedName("text_ok")                  var text_ok: String?,
+    @SerializedName("text_yes")                 var text_yes: String?,
+    @SerializedName("text_no")                  var text_no: String?,
     @SerializedName("message_callback_success") var message_callback_success: String?,
     @SerializedName("sub_message_instruction")  var sub_message_instruction: String?,
     @SerializedName("sub_heading_page")         var sub_heading_page: String?

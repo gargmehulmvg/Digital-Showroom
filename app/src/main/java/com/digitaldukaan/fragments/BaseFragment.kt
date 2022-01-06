@@ -32,6 +32,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.*
+import com.appsflyer.CreateOneLinkHttpTask
+import com.appsflyer.share.ShareInviteHelper
 import com.bumptech.glide.Glide
 import com.daimajia.androidanimations.library.Techniques
 import com.daimajia.androidanimations.library.YoYo
@@ -2395,6 +2397,32 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         StaticInstances.sSuggestedDomainsList = null
         StaticInstances.sCustomDomainBottomSheetResponse = null
         StaticInstances.sPermissionHashMap = null
+    }
+
+    fun shareReferAndEarnWithDeepLink(referEarnOverWhatsAppResponse: ReferAndEarnOverWhatsAppItemResponse) {
+        ShareInviteHelper.generateInviteUrl(mActivity).apply {
+            channel = "whatsapp"
+            campaign = "sharing"
+            setReferrerCustomerId(PrefsManager.getStringDataFromSharedPref(Constants.USER_MOBILE_NUMBER))
+            generateLink(mActivity, object : CreateOneLinkHttpTask.ResponseListener {
+                override fun onResponse(p0: String?) {
+                    Log.d(TAG, "onResponse: $p0")
+                    if (true == referEarnOverWhatsAppResponse.isShareStoreBanner) {
+                        AppEventsManager.pushAppEvents(
+                            eventName = AFInAppEventType.EVENT_SETTINGS_REFERRAL,
+                            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                            data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.LINK to p0)
+                        )
+                        shareDataOnWhatsAppWithImage("${referEarnOverWhatsAppResponse.whatsAppText} $p0", referEarnOverWhatsAppResponse.imageUrl)
+                    } else {
+                        shareOnWhatsApp("${referEarnOverWhatsAppResponse.whatsAppText} $p0")
+                    }
+                }
+                override fun onResponseError(p0: String?) {
+                    Log.d(TAG, "onResponseError: $p0")
+                }
+            })
+        }
     }
 
 }

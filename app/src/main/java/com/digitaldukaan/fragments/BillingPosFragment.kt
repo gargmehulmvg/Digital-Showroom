@@ -22,6 +22,7 @@ import com.digitaldukaan.models.response.BillingPosPageInfoResponse
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.services.BillingPosService
 import com.digitaldukaan.services.serviceinterface.IBillingPosServiceInterface
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.layout_billing_pos.*
@@ -87,8 +88,31 @@ class BillingPosFragment: BaseFragment(), IBillingPosServiceInterface {
                     eventName = AFInAppEventType.EVENT_BILLING_POS_CALLBACK, isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                     data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
                 )
-                showProgressDialog(mActivity)
-                mService?.requestACallBack()
+                showRequestCallBackConfirmationBottomSheet()
+            }
+        }
+    }
+
+    private fun showRequestCallBackConfirmationBottomSheet() {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            mActivity?.let { context ->
+                val bottomSheetDialog = BottomSheetDialog(context, R.style.BottomSheetDialogTheme)
+                val view = LayoutInflater.from(context).inflate(R.layout.bottom_sheet_request_callback_confirmation, context.findViewById(R.id.bottomSheetContainer))
+                bottomSheetDialog.apply {
+                    setContentView(view)
+                    val headingTextView: TextView = view.findViewById(R.id.headingTextView)
+                    val noTextView: TextView = view.findViewById(R.id.noTextView)
+                    val yesTextView: TextView = view.findViewById(R.id.yesTextView)
+                    headingTextView.text = mPageInfoResponse?.staticText?.prompt_heading
+                    noTextView.text = mPageInfoResponse?.staticText?.text_no
+                    yesTextView.text = mPageInfoResponse?.staticText?.text_yes
+                    yesTextView.setOnClickListener { bottomSheetDialog.dismiss() }
+                    noTextView.setOnClickListener {
+                        bottomSheetDialog.dismiss()
+                        showProgressDialog(mActivity)
+                        mService?.requestACallBack()
+                    }
+                }.show()
             }
         }
     }

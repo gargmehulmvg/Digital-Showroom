@@ -17,11 +17,15 @@ import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.IOnToolbarIconClick
 import com.digitaldukaan.models.dto.ConvertMultiImageDTO
 import com.digitaldukaan.models.response.LockedStoreShareResponse
+import com.digitaldukaan.models.response.ReferAndEarnOverWhatsAppItemResponse
+import com.digitaldukaan.network.RetrofitApi
 import com.digitaldukaan.webviews.WebViewBridge
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.layout_common_webview_fragment.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.json.JSONObject
 
 
@@ -71,7 +75,7 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
             settings.javaScriptEnabled = true
             settings.domStorageEnabled = true
             addJavascriptInterface(WebViewBridge(), Constants.KEY_ANDROID)
-            Log.d(CommonWebViewFragment::class.simpleName, "onViewCreated: $mLoadUrl")
+            Log.d(TAG, "onViewCreated: $mLoadUrl")
             triggerWebViewOpenEvent()
             loadUrl(mLoadUrl)
         }
@@ -165,7 +169,7 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
                 launchFragment(OrderFragment.newInstance(), true)
             }
             jsonData.optBoolean("shareReferLink") -> {
-
+                shareReferLinkServerCall()
             }
             jsonData.optBoolean("startLoader") -> {
                 showProgressDialog(mActivity)
@@ -191,16 +195,16 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
             }
             jsonData.optBoolean("openUPI") -> {
                 val packageName = jsonData.optString("packageName")
-                val uri: Uri = Uri.Builder()
-                    .scheme("upi")
-                    .authority("pay")
-                    .appendQueryParameter("pa", jsonData.optString("pa"))
-                    .appendQueryParameter("pn", jsonData.optString("pn"))
-                    .appendQueryParameter("tr", jsonData.optString("tr"))
-                    .appendQueryParameter("tn", jsonData.optString("tn"))
-                    .appendQueryParameter("am", jsonData.optString("am"))
-                    .appendQueryParameter("cu", "INR")
-                    .build()
+                val uri: Uri = Uri.Builder().apply {
+                    scheme("upi")
+                    authority("pay")
+                    appendQueryParameter("pa", jsonData.optString("pa"))
+                    appendQueryParameter("pn", jsonData.optString("pn"))
+                    appendQueryParameter("tr", jsonData.optString("tr"))
+                    appendQueryParameter("tn", jsonData.optString("tn"))
+                    appendQueryParameter("am", jsonData.optString("am"))
+                    appendQueryParameter("cu", "INR")
+                }.build()
                 val intent = Intent(Intent.ACTION_VIEW)
                 intent.data = uri
                 intent.setPackage(packageName)
@@ -245,6 +249,30 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                     data = map
                 )
+            }
+        }
+    }
+
+    private fun shareReferLinkServerCall() {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            try {
+                val response = RetrofitApi().getServerCallObject()?.getReferralData()
+                response?.let { res ->
+                    if (res.isSuccessful) {
+                        res.body()?.let { commonResponse ->
+                            withContext(Dispatchers.Main) {
+                                stopProgress()
+                                if (commonResponse.mIsSuccessStatus) {
+                                    val shareResponse = Gson().fromJson<ReferAndEarnOverWhatsAppItemResponse>(commonResponse.mCommonDataStr, ReferAndEarnOverWhatsAppItemResponse::class.java)
+                                    shareReferAndEarnWithDeepLink(shareResponse)
+                                }
+                            }
+                        }
+
+                    }
+                }
+            } catch (e: Exception) {
+                exceptionHandlingForAPIResponse(e)
             }
         }
     }
