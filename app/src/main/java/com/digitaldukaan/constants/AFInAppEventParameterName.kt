@@ -38,6 +38,7 @@ interface AFInAppEventParameterName {
         const val STORE_TYPE                                    =   "store_type"
         const val STORE_URL                                     =   "store_url"
         const val VERIFY_PHONE                                  =   "verify_phone"
+        const val VERIFY                                        =   "verify"
         const val STORE_TYPE_DUKAAN                             =   "Dukaan"
         const val ADDRESS                                       =   "address"
         const val AMOUNT                                        =   "Amount"
@@ -93,6 +94,9 @@ interface AFInAppEventParameterName {
         const val INVENTORY                                     =   "inventory"
         const val VARIANTS                                      =   "variants"
         const val QUANTITY                                      =   "quantity"
+        const val FIELD                                         =   "field"
+        const val SHOW                                          =   "show"
+        const val MANDATORY                                     =   "mandatory"
         //NOTIFICATION_CHANNEL
         const val NOTIFICATION_GROUP_ID                         =   "DIGITAL_DUKAAN_G_ID"
         const val NOTIFICATION_GROUP_NAME                       =   "DIGITAL_DUKAAN_G_NAME"

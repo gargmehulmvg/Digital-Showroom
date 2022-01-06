@@ -710,6 +710,9 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
             if (true == StaticInstances.sPermissionHashMap?.get(Constants.LANDING_CARDS)) {
                 mService?.getLandingPageCards()
             } else {
+                val myShortcutsRecyclerView: View? = mContentView?.findViewById(R.id.myShortcutsRecyclerView)
+                val zeroOrderItemsRecyclerView: View? = mContentView?.findViewById(R.id.zeroOrderItemsRecyclerView)
+                val nextStepTextView: View? = mContentView?.findViewById(R.id.nextStepTextView)
                 myShortcutsRecyclerView?.visibility = View.GONE
                 zeroOrderItemsRecyclerView?.visibility = View.GONE
                 nextStepTextView?.visibility = View.GONE

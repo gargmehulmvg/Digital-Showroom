@@ -49,13 +49,13 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.File
 
-
 class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInterface,
     SwipeRefreshLayout.OnRefreshListener, IStoreSettingsItemClicked {
 
     companion object {
         fun newInstance(): SettingsFragment = SettingsFragment()
     }
+
     private var mAppSettingsResponseStaticData: AccountStaticTextResponse? = null
     private var mAppStoreServicesResponse: StoreServicesResponse? = null
     private val mProfileService = ProfileService()
@@ -212,18 +212,15 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                         val messageTextView: TextView = findViewById(R.id.messageTextView)
                         val bottomSheetHeading2TextView: TextView = findViewById(R.id.bottomSheetHeading2TextView)
                         val verifyTextView: TextView = findViewById(R.id.verifyTextView)
-                        bottomSheetUpperImageView.let {view ->
-
-                        }
                         bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
                         messageTextView.text = response?.message
                         bottomSheetHeadingTextView.text = response?.heading
                         bottomSheetHeading2TextView.setHtmlData(response?.heading2)
                         verifyTextView.text = response?.referNow
                         verifyTextView.setOnClickListener{
-                            mReferEarnOverWhatsAppResponse?.run {
-                                shareReferAndEarnWithDeepLink(this)
-                                bottomSheetDialog.dismiss()
+                            bottomSheetDialog.dismiss()
+                            mReferEarnOverWhatsAppResponse?.let { response ->
+                                shareReferAndEarnWithDeepLink(response)
                             }
                         }
                     }
@@ -329,16 +326,12 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             if (response.mIsSuccessStatus) {
                 val photoResponse = Gson().fromJson<StoreResponse>(response.mCommonDataStr, StoreResponse::class.java)
                 mStoreLogo = photoResponse?.storeInfo?.logoImage
-                if (mStoreLogo?.isNotEmpty() == true) {
+                if (isNotEmpty(mStoreLogo)) {
                     storePhotoImageView?.visibility = View.VISIBLE
                     hiddenImageView?.visibility = View.INVISIBLE
                     hiddenTextView?.visibility = View.INVISIBLE
                     storePhotoImageView?.let {
-                        try {
-                            Glide.with(this).load(mStoreLogo).into(it)
-                        } catch (e: Exception) {
-                            Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
-                        }
+                        Glide.with(this).load(mStoreLogo).into(it)
                     }
                 } else {
                     StaticInstances.sIsStoreImageUploaded = false
@@ -352,10 +345,10 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         }
     }
 
-    override fun onProductShareStoreWAResponse(commonResponse: CommonApiResponse) {
+    override fun onProductShareStoreWAResponse(response: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
-            mShareDataOverWhatsAppText = Gson().fromJson<String>(commonResponse.mCommonDataStr, String::class.java)
+            mShareDataOverWhatsAppText = Gson().fromJson<String>(response.mCommonDataStr, String::class.java)
             shareOnWhatsApp(mShareDataOverWhatsAppText)
         }
     }
@@ -366,11 +359,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         dukaanNameTextView?.text = infoResponse.mStoreInfo.storeInfo.name
         if (infoResponse.mStoreInfo.storeInfo.logoImage?.isNotEmpty() == true) {
             storePhotoImageView?.let {
-                try {
-                    Glide.with(this).load(infoResponse.mStoreInfo.storeInfo.logoImage).into(it)
-                } catch (e: Exception) {
-                    Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
-                }
+                Glide.with(this).load(infoResponse.mStoreInfo.storeInfo.logoImage).into(it)
             }
             hiddenImageView?.visibility = View.INVISIBLE
             hiddenTextView?.visibility = View.INVISIBLE
@@ -378,19 +367,11 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         infoResponse.mFooterImages?.forEachIndexed { index, imageUrl ->
             if (index == 0) {
                 autoDataBackupImageView?.let {
-                    try {
-                        Glide.with(this).load(imageUrl).into(it)
-                    } catch (e: Exception) {
-                        Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
-                    }
+                    Glide.with(this).load(imageUrl).into(it)
                 }
             } else {
                 safeSecureImageView?.let {
-                    try {
-                        Glide.with(this).load(imageUrl).into(it)
-                    } catch (e: Exception) {
-                        Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
-                    }
+                    Glide.with(this).load(imageUrl).into(it)
                 }
             }
         }
@@ -427,7 +408,6 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         stepsLeftTextView?.text = if (remainingSteps == 1) "$remainingSteps ${infoResponse.mAccountStaticText?.mStepLeft}" else "$remainingSteps ${infoResponse.mAccountStaticText?.mStepsLeft}"
         completeProfileTextView?.text = infoResponse.mAccountStaticText?.mCompleteProfile
         val storeStatus = "${infoResponse.mAccountStaticText?.mStoreText} :"
-        val deliveryStatus = "${infoResponse.mAccountStaticText?.mTextDeliveryStatus} :"
         storeTextView?.text = storeStatus
         storeControlMessageTextView?.text = infoResponse.mAccountStaticText?.message_store_controls
         storeControlNewTextView?.text = infoResponse.mAccountStaticText?.mNewText
@@ -453,7 +433,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         }
         when (response.mPage) {
             Constants.PAGE_REFER -> {
-                if (mReferAndEarnResponse != null) {
+                if (null != mReferAndEarnResponse) {
                     showReferAndEarnBottomSheet(mReferAndEarnResponse)
                     return
                 }
@@ -461,8 +441,8 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                     showNoInternetConnectionDialog()
                     return
                 }
-                showProgressDialog(mActivity)
                 mProfileService.getReferAndEarnDataOverWhatsApp()
+                showProgressDialog(mActivity)
                 mProfileService.getReferAndEarnData()
             }
             Constants.PAGE_MY_PAYMENTS -> {
@@ -477,6 +457,12 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             Constants.PAGE_FEEDBACK -> openPlayStore()
             Constants.PAGE_APP_SETTINGS -> launchFragment(AppSettingsFragment().newInstance(mAccountPageInfoResponse?.mSubPages, response.mText, mAppSettingsResponseStaticData), true)
             Constants.PAGE_REWARDS -> launchFragment(CommonWebViewFragment().newInstance(getString(R.string.my_rewards), "${BuildConfig.WEB_VIEW_URL}${WebViewUrls.WEB_VIEW_REWARDS}?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&redirectFrom=settings&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"), true)
+            else -> {
+                if (Constants.NEW_RELEASE_TYPE_WEBVIEW == response.mAction) {
+                    val url = "${BuildConfig.WEB_VIEW_URL}${response.mPage}?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}"
+                    openWebViewFragmentV3(this, "", url)
+                }
+            }
         }
     }
 
@@ -635,6 +621,15 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                     showShortSnackBar("Permission was denied", true, R.drawable.ic_close_red)
                     mActivity?.onBackPressed()
                 }
+            }
+        }
+        else if (Constants.STORAGE_REQUEST_CODE == requestCode) {
+            when {
+                grantResults.isEmpty() -> Log.d(TAG, "User interaction was cancelled.")
+                PackageManager.PERMISSION_GRANTED == grantResults[0] -> {
+                    mReferEarnOverWhatsAppResponse?.let { response -> shareReferAndEarnWithDeepLink(response) }
+                }
+                else -> showShortSnackBar("Permission was denied", true, R.drawable.ic_close_red)
             }
         }
     }

@@ -164,6 +164,9 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
             jsonData.optBoolean("redirectHomePage") -> {
                 launchFragment(OrderFragment.newInstance(), true)
             }
+            jsonData.optBoolean("shareReferLink") -> {
+
+            }
             jsonData.optBoolean("startLoader") -> {
                 showProgressDialog(mActivity)
             }

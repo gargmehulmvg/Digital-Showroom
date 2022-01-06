@@ -17,9 +17,10 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.AddAddressFieldAdapter
 import com.digitaldukaan.constants.*
-import com.digitaldukaan.interfaces.IAdapterItemNotifyListener
+import com.digitaldukaan.interfaces.IAddressFieldsItemListener
 import com.digitaldukaan.models.request.AddressFieldItemRequest
 import com.digitaldukaan.models.request.AddressFieldRequest
+import com.digitaldukaan.models.response.AddressFieldsItemResponse
 import com.digitaldukaan.models.response.AddressFieldsPageInfoResponse
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.services.AddressFieldsService
@@ -65,6 +66,10 @@ class AddressFieldsFragment: BaseFragment(), IAddressFieldsServiceInterface,
             onBackPressed(this@AddressFieldsFragment)
             setSideIconVisibility(false)
         }
+        AppEventsManager.pushAppEvents(
+            eventName = AFInAppEventType.EVENT_CUSTOMER_ADDRESS_FIELDS, isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+            data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
+        )
     }
 
     override fun onAddressFieldsPageInfoResponse(response: CommonApiResponse) {
@@ -135,9 +140,9 @@ class AddressFieldsFragment: BaseFragment(), IAddressFieldsServiceInterface,
             val recyclerView: RecyclerView? = mContentView?.findViewById(R.id.recyclerView)
             recyclerView?.apply {
                 layoutManager = LinearLayoutManager(mActivity)
-                adapter = AddAddressFieldAdapter(mAddressFieldsPageInfoResponse?.addressFieldsList, object : IAdapterItemNotifyListener {
+                adapter = AddAddressFieldAdapter(mAddressFieldsPageInfoResponse?.addressFieldsList, object : IAddressFieldsItemListener {
 
-                    override fun onAdapterItemNotifyListener(position: Int) {
+                    override fun onAddressFieldsItemNotifyListener(position: Int) {
                         CoroutineScopeUtils().runTaskOnCoroutineMain {
                             Log.d(TAG, "onAdapterItemNotifyListener: ")
                             mIsItemUpdated = true
@@ -152,6 +157,32 @@ class AddressFieldsFragment: BaseFragment(), IAddressFieldsServiceInterface,
                                 }
                             } else
                                 errorTextView?.visibility = View.GONE
+                        }
+                    }
+
+                    override fun onAddressFieldsCheckChangeListener(item: AddressFieldsItemResponse?) {
+                        CoroutineScopeUtils().runTaskOnCoroutineMain {
+                            AppEventsManager.pushAppEvents(
+                                eventName = AFInAppEventType.EVENT_SHOW_FIELD, isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                                data = mapOf(
+                                    AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                                    AFInAppEventParameterName.FIELD to item?.heading,
+                                    AFInAppEventParameterName.SHOW to if (true == item?.isFieldSelected) "1" else "0"
+                                )
+                            )
+                        }
+                    }
+
+                    override fun onAddressFieldsMandatorySwitchChangeListener(item: AddressFieldsItemResponse?) {
+                        CoroutineScopeUtils().runTaskOnCoroutineMain {
+                            AppEventsManager.pushAppEvents(
+                                eventName = AFInAppEventType.EVENT_MARK_FIELD_MANDATORY, isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                                data = mapOf(
+                                    AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                                    AFInAppEventParameterName.FIELD to item?.heading,
+                                    AFInAppEventParameterName.MANDATORY to if (true == item?.isMandatory) "1" else "0"
+                                )
+                            )
                         }
                     }
 
