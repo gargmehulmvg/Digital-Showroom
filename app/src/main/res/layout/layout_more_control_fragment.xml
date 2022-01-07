@@ -420,6 +420,7 @@
                 android:layout_marginTop="0.5dp"
                 android:background="@drawable/ripple_lower_curve_grey_white_background"
                 android:elevation="@dimen/_5sdp"
+                android:visibility="gone"
                 android:onClick="onClick"
                 app:layout_constraintEnd_toEndOf="@id/onlinePaymentsContainer"
                 app:layout_constraintStart_toStartOf="@id/onlinePaymentsContainer"

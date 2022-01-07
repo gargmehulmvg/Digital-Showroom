@@ -115,7 +115,7 @@
         android:id="@+id/verifyTextViewContainer"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@drawable/ripple_curve_grey_black_background"
+        android:background="@drawable/curve_black_background_selector"
         android:onClick="onClick"
         android:paddingTop="@dimen/_10sdp"
         android:paddingBottom="@dimen/_10sdp"

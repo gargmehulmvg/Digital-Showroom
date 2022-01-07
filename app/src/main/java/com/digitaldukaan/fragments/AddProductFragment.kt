@@ -3,10 +3,8 @@ package com.digitaldukaan.fragments
 import android.Manifest
 import android.app.Dialog
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -37,7 +35,6 @@ import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
-import com.squareup.picasso.Picasso
 import com.theartofdev.edmodo.cropper.CropImageView
 import kotlinx.android.synthetic.main.layout_add_product_fragment.*
 import kotlinx.coroutines.Dispatchers
@@ -1029,7 +1026,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     val productNameStr = mAddProductResponse?.storeItem?.name?.trim()
                     val newProductName = replaceTemplateString(productNameStr)
                     val sharingData = "ItemName: ${mAddProductResponse?.storeItem?.name}\nPrice:  ₹${mAddProductResponse?.storeItem?.price} \nDiscounted Price: ₹${mAddProductResponse?.storeItem?.discountedPrice}\n\n\uD83D\uDED2 ORDER NOW, Click on the link below\n\n" + "${mAddProductResponse?.domain}/product/${mAddProductResponse?.storeItem?.id}/$newProductName"
-                    if (true == mAddProductResponse?.storeItem?.imageUrl?.isEmpty()) shareOnWhatsApp(sharingData, null) else shareBillWithImage(sharingData, mAddProductResponse?.storeItem?.imageUrl)
+                    if (isEmpty(mAddProductResponse?.storeItem?.imageUrl)) shareOnWhatsApp(sharingData, null) else shareDataOnWhatsAppWithImage(sharingData, mAddProductResponse?.storeItem?.imageUrl)
                 }
                 shareProductContainer?.visibility = if (mIsAddNewProduct) View.GONE else View.VISIBLE
                 continueTextView?.visibility = if (mIsAddNewProduct) View.VISIBLE else View.GONE
@@ -1283,23 +1280,6 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 )
             )
         }
-    }
-
-    private fun shareBillWithImage(str: String, url: String?) {
-        if (isEmpty(url)) return
-        Picasso.get().load(url).into(object : com.squareup.picasso.Target {
-            override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
-                bitmap?.let { shareOnWhatsApp(str, bitmap) }
-            }
-
-            override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
-                Log.d(TAG, "onPrepareLoad: ")
-            }
-
-            override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
-                Log.d(TAG, "onBitmapFailed: ")
-            }
-        })
     }
 
     override fun onAddProductDataResponse(commonResponse: CommonApiResponse) {

@@ -927,6 +927,10 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
     }
 
     private fun showDisplayNumberBottomSheet(profilePreviewResponse: ProfilePreviewSettingsKeyResponse) {
+        AppEventsManager.pushAppEvents(
+            eventName = AFInAppEventType.EVENT_EDIT_DISPLAY_PHONE, isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+            data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
+        )
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (true == mDisplayPhoneBottomSheet?.isShowing) return@runTaskOnCoroutineMain
             mActivity?.let { context ->
@@ -987,6 +991,13 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                                 mDisplayPhoneStr = userInput
                                 showProgressDialog(mActivity)
                                 mService.generateOTP(userInput)
+                                AppEventsManager.pushAppEvents(
+                                    eventName = AFInAppEventType.EVENT_GET_OTP,
+                                    isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                                    data = mapOf(
+                                        AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                                        AFInAppEventParameterName.PHONE to mDisplayPhoneStr)
+                                )
                             } else {
                                 showProgressDialog(mActivity)
                                 mService.verifyDisplayPhoneNumber(VerifyDisplayPhoneNumberRequest(phone = mDisplayPhoneStr, otp = userInput.toInt()))
@@ -1028,16 +1039,27 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
 
     override fun onVerifyDisplayPhoneNumberResponse(apiResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
+            val isOtpVerified: Boolean
             if (apiResponse.mIsSuccessStatus) {
                 stopProgress()
+                isOtpVerified = true
                 mDisplayPhoneBottomSheet?.dismiss()
                 showDisplayPhoneSuccessBottomSheet()
             } else {
+                isOtpVerified = false
                 mDisplayPhoneContentView?.let { view ->
                     val displayNameLayout: TextInputLayout = view.findViewById(R.id.displayNameLayout)
                     displayNameLayout.error = apiResponse.mMessage
                 }
             }
+            AppEventsManager.pushAppEvents(
+                eventName = AFInAppEventType.EVENT_VERIFY_OTP,
+                isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                data = mapOf(
+                    AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+                    AFInAppEventParameterName.VERIFY to if (isOtpVerified) "1" else "0",
+                    AFInAppEventParameterName.PHONE to mDisplayPhoneStr)
+            )
             stopProgress()
         }
     }
