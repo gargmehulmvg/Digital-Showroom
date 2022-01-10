@@ -23,6 +23,7 @@ import com.digitaldukaan.network.RetrofitApi
 import com.digitaldukaan.webviews.WebViewBridge
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Task
@@ -388,6 +389,7 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
         mActivity?.let { context ->
             val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build()
             val googleSignInClient = GoogleSignIn.getClient(context, gso)
+            signOutFromGmail(googleSignInClient)
             val account = GoogleSignIn.getLastSignedInAccount(context)
             if (null == account) {
                 val signInIntent: Intent = googleSignInClient.signInIntent
@@ -413,7 +415,8 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
                                 stopProgress()
                                 if (commonResponse.mIsSuccessStatus) {
                                     showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_check_circle)
-                                    commonWebView?.reload()
+                                    val commonWebView: WebView? = mContentView?.findViewById(R.id.commonWebView)
+                                    commonWebView?.loadUrl(mLoadUrl)
                                 } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
                             }
                         }
@@ -434,6 +437,11 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
         } catch (e: ApiException) {
             Log.d(TAG, "signInResult:failed code=" + e.statusCode)
             showToast(e.message)
+        }
+    }
+
+    private fun signOutFromGmail(googleSignInClient: GoogleSignInClient) {
+        googleSignInClient.signOut().addOnCompleteListener {
         }
     }
 
