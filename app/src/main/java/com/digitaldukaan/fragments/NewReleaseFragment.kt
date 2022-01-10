@@ -101,7 +101,8 @@ class NewReleaseFragment: BaseFragment(), IStoreSettingsItemClicked {
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                     data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.CHANNEL to AFInAppEventParameterName.SETTINGS_PAGE)
                 )
-                openWebViewFragment(this, "", BuildConfig.WEB_VIEW_URL + responseItem.mPage)
+                val url = "${BuildConfig.WEB_VIEW_URL}${responseItem.mPage}?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&${AFInAppEventParameterName.CHANNEL}=${AFInAppEventParameterName.SETTINGS}"
+                openWebViewFragmentV3(this, "", url)
             }
             Constants.NEW_RELEASE_TYPE_EXTERNAL -> {
                 val eventName = when (responseItem.mType) {

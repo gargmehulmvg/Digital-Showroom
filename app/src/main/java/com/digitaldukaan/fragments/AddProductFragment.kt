@@ -686,6 +686,9 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     }
 
     private fun showDeleteVariantConfirmationDialog(position: Int) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            mActivity?.currentFocus?.clearFocus()
+        }
         mActivity?.let {
             val dialog = Dialog(it)
             dialog.apply {

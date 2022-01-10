@@ -106,11 +106,15 @@ class BillingPosFragment: BaseFragment(), IBillingPosServiceInterface {
                     headingTextView.text = mPageInfoResponse?.staticText?.prompt_heading
                     noTextView.text = mPageInfoResponse?.staticText?.text_no
                     yesTextView.text = mPageInfoResponse?.staticText?.text_yes
-                    yesTextView.setOnClickListener { bottomSheetDialog.dismiss() }
+                    yesTextView.setOnClickListener {
+                        bottomSheetDialog.dismiss()
+                        showProgressDialog(mActivity)
+                        mService?.requestACallBack(true)
+                    }
                     noTextView.setOnClickListener {
                         bottomSheetDialog.dismiss()
                         showProgressDialog(mActivity)
-                        mService?.requestACallBack()
+                        mService?.requestACallBack(false)
                     }
                 }.show()
             }

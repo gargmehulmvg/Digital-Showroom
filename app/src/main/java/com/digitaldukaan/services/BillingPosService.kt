@@ -19,9 +19,9 @@ class BillingPosService {
         }
     }
 
-    fun requestACallBack() {
+    fun requestACallBack(isYesButtonClicked: Boolean) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.requestACallBackServerCall(mServiceInterface)
+            mNetworkService.requestACallBackServerCall(mServiceInterface, isYesButtonClicked)
         }
     }
 
