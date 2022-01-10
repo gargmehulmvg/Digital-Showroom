@@ -383,12 +383,13 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         }
     }
 
-    fun shareDataOnWhatsAppWithImage(str: String, url: String?) {
+    fun shareDataOnWhatsAppWithImage(sharingData: String, url: String?) {
+        Log.d(TAG, "shareDataOnWhatsAppWithImage: sharingData :: $sharingData")
         if (isEmpty(url)) return
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             Picasso.get().load(url).into(object : com.squareup.picasso.Target {
                 override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
-                    bitmap?.let { shareOnWhatsApp(str, bitmap) }
+                    bitmap?.let { shareOnWhatsApp(sharingData, bitmap) }
                 }
 
                 override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
@@ -403,6 +404,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     }
 
     open fun shareOnWhatsApp(sharingData: String?, imageBitmap: Bitmap? = null) {
+        Log.d(TAG, "shareOnWhatsApp: sharingData :: $sharingData")
         if (null != imageBitmap) {
             mActivity?.let {
                 if (ActivityCompat.checkSelfPermission(it, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(it, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -2413,9 +2415,9 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                             isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                             data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.LINK to p0)
                         )
-                        shareDataOnWhatsAppWithImage("${referEarnOverWhatsAppResponse.whatsAppText} $p0", referEarnOverWhatsAppResponse.imageUrl)
+                        shareDataOnWhatsAppWithImage("${referEarnOverWhatsAppResponse.whatsAppText}$p0 ${referEarnOverWhatsAppResponse.pendingText}", referEarnOverWhatsAppResponse.imageUrl)
                     } else {
-                        shareOnWhatsApp("${referEarnOverWhatsAppResponse.whatsAppText} $p0")
+                        shareOnWhatsApp("${referEarnOverWhatsAppResponse.whatsAppText}$p0 ${referEarnOverWhatsAppResponse.pendingText}")
                     }
                 }
                 override fun onResponseError(p0: String?) {
