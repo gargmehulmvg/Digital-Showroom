@@ -146,7 +146,7 @@ class BillingPosFragment: BaseFragment(), IBillingPosServiceInterface {
                 }
                 if (isNotEmpty(mPageInfoResponse?.cta?.cdn)) {
                     addProductImageView?.let { view -> Glide.with(context).load(mPageInfoResponse?.cta?.cdn).into(view) }
-                }
+                } else addProductImageView?.visibility = View.GONE
                 ctaTextView?.text = mPageInfoResponse?.cta?.text
             }
             otherFeaturesRecyclerView?.apply {
