@@ -8,13 +8,13 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.isNotEmpty
-import com.digitaldukaan.interfaces.IAdapterItemNotifyListener
+import com.digitaldukaan.interfaces.IAddressFieldsItemListener
 import com.digitaldukaan.models.response.AddressFieldsItemResponse
 import com.google.android.material.switchmaterial.SwitchMaterial
 
 class AddAddressFieldAdapter(
     private var mItemList: ArrayList<AddressFieldsItemResponse?>?,
-    private var mListener: IAdapterItemNotifyListener?
+    private var mListener: IAddressFieldsItemListener?
     ) : RecyclerView.Adapter<AddAddressFieldAdapter.AddAddressFieldViewHolder>() {
 
     companion object {
@@ -53,7 +53,7 @@ class AddAddressFieldAdapter(
                 isChecked = item?.isFieldSelected ?: false
                 alpha = if (true == item?.isFieldEnabled) VISIBILITY_FULL else VISIBILITY_BLUR
                 setOnClickListener {
-                    mListener?.onAdapterItemNotifyListener(position)
+                    mListener?.onAddressFieldsItemNotifyListener(position)
                     if (false == item?.isFieldEnabled) {
                         checkBox.isChecked = !checkBox.isChecked
                         return@setOnClickListener
@@ -63,6 +63,7 @@ class AddAddressFieldAdapter(
                     if (!checkBox.isChecked) {
                         mandatorySwitch.isChecked = false
                     }
+                    mListener?.onAddressFieldsCheckChangeListener(item)
                 }
             }
             mandatorySwitch.apply {
@@ -70,7 +71,7 @@ class AddAddressFieldAdapter(
                 mandatorySwitch.alpha = if (true == item?.isFieldEnabled) VISIBILITY_FULL else VISIBILITY_BLUR
                 checkBox.alpha = if (false == item?.isFieldEnabled) VISIBILITY_BLUR else VISIBILITY_FULL
                 setOnClickListener {
-                    mListener?.onAdapterItemNotifyListener(position)
+                    mListener?.onAddressFieldsItemNotifyListener(position)
                     if (false == item?.isFieldEnabled) {
                         mandatorySwitch.isChecked = !mandatorySwitch.isChecked
                         return@setOnClickListener
@@ -80,14 +81,15 @@ class AddAddressFieldAdapter(
                         checkBox.isChecked = true
                     }
                     mandatoryTextView.alpha = if (checkBox.isChecked) VISIBILITY_FULL else VISIBILITY_BLUR
+                    mListener?.onAddressFieldsMandatorySwitchChangeListener(item)
                 }
             }
             headingTextView.setOnClickListener {
-                mListener?.onAdapterItemNotifyListener(position)
+                mListener?.onAddressFieldsItemNotifyListener(position)
                 if (true == item?.isFieldEnabled) updateCheckBoxAndSwitch(item)
             }
             subHeadingTextView.setOnClickListener {
-                mListener?.onAdapterItemNotifyListener(position)
+                mListener?.onAddressFieldsItemNotifyListener(position)
                 if (true == item?.isFieldEnabled) updateCheckBoxAndSwitch(item)
             }
         }

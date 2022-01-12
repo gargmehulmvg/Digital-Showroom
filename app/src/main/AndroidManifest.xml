@@ -30,6 +30,7 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="m"
         tools:ignore="AllowBackup">
+
         <activity
             android:name=".MainActivity"
             android:windowSoftInputMode="stateHidden|adjustResize">
@@ -38,7 +39,8 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <intent-filter  android:autoVerify="true">
+            <intent-filter
+                android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
@@ -53,12 +55,16 @@
                 <data android:scheme="digitaldukaan" />
             </intent-filter>
         </activity>
+
         <activity
             android:name="com.yalantis.ucrop.UCropActivity"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
-        <activity android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
+
+        <activity
+            android:name="com.theartofdev.edmodo.cropper.CropImageActivity"
             android:theme="@style/Base.Theme.AppCompat"/>
+
         <provider
             android:authorities="${applicationId}.fileprovider"
             android:name="androidx.core.content.FileProvider"

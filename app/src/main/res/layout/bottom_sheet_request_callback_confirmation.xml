@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/bottomSheetContainer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_10sdp"
+        app:cardCornerRadius="@dimen/_10sdp">
+
+        <View
+            android:id="@+id/floatingClose"
+            android:layout_width="@dimen/_75sdp"
+            android:layout_height="@dimen/_7sdp"
+            android:layout_gravity="center"
+            android:background="@color/curve_grey_border" />
+
+    </androidx.cardview.widget.CardView>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:background="@drawable/upper_curve_white_background"
+        android:padding="@dimen/_25sdp">
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:src="@drawable/ic_billing_pos_bottom_sheet_confirmation"
+            android:contentDescription="@string/image_view_content_description" />
+
+        <TextView
+            android:id="@+id/headingTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto_medium"
+            android:padding="@dimen/_2sdp"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_14sdp"
+            android:layout_marginTop="@dimen/_15sdp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imageView"
+            tools:text="Do you have an existing billing POS?" />
+
+        <TextView
+            android:id="@+id/noTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/_5sdp"
+            android:background="@drawable/ripple_curve_grey_border_white_background"
+            android:fontFamily="@font/roboto_bold"
+            android:gravity="center"
+            android:onClick="onClick"
+            android:paddingStart="@dimen/_25sdp"
+            android:paddingTop="@dimen/_8sdp"
+            android:paddingEnd="@dimen/_25sdp"
+            android:paddingBottom="@dimen/_8sdp"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_10sdp"
+            app:layout_constraintEnd_toStartOf="@id/yesTextView"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/yesTextView"
+            android:text="@string/text_no" />
+
+        <TextView
+            android:id="@+id/yesTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_5sdp"
+            android:layout_marginTop="@dimen/_20sdp"
+            android:background="@drawable/ripple_curve_grey_border_white_background"
+            android:fontFamily="@font/roboto_bold"
+            android:gravity="center"
+            android:onClick="onClick"
+            android:paddingStart="@dimen/_25sdp"
+            android:paddingTop="@dimen/_8sdp"
+            android:paddingEnd="@dimen/_25sdp"
+            android:paddingBottom="@dimen/_8sdp"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_10sdp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@id/noTextView"
+            app:layout_constraintTop_toBottomOf="@id/headingTextView"
+            app:layout_goneMarginTop="@dimen/_15sdp"
+            android:text="@string/txt_yes" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</LinearLayout>

@@ -28,6 +28,7 @@ class Constants {
         const val ERROR_CODE_FORBIDDEN_ACCESS                   = 403
         const val ERROR_CODE_FORCE_UPDATE                       = 410
         const val ERROR_MESSAGE_UN_AUTHORIZED_ACCESS            = "unauthorized access"
+        const val SHARED_PREF_NAME_STAGING                      = "DigitalDukaanPrefsStaging"
         const val SHARED_PREF_NAME                              = "DigitalDukaanPrefs"
         const val USER_AUTH_TOKEN                               = "USER_AUTH_TOKEN"
         const val STORE_ID                                      = "STORE_ID"
@@ -240,6 +241,7 @@ class Constants {
         const val MY_SHORTCUTS                                  = "my_shortcuts"
         const val PREMIUM_USER                                  = "premium_user"
         const val MANAGE_INVENTORY                              = "managed_inventory"
+        const val E_COMM_PACK                                   = "e_comm_pack"
         //BILL_TYPE
         const val BILL_TYPE_PDF                                 = "pdf"
         //STAFF_INVITATION_CODE

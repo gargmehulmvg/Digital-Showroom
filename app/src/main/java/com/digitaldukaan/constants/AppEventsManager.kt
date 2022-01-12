@@ -31,26 +31,18 @@ class AppEventsManager {
         }
 
         fun pushAppEvents(eventName: String?, isCleverTapEvent: Boolean, isAppFlyerEvent: Boolean, isServerCallEvent: Boolean, data: Map<String, String?>) {
-            if (isCleverTapEvent) {
-                pushCleverTapEvent(eventName, data)
-            }
-            if (isAppFlyerEvent) {
-                pushAppFlyerEvent(eventName, data)
-            }
-            if (isServerCallEvent) {
-                pushServerCallEvent(eventName, data)
-            }
+            if (isCleverTapEvent) pushCleverTapEvent(eventName, data)
+            if (isAppFlyerEvent) pushAppFlyerEvent(eventName, data)
+            if (isServerCallEvent) pushServerCallEvent(eventName, data)
         }
 
         private fun pushServerCallEvent(eventName: String?, data: Map<String, String?>) {
-            if (eventName == null || eventName.isEmpty()) {
-                return
-            }
+            if (isEmpty(eventName)) return
             CoroutineScopeUtils().runTaskOnCoroutineBackground {
                 try {
                     Log.d(TAG, "pushServerCallEvent: event name :: $eventName && map :: $data")
                     val storeIdStr = PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)
-                    val request = AndroidEventLogRequest(if (storeIdStr.isNotEmpty()) storeIdStr.toInt() else 0, eventName, data)
+                    val request = AndroidEventLogRequest(if (isNotEmpty(storeIdStr)) storeIdStr.toInt() else 0, eventName, data)
                     val response = RetrofitApi().getAnalyticsServerCallObject()?.androidEventLog(request)
                     Log.d(TAG, "pushServerCallEvent: $response")
                 } catch (e: Exception) {

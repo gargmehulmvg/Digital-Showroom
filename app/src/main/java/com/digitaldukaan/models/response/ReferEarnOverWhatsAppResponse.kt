@@ -10,6 +10,7 @@ data class ReferEarnOverWhatsAppResponse(
 
 data class ReferAndEarnOverWhatsAppItemResponse(
     @SerializedName("wa_text")              var whatsAppText: String?,
+    @SerializedName("pending_text")         var pendingText: String?,
     @SerializedName("image_url")            var imageUrl: String?,
     @SerializedName("share_store_banner")   var isShareStoreBanner: Boolean?
 )

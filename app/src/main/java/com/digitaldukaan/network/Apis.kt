@@ -54,11 +54,17 @@ interface Apis {
     suspend fun getStaffMembersDetails(@Path("storeId") storeId: String) : Response<CommonApiResponse>
 
     /* ----------------------       Settings         ---------------------- */
+    @GET("api/dotk/vm1/settings/getReferralData")
+    suspend fun getReferralData() : Response<CommonApiResponse>
+
     @GET("api/dotk/vm1/settings/getOrderTypePageInfo")
     suspend fun getOrderTypePageInfo() : Response<CommonApiResponse>
 
     @POST("api/dotk/vm1/settings/setGST")
     suspend fun setGST(@Body request: SetGstRequest) : Response<CommonApiResponse>
+
+    @POST("api/dotk/vm1/settings/createReseller")
+    suspend fun createReseller(@Body request: CreateResellerRequest) : Response<CommonApiResponse>
 
     @POST("api/dotk/vm1/settings/verifyDisplayPhoneNumber")
     suspend fun verifyDisplayPhoneNumber(@Body request: VerifyDisplayPhoneNumberRequest) : Response<CommonApiResponse>

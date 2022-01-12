@@ -81,6 +81,11 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
             showNoInternetConnectionDialog()
             return
         }
+        val isECommPermissionEnable = StaticInstances.sPermissionHashMap?.get(Constants.E_COMM_PACK) ?: false
+        editCustomerAddressContainer?.visibility = if (isECommPermissionEnable) View.VISIBLE else {
+            mActivity?.let { context -> deliveryChargeContainer?.background = ContextCompat.getDrawable(context, R.drawable.ripple_lower_curve_grey_white_background) }
+            View.GONE
+        }
     }
 
     private fun updateStoreServiceInstances() {

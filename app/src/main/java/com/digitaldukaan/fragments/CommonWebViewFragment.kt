@@ -16,12 +16,23 @@ import com.digitaldukaan.R
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.IOnToolbarIconClick
 import com.digitaldukaan.models.dto.ConvertMultiImageDTO
+import com.digitaldukaan.models.request.CreateResellerRequest
 import com.digitaldukaan.models.response.LockedStoreShareResponse
+import com.digitaldukaan.models.response.ReferAndEarnOverWhatsAppItemResponse
+import com.digitaldukaan.network.RetrofitApi
 import com.digitaldukaan.webviews.WebViewBridge
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount
+import com.google.android.gms.auth.api.signin.GoogleSignInClient
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.tasks.Task
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.layout_common_webview_fragment.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.json.JSONObject
 
 
@@ -71,7 +82,7 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
             settings.javaScriptEnabled = true
             settings.domStorageEnabled = true
             addJavascriptInterface(WebViewBridge(), Constants.KEY_ANDROID)
-            Log.d(CommonWebViewFragment::class.simpleName, "onViewCreated: $mLoadUrl")
+            Log.d(TAG, "onViewCreated: $mLoadUrl")
             triggerWebViewOpenEvent()
             loadUrl(mLoadUrl)
         }
@@ -164,6 +175,9 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
             jsonData.optBoolean("redirectHomePage") -> {
                 launchFragment(OrderFragment.newInstance(), true)
             }
+            jsonData.optBoolean("shareReferLink") -> {
+                shareReferLinkServerCall()
+            }
             jsonData.optBoolean("startLoader") -> {
                 showProgressDialog(mActivity)
             }
@@ -175,6 +189,9 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
             }
             jsonData.optBoolean("addAddress") -> {
                 launchFragment(StoreMapLocationFragment.newInstance(0, true), true)
+            }
+            jsonData.optBoolean("joinPartnerProgram") -> {
+                showUserEmailDialog()
             }
             jsonData.optBoolean("openAppByPackage") -> {
                 val packageName = jsonData.optString("data")
@@ -188,16 +205,16 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
             }
             jsonData.optBoolean("openUPI") -> {
                 val packageName = jsonData.optString("packageName")
-                val uri: Uri = Uri.Builder()
-                    .scheme("upi")
-                    .authority("pay")
-                    .appendQueryParameter("pa", jsonData.optString("pa"))
-                    .appendQueryParameter("pn", jsonData.optString("pn"))
-                    .appendQueryParameter("tr", jsonData.optString("tr"))
-                    .appendQueryParameter("tn", jsonData.optString("tn"))
-                    .appendQueryParameter("am", jsonData.optString("am"))
-                    .appendQueryParameter("cu", "INR")
-                    .build()
+                val uri: Uri = Uri.Builder().apply {
+                    scheme("upi")
+                    authority("pay")
+                    appendQueryParameter("pa", jsonData.optString("pa"))
+                    appendQueryParameter("pn", jsonData.optString("pn"))
+                    appendQueryParameter("tr", jsonData.optString("tr"))
+                    appendQueryParameter("tn", jsonData.optString("tn"))
+                    appendQueryParameter("am", jsonData.optString("am"))
+                    appendQueryParameter("cu", "INR")
+                }.build()
                 val intent = Intent(Intent.ACTION_VIEW)
                 intent.data = uri
                 intent.setPackage(packageName)
@@ -242,6 +259,30 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                     data = map
                 )
+            }
+        }
+    }
+
+    private fun shareReferLinkServerCall() {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            try {
+                val response = RetrofitApi().getServerCallObject()?.getReferralData()
+                response?.let { res ->
+                    if (res.isSuccessful) {
+                        res.body()?.let { commonResponse ->
+                            withContext(Dispatchers.Main) {
+                                stopProgress()
+                                if (commonResponse.mIsSuccessStatus) {
+                                    val shareResponse = Gson().fromJson<ReferAndEarnOverWhatsAppItemResponse>(commonResponse.mCommonDataStr, ReferAndEarnOverWhatsAppItemResponse::class.java)
+                                    shareReferAndEarnWithDeepLink(shareResponse)
+                                }
+                            }
+                        }
+
+                    }
+                }
+            } catch (e: Exception) {
+                exceptionHandlingForAPIResponse(e)
             }
         }
     }
@@ -343,4 +384,74 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
     }
 
     override fun onLockedStoreShareSuccessResponse(lockedShareResponse: LockedStoreShareResponse) = showLockedStoreShareBottomSheet(lockedShareResponse)
+
+    private fun showUserEmailDialog() {
+        mActivity?.let { context ->
+            val gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestEmail().build()
+            val googleSignInClient = GoogleSignIn.getClient(context, gso)
+            signOutFromGmail(googleSignInClient)
+            val account = GoogleSignIn.getLastSignedInAccount(context)
+            if (null == account) {
+                val signInIntent: Intent = googleSignInClient.signInIntent
+                startActivityForResult(signInIntent, Constants.EMAIL_REQUEST_CODE)
+            } else {
+                updateUserAccountInfo(account)
+                Log.d(TAG, "showUserEmailDialog: $account")
+            }
+        }
+    }
+
+    private fun updateUserAccountInfo(acct: GoogleSignInAccount?) {
+        val personEmail = acct?.email
+        showProgressDialog(mActivity)
+        val request = CreateResellerRequest(emailId = personEmail)
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            try {
+                val response = RetrofitApi().getServerCallObject()?.createReseller(request)
+                response?.let { res ->
+                    if (res.isSuccessful) {
+                        res.body()?.let { commonResponse ->
+                            withContext(Dispatchers.Main) {
+                                stopProgress()
+                                if (commonResponse.mIsSuccessStatus) {
+                                    showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_check_circle)
+                                    val commonWebView: WebView? = mContentView?.findViewById(R.id.commonWebView)
+                                    commonWebView?.loadUrl(mLoadUrl)
+                                } else showShortSnackBar(commonResponse.mMessage, true, R.drawable.ic_close_red)
+                            }
+                        }
+
+                    }
+                }
+            } catch (e: Exception) {
+                exceptionHandlingForAPIResponse(e)
+            }
+        }
+    }
+
+    private fun handleSignInResult(completedTask: Task<GoogleSignInAccount>) {
+        try {
+            val account: GoogleSignInAccount = completedTask.getResult(ApiException::class.java)
+            updateUserAccountInfo(account)
+            Log.d(TAG, "handleSignInResult: $account")
+        } catch (e: ApiException) {
+            Log.d(TAG, "signInResult:failed code=" + e.statusCode)
+            showToast(e.message)
+        }
+    }
+
+    private fun signOutFromGmail(googleSignInClient: GoogleSignInClient) {
+        googleSignInClient.signOut().addOnCompleteListener {
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        when (requestCode) {
+            Constants.EMAIL_REQUEST_CODE -> {
+                val task = GoogleSignIn.getSignedInAccountFromIntent(data)
+                handleSignInResult(task)
+            }
+            else -> super.onActivityResult(requestCode, resultCode, data)
+        }
+    }
 }

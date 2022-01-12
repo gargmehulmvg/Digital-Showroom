@@ -195,6 +195,7 @@ class OtpVerificationFragment : BaseFragment(), IOnOTPFilledListener, IOtpVerifi
 
             override fun afterTextChanged(editable: Editable?) {
                 mEnteredOtpStr = editable?.toString() ?: ""
+                verifyTextViewContainer?.isEnabled = (isNotEmpty(mEnteredOtpStr) && mActivity?.resources?.getInteger(R.integer.otp_length) == mEnteredOtpStr.length)
                 if (isNotEmpty(mEnteredOtpStr) && mActivity?.resources?.getInteger(R.integer.otp_length) == mEnteredOtpStr.length) {
                     onOTPFilledListener(mEnteredOtpStr)
                 }

@@ -32,6 +32,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.*
+import com.appsflyer.CreateOneLinkHttpTask
+import com.appsflyer.share.ShareInviteHelper
 import com.bumptech.glide.Glide
 import com.daimajia.androidanimations.library.Techniques
 import com.daimajia.androidanimations.library.YoYo
@@ -353,14 +355,14 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
 
     open fun storeStringDataInSharedPref(keyName: String, value: String?) {
         mActivity?.run {
-            val editor = getSharedPreferences(Constants.SHARED_PREF_NAME, MODE_PRIVATE).edit()
+            val editor = getSharedPreferences(getSharedPreferenceName(), MODE_PRIVATE).edit()
             editor.putString(keyName, value)
             editor.apply()
         }
     }
 
     open fun getStringDataFromSharedPref(keyName: String?): String {
-        val prefs = mActivity?.getSharedPreferences(Constants.SHARED_PREF_NAME, MODE_PRIVATE)
+        val prefs = mActivity?.getSharedPreferences(getSharedPreferenceName(), MODE_PRIVATE)
         return prefs?.getString(keyName, "").toString()
     }
 
@@ -381,8 +383,29 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         }
     }
 
-    open fun shareOnWhatsApp(sharingData: String?, image: Bitmap? = null) {
-        if (null != image) {
+    fun shareDataOnWhatsAppWithImage(sharingData: String, url: String?) {
+        Log.d(TAG, "shareDataOnWhatsAppWithImage: sharingData :: $sharingData")
+        if (isEmpty(url)) return
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            Picasso.get().load(url).into(object : com.squareup.picasso.Target {
+                override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
+                    bitmap?.let { shareOnWhatsApp(sharingData, bitmap) }
+                }
+
+                override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
+                    Log.d(TAG, "onPrepareLoad: ")
+                }
+
+                override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
+                    Log.d(TAG, "onBitmapFailed: ")
+                }
+            })
+        }
+    }
+
+    open fun shareOnWhatsApp(sharingData: String?, imageBitmap: Bitmap? = null) {
+        Log.d(TAG, "shareOnWhatsApp: sharingData :: $sharingData")
+        if (null != imageBitmap) {
             mActivity?.let {
                 if (ActivityCompat.checkSelfPermission(it, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(it, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                     ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE), Constants.STORAGE_REQUEST_CODE)
@@ -395,7 +418,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         shareIntent.type = "*/*"
         val resInfoList = activity?.packageManager?.queryIntentActivities(shareIntent, 0)
         val shareIntentList = arrayListOf<Intent>()
-        if (resInfoList?.isNotEmpty() == true) {
+        if (true == resInfoList?.isNotEmpty()) {
             for (resInfo in resInfoList) {
                 val packageName = resInfo.activityInfo.packageName
                 if (packageName.toLowerCase(Locale.getDefault()).contains("whatsapp")) {
@@ -403,7 +426,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                     intent.component = ComponentName(packageName, resInfo.activityInfo.name)
                     intent.action = Intent.ACTION_SEND
                     intent.type = "text/plain"
-                    image?.let {
+                    imageBitmap?.let {
                         intent.type = "*/*"
                         intent.putExtra(Intent.EXTRA_STREAM, it.getImageUri(mActivity))
                     }
@@ -480,42 +503,6 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                     "Exception Logs" to ex.toString()
                 )
             )
-        }
-    }
-
-    open fun shareDataOnWhatsAppWithImage(sharingData: String?, photoStr: String?) {
-        CoroutineScopeUtils().runTaskOnCoroutineMain {
-            Picasso.get().load(photoStr).into(object : com.squareup.picasso.Target {
-                override fun onBitmapLoaded(bitmap: Bitmap?, from: Picasso.LoadedFrom?) {
-                    bitmap?.let {
-                        val imgUri = it.getImageUri(mActivity)
-                        Log.d(TAG, "onBitmapLoaded: $imgUri")
-                        imgUri?.let {
-                            val whatsAppIntent = Intent(Intent.ACTION_SEND)
-                            whatsAppIntent.apply {
-                                try {
-                                    setPackage("com.whatsapp")
-                                    putExtra(Intent.EXTRA_TEXT, sharingData)
-                                    putExtra(Intent.EXTRA_STREAM, it)
-                                    type = "*/*"
-                                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                                    mActivity?.startActivity(this)
-                                } catch (e: Exception) {
-                                    showToast("WhatsApp have not been installed. ${e.message}")
-                                }
-                            }
-                        }
-                    }
-                }
-
-                override fun onPrepareLoad(placeHolderDrawable: Drawable?) {
-                    Log.d(TAG, "onPrepareLoad: ")
-                }
-
-                override fun onBitmapFailed(e: Exception?, errorDrawable: Drawable?) {
-                    Log.d(TAG, "onBitmapFailed: ")
-                }
-            })
         }
     }
 
@@ -1358,7 +1345,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
 
     fun logoutFromApplication(isAppLogout: Boolean = false) {
         if (!isAppLogout) showToast(mActivity?.getString(R.string.logout_message))
-        mActivity?.getSharedPreferences(Constants.SHARED_PREF_NAME, MODE_PRIVATE)?.edit()?.clear()?.apply()
+        mActivity?.getSharedPreferences(getSharedPreferenceName(), MODE_PRIVATE)?.edit()?.clear()?.apply()
         storeStringDataInSharedPref(Constants.KEY_DONT_SHOW_MESSAGE_AGAIN, "")
         storeStringDataInSharedPref(Constants.USER_AUTH_TOKEN, "")
         storeStringDataInSharedPref(Constants.STORE_NAME, "")
@@ -2412,6 +2399,32 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         StaticInstances.sSuggestedDomainsList = null
         StaticInstances.sCustomDomainBottomSheetResponse = null
         StaticInstances.sPermissionHashMap = null
+    }
+
+    fun shareReferAndEarnWithDeepLink(referEarnOverWhatsAppResponse: ReferAndEarnOverWhatsAppItemResponse) {
+        ShareInviteHelper.generateInviteUrl(mActivity).apply {
+            channel = "whatsapp"
+            campaign = "sharing"
+            setReferrerCustomerId(PrefsManager.getStringDataFromSharedPref(Constants.USER_MOBILE_NUMBER))
+            generateLink(mActivity, object : CreateOneLinkHttpTask.ResponseListener {
+                override fun onResponse(p0: String?) {
+                    Log.d(TAG, "onResponse: $p0")
+                    if (true == referEarnOverWhatsAppResponse.isShareStoreBanner) {
+                        AppEventsManager.pushAppEvents(
+                            eventName = AFInAppEventType.EVENT_SETTINGS_REFERRAL,
+                            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
+                            data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.LINK to p0)
+                        )
+                        shareDataOnWhatsAppWithImage("${referEarnOverWhatsAppResponse.whatsAppText}$p0 ${referEarnOverWhatsAppResponse.pendingText}", referEarnOverWhatsAppResponse.imageUrl)
+                    } else {
+                        shareOnWhatsApp("${referEarnOverWhatsAppResponse.whatsAppText}$p0 ${referEarnOverWhatsAppResponse.pendingText}")
+                    }
+                }
+                override fun onResponseError(p0: String?) {
+                    Log.d(TAG, "onResponseError: $p0")
+                }
+            })
+        }
     }
 
 }

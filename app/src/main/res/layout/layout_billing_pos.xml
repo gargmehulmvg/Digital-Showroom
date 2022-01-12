@@ -173,6 +173,7 @@
                     android:layout_width="@dimen/_20sdp"
                     android:layout_height="@dimen/_20sdp"
                     android:clickable="false"
+                    android:visibility="visible"
                     android:contentDescription="@string/image_view_content_description"
                     android:padding="@dimen/_4sdp"
                     app:layout_constraintBottom_toBottomOf="parent"

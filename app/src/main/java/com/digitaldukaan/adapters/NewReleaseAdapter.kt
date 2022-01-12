@@ -1,5 +1,6 @@
 package com.digitaldukaan.adapters
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,6 +31,7 @@ class NewReleaseAdapter(
         val imageView: ImageView = itemView.findViewById(R.id.imageView)
         val textView: TextView = itemView.findViewById(R.id.textView)
         val newTextView: ImageView = itemView.findViewById(R.id.newTextView)
+        val backgroundImageView: ImageView = itemView.findViewById(R.id.backgroundImageView)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AppSettingsViewHolder {
@@ -53,14 +55,18 @@ class NewReleaseAdapter(
                 newTextView.background = null
                 activity?.let { context -> Glide.with(context).load(responseItem?.mNewImageUrl).into(newTextView) }
             } else newTextView.visibility = View.INVISIBLE
-            when (responseItem?.mType) {
-                Constants.NEW_RELEASE_TYPE_GOOGLE_ADS -> activity?.let {
-                    itemLayout.background = ContextCompat.getDrawable(it, R.drawable.slight_curve_google_ads_background)
-                    textView.setTextColor(ContextCompat.getColor(it, R.color.white))
+            activity?.let { context ->
+                if (isNotEmpty(responseItem?.mTextColor)) {
+                    textView.setTextColor(Color.parseColor(responseItem?.mTextColor))
+                } else textView.setTextColor(Color.BLACK)
+                if (isNotEmpty(responseItem?.mBgImage)) {
+                    Glide.with(context).load(responseItem?.mBgImage).into(holder.backgroundImageView)
+                } else {
+                    backgroundImageView.setBackgroundColor(ContextCompat.getColor(context, R.color.white))
                 }
-                Constants.NEW_RELEASE_TYPE_CUSTOM_DOMAIN -> activity?.let { itemLayout.background = ContextCompat.getDrawable(it, R.drawable.curve_premium_selector) }
+            }
+            when (responseItem?.mType) {
                 Constants.NEW_RELEASE_TYPE_PREPAID_ORDER -> newTextView.visibility = View.VISIBLE
-                Constants.NEW_RELEASE_TYPE_PREMIUM -> activity?.let { itemLayout.background = ContextCompat.getDrawable(it, R.drawable.curve_premium_selector) }
                 Constants.NEW_RELEASE_TYPE_PAYMENT_MODES -> newTextView.visibility = View.VISIBLE
                 Constants.NEW_RELEASE_TYPE_TRENDING -> {
                     trendingTextView.text = null
