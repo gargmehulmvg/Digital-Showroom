@@ -1423,7 +1423,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
 
     override fun onBackPressed(): Boolean {
         try {
-            return if (!mIsOrderDeleted && mIsOrderEdited && shareProductContainer?.visibility != View.VISIBLE) {
+            return if (!mIsOrderDeleted && mIsOrderEdited && View.VISIBLE != shareProductContainer?.visibility) {
                 showGoBackDialog()
                 return true
             } else {

@@ -66,7 +66,7 @@
             android:theme="@style/Base.Theme.AppCompat"/>
 
         <provider
-            android:authorities="${applicationId}.fileprovider"
+            android:authorities="${appApplicationId}.fileprovider"
             android:name="androidx.core.content.FileProvider"
             android:exported="false"
             android:grantUriPermissions="true">
