@@ -23,6 +23,7 @@ import com.digitaldukaan.adapters.SocialMediaTemplateAdapter
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.IOnToolbarIconClick
 import com.digitaldukaan.interfaces.ISocialMediaTemplateItemClickListener
+import com.digitaldukaan.models.request.SaveSocialMediaPostRequest
 import com.digitaldukaan.models.request.SocialMediaTemplateFavouriteRequest
 import com.digitaldukaan.models.response.*
 import com.digitaldukaan.services.SocialMediaService
@@ -44,6 +45,7 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
     private var mSocialMediaTemplateList: ArrayList<SocialMediaTemplateListItemResponse?>? = ArrayList()
     private var mPageNumber: Int = 1
     private var mSelectedCategoryId: String = "0"
+    private var mTemplateTypeStr: String = ""
     private var mFavoriteCategoryId: Int = 1
     private var mIsNextPage: Boolean = false
     private var mMarketingPageInfoResponse: MarketingPageInfoResponse? = null
@@ -54,6 +56,7 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
         private var sSocialMediaCategoriesList: ArrayList<SocialMediaCategoryItemResponse?>? = ArrayList()
         private var sIsWhatsAppIconClicked = false
         private var sSelectedTemplatePosition = 0
+        private const val SALES_AND_OFFERS_ID = "4"
         private var sSelectedTemplateItem: SocialMediaTemplateListItemResponse? = null
 
         fun newInstance(marketingPageInfoResponse: MarketingPageInfoResponse?): SocialMediaFragment {
@@ -76,6 +79,7 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
         mService = SocialMediaService()
         mService?.setSocialMediaServiceInterface(this)
         if (null == mMarketingPageInfoResponse) mService?.getMarketingPageInfo()
+        mTemplateTypeStr = Constants.SOCIAL_MEDIA_TEMPLATE_TYPE_SOCIAL
         return mContentView
     }
 
@@ -181,6 +185,13 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
         }
     }
 
+    override fun onSaveSocialMediaPostResponse(commonApiResponse: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            showShortSnackBar(commonApiResponse.mMessage, true, if (commonApiResponse.mIsSuccessStatus) R.drawable.ic_check_circle else R.drawable.ic_close_red_small)
+            stopProgress()
+        }
+    }
+
     private fun setupHelpPageUI(marketingHelpPage: HelpPageResponse?) {
         ToolBarManager.getInstance()?.apply {
             if (marketingHelpPage?.mIsActive == true) {
@@ -230,6 +241,7 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
             showProgressDialog(mActivity)
             mPageNumber = 1
             mSelectedCategoryId = item?.id ?: "0"
+            mTemplateTypeStr = if (SALES_AND_OFFERS_ID == mSelectedCategoryId) Constants.SOCIAL_MEDIA_TEMPLATE_TYPE_BUSINESS else Constants.SOCIAL_MEDIA_TEMPLATE_TYPE_SOCIAL
             Log.d(TAG, "onViewCreated: onSocialMediaTemplateCategoryItemClickListener called :: page number :: $mPageNumber :: Category Id :: $mSelectedCategoryId")
             mService?.getSocialMediaTemplateList(mSelectedCategoryId, mPageNumber)
         }
@@ -268,6 +280,14 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
             }, Constants.TIMER_AUTO_DISMISS_PROGRESS_DIALOG)
             showProgressDialog(mActivity)
         }
+        val request = SaveSocialMediaPostRequest(
+            shareType       = Constants.SOCIAL_MEDIA_SHARE_TYPE_SHARE,
+            htmlDefaults    = item?.html?.htmlDefaults,
+            templateId      = item?.id?.toInt() ?: 0,
+            templateType    = mTemplateTypeStr,
+            isEdited        = false
+        )
+        mService?.saveSocialMediaPost(request)
     }
 
     override fun onSocialMediaTemplateWhatsappItemClickListener(position: Int, item: SocialMediaTemplateListItemResponse?) {
@@ -289,6 +309,14 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
             }, Constants.TIMER_AUTO_DISMISS_PROGRESS_DIALOG)
             showProgressDialog(mActivity)
         }
+        val request = SaveSocialMediaPostRequest(
+            shareType       = Constants.SOCIAL_MEDIA_SHARE_TYPE_WHATSAPP,
+            htmlDefaults    = item?.html?.htmlDefaults,
+            templateId      = item?.id?.toInt() ?: 0,
+            templateType    = mTemplateTypeStr,
+            isEdited        = false
+        )
+        mService?.saveSocialMediaPost(request)
     }
 
     private fun setupUIForScreenShot(item: SocialMediaTemplateListItemResponse?) {

@@ -28,6 +28,7 @@ import com.digitaldukaan.adapters.TemplateBackgroundAdapter
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.IAdapterItemClickListener
 import com.digitaldukaan.interfaces.IProductItemClickListener
+import com.digitaldukaan.models.request.SaveSocialMediaPostRequest
 import com.digitaldukaan.models.request.SearchCatalogItemsRequest
 import com.digitaldukaan.models.response.*
 import com.digitaldukaan.network.RetrofitApi
@@ -265,6 +266,13 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
                 mTemplateBackgroundList = Gson().fromJson<ArrayList<TemplateBackgroundItemResponse>>(response.mCommonDataStr, listType)
                 showBackgroundBottomSheet()
             }
+        }
+    }
+
+    override fun onSaveSocialMediaPostResponse(commonApiResponse: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            showShortSnackBar(commonApiResponse.mMessage, true, if (commonApiResponse.mIsSuccessStatus) R.drawable.ic_check_circle else R.drawable.ic_close_red_small)
         }
     }
 
@@ -519,6 +527,15 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
                     val originalBitmap = getBitmapFromView(v, mActivity)
                     originalBitmap?.let { bitmap -> shareOnWhatsApp("Order From - ${mMarketingPageInfoResponse?.marketingStoreInfo?.domain}", bitmap) }
                 }
+                showProgressDialog(mActivity)
+                val request = SaveSocialMediaPostRequest(
+                    shareType       = Constants.SOCIAL_MEDIA_SHARE_TYPE_WHATSAPP,
+                    htmlDefaults    = mSocialMediaTemplateResponse?.html?.htmlDefaults,
+                    templateId      = mSocialMediaTemplateResponse?.id?.toInt() ?: 0,
+                    templateType    = "",
+                    isEdited        = false
+                )
+                mService?.saveSocialMediaPost(request)
             }
             shareTextView?.id -> {
                 if (StaticInstances.sIsShareStoreLocked) {
@@ -535,6 +552,15 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
                     val originalBitmap = getBitmapFromView(v, mActivity)
                     originalBitmap?.let { bitmap -> shareData("Order From - ${mMarketingPageInfoResponse?.marketingStoreInfo?.domain}", bitmap) }
                 }
+                showProgressDialog(mActivity)
+                val request = SaveSocialMediaPostRequest(
+                    shareType       = Constants.SOCIAL_MEDIA_SHARE_TYPE_SHARE,
+                    htmlDefaults    = mSocialMediaTemplateResponse?.html?.htmlDefaults,
+                    templateId      = mSocialMediaTemplateResponse?.id?.toInt() ?: 0,
+                    templateType    = "",
+                    isEdited        = false
+                )
+                mService?.saveSocialMediaPost(request)
             }
         }
     }

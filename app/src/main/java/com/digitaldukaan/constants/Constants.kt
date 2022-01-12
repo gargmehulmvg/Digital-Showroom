@@ -251,5 +251,13 @@ class Constants {
         //MANAGE_INVENTORY
         const val INVENTORY_DISABLE                             = 0
         const val INVENTORY_ENABLE                              = 1
+        //SOCIAL_MEDIA_TEMPLATE_TYPE
+        const val SOCIAL_MEDIA_TEMPLATE_TYPE_SOCIAL             = "Social"
+        const val SOCIAL_MEDIA_TEMPLATE_TYPE_BUSINESS           = "Business"
+        const val SOCIAL_MEDIA_TEMPLATE_TYPE_PRODUCT_DISCOUNT   = "Product Discount"
+        const val SOCIAL_MEDIA_TEMPLATE_TYPE_PRODUCT_BESTSELLER = "Product Bestseller"
+        //SOCIAL_MEDIA_SHARE_TYPE
+        const val SOCIAL_MEDIA_SHARE_TYPE_SHARE                 = "generic"
+        const val SOCIAL_MEDIA_SHARE_TYPE_WHATSAPP              = "whatsapp"
     }
 }

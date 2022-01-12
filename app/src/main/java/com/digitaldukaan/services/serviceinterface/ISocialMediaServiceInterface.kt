@@ -12,5 +12,7 @@ interface ISocialMediaServiceInterface {
 
     fun onMarketingPageInfoResponse(commonApiResponse: CommonApiResponse)
 
+    fun onSaveSocialMediaPostResponse(commonApiResponse: CommonApiResponse)
+
     fun onSocialMediaException(e: Exception)
 }

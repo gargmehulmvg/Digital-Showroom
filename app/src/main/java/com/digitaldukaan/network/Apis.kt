@@ -178,6 +178,9 @@ interface Apis {
     @POST("api/dotk/vm1/marketing/shareStore")
     suspend fun getShareStore(): Response<CommonApiResponse>
 
+    @POST("api/dotk/vm1/marketing/saveSocialMediaPost")
+    suspend fun saveSocialMediaPost(@Body request: SaveSocialMediaPostRequest): Response<CommonApiResponse>
+
     @POST("api/dotk/vm1/marketing/setSocialMediaFavourite")
     suspend fun setSocialMediaFavourite(@Body request: SocialMediaTemplateFavouriteRequest): Response<CommonApiResponse>
 
