@@ -258,7 +258,15 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
     }
 
     override fun onSocialMediaTemplateEditItemClickListener(position: Int, item: SocialMediaTemplateListItemResponse?) {
-        launchFragment(EditSocialMediaTemplateFragment.newInstance(mMarketingPageInfoResponse?.marketingStaticTextResponse?.heading_edit_and_share, item, false, mMarketingPageInfoResponse), true)
+        launchFragment(
+            EditSocialMediaTemplateFragment.newInstance(
+                heading = mMarketingPageInfoResponse?.marketingStaticTextResponse?.heading_edit_and_share,
+                item = item,
+                isOpenBottomSheet = false,
+                marketingPageInfoResponse = mMarketingPageInfoResponse,
+                templateType = Constants.SOCIAL_MEDIA_TEMPLATE_TYPE_BUSINESS
+            ), true
+        )
     }
 
     override fun onSocialMediaTemplateShareItemClickListener(position: Int, item: SocialMediaTemplateListItemResponse?) {

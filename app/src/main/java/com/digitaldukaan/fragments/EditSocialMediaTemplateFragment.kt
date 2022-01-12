@@ -55,7 +55,9 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
     private var mSocialMediaTemplateResponse: SocialMediaTemplateListItemResponse? = null
     private var mService: EditSocialMediaTemplateService? = null
     private var mIsOpenBottomSheet = false
+    private var mIsTemplateEdited = false
     private var mHeadingStr = ""
+    private var mTemplateTypeStr = ""
     private var mMarketingPageInfoResponse: MarketingPageInfoResponse? = null
     private var mAddProductStoreCategoryList: ArrayList<StoreCategoryItem>? = ArrayList()
     private var mCategoryBottomSheetDialog: BottomSheetDialog? = null
@@ -65,15 +67,17 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
     private var mSelectedBackgroundItem: TemplateBackgroundItemResponse? = null
     private var editTemplateWebView: WebView? = null
     private var mIsItemSelectedFromBottomSheet = false
+    private var mSelectedProductFromBottomSheet: ProductResponse? = null
 
     companion object {
         private const val EDIT_TEMPLATE_WEB_VIEW_URL = BuildConfig.WEB_VIEW_URL + Constants.WEB_VIEW_URL_EDIT_SOCIAL_MEDIA_POST
         private var sIsWhatsAppIconClicked = false
 
-        fun newInstance(heading: String?, item: SocialMediaTemplateListItemResponse?, isOpenBottomSheet: Boolean = false, marketingPageInfoResponse: MarketingPageInfoResponse?): EditSocialMediaTemplateFragment {
+        fun newInstance(templateType: String, heading: String?, item: SocialMediaTemplateListItemResponse?, isOpenBottomSheet: Boolean = false, marketingPageInfoResponse: MarketingPageInfoResponse?): EditSocialMediaTemplateFragment {
             val fragment = EditSocialMediaTemplateFragment()
             fragment.mSocialMediaTemplateResponse = item
             fragment.mHeadingStr = heading ?: ""
+            fragment.mTemplateTypeStr = templateType
             fragment.mIsOpenBottomSheet = isOpenBottomSheet
             fragment.mMarketingPageInfoResponse = marketingPageInfoResponse
             return fragment
@@ -402,6 +406,7 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
                         }
                         Log.d(TAG, "showEditTemplateBottomSheet :: mWebViewUrl :: $mWebViewUrl")
                         editTemplateWebView?.loadUrl(mWebViewUrl)
+                        mIsTemplateEdited = true
                         bottomSheetDialog.dismiss()
                     }
                 }
@@ -426,7 +431,6 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
                         adapter = TemplateBackgroundAdapter(mActivity, mTemplateBackgroundList, object : IAdapterItemClickListener {
 
                             override fun onAdapterItemClickListener(position: Int) {
-                                bottomSheetDialog.dismiss()
                                 mTemplateBackgroundList?.forEachIndexed { _, itemResponse -> itemResponse.isSelected = false }
                                 mSelectedBackgroundItem = null
                                 mSelectedBackgroundItem = mTemplateBackgroundList?.get(position)
@@ -434,6 +438,8 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
                                 val newWebViewUrlWithBg = "$mWebViewUrl&background=${URLEncoder.encode(Gson().toJson(mSelectedBackgroundItem))}"
                                 Log.d(TAG, "showBackgroundBottomSheet :: onAdapterItemClickListener: newWebViewUrlWithBg :: $newWebViewUrlWithBg")
                                 editTemplateWebView?.loadUrl(newWebViewUrlWithBg)
+                                mIsTemplateEdited = true
+                                bottomSheetDialog.dismiss()
                             }
                         })
                     }
@@ -450,6 +456,7 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
         val orderAtStr = "${mMarketingPageInfoResponse?.marketingStaticTextResponse?.text_order_at} : ${mMarketingPageInfoResponse?.marketingStoreInfo?.domain}"
         storeNameTextView?.text = mMarketingPageInfoResponse?.marketingStoreInfo?.name
         storeLinkTextView?.text = orderAtStr
+        mSelectedProductFromBottomSheet = productItem
         productNameTextView?.text = productItem?.name
         productDescriptionTextView?.text = productItem?.description
         val productImageView: ImageView? = mContentView?.findViewById(R.id.productImageView)
@@ -527,13 +534,12 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
                     val originalBitmap = getBitmapFromView(v, mActivity)
                     originalBitmap?.let { bitmap -> shareOnWhatsApp("Order From - ${mMarketingPageInfoResponse?.marketingStoreInfo?.domain}", bitmap) }
                 }
-                showProgressDialog(mActivity)
                 val request = SaveSocialMediaPostRequest(
                     shareType       = Constants.SOCIAL_MEDIA_SHARE_TYPE_WHATSAPP,
                     htmlDefaults    = mSocialMediaTemplateResponse?.html?.htmlDefaults,
-                    templateId      = mSocialMediaTemplateResponse?.id?.toInt() ?: 0,
-                    templateType    = "",
-                    isEdited        = false
+                    templateId      = if (Constants.SOCIAL_MEDIA_TEMPLATE_TYPE_BUSINESS == mTemplateTypeStr) mSocialMediaTemplateResponse?.id?.toInt() ?: 0 else  mSelectedProductFromBottomSheet?.id ?: 0,
+                    templateType    = mTemplateTypeStr,
+                    isEdited        = mIsTemplateEdited
                 )
                 mService?.saveSocialMediaPost(request)
             }
@@ -552,13 +558,12 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
                     val originalBitmap = getBitmapFromView(v, mActivity)
                     originalBitmap?.let { bitmap -> shareData("Order From - ${mMarketingPageInfoResponse?.marketingStoreInfo?.domain}", bitmap) }
                 }
-                showProgressDialog(mActivity)
                 val request = SaveSocialMediaPostRequest(
                     shareType       = Constants.SOCIAL_MEDIA_SHARE_TYPE_SHARE,
                     htmlDefaults    = mSocialMediaTemplateResponse?.html?.htmlDefaults,
-                    templateId      = mSocialMediaTemplateResponse?.id?.toInt() ?: 0,
-                    templateType    = "",
-                    isEdited        = false
+                    templateId      = if (Constants.SOCIAL_MEDIA_TEMPLATE_TYPE_BUSINESS == mTemplateTypeStr) mSocialMediaTemplateResponse?.id?.toInt() ?: 0 else  mSelectedProductFromBottomSheet?.id ?: 0,
+                    templateType    = mTemplateTypeStr,
+                    isEdited        = mIsTemplateEdited
                 )
                 mService?.saveSocialMediaPost(request)
             }
