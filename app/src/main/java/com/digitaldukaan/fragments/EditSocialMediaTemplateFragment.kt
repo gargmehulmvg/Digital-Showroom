@@ -467,19 +467,23 @@ class EditSocialMediaTemplateFragment : BaseFragment(), IEditSocialMediaTemplate
         }
         val saleImageView: ImageView? = mContentView?.findViewById(R.id.saleImageView)
         if (ToolBarManager.getInstance().headerTitle == mMarketingPageInfoResponse?.marketingStaticTextResponse?.heading_product_discount) {
-            saleImageView?.visibility = View.VISIBLE
-            percentageTextView?.visibility = View.VISIBLE
-            offTextView?.visibility = View.VISIBLE
-            saleTextView?.visibility = View.VISIBLE
+            with(View.VISIBLE) {
+                saleImageView?.visibility = this
+                percentageTextView?.visibility = this
+                offTextView?.visibility = this
+                saleTextView?.visibility = this
+            }
             bestsellerTextView?.visibility = View.GONE
             mActivity?.let { context -> saleImageView?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_sale_background)) }
             val discountPercentStr = "$discount%"
             percentageTextView?.text = discountPercentStr
         } else {
-            saleImageView?.visibility = View.GONE
-            percentageTextView?.visibility = View.GONE
-            offTextView?.visibility = View.GONE
-            saleTextView?.visibility = View.GONE
+            with(View.GONE) {
+                saleImageView?.visibility = this
+                percentageTextView?.visibility = this
+                offTextView?.visibility = this
+                saleTextView?.visibility = this
+            }
             bestsellerTextView?.visibility = View.VISIBLE
         }
     }
