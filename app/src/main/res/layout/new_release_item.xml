@@ -6,121 +6,138 @@
     android:layout_height="wrap_content"
     android:layout_gravity="center_horizontal">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/itemLayout"
-        android:layout_width="@dimen/_90sdp"
-        android:layout_height="match_parent"
+    <androidx.cardview.widget.CardView
+        android:id="@+id/itemLayoutContainer"
+        android:layout_width="wrap_content"
         android:layout_margin="@dimen/_5sdp"
-        android:background="@drawable/curve_white_selector"
-        android:elevation="@dimen/_2sdp"
-        android:gravity="center_horizontal"
-        android:onClick="onClick"
-        android:orientation="vertical"
+        app:cardCornerRadius="@dimen/_5sdp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:targetApi="lollipop">
+        android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/trendingTextView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:clickable="false"
-            android:drawablePadding="@dimen/_5sdp"
-            android:fontFamily="@font/roboto"
-            android:padding="@dimen/_4sdp"
-            android:textColor="@color/red"
-            android:textSize="@dimen/_8sdp"
-            android:visibility="visible"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_chainStyle="spread_inside"
-            tools:layout_conversion_absoluteHeight="27dp"
-            tools:layout_conversion_absoluteWidth="124dp"
-            tools:text="@string/trending" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/itemLayout"
+            android:layout_width="@dimen/_90sdp"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal"
+            android:onClick="onClick"
+            android:orientation="vertical"
+            tools:targetApi="lollipop">
 
-        <com.google.android.material.imageview.ShapeableImageView
-            android:id="@+id/imageView"
-            android:layout_width="@dimen/_35sdp"
-            android:layout_height="@dimen/_35sdp"
-            android:layout_marginTop="@dimen/_8sdp"
-            android:clickable="false"
-            android:src="@drawable/ic_auto_data_backup"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/trendingTextView"
-            tools:layout_conversion_absoluteHeight="43dp"
-            tools:layout_conversion_absoluteWidth="43dp" />
+            <ImageView
+                android:id="@+id/backgroundImageView"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:scaleType="fitXY"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/trendingTextView"
+                android:contentDescription="@string/image_view_content_description" />
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/textView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_10sdp"
-            android:layout_marginBottom="@dimen/_4sdp"
-            android:clickable="false"
-            android:gravity="center"
-            android:maxLines="@integer/min_lines_two"
-            android:minLines="@integer/min_lines_two"
-            android:padding="@dimen/_2sdp"
-            android:paddingStart="@dimen/_3sdp"
-            android:paddingEnd="@dimen/_3sdp"
-            android:textColor="@color/black"
-            android:textSize="@dimen/_10sdp"
-            app:fontFamily="@font/montserrat"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageView"
-            tools:layout_conversion_absoluteHeight="41dp"
-            tools:layout_conversion_absoluteWidth="124dp"
-            tools:text="digital _ show room_ web digital _showroom_web" />
+            <TextView
+                android:id="@+id/trendingTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:drawablePadding="@dimen/_5sdp"
+                android:fontFamily="@font/roboto"
+                android:padding="@dimen/_4sdp"
+                android:textColor="@color/red"
+                android:textSize="@dimen/_8sdp"
+                android:visibility="visible"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_chainStyle="spread_inside"
+                tools:layout_conversion_absoluteHeight="27dp"
+                tools:layout_conversion_absoluteWidth="124dp"
+                tools:text="@string/trending" />
 
-        <ImageView
-            android:id="@+id/newTextView"
-            android:layout_width="@dimen/_20sdp"
-            android:layout_height="@dimen/_20sdp"
-            android:background="@drawable/ic_new_with_text"
-            android:clickable="false"
-            android:contentDescription="@string/image_view_content_description"
-            android:gravity="center"
-            android:visibility="gone"
-            app:layout_constraintStart_toStartOf="@+id/itemLayout"
-            app:layout_constraintTop_toTopOf="@+id/itemLayout" />
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/imageView"
+                android:layout_width="@dimen/_35sdp"
+                android:layout_height="@dimen/_35sdp"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:clickable="false"
+                android:src="@drawable/ic_auto_data_backup"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/trendingTextView"
+                tools:layout_conversion_absoluteHeight="43dp"
+                tools:layout_conversion_absoluteWidth="43dp" />
 
-        <androidx.constraintlayout.widget.Group
-            android:id="@+id/newReleaseLockGroup"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="gone"
-            app:constraint_referenced_ids="paymentModesLockedBackground,paymentModesUnlockNowTextView" />
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/textView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginBottom="@dimen/_4sdp"
+                android:clickable="false"
+                android:gravity="center"
+                android:maxLines="@integer/min_lines_two"
+                android:minLines="@integer/min_lines_two"
+                android:padding="@dimen/_2sdp"
+                android:paddingStart="@dimen/_3sdp"
+                android:paddingEnd="@dimen/_3sdp"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_10sdp"
+                app:fontFamily="@font/montserrat"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/imageView"
+                tools:layout_conversion_absoluteHeight="41dp"
+                tools:layout_conversion_absoluteWidth="124dp"
+                tools:text="digital _ show room_ web digital _showroom_web" />
 
-        <ImageView
-            android:id="@+id/paymentModesLockedBackground"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:alpha="0.5"
-            android:background="@drawable/slight_curve_black_background"
-            android:clickable="false"
-            android:contentDescription="@string/image_view_content_description"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            <ImageView
+                android:id="@+id/newTextView"
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_20sdp"
+                android:background="@drawable/ic_new_with_text"
+                android:clickable="false"
+                android:contentDescription="@string/image_view_content_description"
+                android:gravity="center"
+                android:visibility="gone"
+                app:layout_constraintStart_toStartOf="@+id/itemLayout"
+                app:layout_constraintTop_toTopOf="@+id/itemLayout" />
 
-        <ImageView
-            android:id="@+id/paymentModesUnlockNowTextView"
-            android:layout_width="@dimen/_20sdp"
-            android:layout_height="@dimen/_20sdp"
-            android:layout_margin="@dimen/_5sdp"
-            android:background="@drawable/curve_white_background2"
-            android:clickable="false"
-            android:contentDescription="@string/image_view_content_description"
-            android:padding="@dimen/_5sdp"
-            android:src="@drawable/ic_subscription_locked_black_small"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            <androidx.constraintlayout.widget.Group
+                android:id="@+id/newReleaseLockGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:constraint_referenced_ids="paymentModesLockedBackground,paymentModesUnlockNowTextView" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <ImageView
+                android:id="@+id/paymentModesLockedBackground"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:alpha="0.5"
+                android:background="@drawable/slight_curve_black_background"
+                android:clickable="false"
+                android:contentDescription="@string/image_view_content_description"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageView
+                android:id="@+id/paymentModesUnlockNowTextView"
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_20sdp"
+                android:layout_margin="@dimen/_5sdp"
+                android:background="@drawable/curve_white_background2"
+                android:clickable="false"
+                android:contentDescription="@string/image_view_content_description"
+                android:padding="@dimen/_5sdp"
+                android:src="@drawable/ic_subscription_locked_black_small"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.cardview.widget.CardView>
 
     <TextView
         android:id="@+id/trendingNewTextView"
@@ -139,7 +156,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/itemLayout"
+        app:layout_constraintTop_toBottomOf="@id/itemLayoutContainer"
         app:layout_constraintVertical_chainStyle="spread_inside"
         tools:text="@string/trending" />
 

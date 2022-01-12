@@ -13,7 +13,8 @@ import com.google.gson.Gson
 class BillingPosNetworkService {
 
     companion object {
-        private const val BILLING_POS = "billing_pos"
+        private const val BILLING_POS_YES   = "billing_pos_yes"
+        private const val BILLING_POS_NO    = "billing_pos_no"
     }
 
     suspend fun getPosBillingPageInfoServerCall(serviceInterface: IBillingPosServiceInterface) {
@@ -38,9 +39,12 @@ class BillingPosNetworkService {
         }
     }
 
-    suspend fun requestACallBackServerCall(serviceInterface: IBillingPosServiceInterface) {
+    suspend fun requestACallBackServerCall(
+        serviceInterface: IBillingPosServiceInterface,
+        isYesButtonClicked: Boolean
+    ) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.updateCallbackFlag(RequestToCallbackRequest(text = BILLING_POS))
+            val response = RetrofitApi().getServerCallObject()?.updateCallbackFlag(RequestToCallbackRequest(text = if (isYesButtonClicked) BILLING_POS_YES else BILLING_POS_NO))
             response?.let {
                 if (it.isSuccessful) {
                     it.body()?.let { storeNameResponse -> serviceInterface.onRequestCallBackResponse(storeNameResponse) }

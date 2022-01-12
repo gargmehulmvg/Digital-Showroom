@@ -15,7 +15,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -23,8 +22,6 @@ import androidx.core.net.toUri
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import com.appsflyer.CreateOneLinkHttpTask
-import com.appsflyer.share.ShareInviteHelper
 import com.bumptech.glide.Glide
 import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
@@ -207,7 +204,6 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                     setBottomSheetCommonProperty()
                     view.run {
                         val bottomSheetClose: View = findViewById(R.id.bottomSheetClose)
-                        val bottomSheetUpperImageView: ImageView = findViewById(R.id.bottomSheetUpperImageView)
                         val bottomSheetHeadingTextView: TextView = findViewById(R.id.bottomSheetHeadingTextView)
                         val messageTextView: TextView = findViewById(R.id.messageTextView)
                         val bottomSheetHeading2TextView: TextView = findViewById(R.id.bottomSheetHeading2TextView)
@@ -220,7 +216,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                         verifyTextView.setOnClickListener{
                             bottomSheetDialog.dismiss()
                             mReferEarnOverWhatsAppResponse?.let { response ->
-                                shareReferAndEarnWithDeepLink(response)
+                                shareReferAndEarnWithDeepLink(response.mReferAndEarnData)
                             }
                         }
                     }
@@ -228,32 +224,6 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             } catch (e: Exception) {
                 Log.e(TAG, "showReferAndEarnBottomSheet: ${e.message}", e)
             }
-        }
-    }
-
-    private fun shareReferAndEarnWithDeepLink(referEarnOverWhatsAppResponse: ReferEarnOverWhatsAppResponse) {
-        ShareInviteHelper.generateInviteUrl(mActivity).apply {
-            channel = "whatsapp"
-            campaign = "sharing"
-            setReferrerCustomerId(PrefsManager.getStringDataFromSharedPref(Constants.USER_MOBILE_NUMBER))
-            generateLink(mActivity, object : CreateOneLinkHttpTask.ResponseListener {
-                override fun onResponse(p0: String?) {
-                    Log.d(TAG, "onResponse: $p0")
-                    if (referEarnOverWhatsAppResponse.mReferAndEarnData.isShareStoreBanner == true) {
-                        AppEventsManager.pushAppEvents(
-                            eventName = AFInAppEventType.EVENT_SETTINGS_REFERRAL,
-                            isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
-                            data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.LINK to p0)
-                        )
-                        shareDataOnWhatsAppWithImage("${referEarnOverWhatsAppResponse.mReferAndEarnData.whatsAppText} $p0", referEarnOverWhatsAppResponse.mReferAndEarnData.imageUrl)
-                    } else {
-                        shareOnWhatsApp("${referEarnOverWhatsAppResponse.mReferAndEarnData.whatsAppText} $p0")
-                    }
-                }
-                override fun onResponseError(p0: String?) {
-                    Log.d(TAG, "onResponseError: $p0")
-                }
-            })
         }
     }
 
@@ -511,7 +481,8 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                     data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID), AFInAppEventParameterName.CHANNEL to AFInAppEventParameterName.IS_SETTINGS_PAGE)
                 )
-                openWebViewFragment(this, "", BuildConfig.WEB_VIEW_URL + responseItem.mPage)
+                val url = "${BuildConfig.WEB_VIEW_URL}${responseItem.mPage}?storeid=${getStringDataFromSharedPref(Constants.STORE_ID)}&token=${getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&${AFInAppEventParameterName.CHANNEL}=${AFInAppEventParameterName.SETTINGS}"
+                openWebViewFragmentV3(this, "", url)
             }
             Constants.NEW_RELEASE_TYPE_EXTERNAL -> {
                 val eventName = when (responseItem.mType) {
@@ -627,7 +598,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
             when {
                 grantResults.isEmpty() -> Log.d(TAG, "User interaction was cancelled.")
                 PackageManager.PERMISSION_GRANTED == grantResults[0] -> {
-                    mReferEarnOverWhatsAppResponse?.let { response -> shareReferAndEarnWithDeepLink(response) }
+                    mReferEarnOverWhatsAppResponse?.let { response -> shareReferAndEarnWithDeepLink(response.mReferAndEarnData) }
                 }
                 else -> showShortSnackBar("Permission was denied", true, R.drawable.ic_close_red)
             }
