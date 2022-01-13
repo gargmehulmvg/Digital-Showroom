@@ -1,7 +1,6 @@
 package com.digitaldukaan.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -268,9 +267,9 @@ class SetDeliveryChargeFragment : BaseFragment(), IMoreControlsServiceInterface 
         }
     }
 
-    override fun onChangeStoreAndDeliveryStatusResponse(response: CommonApiResponse) {
-        Log.d(TAG, "onChangeStoreAndDeliveryStatusResponse: do nothing")
-    }
+    override fun onMoreControlsPageInfoResponse(response: CommonApiResponse) = Unit
+
+    override fun onChangeStoreAndDeliveryStatusResponse(response: CommonApiResponse) = Unit
 
     override fun onMoreControlsServerException(e: Exception) {
         CoroutineScopeUtils().runTaskOnCoroutineMain { continueTextView?.isEnabled = true }

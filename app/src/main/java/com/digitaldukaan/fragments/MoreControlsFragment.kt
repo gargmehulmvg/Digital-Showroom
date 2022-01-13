@@ -8,14 +8,14 @@ import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
+import com.digitaldukaan.adapters.MoreControlsItemAdapter
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.models.request.MoreControlsRequest
 import com.digitaldukaan.models.request.StoreDeliveryStatusChangeRequest
-import com.digitaldukaan.models.response.AccountInfoResponse
-import com.digitaldukaan.models.response.AccountStaticTextResponse
-import com.digitaldukaan.models.response.CommonApiResponse
-import com.digitaldukaan.models.response.StoreServicesResponse
+import com.digitaldukaan.models.response.*
 import com.digitaldukaan.services.MoreControlsService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IMoreControlsServiceInterface
@@ -60,9 +60,11 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         TAG = "MoreControlsFragment"
         FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
-        mContentView = inflater.inflate(R.layout.layout_more_control_fragment, container, false)
+        mContentView = inflater.inflate(R.layout.layout_more_control_fragment_v2, container, false)
         mMoreControlsService = MoreControlsService()
         mMoreControlsService?.setServiceInterface(this)
+        showProgressDialog(mActivity)
+        mMoreControlsService?.getMoreControlsPageInfo()
         return mContentView
     }
 
@@ -75,17 +77,17 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
             hideBackPressFromToolBar(mActivity, false)
         }
         hideBottomNavigationView(true)
-        updateStoreServiceInstances()
-        setUIDataFromResponse()
+//        updateStoreServiceInstances()
+//        setUIDataFromResponse()
         if (!isInternetConnectionAvailable(mActivity)) {
             showNoInternetConnectionDialog()
             return
         }
-        val isECommPermissionEnable = StaticInstances.sPermissionHashMap?.get(Constants.E_COMM_PACK) ?: false
-        editCustomerAddressContainer?.visibility = if (isECommPermissionEnable) View.VISIBLE else {
-            mActivity?.let { context -> deliveryChargeContainer?.background = ContextCompat.getDrawable(context, R.drawable.ripple_lower_curve_grey_white_background) }
-            View.GONE
-        }
+//        val isECommPermissionEnable = StaticInstances.sPermissionHashMap?.get(Constants.E_COMM_PACK) ?: false
+//        editCustomerAddressContainer?.visibility = if (isECommPermissionEnable) View.VISIBLE else {
+//            mActivity?.let { context -> deliveryChargeContainer?.background = ContextCompat.getDrawable(context, R.drawable.ripple_lower_curve_grey_white_background) }
+//            View.GONE
+//        }
     }
 
     private fun updateStoreServiceInstances() {
@@ -336,6 +338,20 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface {
                 updateStoreServiceInstances()
                 setUIDataFromResponse()
             } else showShortSnackBar(response.mMessage, true, R.drawable.ic_close_red)
+        }
+    }
+
+    override fun onMoreControlsPageInfoResponse(response: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            if (response.mIsSuccessStatus) {
+                val moreControlsPageInfoResponse = Gson().fromJson<MoreControlsPageInfoResponse>(response.mCommonDataStr, MoreControlsPageInfoResponse::class.java)
+                val recyclerView: RecyclerView? = mContentView?.findViewById(R.id.recyclerView)
+                recyclerView?.apply {
+                    layoutManager = LinearLayoutManager(mActivity)
+                    adapter = MoreControlsItemAdapter(mActivity, moreControlsPageInfoResponse?.storeControlItemsList, moreControlsPageInfoResponse?.staticText)
+                }
+            }
         }
     }
 
