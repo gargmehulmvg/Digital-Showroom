@@ -31,35 +31,20 @@ import kotlinx.android.synthetic.main.layout_more_control_fragment.*
 class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface, IMoreControlsItemClickListener,
     SwipeRefreshLayout.OnRefreshListener {
 
-    private var mMoreControlsStaticData: AccountStaticTextResponse? = null
     private var mMoreControlsService: MoreControlsService? = null
     private var mMinOrderValue = 0.0
     private var mDeliveryPrice = 0.0
     private var mFreeDeliveryAbove = 0.0
     private var mDeliveryChargeType = 0
     private var mPaymentPaymentMethod: String? = ""
-    private var mIsOrderNotificationOn: Boolean = false
-    private var mIsOnlinePaymentModeLocked: Boolean = false
-    private var mIsPrepaidOrdersLocked: Boolean = false
     private var mIsDeliveryOn: Boolean = false
     private var mIsPickupOn: Boolean = false
     private var mIsStoreOn: Boolean = false
-    private var mAccountInfoResponse: AccountInfoResponse? = null
     private var mMoreControlsPageInfoResponse: MoreControlsPageInfoResponse? = null
     private var mSwipeRefreshLayout: SwipeRefreshLayout? = null
 
     companion object {
-
-        fun newInstance(accountInfoResponse: AccountInfoResponse?): MoreControlsFragment {
-            val fragment = MoreControlsFragment()
-            fragment.mMoreControlsStaticData = accountInfoResponse?.mAccountStaticText
-            fragment.mAccountInfoResponse = accountInfoResponse
-            fragment.mIsOrderNotificationOn = accountInfoResponse?.mIsOrderNotificationOn ?: false
-            fragment.mIsPrepaidOrdersLocked = accountInfoResponse?.mPrepaidOrdersLocked?.mIsActive ?: false
-            fragment.mIsOnlinePaymentModeLocked = accountInfoResponse?.mOnlinePaymentModesOn?.mIsActive ?: false
-            return fragment
-        }
-
+        fun newInstance(): MoreControlsFragment = MoreControlsFragment()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -79,7 +64,7 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface, IMor
         super.onViewCreated(view, savedInstanceState)
         ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, false)
-            headerTitle = mMoreControlsStaticData?.mTextStoreControls
+            headerTitle = ""
             onBackPressed(this@MoreControlsFragment)
             hideBackPressFromToolBar(mActivity, false)
         }
@@ -122,7 +107,7 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface, IMor
                     pickupStatusValueTextView?.setTextColor(ContextCompat.getColor(context, R.color.red))
                     pickupImageView?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_pickup_red))
                 }
-                val storeStatus = "${mMoreControlsStaticData?.mStoreText} :"
+                val storeStatus = "${staticText?.text_store} :"
                 storeStatusTextView?.text = storeStatus
                 if (1 == mStoreFlag) {
                     mIsStoreOn = true
@@ -199,18 +184,19 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface, IMor
                 setContentView(view)
                 setBottomSheetCommonProperty()
                 view.run {
+                    val staticText = mMoreControlsPageInfoResponse?.staticText
                     val verifyTextView: TextView = findViewById(R.id.verifyTextView)
                     val minDeliveryHeadingTextView: TextView = findViewById(R.id.minDeliveryHeadingTextView)
                     val minDeliveryAmountContainer: TextInputLayout = findViewById(R.id.minDeliveryAmountContainer)
                     val minDeliveryAmountEditText: EditText = findViewById(R.id.minDeliveryAmountEditText)
-                    minDeliveryAmountContainer.hint = mMoreControlsStaticData?.bottom_sheet_heading
-                    minDeliveryAmountEditText.setText(if (mMinOrderValue != 0.0) mMinOrderValue.toString() else "")
-                    minDeliveryHeadingTextView.text = mMoreControlsStaticData?.bottom_sheet_hint
-                    verifyTextView.text = mMoreControlsStaticData?.save_changes
+                    minDeliveryAmountContainer.hint = staticText?.bottom_sheet_hint
+                    minDeliveryAmountEditText.setText(if (0.0 != mMinOrderValue) mMinOrderValue.toString() else "")
+                    minDeliveryHeadingTextView.text = staticText?.heading_set_min_order_value_for_delivery
+                    verifyTextView.text = staticText?.bottom_sheet_save_changes
                     verifyTextView.setOnClickListener {
                         val amount = minDeliveryAmountEditText.text.trim().toString()
                         if (isNotEmpty(amount) && 0.0 != mFreeDeliveryAbove && amount.toDoubleOrNull() ?: 0.0 > mFreeDeliveryAbove) {
-                            minDeliveryAmountEditText.error = mMoreControlsStaticData?.error_amount_must_greater_than_free_delivery_above
+                            minDeliveryAmountEditText.error = staticText?.error_amount_must_greater_than_free_delivery_above
                             minDeliveryAmountEditText.requestFocus()
                             return@setOnClickListener
                         }
@@ -219,10 +205,10 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface, IMor
                             return@setOnClickListener
                         }
                         val request = MoreControlsRequest(
-                            mDeliveryChargeType,
-                            mFreeDeliveryAbove,
-                            mDeliveryPrice,
-                            if (isEmpty(amount)) 0.0 else if (amount.startsWith(".")) "0$amount".toDoubleOrNull() else amount.toDoubleOrNull()
+                            deliveryChargeType = mDeliveryChargeType,
+                            freeDeliveryAbove = mFreeDeliveryAbove,
+                            deliveryPrice = mDeliveryPrice,
+                            minOrderValue = if (isEmpty(amount)) 0.0 else if (amount.startsWith(".")) "0$amount".toDoubleOrNull() else amount.toDoubleOrNull()
                         )
                         showProgressDialog(mActivity)
                         bottomSheetDialog.dismiss()
@@ -264,6 +250,9 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface, IMor
                     adapter = MoreControlsItemAdapter(mActivity, mMoreControlsPageInfoResponse?.storeControlItemsList, mMoreControlsPageInfoResponse?.staticText, this@MoreControlsFragment)
                 }
                 updateStoreServiceInstances()
+                ToolBarManager.getInstance()?.apply {
+                    headerTitle = mMoreControlsPageInfoResponse?.staticText?.heading_page
+                }
             }
             if (true == mSwipeRefreshLayout?.isRefreshing) mSwipeRefreshLayout?.isRefreshing = false
         }
@@ -277,9 +266,9 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface, IMor
             return
         }
         showCancellableProgressDialog(mActivity)
-        val isStoreOpen = if (isStoreClicked) { StaticInstances.sAppStoreServicesResponse?.mStoreFlag != 1 } else StaticInstances.sAppStoreServicesResponse?.mStoreFlag == 1
-        val isDeliveryOpen = if (isDeliveryClicked) { StaticInstances.sAppStoreServicesResponse?.mDeliveryFlag != 1 } else StaticInstances.sAppStoreServicesResponse?.mDeliveryFlag == 1
-        val isPickUpOpen = if (isPickUpClicked) { StaticInstances.sAppStoreServicesResponse?.mPickupFlag != 1 } else StaticInstances.sAppStoreServicesResponse?.mPickupFlag == 1
+        val isStoreOpen = if (isStoreClicked) { 1 != mMoreControlsPageInfoResponse?.store?.storeServices?.mStoreFlag } else 1 == mMoreControlsPageInfoResponse?.store?.storeServices?.mStoreFlag
+        val isDeliveryOpen = if (isDeliveryClicked) { 1 != mMoreControlsPageInfoResponse?.store?.storeServices?.mDeliveryFlag } else 1 == mMoreControlsPageInfoResponse?.store?.storeServices?.mDeliveryFlag
+        val isPickUpOpen = if (isPickUpClicked) { 1 != mMoreControlsPageInfoResponse?.store?.storeServices?.mPickupFlag } else 1 == mMoreControlsPageInfoResponse?.store?.storeServices?.mPickupFlag
         val request = StoreDeliveryStatusChangeRequest(
             if (isStoreOpen) 1 else 0,
             if (isDeliveryOpen) 1 else 0,
@@ -295,44 +284,9 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface, IMor
                 if (response.mIsSuccessStatus) {
                     showShortSnackBar(response.mMessage, true, R.drawable.ic_check_circle)
                     onRefresh()
-//                    setupPickupDeliveryUI()
                 } else showShortSnackBar(response.mMessage, true, R.drawable.ic_close_red)
             } catch (e: Exception) {
                 Log.e(TAG, "onChangeStoreAndDeliveryStatusResponse: ${e.message}", e)
-            }
-        }
-    }
-
-    private fun setupPickupDeliveryUI() {
-        mActivity?.let { context ->
-            if (mIsDeliveryOn) {
-                deliveryStatusValueTextView?.text = mMoreControlsStaticData?.mOnText
-                deliveryStatusValueTextView?.setTextColor(ContextCompat.getColor(context, R.color.open_green))
-                deliveryImageView?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_delivery_on))
-            } else {
-                deliveryStatusValueTextView?.text = mMoreControlsStaticData?.mOffText
-                deliveryStatusValueTextView?.setTextColor(ContextCompat.getColor(context, R.color.red))
-                deliveryImageView?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_delivery_off))
-            }
-            if (mIsPickupOn) {
-                pickupStatusValueTextView?.text = mMoreControlsStaticData?.mOnText
-                pickupStatusValueTextView?.setTextColor(ContextCompat.getColor(context, R.color.open_green))
-                pickupImageView?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_pickup_green))
-            } else {
-                pickupStatusValueTextView?.text = mMoreControlsStaticData?.mOffText
-                pickupStatusValueTextView?.setTextColor(ContextCompat.getColor(context, R.color.red))
-                pickupImageView?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_pickup_red))
-            }
-            val storeStatus = "${mMoreControlsStaticData?.mStoreText} :"
-            storeStatusTextView?.text = storeStatus
-            if (mIsStoreOn) {
-                storeStatusTextView2?.text = mMoreControlsStaticData?.mOpenText
-                storeStatusTextView2?.setTextColor(ContextCompat.getColor(context, R.color.open_green))
-                storeImageView?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_open))
-            } else {
-                storeStatusTextView2?.text = mMoreControlsStaticData?.mClosedText
-                storeStatusTextView2?.setTextColor(ContextCompat.getColor(context, R.color.red))
-                storeImageView?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_closed))
             }
         }
     }
@@ -355,14 +309,14 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface, IMor
                 isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                 data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
             )
-            mMoreControlsStaticData?.let { staticData -> launchFragment(SetDeliveryChargeFragment.newInstance(staticData), true) }
+//            mMoreControlsStaticData?.let { staticData -> launchFragment(SetDeliveryChargeFragment.newInstance(staticData), true) }
         }
     }
 
     override fun onMoreControlsPrepaidOrderClicked(item: MoreControlsInnerItemResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            if (mIsPrepaidOrdersLocked) {
-                openSubscriptionLockedUrlInBrowser(mAccountInfoResponse?.mPrepaidOrdersLocked?.mUrl ?: "")
+            if (item.isLocked) {
+                openSubscriptionLockedUrlInBrowser(mMoreControlsPageInfoResponse?.mPrepaidOrdersLocked?.mUrl ?: "")
                 return@runTaskOnCoroutineMain
             }
             AppEventsManager.pushAppEvents(
@@ -388,8 +342,8 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface, IMor
 
     override fun onMoreControlsPaymentModesClicked(item: MoreControlsInnerItemResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            if (mIsOnlinePaymentModeLocked) {
-                openSubscriptionLockedUrlInBrowser(mAccountInfoResponse?.mOnlinePaymentModesOn?.mUrl ?: "")
+            if (item.isLocked) {
+                openSubscriptionLockedUrlInBrowser(mMoreControlsPageInfoResponse?.mPrepaidOrdersLocked?.mUrl ?: "")
                 return@runTaskOnCoroutineMain
             }
             launchFragment(PaymentModesFragment.newInstance(), true)

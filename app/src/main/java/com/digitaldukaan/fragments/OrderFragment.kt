@@ -49,8 +49,6 @@ import kotlinx.android.synthetic.main.layout_home_fragment.analyticsContainer
 import kotlinx.android.synthetic.main.layout_home_fragment.analyticsImageView
 import kotlinx.android.synthetic.main.layout_home_fragment.orderLayout
 import kotlinx.android.synthetic.main.layout_order_fragment.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import java.io.File
 
 class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuItemClickListener,
@@ -407,34 +405,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                                             shareStoreOverWhatsAppServerCall()
                                         }
                                         Constants.ACTION_MY_PROFILE -> launchFragment(ProfilePreviewFragment.newInstance(), true)
-                                        Constants.ACTION_STORE_CONTROLS -> initiateAccountInfoServerCall()
-                                    }
-                                }
-
-                                private fun initiateAccountInfoServerCall() {
-                                    showProgressDialog(mActivity)
-                                    CoroutineScopeUtils().runTaskOnCoroutineBackground {
-                                        try {
-                                            val response = RetrofitApi().getServerCallObject()?.getProfileResponse()
-                                            response?.let {
-                                                stopProgress()
-                                                if (it.isSuccessful) {
-                                                    it.body()?.let {
-                                                        withContext(Dispatchers.Main) {
-                                                            stopProgress()
-                                                            if (it.mIsSuccessStatus) {
-                                                                val accountInfoResponse = Gson().fromJson<AccountInfoResponse>(it.mCommonDataStr, AccountInfoResponse::class.java)
-                                                                StaticInstances.sAccountPageSettingsStaticData = accountInfoResponse?.mAccountStaticText
-                                                                StaticInstances.sAppStoreServicesResponse = accountInfoResponse?.mStoreInfo?.storeServices
-                                                                launchFragment(MoreControlsFragment.newInstance(accountInfoResponse), true)
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        } catch (e: Exception) {
-                                            exceptionHandlingForAPIResponse(e)
-                                        }
+                                        Constants.ACTION_STORE_CONTROLS -> launchFragment(MoreControlsFragment.newInstance(), true)
                                     }
                                 }
                             })

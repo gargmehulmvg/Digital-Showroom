@@ -122,7 +122,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                     showStaffFeatureLockedBottomSheet(Constants.NAV_BAR_SETTINGS)
                     return
                 }
-                launchFragment(MoreControlsFragment.newInstance(mAccountPageInfoResponse), true)
+                launchFragment(MoreControlsFragment.newInstance(), true)
             }
             dukaanNameTextView?.id -> launchProfilePreviewFragment()
             editProfileTextView?.id -> launchProfilePreviewFragment()
