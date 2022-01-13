@@ -30,14 +30,13 @@ import com.truecaller.android.sdk.TruecallerSDK
 import kotlinx.android.synthetic.main.activity_main2.*
 import java.util.*
 
-
 class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener, CTPushNotificationListener, InAppNotificationButtonListener {
 
-    private var manager: ReviewManager? = null
-    private var reviewInfo: ReviewInfo? = null
+    private var mReviewManager: ReviewManager? = null
+    private var mReviewInfo: ReviewInfo? = null
 
     companion object {
-        private val mNetworkChangeListener = NetworkChangeListener()
+        private val sNetworkChangeListener = NetworkChangeListener()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -107,7 +106,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     override fun onStart() {
         try {
             val intentFiler = IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION)
-            registerReceiver(mNetworkChangeListener, intentFiler)
+            registerReceiver(sNetworkChangeListener, intentFiler)
         } catch (e: Exception) {
             Log.e("MainActivity", "onStart: ${e.message}", e)
             AppEventsManager.pushAppEvents(
@@ -121,7 +120,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
     override fun onStop() {
         try {
-            unregisterReceiver(mNetworkChangeListener)
+            unregisterReceiver(sNetworkChangeListener)
         } catch (e: Exception) {
             Log.e("MainActivity", "onStop: ${e.message}", e)
             AppEventsManager.pushAppEvents(
@@ -173,7 +172,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     override fun onBackPressed() {
         try {
             val current: BaseFragment? = getCurrentFragment()
-            if (current?.onBackPressed() == true) return
+            if (true == current?.onBackPressed()) return
             val manager = supportFragmentManager
             if (manager.backStackEntryCount > 0) super.onBackPressed()
         } catch (e: Exception) {
@@ -362,18 +361,18 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     }
 
     private fun requestInAppReviewObject() {
-        manager = ReviewManagerFactory.create(this)
-        val request = manager?.requestReviewFlow()
+        mReviewManager = ReviewManagerFactory.create(this)
+        val request = mReviewManager?.requestReviewFlow()
         request?.addOnCompleteListener { task ->
             if (task.isSuccessful) {
-                reviewInfo = task.result
+                mReviewInfo = task.result
             }
         }
     }
 
     fun launchInAppReviewDialog() {
-        reviewInfo?.let { info ->
-            val flow = manager?.launchReviewFlow(this, info)
+        mReviewInfo?.let { info ->
+            val flow = mReviewManager?.launchReviewFlow(this, info)
             flow?.addOnCompleteListener { _ ->
                 // The flow has finished. The API does not indicate whether the user
                 // reviewed or not, or even whether the review dialog was shown. Thus, no
