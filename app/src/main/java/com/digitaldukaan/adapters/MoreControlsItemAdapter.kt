@@ -10,11 +10,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
 import com.digitaldukaan.models.response.MoreControlsItemResponse
 import com.digitaldukaan.models.response.MoreControlsStaticTextResponse
+import com.digitaldukaan.services.serviceinterface.IMoreControlsItemClickListener
 
 class MoreControlsItemAdapter(
     private var mContext: Context?,
     private var mStoreControlItemsList: ArrayList<MoreControlsItemResponse>?,
-    private var mStoreControlStaticText: MoreControlsStaticTextResponse?
+    private var mStoreControlStaticText: MoreControlsStaticTextResponse?,
+    private var mListener: IMoreControlsItemClickListener
 ) : RecyclerView.Adapter<MoreControlsItemAdapter.MoreControlsItemViewHolder>() {
 
     inner class MoreControlsItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -32,7 +34,8 @@ class MoreControlsItemAdapter(
             textView.text = item?.heading
             recyclerView.apply {
                 layoutManager = LinearLayoutManager(mContext)
-                adapter = MoreControlsInnerItemAdapter(mContext, item?.children, mStoreControlStaticText)
+                isNestedScrollingEnabled = false
+                adapter = MoreControlsInnerItemAdapter(mContext, item?.children, mStoreControlStaticText, mListener)
             }
         }
     }

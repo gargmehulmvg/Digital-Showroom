@@ -14,12 +14,23 @@ import com.digitaldukaan.constants.isNotEmpty
 import com.digitaldukaan.constants.setHtmlData
 import com.digitaldukaan.models.response.MoreControlsInnerItemResponse
 import com.digitaldukaan.models.response.MoreControlsStaticTextResponse
+import com.digitaldukaan.services.serviceinterface.IMoreControlsItemClickListener
 
 class MoreControlsInnerItemAdapter(
     private var mContext: Context?,
     private var mStoreControlItemsList: ArrayList<MoreControlsInnerItemResponse>?,
-    private var mStoreControlStaticText: MoreControlsStaticTextResponse?
+    private var mStoreControlStaticText: MoreControlsStaticTextResponse?,
+    private var mListener: IMoreControlsItemClickListener
 ) : RecyclerView.Adapter<MoreControlsInnerItemAdapter.MoreControlsItemViewHolder>() {
+
+    companion object {
+        private const val SET_MIN_ORDER_VALUE       = "set-minimum-order-value"
+        private const val SET_DELIVERY_CHARGE       = "set-delivery-charge"
+        private const val SET_PREPAID_ORDERS        = "set-prepaid-orders"
+        private const val SET_PAYMENT_MODE          = "set-payment-mode"
+        private const val SET_ORDER_NOTIFICATION    = "set-order-notification"
+        private const val CUSTOMER_ADDRESS_FIELD    = "edit-customer-address-fields"
+    }
 
     inner class MoreControlsItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val headingTextView: TextView = itemView.findViewById(R.id.headingTextView)
@@ -28,7 +39,24 @@ class MoreControlsInnerItemAdapter(
         val container: ConstraintLayout = itemView.findViewById(R.id.container)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MoreControlsItemViewHolder = MoreControlsItemViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.more_controls_inner_item, parent, false))
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MoreControlsItemViewHolder {
+        val view = MoreControlsItemViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.more_controls_inner_item, parent, false))
+        view.container.setOnClickListener {
+            if (view.adapterPosition < 0 && view.adapterPosition > (mStoreControlItemsList?.size ?: 0)) return@setOnClickListener
+            val item = mStoreControlItemsList?.get(view.adapterPosition)
+            if (true == item?.isClickable) {
+                when(item.action) {
+                    SET_MIN_ORDER_VALUE -> mListener.onMoreControlsEditMinOrderValueClicked(item)
+                    SET_DELIVERY_CHARGE -> mListener.onMoreControlsSetDeliveryChargeClicked(item)
+                    CUSTOMER_ADDRESS_FIELD -> mListener.onMoreControlsEditCustomerAddressFieldClicked(item)
+                    SET_PREPAID_ORDERS -> mListener.onMoreControlsPrepaidOrderClicked(item)
+                    SET_PAYMENT_MODE -> mListener.onMoreControlsPaymentModesClicked(item)
+                    SET_ORDER_NOTIFICATION -> mListener.onMoreControlsOrderNotificationClicked(item)
+                }
+            }
+        }
+        return view
+    }
 
     override fun getItemCount(): Int = mStoreControlItemsList?.size ?: 0
 

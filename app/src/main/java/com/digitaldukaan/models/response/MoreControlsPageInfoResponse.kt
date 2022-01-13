@@ -27,6 +27,7 @@ data class MoreControlsInnerItemResponse(
 
 data class MoreControlsStaticTextResponse(
     @SerializedName("heading_page")             var heading_page: String?,
+    @SerializedName("heading_tap_the_icon")     var heading_tap_the_icon: String?,
     @SerializedName("text_closed")              var text_closed: String?,
     @SerializedName("text_delivery")            var text_delivery: String?,
     @SerializedName("text_new")                 var text_new: String?,
