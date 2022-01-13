@@ -690,7 +690,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                 val imageFile = File.createTempFile(fileName, ".jpg", storageDirectory)
                 mCurrentPhotoPath = imageFile.absolutePath
                 val cameraIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
-                val imageUri = FileProvider.getUriForFile(this, "com.digitaldukaan.fileprovider", imageFile)
+                val imageUri = FileProvider.getUriForFile(this, "${BuildConfig.APPLICATION_ID}.fileprovider", imageFile)
                 cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
                 cameraGalleryWithCropIntentResult.launch(cameraIntent)
             } catch (e: Exception) {
@@ -714,7 +714,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                 val imageFile = File.createTempFile(fileName, ".jpg", storageDirectory)
                 mCurrentPhotoPath = imageFile.absolutePath
                 val cameraIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
-                val imageUri = FileProvider.getUriForFile(this, "com.digitaldukaan.fileprovider", imageFile)
+                val imageUri = FileProvider.getUriForFile(this, "${BuildConfig.APPLICATION_ID}.fileprovider", imageFile)
                 cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
                 cameraGalleryWithoutCropIntentResult.launch(cameraIntent)
             } catch (e: Exception) {
@@ -739,7 +739,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                 val imageFile = File.createTempFile(fileName, ".jpg", storageDirectory)
                 mCurrentPhotoPath = imageFile.absolutePath
                 val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                val imageUri = FileProvider.getUriForFile(this, "com.digitaldukaan.fileprovider", imageFile)
+                val imageUri = FileProvider.getUriForFile(this, "${BuildConfig.APPLICATION_ID}.fileprovider", imageFile)
                 cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
                 cameraGalleryWithoutCropIntentResult.launch(cameraIntent)
             } catch (e: Exception) {
@@ -764,7 +764,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                 val imageFile = File.createTempFile(fileName, ".jpg", storageDirectory)
                 mCurrentPhotoPath = imageFile.absolutePath
                 val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                val imageUri = FileProvider.getUriForFile(this, "com.digitaldukaan.fileprovider", imageFile)
+                val imageUri = FileProvider.getUriForFile(this, "${BuildConfig.APPLICATION_ID}.fileprovider", imageFile)
                 cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
                 cameraGalleryWithCropIntentResult.launch(cameraIntent)
             } catch (e: Exception) {
