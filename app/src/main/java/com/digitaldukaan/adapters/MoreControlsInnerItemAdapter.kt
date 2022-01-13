@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
@@ -33,10 +34,13 @@ class MoreControlsInnerItemAdapter(
     }
 
     inner class MoreControlsItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val lockedBackground: ImageView = itemView.findViewById(R.id.lockedBackground)
         val headingTextView: TextView = itemView.findViewById(R.id.headingTextView)
+        val unlockNowTextView: TextView = itemView.findViewById(R.id.unlockNowTextView)
         val valueTextView: TextView = itemView.findViewById(R.id.valueTextView)
         val newTextView: TextView = itemView.findViewById(R.id.newTextView)
         val container: ConstraintLayout = itemView.findViewById(R.id.container)
+        val paymentModeLockGroup: View = itemView.findViewById(R.id.paymentModeLockGroup)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MoreControlsItemViewHolder {
@@ -72,24 +76,28 @@ class MoreControlsInnerItemAdapter(
             } else View.GONE
             mContext?.let { context ->
                 when {
+                    //SINGLE ITEM
                     1 == (mStoreControlItemsList?.size ?: 0) -> {
                         val param = container.layoutParams as ViewGroup.MarginLayoutParams
                         param.setMargins(5,15,5,15)
                         container.layoutParams = param
                         container.background = ContextCompat.getDrawable(context, R.drawable.ripple_slight_curve_grey_white_background)
                     }
+                    //FIRST ITEM
                     0 == position -> {
                         val param = container.layoutParams as ViewGroup.MarginLayoutParams
                         param.setMargins(5,15,5,0)
                         container.layoutParams = param
                         container.background = ContextCompat.getDrawable(context, R.drawable.ripple_upper_curve_grey_white_background)
                     }
+                    //LAST ITEM
                     ((mStoreControlItemsList?.size ?: 0) - 1) == position -> {
                         val param = container.layoutParams as ViewGroup.MarginLayoutParams
                         param.setMargins(5,1,5,15)
                         container.layoutParams = param
                         container.background = ContextCompat.getDrawable(context, R.drawable.ripple_lower_curve_grey_white_background)
                     }
+                    //MIDDLE ITEM
                     else -> {
                         val param = container.layoutParams as ViewGroup.MarginLayoutParams
                         param.setMargins(5,1,5,0)
@@ -97,6 +105,28 @@ class MoreControlsInnerItemAdapter(
                         container.background = ContextCompat.getDrawable(context, R.drawable.ripple_rect_grey_white_background)
                     }
                 }
+                if (true == item?.isLocked) {
+                    paymentModeLockGroup.visibility = View.VISIBLE
+                    unlockNowTextView.text = mStoreControlStaticText?.text_unlock_now
+                    when {
+                        1 == (mStoreControlItemsList?.size ?: 0) -> {
+                            lockedBackground.background = ContextCompat.getDrawable(context, R.drawable.curve_black_background_v2)
+                            lockedBackground.alpha = 0.5f
+                        }
+                        0 == position -> {
+                            lockedBackground.background = ContextCompat.getDrawable(context, R.drawable.upper_curve_black_background)
+                            lockedBackground.alpha = 0.5f
+                        }
+                        ((mStoreControlItemsList?.size ?: 0) - 1) == position -> {
+                            lockedBackground.background = ContextCompat.getDrawable(context, R.drawable.lower_curve_black_background)
+                            lockedBackground.alpha = 0.5f
+                        }
+                        else -> {
+                            lockedBackground.background = ContextCompat.getDrawable(context, R.drawable.rect_black_background)
+                            lockedBackground.alpha = 0.5f
+                        }
+                    }
+                } else paymentModeLockGroup.visibility = View.GONE
             }
         }
     }
