@@ -42,9 +42,14 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface, IMor
     private var mIsStoreOn: Boolean = false
     private var mMoreControlsPageInfoResponse: MoreControlsPageInfoResponse? = null
     private var mSwipeRefreshLayout: SwipeRefreshLayout? = null
+    private var mAccountStaticText: AccountStaticTextResponse? = null
 
     companion object {
-        fun newInstance(): MoreControlsFragment = MoreControlsFragment()
+        fun newInstance(accountStaticText: AccountStaticTextResponse?): MoreControlsFragment {
+            val fragment = MoreControlsFragment()
+            fragment.mAccountStaticText = accountStaticText
+            return fragment
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -309,7 +314,7 @@ class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface, IMor
                 isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                 data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
             )
-//            mMoreControlsStaticData?.let { staticData -> launchFragment(SetDeliveryChargeFragment.newInstance(staticData), true) }
+            launchFragment(SetDeliveryChargeFragment.newInstance(mAccountStaticText), true)
         }
     }
 
