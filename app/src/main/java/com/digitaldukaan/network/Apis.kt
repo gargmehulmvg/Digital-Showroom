@@ -54,9 +54,6 @@ interface Apis {
     suspend fun getStaffMembersDetails(@Path("storeId") storeId: String) : Response<CommonApiResponse>
 
     /* ----------------------       Settings         ---------------------- */
-    @GET("api/dotk/vm1/settings/getReferralData")
-    suspend fun getReferralData() : Response<CommonApiResponse>
-
     @GET("api/dotk/vm1/settings/getOrderTypePageInfo")
     suspend fun getOrderTypePageInfo() : Response<CommonApiResponse>
 
@@ -149,6 +146,9 @@ interface Apis {
 
     @POST("api/dotk/vm1/settings/setStoreAddressConfigs")
     suspend fun setAddressFields(@Body request: AddressFieldRequest): Response<CommonApiResponse>
+
+    @GET("api/dotk/vm1/settings/getReferralData")
+    suspend fun getReferralData(): Response<CommonApiResponse>
 
     /* ----------------------       Images         ---------------------- */
     @POST("api/dotk/vm1/media/setStoreLogo")

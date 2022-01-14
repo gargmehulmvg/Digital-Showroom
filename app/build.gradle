@@ -14,7 +14,7 @@ android {
         applicationId "com.digitaldukaan"
         minSdkVersion 24
         targetSdkVersion 30
-        versionCode 93
+        versionCode 92
         versionName "4.5.1"
         multiDexEnabled true
 
@@ -64,7 +64,7 @@ android {
             buildConfigField('String', 'WEB_VIEW_URL', '"https://digitaldukaanwebview.dotq.in/"')
             buildConfigField('String', 'WEB_VIEW_SHOW_ROOM_URL', '"https://showroom.dotq.in/"')
             buildConfigField('String', 'WEB_VIEW_PREVIEW_URL', '"https://showroom-preview2.dotq.in/"')
-            manifestPlaceholders = [appLabel:"@string/app_name_staging", appApplicationId:"com.digitaldukaanlocal"]
+            manifestPlaceholders = [appLabel:"@string/app_name_staging"]
             applicationId "com.digitaldukaanlocal"
         }
         prod {
@@ -72,7 +72,7 @@ android {
             buildConfigField('String', 'WEB_VIEW_URL', '"https://webview.digitaldukaan.co.in/"')
             buildConfigField('String', 'WEB_VIEW_SHOW_ROOM_URL', '"https://showroom.dotpe.in/"')
             buildConfigField('String', 'WEB_VIEW_PREVIEW_URL', '"https://showroom-preview2.dotpe.in/"')
-            manifestPlaceholders = [appLabel:"@string/app_name", appApplicationId:"com.digitaldukaan"]
+            manifestPlaceholders = [appLabel:"@string/app_name"]
             applicationId "com.digitaldukaan"
         }
     }
@@ -165,6 +165,4 @@ dependencies {
     implementation "com.github.skydoves:balloon:1.4.0"
     //  Generate QR Code
     implementation 'androidmads.library.qrgenearator:QRGenearator:1.0.3'
-    //image picker
-    implementation 'com.github.nguyenhoanglam:ImagePicker:1.5.1'
 }
