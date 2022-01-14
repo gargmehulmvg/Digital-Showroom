@@ -165,4 +165,6 @@ dependencies {
     implementation "com.github.skydoves:balloon:1.4.0"
     //  Generate QR Code
     implementation 'androidmads.library.qrgenearator:QRGenearator:1.0.3'
+    //image picker
+    implementation 'com.github.nguyenhoanglam:ImagePicker:1.5.1'
 }

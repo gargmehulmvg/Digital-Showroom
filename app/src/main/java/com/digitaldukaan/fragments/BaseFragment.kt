@@ -61,6 +61,11 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import com.google.gson.Gson
+import com.nguyenhoanglam.imagepicker.model.GridCount
+import com.nguyenhoanglam.imagepicker.model.Image
+import com.nguyenhoanglam.imagepicker.model.ImagePickerConfig
+import com.nguyenhoanglam.imagepicker.model.RootDirectory
+import com.nguyenhoanglam.imagepicker.ui.imagepicker.registerImagePicker
 import com.squareup.picasso.Picasso
 import com.yalantis.ucrop.UCrop
 import id.zelory.compressor.Compressor
@@ -676,6 +681,26 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         }
     }
 
+    open fun openMobileGalleryWithCropMultiple() {
+                val configMultiple = ImagePickerConfig(
+                    statusBarColor = "#000000",
+                    isLightStatusBar = true,
+                    isFolderMode = true,
+                    toolbarColor= "#1E9848",
+                    isMultipleMode = true,
+                    maxSize = 4,
+                    rootDirectory = RootDirectory.DCIM,
+                    subDirectory = "Photos",
+                    folderGridCount = GridCount(2, 4),
+            imageGridCount = GridCount(3, 5),
+            // See more at configuration attributes table below
+        )
+
+        launcher.launch(configMultiple)
+    }
+
+
+
     open fun openMobileGalleryWithCrop() {
         mActivity?.let {
             if (ActivityCompat.checkSelfPermission(it, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(it, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(it, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
@@ -773,6 +798,14 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                     ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA), Constants.IMAGE_PICK_REQUEST_CODE)
                 }
             }
+        }
+    }
+
+    private val launcher = registerImagePicker { images ->
+        // Selected images are ready to use
+        if(images.isNotEmpty()){
+            //get each image
+            Log.d("image size", images.size.toString())
         }
     }
 
