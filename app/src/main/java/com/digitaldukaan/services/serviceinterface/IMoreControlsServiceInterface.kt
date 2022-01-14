@@ -6,6 +6,8 @@ interface IMoreControlsServiceInterface {
 
     fun onMoreControlsResponse(response: CommonApiResponse)
 
+    fun onMoreControlsPageInfoResponse(response: CommonApiResponse)
+
     fun onChangeStoreAndDeliveryStatusResponse(response: CommonApiResponse)
 
     fun onMoreControlsServerException(e: Exception)

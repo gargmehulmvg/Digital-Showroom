@@ -15,6 +15,12 @@ class MoreControlsService {
         mServiceInterface = serviceInterface
     }
 
+    fun getMoreControlsPageInfo() {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.getMoreControlsPageInfoServerCall(mServiceInterface)
+        }
+    }
+
     fun updateDeliveryInfo(request: MoreControlsRequest) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
             mNetworkService.updateDeliveryInfoServerCall(request, mServiceInterface)

@@ -105,6 +105,9 @@ interface Apis {
     @GET("api/dotk/vm1/settings/getReferPageInfo")
     suspend fun getReferAndEarnData() : Response<CommonApiResponse>
 
+    @GET("api/dotk/vm1/settings/getStoreControlPageInfo")
+    suspend fun getStoreControlPageInfo() : Response<CommonApiResponse>
+
     @POST("api/dotk/vm1/settings/setStoreBusinesses")
     suspend fun setStoreBusinesses(@Body request: BusinessTypeRequest) : Response<CommonApiResponse>
 

@@ -1,7 +1,6 @@
 package com.digitaldukaan.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -42,7 +41,6 @@ class SetDeliveryChargeFragment : BaseFragment(), IMoreControlsServiceInterface 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        ToolBarManager.getInstance().hideToolBar(mActivity, true)
         ToolBarManager.getInstance()?.apply {
             hideToolBar(mActivity, false)
             headerTitle = mMoreControlsStaticData?.page_heading_set_delivery_charge
@@ -85,13 +83,13 @@ class SetDeliveryChargeFragment : BaseFragment(), IMoreControlsServiceInterface 
                 showFixedDeliveryContainer(true)
                 showCustomDeliveryContainer(false)
                 fixedDeliveryChargeEditText?.setText(mAppStoreServicesResponse?.mDeliveryPrice.toString())
-                if (mAppStoreServicesResponse?.mFreeDeliveryAbove != 0.0) freeDeliveryAboveEditText.setText(mAppStoreServicesResponse?.mFreeDeliveryAbove.toString())
+                if (0.0 != mAppStoreServicesResponse?.mFreeDeliveryAbove) freeDeliveryAboveEditText.setText(mAppStoreServicesResponse?.mFreeDeliveryAbove.toString())
             }
             Constants.CUSTOM_DELIVERY_CHARGE -> {
                 showFreeDeliveryContainer(false)
                 showFixedDeliveryContainer(false)
                 showCustomDeliveryContainer(true)
-                if (mAppStoreServicesResponse?.mFreeDeliveryAbove != 0.0) customDeliveryAboveEditText.setText(mAppStoreServicesResponse?.mFreeDeliveryAbove.toString())
+                if (0.0 != mAppStoreServicesResponse?.mFreeDeliveryAbove) customDeliveryAboveEditText.setText(mAppStoreServicesResponse?.mFreeDeliveryAbove.toString())
             }
         }
     }
@@ -268,9 +266,9 @@ class SetDeliveryChargeFragment : BaseFragment(), IMoreControlsServiceInterface 
         }
     }
 
-    override fun onChangeStoreAndDeliveryStatusResponse(response: CommonApiResponse) {
-        Log.d(TAG, "onChangeStoreAndDeliveryStatusResponse: do nothing")
-    }
+    override fun onMoreControlsPageInfoResponse(response: CommonApiResponse) = Unit
+
+    override fun onChangeStoreAndDeliveryStatusResponse(response: CommonApiResponse) = Unit
 
     override fun onMoreControlsServerException(e: Exception) {
         CoroutineScopeUtils().runTaskOnCoroutineMain { continueTextView?.isEnabled = true }
