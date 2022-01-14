@@ -77,6 +77,16 @@ import java.io.IOException
 import java.net.UnknownHostException
 import java.util.*
 import kotlin.collections.ArrayList
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+
+import android.content.ContentResolver
+
+
+
+
+
+
 
 
 open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener {
@@ -859,6 +869,115 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                 stopProgress()
                 onImageSelectionResultUri(fileUri)
                 onImageSelectionResultFile(file)
+            }
+        }
+    }
+
+    /*open fun openMobileGalleryWithCropMultipleImages() {
+        mActivity?.let {
+            if (ActivityCompat.checkSelfPermission(it, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(it, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(it, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA), Constants.IMAGE_PICK_REQUEST_CODE)
+                return
+            }
+        }
+        mActivity?.run {
+            val fileName = "tempFile_${System.currentTimeMillis()}"
+            val storageDirectory = this.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+            try {
+                val imageFile = File.createTempFile(fileName, ".jpg", storageDirectory)
+                mCurrentPhotoPath = imageFile.absolutePath
+                val cameraIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
+                val imageUri = FileProvider.getUriForFile(this, "${BuildConfig.APPLICATION_ID}.fileprovider", imageFile)
+                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, imageUri)
+                cameraIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+                testCameraGalleryWithCropIntentResult.launch(cameraIntent)
+            } catch (e: Exception) {
+                showToast(e.message)
+                Log.e(TAG, "openCamera: ${e.message}", e)
+            }
+        }
+    }
+
+    private var testCameraGalleryWithCropIntentResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            Log.d(TAG, "onActivityResult: ")
+            if (result.resultCode == Activity.RESULT_OK) {
+                CoroutineScopeUtils().runTaskOnCoroutineMain {
+                    try {
+                        val arr : ArrayList<Bitmap> = ArrayList()
+                        Log.d(TAG, "onActivityResult: OK")
+                        val bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath)
+                        Log.d(TAG, "onActivityResult: bitmap :: ${result.data!!.clipData!!.itemCount}")
+                        for (i in 0 until result.data!!.clipData!!.itemCount) {
+                            val bitmap = getBitmapFromUri(result.data!!.clipData!!.getItemAt(i).uri, context)
+                            Log.d(TAG, "onActivityResult: $bitmap")
+                            if (bitmap != null) {
+                                arr.add(bitmap)
+                            }
+                        }
+                        for (image in arr){
+                            var file = getImageFileFromBitmap(image, mActivity)
+                            file?.let {
+                                Log.d(TAG, "ORIGINAL :: ${it.length() / (1024)} KB")
+                                mActivity?.run {
+                                    file = Compressor.compress(this, it) {
+                                        quality(if (false == StaticInstances.sPermissionHashMap?.get(Constants.PREMIUM_USER)) (mActivity?.resources?.getInteger(R.integer.premium_compression_value) ?: 80) else 100)
+                                    }
+                                }
+                                Log.d(TAG, "COMPRESSED :: ${it.length() / (1024)} KB")
+                                if (it.length() / (1024 * 1024) >= mActivity?.resources?.getInteger(R.integer.image_mb_size) ?: 0) {
+                                    showToast("Images more than ${mActivity?.resources?.getInteger(R.integer.image_mb_size)} are not allowed")
+                                    return@let
+                                }
+                            }
+                            stopProgress()
+                        }
+                        if (null == bitmap) testHandleGalleryResult(arr, true) else handleCameraResult(bitmap, true)
+                    } catch (e: Exception) {
+                        Log.e(TAG, "resultLauncherForCamera: ${e.message}", e)
+                    }
+                }
+            }
+        }*/
+
+    private suspend fun cropper(arr: ArrayList<Bitmap>?){
+        if (arr != null) {
+            for (image in arr){
+                var file = getImageFileFromBitmap(image, mActivity)
+                file?.let {
+                    Log.d(TAG, "ORIGINAL :: ${it.length() / (1024)} KB")
+                    mActivity?.run {
+                        file = Compressor.compress(this, it) {
+                            quality(if (false == StaticInstances.sPermissionHashMap?.get(Constants.PREMIUM_USER)) (mActivity?.resources?.getInteger(R.integer.premium_compression_value) ?: 80) else 100)
+                        }
+                    }
+                    Log.d(TAG, "COMPRESSED :: ${it.length() / (1024)} KB")
+                    if (it.length() / (1024 * 1024) >= mActivity?.resources?.getInteger(R.integer.image_mb_size) ?: 0) {
+                        showToast("Images more than ${mActivity?.resources?.getInteger(R.integer.image_mb_size)} are not allowed")
+                        return@let
+                    }
+                }
+                stopProgress()
+            }
+            testHandleGalleryResult(arr, true)
+        }
+    }
+
+    private fun testHandleGalleryResult(it: ArrayList<Bitmap>?, isCropAllowed: Boolean) {
+        if (it != null) {
+            for (image in it){
+                var file = getImageFileFromBitmap(image, mActivity)
+                file?.let {
+                    val fileUri = image.getImageUri(mActivity)
+                    if (isCropAllowed) {
+                        startCropping(image)
+                        stopProgress()
+                    } else {
+                        stopProgress()
+                        onImageSelectionResultUri(fileUri)
+                        onImageSelectionResultFile(file)
+                    }
+                }
             }
         }
     }
