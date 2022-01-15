@@ -1154,7 +1154,6 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             })
             manageInventoryRecyclerView?.apply {
                 layoutManager = LinearLayoutManager(mActivity)
-                setRecyclerListener { hideSoftKeyboard() }
                 adapter = mInventoryAdapter
             }
         } else mInventoryAdapter?.notifyItemRangeChanged(0, mInventoryAdapter?.getDataSource()?.size ?: 0)
