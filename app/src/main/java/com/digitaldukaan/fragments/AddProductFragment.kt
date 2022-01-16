@@ -57,7 +57,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     private var mAddProductStaticData: AddProductStaticText? = null
     private var mItemId = 0
     private var mItemCategoryId = 0
-    private val mImagesStrList: ArrayList<AddProductImagesResponse> = ArrayList()
+    private val mImagesStrList: ArrayList<AddProductImagesResponse> = ArrayList(4)
     private var imagePickBottomSheet: BottomSheetDialog? = null
     private var mImageSearchAdapter = ImagesSearchAdapter()
     private var mImageChangePosition = 0
@@ -775,7 +775,11 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     }
                     bottomSheetUploadImageGalleryTextView.setOnClickListener {
                         imagePickBottomSheet?.dismiss()
-                        openMobileGalleryWithCropMultipleImages()
+                        if(5 == mImagesStrList.size){
+                            openMobileGalleryWithCrop()
+                        }else{
+                            openMobileGalleryWithCropMultipleImages(5-mImagesStrList.size)
+                        }
                     }
                     bottomSheetUploadImageRemovePhotoTextView.setOnClickListener {
                         imagePickBottomSheet?.dismiss()
