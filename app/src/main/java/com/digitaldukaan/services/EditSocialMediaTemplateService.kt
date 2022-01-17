@@ -1,6 +1,7 @@
 package com.digitaldukaan.services
 
 import com.digitaldukaan.constants.CoroutineScopeUtils
+import com.digitaldukaan.models.request.SaveSocialMediaPostRequest
 import com.digitaldukaan.services.networkservice.EditSocialMediaTemplateNetworkService
 import com.digitaldukaan.services.serviceinterface.IEditSocialMediaTemplateServiceInterface
 
@@ -29,6 +30,12 @@ class EditSocialMediaTemplateService {
     fun getSocialMediaTemplateBackgrounds(id: String) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
             mNetworkService.getSocialMediaTemplateBackgroundsServerCall(id, mServiceInterface)
+        }
+    }
+
+    fun saveSocialMediaPost(request: SaveSocialMediaPostRequest) {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.saveSocialMediaPostServerCall(mServiceInterface, request)
         }
     }
 

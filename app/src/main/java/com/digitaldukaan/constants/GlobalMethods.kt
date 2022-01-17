@@ -19,6 +19,7 @@ import android.provider.ContactsContract
 import android.provider.MediaStore
 import android.provider.Settings
 import android.telephony.PhoneNumberUtils
+import android.text.Html
 import android.text.TextUtils
 import android.util.Base64
 import android.util.Base64OutputStream
@@ -31,6 +32,7 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import android.view.animation.TranslateAnimation
 import android.webkit.CookieManager
 import android.webkit.URLUtil
+import android.widget.TextView
 import android.widget.Toast
 import androidmads.library.qrgenearator.QRGContents
 import androidmads.library.qrgenearator.QRGEncoder
@@ -586,3 +588,9 @@ fun openAppByPackageName(packageName: String, context: Context?) {
 }
 
 fun getSharedPreferenceName(): String = if (BuildConfig.DEBUG) Constants.SHARED_PREF_NAME_STAGING else Constants.SHARED_PREF_NAME
+
+fun setHtmlData(textView: TextView, string: String?) {
+    string?.let { it ->
+        textView.text = Html.fromHtml(it, Html.FROM_HTML_MODE_COMPACT)
+    }
+}

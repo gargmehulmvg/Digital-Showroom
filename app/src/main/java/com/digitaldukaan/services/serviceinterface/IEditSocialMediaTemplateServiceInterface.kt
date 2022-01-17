@@ -12,4 +12,5 @@ interface IEditSocialMediaTemplateServiceInterface {
 
     fun onSocialMediaTemplateBackgroundsResponse(response: CommonApiResponse)
 
+    fun onSaveSocialMediaPostResponse(commonApiResponse: CommonApiResponse)
 }

@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/default_bg">
+
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.core.widget.NestedScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fillViewport="true">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:id="@+id/storeServiceContainer"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/_12sdp"
+                        android:layout_marginTop="@dimen/_15sdp"
+                        android:layout_marginEnd="@dimen/_12sdp"
+                        android:layout_marginBottom="@dimen/_12sdp"
+                        android:background="@drawable/curve_white_background"
+                        android:elevation="@dimen/_5sdp"
+                        android:onClick="onClick"
+                        android:paddingStart="@dimen/_1sdp"
+                        android:paddingTop="@dimen/_10sdp"
+                        android:paddingEnd="@dimen/_1sdp"
+                        android:paddingBottom="@dimen/_10sdp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:targetApi="lollipop">
+
+                        <View
+                            android:id="@+id/separator"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/_1sdp"
+                            android:layout_marginTop="@dimen/_10sdp"
+                            android:background="@color/default_bg"
+                            app:layout_constraintTop_toBottomOf="@id/storeServiceContainerHeading" />
+
+                        <TextView
+                            android:id="@+id/storeServiceContainerHeading"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/_15sdp"
+                            android:layout_marginTop="@dimen/_5sdp"
+                            android:layout_marginEnd="@dimen/_15sdp"
+                            android:drawablePadding="@dimen/_5sdp"
+                            android:fontFamily="@font/roboto"
+                            android:maxLines="1"
+                            android:textColor="@color/default_text_light_grey"
+                            android:textSize="@dimen/_9sdp"
+                            app:drawableStartCompat="@drawable/ic_coupon_light_bulb"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            tools:text="Tap the icons below to turn the feature on or off" />
+
+                        <ImageView
+                            android:id="@+id/storeImageView"
+                            android:layout_width="@dimen/_35sdp"
+                            android:layout_height="@dimen/_35sdp"
+                            android:layout_marginTop="@dimen/_10sdp"
+                            android:background="?selectableItemBackgroundBorderless"
+                            android:contentDescription="@string/image_view_content_description"
+                            android:onClick="onClick"
+                            android:src="@drawable/ic_closed"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintHorizontal_bias="0.15"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/separator" />
+
+                        <ImageView
+                            android:id="@+id/deliveryImageView"
+                            android:layout_width="@dimen/_35sdp"
+                            android:layout_height="@dimen/_35sdp"
+                            android:background="?selectableItemBackgroundBorderless"
+                            android:contentDescription="@string/image_view_content_description"
+                            android:onClick="onClick"
+                            android:src="@drawable/ic_delivery_off"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintHorizontal_bias="0.501"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="@id/storeImageView" />
+
+                        <ImageView
+                            android:id="@+id/pickupImageView"
+                            android:layout_width="@dimen/_35sdp"
+                            android:layout_height="@dimen/_35sdp"
+                            android:background="?selectableItemBackgroundBorderless"
+                            android:contentDescription="@string/image_view_content_description"
+                            android:onClick="onClick"
+                            android:src="@drawable/ic_pickup_red"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintHorizontal_bias="0.85"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="@id/storeImageView" />
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/storeStatusTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="?selectableItemBackgroundBorderless"
+                            android:fontFamily="@font/roboto"
+                            android:onClick="onClick"
+                            android:paddingStart="@dimen/_5sdp"
+                            android:paddingTop="@dimen/_5sdp"
+                            android:paddingEnd="@dimen/_1sdp"
+                            android:paddingBottom="@dimen/_5sdp"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/_10sdp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toStartOf="@id/storeStatusTextView2"
+                            app:layout_constraintHorizontal_bias="0.5"
+                            app:layout_constraintHorizontal_chainStyle="packed"
+                            app:layout_constraintStart_toStartOf="@id/storeImageView"
+                            app:layout_constraintTop_toBottomOf="@id/storeImageView"
+                            app:layout_constraintVertical_bias="1.0"
+                            tools:text="@string/store_controls" />
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/storeStatusTextView2"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="?selectableItemBackgroundBorderless"
+                            android:fontFamily="@font/roboto_medium"
+                            android:onClick="onClick"
+                            android:paddingStart="@dimen/_1sdp"
+                            android:paddingTop="@dimen/_5sdp"
+                            android:paddingEnd="@dimen/_5sdp"
+                            android:paddingBottom="@dimen/_5sdp"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/_10sdp"
+                            app:layout_constraintBaseline_toBaselineOf="@id/storeStatusTextView"
+                            app:layout_constraintEnd_toEndOf="@id/storeImageView"
+                            app:layout_constraintHorizontal_bias="0.5"
+                            app:layout_constraintStart_toEndOf="@id/storeStatusTextView"
+                            tools:text="@string/close" />
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/deliveryStatusTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="?selectableItemBackgroundBorderless"
+                            android:fontFamily="@font/roboto"
+                            android:onClick="onClick"
+                            android:paddingStart="@dimen/_5sdp"
+                            android:paddingTop="@dimen/_5sdp"
+                            android:paddingEnd="@dimen/_1sdp"
+                            android:paddingBottom="@dimen/_5sdp"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/_10sdp"
+                            app:layout_constraintBaseline_toBaselineOf="@id/storeStatusTextView"
+                            app:layout_constraintEnd_toStartOf="@id/deliveryStatusValueTextView"
+                            app:layout_constraintHorizontal_bias="0.5"
+                            app:layout_constraintHorizontal_chainStyle="packed"
+                            app:layout_constraintStart_toStartOf="@id/deliveryImageView"
+                            tools:text="@string/store_controls" />
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/deliveryStatusValueTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="?selectableItemBackgroundBorderless"
+                            android:fontFamily="@font/roboto_medium"
+                            android:onClick="onClick"
+                            android:paddingStart="@dimen/_1sdp"
+                            android:paddingTop="@dimen/_5sdp"
+                            android:paddingEnd="@dimen/_5sdp"
+                            android:paddingBottom="@dimen/_5sdp"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/_10sdp"
+                            app:layout_constraintBaseline_toBaselineOf="@id/deliveryStatusTextView"
+                            app:layout_constraintEnd_toEndOf="@id/deliveryImageView"
+                            app:layout_constraintHorizontal_bias="0.5"
+                            app:layout_constraintStart_toEndOf="@id/deliveryStatusTextView"
+                            tools:text="@string/close" />
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/pickupStatusTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="?selectableItemBackgroundBorderless"
+                            android:fontFamily="@font/roboto"
+                            android:onClick="onClick"
+                            android:paddingStart="@dimen/_5sdp"
+                            android:paddingTop="@dimen/_5sdp"
+                            android:paddingEnd="@dimen/_1sdp"
+                            android:paddingBottom="@dimen/_5sdp"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/_10sdp"
+                            app:layout_constraintBaseline_toBaselineOf="@id/storeStatusTextView"
+                            app:layout_constraintEnd_toStartOf="@id/pickupStatusValueTextView"
+                            app:layout_constraintHorizontal_bias="0.5"
+                            app:layout_constraintHorizontal_chainStyle="packed"
+                            app:layout_constraintStart_toStartOf="@id/pickupImageView"
+                            tools:text="@string/store_controls" />
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/pickupStatusValueTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="?selectableItemBackgroundBorderless"
+                            android:fontFamily="@font/roboto_medium"
+                            android:onClick="onClick"
+                            android:paddingStart="@dimen/_1sdp"
+                            android:paddingTop="@dimen/_5sdp"
+                            android:paddingEnd="@dimen/_5sdp"
+                            android:paddingBottom="@dimen/_5sdp"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/_10sdp"
+                            app:layout_constraintBaseline_toBaselineOf="@id/pickupStatusTextView"
+                            app:layout_constraintEnd_toEndOf="@id/pickupImageView"
+                            app:layout_constraintHorizontal_bias="0.5"
+                            app:layout_constraintStart_toEndOf="@id/pickupStatusTextView"
+                            tools:text="@string/close" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recyclerView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/_10sdp"
+                        android:paddingTop="@dimen/_15sdp"
+                        android:layout_marginEnd="@dimen/_10sdp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/storeServiceContainer"
+                        tools:itemCount="3"
+                        tools:listitem="@layout/more_controls_item" />
+
+                    <View
+                        android:id="@+id/blankSpace"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_100sdp"
+                        app:layout_constraintTop_toBottomOf="@+id/recyclerView" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.core.widget.NestedScrollView>
+
+        </LinearLayout>
+
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

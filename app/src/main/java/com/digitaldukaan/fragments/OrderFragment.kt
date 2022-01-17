@@ -426,7 +426,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                                                                 val accountInfoResponse = Gson().fromJson<AccountInfoResponse>(it.mCommonDataStr, AccountInfoResponse::class.java)
                                                                 StaticInstances.sAccountPageSettingsStaticData = accountInfoResponse?.mAccountStaticText
                                                                 StaticInstances.sAppStoreServicesResponse = accountInfoResponse?.mStoreInfo?.storeServices
-                                                                launchFragment(MoreControlsFragment.newInstance(accountInfoResponse), true)
+                                                                launchFragment(MoreControlsFragment.newInstance(accountInfoResponse?.mAccountStaticText), true)
                                                             }
                                                         }
                                                     }

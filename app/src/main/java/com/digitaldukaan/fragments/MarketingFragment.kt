@@ -599,7 +599,14 @@ class MarketingFragment : BaseFragment(), IOnToolbarIconClick, IMarketingService
                                         Constants.ACTION_PRODUCT_DISCOUNT -> mMarketingPageInfoResponse?.marketingStaticTextResponse?.heading_product_discount
                                         else -> ""
                                     }
-                                    launchFragment(EditSocialMediaTemplateFragment.newInstance(headingStr, null, true, mMarketingPageInfoResponse), true)
+                                    launchFragment(EditSocialMediaTemplateFragment.newInstance(
+                                        heading = headingStr,
+                                        item = null,
+                                        isOpenBottomSheet = true,
+                                        marketingPageInfoResponse = mMarketingPageInfoResponse,
+                                        templateType = if (Constants.ACTION_BESTSELLER == item?.action) Constants.SOCIAL_MEDIA_TEMPLATE_TYPE_PRODUCT_BESTSELLER else Constants.SOCIAL_MEDIA_TEMPLATE_TYPE_PRODUCT_DISCOUNT
+                                        ), true
+                                    )
                                 }
 
                             })
