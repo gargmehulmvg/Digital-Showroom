@@ -1,9 +1,6 @@
 package com.digitaldukaan.fragments
 
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -65,25 +62,16 @@ class StoreDescriptionFragment : BaseFragment(), IStoreDescriptionServiceInterfa
             showNoInternetConnectionDialog()
             return
         }
-        storeDescriptionEditText?.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                Log.d(TAG, "afterTextChanged: BEFORE TRIM :: ${s.toString()}")
-                val str = s.toString().trim()
-                Log.d(TAG, "afterTextChanged: AFTER TRIM :: $str")
-                continueTextView.isEnabled = str.isNotEmpty()
-            }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) = Unit
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = Unit
-
-        })
-        storeDescriptionEditText?.setText(mProfilePreviewResponse?.mValue)
-        storeDescriptionEditText?.hint = mStoreDescriptionStaticData?.storeDescriptionHint
+        storeDescriptionEditText?.apply {
+            setText(mProfilePreviewResponse?.mValue)
+            hint = mStoreDescriptionStaticData?.storeDescriptionHint
+        }
         continueTextView?.text = mStoreDescriptionStaticData?.saveChanges
         if (mIsSingleStep) {
-            statusRecyclerView?.visibility = View.GONE
-            skipTextView?.visibility = View.GONE
+            with(View.GONE) {
+                statusRecyclerView?.visibility = this
+                skipTextView?.visibility = this
+            }
         } else {
             skipTextView?.visibility = View.VISIBLE
             statusRecyclerView?.apply {
@@ -99,7 +87,7 @@ class StoreDescriptionFragment : BaseFragment(), IStoreDescriptionServiceInterfa
             skipTextView?.id -> {
                 StaticInstances.sStepsCompletedList?.run {
                     for (completedItem in this) {
-                        if (completedItem.action == Constants.ACTION_DESCRIPTION) {
+                        if (Constants.ACTION_DESCRIPTION == completedItem.action) {
                             completedItem.isCompleted = true
                             break
                         }
@@ -110,7 +98,7 @@ class StoreDescriptionFragment : BaseFragment(), IStoreDescriptionServiceInterfa
             continueTextView?.id -> {
                 val service = StoreDescriptionService()
                 service.setServiceInterface(this)
-                val request = StoreDescriptionRequest(storeDescriptionEditText.text.trim().toString())
+                val request = StoreDescriptionRequest(storeDescriptionEditText?.text?.trim().toString())
                 showCancellableProgressDialog(mActivity)
                 service.saveStoreDescriptionData(request)
             }
@@ -125,7 +113,7 @@ class StoreDescriptionFragment : BaseFragment(), IStoreDescriptionServiceInterfa
                 if (!mIsSingleStep) {
                     StaticInstances.sStepsCompletedList?.run {
                         for (completedItem in this) {
-                            if (completedItem.action == Constants.ACTION_DESCRIPTION) {
+                            if (Constants.ACTION_DESCRIPTION == completedItem.action) {
                                 completedItem.isCompleted = true
                                 break
                             }
@@ -139,8 +127,6 @@ class StoreDescriptionFragment : BaseFragment(), IStoreDescriptionServiceInterfa
         }
     }
 
-    override fun onStoreDescriptionServerException(e: Exception) {
-        exceptionHandlingForAPIResponse(e)
-    }
+    override fun onStoreDescriptionServerException(e: Exception) = exceptionHandlingForAPIResponse(e)
 
 }

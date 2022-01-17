@@ -134,21 +134,21 @@ class SetDeliveryChargeFragment : BaseFragment(), IMoreControlsServiceInterface 
                     selectionStr = "Fixed_delivery"
                     val fixedDeliveryChargeStr = fixedDeliveryChargeEditText.text.trim().toString()
                     val freeDeliveryAboveStr = freeDeliveryAboveEditText.text.trim().toString()
-                    if (fixedDeliveryChargeStr.isEmpty() || fixedDeliveryChargeStr.toDouble() == 0.0) {
+                    if (isEmpty(fixedDeliveryChargeStr) || 0.0 == fixedDeliveryChargeStr.toDouble()) {
                         fixedDeliveryChargeEditText?.apply {
                             requestFocus()
-                            error = mMoreControlsStaticData?.error_mandatory_field
+                            error = mMoreControlsStaticData?.error_please_select_free_delivery
                         }
                         return
                     }
-                    if (freeDeliveryAboveStr.isNotEmpty() && (freeDeliveryAboveStr.toDouble() < (mAppStoreServicesResponse?.mMinOrderValue ?: 0.0))) {
+                    if (isNotEmpty(freeDeliveryAboveStr) && (freeDeliveryAboveStr.toDouble() < (mAppStoreServicesResponse?.mMinOrderValue ?: 0.0))) {
                         freeDeliveryAboveEditText?.apply {
                             requestFocus()
                             error = mMoreControlsStaticData?.error_amount_must_greater_than_min_order_value
                         }
                         return
                     }
-                    if (freeDeliveryAboveStr.isNotEmpty() && (freeDeliveryAboveStr.toDouble() == 0.0)) {
+                    if (isNotEmpty(freeDeliveryAboveStr) && (0.0 == freeDeliveryAboveStr.toDouble())) {
                         freeDeliveryAboveEditText?.apply {
                             requestFocus()
                             error = mMoreControlsStaticData?.error_mandatory_field
@@ -158,21 +158,21 @@ class SetDeliveryChargeFragment : BaseFragment(), IMoreControlsServiceInterface 
                     mMoreControlRequest.apply {
                         deliveryChargeType = Constants.FIXED_DELIVERY_CHARGE
                         deliveryPrice = fixedDeliveryChargeStr.toDouble()
-                        freeDeliveryAbove = if (freeDeliveryAboveStr.isEmpty()) 0.0 else freeDeliveryAboveStr.toDouble()
+                        freeDeliveryAbove = if (isEmpty(freeDeliveryAboveStr)) 0.0 else freeDeliveryAboveStr.toDouble()
                         minOrderValue = mAppStoreServicesResponse?.mMinOrderValue ?: 0.0
                     }
                 }
                 if (customDeliveryRadioButton.isChecked) {
                     selectionStr = "Custom_delivery"
                     val customDeliveryAboveStr = customDeliveryAboveEditText.text.trim().toString()
-                    if (customDeliveryAboveStr.isNotEmpty() && (customDeliveryAboveStr.toDouble() == 0.0)) {
+                    if (isNotEmpty(customDeliveryAboveStr) && (0.0 == customDeliveryAboveStr.toDouble())) {
                         customDeliveryAboveEditText?.apply {
                             requestFocus()
                             error = mMoreControlsStaticData?.error_mandatory_field
                         }
                         return
                     }
-                    if (customDeliveryAboveStr.isNotEmpty() && (customDeliveryAboveStr.toDouble() < (mAppStoreServicesResponse?.mMinOrderValue ?: 0.0))) {
+                    if (isNotEmpty(customDeliveryAboveStr) && (customDeliveryAboveStr.toDouble() < (mAppStoreServicesResponse?.mMinOrderValue ?: 0.0))) {
                         customDeliveryAboveEditText?.apply {
                             requestFocus()
                             error = mMoreControlsStaticData?.error_amount_must_greater_than_min_order_value
