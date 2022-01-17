@@ -21,10 +21,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/_15sdp"
-        app:layout_constraintBottom_toTopOf="@+id/continueTextView"
+        app:layout_constraintBottom_toTopOf="@id/continueTextView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/statusRecyclerView"
+        app:layout_constraintTop_toBottomOf="@id/statusRecyclerView"
         app:layout_constraintVertical_bias="0.0">
 
         <EditText
@@ -41,7 +41,8 @@
             android:textColor="@color/black"
             android:textColorHint="@color/default_text_light_grey"
             android:textSize="@dimen/_14sdp"
-            tools:hint="@string/step_1_store_description" />
+            tools:hint="@string/step_1_store_description"
+            tools:ignore="LabelFor" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -50,10 +51,9 @@
         style="@style/common_text_view_background"
         android:layout_marginBottom="@dimen/_15sdp"
         android:drawablePadding="@dimen/_10sdp"
-        android:enabled="false"
         android:onClick="onClick"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/usernameWrapper"
+        app:layout_constraintEnd_toEndOf="@id/usernameWrapper"
         tools:text="@string/save_n_continue" />
 
     <com.google.android.material.textview.MaterialTextView
@@ -65,10 +65,10 @@
         android:textSize="@dimen/_16sdp"
         android:visibility="visible"
         android:onClick="onClick"
-        app:layout_constraintBottom_toBottomOf="@+id/continueTextView"
-        app:layout_constraintEnd_toStartOf="@+id/continueTextView"
+        app:layout_constraintBottom_toBottomOf="@id/continueTextView"
+        app:layout_constraintEnd_toStartOf="@id/continueTextView"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/continueTextView"
+        app:layout_constraintTop_toTopOf="@id/continueTextView"
         android:text="@string/skip" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
