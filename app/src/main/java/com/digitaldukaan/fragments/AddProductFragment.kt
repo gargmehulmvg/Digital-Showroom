@@ -794,6 +794,9 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                         } else {
                             mImagesStrList.removeAt(mImageChangePosition)
                             mImageAddAdapter?.setListToAdapter(mImagesStrList)
+                            val imagesLeftStr = "${mImagesStrList?.size - 1}/4 ${mAddProductStaticData?.text_images_added}"
+                            val imagesLeftTextView: TextView? = mContentView?.findViewById(R.id.imagesLeftTextView)
+                            imagesLeftTextView?.text = imagesLeftStr
                         }
                     }
                     mImageSearchAdapter.setSearchImageListener(this@AddProductFragment)
