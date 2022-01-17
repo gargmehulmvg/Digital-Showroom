@@ -871,19 +871,21 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     }
 
     open fun openMobileGalleryWithCropMultipleImages(quantity: Int) {
-        val configMultiple = ImagePickerConfig(
-            statusBarColor = "#000000",
-            isLightStatusBar = true,
-            isFolderMode = true,
-            toolbarColor= "#1E9848",
-            isMultipleMode = true,
-            maxSize = quantity,
-            rootDirectory = RootDirectory.PICTURES,
-            subDirectory = "Photos",
-            folderGridCount = GridCount(2, 4),
-            imageGridCount = GridCount(3, 5),
-        )
-        launcher.launch(configMultiple)
+        mActivity?.let { context ->
+            val configMultiple = ImagePickerConfig(
+                statusBarColor = context.getString(R.color.black),
+                isLightStatusBar = true,
+                isFolderMode = true,
+                toolbarColor = context.getString(R.color.open_green),
+                isMultipleMode = true,
+                maxSize = quantity,
+                rootDirectory = RootDirectory.PICTURES,
+                subDirectory = "Photos",
+                folderGridCount = GridCount(2, 4),
+                imageGridCount = GridCount(3, 5),
+            )
+            launcher.launch(configMultiple)
+        }
     }
 
     private val launcher = registerImagePicker { images ->
