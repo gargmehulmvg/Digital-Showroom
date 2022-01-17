@@ -61,6 +61,10 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import com.google.gson.Gson
+import com.nguyenhoanglam.imagepicker.model.GridCount
+import com.nguyenhoanglam.imagepicker.model.ImagePickerConfig
+import com.nguyenhoanglam.imagepicker.model.RootDirectory
+import com.nguyenhoanglam.imagepicker.ui.imagepicker.registerImagePicker
 import com.squareup.picasso.Picasso
 import com.yalantis.ucrop.UCrop
 import id.zelory.compressor.Compressor
@@ -77,12 +81,6 @@ import java.io.IOException
 import java.net.UnknownHostException
 import java.util.*
 import kotlin.collections.ArrayList
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import com.nguyenhoanglam.imagepicker.model.GridCount
-import com.nguyenhoanglam.imagepicker.model.ImagePickerConfig
-import com.nguyenhoanglam.imagepicker.model.RootDirectory
-import com.nguyenhoanglam.imagepicker.ui.imagepicker.registerImagePicker
 
 
 open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener {
@@ -101,8 +99,8 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     private var mCurrentLongitude = 0.0
     private var mMultiUserAdapter: StaffInvitationAdapter? = null
     private var webConsoleBottomSheetDialog: BottomSheetDialog? = null
-    private val bitmapArr: ArrayList<Bitmap> = ArrayList()
-    private var loader: Boolean = false
+    private val mMultiImageBitmapArray: ArrayList<Bitmap> = ArrayList()
+    private var mIsMultiImageCompressionLoaderShowing = false
 
     companion object {
         private var sStaffInvitationDialog: Dialog? = null
@@ -144,9 +142,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     }
 
     protected fun showCancellableProgressDialog(context: Context?) {
-        if(loader){
-            return
-        }
+        if (mIsMultiImageCompressionLoaderShowing) return
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             context?.let { context ->
                 try {
@@ -882,43 +878,37 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
             toolbarColor= "#1E9848",
             isMultipleMode = true,
             maxSize = quantity,
-            rootDirectory = RootDirectory.DCIM,
+            rootDirectory = RootDirectory.PICTURES,
             subDirectory = "Photos",
             folderGridCount = GridCount(2, 4),
             imageGridCount = GridCount(3, 5),
-            // See more at configuration attributes table below
         )
-
         launcher.launch(configMultiple)
     }
 
     private val launcher = registerImagePicker { images ->
-        bitmapArr.clear()
-        for(it in images){
+        mMultiImageBitmapArray.clear()
+        for (it in images) {
             val bitmapImage = getBitmapFromUri(it.uri, context)
-            if (bitmapImage != null) {
-                bitmapArr.add(bitmapImage)
-            }
+            if (null != bitmapImage) mMultiImageBitmapArray.add(bitmapImage)
         }
-        if(bitmapArr.isNotEmpty()){
+        if (isNotEmpty(mMultiImageBitmapArray)) {
             CoroutineScopeUtils().runTaskOnCoroutineMain {
                 showCancellableProgressDialog(context)
-                loader=true
-                compressMultipleImages(bitmapArr)
+                mIsMultiImageCompressionLoaderShowing = true
+                compressMultipleImages(mMultiImageBitmapArray)
             }
         }
-        loader=false
+        mIsMultiImageCompressionLoaderShowing = false
     }
 
-    private suspend fun compressMultipleImages(arr: ArrayList<Bitmap>?){
-        if (arr != null) {
-            for (image in arr){
+    private suspend fun compressMultipleImages(imagesArray: ArrayList<Bitmap>?){
+        if (null != imagesArray) {
+            for (image in imagesArray) {
                 var file = getImageFileFromBitmap(image, mActivity)
                 file?.let {
                     Log.d(TAG, "ORIGINAL :: ${it.length() / (1024)} KB")
-                    mActivity?.run {
-                        file = Compressor.compress(this, it) { quality(if (false == StaticInstances.sPermissionHashMap?.get(Constants.PREMIUM_USER)) (mActivity?.resources?.getInteger(R.integer.premium_compression_value) ?: 80) else 100) }
-                    }
+                    mActivity?.run { file = Compressor.compress(this, it) { quality(if (false == StaticInstances.sPermissionHashMap?.get(Constants.PREMIUM_USER)) (mActivity?.resources?.getInteger(R.integer.premium_compression_value) ?: 80) else 100) } }
                     Log.d(TAG, "COMPRESSED :: ${it.length() / (1024)} KB")
                     if (it.length() / (1024 * 1024) >= mActivity?.resources?.getInteger(R.integer.image_mb_size) ?: 0) {
                         showToast("Images more than ${mActivity?.resources?.getInteger(R.integer.image_mb_size)} are not allowed")
@@ -926,29 +916,16 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                     }
                 }
             }
-            cropMultipleImages(arr, true)
+            cropMultipleImages(imagesArray)
         }
     }
 
-    private fun cropMultipleImages(it: ArrayList<Bitmap>?, isCropAllowed: Boolean) {
-        if (it != null) {
-            for (image in it){
-                var file = getImageFileFromBitmap(image, mActivity)
-                file?.let {
-                    val fileUri = image.getImageUri(mActivity)
-                    if (isCropAllowed) {
-                        startCropping(image)
-                        stopProgress()
-                    } else {
-                        stopProgress()
-                        onImageSelectionResultUri(fileUri)
-                        onImageSelectionResultFile(file)
-                    }
-                }
-                stopProgress()
+    private fun cropMultipleImages(multiImageArrayList: ArrayList<Bitmap>?) {
+        if (isNotEmpty(multiImageArrayList)) {
+            for (image in multiImageArrayList!!) {
+                startCropping(image)
             }
         }
-        stopProgress()
     }
 
     private fun startCropping(bitmap: Bitmap?) {
@@ -993,10 +970,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                 Log.d(TAG, "onActivityResult: CROP_IMAGE_ACTIVITY_REQUEST_CODE ")
                 data?.let {
                     val resultUri = UCrop.getOutput(data)
-                    Log.d(
-                        TAG,
-                        "onActivityResult: CROP_IMAGE_ACTIVITY_REQUEST_CODE :: result uri :: $resultUri"
-                    )
+                    Log.d(TAG, "onActivityResult: CROP_IMAGE_ACTIVITY_REQUEST_CODE :: result uri :: $resultUri")
                     onImageSelectionResultUri(resultUri)
                     val croppedBitmap = getBitmapFromUri(resultUri, mActivity)
                     val croppedFile = getImageFileFromBitmap(croppedBitmap, mActivity)
