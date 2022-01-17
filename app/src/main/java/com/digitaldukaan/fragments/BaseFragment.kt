@@ -875,7 +875,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
             statusBarColor = "#000000",
             isLightStatusBar = true,
             isFolderMode = true,
-            toolbarColor= "#1E9848",
+            toolbarColor= "1E9848",
             isMultipleMode = true,
             maxSize = quantity,
             rootDirectory = RootDirectory.PICTURES,
@@ -896,34 +896,32 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
             CoroutineScopeUtils().runTaskOnCoroutineMain {
                 showCancellableProgressDialog(context)
                 mIsMultiImageCompressionLoaderShowing = true
-                compressMultipleImages(mMultiImageBitmapArray)
+                compressAndCropMultipleImages(mMultiImageBitmapArray)
             }
         }
         mIsMultiImageCompressionLoaderShowing = false
     }
 
-    private suspend fun compressMultipleImages(imagesArray: ArrayList<Bitmap>?){
-        if (null != imagesArray) {
-            for (image in imagesArray) {
-                var file = getImageFileFromBitmap(image, mActivity)
-                file?.let {
-                    Log.d(TAG, "ORIGINAL :: ${it.length() / (1024)} KB")
-                    mActivity?.run { file = Compressor.compress(this, it) { quality(if (false == StaticInstances.sPermissionHashMap?.get(Constants.PREMIUM_USER)) (mActivity?.resources?.getInteger(R.integer.premium_compression_value) ?: 80) else 100) } }
-                    Log.d(TAG, "COMPRESSED :: ${it.length() / (1024)} KB")
-                    if (it.length() / (1024 * 1024) >= mActivity?.resources?.getInteger(R.integer.image_mb_size) ?: 0) {
-                        showToast("Images more than ${mActivity?.resources?.getInteger(R.integer.image_mb_size)} are not allowed")
-                        return@let
+    private suspend fun compressAndCropMultipleImages(imagesArray: ArrayList<Bitmap>?){
+        if (isNotEmpty(imagesArray)) {
+            if (imagesArray != null) {
+                for (image in imagesArray) {
+                    var file = getImageFileFromBitmap(image, mActivity)
+                    file?.let {
+                        Log.d(TAG, "ORIGINAL :: ${it.length() / (1024)} KB")
+                        mActivity?.run { file = Compressor.compress(this, it) { quality(if (false == StaticInstances.sPermissionHashMap?.get(Constants.PREMIUM_USER)) (mActivity?.resources?.getInteger(R.integer.premium_compression_value) ?: 80) else 100) } }
+                        Log.d(TAG, "COMPRESSED :: ${it.length() / (1024)} KB")
+                        if (it.length() / (1024 * 1024) >= mActivity?.resources?.getInteger(R.integer.image_mb_size) ?: 0) {
+                            showToast("Images more than ${mActivity?.resources?.getInteger(R.integer.image_mb_size)} are not allowed")
+                            return@let
+                        }
                     }
                 }
             }
-            cropMultipleImages(imagesArray)
-        }
-    }
-
-    private fun cropMultipleImages(multiImageArrayList: ArrayList<Bitmap>?) {
-        if (isNotEmpty(multiImageArrayList)) {
-            for (image in multiImageArrayList!!) {
-                startCropping(image)
+            if (isNotEmpty(imagesArray)) {
+                for (image in imagesArray!!) {
+                    startCropping(image)
+                }
             }
         }
     }

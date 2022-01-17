@@ -194,7 +194,7 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
 
     private fun setupHelpPageUI(marketingHelpPage: HelpPageResponse?) {
         ToolBarManager.getInstance()?.apply {
-            if (marketingHelpPage?.mIsActive == true) {
+            if (true==marketingHelpPage?.mIsActive) {
                 setSideIconVisibility(true)
                 mActivity?.let { setSideIcon(ContextCompat.getDrawable(it, R.drawable.ic_setting_toolbar), this@SocialMediaFragment) }
             } else {
