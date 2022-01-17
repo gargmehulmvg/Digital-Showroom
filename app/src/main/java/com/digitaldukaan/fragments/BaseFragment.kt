@@ -884,11 +884,11 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                 folderGridCount = GridCount(2, 4),
                 imageGridCount = GridCount(3, 5),
             )
-            launcher.launch(configMultiple)
+            multiImagePickerLauncher.launch(configMultiple)
         }
     }
 
-    private val launcher = registerImagePicker { images ->
+    private val multiImagePickerLauncher = registerImagePicker { images ->
         mMultiImageBitmapArray.clear()
         for (it in images) {
             val bitmapImage = getBitmapFromUri(it.uri, context)
@@ -905,8 +905,8 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     }
 
     private suspend fun compressMultipleImages(imagesArray: ArrayList<Bitmap>?){
-        if (null != imagesArray) {
-            for (image in imagesArray) {
+        if (isNotEmpty(imagesArray)) {
+            for (image in imagesArray!!) {
                 var file = getImageFileFromBitmap(image, mActivity)
                 file?.let {
                     Log.d(TAG, "ORIGINAL :: ${it.length() / (1024)} KB")
