@@ -134,7 +134,7 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
         stopProgress()
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (commonApiResponse.mIsSuccessStatus) {
-                sSocialMediaPageInfoResponse = Gson().fromJson<SocialMediaPageInfoResponse>(commonApiResponse.mCommonDataStr, SocialMediaPageInfoResponse::class.java)
+                sSocialMediaPageInfoResponse = Gson().fromJson(commonApiResponse.mCommonDataStr, SocialMediaPageInfoResponse::class.java)
                 StaticInstances.sIsShareStoreLocked = sSocialMediaPageInfoResponse?.isShareStoreLocked ?: false
                 setupSocialMediaUIFromResponse()
             }
@@ -161,7 +161,7 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             if (commonApiResponse.mIsSuccessStatus) {
-                val response = Gson().fromJson<SocialMediaTemplateListResponse>(commonApiResponse.mCommonDataStr, SocialMediaTemplateListResponse::class.java)
+                val response = Gson().fromJson(commonApiResponse.mCommonDataStr, SocialMediaTemplateListResponse::class.java)
                 mIsNextPage = response?.isNextPage ?: false
                 Log.d(TAG, "onSocialMediaTemplateListResponse: mIsNextPage :: $mIsNextPage :: List Size :: ${response?.templateList?.size}")
                 setDataToSocialMediaTemplateList(response?.templateList)
@@ -181,7 +181,7 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
 
     override fun onMarketingPageInfoResponse(commonApiResponse: CommonApiResponse) {
         if (commonApiResponse.mIsSuccessStatus) {
-            mMarketingPageInfoResponse = Gson().fromJson<MarketingPageInfoResponse>(commonApiResponse.mCommonDataStr, MarketingPageInfoResponse::class.java)
+            mMarketingPageInfoResponse = Gson().fromJson(commonApiResponse.mCommonDataStr, MarketingPageInfoResponse::class.java)
         }
     }
 
@@ -194,7 +194,7 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
 
     private fun setupHelpPageUI(marketingHelpPage: HelpPageResponse?) {
         ToolBarManager.getInstance()?.apply {
-            if (true==marketingHelpPage?.mIsActive) {
+            if (true == marketingHelpPage?.mIsActive) {
                 setSideIconVisibility(true)
                 mActivity?.let { setSideIcon(ContextCompat.getDrawable(it, R.drawable.ic_setting_toolbar), this@SocialMediaFragment) }
             } else {

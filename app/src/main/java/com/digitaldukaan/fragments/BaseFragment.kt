@@ -898,13 +898,13 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
             CoroutineScopeUtils().runTaskOnCoroutineMain {
                 showCancellableProgressDialog(context)
                 mIsMultiImageCompressionLoaderShowing = true
-                compressMultipleImages(mMultiImageBitmapArray)
+                compressAndCropMultipleImages(mMultiImageBitmapArray)
             }
         }
         mIsMultiImageCompressionLoaderShowing = false
     }
 
-    private suspend fun compressMultipleImages(imagesArray: ArrayList<Bitmap>?){
+    private suspend fun compressAndCropMultipleImages(imagesArray: ArrayList<Bitmap>?){
         if (isNotEmpty(imagesArray)) {
             for (image in imagesArray!!) {
                 var file = getImageFileFromBitmap(image, mActivity)
@@ -918,14 +918,10 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                     }
                 }
             }
-            cropMultipleImages(imagesArray)
-        }
-    }
-
-    private fun cropMultipleImages(multiImageArrayList: ArrayList<Bitmap>?) {
-        if (isNotEmpty(multiImageArrayList)) {
-            for (image in multiImageArrayList!!) {
-                startCropping(image)
+            if (isNotEmpty(imagesArray)) {
+                for (image in imagesArray!!) {
+                    startCropping(image)
+                }
             }
         }
     }
