@@ -57,7 +57,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     private var mAddProductStaticData: AddProductStaticText? = null
     private var mItemId = 0
     private var mItemCategoryId = 0
-    private val mImagesStrList: ArrayList<AddProductImagesResponse> = ArrayList(4)
+    private val mImagesStrList: ArrayList<AddProductImagesResponse> = ArrayList(MAXIMUM_IMAGE_SELECTION)
     private var imagePickBottomSheet: BottomSheetDialog? = null
     private var mImageSearchAdapter = ImagesSearchAdapter()
     private var mImageChangePosition = 0
@@ -107,6 +107,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
 
         private var sIsVariantImageClicked = false
         private var sVariantImageClickedPosition = 0
+        private const val MAXIMUM_IMAGE_SELECTION = 4
 
         fun newInstance(itemId:Int, isAddNewProduct: Boolean): AddProductFragment {
             val fragment = AddProductFragment()
@@ -143,7 +144,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             hideBackPressFromToolBar(mActivity, false)
             onBackPressed(this@AddProductFragment)
             setSideIconVisibility(true)
-            setSecondSideIconVisibility(mItemId != 0)
+            setSecondSideIconVisibility(0 != mItemId)
             mActivity?.run {
                 setSecondSideIcon(ContextCompat.getDrawable(this, R.drawable.ic_delete), this@AddProductFragment)
                 setSideIcon(ContextCompat.getDrawable(this, R.drawable.ic_options_menu), this@AddProductFragment)
@@ -775,10 +776,10 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     }
                     bottomSheetUploadImageGalleryTextView.setOnClickListener {
                         imagePickBottomSheet?.dismiss()
-                        if(5 == mImagesStrList.size){
+                        if ((MAXIMUM_IMAGE_SELECTION + 1) == mImagesStrList.size) {
                             openMobileGalleryWithCrop()
-                        }else{
-                            openMobileGalleryWithCropMultipleImages(5-mImagesStrList.size)
+                        } else {
+                            openMobileGalleryWithCropMultipleImages((MAXIMUM_IMAGE_SELECTION + 1) - mImagesStrList.size)
                         }
                     }
                     bottomSheetUploadImageRemovePhotoTextView.setOnClickListener {
@@ -793,6 +794,9 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                         } else {
                             mImagesStrList.removeAt(mImageChangePosition)
                             mImageAddAdapter?.setListToAdapter(mImagesStrList)
+                            val imagesLeftStr = "${mImagesStrList?.size - 1}/4 ${mAddProductStaticData?.text_images_added}"
+                            val imagesLeftTextView: TextView? = mContentView?.findViewById(R.id.imagesLeftTextView)
+                            imagesLeftTextView?.text = imagesLeftStr
                         }
                     }
                     mImageSearchAdapter.setSearchImageListener(this@AddProductFragment)
@@ -1158,7 +1162,6 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             })
             manageInventoryRecyclerView?.apply {
                 layoutManager = LinearLayoutManager(mActivity)
-                setRecyclerListener { hideSoftKeyboard() }
                 adapter = mInventoryAdapter
             }
         } else mInventoryAdapter?.notifyItemRangeChanged(0, mInventoryAdapter?.getDataSource()?.size ?: 0)

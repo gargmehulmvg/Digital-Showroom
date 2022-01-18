@@ -14,8 +14,8 @@ android {
         applicationId "com.digitaldukaan"
         minSdkVersion 24
         targetSdkVersion 30
-        versionCode 93
-        versionName "4.5.1"
+        versionCode 96
+        versionName "4.5.4"
         multiDexEnabled true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -165,6 +165,6 @@ dependencies {
     implementation "com.github.skydoves:balloon:1.4.0"
     //  Generate QR Code
     implementation 'androidmads.library.qrgenearator:QRGenearator:1.0.3'
-    //image picker
+    //  Multi Image Picker
     implementation 'com.github.nguyenhoanglam:ImagePicker:1.5.1'
 }
