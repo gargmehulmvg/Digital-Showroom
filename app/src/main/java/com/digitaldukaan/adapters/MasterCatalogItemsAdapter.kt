@@ -25,10 +25,12 @@ class MasterCatalogItemsAdapter(
     RecyclerView.Adapter<MasterCatalogItemsAdapter.MarketingCardViewHolder>() {
 
     private var mSelectedProductsHashMap: HashMap<Int?, MasterCatalogItemResponse?>? = HashMap()
+    private var mCategoryCartItems: Int = 0
 
-    fun setMasterCatalogList(list: ArrayList<MasterCatalogItemResponse>?, selectedProductsHashMap: HashMap<Int?, MasterCatalogItemResponse?>?) {
+    fun setMasterCatalogList(list: ArrayList<MasterCatalogItemResponse>?, selectedProductsHashMap: HashMap<Int?, MasterCatalogItemResponse?>?, alreadyAdded: Int) {
         this.mCategoryItemList = list
         this.mSelectedProductsHashMap = selectedProductsHashMap
+        mCategoryCartItems = alreadyAdded
         notifyDataSetChanged()
     }
 
@@ -68,11 +70,19 @@ class MasterCatalogItemsAdapter(
                 view.checkBox.isSelected = false
                 return@setOnCheckedChangeListener
             }
-            if (mActivity.resources.getInteger(R.integer.max_selection_item_catalog) == mSelectedProductsHashMap?.size) {
-                mActivity.showToast("Only ${mActivity.resources.getInteger(R.integer.max_selection_item_catalog)} products are allowed to add at a time")
-                view.checkBox.isChecked = false
-                view.checkBox.isSelected = false
-            }  else mCategoryItemClickListener.onCategoryCheckBoxClick(view.adapterPosition, item, isChecked)
+            when {
+                mActivity.resources.getInteger(R.integer.max_selection_item_catalog_subcategory) == mSelectedProductsHashMap?.size?.plus(mCategoryCartItems) -> {
+                    mActivity.showToast("Maximum products per category - 200 \n Please create new category for adding more products.")
+                    view.checkBox.isChecked = false
+                    view.checkBox.isSelected = false
+                }
+                mActivity.resources.getInteger(R.integer.max_selection_item_catalog) == mSelectedProductsHashMap?.size -> {
+                    mActivity.showToast("Only ${mActivity.resources.getInteger(R.integer.max_selection_item_catalog)} products are allowed to add at a time")
+                    view.checkBox.isChecked = false
+                    view.checkBox.isSelected = false
+                }
+                else -> mCategoryItemClickListener.onCategoryCheckBoxClick(view.adapterPosition, item, isChecked)
+            }
         }
         view.titleTextView.setOnClickListener {
             val item = mCategoryItemList?.get(view.adapterPosition)
