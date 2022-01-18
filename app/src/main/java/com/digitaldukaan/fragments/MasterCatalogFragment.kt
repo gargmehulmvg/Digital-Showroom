@@ -51,6 +51,7 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
     private var mIsMoreItemsAvailable = false
     private var mCategoryItemsList: ArrayList<MasterCatalogItemResponse>? = ArrayList()
     private val mSelectedProductsHashMap: HashMap<Int?, MasterCatalogItemResponse?> = HashMap()
+    private var mCategorySelectedItems: Int = 0
 
     companion object {
         fun newInstance(addProductStaticData: AddProductStaticText?, item: ExploreCategoryItemResponse?): MasterCatalogFragment {
@@ -166,6 +167,7 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
     }
 
     override fun onSubCategoryItemsResponse(response: CommonApiResponse) {
+        mCategorySelectedItems=0
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             if (response.mIsSuccessStatus) {
@@ -173,7 +175,12 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
                 productCountTextView?.text = "${categoryItems?.totalItems} ${addProductStaticData?.text_tap_to_select}"
                 mIsMoreItemsAvailable = categoryItems.isNext
                 if (categoryItems?.itemList?.isNotEmpty() == true) mCategoryItemsList?.addAll(categoryItems.itemList)
-                masterCatalogAdapter?.setMasterCatalogList(mCategoryItemsList, mSelectedProductsHashMap)
+                for(items in categoryItems?.itemList!!){
+                    if(items.isAdded){
+                        mCategorySelectedItems++
+                    }
+                }
+                masterCatalogAdapter?.setMasterCatalogList(mCategoryItemsList, mSelectedProductsHashMap, mCategorySelectedItems)
             }
         }
     }
