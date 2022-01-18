@@ -132,7 +132,8 @@ data class AccountStaticTextResponse(
     @SerializedName("message_bottom_sheet_delivery")                            var message_bottom_sheet_delivery: String?,
     @SerializedName("heading_tap_the_icon")                                     var heading_tap_the_icon: String?,
     @SerializedName("text_unlock_now")                                          var text_unlock_now: String?,
-    @SerializedName("message_bottom_sheet_pickup")                              var message_bottom_sheet_pickup: String?
+    @SerializedName("message_bottom_sheet_pickup")                              var message_bottom_sheet_pickup: String?,
+    @SerializedName("error_please_select_free_delivery")                        var error_please_select_free_delivery: String?
 )
 
 data class StoreShareResponse(

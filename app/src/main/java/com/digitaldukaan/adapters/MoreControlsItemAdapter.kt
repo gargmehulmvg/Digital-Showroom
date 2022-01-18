@@ -20,7 +20,7 @@ class MoreControlsItemAdapter(
 ) : RecyclerView.Adapter<MoreControlsItemAdapter.MoreControlsItemViewHolder>() {
 
     inner class MoreControlsItemViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val textView: TextView = itemView.findViewById(R.id.headingTextView)
+        val headingTextView: TextView = itemView.findViewById(R.id.headingTextView)
         val recyclerView: RecyclerView = itemView.findViewById(R.id.recyclerView)
     }
 
@@ -31,7 +31,7 @@ class MoreControlsItemAdapter(
     override fun onBindViewHolder(holder: MoreControlsItemViewHolder, position: Int) {
         val item = mStoreControlItemsList?.get(position)
         holder.apply {
-            textView.text = item?.heading
+            headingTextView.text = item?.heading
             recyclerView.apply {
                 layoutManager = LinearLayoutManager(mContext)
                 isNestedScrollingEnabled = false

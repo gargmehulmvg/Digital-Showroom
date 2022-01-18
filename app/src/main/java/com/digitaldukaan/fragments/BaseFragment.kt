@@ -884,11 +884,11 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                 folderGridCount = GridCount(2, 4),
                 imageGridCount = GridCount(3, 5),
             )
-            launcher.launch(configMultiple)
+            multiImagePickerLauncher.launch(configMultiple)
         }
     }
 
-    private val launcher = registerImagePicker { images ->
+    private val multiImagePickerLauncher = registerImagePicker { images ->
         mMultiImageBitmapArray.clear()
         for (it in images) {
             val bitmapImage = getBitmapFromUri(it.uri, context)
@@ -898,15 +898,15 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
             CoroutineScopeUtils().runTaskOnCoroutineMain {
                 showCancellableProgressDialog(context)
                 mIsMultiImageCompressionLoaderShowing = true
-                compressMultipleImages(mMultiImageBitmapArray)
+                compressAndCropMultipleImages(mMultiImageBitmapArray)
             }
         }
         mIsMultiImageCompressionLoaderShowing = false
     }
 
-    private suspend fun compressMultipleImages(imagesArray: ArrayList<Bitmap>?){
-        if (null != imagesArray) {
-            for (image in imagesArray) {
+    private suspend fun compressAndCropMultipleImages(imagesArray: ArrayList<Bitmap>?){
+        if (isNotEmpty(imagesArray)) {
+            for (image in imagesArray!!) {
                 var file = getImageFileFromBitmap(image, mActivity)
                 file?.let {
                     Log.d(TAG, "ORIGINAL :: ${it.length() / (1024)} KB")
@@ -918,14 +918,10 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                     }
                 }
             }
-            cropMultipleImages(imagesArray)
-        }
-    }
-
-    private fun cropMultipleImages(multiImageArrayList: ArrayList<Bitmap>?) {
-        if (isNotEmpty(multiImageArrayList)) {
-            for (image in multiImageArrayList!!) {
-                startCropping(image)
+            if (isNotEmpty(imagesArray)) {
+                for (image in imagesArray!!) {
+                    startCropping(image)
+                }
             }
         }
     }
