@@ -98,8 +98,9 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_15sdp"
         android:overScrollMode="always"
-        app:layout_constraintStart_toStartOf="@+id/couponCodeTextView"
+        app:layout_constraintStart_toStartOf="@+id/separator1"
         app:layout_constraintTop_toBottomOf="@id/separator1"
+        app:layout_constraintEnd_toEndOf="@+id/separator1"
         tools:itemCount="100"
         tools:listitem="@layout/bank_offer_sheet_item" />
 </androidx.constraintlayout.widget.ConstraintLayout>
