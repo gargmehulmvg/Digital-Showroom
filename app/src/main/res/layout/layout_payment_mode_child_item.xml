@@ -46,17 +46,61 @@
         app:layout_constraintStart_toStartOf="@+id/headingTextView"
         app:layout_constraintTop_toBottomOf="@+id/headingTextView" />
 
-    <TextView
-        android:id="@+id/activeOfferTextView"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/_12sdp"
-        android:clickable="false"
-        android:fontFamily="@font/roboto_medium"
-        tools:text="UPI"
-        android:textColor="@color/black"
-        android:textSize="@dimen/_13sdp"
-        app:layout_constraintStart_toEndOf="@+id/upiImageView"
-        app:layout_constraintTop_toBottomOf="@+id/upiTxnChargeTextView" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cardOfferContainer"
+        android:clickable="true"
+        android:layout_marginTop="@dimen/_4sdp"
+        android:layout_width="wrap_content"
+        app:layout_constraintStart_toStartOf="@+id/upiTxnChargeTextView"
+        app:layout_constraintTop_toBottomOf="@+id/upiTxnChargeTextView"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/backgroundImageViewCardOffer"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            tools:background="@drawable/curve_offer_text_color_curve"
+            android:contentDescription="@string/image_view_content_description"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="@id/cardOfferTextView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@color/white" />
+
+        <TextView
+            android:id="@+id/cardOfferTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:textColor="@color/card_offer_text_color"
+            android:paddingStart="@dimen/_10sdp"
+            android:paddingTop="@dimen/_3sdp"
+            android:visibility="visible"
+            android:paddingEnd="@dimen/_3sdp"
+            android:paddingBottom="@dimen/_3sdp"
+            android:textSize="@dimen/_8sdp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/cardOfferArrowImageView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Bank of Baroda credit card offer active" />
+
+        <ImageView
+            android:id="@+id/cardOfferArrowImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            android:layout_marginEnd="@dimen/_5sdp"
+            android:contentDescription="@string/image_view_content_description"
+            android:src="@drawable/ic_half_arrow_forward_small_green"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
