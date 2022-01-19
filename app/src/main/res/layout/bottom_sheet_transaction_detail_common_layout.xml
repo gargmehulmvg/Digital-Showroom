@@ -115,6 +115,19 @@
         app:layout_constraintTop_toTopOf="@+id/paymentModeImageView"
         tools:text="Payment Mode" />
 
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/paymentDetailTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:fontFamily="@font/roboto"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_10sdp"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintTop_toBottomOf="@id/paymentModeTextView"
+        tools:text="Customer received an additional Rs.xxx OFF for using XXX Bank YYY Card" />
+
+
     <ImageView
         android:id="@+id/paymentModeImageView"
         android:layout_width="@dimen/_45sdp"
@@ -128,7 +141,7 @@
     <View
         android:id="@+id/separator2"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/_5sdp"
+        android:layout_height="@dimen/_3sdp"
         android:layout_marginTop="@dimen/_15sdp"
         android:background="@color/light_grey_background"
         app:layout_constraintTop_toBottomOf="@+id/paymentModeImageView" />
