@@ -58,10 +58,12 @@
         android:background="@drawable/curve_offer_text_color_curve"
         app:layout_constraintStart_toStartOf="@+id/upiTxnChargeTextView"
         app:layout_constraintTop_toBottomOf="@+id/upiTxnChargeTextView"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:focusable="true">
 
         <TextView
             android:id="@+id/activeOfferTextView"
+            android:clickable="false"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
@@ -69,27 +71,12 @@
             android:visibility="visible"
             android:textSize="@dimen/_8sdp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/cardOfferArrowImageView"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
+            app:drawableRightCompat="@drawable/ic_half_arrow_forward_small_green"
+            android:drawablePadding="@dimen/_5sdp"
             tools:text="Bank of Baroda credit card offer active" />
 
-        <ImageView
-            android:id="@+id/cardOfferArrowImageView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:visibility="visible"
-            android:layout_marginStart="@dimen/_6sdp"
-            app:layout_constraintStart_toEndOf="@id/activeOfferTextView"
-            android:contentDescription="@string/image_view_content_description"
-            android:src="@drawable/ic_half_arrow_forward_small_green"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

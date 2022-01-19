@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.isEmpty
+import com.digitaldukaan.constants.isNotEmpty
 import com.digitaldukaan.interfaces.IActiveOfferDetailsListener
 import com.digitaldukaan.models.response.PaymentModesItemResponse
 
@@ -44,7 +45,7 @@ class PaymentModeChildAdapter(
             headingTextView?.text = item?.name
             val txnChargeStr = "${item?.transactionCharges}% txn Charges"
             upiTxnChargeTextView?.text = txnChargeStr
-            if (!isEmpty(item?.imageUrl)) mContext?.let { context -> Glide.with(context).load(item?.imageUrl).into(upiImageView) }
+            if (isNotEmpty(item?.imageUrl)) mContext?.let { context -> Glide.with(context).load(item?.imageUrl).into(upiImageView) }
             if (true == mIsKycActive) {
                 headingTextView?.alpha = 1f
                 upiTxnChargeTextView?.alpha = 1f
@@ -52,12 +53,12 @@ class PaymentModeChildAdapter(
                 headingTextView?.alpha = 0.5f
                 upiTxnChargeTextView?.alpha = 0.5f
             }
-            if (!isEmpty(item?.offerActiveText)) {
+            if (isNotEmpty(item?.offerActiveText)) {
                 activeOfferTextView.text = item?.offerActiveText
             } else {
                 cardOfferContainer.visibility = View.GONE
             }
-            activeOfferTextView.setOnClickListener{
+            activeOfferTextView.setOnClickListener {
                 item?.offerInfoMap?.let { it1 -> mListener?.activeOfferDetailsListener(it1) }
             }
         }
