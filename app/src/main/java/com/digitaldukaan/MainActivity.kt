@@ -371,13 +371,13 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     }
 
     fun launchInAppReviewDialog() {
-        mReviewInfo?.let { info ->
+        /*mReviewInfo?.let { info ->
             val flow = mReviewManager?.launchReviewFlow(this, info)
             flow?.addOnCompleteListener { _ ->
                 // The flow has finished. The API does not indicate whether the user
                 // reviewed or not, or even whether the review dialog was shown. Thus, no
                 // matter the result, we continue our app flow.
             }
-        }
+        }*/
     }
 }
