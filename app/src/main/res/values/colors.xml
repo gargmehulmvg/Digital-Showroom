@@ -54,4 +54,5 @@
     <color name="gst_pending_text_color">#D09B0B</color>
     <color name="gst_pending_curve_bg_color">#FFF5DA</color>
     <color name="card_offer_text_color">#21BA35</color>
+    <color name="coupon_code_grey_dotted_border_color">#D5D5D5</color>
 </resources>
