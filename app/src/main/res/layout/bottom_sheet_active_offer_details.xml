@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/bottomSheetContainer"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/upper_curve_white_background"
+    android:padding="@dimen/_10sdp">
+
+    <ImageView
+        android:id="@+id/bottomSheetClose"
+        android:layout_width="@dimen/_22sdp"
+        android:layout_height="@dimen/_22sdp"
+        android:layout_marginEnd="@dimen/_5sdp"
+        android:contentDescription="@string/image_view_content_description"
+        android:elevation="@dimen/_4sdp"
+        android:src="@drawable/ic_black_close"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/bottomSheetHeading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:layout_marginStart="@dimen/_10sdp"
+        android:layout_marginRight="@dimen/_10sdp"
+        android:layout_marginTop="@dimen/_18sdp"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_18sdp"
+        tools:text="Offer Details"
+        tools:ignore="MissingConstraints" />
+
+    <ImageView
+        android:id="@+id/bankOfferImageView"
+        android:layout_width="@dimen/_65sdp"
+        android:layout_height="@dimen/_65sdp"
+        android:layout_marginTop="@dimen/_15sdp"
+        android:layout_marginLeft="@dimen/_10sdp"
+        android:contentDescription="@string/image_view_content_description"
+        android:src="@drawable/ic_cash"
+        app:layout_constraintTop_toBottomOf="@id/bottomSheetHeading"
+        android:paddingLeft="@dimen/_10sdp"
+        tools:ignore="MissingConstraints" />
+
+    <TextView
+        android:id="@+id/bottomSheetContentTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:layout_marginTop="@dimen/_15sdp"
+        android:textSize="@dimen/_14sdp"
+        app:layout_constraintTop_toBottomOf="@id/bankOfferImageView"
+        tools:text="Dummy text refers to the bits of content that are used to fill a website mock-up." />
+
+    <TextView
+        android:id="@+id/bottomSheetValidityTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:textColor="@color/default_text_light_grey"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:textSize="@dimen/_10sdp"
+        app:layout_constraintTop_toBottomOf="@id/bottomSheetContentTextView"
+        tools:text="Valid upto 23rd December, 2021" />
+
+    <TextView
+        android:id="@+id/couponCodeTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:paddingRight="@dimen/_6sdp"
+        android:paddingLeft="@dimen/_6sdp"
+        android:paddingBottom="@dimen/_2sdp"
+        android:paddingTop="@dimen/_2sdp"
+        android:background="@drawable/curve_grey_dotted_border"
+        android:textColor="@color/black"
+        android:layout_marginTop="@dimen/_15sdp"
+        android:textSize="@dimen/_21sdp"
+        app:layout_constraintTop_toBottomOf="@id/bottomSheetValidityTextView"
+        tools:text="ACB20"
+        tools:ignore="MissingConstraints" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
