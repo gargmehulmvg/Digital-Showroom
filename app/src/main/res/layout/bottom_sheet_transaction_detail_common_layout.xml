@@ -3,9 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:background="@color/white"
-    android:padding="@dimen/_10sdp"
-    android:layout_height="wrap_content">
+    android:padding="@dimen/_10sdp">
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/billAmountTextView"
@@ -14,7 +14,7 @@
         android:fontFamily="@font/roboto_light"
         android:textColor="@color/dark_blackish"
         android:textSize="@dimen/_10sdp"
-        app:layout_constraintEnd_toStartOf="@+id/billAmountValueTextView"
+        app:layout_constraintEnd_toStartOf="@id/billAmountValueTextView"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -28,11 +28,11 @@
         android:gravity="end"
         android:textColor="@color/dark_blackish"
         android:textSize="@dimen/_10sdp"
-        app:layout_constraintBottom_toBottomOf="@+id/billAmountTextView"
+        app:layout_constraintBottom_toBottomOf="@id/billAmountTextView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/billAmountTextView"
-        app:layout_constraintTop_toTopOf="@+id/billAmountTextView"
+        app:layout_constraintStart_toEndOf="@id/billAmountTextView"
+        app:layout_constraintTop_toTopOf="@id/billAmountTextView"
         tools:text="₹ 500" />
 
     <com.google.android.material.textview.MaterialTextView
@@ -43,10 +43,10 @@
         android:fontFamily="@font/roboto_light"
         android:textColor="@color/dark_blackish"
         android:textSize="@dimen/_10sdp"
-        app:layout_constraintEnd_toStartOf="@+id/txnChargeValueTextView"
+        app:layout_constraintEnd_toStartOf="@id/txnChargeValueTextView"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="@+id/billAmountTextView"
-        app:layout_constraintTop_toBottomOf="@+id/billAmountTextView"
+        app:layout_constraintStart_toStartOf="@id/billAmountTextView"
+        app:layout_constraintTop_toBottomOf="@id/billAmountTextView"
         tools:text="Transaction Charges (2.3%)" />
 
     <com.google.android.material.textview.MaterialTextView
@@ -57,11 +57,11 @@
         android:gravity="end"
         android:textColor="@color/dark_blackish"
         android:textSize="@dimen/_10sdp"
-        app:layout_constraintBottom_toBottomOf="@+id/txnChargeTextView"
-        app:layout_constraintEnd_toEndOf="@+id/billAmountValueTextView"
+        app:layout_constraintBottom_toBottomOf="@id/txnChargeTextView"
+        app:layout_constraintEnd_toEndOf="@id/billAmountValueTextView"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/billAmountTextView"
-        app:layout_constraintTop_toTopOf="@+id/txnChargeTextView"
+        app:layout_constraintStart_toEndOf="@id/billAmountTextView"
+        app:layout_constraintTop_toTopOf="@id/txnChargeTextView"
         tools:text="₹ 10.98" />
 
     <com.google.android.material.textview.MaterialTextView
@@ -72,10 +72,10 @@
         android:fontFamily="@font/roboto"
         android:textColor="@color/black"
         android:textSize="@dimen/_10sdp"
-        app:layout_constraintEnd_toStartOf="@+id/amountSettleValueTextView"
+        app:layout_constraintEnd_toStartOf="@id/amountSettleValueTextView"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="@+id/txnChargeTextView"
-        app:layout_constraintTop_toBottomOf="@+id/txnChargeTextView"
+        app:layout_constraintStart_toStartOf="@id/txnChargeTextView"
+        app:layout_constraintTop_toBottomOf="@id/txnChargeTextView"
         tools:text="Transaction Charges (2.3%)" />
 
     <com.google.android.material.textview.MaterialTextView
@@ -86,11 +86,11 @@
         android:gravity="end"
         android:textColor="@color/black"
         android:textSize="@dimen/_10sdp"
-        app:layout_constraintBottom_toBottomOf="@+id/amountSettleTextView"
-        app:layout_constraintEnd_toEndOf="@+id/txnChargeValueTextView"
+        app:layout_constraintBottom_toBottomOf="@id/amountSettleTextView"
+        app:layout_constraintEnd_toEndOf="@id/txnChargeValueTextView"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/billAmountTextView"
-        app:layout_constraintTop_toTopOf="@+id/amountSettleTextView"
+        app:layout_constraintStart_toEndOf="@id/billAmountTextView"
+        app:layout_constraintTop_toTopOf="@id/amountSettleTextView"
         tools:text="₹ 10.98" />
 
     <View
@@ -99,7 +99,7 @@
         android:layout_height="@dimen/_5sdp"
         android:layout_marginTop="@dimen/_15sdp"
         android:background="@color/light_grey_background"
-        app:layout_constraintTop_toBottomOf="@+id/amountSettleTextView" />
+        app:layout_constraintTop_toBottomOf="@id/amountSettleTextView" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/paymentModeTextView"
@@ -108,25 +108,25 @@
         android:fontFamily="@font/roboto_light"
         android:textColor="@color/black"
         android:textSize="@dimen/_10sdp"
-        app:layout_constraintBottom_toBottomOf="@+id/paymentModeImageView"
-        app:layout_constraintEnd_toStartOf="@+id/amountSettleValueTextView"
+        app:layout_constraintBottom_toBottomOf="@id/paymentModeImageView"
+        app:layout_constraintEnd_toStartOf="@id/amountSettleValueTextView"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="@+id/txnChargeTextView"
-        app:layout_constraintTop_toTopOf="@+id/paymentModeImageView"
+        app:layout_constraintStart_toStartOf="@id/txnChargeTextView"
+        app:layout_constraintTop_toTopOf="@id/paymentModeImageView"
         tools:text="Payment Mode" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/paymentDetailTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_10sdp"
+        android:layout_marginTop="@dimen/_5sdp"
         android:fontFamily="@font/roboto"
         android:textColor="@color/black"
         android:textSize="@dimen/_10sdp"
+        android:visibility="visible"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintTop_toBottomOf="@id/paymentModeTextView"
+        app:layout_constraintTop_toBottomOf="@id/paymentModeImageView"
         tools:text="Customer received an additional Rs.xxx OFF for using XXX Bank YYY Card" />
-
 
     <ImageView
         android:id="@+id/paymentModeImageView"
@@ -134,8 +134,8 @@
         android:layout_height="@dimen/_40sdp"
         android:layout_marginTop="@dimen/_10sdp"
         android:contentDescription="@string/image_view_content_description"
-        app:layout_constraintEnd_toEndOf="@+id/txnChargeValueTextView"
-        app:layout_constraintTop_toBottomOf="@+id/separator1"
+        app:layout_constraintEnd_toEndOf="@id/txnChargeValueTextView"
+        app:layout_constraintTop_toBottomOf="@id/separator1"
         tools:src="@drawable/ic_cash" />
 
     <View
@@ -144,7 +144,7 @@
         android:layout_height="@dimen/_3sdp"
         android:layout_marginTop="@dimen/_15sdp"
         android:background="@color/light_grey_background"
-        app:layout_constraintTop_toBottomOf="@+id/paymentModeImageView" />
+        app:layout_constraintTop_toBottomOf="@id/paymentDetailTextView" />
 
     <ImageView
         android:id="@+id/imageViewTop"
@@ -207,10 +207,10 @@
         android:fontFamily="@font/roboto"
         android:textColor="@color/black"
         android:textSize="@dimen/_12sdp"
-        app:layout_constraintBottom_toBottomOf="@+id/imageViewBottom"
+        app:layout_constraintBottom_toBottomOf="@id/imageViewBottom"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/dottedView"
-        app:layout_constraintTop_toTopOf="@+id/imageViewBottom"
+        app:layout_constraintTop_toTopOf="@id/imageViewBottom"
         tools:text="Order ID:342" />
 
     <com.google.android.material.textview.MaterialTextView
@@ -220,8 +220,8 @@
         android:fontFamily="@font/roboto"
         android:textSize="@dimen/_10sdp"
         android:visibility="visible"
-        app:layout_constraintStart_toStartOf="@+id/textViewBottom"
-        app:layout_constraintTop_toBottomOf="@+id/textViewBottom"
+        app:layout_constraintStart_toStartOf="@id/textViewBottom"
+        app:layout_constraintTop_toBottomOf="@id/textViewBottom"
         tools:text="Order ID:342" />
 
     <com.google.android.material.textview.MaterialTextView
@@ -233,8 +233,8 @@
         android:textSize="@dimen/_10sdp"
         android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/textViewBottom"
-        app:layout_constraintTop_toBottomOf="@+id/textViewBottom"
+        app:layout_constraintStart_toStartOf="@id/textViewBottom"
+        app:layout_constraintTop_toBottomOf="@id/textViewBottom"
         tools:text="Order ID:342" />
 
     <TextView
@@ -252,7 +252,7 @@
         android:textColor="@color/white"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/bottomDate"
-        app:layout_constraintTop_toBottomOf="@+id/displayMessage" />
+        app:layout_constraintStart_toStartOf="@id/bottomDate"
+        app:layout_constraintTop_toBottomOf="@id/displayMessage" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
