@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.digitaldukaan.R
@@ -26,6 +27,7 @@ class PaymentModeChildAdapter(
         val upiTxnChargeTextView: TextView? = itemView.findViewById(R.id.upiTxnChargeTextView)
         val upiImageView: ImageView = itemView.findViewById(R.id.upiImageView)
         val activeOfferTextView: TextView = itemView.findViewById(R.id.activeOfferTextView)
+        val cardOfferContainer: ConstraintLayout = itemView.findViewById(R.id.cardOfferContainer)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReferAndEarnViewHolder {
@@ -50,8 +52,11 @@ class PaymentModeChildAdapter(
                 headingTextView?.alpha = 0.5f
                 upiTxnChargeTextView?.alpha = 0.5f
             }
-            if(!isEmpty(item?.offerActiveText)){ activeOfferTextView.text = item?.offerActiveText }
-
+            if (!isEmpty(item?.offerActiveText)) {
+                activeOfferTextView.text = item?.offerActiveText
+            } else {
+                cardOfferContainer.visibility = View.GONE
+            }
             activeOfferTextView.setOnClickListener{
                 item?.offerInfoMap?.let { it1 -> mListener?.activeOfferDetailsListener(it1) }
             }

@@ -62,14 +62,14 @@
             tools:background="@drawable/curve_offer_text_color_curve"
             android:contentDescription="@string/image_view_content_description"
             android:visibility="visible"
-            app:layout_constraintBottom_toBottomOf="@id/cardOfferTextView"
+            app:layout_constraintBottom_toBottomOf="@id/activeOfferTextView"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:src="@color/white" />
 
         <TextView
-            android:id="@+id/cardOfferTextView"
+            android:id="@+id/activeOfferTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center_vertical"
