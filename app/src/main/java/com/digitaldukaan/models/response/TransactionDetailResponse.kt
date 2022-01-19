@@ -19,6 +19,7 @@ data class TransactionDetailResponse(
     @SerializedName("utr")                          var utr: String?,
     @SerializedName("settlement_amount")            var settlementAmount: Double,
     @SerializedName("payment_mode_image")           var paymentImage: String?,
+    @SerializedName("bank_offer_text")              var bankOfferText: String?,
     @SerializedName("cta")                          var ctaItem: CTAItemResponse?,
     @SerializedName("static_text")                  var staticText: TransactionDetailStaticTextResponse
 )
