@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.PaymentModeAdapter
+import com.digitaldukaan.adapters.PaymentOffersBottomSheetAdapter
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.IActiveOfferDetailsListener
 import com.digitaldukaan.interfaces.ISwitchCheckChangeListener
@@ -36,6 +37,7 @@ class PaymentModesFragment: BaseFragment(), IPaymentModesServiceInterface,
     private val mService: PaymentModesService = PaymentModesService()
     private var mPaymentModesResponse: PaymentModesResponse? = null
     private var mPaymentType: String? = ""
+    private var bottomSheetRecyclerView: RecyclerView? = null
 
     companion object {
 
@@ -304,10 +306,46 @@ class PaymentModesFragment: BaseFragment(), IPaymentModesServiceInterface,
                     }
                 }, object : IActiveOfferDetailsListener{
                     override fun activeOfferDetailsListener(offerInfoMap: ArrayList<OfferInfoArray>) {
-                        //Log.d("Challoo", offerInfoMap[0].description.toString())
+                        showActiveOffersBottomSheet(offerInfoMap[0])
                     }
 
                 })
+            }
+        }
+    }
+
+
+    private fun showActiveOffersBottomSheet(data: OfferInfoArray){
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            try {
+                mActivity?.let {
+                    val bottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
+                    val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_active_offer_details, it.findViewById(R.id.activeBottomSheetContainer))
+                    bottomSheetDialog.apply {
+                        setContentView(view)
+                        setCancelable(true)
+                        view.run {
+                            val descriptionTextView: TextView = findViewById(R.id.descriptionTextView)
+                            val bottomSheetClose: View = findViewById(R.id.bottomSheetClose)
+                            val bankImageView: ImageView = findViewById(R.id.bankImageView)
+                            val couponCodeTextView: TextView = findViewById(R.id.couponCodeTextView)
+                            val bottomSheetValidityTextView: TextView = findViewById((R.id.bottomSheetValidityTextView))
+                            bottomSheetRecyclerView = findViewById(R.id.activeOfferBottomSheetRecyclerView)
+                            bottomSheetRecyclerView?.apply{
+                                layoutManager = LinearLayoutManager(context)
+                                adapter = PaymentOffersBottomSheetAdapter(data.notes!!)
+                            }
+                            val validString = "Valid upto "+data.endDate
+                            bottomSheetValidityTextView.text = validString
+                            if (!isEmpty(data.imageUrl)) mActivity?.let { context -> Glide.with(context).load(data.imageUrl).into(bankImageView) }
+                            descriptionTextView.text = data.description
+                            couponCodeTextView.text = data.promoCode
+                            bottomSheetClose.setOnClickListener { this@apply.dismiss() }
+                        }
+                    }.show()
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "showActiveOffersBottomSheet: ${e.message}", e)
             }
         }
     }

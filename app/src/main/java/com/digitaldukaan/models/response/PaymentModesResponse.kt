@@ -65,4 +65,5 @@ data class OfferInfoArray(
     @SerializedName("cashback_type") var cashbackType: String?,
     @SerializedName("offer_callout") var offerCallout: String?,
     @SerializedName("image_url") var imageUrl: String?,
+    @SerializedName("end_date") var endDate: String?
 )

@@ -2,7 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/bottomSheetContainer"
+    android:id="@+id/activeBottomSheetContainer"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/upper_curve_white_background"
@@ -23,36 +23,37 @@
         android:id="@+id/bottomSheetHeading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textStyle="bold"
-        android:layout_marginStart="@dimen/_10sdp"
-        android:layout_marginRight="@dimen/_10sdp"
-        android:layout_marginTop="@dimen/_18sdp"
         android:textColor="@color/black"
         android:textSize="@dimen/_18sdp"
-        tools:text="Offer Details"
-        tools:ignore="MissingConstraints" />
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Offer Details" />
 
     <ImageView
-        android:id="@+id/bankOfferImageView"
+        android:id="@+id/bankImageView"
         android:layout_width="@dimen/_65sdp"
         android:layout_height="@dimen/_65sdp"
-        android:layout_marginTop="@dimen/_15sdp"
-        android:layout_marginLeft="@dimen/_10sdp"
+        android:layout_marginTop="@dimen/_10sdp"
         android:contentDescription="@string/image_view_content_description"
+        android:paddingStart="@dimen/_10sdp"
+        android:paddingEnd="@dimen/_10sdp"
         android:src="@drawable/ic_cash"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/bottomSheetHeading"
-        android:paddingLeft="@dimen/_10sdp"
         tools:ignore="MissingConstraints" />
 
     <TextView
-        android:id="@+id/bottomSheetContentTextView"
+        android:id="@+id/descriptionTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textStyle="bold"
-        android:textColor="@color/black"
         android:layout_marginTop="@dimen/_15sdp"
-        android:textSize="@dimen/_14sdp"
-        app:layout_constraintTop_toBottomOf="@id/bankOfferImageView"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_12sdp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/bankImageView"
         tools:text="Dummy text refers to the bits of content that are used to fill a website mock-up." />
 
     <TextView
@@ -63,7 +64,7 @@
         android:textColor="@color/default_text_light_grey"
         android:layout_marginTop="@dimen/_5sdp"
         android:textSize="@dimen/_10sdp"
-        app:layout_constraintTop_toBottomOf="@id/bottomSheetContentTextView"
+        app:layout_constraintTop_toBottomOf="@id/descriptionTextView"
         tools:text="Valid upto 23rd December, 2021" />
 
     <TextView
@@ -83,15 +84,23 @@
         tools:text="ACB20"
         tools:ignore="MissingConstraints" />
 
+    <View
+        android:id="@+id/separator1"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_1sdp"
+        android:layout_marginTop="@dimen/_15sdp"
+        android:background="@color/curve_grey_border"
+        app:layout_constraintTop_toBottomOf="@+id/couponCodeTextView" />
+
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/cardofferBottomSheetRecyclerView"
+        android:id="@+id/activeOfferBottomSheetRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_30sdp"
+        android:layout_marginTop="@dimen/_15sdp"
         android:overScrollMode="always"
-
-        app:layout_constraintTop_toBottomOf="@id/couponCodeTextView"
-        tools:itemCount="1"
+        app:layout_constraintStart_toStartOf="@+id/couponCodeTextView"
+        app:layout_constraintTop_toBottomOf="@id/separator1"
+        tools:itemCount="100"
         tools:listitem="@layout/bank_offer_sheet_item" />
 </androidx.constraintlayout.widget.ConstraintLayout>
 
