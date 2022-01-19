@@ -45,5 +45,24 @@ data class PaymentModesItemResponse(
     @SerializedName("payment_type") var paymentType: String?,
     @SerializedName("transaction_charges") var transactionCharges: Double,
     @SerializedName("settlement_day") var settlementDay: Int?,
-    @SerializedName("status") var status: Int?
+    @SerializedName("status") var status: Int?,
+    @SerializedName("offer_info") var offerInfoMap: ArrayList<OfferInfoArray>?,
+    @SerializedName("text") var offerActiveText: String?
+
+)
+
+data class OfferInfoArray(
+    @SerializedName("promo_id") var promoId: Int,
+    @SerializedName("status") var status: String?,
+    @SerializedName("discount_type") var discountType: String?,
+    @SerializedName("max_discount") var macDiscount: Int?,
+    @SerializedName("min_order_price") var minOrderPrice: Int?,
+    @SerializedName("promo_code") var promoCode: String?,
+    @SerializedName("description") var description: String?,
+    @SerializedName("notes") var notes: ArrayList<String>?,
+    @SerializedName("payment_method") var paymentMethod: String?,
+    @SerializedName("terms_url") var termsUrl: String?,
+    @SerializedName("cashback_type") var cashbackType: String?,
+    @SerializedName("offer_callout") var offerCallout: String?,
+    @SerializedName("image_url") var imageUrl: String?,
 )

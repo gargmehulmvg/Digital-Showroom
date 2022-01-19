@@ -10,12 +10,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.isEmpty
+import com.digitaldukaan.interfaces.IActiveOfferDetailsListener
 import com.digitaldukaan.models.response.PaymentModesItemResponse
 
 class PaymentModeChildAdapter(
     private var mContext: Context?,
     private var mIsKycActive: Boolean?,
-    private var mList: ArrayList<PaymentModesItemResponse>?
+    private var mList: ArrayList<PaymentModesItemResponse>?,
+    private var mListener: IActiveOfferDetailsListener?
 ) :
     RecyclerView.Adapter<PaymentModeChildAdapter.ReferAndEarnViewHolder>() {
 
@@ -23,6 +25,7 @@ class PaymentModeChildAdapter(
         val headingTextView: TextView? = itemView.findViewById(R.id.headingTextView)
         val upiTxnChargeTextView: TextView? = itemView.findViewById(R.id.upiTxnChargeTextView)
         val upiImageView: ImageView = itemView.findViewById(R.id.upiImageView)
+        val activeOfferTextView: TextView = itemView.findViewById(R.id.activeOfferTextView)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReferAndEarnViewHolder {
@@ -46,6 +49,11 @@ class PaymentModeChildAdapter(
             } else {
                 headingTextView?.alpha = 0.5f
                 upiTxnChargeTextView?.alpha = 0.5f
+            }
+            if(!isEmpty(item?.offerActiveText)){ activeOfferTextView.text = item?.offerActiveText }
+
+            activeOfferTextView.setOnClickListener{
+                item?.offerInfoMap?.let { it1 -> mListener?.activeOfferDetailsListener(it1) }
             }
         }
     }

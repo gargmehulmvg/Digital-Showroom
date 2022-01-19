@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
+import com.digitaldukaan.interfaces.IActiveOfferDetailsListener
 import com.digitaldukaan.interfaces.ISwitchCheckChangeListener
 import com.digitaldukaan.models.dto.PaymentModelDTO
 import com.google.android.material.switchmaterial.SwitchMaterial
@@ -17,7 +18,8 @@ class PaymentModeAdapter(
     private var mContext: Context?,
     private var mIsKycActive: Boolean?,
     private var mPaymentOptionsList: ArrayList<PaymentModelDTO>?,
-    private var mListener: ISwitchCheckChangeListener?
+    private var mListener: ISwitchCheckChangeListener?,
+    private var activeOfferListener : IActiveOfferDetailsListener
 ) :
     RecyclerView.Adapter<PaymentModeAdapter.ReferAndEarnViewHolder>() {
 
@@ -48,7 +50,7 @@ class PaymentModeAdapter(
             paymentModeTextView?.text = item?.name
             paymentModeChildRecyclerView?.apply {
                 layoutManager = LinearLayoutManager(mContext)
-                adapter = PaymentModeChildAdapter(mContext, mIsKycActive, item?.value)
+                adapter = PaymentModeChildAdapter(mContext, mIsKycActive, item?.value, activeOfferListener)
             }
             paymentModeSwitch?.setOnClickListener {
                 mListener?.onSwitchCheckChangeListener(paymentModeSwitch, paymentModeSwitch.isChecked, item?.value?.get(0)?.paymentType)

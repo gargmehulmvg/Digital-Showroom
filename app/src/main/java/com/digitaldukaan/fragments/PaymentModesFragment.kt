@@ -14,10 +14,12 @@ import com.bumptech.glide.Glide
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.PaymentModeAdapter
 import com.digitaldukaan.constants.*
+import com.digitaldukaan.interfaces.IActiveOfferDetailsListener
 import com.digitaldukaan.interfaces.ISwitchCheckChangeListener
 import com.digitaldukaan.models.dto.PaymentModelDTO
 import com.digitaldukaan.models.request.PaymentModeRequest
 import com.digitaldukaan.models.response.CommonApiResponse
+import com.digitaldukaan.models.response.OfferInfoArray
 import com.digitaldukaan.models.response.PaymentModesResponse
 import com.digitaldukaan.services.PaymentModesService
 import com.digitaldukaan.services.serviceinterface.IPaymentModesServiceInterface
@@ -300,6 +302,11 @@ class PaymentModesFragment: BaseFragment(), IPaymentModesServiceInterface,
                             showCompleteYourKYCBottomSheet()
                         }
                     }
+                }, object : IActiveOfferDetailsListener{
+                    override fun activeOfferDetailsListener(offerInfoMap: ArrayList<OfferInfoArray>) {
+                        //Log.d("Challoo", offerInfoMap[0].description.toString())
+                    }
+
                 })
             }
         }
