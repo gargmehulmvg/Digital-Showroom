@@ -1550,7 +1550,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                     billAmountTextView.text = staticText?.bill_amount
                     amountSettleTextView.text = staticText?.amount_to_settled
                     paymentModeTextView.text = staticText?.payment_mode
-                    if (isNotEmpty(response?.bankOfferText)) paymentDetailTextView.text = response?.bankOfferText
+                    if (isNotEmpty(response?.bankOfferText)) paymentDetailTextView.setHtmlData(response?.bankOfferText)
                     else paymentDetailTextView.visibility = View.GONE
                     txnId.text = getStringDateTimeFromTransactionDetailDate(getCompleteDateFromOrderString(response?.transactionTimestamp))
                     when (Constants.ORDER_STATUS_PAYOUT_SUCCESS) {
