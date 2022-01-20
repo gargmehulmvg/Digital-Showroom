@@ -1,6 +1,5 @@
 package com.digitaldukaan.adapters
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,10 +24,12 @@ class MasterCatalogItemsAdapter(
     RecyclerView.Adapter<MasterCatalogItemsAdapter.MarketingCardViewHolder>() {
 
     private var mSelectedProductsHashMap: HashMap<Int?, MasterCatalogItemResponse?>? = HashMap()
+    private var mCategoryCartItems: Int = 0
 
-    fun setMasterCatalogList(list: ArrayList<MasterCatalogItemResponse>?, selectedProductsHashMap: HashMap<Int?, MasterCatalogItemResponse?>?) {
+    fun setMasterCatalogList(list: ArrayList<MasterCatalogItemResponse>?, selectedProductsHashMap: HashMap<Int?, MasterCatalogItemResponse?>?, alreadyAdded: Int) {
         this.mCategoryItemList = list
         this.mSelectedProductsHashMap = selectedProductsHashMap
+        mCategoryCartItems = alreadyAdded
         notifyDataSetChanged()
     }
 
@@ -68,11 +69,19 @@ class MasterCatalogItemsAdapter(
                 view.checkBox.isSelected = false
                 return@setOnCheckedChangeListener
             }
-            if (mActivity.resources.getInteger(R.integer.max_selection_item_catalog) == mSelectedProductsHashMap?.size) {
-                mActivity.showToast("Only ${mActivity.resources.getInteger(R.integer.max_selection_item_catalog)} products are allowed to add at a time")
-                view.checkBox.isChecked = false
-                view.checkBox.isSelected = false
-            }  else mCategoryItemClickListener.onCategoryCheckBoxClick(view.adapterPosition, item, isChecked)
+            when {
+                mActivity.resources.getInteger(R.integer.max_selection_item_catalog_subcategory) == mSelectedProductsHashMap?.size?.plus(mCategoryCartItems) -> {
+                    mActivity.showToast("Maximum products per category - 200 \n Please create new category for adding more products.")
+                    view.checkBox.isChecked = false
+                    view.checkBox.isSelected = false
+                }
+                mActivity.resources.getInteger(R.integer.max_selection_item_catalog) == mSelectedProductsHashMap?.size -> {
+                    mActivity.showToast("Only ${mActivity.resources.getInteger(R.integer.max_selection_item_catalog)} products are allowed to add at a time")
+                    view.checkBox.isChecked = false
+                    view.checkBox.isSelected = false
+                }
+                else -> mCategoryItemClickListener.onCategoryCheckBoxClick(view.adapterPosition, item, isChecked)
+            }
         }
         view.titleTextView.setOnClickListener {
             val item = mCategoryItemList?.get(view.adapterPosition)
@@ -109,18 +118,14 @@ class MasterCatalogItemsAdapter(
     ) {
         val item = mCategoryItemList?.get(position)
         holder.run {
-            imageView?.let {
-                try {
-                    Picasso.get().load(item?.imageUrl).into(it)
-                } catch (e: Exception) {
-                    Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
-                }
+            imageView.let { view ->
+                Picasso.get().load(item?.imageUrl).into(view)
             }
             titleTextView.text = item?.itemName
             val priceStr = "${mStaticText?.text_rupees_symbol} ${item?.price}"
             priceTextView.text = priceStr
             titleTextView.setTextColor(ContextCompat.getColor(mActivity, if (item?.isSelected == true) R.color.open_green else R.color.black))
-            if (item?.isAdded == true) {
+            if (true == item?.isAdded) {
                 container.isEnabled = false
                 container.alpha = 0.2f
                 checkBox.isEnabled = false

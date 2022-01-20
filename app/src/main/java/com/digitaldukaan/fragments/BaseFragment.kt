@@ -1544,11 +1544,14 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                     val closeImageView: ImageView = findViewById(R.id.closeImageView)
                     val imageViewBottom: ImageView = findViewById(R.id.imageViewBottom)
                     val paymentModeImageView: ImageView = findViewById(R.id.paymentModeImageView)
+                    val paymentDetailTextView: TextView = findViewById(R.id.paymentDetailTextView)
                     textViewTop.text = response?.transactionMessage
                     textViewBottom.text = response?.settlementMessage
                     billAmountTextView.text = staticText?.bill_amount
                     amountSettleTextView.text = staticText?.amount_to_settled
                     paymentModeTextView.text = staticText?.payment_mode
+                    if (isNotEmpty(response?.bankOfferText)) paymentDetailTextView.setHtmlData(response?.bankOfferText)
+                    else paymentDetailTextView.visibility = View.GONE
                     txnId.text = getStringDateTimeFromTransactionDetailDate(getCompleteDateFromOrderString(response?.transactionTimestamp))
                     when (Constants.ORDER_STATUS_PAYOUT_SUCCESS) {
                         response?.settlementState -> {

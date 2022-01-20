@@ -1,7 +1,6 @@
 package com.digitaldukaan.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -79,29 +78,17 @@ class ExploreCategoryFragment: BaseFragment(), IExploreCategoryServiceInterface 
         }
     }
 
-    override fun onBuildCatalogResponse(response: CommonApiResponse) {
-        Log.d(TAG, "onBuildCatalogResponse: do nothing")
-    }
+    override fun onBuildCatalogResponse(response: CommonApiResponse) = Unit
 
-    override fun onSubCategoryItemsResponse(response: CommonApiResponse) {
-        Log.d(TAG, "onCategoryItemsResponse: do nothing")
-    }
+    override fun onSubCategoryItemsResponse(response: CommonApiResponse) = Unit
 
-    override fun onCategoryItemsClickResponse(response: MasterCatalogItemResponse?) {
-        Log.d(TAG, "onCategoryItemsClickResponse: do nothing")
-    }
+    override fun onCategoryItemsClickResponse(response: MasterCatalogItemResponse?) = Unit
 
-    override fun onCategoryItemsImageClick(response: MasterCatalogItemResponse?) {
-        Log.d(TAG, "onCategoryItemsImageClickResponse: do nothing")
-    }
+    override fun onCategoryItemsImageClick(response: MasterCatalogItemResponse?) = Unit
 
-    override fun onCategoryItemsSetPriceClick(position: Int, response: MasterCatalogItemResponse?) {
-        Log.d(TAG, "onCategoryItemsSetPriceClickResponse: do nothing")
-    }
+    override fun onCategoryItemsSetPriceClick(position: Int, response: MasterCatalogItemResponse?) = Unit
 
-    override fun onCategoryCheckBoxClick(position: Int, response: MasterCatalogItemResponse?, isChecked: Boolean) {
-        Log.d(TAG, "onCategoryCheckBoxClick: do nothing")
-    }
+    override fun onCategoryCheckBoxClick(position: Int, response: MasterCatalogItemResponse?, isChecked: Boolean) = Unit
 
     override fun onExploreCategoryItemClick(response: ExploreCategoryItemResponse?) {
         AppEventsManager.pushAppEvents(
@@ -115,7 +102,6 @@ class ExploreCategoryFragment: BaseFragment(), IExploreCategoryServiceInterface 
         launchFragment(MasterCatalogFragment.newInstance(addProductStaticData, response), true)
     }
 
-    override fun onExploreCategoryServerException(e: Exception) {
-        exceptionHandlingForAPIResponse(e)
-    }
+    override fun onExploreCategoryServerException(e: Exception) = exceptionHandlingForAPIResponse(e)
+
 }
