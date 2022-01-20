@@ -31,7 +31,7 @@ import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import kotlinx.android.synthetic.main.layout_master_catelog_fragment.*
+import kotlinx.android.synthetic.main.layout_master_catalog_fragment.*
 
 class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, IOnToolbarIconClick {
 
@@ -65,7 +65,7 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         TAG = "MasterCatalogFragment"
         FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
-        mContentView = inflater.inflate(R.layout.layout_master_catelog_fragment, container, false)
+        mContentView = inflater.inflate(R.layout.layout_master_catalog_fragment, container, false)
         mService.setServiceInterface(this)
         mLinearLayoutManager = LinearLayoutManager(mActivity)
         return mContentView
@@ -171,8 +171,9 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             if (response.mIsSuccessStatus) {
-                val categoryItems = Gson().fromJson<MasterCatalogResponse>(response.mCommonDataStr, MasterCatalogResponse::class.java)
-                productCountTextView?.text = "${categoryItems?.totalItems} ${addProductStaticData?.text_tap_to_select}"
+                val categoryItems = Gson().fromJson(response.mCommonDataStr, MasterCatalogResponse::class.java)
+                val messageStr = "${categoryItems?.totalItems} ${addProductStaticData?.text_tap_to_select}"
+                productCountTextView?.text = messageStr
                 mIsMoreItemsAvailable = categoryItems.isNext
                 if (categoryItems?.itemList?.isNotEmpty() == true) mCategoryItemsList?.addAll(categoryItems.itemList)
                 for(items in categoryItems?.itemList!!){
@@ -236,13 +237,7 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
                     val priceEditText: EditText = findViewById(R.id.priceEditText)
                     bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
                     bottomSheetHeadingTextView.text = addProductStaticData?.bottom_sheet_set_price_below
-                    imageView?.let {
-                        try {
-                            Glide.with(this@MasterCatalogFragment).load(response?.imageUrl).into(it)
-                        } catch (e: Exception) {
-                            Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
-                        }
-                    }
+                    imageView.let { view -> Glide.with(this@MasterCatalogFragment).load(response?.imageUrl).into(view) }
                     titleTextView.text = response?.itemName
                     priceLayout.hint = addProductStaticData?.hint_price
                     setPriceTextView.text = addProductStaticData?.bottom_sheet_set_price
@@ -250,7 +245,7 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
                         val price = priceEditText.text.toString()
                         bottomSheetDialog.dismiss()
                         mCategoryItemsList?.get(position)?.isSelected = true
-                        mCategoryItemsList?.get(position)?.price = if (price.isEmpty()) 0.0 else price.toDouble()
+                        mCategoryItemsList?.get(position)?.price = if (isEmpty(price)) 0.0 else price.toDouble()
                         masterCatalogAdapter?.notifyItemChanged(position)
                     }
                 }
@@ -276,7 +271,7 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
                     bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
                     bottomSheetHeadingTextView.text = addProductStaticData?.bottom_sheet_confirm_selection
                     val size = mSelectedProductsHashMap.size
-                    setPriceTextView.text = if (size == 1) "${addProductStaticData?.text_add} 1 ${addProductStaticData?.text_product}" else "${addProductStaticData?.text_add} $size ${addProductStaticData?.text_products}"
+                    setPriceTextView.text = if (1 == size) "${addProductStaticData?.text_add} 1 ${addProductStaticData?.text_product}" else "${addProductStaticData?.text_add} $size ${addProductStaticData?.text_products}"
                     val addMasterCatalogConfirmProductsList = ArrayList(mSelectedProductsHashMap.values)
                     recyclerView.apply {
                         layoutManager = LinearLayoutManager(mActivity)

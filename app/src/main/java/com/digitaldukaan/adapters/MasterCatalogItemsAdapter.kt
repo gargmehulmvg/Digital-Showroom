@@ -1,6 +1,5 @@
 package com.digitaldukaan.adapters
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -119,18 +118,14 @@ class MasterCatalogItemsAdapter(
     ) {
         val item = mCategoryItemList?.get(position)
         holder.run {
-            imageView?.let {
-                try {
-                    Picasso.get().load(item?.imageUrl).into(it)
-                } catch (e: Exception) {
-                    Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
-                }
+            imageView.let { view ->
+                Picasso.get().load(item?.imageUrl).into(view)
             }
             titleTextView.text = item?.itemName
             val priceStr = "${mStaticText?.text_rupees_symbol} ${item?.price}"
             priceTextView.text = priceStr
             titleTextView.setTextColor(ContextCompat.getColor(mActivity, if (item?.isSelected == true) R.color.open_green else R.color.black))
-            if (item?.isAdded == true) {
+            if (true == item?.isAdded) {
                 container.isEnabled = false
                 container.alpha = 0.2f
                 checkBox.isEnabled = false

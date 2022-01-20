@@ -356,7 +356,7 @@ class PaymentModesFragment: BaseFragment(), IPaymentModesServiceInterface,
 
     private fun isAllListItemDisabled(): Boolean {
         val list: ArrayList<PaymentModelDTO> = ArrayList()
-        mPaymentModesPageInfoResponse?.paymentOptionsMap?.forEach { key, arrayList ->
+        mPaymentModesPageInfoResponse?.paymentOptionsMap?.forEach { (key, arrayList) ->
             val item = PaymentModelDTO(key, arrayList)
             list.add(item)
         }
