@@ -24,12 +24,16 @@ class MasterCatalogItemsAdapter(
     RecyclerView.Adapter<MasterCatalogItemsAdapter.MarketingCardViewHolder>() {
 
     private var mSelectedProductsHashMap: HashMap<Int?, MasterCatalogItemResponse?>? = HashMap()
-    private var mCategoryCartItems: Int = 0
+    private var mSubCategoryLimitMap: HashMap<Int, Int> = HashMap()
+    private var mSubCategoryLimit = 0
+    private var mCategoryId = 0
 
-    fun setMasterCatalogList(list: ArrayList<MasterCatalogItemResponse>?, selectedProductsHashMap: HashMap<Int?, MasterCatalogItemResponse?>?, alreadyAdded: Int) {
+    fun setMasterCatalogList(list: ArrayList<MasterCatalogItemResponse>?, selectedProductsHashMap: HashMap<Int?, MasterCatalogItemResponse?>?, subCategoryLimitMap: HashMap<Int, Int>, subCategoryLimit: Int, categoryId: Int) {
         this.mCategoryItemList = list
         this.mSelectedProductsHashMap = selectedProductsHashMap
-        mCategoryCartItems = alreadyAdded
+        this.mSubCategoryLimitMap = subCategoryLimitMap
+        this.mSubCategoryLimit = subCategoryLimit
+        this.mCategoryId = categoryId
         notifyDataSetChanged()
     }
 
@@ -43,35 +47,37 @@ class MasterCatalogItemsAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MarketingCardViewHolder {
-        val view = MarketingCardViewHolder(
-            LayoutInflater.from(parent.context).inflate(R.layout.master_catalog_item, parent, false)
-        )
-        view.imageView.setOnClickListener {
-            mCategoryItemClickListener.onCategoryItemsImageClick(mCategoryItemList?.get(view.absoluteAdapterPosition))
-        }
+        val view = MarketingCardViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.master_catalog_item, parent, false))
+        view.imageView.setOnClickListener { mCategoryItemClickListener.onCategoryItemsImageClick(mCategoryItemList?.get(view.absoluteAdapterPosition)) }
         view.setPriceTextView.setOnClickListener {
+            val item = mCategoryItemList?.get(view.absoluteAdapterPosition)
+            if (isSubCategoryItemSelectionExceeded(view.checkBox.isChecked)) return@setOnClickListener
             if (mActivity.resources.getInteger(R.integer.max_selection_item_catalog) == mSelectedProductsHashMap?.size && !view.checkBox.isChecked) {
-                mActivity.showToast("Only ${mActivity.resources.getInteger(R.integer.max_selection_item_catalog)} products are allowed to add at a time")
+                mActivity.showToast(mStaticText?.text_error_cart_limit)
                 return@setOnClickListener
             }
-            val item = mCategoryItemList?.get(view.absoluteAdapterPosition)
             if (true == item?.isAdded) return@setOnClickListener
             mCategoryItemClickListener.onCategoryItemsSetPriceClick(view.absoluteAdapterPosition, mCategoryItemList?.get(view.absoluteAdapterPosition))
         }
         view.priceTextView.setOnClickListener {
+            val item = mCategoryItemList?.get(view.absoluteAdapterPosition)
+            if (isSubCategoryItemSelectionExceeded(view.checkBox.isChecked)) return@setOnClickListener
             if (mActivity.resources.getInteger(R.integer.max_selection_item_catalog) == mSelectedProductsHashMap?.size && !view.checkBox.isChecked) {
-                mActivity.showToast("Only ${mActivity.resources.getInteger(R.integer.max_selection_item_catalog)} products are allowed to add at a time")
+                mActivity.showToast(mStaticText?.text_error_cart_limit)
                 return@setOnClickListener
             }
-            val item = mCategoryItemList?.get(view.absoluteAdapterPosition)
             if (0.0 != item?.price) return@setOnClickListener
             if (item.isAdded) return@setOnClickListener
             mCategoryItemClickListener.onCategoryItemsSetPriceClick(view.absoluteAdapterPosition, item)
         }
         view.checkBox.setOnClickListener {
             val item = mCategoryItemList?.get(view.absoluteAdapterPosition)
+            if (isSubCategoryItemSelectionExceeded(!view.checkBox.isChecked)) {
+                view.checkBox.isChecked = false
+                return@setOnClickListener
+            }
             if (mActivity.resources.getInteger(R.integer.max_selection_item_catalog) == mSelectedProductsHashMap?.size && view.checkBox.isChecked) {
-                mActivity.showToast("Only ${mActivity.resources.getInteger(R.integer.max_selection_item_catalog)} products are allowed to add at a time")
+                mActivity.showToast(mStaticText?.text_error_cart_limit)
                 view.checkBox.isChecked = false
                 view.checkBox.isSelected = false
             }  else {
@@ -85,8 +91,9 @@ class MasterCatalogItemsAdapter(
         }
         view.titleTextView.setOnClickListener {
             val item = mCategoryItemList?.get(view.absoluteAdapterPosition)
+            if (isSubCategoryItemSelectionExceeded(view.checkBox.isChecked)) return@setOnClickListener
             if (mActivity.resources.getInteger(R.integer.max_selection_item_catalog) == mSelectedProductsHashMap?.size && !view.checkBox.isChecked) {
-                mActivity.showToast("Only ${mActivity.resources.getInteger(R.integer.max_selection_item_catalog)} products are allowed to add at a time")
+                mActivity.showToast(mStaticText?.text_error_cart_limit)
                 view.checkBox.isChecked = false
                 view.checkBox.isSelected = false
             } else {
@@ -95,6 +102,14 @@ class MasterCatalogItemsAdapter(
             }
         }
         return view
+    }
+
+    private fun isSubCategoryItemSelectionExceeded(isChecked: Boolean): Boolean {
+        if (null != mSubCategoryLimitMap[mCategoryId] && (mSubCategoryLimit == (mSubCategoryLimitMap[mCategoryId])) && !isChecked) {
+            mActivity.showToast(mStaticText?.text_error_sub_category_limit)
+            return true
+        }
+        return false
     }
 
     override fun getItemId(position: Int): Long = position.toLong()
@@ -129,5 +144,4 @@ class MasterCatalogItemsAdapter(
             checkBox.isChecked = (true == item?.isSelected || true == mSelectedProductsHashMap?.containsKey(item?.itemId))
         }
     }
-
 }

@@ -10,7 +10,6 @@
     <integer name="store_name_length">50</integer>
     <integer name="variant_name_length">30</integer>
     <integer name="max_selection_item_catalog">100</integer>
-    <integer name="max_selection_item_catalog_subcategory">200</integer>
     <integer name="amount_length">7</integer>
     <integer name="min_lines_two">2</integer>
     <integer name="max_length_two">2</integer>

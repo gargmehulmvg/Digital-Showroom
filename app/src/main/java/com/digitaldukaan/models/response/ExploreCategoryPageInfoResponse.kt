@@ -3,8 +3,9 @@ package com.digitaldukaan.models.response
 import com.google.gson.annotations.SerializedName
 
 data class ExploreCategoryPageInfoResponse(
-    @SerializedName("master_categories_list")   var masterCategoriesList: ArrayList<ExploreCategoryItemResponse>?,
-    @SerializedName("static_text")              var staticText: ExploreCategoryStaticTextResponse?
+    @SerializedName("master_categories_list")           var masterCategoriesList: ArrayList<ExploreCategoryItemResponse>?,
+    @SerializedName("sub_category_limit")               var subCategoryLimit: Int,
+    @SerializedName("static_text")                      var staticText: ExploreCategoryStaticTextResponse?
 )
 
 data class ExploreCategoryStaticTextResponse(
@@ -21,5 +22,7 @@ data class ExploreCategoryStaticTextResponse(
     @SerializedName("bottom_sheet_set_price")           val bottom_sheet_set_price: String,
     @SerializedName("bottom_sheet_confirm_selection")   val bottom_sheet_confirm_selection: String,
     @SerializedName("hint_mrp")                         val hint_mrp: String,
-    @SerializedName("text_rupees_symbol")               val text_rupees_symbol: String
+    @SerializedName("text_rupees_symbol")               val text_rupees_symbol: String,
+    @SerializedName("text_error_sub_category_limit")    val text_error_sub_category_limit: String,
+    @SerializedName("text_error_cart_limit")            val text_error_cart_limit: String
 )

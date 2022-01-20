@@ -90,7 +90,7 @@ class ExploreCategoryFragment: BaseFragment(), IExploreCategoryServiceInterface 
                 AFInAppEventParameterName.CATEGORY_NAME to response?.categoryName
             )
         )
-        launchFragment(MasterCatalogFragment.newInstance(mExploreMasterCategoryResponse?.staticText, response), true)
+        launchFragment(MasterCatalogFragment.newInstance(mExploreMasterCategoryResponse, response), true)
     }
 
     override fun onExploreCategoryServerException(e: Exception) = exceptionHandlingForAPIResponse(e)
