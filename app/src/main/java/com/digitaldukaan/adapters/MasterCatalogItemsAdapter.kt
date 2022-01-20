@@ -10,7 +10,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.MainActivity
 import com.digitaldukaan.R
-import com.digitaldukaan.models.response.AddProductStaticText
+import com.digitaldukaan.models.response.ExploreCategoryStaticTextResponse
 import com.digitaldukaan.models.response.MasterCatalogItemResponse
 import com.digitaldukaan.services.serviceinterface.IExploreCategoryServiceInterface
 import com.squareup.picasso.Picasso
@@ -19,7 +19,7 @@ class MasterCatalogItemsAdapter(
     private val mActivity: MainActivity,
     private var mCategoryItemList: ArrayList<MasterCatalogItemResponse>?,
     private var mCategoryItemClickListener: IExploreCategoryServiceInterface,
-    private var mStaticText: AddProductStaticText? = null
+    private var mStaticText: ExploreCategoryStaticTextResponse? = null
 ) :
     RecyclerView.Adapter<MasterCatalogItemsAdapter.MarketingCardViewHolder>() {
 

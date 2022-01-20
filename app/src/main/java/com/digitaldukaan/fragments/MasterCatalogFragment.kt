@@ -36,7 +36,7 @@ import kotlinx.android.synthetic.main.layout_master_catalog_fragment.*
 class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, IOnToolbarIconClick {
 
     private val mService = ExploreCategoryService()
-    private var addProductStaticData: AddProductStaticText? = null
+    private var addProductStaticData: ExploreCategoryStaticTextResponse? = null
     private var mExploreCategoryItem: ExploreCategoryItemResponse? = null
     private var subCategoryItemList: ArrayList<ExploreCategoryItemResponse>? = null
     private var subCategoryAdapter: SubCategoryAdapter? = null
@@ -54,7 +54,7 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
     private var mCategorySelectedItems: Int = 0
 
     companion object {
-        fun newInstance(addProductStaticData: AddProductStaticText?, item: ExploreCategoryItemResponse?): MasterCatalogFragment {
+        fun newInstance(addProductStaticData: ExploreCategoryStaticTextResponse?, item: ExploreCategoryItemResponse?): MasterCatalogFragment {
             val fragment =  MasterCatalogFragment()
             fragment.addProductStaticData = addProductStaticData
             fragment.mExploreCategoryItem = item

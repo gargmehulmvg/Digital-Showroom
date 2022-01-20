@@ -1346,7 +1346,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                                         AFInAppEventParameterName.PATH to if (mode == Constants.MODE_PRODUCT_LIST) Constants.MODE_PRODUCT_LIST else Constants.MODE_ADD_PRODUCT
                                     )
                                 )
-                                launchFragment(ExploreCategoryFragment.newInstance(addProductStaticText), true)
+                                launchFragment(ExploreCategoryFragment.newInstance(), true)
                             }
                         }
                     }.show()
