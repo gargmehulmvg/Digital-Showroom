@@ -47,93 +47,76 @@ class MasterCatalogItemsAdapter(
             LayoutInflater.from(parent.context).inflate(R.layout.master_catalog_item, parent, false)
         )
         view.imageView.setOnClickListener {
-            mCategoryItemClickListener.onCategoryItemsImageClick(mCategoryItemList?.get(view.adapterPosition))
+            mCategoryItemClickListener.onCategoryItemsImageClick(mCategoryItemList?.get(view.absoluteAdapterPosition))
         }
         view.setPriceTextView.setOnClickListener {
-            val item = mCategoryItemList?.get(view.adapterPosition)
-            if (true == item?.isAdded) {
+            if (mActivity.resources.getInteger(R.integer.max_selection_item_catalog) == mSelectedProductsHashMap?.size && !view.checkBox.isChecked) {
+                mActivity.showToast("Only ${mActivity.resources.getInteger(R.integer.max_selection_item_catalog)} products are allowed to add at a time")
                 return@setOnClickListener
             }
-            mCategoryItemClickListener.onCategoryItemsSetPriceClick(view.adapterPosition, mCategoryItemList?.get(view.adapterPosition))
+            val item = mCategoryItemList?.get(view.absoluteAdapterPosition)
+            if (true == item?.isAdded) return@setOnClickListener
+            mCategoryItemClickListener.onCategoryItemsSetPriceClick(view.absoluteAdapterPosition, mCategoryItemList?.get(view.absoluteAdapterPosition))
         }
         view.priceTextView.setOnClickListener {
-            val item = mCategoryItemList?.get(view.adapterPosition)
+            if (mActivity.resources.getInteger(R.integer.max_selection_item_catalog) == mSelectedProductsHashMap?.size && !view.checkBox.isChecked) {
+                mActivity.showToast("Only ${mActivity.resources.getInteger(R.integer.max_selection_item_catalog)} products are allowed to add at a time")
+                return@setOnClickListener
+            }
+            val item = mCategoryItemList?.get(view.absoluteAdapterPosition)
             if (0.0 != item?.price) return@setOnClickListener
             if (item.isAdded) return@setOnClickListener
-            mCategoryItemClickListener.onCategoryItemsSetPriceClick(view.adapterPosition, item)
+            mCategoryItemClickListener.onCategoryItemsSetPriceClick(view.absoluteAdapterPosition, item)
         }
-        view.checkBox.setOnCheckedChangeListener { _, isChecked ->
-            val item = mCategoryItemList?.get(view.adapterPosition)
-            if (true == item?.isAdded) {
+        view.checkBox.setOnClickListener {
+            val item = mCategoryItemList?.get(view.absoluteAdapterPosition)
+            if (mActivity.resources.getInteger(R.integer.max_selection_item_catalog) == mSelectedProductsHashMap?.size && view.checkBox.isChecked) {
+                mActivity.showToast("Only ${mActivity.resources.getInteger(R.integer.max_selection_item_catalog)} products are allowed to add at a time")
                 view.checkBox.isChecked = false
                 view.checkBox.isSelected = false
-                return@setOnCheckedChangeListener
-            }
-            when {
-                mActivity.resources.getInteger(R.integer.max_selection_item_catalog_subcategory) == mSelectedProductsHashMap?.size?.plus(mCategoryCartItems) -> {
-                    mActivity.showToast("Maximum products per category - 200 \n Please create new category for adding more products.")
+            }  else {
+                if (true == item?.isAdded) {
                     view.checkBox.isChecked = false
                     view.checkBox.isSelected = false
+                    return@setOnClickListener
                 }
-                mActivity.resources.getInteger(R.integer.max_selection_item_catalog) == mSelectedProductsHashMap?.size -> {
-                    mActivity.showToast("Only ${mActivity.resources.getInteger(R.integer.max_selection_item_catalog)} products are allowed to add at a time")
-                    view.checkBox.isChecked = false
-                    view.checkBox.isSelected = false
-                }
-                else -> mCategoryItemClickListener.onCategoryCheckBoxClick(view.adapterPosition, item, isChecked)
+                mCategoryItemClickListener.onCategoryCheckBoxClick(view.absoluteAdapterPosition, item, view.checkBox.isChecked)
             }
         }
         view.titleTextView.setOnClickListener {
-            val item = mCategoryItemList?.get(view.adapterPosition)
-            if (true == item?.isAdded) {
-                view.checkBox.isChecked = false
-                view.checkBox.isSelected = false
-                return@setOnClickListener
-            }
-            if (mActivity.resources.getInteger(R.integer.max_selection_item_catalog) == mSelectedProductsHashMap?.size) {
+            val item = mCategoryItemList?.get(view.absoluteAdapterPosition)
+            if (mActivity.resources.getInteger(R.integer.max_selection_item_catalog) == mSelectedProductsHashMap?.size && !view.checkBox.isChecked) {
                 mActivity.showToast("Only ${mActivity.resources.getInteger(R.integer.max_selection_item_catalog)} products are allowed to add at a time")
                 view.checkBox.isChecked = false
                 view.checkBox.isSelected = false
             } else {
-                mCategoryItemClickListener.onCategoryCheckBoxClick(view.adapterPosition, item, !view.checkBox.isChecked)
+                mCategoryItemClickListener.onCategoryCheckBoxClick(view.absoluteAdapterPosition, item, !view.checkBox.isChecked)
                 view.checkBox.isChecked = !view.checkBox.isChecked
             }
         }
         return view
     }
 
-    override fun getItemId(position: Int): Long {
-        return position.toLong()
-    }
+    override fun getItemId(position: Int): Long = position.toLong()
 
-    override fun getItemViewType(position: Int): Int {
-        return position
-    }
+    override fun getItemViewType(position: Int): Int = position
 
     override fun getItemCount(): Int = mCategoryItemList?.size ?: 0
 
-    override fun onBindViewHolder(
-        holder: MarketingCardViewHolder,
-        position: Int
-    ) {
-        val item = mCategoryItemList?.get(position)
+    override fun onBindViewHolder(holder: MarketingCardViewHolder, position: Int) {
+        var item = mCategoryItemList?.get(position)
+        if (true == mSelectedProductsHashMap?.containsKey(item?.itemId)) {
+            item = mSelectedProductsHashMap?.get(item?.itemId)
+        }
         holder.run {
-            imageView.let { view ->
-                Picasso.get().load(item?.imageUrl).into(view)
-            }
+            Picasso.get().load(item?.imageUrl).into(imageView)
             titleTextView.text = item?.itemName
             val priceStr = "${mStaticText?.text_rupees_symbol} ${item?.price}"
             priceTextView.text = priceStr
             titleTextView.setTextColor(ContextCompat.getColor(mActivity, if (item?.isSelected == true) R.color.open_green else R.color.black))
-            if (true == item?.isAdded) {
-                container.isEnabled = false
-                container.alpha = 0.2f
-                checkBox.isEnabled = false
-            } else {
-                container.isEnabled = true
-                container.alpha = 1f
-                checkBox.isEnabled = true
-            }
+            container.isEnabled = (false == item?.isAdded)
+            container.alpha = if (true == item?.isAdded) 0.2f else 1f
+            checkBox.isEnabled = (false == item?.isAdded)
             if (0.0 == item?.price) {
                 val priceString = "${mStaticText?.text_set_your_price} ${mStaticText?.text_rupees_symbol}"
                 priceTextView.text = priceString
@@ -144,7 +127,6 @@ class MasterCatalogItemsAdapter(
                 checkBox.isEnabled = true
             }
             checkBox.isChecked = (true == item?.isSelected || true == mSelectedProductsHashMap?.containsKey(item?.itemId))
-            checkBox.isSelected = (true == item?.isSelected || true == mSelectedProductsHashMap?.containsKey(item?.itemId))
         }
     }
 

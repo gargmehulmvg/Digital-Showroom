@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.StyleSpan
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -186,17 +185,11 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
         }
     }
 
-    override fun onCategoryItemsClickResponse(response: MasterCatalogItemResponse?) {
-        Log.d(TAG, "onCategoryItemsClickResponse: ${response?.itemName}")
-    }
+    override fun onCategoryItemsClickResponse(response: MasterCatalogItemResponse?) = Unit
 
-    override fun onCategoryItemsImageClick(response: MasterCatalogItemResponse?) {
-        showImageDialog(response?.imageUrl)
-    }
+    override fun onCategoryItemsImageClick(response: MasterCatalogItemResponse?) = showImageDialog(response?.imageUrl)
 
-    override fun onCategoryItemsSetPriceClick(position: Int, response: MasterCatalogItemResponse?) {
-        showSetPriceBottomSheet(response, position)
-    }
+    override fun onCategoryItemsSetPriceClick(position: Int, response: MasterCatalogItemResponse?) = showSetPriceBottomSheet(response, position)
 
     override fun onCategoryCheckBoxClick(position: Int, response: MasterCatalogItemResponse?, isChecked: Boolean) {
         if (isChecked) {
@@ -205,16 +198,20 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
         } else mSelectedProductsHashMap.remove(response?.itemId)
         if (mSelectedProductsHashMap.isNotEmpty()) {
             addProductTextView?.visibility = View.VISIBLE
-            val size = mSelectedProductsHashMap.size
-            addProductTextView?.text = if (size == 1) "${addProductStaticData?.text_add} 1 ${addProductStaticData?.text_product}" else "${addProductStaticData?.text_add} $size ${addProductStaticData?.text_products}"
+            refreshCountView()
             AppEventsManager.pushAppEvents(eventName = AFInAppEventType.EVENT_CATALOG_BUILDER_PRODUCT_SELECT, isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true, data = mapOf(
                     AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
                     AFInAppEventParameterName.CATEGORY_NAME to response?.itemName,
-                    AFInAppEventParameterName.PRODUCTS_ADDED to "$size"
+                    AFInAppEventParameterName.PRODUCTS_ADDED to "${mSelectedProductsHashMap.size}"
                 ))
         } else {
             addProductTextView?.visibility = View.GONE
         }
+    }
+
+    private fun refreshCountView() {
+        val size = mSelectedProductsHashMap.size
+        addProductTextView?.text = if (size == 1) "${addProductStaticData?.text_add} 1 ${addProductStaticData?.text_product}" else "${addProductStaticData?.text_add} $size ${addProductStaticData?.text_products}"
     }
 
     private fun showSetPriceBottomSheet(response: MasterCatalogItemResponse?, position: Int) {
@@ -243,9 +240,15 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
                     setPriceTextView.text = addProductStaticData?.bottom_sheet_set_price
                     setPriceTextView.setOnClickListener {
                         val price = priceEditText.text.toString()
-                        bottomSheetDialog.dismiss()
                         mCategoryItemsList?.get(position)?.isSelected = true
                         mCategoryItemsList?.get(position)?.price = if (isEmpty(price)) 0.0 else price.toDouble()
+
+                        mSelectedProductsHashMap[response?.itemId] = mCategoryItemsList?.get(position)
+                        mSelectedProductsHashMap[response?.itemId]?.parentCategoryIdForRequest = mCategoryId
+
+                        refreshCountView()
+
+                        bottomSheetDialog.dismiss()
                         masterCatalogAdapter?.notifyItemChanged(position)
                     }
                 }

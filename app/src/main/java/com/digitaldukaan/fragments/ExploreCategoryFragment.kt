@@ -94,5 +94,4 @@ class ExploreCategoryFragment: BaseFragment(), IExploreCategoryServiceInterface 
     }
 
     override fun onExploreCategoryServerException(e: Exception) = exceptionHandlingForAPIResponse(e)
-
 }
