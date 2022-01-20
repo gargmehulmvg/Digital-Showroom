@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.StyleSpan
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -212,7 +211,6 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
             if (null != currentCategoryCount) mSubCategoryLimitMap[mCategoryId] = (--currentCategoryCount)
             mSelectedProductsHashMap.remove(response?.itemId)
         }
-        Log.d("MEHUL", "MASTERCATALOGFRAGMENT :: mSubCategoryLimitMap: $mSubCategoryLimitMap")
         if (mSelectedProductsHashMap.isNotEmpty()) {
             addProductTextView?.visibility = View.VISIBLE
             refreshCountView()
