@@ -4,7 +4,7 @@ import com.digitaldukaan.models.response.CommonApiResponse
 
 interface IPaymentModesServiceInterface {
 
-    fun onPaymentModesResponse(response: CommonApiResponse)
+    fun onPaymentModesPageInfoResponse(response: CommonApiResponse)
 
     fun onSetPaymentModesResponse(response: CommonApiResponse)
 

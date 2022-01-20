@@ -6,11 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.digitaldukaan.R
-import com.digitaldukaan.constants.isEmpty
 import com.digitaldukaan.constants.isNotEmpty
 import com.digitaldukaan.interfaces.IActiveOfferDetailsListener
 import com.digitaldukaan.models.response.PaymentModesItemResponse
@@ -21,45 +19,40 @@ class PaymentModeChildAdapter(
     private var mList: ArrayList<PaymentModesItemResponse>?,
     private var mListener: IActiveOfferDetailsListener?
 ) :
-    RecyclerView.Adapter<PaymentModeChildAdapter.ReferAndEarnViewHolder>() {
+    RecyclerView.Adapter<PaymentModeChildAdapter.PaymentModeChildViewHolder>() {
 
-    inner class ReferAndEarnViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class PaymentModeChildViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val headingTextView: TextView? = itemView.findViewById(R.id.headingTextView)
         val upiTxnChargeTextView: TextView? = itemView.findViewById(R.id.upiTxnChargeTextView)
         val upiImageView: ImageView = itemView.findViewById(R.id.upiImageView)
         val activeOfferTextView: TextView = itemView.findViewById(R.id.activeOfferTextView)
-        val cardOfferContainer: ConstraintLayout = itemView.findViewById(R.id.cardOfferContainer)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ReferAndEarnViewHolder {
-        return ReferAndEarnViewHolder(
-            LayoutInflater.from(parent.context).inflate(R.layout.layout_payment_mode_child_item, parent, false)
-        )
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PaymentModeChildViewHolder {
+        val view = PaymentModeChildViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.layout_payment_mode_child_item, parent, false))
+        view.activeOfferTextView.setOnClickListener {
+            val item = mList?.get(view.absoluteAdapterPosition)
+            mListener?.activeOfferDetailsListener(item?.offerInfoList)
+        }
+        return view
     }
 
     override fun getItemCount(): Int = mList?.size ?: 0
 
-    override fun onBindViewHolder(holder: ReferAndEarnViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: PaymentModeChildViewHolder, position: Int) {
         holder.apply {
             val item = mList?.get(position)
             headingTextView?.text = item?.name
             val txnChargeStr = "${item?.transactionCharges}% txn Charges"
             upiTxnChargeTextView?.text = txnChargeStr
             if (isNotEmpty(item?.imageUrl)) mContext?.let { context -> Glide.with(context).load(item?.imageUrl).into(upiImageView) }
-            if (true == mIsKycActive) {
-                headingTextView?.alpha = 1f
-                upiTxnChargeTextView?.alpha = 1f
-            } else {
-                headingTextView?.alpha = 0.5f
-                upiTxnChargeTextView?.alpha = 0.5f
-            }
+            headingTextView?.alpha = if (true == mIsKycActive) 1f else 0.5f
+            upiTxnChargeTextView?.alpha = if (true == mIsKycActive) 1f else 0.5f
             if (isNotEmpty(item?.offerActiveText)) {
+                activeOfferTextView.visibility = View.VISIBLE
                 activeOfferTextView.text = item?.offerActiveText
             } else {
-                cardOfferContainer.visibility = View.GONE
-            }
-            activeOfferTextView.setOnClickListener {
-                item?.offerInfoMap?.let { it1 -> mListener?.activeOfferDetailsListener(it1) }
+                activeOfferTextView.visibility = View.GONE
             }
         }
     }

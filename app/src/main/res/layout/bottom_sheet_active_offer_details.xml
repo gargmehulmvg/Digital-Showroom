@@ -1,107 +1,131 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activeBottomSheetContainer"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:background="@drawable/upper_curve_white_background"
-    android:padding="@dimen/_10sdp">
+    android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/bottomSheetClose"
-        android:layout_width="@dimen/_22sdp"
-        android:layout_height="@dimen/_22sdp"
-        android:layout_marginEnd="@dimen/_5sdp"
-        android:contentDescription="@string/image_view_content_description"
-        android:elevation="@dimen/_4sdp"
-        android:src="@drawable/ic_black_close"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/bottomSheetHeading"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/black"
-        android:textSize="@dimen/_18sdp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="Offer Details" />
-
-    <ImageView
-        android:id="@+id/bankImageView"
-        android:layout_width="@dimen/_65sdp"
-        android:layout_height="@dimen/_65sdp"
-        android:layout_marginTop="@dimen/_10sdp"
-        android:contentDescription="@string/image_view_content_description"
-        android:paddingStart="@dimen/_10sdp"
-        android:paddingEnd="@dimen/_10sdp"
-        android:src="@drawable/ic_cash"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/bottomSheetHeading"
-        tools:ignore="MissingConstraints" />
-
-    <TextView
-        android:id="@+id/descriptionTextView"
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_15sdp"
-        android:textColor="@color/black"
-        android:textSize="@dimen/_12sdp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/bankImageView"
-        tools:text="Dummy text refers to the bits of content that are used to fill a website mock-up." />
+        android:fillViewport="true">
 
-    <TextView
-        android:id="@+id/bottomSheetValidityTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textStyle="bold"
-        android:textColor="@color/default_text_light_grey"
-        android:layout_marginTop="@dimen/_5sdp"
-        android:textSize="@dimen/_10sdp"
-        app:layout_constraintTop_toBottomOf="@id/descriptionTextView"
-        tools:text="Valid upto 23rd December, 2021" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/couponCodeTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textStyle="bold"
-        android:paddingRight="@dimen/_6sdp"
-        android:paddingLeft="@dimen/_6sdp"
-        android:paddingBottom="@dimen/_2sdp"
-        android:paddingTop="@dimen/_2sdp"
-        android:background="@drawable/curve_grey_dotted_border"
-        android:textColor="@color/black"
-        android:layout_marginTop="@dimen/_15sdp"
-        android:textSize="@dimen/_21sdp"
-        app:layout_constraintTop_toBottomOf="@id/bottomSheetValidityTextView"
-        tools:text="ACB20"
-        tools:ignore="MissingConstraints" />
+            <androidx.cardview.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10sdp"
+                app:cardCornerRadius="@dimen/_10sdp">
 
-    <View
-        android:id="@+id/separator1"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/_1sdp"
-        android:layout_marginTop="@dimen/_15sdp"
-        android:background="@color/curve_grey_border"
-        app:layout_constraintTop_toBottomOf="@+id/couponCodeTextView" />
+                <View
+                    android:id="@+id/floatingClose"
+                    android:layout_width="@dimen/_75sdp"
+                    android:layout_height="@dimen/_7sdp"
+                    android:layout_gravity="center"
+                    android:background="@color/curve_grey_border" />
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/activeOfferBottomSheetRecyclerView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_15sdp"
-        android:overScrollMode="always"
-        app:layout_constraintStart_toStartOf="@+id/separator1"
-        app:layout_constraintTop_toBottomOf="@id/separator1"
-        app:layout_constraintEnd_toEndOf="@+id/separator1"
-        tools:itemCount="100"
-        tools:listitem="@layout/bank_offer_sheet_item" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:background="@drawable/upper_curve_white_background"
+                android:padding="@dimen/_15sdp">
+
+                <TextView
+                    android:id="@+id/bottomSheetHeading"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/roboto_medium"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_18sdp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="Offer Details" />
+
+                <ImageView
+                    android:id="@+id/bankImageView"
+                    android:layout_width="@dimen/_55sdp"
+                    android:layout_height="@dimen/_55sdp"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:contentDescription="@string/image_view_content_description"
+                    tools:src="@drawable/ic_cash"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/bottomSheetHeading" />
+
+                <TextView
+                    android:id="@+id/descriptionTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_15sdp"
+                    android:textColor="@color/black"
+                    android:fontFamily="@font/roboto_medium"
+                    android:textSize="@dimen/_12sdp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/bankImageView"
+                    tools:text="Dummy text refers to the bits of content that are used to fill a website mock-up." />
+
+                <TextView
+                    android:id="@+id/bottomSheetValidityTextView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:textColor="@color/default_text_light_grey"
+                    android:fontFamily="@font/roboto"
+                    android:textSize="@dimen/_9sdp"
+                    app:layout_constraintTop_toBottomOf="@id/descriptionTextView"
+                    tools:text="Valid upto 23rd December, 2021" />
+
+                <TextView
+                    android:id="@+id/couponCodeTextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_15sdp"
+                    android:background="@drawable/curve_grey_dotted_border"
+                    android:fontFamily="@font/roboto_medium"
+                    android:paddingLeft="@dimen/_6sdp"
+                    android:paddingTop="@dimen/_2sdp"
+                    android:paddingRight="@dimen/_6sdp"
+                    android:paddingBottom="@dimen/_2sdp"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_21sdp"
+                    app:layout_constraintTop_toBottomOf="@id/bottomSheetValidityTextView"
+                    tools:ignore="MissingConstraints"
+                    tools:text="ACB20" />
+
+                <View
+                    android:id="@+id/separator1"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_1sdp"
+                    android:layout_marginTop="@dimen/_15sdp"
+                    android:background="@color/curve_grey_border"
+                    app:layout_constraintTop_toBottomOf="@id/couponCodeTextView" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/activeOfferBottomSheetRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_15sdp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@id/separator1"
+                    app:layout_constraintStart_toStartOf="@id/separator1"
+                    app:layout_constraintTop_toBottomOf="@id/separator1"
+                    tools:itemCount="10"
+                    tools:listitem="@layout/payment_offer_bottom_sheet_item" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </LinearLayout>
+
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
 

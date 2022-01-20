@@ -5,32 +5,31 @@
     android:id="@+id/offerDetailLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:onClick="onClick"
-    android:padding="@dimen/_3sdp"
-    android:paddingEnd="@dimen/_1sdp"
-    android:background="?android:selectableItemBackground"
-    android:gravity="center_vertical">
+    android:gravity="center_vertical"
+    android:padding="@dimen/_3sdp">
 
     <ImageView
         android:id="@+id/bulletImageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_bullet"
-        android:paddingTop="@dimen/_4sdp"
-        android:layout_marginLeft="@dimen/_2sdp"
-        app:layout_constraintEnd_toStartOf="@id/activeOffersTextView"
         android:contentDescription="@string/image_view_content_description"
-        tools:ignore="MissingConstraints" />
+        android:padding="@dimen/_2sdp"
+        android:layout_marginTop="@dimen/_3sdp"
+        android:src="@drawable/ic_bullet"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/activeOffersTextView"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        tools:text="Offer only applicable on INDUSIND Bank"
-        android:paddingLeft="@dimen/_4sdp"
+        android:fontFamily="@font/roboto"
+        android:paddingStart="@dimen/_4sdp"
+        android:textSize="@dimen/_9sdp"
+        android:paddingEnd="@dimen/_4sdp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/bulletImageView"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toEndOf="@id/bulletImageView"/>
-
-
+        tools:text="Offer only applicable on INDUSIND Bank" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

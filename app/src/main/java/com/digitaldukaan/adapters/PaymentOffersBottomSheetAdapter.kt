@@ -7,22 +7,19 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
 
-class PaymentOffersBottomSheetAdapter(
-    private var mItemList: ArrayList<String>
-    ) : RecyclerView.Adapter<PaymentOffersBottomSheetAdapter.PaymentOffersBottomSheetViewHolder>() {
+class PaymentOffersBottomSheetAdapter(private var mItemList: ArrayList<String>?) : RecyclerView.Adapter<PaymentOffersBottomSheetAdapter.PaymentOffersBottomSheetViewHolder>() {
 
     inner class PaymentOffersBottomSheetViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val textView: TextView? = itemView.findViewById(R.id.activeOffersTextView)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PaymentOffersBottomSheetViewHolder =
-        PaymentOffersBottomSheetViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.bank_offer_sheet_item, parent, false))
+        PaymentOffersBottomSheetViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.payment_offer_bottom_sheet_item, parent, false))
 
-    override fun getItemCount(): Int = mItemList.size
+    override fun getItemCount(): Int = mItemList?.size ?: 0
 
     override fun onBindViewHolder(holder: PaymentOffersBottomSheetViewHolder, position: Int) {
-        val item = mItemList[position]
-        holder.textView?.text = item
+        holder.textView?.text = mItemList?.get(position)
     }
 
 }
