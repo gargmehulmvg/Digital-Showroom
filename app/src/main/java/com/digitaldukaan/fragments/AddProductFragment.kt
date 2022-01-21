@@ -121,8 +121,8 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         mService = AddProductService()
         mService?.setServiceListener(this)
         AppEventsManager.pushAppEvents(eventName = AFInAppEventType.EVENT_ADD_ITEM, isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true, data = mapOf(
-                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                AFInAppEventParameterName.IS_MERCHANT to "1"
+            AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+            AFInAppEventParameterName.IS_MERCHANT to "1"
         ))
     }
 
@@ -143,7 +143,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             hideBackPressFromToolBar(mActivity, false)
             onBackPressed(this@AddProductFragment)
             setSideIconVisibility(true)
-            setSecondSideIconVisibility(mItemId != 0)
+            setSecondSideIconVisibility(0 != mItemId)
             mActivity?.run {
                 setSecondSideIcon(ContextCompat.getDrawable(this, R.drawable.ic_delete), this@AddProductFragment)
                 setSideIcon(ContextCompat.getDrawable(this, R.drawable.ic_options_menu), this@AddProductFragment)
@@ -789,6 +789,9 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                         } else {
                             mImagesStrList.removeAt(mImageChangePosition)
                             mImageAddAdapter?.setListToAdapter(mImagesStrList)
+                            val imagesLeftStr = "${mImagesStrList?.size - 1}/4 ${mAddProductStaticData?.text_images_added}"
+                            val imagesLeftTextView: TextView? = mContentView?.findViewById(R.id.imagesLeftTextView)
+                            imagesLeftTextView?.text = imagesLeftStr
                         }
                     }
                     mImageSearchAdapter.setSearchImageListener(this@AddProductFragment)

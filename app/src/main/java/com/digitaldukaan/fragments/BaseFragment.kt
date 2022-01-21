@@ -905,10 +905,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                 Log.d(TAG, "onActivityResult: CROP_IMAGE_ACTIVITY_REQUEST_CODE ")
                 data?.let {
                     val resultUri = UCrop.getOutput(data)
-                    Log.d(
-                        TAG,
-                        "onActivityResult: CROP_IMAGE_ACTIVITY_REQUEST_CODE :: result uri :: $resultUri"
-                    )
+                    Log.d(TAG, "onActivityResult: CROP_IMAGE_ACTIVITY_REQUEST_CODE :: result uri :: $resultUri")
                     onImageSelectionResultUri(resultUri)
                     val croppedBitmap = getBitmapFromUri(resultUri, mActivity)
                     val croppedFile = getImageFileFromBitmap(croppedBitmap, mActivity)
@@ -1286,7 +1283,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                                         AFInAppEventParameterName.PATH to if (mode == Constants.MODE_PRODUCT_LIST) Constants.MODE_PRODUCT_LIST else Constants.MODE_ADD_PRODUCT
                                     )
                                 )
-                                launchFragment(ExploreCategoryFragment.newInstance(addProductStaticText), true)
+                                launchFragment(ExploreCategoryFragment.newInstance(), true)
                             }
                         }
                     }.show()
@@ -1484,11 +1481,14 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                     val closeImageView: ImageView = findViewById(R.id.closeImageView)
                     val imageViewBottom: ImageView = findViewById(R.id.imageViewBottom)
                     val paymentModeImageView: ImageView = findViewById(R.id.paymentModeImageView)
+                    val paymentDetailTextView: TextView = findViewById(R.id.paymentDetailTextView)
                     textViewTop.text = response?.transactionMessage
                     textViewBottom.text = response?.settlementMessage
                     billAmountTextView.text = staticText?.bill_amount
                     amountSettleTextView.text = staticText?.amount_to_settled
                     paymentModeTextView.text = staticText?.payment_mode
+                    if (isNotEmpty(response?.bankOfferText)) paymentDetailTextView.setHtmlData(response?.bankOfferText)
+                    else paymentDetailTextView.visibility = View.GONE
                     txnId.text = getStringDateTimeFromTransactionDetailDate(getCompleteDateFromOrderString(response?.transactionTimestamp))
                     when (Constants.ORDER_STATUS_PAYOUT_SUCCESS) {
                         response?.settlementState -> {

@@ -1,6 +1,7 @@
 package com.digitaldukaan.services
 
 import com.digitaldukaan.constants.CoroutineScopeUtils
+import com.digitaldukaan.models.request.SaveSocialMediaPostRequest
 import com.digitaldukaan.models.request.SocialMediaTemplateFavouriteRequest
 import com.digitaldukaan.services.networkservice.SocialMediaNetworkService
 import com.digitaldukaan.services.serviceinterface.ISocialMediaServiceInterface
@@ -36,6 +37,12 @@ class SocialMediaService {
     fun getMarketingPageInfo() {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
             mNetworkService.getMarketingPageInfoServerCall(mServiceInterface)
+        }
+    }
+
+    fun saveSocialMediaPost(request: SaveSocialMediaPostRequest) {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.saveSocialMediaPostServerCall(mServiceInterface, request)
         }
     }
 

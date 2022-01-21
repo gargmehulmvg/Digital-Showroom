@@ -96,7 +96,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
     override fun onAddProductBannerStaticDataResponse(commonResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
-            addProductBannerStaticDataResponse = Gson().fromJson<AddProductBannerTextResponse>(commonResponse.mCommonDataStr, AddProductBannerTextResponse::class.java)
+            addProductBannerStaticDataResponse = Gson().fromJson(commonResponse.mCommonDataStr, AddProductBannerTextResponse::class.java)
             addProductBannerStaticDataResponse?.run { showMasterCatalogBottomSheet(addProductBannerStaticDataResponse, addProductStaticData, Constants.MODE_PRODUCT_LIST) }
         }
     }

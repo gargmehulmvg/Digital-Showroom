@@ -54,9 +54,6 @@ interface Apis {
     suspend fun getStaffMembersDetails(@Path("storeId") storeId: String) : Response<CommonApiResponse>
 
     /* ----------------------       Settings         ---------------------- */
-    @GET("api/dotk/vm1/settings/getReferralData")
-    suspend fun getReferralData() : Response<CommonApiResponse>
-
     @GET("api/dotk/vm1/settings/getOrderTypePageInfo")
     suspend fun getOrderTypePageInfo() : Response<CommonApiResponse>
 
@@ -105,6 +102,9 @@ interface Apis {
     @GET("api/dotk/vm1/settings/getReferPageInfo")
     suspend fun getReferAndEarnData() : Response<CommonApiResponse>
 
+    @GET("api/dotk/vm1/settings/getStoreControlPageInfo")
+    suspend fun getStoreControlPageInfo() : Response<CommonApiResponse>
+
     @POST("api/dotk/vm1/settings/setStoreBusinesses")
     suspend fun setStoreBusinesses(@Body request: BusinessTypeRequest) : Response<CommonApiResponse>
 
@@ -147,6 +147,9 @@ interface Apis {
     @POST("api/dotk/vm1/settings/setStoreAddressConfigs")
     suspend fun setAddressFields(@Body request: AddressFieldRequest): Response<CommonApiResponse>
 
+    @GET("api/dotk/vm1/settings/getReferralData")
+    suspend fun getReferralData(): Response<CommonApiResponse>
+
     /* ----------------------       Images         ---------------------- */
     @POST("api/dotk/vm1/media/setStoreLogo")
     suspend fun setStoreLogo(@Body request: StoreLogoRequest) : Response<CommonApiResponse>
@@ -177,6 +180,9 @@ interface Apis {
 
     @POST("api/dotk/vm1/marketing/shareStore")
     suspend fun getShareStore(): Response<CommonApiResponse>
+
+    @POST("api/dotk/vm1/marketing/saveSocialMediaPost")
+    suspend fun saveSocialMediaPost(@Body request: SaveSocialMediaPostRequest): Response<CommonApiResponse>
 
     @POST("api/dotk/vm1/marketing/setSocialMediaFavourite")
     suspend fun setSocialMediaFavourite(@Body request: SocialMediaTemplateFavouriteRequest): Response<CommonApiResponse>
@@ -222,7 +228,7 @@ interface Apis {
     @POST("api/dotk/vm1/products/searchItems")
     suspend fun searchItems(@Body request: SearchCatalogItemsRequest): Response<CommonApiResponse>
 
-    @GET("api/dotk/vm1/products/getMasterCategories")
+    @GET("api/dotk/vm1/products/getAllMasterCategoriesList")
     suspend fun getMasterCategories(): Response<CommonApiResponse>
 
     @GET("api/dotk/vm1/products/getMasterSubCategories/{id}")

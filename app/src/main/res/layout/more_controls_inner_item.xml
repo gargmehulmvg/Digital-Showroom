@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_5sdp"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:layout_marginEnd="@dimen/_5sdp"
+        android:layout_marginBottom="@dimen/_5sdp"
+        android:background="@drawable/ripple_rect_grey_white_background"
+        android:elevation="@dimen/_2sdp"
+        android:onClick="onClick"
+        app:layout_constraintEnd_toEndOf="@id/minOrderValueContainer"
+        app:layout_constraintStart_toStartOf="@id/minOrderValueContainer"
+        app:layout_constraintTop_toBottomOf="@id/minOrderValueContainer"
+        tools:targetApi="lollipop">
+
+        <ImageView
+            android:id="@+id/arrowImageView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:layout_marginEnd="@dimen/_11sdp"
+            android:paddingTop="@dimen/_13sdp"
+            android:paddingBottom="@dimen/_13sdp"
+            android:contentDescription="@string/image_view_content_description"
+            android:src="@drawable/ic_half_arrow_forward"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/headingTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_11sdp"
+            android:layout_marginTop="@dimen/_13sdp"
+            android:layout_marginStart="@dimen/_13sdp"
+            app:layout_constraintEnd_toStartOf="@id/arrowImageView"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Set minimum order value for delivery" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/newTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_5sdp"
+            android:background="@drawable/slight_curve_red_background_with_padding"
+            android:clickable="false"
+            android:fontFamily="@font/roboto_medium"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_7sdp"
+            app:layout_constraintBottom_toBottomOf="@id/headingTextView"
+            app:layout_constraintStart_toEndOf="@id/headingTextView"
+            app:layout_constraintTop_toTopOf="@id/headingTextView"
+            tools:text="@string/text_new" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/valueTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_2sdp"
+            android:clickable="false"
+            android:lineSpacingMultiplier="1.2"
+            android:paddingTop="@dimen/_2sdp"
+            android:layout_marginBottom="@dimen/_13sdp"
+            android:textColor="@color/default_text_light_grey"
+            android:textSize="@dimen/_9sdp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/arrowImageView"
+            app:layout_constraintStart_toStartOf="@id/headingTextView"
+            app:layout_constraintTop_toBottomOf="@id/headingTextView"
+            tools:text="Current: Fixed Delivery Charge" />
+
+        <androidx.constraintlayout.widget.Group
+            android:id="@+id/paymentModeLockGroup"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:constraint_referenced_ids="lockedBackground,unlockNowTextView" />
+
+        <ImageView
+            android:id="@+id/lockedBackground"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:alpha="0.5"
+            android:background="@drawable/lower_curve_black_background"
+            android:clickable="false"
+            android:contentDescription="@string/image_view_content_description"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/unlockNowTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="@dimen/_10sdp"
+            android:background="@drawable/curve_white_background2"
+            android:clickable="false"
+            android:drawablePadding="@dimen/_5sdp"
+            android:fontFamily="@font/roboto_medium"
+            android:gravity="center"
+            android:paddingStart="@dimen/_5sdp"
+            android:paddingTop="@dimen/_5sdp"
+            android:paddingEnd="@dimen/_5sdp"
+            android:paddingBottom="@dimen/_5sdp"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_10sdp"
+            app:drawableStartCompat="@drawable/ic_subscription_locked_black_small"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Unlock Now" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</LinearLayout>
