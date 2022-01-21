@@ -61,10 +61,6 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import com.google.gson.Gson
-import com.nguyenhoanglam.imagepicker.model.GridCount
-import com.nguyenhoanglam.imagepicker.model.ImagePickerConfig
-import com.nguyenhoanglam.imagepicker.model.RootDirectory
-import com.nguyenhoanglam.imagepicker.ui.imagepicker.registerImagePicker
 import com.squareup.picasso.Picasso
 import com.yalantis.ucrop.UCrop
 import id.zelory.compressor.Compressor
@@ -99,8 +95,6 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     private var mCurrentLongitude = 0.0
     private var mMultiUserAdapter: StaffInvitationAdapter? = null
     private var webConsoleBottomSheetDialog: BottomSheetDialog? = null
-    private val mMultiImageBitmapArray: ArrayList<Bitmap> = ArrayList()
-    private var mIsMultiImageCompressionLoaderShowing = false
 
     companion object {
         private var sStaffInvitationDialog: Dialog? = null
@@ -142,7 +136,6 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     }
 
     protected fun showCancellableProgressDialog(context: Context?) {
-        if (mIsMultiImageCompressionLoaderShowing) return
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             context?.let { context ->
                 try {
@@ -870,62 +863,6 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         }
     }
 
-    open fun openMobileGalleryWithCropMultipleImages(quantity: Int) {
-        mActivity?.let { context ->
-            val configMultiple = ImagePickerConfig(
-                statusBarColor = context.getString(R.color.black),
-                isLightStatusBar = true,
-                isFolderMode = true,
-                toolbarColor = context.getString(R.color.open_green),
-                isMultipleMode = true,
-                maxSize = quantity,
-                rootDirectory = RootDirectory.PICTURES,
-                subDirectory = "Photos",
-                folderGridCount = GridCount(2, 4),
-                imageGridCount = GridCount(3, 5),
-            )
-            multiImagePickerLauncher.launch(configMultiple)
-        }
-    }
-
-    private val multiImagePickerLauncher = registerImagePicker { images ->
-        mMultiImageBitmapArray.clear()
-        for (it in images) {
-            val bitmapImage = getBitmapFromUri(it.uri, context)
-            if (null != bitmapImage) mMultiImageBitmapArray.add(bitmapImage)
-        }
-        if (isNotEmpty(mMultiImageBitmapArray)) {
-            CoroutineScopeUtils().runTaskOnCoroutineMain {
-                showCancellableProgressDialog(context)
-                mIsMultiImageCompressionLoaderShowing = true
-                compressAndCropMultipleImages(mMultiImageBitmapArray)
-            }
-        }
-        mIsMultiImageCompressionLoaderShowing = false
-    }
-
-    private suspend fun compressAndCropMultipleImages(imagesArray: ArrayList<Bitmap>?){
-        if (isNotEmpty(imagesArray)) {
-            for (image in imagesArray!!) {
-                var file = getImageFileFromBitmap(image, mActivity)
-                file?.let {
-                    Log.d(TAG, "ORIGINAL :: ${it.length() / (1024)} KB")
-                    mActivity?.run { file = Compressor.compress(this, it) { quality(if (false == StaticInstances.sPermissionHashMap?.get(Constants.PREMIUM_USER)) (mActivity?.resources?.getInteger(R.integer.premium_compression_value) ?: 80) else 100) } }
-                    Log.d(TAG, "COMPRESSED :: ${it.length() / (1024)} KB")
-                    if (it.length() / (1024 * 1024) >= mActivity?.resources?.getInteger(R.integer.image_mb_size) ?: 0) {
-                        showToast("Images more than ${mActivity?.resources?.getInteger(R.integer.image_mb_size)} are not allowed")
-                        return@let
-                    }
-                }
-            }
-            if (isNotEmpty(imagesArray)) {
-                for (image in imagesArray!!) {
-                    startCropping(image)
-                }
-            }
-        }
-    }
-
     private fun startCropping(bitmap: Bitmap?) {
         try {
             mActivity?.let {
@@ -1346,7 +1283,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                                         AFInAppEventParameterName.PATH to if (mode == Constants.MODE_PRODUCT_LIST) Constants.MODE_PRODUCT_LIST else Constants.MODE_ADD_PRODUCT
                                     )
                                 )
-                                launchFragment(ExploreCategoryFragment.newInstance(addProductStaticText), true)
+                                launchFragment(ExploreCategoryFragment.newInstance(), true)
                             }
                         }
                     }.show()
@@ -1544,11 +1481,14 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                     val closeImageView: ImageView = findViewById(R.id.closeImageView)
                     val imageViewBottom: ImageView = findViewById(R.id.imageViewBottom)
                     val paymentModeImageView: ImageView = findViewById(R.id.paymentModeImageView)
+                    val paymentDetailTextView: TextView = findViewById(R.id.paymentDetailTextView)
                     textViewTop.text = response?.transactionMessage
                     textViewBottom.text = response?.settlementMessage
                     billAmountTextView.text = staticText?.bill_amount
                     amountSettleTextView.text = staticText?.amount_to_settled
                     paymentModeTextView.text = staticText?.payment_mode
+                    if (isNotEmpty(response?.bankOfferText)) paymentDetailTextView.setHtmlData(response?.bankOfferText)
+                    else paymentDetailTextView.visibility = View.GONE
                     txnId.text = getStringDateTimeFromTransactionDetailDate(getCompleteDateFromOrderString(response?.transactionTimestamp))
                     when (Constants.ORDER_STATUS_PAYOUT_SUCCESS) {
                         response?.settlementState -> {

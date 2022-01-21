@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/offerDetailLayout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:padding="@dimen/_3sdp">
+
+    <ImageView
+        android:id="@+id/bulletImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/image_view_content_description"
+        android:padding="@dimen/_2sdp"
+        android:layout_marginTop="@dimen/_3sdp"
+        android:src="@drawable/ic_bullet"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/activeOffersTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/roboto"
+        android:paddingStart="@dimen/_4sdp"
+        android:textSize="@dimen/_9sdp"
+        android:paddingEnd="@dimen/_4sdp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/bulletImageView"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Offer only applicable on INDUSIND Bank" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
