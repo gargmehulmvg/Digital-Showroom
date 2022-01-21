@@ -69,6 +69,7 @@ class ViewAsCustomerFragment: BaseFragment() {
             Log.d(TAG, "onViewCreated: $mDomainName")
             loadUrl(mDomainName)
         }
+        premiumBottomContainer?.visibility = if (true == StaticInstances.sPermissionHashMap?.get(Constants.PAGE_PREMIUM)) View.VISIBLE else View.GONE
     }
 
     override fun onClick(view: View?) {

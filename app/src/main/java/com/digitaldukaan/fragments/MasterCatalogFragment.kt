@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.StyleSpan
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -31,16 +30,16 @@ import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import kotlinx.android.synthetic.main.layout_master_catelog_fragment.*
+import kotlinx.android.synthetic.main.layout_master_catalog_fragment.*
 
 class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, IOnToolbarIconClick {
 
     private val mService = ExploreCategoryService()
-    private var addProductStaticData: AddProductStaticText? = null
+    private var mStaticData: ExploreCategoryStaticTextResponse? = null
     private var mExploreCategoryItem: ExploreCategoryItemResponse? = null
-    private var subCategoryItemList: ArrayList<ExploreCategoryItemResponse>? = null
-    private var subCategoryAdapter: SubCategoryAdapter? = null
-    private var masterCatalogAdapter: MasterCatalogItemsAdapter? = null
+    private var mSubCategoryItemList: ArrayList<ExploreCategoryItemResponse>? = null
+    private var mSubCategoryAdapter: SubCategoryAdapter? = null
+    private var mMasterCatalogAdapter: MasterCatalogItemsAdapter? = null
     private lateinit var mLinearLayoutManager: LinearLayoutManager
     private var mCurrentItems = 0
     private var mTotalItems = 0
@@ -51,12 +50,15 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
     private var mIsMoreItemsAvailable = false
     private var mCategoryItemsList: ArrayList<MasterCatalogItemResponse>? = ArrayList()
     private val mSelectedProductsHashMap: HashMap<Int?, MasterCatalogItemResponse?> = HashMap()
+    private var mSubCategoryLimit: Int = 0
+    private var mSubCategoryLimitMap: HashMap<Int, Int> = HashMap()
 
     companion object {
-        fun newInstance(addProductStaticData: AddProductStaticText?, item: ExploreCategoryItemResponse?): MasterCatalogFragment {
+        fun newInstance(exploreCategoryPageInfoResponse: ExploreCategoryPageInfoResponse?, item: ExploreCategoryItemResponse?): MasterCatalogFragment {
             val fragment =  MasterCatalogFragment()
-            fragment.addProductStaticData = addProductStaticData
+            fragment.mStaticData = exploreCategoryPageInfoResponse?.staticText
             fragment.mExploreCategoryItem = item
+            fragment.mSubCategoryLimit = exploreCategoryPageInfoResponse?.subCategoryLimit ?: 0
             return fragment
         }
     }
@@ -64,7 +66,7 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         TAG = "MasterCatalogFragment"
         FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
-        mContentView = inflater.inflate(R.layout.layout_master_catelog_fragment, container, false)
+        mContentView = inflater.inflate(R.layout.layout_master_catalog_fragment, container, false)
         mService.setServiceInterface(this)
         mLinearLayoutManager = LinearLayoutManager(mActivity)
         return mContentView
@@ -72,9 +74,9 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         ToolBarManager.getInstance()?.apply { hideToolBar(mActivity, true) }
-        val txtSpannable = SpannableString(addProductStaticData?.text_explore + " " + mExploreCategoryItem?.categoryName)
+        val txtSpannable = SpannableString(mStaticData?.text_explore + " " + mExploreCategoryItem?.categoryName)
         val boldSpan = StyleSpan(Typeface.BOLD)
-        txtSpannable.setSpan(boldSpan, addProductStaticData?.text_explore?.length ?: 6, txtSpannable.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+        txtSpannable.setSpan(boldSpan, mStaticData?.text_explore?.length ?: 6, txtSpannable.length, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
         exploreTextView?.text = txtSpannable
         if (!isInternetConnectionAvailable(mActivity)) {
             showNoInternetConnectionDialog()
@@ -86,31 +88,30 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
             masterCatalogRecyclerView?.apply {
                 layoutManager = mLinearLayoutManager
                 mActivity?.let {
-                    masterCatalogAdapter = MasterCatalogItemsAdapter(it, mCategoryItemsList, this@MasterCatalogFragment, addProductStaticData)
-                }
-                adapter = masterCatalogAdapter
+                    mMasterCatalogAdapter = MasterCatalogItemsAdapter(it, mCategoryItemsList, this@MasterCatalogFragment, mStaticData)
+                    adapter = mMasterCatalogAdapter
+                    addOnScrollListener(object : RecyclerView.OnScrollListener() {
 
-                addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                        override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                            super.onScrollStateChanged(recyclerView, newState)
+                            if (AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL == newState) mIsRecyclerViewScrolling = true
+                        }
 
-                    override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-                        super.onScrollStateChanged(recyclerView, newState)
-                        if (AbsListView.OnScrollListener.SCROLL_STATE_TOUCH_SCROLL == newState) mIsRecyclerViewScrolling = true
-                    }
-
-                    override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                        super.onScrolled(recyclerView, dx, dy)
-                        mCurrentItems = mLinearLayoutManager.childCount
-                        mTotalItems = masterCatalogAdapter?.itemCount ?: 0
-                        mScrollOutItems = mLinearLayoutManager.findFirstVisibleItemPosition()
-                        if (mIsRecyclerViewScrolling && (mCurrentItems + mScrollOutItems == mTotalItems)) {
-                            mIsRecyclerViewScrolling = false
-                            if (mIsMoreItemsAvailable) {
-                                mPageCount++
-                                mService.getMasterItems(mCategoryId, mPageCount)
+                        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                            super.onScrolled(recyclerView, dx, dy)
+                            mCurrentItems = mLinearLayoutManager.childCount
+                            mTotalItems = mMasterCatalogAdapter?.itemCount ?: 0
+                            mScrollOutItems = mLinearLayoutManager.findFirstVisibleItemPosition()
+                            if (mIsRecyclerViewScrolling && (mCurrentItems + mScrollOutItems == mTotalItems)) {
+                                mIsRecyclerViewScrolling = false
+                                if (mIsMoreItemsAvailable) {
+                                    mPageCount++
+                                    mService.getMasterItems(mCategoryId, mPageCount)
+                                }
                             }
                         }
-                    }
-                })
+                    })
+                }
             }
         } catch (e: Exception) {
             AppEventsManager.pushAppEvents(
@@ -139,16 +140,16 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
             stopProgress()
             if (response.mIsSuccessStatus) {
                 val listType = object : TypeToken<List<ExploreCategoryItemResponse>>() {}.type
-                subCategoryItemList = Gson().fromJson<ArrayList<ExploreCategoryItemResponse>>(response.mCommonDataStr, listType)
-                if (subCategoryItemList?.isNotEmpty() == true) {
-                    subCategoryItemList?.get(0)?.isSelected = true
-                    mCategoryId = subCategoryItemList?.get(0)?.categoryId ?: 0
+                mSubCategoryItemList = Gson().fromJson<ArrayList<ExploreCategoryItemResponse>>(response.mCommonDataStr, listType)
+                if (isNotEmpty(mSubCategoryItemList)) {
+                    mSubCategoryItemList?.get(0)?.isSelected = true
+                    mCategoryId = mSubCategoryItemList?.get(0)?.categoryId ?: 0
                     mService.getMasterItems(mCategoryId, 1)
                     subCategoryRecyclerView?.apply {
                         mActivity?.let {
                             layoutManager = LinearLayoutManager(it, LinearLayoutManager.HORIZONTAL, false)
-                            subCategoryAdapter = SubCategoryAdapter(it, subCategoryItemList, this@MasterCatalogFragment)
-                            adapter = subCategoryAdapter
+                            mSubCategoryAdapter = SubCategoryAdapter(it, mSubCategoryItemList, this@MasterCatalogFragment)
+                            adapter = mSubCategoryAdapter
                         }
                     }
                 }
@@ -169,53 +170,62 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             if (response.mIsSuccessStatus) {
-                val categoryItems = Gson().fromJson<MasterCatalogResponse>(response.mCommonDataStr, MasterCatalogResponse::class.java)
-                productCountTextView?.text = "${categoryItems?.totalItems} ${addProductStaticData?.text_tap_to_select}"
+                val categoryItems = Gson().fromJson(response.mCommonDataStr, MasterCatalogResponse::class.java)
+                val messageStr = "${categoryItems?.totalItems} ${mStaticData?.text_tap_to_select}"
+                productCountTextView?.text = messageStr
                 mIsMoreItemsAvailable = categoryItems.isNext
-                if (categoryItems?.itemList?.isNotEmpty() == true) mCategoryItemsList?.addAll(categoryItems.itemList)
-                masterCatalogAdapter?.setMasterCatalogList(mCategoryItemsList, mSelectedProductsHashMap)
+                val prevSelectedMapCount = mSubCategoryLimitMap[mCategoryId]
+                if (null == prevSelectedMapCount) {
+                    mSubCategoryLimitMap[mCategoryId] = categoryItems?.totalSelectedItems ?: 0
+                }
+                if (isNotEmpty(categoryItems?.itemList)) mCategoryItemsList?.addAll(categoryItems.itemList)
+                mMasterCatalogAdapter?.setMasterCatalogList(
+                    mCategoryItemsList,
+                    mSelectedProductsHashMap,
+                    mSubCategoryLimitMap,
+                    mSubCategoryLimit,
+                    mCategoryId
+                )
             }
         }
     }
 
-    override fun onCategoryItemsClickResponse(response: MasterCatalogItemResponse?) {
-        Log.d(TAG, "onCategoryItemsClickResponse: ${response?.itemName}")
-    }
+    override fun onCategoryItemsClickResponse(response: MasterCatalogItemResponse?) = Unit
 
-    override fun onCategoryItemsImageClick(response: MasterCatalogItemResponse?) {
-        showImageDialog(response?.imageUrl)
-    }
+    override fun onCategoryItemsImageClick(response: MasterCatalogItemResponse?) = showImageDialog(response?.imageUrl)
 
-    override fun onCategoryItemsSetPriceClick(position: Int, response: MasterCatalogItemResponse?) {
-        showSetPriceBottomSheet(response, position)
-    }
+    override fun onCategoryItemsSetPriceClick(position: Int, response: MasterCatalogItemResponse?) = showSetPriceBottomSheet(response, position)
 
     override fun onCategoryCheckBoxClick(position: Int, response: MasterCatalogItemResponse?, isChecked: Boolean) {
+        var currentCategoryCount = mSubCategoryLimitMap[mCategoryId]
         if (isChecked) {
             mSelectedProductsHashMap[response?.itemId] = response
             mSelectedProductsHashMap[response?.itemId]?.parentCategoryIdForRequest = mCategoryId
-        } else mSelectedProductsHashMap.remove(response?.itemId)
+            if (null != currentCategoryCount) mSubCategoryLimitMap[mCategoryId] = (++currentCategoryCount)
+        } else {
+            if (null != currentCategoryCount) mSubCategoryLimitMap[mCategoryId] = (--currentCategoryCount)
+            mSelectedProductsHashMap.remove(response?.itemId)
+        }
         if (mSelectedProductsHashMap.isNotEmpty()) {
             addProductTextView?.visibility = View.VISIBLE
-            val size = mSelectedProductsHashMap.size
-            addProductTextView?.text = if (size == 1) "${addProductStaticData?.text_add} 1 ${addProductStaticData?.text_product}" else "${addProductStaticData?.text_add} $size ${addProductStaticData?.text_products}"
+            refreshCountView()
             AppEventsManager.pushAppEvents(eventName = AFInAppEventType.EVENT_CATALOG_BUILDER_PRODUCT_SELECT, isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true, data = mapOf(
                     AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
                     AFInAppEventParameterName.CATEGORY_NAME to response?.itemName,
-                    AFInAppEventParameterName.PRODUCTS_ADDED to "$size"
+                    AFInAppEventParameterName.PRODUCTS_ADDED to "${mSelectedProductsHashMap.size}"
                 ))
-        } else {
-            addProductTextView?.visibility = View.GONE
-        }
+        } else addProductTextView?.visibility = View.GONE
+    }
+
+    private fun refreshCountView() {
+        val size = mSelectedProductsHashMap.size
+        addProductTextView?.text = if (1 == size) "${mStaticData?.text_add} 1 ${mStaticData?.text_product}" else "${mStaticData?.text_add} $size ${mStaticData?.text_products}"
     }
 
     private fun showSetPriceBottomSheet(response: MasterCatalogItemResponse?, position: Int) {
         mActivity?.let {
             val bottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
-            val view = LayoutInflater.from(mActivity).inflate(
-                R.layout.bottom_sheet_set_price,
-                it.findViewById(R.id.bottomSheetContainer)
-            )
+            val view = LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet_set_price, it.findViewById(R.id.bottomSheetContainer))
             bottomSheetDialog.apply {
                 setContentView(view)
                 setBottomSheetCommonProperty()
@@ -228,23 +238,22 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
                     val setPriceTextView: TextView = findViewById(R.id.setPriceTextView)
                     val priceEditText: EditText = findViewById(R.id.priceEditText)
                     bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
-                    bottomSheetHeadingTextView.text = addProductStaticData?.bottom_sheet_set_price_below
-                    imageView?.let {
-                        try {
-                            Glide.with(this@MasterCatalogFragment).load(response?.imageUrl).into(it)
-                        } catch (e: Exception) {
-                            Log.e("PICASSO", "picasso image loading issue: ${e.message}", e)
-                        }
-                    }
+                    bottomSheetHeadingTextView.text = mStaticData?.bottom_sheet_set_price_below
+                    Glide.with(this@MasterCatalogFragment).load(response?.imageUrl).into(imageView)
                     titleTextView.text = response?.itemName
-                    priceLayout.hint = addProductStaticData?.hint_price
-                    setPriceTextView.text = addProductStaticData?.bottom_sheet_set_price
+                    priceLayout.hint = mStaticData?.hint_price
+                    setPriceTextView.text = mStaticData?.bottom_sheet_set_price
                     setPriceTextView.setOnClickListener {
                         val price = priceEditText.text.toString()
-                        bottomSheetDialog.dismiss()
                         mCategoryItemsList?.get(position)?.isSelected = true
-                        mCategoryItemsList?.get(position)?.price = if (price.isEmpty()) 0.0 else price.toDouble()
-                        masterCatalogAdapter?.notifyItemChanged(position)
+                        mCategoryItemsList?.get(position)?.price = if (isEmpty(price)) 0.0 else price.toDouble()
+                        mSelectedProductsHashMap[response?.itemId] = mCategoryItemsList?.get(position)
+                        mSelectedProductsHashMap[response?.itemId]?.parentCategoryIdForRequest = mCategoryId
+                        var currentCategoryCount = mSubCategoryLimitMap[mCategoryId]
+                        if (null != currentCategoryCount) mSubCategoryLimitMap[mCategoryId] = (++currentCategoryCount)
+                        refreshCountView()
+                        bottomSheetDialog.dismiss()
+                        mMasterCatalogAdapter?.notifyItemChanged(position)
                     }
                 }
             }.show()
@@ -254,10 +263,7 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
     private fun showConfirmationBottomSheet() {
         mActivity?.let {
             val bottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
-            val view = LayoutInflater.from(mActivity).inflate(
-                R.layout.bottom_sheet_set_price_confirmation,
-                it.findViewById(R.id.bottomSheetContainer)
-            )
+            val view = LayoutInflater.from(mActivity).inflate(R.layout.bottom_sheet_set_price_confirmation, it.findViewById(R.id.bottomSheetContainer))
             bottomSheetDialog.apply {
                 setContentView(view)
                 setBottomSheetCommonProperty()
@@ -267,13 +273,13 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
                     val setPriceTextView: TextView = findViewById(R.id.setPriceTextView)
                     val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
                     bottomSheetClose.setOnClickListener { bottomSheetDialog.dismiss() }
-                    bottomSheetHeadingTextView.text = addProductStaticData?.bottom_sheet_confirm_selection
+                    bottomSheetHeadingTextView.text = mStaticData?.bottom_sheet_confirm_selection
                     val size = mSelectedProductsHashMap.size
-                    setPriceTextView.text = if (size == 1) "${addProductStaticData?.text_add} 1 ${addProductStaticData?.text_product}" else "${addProductStaticData?.text_add} $size ${addProductStaticData?.text_products}"
+                    setPriceTextView.text = if (1 == size) "${mStaticData?.text_add} 1 ${mStaticData?.text_product}" else "${mStaticData?.text_add} $size ${mStaticData?.text_products}"
                     val addMasterCatalogConfirmProductsList = ArrayList(mSelectedProductsHashMap.values)
                     recyclerView.apply {
                         layoutManager = LinearLayoutManager(mActivity)
-                        adapter = MasterCatalogItemsConfirmationAdapter(it, addProductStaticData, addMasterCatalogConfirmProductsList)
+                        adapter = MasterCatalogItemsConfirmationAdapter(it, mStaticData, addMasterCatalogConfirmProductsList)
                     }
                     setPriceTextView.setOnClickListener {
                         if (!isInternetConnectionAvailable(mActivity)) {
@@ -292,11 +298,11 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
         val newEmptyArrayList: ArrayList<MasterCatalogItemResponse> = ArrayList()
         mCategoryItemsList = newEmptyArrayList
         var position = 0
-        subCategoryItemList?.forEachIndexed { pos, itemResponse -> itemResponse.isSelected = false
+        mSubCategoryItemList?.forEachIndexed { pos, itemResponse -> itemResponse.isSelected = false
             if (response?.categoryId == itemResponse.categoryId) position = pos
         }
-        subCategoryItemList?.get(position)?.isSelected = true
-        subCategoryAdapter?.setSubCategoryList(subCategoryItemList)
+        mSubCategoryItemList?.get(position)?.isSelected = true
+        mSubCategoryAdapter?.setSubCategoryList(mSubCategoryItemList)
         subCategoryRecyclerView.scrollToPosition(position)
         showProgressDialog(mActivity)
         mPageCount = 1

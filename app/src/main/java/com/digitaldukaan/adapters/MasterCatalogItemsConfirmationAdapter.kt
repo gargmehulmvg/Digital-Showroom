@@ -13,14 +13,14 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.MainActivity
 import com.digitaldukaan.R
-import com.digitaldukaan.models.response.AddProductStaticText
+import com.digitaldukaan.models.response.ExploreCategoryStaticTextResponse
 import com.digitaldukaan.models.response.MasterCatalogItemResponse
 import com.google.android.material.textfield.TextInputLayout
 import com.squareup.picasso.Picasso
 
 class MasterCatalogItemsConfirmationAdapter(
     private val mActivity: MainActivity,
-    private var mStaticText: AddProductStaticText? = null,
+    private var mStaticText: ExploreCategoryStaticTextResponse? = null,
     private val addMasterCatalogConfirmProductsList: ArrayList<MasterCatalogItemResponse?>
 ) :
     RecyclerView.Adapter<MasterCatalogItemsConfirmationAdapter.MarketingCardViewHolder>() {
