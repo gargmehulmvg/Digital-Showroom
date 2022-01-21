@@ -50,7 +50,6 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
     private var mIsMoreItemsAvailable = false
     private var mCategoryItemsList: ArrayList<MasterCatalogItemResponse>? = ArrayList()
     private val mSelectedProductsHashMap: HashMap<Int?, MasterCatalogItemResponse?> = HashMap()
-    private var mCategorySelectedItems: Int = 0
     private var mSubCategoryLimit: Int = 0
     private var mSubCategoryLimitMap: HashMap<Int, Int> = HashMap()
 
@@ -168,7 +167,6 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
     }
 
     override fun onSubCategoryItemsResponse(response: CommonApiResponse) {
-        mCategorySelectedItems = 0
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             if (response.mIsSuccessStatus) {
@@ -181,9 +179,6 @@ class MasterCatalogFragment: BaseFragment(), IExploreCategoryServiceInterface, I
                     mSubCategoryLimitMap[mCategoryId] = categoryItems?.totalSelectedItems ?: 0
                 }
                 if (isNotEmpty(categoryItems?.itemList)) mCategoryItemsList?.addAll(categoryItems.itemList)
-                for (items in categoryItems?.itemList!!) {
-                    if (items.isAdded) ++mCategorySelectedItems
-                }
                 mMasterCatalogAdapter?.setMasterCatalogList(
                     mCategoryItemsList,
                     mSelectedProductsHashMap,
