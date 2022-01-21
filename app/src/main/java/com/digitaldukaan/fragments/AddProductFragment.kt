@@ -57,7 +57,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     private var mAddProductStaticData: AddProductStaticText? = null
     private var mItemId = 0
     private var mItemCategoryId = 0
-    private val mImagesStrList: ArrayList<AddProductImagesResponse> = ArrayList(MAXIMUM_IMAGE_SELECTION)
+    private val mImagesStrList: ArrayList<AddProductImagesResponse> = ArrayList()
     private var imagePickBottomSheet: BottomSheetDialog? = null
     private var mImageSearchAdapter = ImagesSearchAdapter()
     private var mImageChangePosition = 0
@@ -107,7 +107,6 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
 
         private var sIsVariantImageClicked = false
         private var sVariantImageClickedPosition = 0
-        private const val MAXIMUM_IMAGE_SELECTION = 4
 
         fun newInstance(itemId:Int, isAddNewProduct: Boolean): AddProductFragment {
             val fragment = AddProductFragment()
@@ -122,8 +121,8 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         mService = AddProductService()
         mService?.setServiceListener(this)
         AppEventsManager.pushAppEvents(eventName = AFInAppEventType.EVENT_ADD_ITEM, isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true, data = mapOf(
-                AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
-                AFInAppEventParameterName.IS_MERCHANT to "1"
+            AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID),
+            AFInAppEventParameterName.IS_MERCHANT to "1"
         ))
     }
 
@@ -776,11 +775,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     }
                     bottomSheetUploadImageGalleryTextView.setOnClickListener {
                         imagePickBottomSheet?.dismiss()
-                        if (isVariantImageClicked || ((MAXIMUM_IMAGE_SELECTION + 1) == mImagesStrList.size)) {
-                            openMobileGalleryWithCrop()
-                        } else {
-                            openMobileGalleryWithCropMultipleImages((MAXIMUM_IMAGE_SELECTION + 1) - mImagesStrList.size)
-                        }
+                        openMobileGalleryWithCrop()
                     }
                     bottomSheetUploadImageRemovePhotoTextView.setOnClickListener {
                         imagePickBottomSheet?.dismiss()
