@@ -306,7 +306,7 @@ class PaymentModesFragment: BaseFragment(), IPaymentModesServiceInterface,
                     }
                 }, object : IActiveOfferDetailsListener {
 
-                    override fun activeOfferDetailsListener(offerInfoMap: ArrayList<OfferInfoArray>?) {
+                    override fun onActiveOfferDetailsListener(offerInfoMap: ArrayList<OfferInfoArray>?) {
                         showActiveOffersBottomSheet(offerInfoMap?.get(0))
                     }
 

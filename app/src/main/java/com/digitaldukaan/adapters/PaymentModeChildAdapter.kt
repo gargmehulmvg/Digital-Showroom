@@ -32,7 +32,7 @@ class PaymentModeChildAdapter(
         val view = PaymentModeChildViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.layout_payment_mode_child_item, parent, false))
         view.activeOfferTextView.setOnClickListener {
             val item = mList?.get(view.absoluteAdapterPosition)
-            mListener?.activeOfferDetailsListener(item?.offerInfoList)
+            mListener?.onActiveOfferDetailsListener(item?.offerInfoList)
         }
         return view
     }
