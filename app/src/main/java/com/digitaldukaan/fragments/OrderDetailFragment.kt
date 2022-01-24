@@ -1085,7 +1085,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
     private fun askStoragePermission(): Boolean {
         mActivity?.run {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE), Constants.EXTERNAL_STORAGE_REQUEST_CODE)
+                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE), Constants.REQUEST_CODE_EXTERNAL_STORAGE)
                 return true
             }
         }
@@ -1094,7 +1094,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         Log.i(TAG, "onRequestPermissionResult")
-        if (Constants.EXTERNAL_STORAGE_REQUEST_CODE == requestCode) {
+        if (Constants.REQUEST_CODE_EXTERNAL_STORAGE == requestCode) {
             when {
                 grantResults.isEmpty() -> Log.i(TAG, "User interaction was cancelled.")
                 PackageManager.PERMISSION_GRANTED == grantResults[0] -> startDownloadBill(orderDetailMainResponse?.orders?.digitalReceipt)

@@ -445,7 +445,7 @@ class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInter
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         Log.i(TAG, "onRequestPermissionResult")
-        if (requestCode == Constants.STORAGE_REQUEST_CODE) {
+        if (requestCode == Constants.REQUEST_CODE_STORAGE) {
             when {
                 grantResults.isEmpty() -> Log.d(TAG, "User interaction was cancelled.")
                 grantResults[0] == PackageManager.PERMISSION_GRANTED -> shareCouponsWithImage(mShareText, mShareCdn)

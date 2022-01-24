@@ -20,9 +20,10 @@ class Constants {
         const val IMAGE_PICK_REQUEST_CODE                       = 1002
         const val CONTACT_REQUEST_CODE                          = 1003
         const val CROP_IMAGE_REQUEST_CODE                       = 1004
-        const val EXTERNAL_STORAGE_REQUEST_CODE                 = 1005
-        const val STORAGE_REQUEST_CODE                          = 1006
-        const val EMAIL_REQUEST_CODE                            = 1007
+        const val REQUEST_CODE_EXTERNAL_STORAGE                 = 1005
+        const val REQUEST_CODE_STORAGE                          = 1006
+        const val REQUEST_CODE_EMAIL                            = 1007
+        const val REQUEST_CODE_MULTI_IMAGE                      = 1008
         //ERROR_CODE
         const val ERROR_CODE_UN_AUTHORIZED_ACCESS               = 401
         const val ERROR_CODE_FORBIDDEN_ACCESS                   = 403

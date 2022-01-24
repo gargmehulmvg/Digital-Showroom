@@ -353,7 +353,7 @@ class SocialMediaFragment : BaseFragment(), ISocialMediaServiceInterface, IOnToo
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         Log.i(TAG, "onRequestPermissionResult")
-        if (Constants.STORAGE_REQUEST_CODE == requestCode) {
+        if (Constants.REQUEST_CODE_STORAGE == requestCode) {
             when {
                 grantResults.isEmpty() -> Log.d(TAG, "User interaction was cancelled.")
                 PackageManager.PERMISSION_GRANTED == grantResults[0] -> {

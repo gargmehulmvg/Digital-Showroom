@@ -13,7 +13,6 @@ import android.graphics.drawable.Drawable
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
-import android.media.Image
 import android.net.Uri
 import android.os.*
 import android.provider.MediaStore
@@ -79,7 +78,6 @@ import java.io.IOException
 import java.net.UnknownHostException
 import java.util.*
 import kotlin.collections.ArrayList
-import android.content.Intent
 
 
 
@@ -100,8 +98,8 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     private var mCurrentLongitude = 0.0
     private var mMultiUserAdapter: StaffInvitationAdapter? = null
     private var webConsoleBottomSheetDialog: BottomSheetDialog? = null
-    private val mMultiImageBitmapArray: ArrayList<Bitmap> = ArrayList()
-    private var mIsMultiImageCompressionLoaderShowing: Boolean = false
+    private val bitmapArr: ArrayList<Bitmap> = ArrayList()
+    private var loader: Boolean = false
 
     companion object {
         private var sStaffInvitationDialog: Dialog? = null
@@ -143,7 +141,9 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     }
 
     protected fun showCancellableProgressDialog(context: Context?) {
-        if (mIsMultiImageCompressionLoaderShowing) return
+        if(loader){
+            return
+        }
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             context?.let { context ->
                 try {
@@ -416,7 +416,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         if (null != imageBitmap) {
             mActivity?.let {
                 if (ActivityCompat.checkSelfPermission(it, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(it, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE), Constants.STORAGE_REQUEST_CODE)
+                    ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE), Constants.REQUEST_CODE_STORAGE)
                     return
                 }
             }
@@ -485,7 +485,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     open fun shareData(sharingData: String?, image: Bitmap?) {
         if (null == image) {
             mActivity?.let {
-                if (ActivityCompat.checkSelfPermission(it, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(it, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) { ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE), Constants.STORAGE_REQUEST_CODE)
+                if (ActivityCompat.checkSelfPermission(it, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(it, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) { ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE), Constants.REQUEST_CODE_STORAGE)
                     return
                 }
             }
@@ -784,8 +784,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         }
     }
 
-    private var cameraGalleryWithCropIntentResult =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+    private var cameraGalleryWithCropIntentResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             Log.d(TAG, "onActivityResult: ")
             if (result.resultCode == Activity.RESULT_OK) {
                 CoroutineScopeUtils().runTaskOnCoroutineMain {
@@ -871,7 +870,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         }
     }
 
-    private fun startCropping(bitmap: Bitmap?) {
+    open fun startCropping(bitmap: Bitmap?) {
         try {
             mActivity?.let {
                 val originalImgFile = File(it.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "${System.currentTimeMillis()}_originalImgFile.jpg")
@@ -888,24 +887,6 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         }
     }
 
-    /*private val launcher = registerImagePicker { images ->
-        bitmapArr.clear()
-        for(it in images){
-            val bitmapImage = getBitmapFromUri(it.uri, context)
-            if (bitmapImage != null) {
-                bitmapArr.add(bitmapImage)
-            }
-        }
-        if(bitmapArr.isNotEmpty()){
-            CoroutineScopeUtils().runTaskOnCoroutineMain {
-                showCancellableProgressDialog(context)
-                loader=true
-                compressMultipleImages(bitmapArr)
-            }
-        }
-        loader=false
-    }*/
-
     open fun openMobileGalleryWithCropMultipleImages(quantity: Int) {
         ImagePicker.create(mActivity)
             .folderMode(true)
@@ -915,16 +896,18 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
             .limit(quantity)
             .showCamera(false)
             .imageDirectory("Camera")
-            .start(Constants.STORAGE_REQUEST_CODE)
+            .start(Constants.REQUEST_CODE_MULTI_IMAGE)
     }
 
-    private suspend fun compressMultipleImages(imagesArray: ArrayList<Bitmap>?){
-        if (null != imagesArray) {
-            for (image in imagesArray){
+    private suspend fun compressMultipleImages(arr: ArrayList<Bitmap>?) {
+        if (arr != null) {
+            for (image in arr) {
                 var file = getImageFileFromBitmap(image, mActivity)
                 file?.let {
                     Log.d(TAG, "ORIGINAL :: ${it.length() / (1024)} KB")
-                    mActivity?.run { file = Compressor.compress(this, it) { quality(if (false == StaticInstances.sPermissionHashMap?.get(Constants.PREMIUM_USER)) (mActivity?.resources?.getInteger(R.integer.premium_compression_value) ?: 80) else 100) } }
+                    mActivity?.run {
+                        file = Compressor.compress(this, it) { quality(if (false == StaticInstances.sPermissionHashMap?.get(Constants.PREMIUM_USER)) (mActivity?.resources?.getInteger(R.integer.premium_compression_value) ?: 80) else 100) }
+                    }
                     Log.d(TAG, "COMPRESSED :: ${it.length() / (1024)} KB")
                     if (it.length() / (1024 * 1024) >= mActivity?.resources?.getInteger(R.integer.image_mb_size) ?: 0) {
                         showToast("Images more than ${mActivity?.resources?.getInteger(R.integer.image_mb_size)} are not allowed")
@@ -932,14 +915,25 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                     }
                 }
             }
-            cropMultipleImages(imagesArray)
+            cropMultipleImages(arr, true)
         }
     }
 
-    private fun cropMultipleImages(multiImageArrayList: ArrayList<Bitmap>?) {
-        if (isNotEmpty(multiImageArrayList)) {
-            for (image in multiImageArrayList!!){
-                startCropping(image)
+    private fun cropMultipleImages(it: ArrayList<Bitmap>?, isCropAllowed: Boolean) {
+        if (null != it) {
+            for (image in it) {
+                getImageFileFromBitmap(image, mActivity)?.let { f ->
+                    val fileUri = image.getImageUri(mActivity)
+                    if (isCropAllowed) {
+                        startCropping(image)
+                        stopProgress()
+                    } else {
+                        stopProgress()
+                        onImageSelectionResultUri(fileUri)
+                        onImageSelectionResultFile(f)
+                    }
+                }
+                stopProgress()
             }
         }
         stopProgress()
