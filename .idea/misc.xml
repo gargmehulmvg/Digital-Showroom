@@ -13,6 +13,7 @@
         <entry key="app/src/main/res/drawable/curve_green_dotted_border_green_background.xml" value="0.36875" />
         <entry key="app/src/main/res/drawable/curve_grey_background.xml" value="0.31851851851851853" />
         <entry key="app/src/main/res/drawable/curve_grey_border.xml" value="0.36875" />
+        <entry key="app/src/main/res/drawable/curve_grey_dotted_border.xml" value="0.2326388888888889" />
         <entry key="app/src/main/res/drawable/curve_light_green_background.xml" value="0.31851851851851853" />
         <entry key="app/src/main/res/drawable/curve_light_red_background.xml" value="0.23061889250814332" />
         <entry key="app/src/main/res/drawable/curve_light_yellow_background.xml" value="0.23061889250814332" />
@@ -22,6 +23,7 @@
         <entry key="app/src/main/res/drawable/curve_white_background2.xml" value="0.24013157894736842" />
         <entry key="app/src/main/res/drawable/curve_white_selector.xml" value="0.24111842105263157" />
         <entry key="app/src/main/res/drawable/custom_green_horizontal_progress_bar.xml" value="0.36875" />
+        <entry key="app/src/main/res/drawable/ic_bullet.xml" value="0.11486486486486487" />
         <entry key="app/src/main/res/drawable/ic_camera_plus.xml" value="0.24013157894736842" />
         <entry key="app/src/main/res/drawable/ic_favourite.xml" value="0.36875" />
         <entry key="app/src/main/res/drawable/ic_half_arrow_forward_small_green.xml" value="0.24662162162162163" />
@@ -140,6 +142,7 @@
         <entry key="app/src/main/res/layout/layout_master_catelog_fragment.xml" value="0.23614864864864865" />
         <entry key="app/src/main/res/layout/layout_more_control_fragment.xml" value="0.25" />
         <entry key="app/src/main/res/layout/layout_more_control_fragment_v2.xml" value="0.23614864864864865" />
+        <entry key="app/src/main/res/layout/layout_multi_image_selection.xml" value="0.23614864864864865" />
         <entry key="app/src/main/res/layout/layout_on_board_help_screen.xml" value="0.3020833333333333" />
         <entry key="app/src/main/res/layout/layout_on_board_screen_dukaan_fragment.xml" value="0.35260416666666666" />
         <entry key="app/src/main/res/layout/layout_order_detail_fragment.xml" value="0.25" />
@@ -160,6 +163,7 @@
         <entry key="app/src/main/res/layout/marketing_card_item.xml" value="0.25" />
         <entry key="app/src/main/res/layout/marketing_know_more_item.xml" value="0.25" />
         <entry key="app/src/main/res/layout/more_controls_item.xml" value="0.23614864864864865" />
+        <entry key="app/src/main/res/layout/multi_image_selection_item.xml" value="0.23614864864864865" />
         <entry key="app/src/main/res/layout/multi_user_selection_dialog.xml" value="0.25" />
         <entry key="app/src/main/res/layout/multi_user_selection_item.xml" value="0.22269736842105264" />
         <entry key="app/src/main/res/layout/new_release_item.xml" value="0.375" />

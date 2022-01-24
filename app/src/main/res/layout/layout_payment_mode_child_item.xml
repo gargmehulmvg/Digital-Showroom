@@ -60,10 +60,11 @@
         android:textColor="@color/card_offer_text_color"
         android:textSize="@dimen/_8sdp"
         android:visibility="visible"
-        app:drawableRightCompat="@drawable/ic_half_arrow_forward_small_green"
+        app:drawableRightCompat="@drawable/ic_half_arrow_forward_small_black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@id/upiTxnChargeTextView"
         app:layout_constraintTop_toBottomOf="@id/upiTxnChargeTextView"
-        tools:text="Bank of Baroda credit card offer active" />
+        tools:text="Bank of Baroda credit card offer active"
+        app:drawableTint="@color/card_offer_text_color" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

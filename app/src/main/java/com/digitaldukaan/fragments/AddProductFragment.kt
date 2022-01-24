@@ -775,7 +775,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     }
                     bottomSheetUploadImageGalleryTextView.setOnClickListener {
                         imagePickBottomSheet?.dismiss()
-                        openMobileGalleryWithCrop()
+                        if (isVariantImageClicked) openMobileGalleryWithCrop() else openMultiImageSelectionFragment()
                     }
                     bottomSheetUploadImageRemovePhotoTextView.setOnClickListener {
                         imagePickBottomSheet?.dismiss()
@@ -831,6 +831,8 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             }?.show()
         }
     }
+
+    private fun openMultiImageSelectionFragment() = launchFragment(MultiImageSelectionFragment.newInstance(4), true)
 
     override fun onResume() {
         super.onResume()
