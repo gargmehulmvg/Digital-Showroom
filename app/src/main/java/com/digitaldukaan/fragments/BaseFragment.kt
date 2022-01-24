@@ -893,46 +893,6 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
             .start(Constants.REQUEST_CODE_MULTI_IMAGE)
     }
 
-    private suspend fun compressMultipleImages(arr: ArrayList<Bitmap>?) {
-        if (arr != null) {
-            for (image in arr) {
-                var file = getImageFileFromBitmap(image, mActivity)
-                file?.let {
-                    Log.d(TAG, "ORIGINAL :: ${it.length() / (1024)} KB")
-                    mActivity?.run {
-                        file = Compressor.compress(this, it) { quality(if (false == StaticInstances.sPermissionHashMap?.get(Constants.PREMIUM_USER)) (mActivity?.resources?.getInteger(R.integer.premium_compression_value) ?: 80) else 100) }
-                    }
-                    Log.d(TAG, "COMPRESSED :: ${it.length() / (1024)} KB")
-                    if (it.length() / (1024 * 1024) >= mActivity?.resources?.getInteger(R.integer.image_mb_size) ?: 0) {
-                        showToast("Images more than ${mActivity?.resources?.getInteger(R.integer.image_mb_size)} are not allowed")
-                        return@let
-                    }
-                }
-            }
-            cropMultipleImages(arr, true)
-        }
-    }
-
-    private fun cropMultipleImages(it: ArrayList<Bitmap>?, isCropAllowed: Boolean) {
-        if (null != it) {
-            for (image in it) {
-                getImageFileFromBitmap(image, mActivity)?.let { f ->
-                    val fileUri = image.getImageUri(mActivity)
-                    if (isCropAllowed) {
-                        startCropping(image)
-                        stopProgress()
-                    } else {
-                        stopProgress()
-                        onImageSelectionResultUri(fileUri)
-                        onImageSelectionResultFile(f)
-                    }
-                }
-                stopProgress()
-            }
-        }
-        stopProgress()
-    }
-
     private fun convertBitmapToFile(destinationFile: File, bitmap: Bitmap) {
         try {//create a file to write bitmap data
             destinationFile.createNewFile()
@@ -979,9 +939,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                             var file = getImageFileFromBitmap(it, mActivity)
                             file?.let { f ->
                                 Log.d(TAG, "ORIGINAL :: ${f.length() / (1024)} KB")
-                                mActivity?.let { context ->
-                                    file = Compressor.compress(context, f) {
-                                        quality(if (false == StaticInstances.sPermissionHashMap?.get(Constants.PREMIUM_USER)) (mActivity?.resources?.getInteger(R.integer.premium_compression_value) ?: 80) else 100) } }
+                                mActivity?.let { context -> file = Compressor.compress(context, f) { quality(if (false == StaticInstances.sPermissionHashMap?.get(Constants.PREMIUM_USER)) (mActivity?.resources?.getInteger(R.integer.premium_compression_value) ?: 80) else 100) } }
                                 Log.d(TAG, "COMPRESSED :: ${f.length() / (1024)} KB")
                                 if (f.length() / (1024 * 1024) >= mActivity?.resources?.getInteger(R.integer.image_mb_size) ?: 0) {
                                     showToast("Images more than ${mActivity?.resources?.getInteger(R.integer.image_mb_size)} are not allowed")
