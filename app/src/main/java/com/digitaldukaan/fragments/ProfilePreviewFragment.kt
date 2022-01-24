@@ -413,7 +413,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                 val account = GoogleSignIn.getLastSignedInAccount(context)
                 if (null == account) {
                     val signInIntent: Intent = googleSignInClient.signInIntent
-                    startActivityForResult(signInIntent, Constants.EMAIL_REQUEST_CODE)
+                    startActivityForResult(signInIntent, Constants.REQUEST_CODE_EMAIL)
                 } else {
                     updateUserAccountInfo(account, isServerCall)
                     Log.d(TAG, "showUserEmailDialog: $account")
@@ -816,7 +816,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
                     onImageSelectionResultFile(file, "")
                 }
             }
-            Constants.EMAIL_REQUEST_CODE -> {
+            Constants.REQUEST_CODE_EMAIL -> {
                 val task = GoogleSignIn.getSignedInAccountFromIntent(data)
                 handleSignInResult(task)
             }
