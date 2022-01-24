@@ -112,6 +112,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
 
         private var sIsVariantImageClicked = false
         private var sVariantImageClickedPosition = 0
+        private const val MAXIMUM_IMAGE_SELECTION = 5
 
         fun newInstance(itemId:Int, isAddNewProduct: Boolean): AddProductFragment {
             val fragment = AddProductFragment()
@@ -780,7 +781,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     }
                     bottomSheetUploadImageGalleryTextView.setOnClickListener {
                         imagePickBottomSheet?.dismiss()
-                        if (isVariantImageClicked || 5 == (mImagesStrList.size)) openMobileGalleryWithCrop() else openMobileGalleryWithCropMultipleImages(quantity = (5 - mImagesStrList.size))
+                        if (isVariantImageClicked || MAXIMUM_IMAGE_SELECTION == (mImagesStrList.size)) openMobileGalleryWithCrop() else openMobileGalleryWithCropMultipleImages(quantity = (MAXIMUM_IMAGE_SELECTION - mImagesStrList.size))
                     }
                     bottomSheetUploadImageRemovePhotoTextView.setOnClickListener {
                         imagePickBottomSheet?.dismiss()
