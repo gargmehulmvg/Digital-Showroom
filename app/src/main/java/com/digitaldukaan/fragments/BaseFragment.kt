@@ -100,8 +100,8 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     private var mCurrentLongitude = 0.0
     private var mMultiUserAdapter: StaffInvitationAdapter? = null
     private var webConsoleBottomSheetDialog: BottomSheetDialog? = null
-    private val bitmapArr: ArrayList<Bitmap> = ArrayList()
-    private var loader: Boolean = false
+    private val mMultiImageBitmapArray: ArrayList<Bitmap> = ArrayList()
+    private var mIsMultiImageCompressionLoaderShowing: Boolean = false
 
     companion object {
         private var sStaffInvitationDialog: Dialog? = null
@@ -143,9 +143,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     }
 
     protected fun showCancellableProgressDialog(context: Context?) {
-        if(loader){
-            return
-        }
+        if (mIsMultiImageCompressionLoaderShowing) return
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             context?.let { context ->
                 try {
@@ -920,15 +918,13 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
             .start(Constants.STORAGE_REQUEST_CODE)
     }
 
-    private suspend fun compressMultipleImages(arr: ArrayList<Bitmap>?){
-        if (arr != null) {
-            for (image in arr){
+    private suspend fun compressMultipleImages(imagesArray: ArrayList<Bitmap>?){
+        if (null != imagesArray) {
+            for (image in imagesArray){
                 var file = getImageFileFromBitmap(image, mActivity)
                 file?.let {
                     Log.d(TAG, "ORIGINAL :: ${it.length() / (1024)} KB")
-                    mActivity?.run {
-                        file = Compressor.compress(this, it) { quality(if (false == StaticInstances.sPermissionHashMap?.get(Constants.PREMIUM_USER)) (mActivity?.resources?.getInteger(R.integer.premium_compression_value) ?: 80) else 100) }
-                    }
+                    mActivity?.run { file = Compressor.compress(this, it) { quality(if (false == StaticInstances.sPermissionHashMap?.get(Constants.PREMIUM_USER)) (mActivity?.resources?.getInteger(R.integer.premium_compression_value) ?: 80) else 100) } }
                     Log.d(TAG, "COMPRESSED :: ${it.length() / (1024)} KB")
                     if (it.length() / (1024 * 1024) >= mActivity?.resources?.getInteger(R.integer.image_mb_size) ?: 0) {
                         showToast("Images more than ${mActivity?.resources?.getInteger(R.integer.image_mb_size)} are not allowed")
@@ -936,26 +932,14 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                     }
                 }
             }
-            cropMultipleImages(arr, true)
+            cropMultipleImages(imagesArray)
         }
     }
 
-    private fun cropMultipleImages(it: ArrayList<Bitmap>?, isCropAllowed: Boolean) {
-        if (it != null) {
-            for (image in it){
-                var file = getImageFileFromBitmap(image, mActivity)
-                file?.let {
-                    val fileUri = image.getImageUri(mActivity)
-                    if (isCropAllowed) {
-                        startCropping(image)
-                        stopProgress()
-                    } else {
-                        stopProgress()
-                        onImageSelectionResultUri(fileUri)
-                        onImageSelectionResultFile(file)
-                    }
-                }
-                stopProgress()
+    private fun cropMultipleImages(multiImageArrayList: ArrayList<Bitmap>?) {
+        if (isNotEmpty(multiImageArrayList)) {
+            for (image in multiImageArrayList!!){
+                startCropping(image)
             }
         }
         stopProgress()

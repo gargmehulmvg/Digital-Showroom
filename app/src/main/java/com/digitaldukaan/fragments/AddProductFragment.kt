@@ -777,7 +777,11 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     }
                     bottomSheetUploadImageGalleryTextView.setOnClickListener {
                         imagePickBottomSheet?.dismiss()
-                        if (isVariantImageClicked) openMobileGalleryWithCrop() else openMobileGalleryWithCropMultipleImages(4)
+                        if(isVariantImageClicked || 5 == mImagesStrList.size){
+                            openMobileGalleryWithCrop()
+                        }else{
+                            openMobileGalleryWithCropMultipleImages(5-mImagesStrList.size)
+                        }
                     }
                     bottomSheetUploadImageRemovePhotoTextView.setOnClickListener {
                         imagePickBottomSheet?.dismiss()
