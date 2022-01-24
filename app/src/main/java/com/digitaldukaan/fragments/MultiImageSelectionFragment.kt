@@ -3,6 +3,7 @@ package com.digitaldukaan.fragments
 import android.Manifest
 import android.content.pm.PackageManager
 import android.database.Cursor
+import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
@@ -18,6 +19,7 @@ import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.constants.ToolBarManager
 import com.digitaldukaan.interfaces.IOnToolbarIconClick
+import com.digitaldukaan.models.dto.ImageFolder
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import kotlinx.android.synthetic.main.layout_multi_image_selection.*
 
@@ -56,17 +58,17 @@ class MultiImageSelectionFragment: BaseFragment(), IOnToolbarIconClick {
                 return
             }
         }
-        val list = fetchGalleryImages()
+        val list = getPicturePaths()
         Log.d(TAG, "fetchGalleryImages: ${list.size}")
         setupRecyclerView(list)
     }
 
-    private fun setupRecyclerView(imagesList: ArrayList<String>) {
+    private fun setupRecyclerView(imagesList: ArrayList<ImageFolder>) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             imagesRecyclerView?.apply {
                 Log.d(TAG, "setupRecyclerView: imagesList :: \n\n$imagesList")
                 layoutManager = GridLayoutManager(mActivity, 3)
-                adapter = MultiImageSelectionAdapter(imagesList)
+                adapter = MultiImageSelectionAdapter(imagesList, mActivity)
             }
         }
     }
@@ -77,30 +79,53 @@ class MultiImageSelectionFragment: BaseFragment(), IOnToolbarIconClick {
         }
     }
 
-    private fun fetchGalleryImages(): ArrayList<String> {
+    private fun getPicturePaths(): ArrayList<ImageFolder> {
+        val picFolders: ArrayList<ImageFolder> = ArrayList()
+        val picPaths: ArrayList<String> = ArrayList()
+        val allImagesUri: Uri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+        val projection = arrayOf(
+            MediaStore.Images.ImageColumns.DATA, MediaStore.Images.Media.DISPLAY_NAME,
+            MediaStore.Images.Media.BUCKET_DISPLAY_NAME, MediaStore.Images.Media.BUCKET_ID
+        )
+        val cursor: Cursor? = mActivity?.contentResolver?.query(allImagesUri, projection, null, null, null)
         try {
-            mActivity?.let { context ->
-                val columns = arrayOf(
-                    MediaStore.Images.Media.DATA,
-                    MediaStore.Images.Media._ID
-                )
-                val orderBy = MediaStore.Images.Media.DATE_TAKEN
-                val imageCursor: Cursor = context.managedQuery(
-                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI, columns, null,
-                    null, "$orderBy DESC"
-                )
-                val galleryImageUrls: ArrayList<String> = ArrayList()
-                for (i in 0 until imageCursor.count) {
-                    imageCursor.moveToPosition(i)
-                    val dataColumnIndex: Int = imageCursor.getColumnIndex(MediaStore.Images.Media.DATA) //get column index
-                    galleryImageUrls.add(imageCursor.getString(dataColumnIndex)) //get Image from column index
+            cursor?.moveToFirst()
+            do {
+                val folds = ImageFolder()
+                val name = cursor?.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DISPLAY_NAME))
+                val folder = cursor?.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.BUCKET_DISPLAY_NAME))
+                val dataPath = cursor?.getString(cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA))
+                var folderpaths = dataPath?.substring(0, dataPath.lastIndexOf("$folder/"))
+                folderpaths = "$folderpaths$folder/"
+                if (!picPaths.contains(folderpaths)) {
+                    picPaths.add(folderpaths)
+                    folds.path = folderpaths
+                    folds.folderName = folder
+                    folds.firstPic = dataPath
+                    folds.addpics()
+                    picFolders.add(folds)
+                } else {
+                    for (i in 0 until picFolders.size) {
+                        if (picFolders[i].path.equals(folderpaths)) {
+                            picFolders[i].firstPic = dataPath
+                            picFolders[i].addpics()
+                        }
+                    }
                 }
-                return galleryImageUrls
-            }
-            return ArrayList()
+            } while (true == cursor?.moveToNext())
+            cursor?.close()
         } catch (e: Exception) {
-            return ArrayList()
+            e.printStackTrace()
         }
+        for (i in 0 until picFolders.size) {
+            Log.d(TAG, picFolders[i].folderName.toString() + " and path = " + picFolders[i].path + " " + picFolders[i].numberOfPics)
+        }
+        //reverse order ArrayList
+        /* ArrayList<imageFolder> reverseFolders = new ArrayList<>();
+        for(int i = picFolders.size()-1;i > reverseFolders.size()-1;i--){
+            reverseFolders.add(picFolders.get(i));
+        }*/
+        return picFolders
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
@@ -109,7 +134,7 @@ class MultiImageSelectionFragment: BaseFragment(), IOnToolbarIconClick {
             when {
                 grantResults.isEmpty() -> Log.i(ProfilePreviewFragment::class.simpleName, "User interaction was cancelled.")
                 PackageManager.PERMISSION_GRANTED == grantResults[0] -> {
-                    val list = fetchGalleryImages()
+                    val list = getPicturePaths()
                     Log.d(TAG, "fetchGalleryImages: ${list.size}")
                     setupRecyclerView(list)
                 }
