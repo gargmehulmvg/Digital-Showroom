@@ -31,6 +31,7 @@ import com.digitaldukaan.services.AddProductService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IAddProductServiceInterface
 import com.esafirm.imagepicker.features.ImagePicker
+import com.esafirm.imagepicker.model.Image
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textfield.TextInputLayout
@@ -776,7 +777,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     }
                     bottomSheetUploadImageGalleryTextView.setOnClickListener {
                         imagePickBottomSheet?.dismiss()
-                        if (isVariantImageClicked) openMobileGalleryWithCrop() else openMultiImageSelectionFragment()
+                        if (isVariantImageClicked) openMobileGalleryWithCrop() else openMobileGalleryWithCropMultipleImages(4)
                     }
                     bottomSheetUploadImageRemovePhotoTextView.setOnClickListener {
                         imagePickBottomSheet?.dismiss()
@@ -831,18 +832,6 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 }
             }?.show()
         }
-    }
-
-    private fun openMultiImageSelectionFragment() {
-        ImagePicker.create(mActivity)
-            .folderMode(true)
-            .single()
-            .multi()
-            .includeVideo(false)
-            .limit(4)
-            .showCamera(false)
-            .imageDirectory("Camera")
-            .start(Constants.STORAGE_REQUEST_CODE)
     }
 
     override fun onResume() {

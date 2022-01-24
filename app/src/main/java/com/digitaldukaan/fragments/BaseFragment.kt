@@ -13,6 +13,7 @@ import android.graphics.drawable.Drawable
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
+import android.media.Image
 import android.net.Uri
 import android.os.*
 import android.provider.MediaStore
@@ -54,6 +55,7 @@ import com.digitaldukaan.models.request.UpdateInvitationRequest
 import com.digitaldukaan.models.request.UpdatePaymentMethodRequest
 import com.digitaldukaan.models.response.*
 import com.digitaldukaan.network.RetrofitApi
+import com.esafirm.imagepicker.features.ImagePicker
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -77,6 +79,9 @@ import java.io.IOException
 import java.net.UnknownHostException
 import java.util.*
 import kotlin.collections.ArrayList
+import android.content.Intent
+
+
 
 
 open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener {
@@ -95,6 +100,8 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     private var mCurrentLongitude = 0.0
     private var mMultiUserAdapter: StaffInvitationAdapter? = null
     private var webConsoleBottomSheetDialog: BottomSheetDialog? = null
+    private val bitmapArr: ArrayList<Bitmap> = ArrayList()
+    private var loader: Boolean = false
 
     companion object {
         private var sStaffInvitationDialog: Dialog? = null
@@ -136,6 +143,9 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     }
 
     protected fun showCancellableProgressDialog(context: Context?) {
+        if(loader){
+            return
+        }
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             context?.let { context ->
                 try {
@@ -878,6 +888,77 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         } catch (e: Exception) {
             Log.e(TAG, "startCropping: ${e.message}", e)
         }
+    }
+
+    /*private val launcher = registerImagePicker { images ->
+        bitmapArr.clear()
+        for(it in images){
+            val bitmapImage = getBitmapFromUri(it.uri, context)
+            if (bitmapImage != null) {
+                bitmapArr.add(bitmapImage)
+            }
+        }
+        if(bitmapArr.isNotEmpty()){
+            CoroutineScopeUtils().runTaskOnCoroutineMain {
+                showCancellableProgressDialog(context)
+                loader=true
+                compressMultipleImages(bitmapArr)
+            }
+        }
+        loader=false
+    }*/
+
+    open fun openMobileGalleryWithCropMultipleImages(quantity: Int) {
+        ImagePicker.create(mActivity)
+            .folderMode(true)
+            .single()
+            .multi()
+            .includeVideo(false)
+            .limit(quantity)
+            .showCamera(false)
+            .imageDirectory("Camera")
+            .start(Constants.STORAGE_REQUEST_CODE)
+    }
+
+    private suspend fun compressMultipleImages(arr: ArrayList<Bitmap>?){
+        if (arr != null) {
+            for (image in arr){
+                var file = getImageFileFromBitmap(image, mActivity)
+                file?.let {
+                    Log.d(TAG, "ORIGINAL :: ${it.length() / (1024)} KB")
+                    mActivity?.run {
+                        file = Compressor.compress(this, it) { quality(if (false == StaticInstances.sPermissionHashMap?.get(Constants.PREMIUM_USER)) (mActivity?.resources?.getInteger(R.integer.premium_compression_value) ?: 80) else 100) }
+                    }
+                    Log.d(TAG, "COMPRESSED :: ${it.length() / (1024)} KB")
+                    if (it.length() / (1024 * 1024) >= mActivity?.resources?.getInteger(R.integer.image_mb_size) ?: 0) {
+                        showToast("Images more than ${mActivity?.resources?.getInteger(R.integer.image_mb_size)} are not allowed")
+                        return@let
+                    }
+                }
+            }
+            cropMultipleImages(arr, true)
+        }
+    }
+
+    private fun cropMultipleImages(it: ArrayList<Bitmap>?, isCropAllowed: Boolean) {
+        if (it != null) {
+            for (image in it){
+                var file = getImageFileFromBitmap(image, mActivity)
+                file?.let {
+                    val fileUri = image.getImageUri(mActivity)
+                    if (isCropAllowed) {
+                        startCropping(image)
+                        stopProgress()
+                    } else {
+                        stopProgress()
+                        onImageSelectionResultUri(fileUri)
+                        onImageSelectionResultFile(file)
+                    }
+                }
+                stopProgress()
+            }
+        }
+        stopProgress()
     }
 
     private fun convertBitmapToFile(destinationFile: File, bitmap: Bitmap) {
