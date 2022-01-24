@@ -30,6 +30,7 @@ import com.digitaldukaan.network.RetrofitApi
 import com.digitaldukaan.services.AddProductService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IAddProductServiceInterface
+import com.esafirm.imagepicker.features.ImagePicker
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textfield.TextInputLayout
@@ -832,7 +833,17 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         }
     }
 
-    private fun openMultiImageSelectionFragment() = launchFragment(MultiImageSelectionFragment.newInstance(4), true)
+    private fun openMultiImageSelectionFragment() {
+        ImagePicker.create(mActivity)
+            .folderMode(true)
+            .single()
+            .multi()
+            .includeVideo(false)
+            .limit(4)
+            .showCamera(false)
+            .imageDirectory("Camera")
+            .start(Constants.STORAGE_REQUEST_CODE)
+    }
 
     override fun onResume() {
         super.onResume()
