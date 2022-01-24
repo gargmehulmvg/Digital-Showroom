@@ -79,9 +79,6 @@ import java.net.UnknownHostException
 import java.util.*
 import kotlin.collections.ArrayList
 
-
-
-
 open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener {
 
     protected var mContentView: View? = null
@@ -98,8 +95,6 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     private var mCurrentLongitude = 0.0
     private var mMultiUserAdapter: StaffInvitationAdapter? = null
     private var webConsoleBottomSheetDialog: BottomSheetDialog? = null
-    private val bitmapArr: ArrayList<Bitmap> = ArrayList()
-    private var loader: Boolean = false
 
     companion object {
         private var sStaffInvitationDialog: Dialog? = null
@@ -121,6 +116,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             context?.let { context ->
                 try {
+                    if (null != mProgressDialog && true == mProgressDialog?.isShowing) return@runTaskOnCoroutineMain
                     mProgressDialog = Dialog(context)
                     mProgressDialog?.apply {
                         val view = LayoutInflater.from(context).inflate(R.layout.progress_dialog, null)
@@ -141,12 +137,10 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     }
 
     protected fun showCancellableProgressDialog(context: Context?) {
-        if(loader){
-            return
-        }
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             context?.let { context ->
                 try {
+                    if (null != mProgressDialog && true == mProgressDialog?.isShowing) return@runTaskOnCoroutineMain
                     mProgressDialog = Dialog(context)
                     val inflate = LayoutInflater.from(context).inflate(R.layout.progress_dialog, null)
                     val view: View = inflate.findViewById(R.id.container)
@@ -888,7 +882,6 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     }
 
     open fun openMobileGalleryWithCropMultipleImages(quantity: Int) {
-        loader=true
         ImagePicker.create(mActivity)
             .folderMode(true)
             .single()
@@ -938,7 +931,6 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
             }
         }
         stopProgress()
-        loader=false
     }
 
     private fun convertBitmapToFile(destinationFile: File, bitmap: Bitmap) {

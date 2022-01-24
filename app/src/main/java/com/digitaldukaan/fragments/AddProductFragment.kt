@@ -780,7 +780,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     }
                     bottomSheetUploadImageGalleryTextView.setOnClickListener {
                         imagePickBottomSheet?.dismiss()
-                        if (isVariantImageClicked || 5 == (mImagesStrList.size)) openMobileGalleryWithCrop() else openMobileGalleryWithCropMultipleImages(quantity = (5-mImagesStrList.size))
+                        if (isVariantImageClicked || 5 == (mImagesStrList.size)) openMobileGalleryWithCrop() else openMobileGalleryWithCropMultipleImages(quantity = (5 - mImagesStrList.size))
                     }
                     bottomSheetUploadImageRemovePhotoTextView.setOnClickListener {
                         imagePickBottomSheet?.dismiss()
@@ -1566,14 +1566,10 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                 }
                 Constants.REQUEST_CODE_MULTI_IMAGE -> {
                     Log.d(TAG, "onActivityResult: REQUEST_CODE_MULTI_IMAGE ")
-                    if (null != data) {
+                    data?.let { intentData ->
                         CoroutineScopeUtils().runTaskOnCoroutineMain {
-                            val imagesList = ImagePicker.getImages(data) as ArrayList<Image>
-                            imagesList.forEachIndexed { position, image ->
-                                Log.d(TAG, "REQUEST_CODE_MULTI_IMAGE: imagesList for loop :: position :: $position :: image :: ${image.path} ")
-                                val bitmap = getBitmapFromUri(image.uri, mActivity)
-                                bitmap?.let { b -> startCropping(b) }
-                            }
+                            val imagesList = ImagePicker.getImages(intentData) as ArrayList<Image>?
+                            imagesList?.forEachIndexed { _, image -> getBitmapFromUri(image.uri, mActivity)?.let { b -> startCropping(b) } }
                         }
                     }
                 }
