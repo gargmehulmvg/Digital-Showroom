@@ -65,8 +65,8 @@ class MultiImageSelectionFragment: BaseFragment(), IOnToolbarIconClick {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             imagesRecyclerView?.apply {
                 Log.d(TAG, "setupRecyclerView: imagesList :: \n\n$imagesList")
-                layoutManager = GridLayoutManager(mActivity, 2)
-                adapter = MultiImageSelectionAdapter(imagesList, mActivity)
+                layoutManager = GridLayoutManager(mActivity, 3)
+                adapter = MultiImageSelectionAdapter(imagesList)
             }
         }
     }
@@ -84,7 +84,7 @@ class MultiImageSelectionFragment: BaseFragment(), IOnToolbarIconClick {
                     MediaStore.Images.Media.DATA,
                     MediaStore.Images.Media._ID
                 )
-                val orderBy = MediaStore.Images.Media.DATE_TAKEN //order data by date
+                val orderBy = MediaStore.Images.Media.DATE_TAKEN
                 val imageCursor: Cursor = context.managedQuery(
                     MediaStore.Images.Media.EXTERNAL_CONTENT_URI, columns, null,
                     null, "$orderBy DESC"
