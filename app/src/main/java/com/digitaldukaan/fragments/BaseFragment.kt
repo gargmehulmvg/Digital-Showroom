@@ -888,6 +888,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     }
 
     open fun openMobileGalleryWithCropMultipleImages(quantity: Int) {
+        loader=true
         ImagePicker.create(mActivity)
             .folderMode(true)
             .single()
@@ -937,6 +938,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
             }
         }
         stopProgress()
+        loader=false
     }
 
     private fun convertBitmapToFile(destinationFile: File, bitmap: Bitmap) {
