@@ -207,7 +207,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
             }
             val orderDetailList = orderDetailsItemsList?.toMutableList()
             if (isNotEmpty(orderDetailList)) {
-                orderDetailList?.forEachIndexed { _, itemResponse -> if (Constants.ITEM_TYPE_DELIVERY_CHARGE == itemResponse.item_type || Constants.ITEM_TYPE_CHARGE == itemResponse.item_type) orderDetailsItemsList?.remove(itemResponse) }
+                orderDetailList?.forEachIndexed { _, itemResponse -> if (Constants.ITEM_TYPE_DELIVERY_CHARGE == itemResponse.itemType || Constants.ITEM_TYPE_CHARGE == itemResponse.itemType) orderDetailsItemsList?.remove(itemResponse) }
             }
             val request = UpdateOrderRequest(
                 orderId = orderId,
@@ -571,18 +571,18 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
             val deliveryStatus = orderDetailResponse?.displayStatus
             val listCopy = list?.toMutableList()
             listCopy?.forEachIndexed { _, itemResponse ->
-                if (Constants.ITEM_TYPE_DELIVERY_CHARGE == itemResponse.item_type || Constants.ITEM_TYPE_CHARGE == itemResponse.item_type || Constants.ITEM_TYPE_CHARGE == itemResponse.item_type) {
+                if (Constants.ITEM_TYPE_DELIVERY_CHARGE == itemResponse.itemType || Constants.ITEM_TYPE_CHARGE == itemResponse.itemType || Constants.ITEM_TYPE_CHARGE == itemResponse.itemType) {
                     list.remove(itemResponse)
                 }
             }
             if (orderDetailResponse?.deliveryCharge != 0.0 && !(Constants.DS_NEW == deliveryStatus || Constants.DS_SEND_BILL == deliveryStatus)) {
-                list?.add(OrderDetailItemResponse(0, 0, getString(R.string.delivery_charge), 1, "1", orderDetailResponse.deliveryCharge, orderDetailResponse.deliveryCharge, orderDetailResponse.deliveryCharge, orderDetailResponse.deliveryCharge, 1, Constants.ITEM_TYPE_DELIVERY_CHARGE, null, 0, null, false))
+                list?.add(OrderDetailItemResponse(0, 0, getString(R.string.delivery_charge), 1, "1", orderDetailResponse.deliveryCharge, orderDetailResponse.deliveryCharge, orderDetailResponse.deliveryCharge, orderDetailResponse.deliveryCharge, 1, Constants.ITEM_TYPE_DELIVERY_CHARGE, null, 0, null, "", false))
             }
             if (orderDetailResponse?.extraCharges != 0.0 && !(Constants.DS_NEW == deliveryStatus || Constants.DS_SEND_BILL == deliveryStatus)) {
-                list?.add(OrderDetailItemResponse(0, 0, orderDetailResponse.extraChargesName, 1, "1", orderDetailResponse.extraCharges, orderDetailResponse.extraCharges, orderDetailResponse.extraCharges, orderDetailResponse.extraCharges, 1, Constants.ITEM_TYPE_CHARGE, null, 0, null, false))
+                list?.add(OrderDetailItemResponse(0, 0, orderDetailResponse.extraChargesName, 1, "1", orderDetailResponse.extraCharges, orderDetailResponse.extraCharges, orderDetailResponse.extraCharges, orderDetailResponse.extraCharges, 1, Constants.ITEM_TYPE_CHARGE, null, 0, null, "", false))
             }
             if (orderDetailResponse?.discount != 0.0 && !(Constants.DS_NEW == deliveryStatus || Constants.DS_SEND_BILL == deliveryStatus)) {
-                list?.add(OrderDetailItemResponse(0, 0, getString(R.string.discount), 1, "1", orderDetailResponse.discount, orderDetailResponse.discount, orderDetailResponse.discount, orderDetailResponse.discount, 1, Constants.ITEM_TYPE_DISCOUNT, null, 0, null, false))
+                list?.add(OrderDetailItemResponse(0, 0, getString(R.string.discount), 1, "1", orderDetailResponse.discount, orderDetailResponse.discount, orderDetailResponse.discount, orderDetailResponse.discount, 1, Constants.ITEM_TYPE_DISCOUNT, null, 0, null, "", false))
             }
             list?.forEachIndexed { _, itemResponse ->
                 itemResponse.isItemEditable = (((Constants.DS_NEW == deliveryStatus || Constants.DS_SEND_BILL == deliveryStatus)) && 0.0 == itemResponse.amount)
@@ -591,18 +591,18 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                 mTotalActualAmount += ((itemResponse.actualAmount ?: 0.0) * itemResponse.quantity)
             }
             var orderDetailAdapter: OrderDetailsAdapter? = null
-            orderDetailAdapter = OrderDetailsAdapter(list, orderDetailResponse, displayStatus, mOrderDetailStaticData, object : IOrderDetailListener {
+            orderDetailAdapter = OrderDetailsAdapter(mActivity, list, orderDetailResponse, displayStatus, mOrderDetailStaticData, object : IOrderDetailListener {
 
                     override fun onOrderDetailItemClickListener(position: Int) {
                         if (position < 0) return
                         val item = list?.get(position)
-                        item?.item_status = if (2 == list?.get(position)?.item_status) 1 else 2
-                        if (2 == item?.item_status) mTotalPayAmount -= item.amount ?: 0.0 else mTotalPayAmount += item?.amount ?: 0.0
-                        if (2 == item?.item_status) mTotalActualAmount -= ((item.actualAmount ?: 0.0) * item.quantity) else mTotalActualAmount += ((item?.actualAmount ?: 0.0) * item?.quantity!!)
+                        item?.itemStatus = if (2 == list?.get(position)?.itemStatus) 1 else 2
+                        if (2 == item?.itemStatus) mTotalPayAmount -= item.amount ?: 0.0 else mTotalPayAmount += item?.amount ?: 0.0
+                        if (2 == item?.itemStatus) mTotalActualAmount -= ((item.actualAmount ?: 0.0) * item.quantity) else mTotalActualAmount += ((item?.actualAmount ?: 0.0) * item?.quantity!!)
                         orderDetailAdapter?.setOrderDetailList(list)
                         setAmountToEditText()
                         var isValidOrderAvailable = false
-                        list?.forEachIndexed { _, itemResponse -> if (2 != itemResponse.item_status) isValidOrderAvailable = true }
+                        list?.forEachIndexed { _, itemResponse -> if (2 != itemResponse.itemStatus) isValidOrderAvailable = true }
                         sendBillTextView.isEnabled = isValidOrderAvailable
                     }
 
