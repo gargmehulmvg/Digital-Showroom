@@ -37,6 +37,7 @@
                 android:id="@+id/orderDetailNameTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_5sdp"
                 android:layout_marginEnd="@dimen/_15sdp"
                 android:minLines="@integer/min_lines_two"
                 android:textColor="@color/black"
