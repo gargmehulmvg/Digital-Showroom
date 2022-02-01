@@ -673,6 +673,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                 val completedOrderTextView: TextView? = mContentView?.findViewById(R.id.completedOrderTextView)
                 val takeOrderTextView: TextView? = mContentView?.findViewById(R.id.takeOrderTextView)
                 val myOrdersHeadingTextView: TextView? = mContentView?.findViewById(R.id.myOrdersHeadingTextView)
+                val myLeadsHeadingTextView: TextView? = mContentView?.findViewById(R.id.myLeadsHeadingTextView)
                 val noOrderLayout: View? = mContentView?.findViewById(R.id.noOrderLayout)
                 val ordersLayout: View? = mContentView?.findViewById(R.id.ordersLayout)
                 val orderLayout: View? = mContentView?.findViewById(R.id.orderLayout)
@@ -684,6 +685,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                 ePosTextView?.text = sOrderPageInfoStaticData?.text_epos
                 subHeadingTextView?.setHtmlData(sOrderPageInfoStaticData?.text_congratulations)
                 myOrdersHeadingTextView?.text = sOrderPageInfoStaticData?.text_my_orders
+                myLeadsHeadingTextView?.text = "Leads"
                 setupSideOptionMenu()
                 swipeRefreshLayout?.isEnabled = true
                 orderLayout?.visibility = View.VISIBLE

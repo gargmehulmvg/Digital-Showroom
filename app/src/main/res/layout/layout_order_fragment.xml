@@ -7,10 +7,10 @@
     android:animateLayoutChanges="true">
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:layout_width="match_parent"
         android:id="@+id/swipeRefreshLayout"
-        android:animateLayoutChanges="true"
-        android:layout_height="wrap_content">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:animateLayoutChanges="true">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -80,10 +80,10 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/_15sdp"
                         android:layout_marginTop="@dimen/_6sdp"
-                        android:onClick="onClick"
                         android:layout_marginBottom="@dimen/_7sdp"
                         android:animateLayoutChanges="true"
                         android:background="@drawable/ripple_curve_pink_background"
+                        android:onClick="onClick"
                         android:visibility="gone"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
@@ -246,40 +246,72 @@
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:paddingTop="@dimen/_8sdp"
-                        android:paddingBottom="@dimen/_8sdp">
+                        android:layout_height="wrap_content">
 
                         <TextView
                             android:id="@+id/myOrdersHeadingTextView"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/_15sdp"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
                             android:fontFamily="@font/roboto_medium"
-                            android:textColor="@color/black"
-                            android:textSize="@dimen/_16sdp"
+                            android:onClick="onClick"
+                            android:padding="@dimen/_10sdp"
+                            android:textAlignment="center"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/_14sdp"
                             app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toStartOf="@id/myLeadsHeadingTextView"
+                            app:layout_constraintHorizontal_chainStyle="spread"
+                            app:layout_constraintHorizontal_weight="1"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
+                            android:background="@drawable/ripple_rect_grey_blue_background"
                             tools:text="My Orders" />
 
-                        <ImageView
-                            android:id="@+id/searchImageView"
-                            android:layout_width="@dimen/_30sdp"
-                            android:layout_height="@dimen/_30sdp"
-                            android:layout_marginEnd="@dimen/_14sdp"
-                            android:background="?selectableItemBackground"
+                        <TextView
+                            android:id="@+id/myLeadsHeadingTextView"
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:fontFamily="@font/roboto_medium"
                             android:onClick="onClick"
-                            android:padding="@dimen/_6sdp"
-                            android:src="@drawable/ic_search"
-                            android:visibility="visible"
+                            android:padding="@dimen/_10sdp"
+                            android:textAlignment="center"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/_14sdp"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintHorizontal_chainStyle="spread"
+                            app:layout_constraintHorizontal_weight="1"
+                            app:layout_constraintStart_toEndOf="@id/myOrdersHeadingTextView"
                             app:layout_constraintTop_toTopOf="parent"
-                            app:tint="@color/black"
-                            tools:ignore="ContentDescription" />
+                            tools:text="Leads"
+                            android:background="@drawable/ripple_rect_grey_white_background"/>
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <View
+                        android:id="@+id/separator2"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:alpha="0.85"
+                        android:background="@color/curve_grey_border"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/appSettingImageView"
+                        app:layout_constraintTop_toBottomOf="@id/appSettingTextView" />
+
+                    <ImageView
+                        android:id="@+id/searchImageView"
+                        android:layout_width="@dimen/_30sdp"
+                        android:layout_height="@dimen/_30sdp"
+                        android:layout_gravity="right"
+                        android:layout_marginEnd="@dimen/_10sdp"
+                        android:background="?selectableItemBackground"
+                        android:onClick="onClick"
+                        android:padding="@dimen/_6sdp"
+                        android:src="@drawable/ic_search"
+                        android:visibility="visible"
+                        app:tint="@color/black"
+                        tools:ignore="ContentDescription" />
+
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/noOrderLayout"
@@ -427,6 +459,7 @@
                 android:background="@drawable/ripple_curve_grey_black_background"
                 android:elevation="@dimen/_5sdp"
                 android:onClick="onClick"
+                android:visibility="invisible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
 
