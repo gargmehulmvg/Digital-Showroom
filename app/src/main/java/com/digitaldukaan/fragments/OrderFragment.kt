@@ -1,6 +1,8 @@
 package com.digitaldukaan.fragments
 
 import android.content.pm.PackageManager
+import android.graphics.Color
+import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -600,6 +602,25 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                     data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
                 )
                 showEPosBottomSheet()
+            }
+            myOrdersHeadingTextView?.id -> setupUnSelectedTabView(myOrdersHeadingTextView, myLeadsHeadingTextView)
+            myLeadsHeadingTextView?.id -> setupUnSelectedTabView(myLeadsHeadingTextView, myOrdersHeadingTextView)
+        }
+    }
+
+    private fun setupUnSelectedTabView(selectedTextView: TextView?, unSelectedTextView: TextView?) {
+        mActivity?.let { context ->
+            selectedTextView?.apply {
+                textSize = 17f
+                typeface = Typeface.DEFAULT_BOLD
+                setTextColor(Color.WHITE)
+                background = ContextCompat.getDrawable(context, R.drawable.ripple_rect_grey_blue_background)
+            }
+            unSelectedTextView?.apply {
+                textSize = 13f
+                typeface = Typeface.DEFAULT
+                setTextColor(Color.BLACK)
+                setBackgroundColor(Color.WHITE)
             }
         }
     }
