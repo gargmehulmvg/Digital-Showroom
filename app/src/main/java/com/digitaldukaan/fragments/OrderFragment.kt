@@ -64,7 +64,6 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
     private var swipeRefreshLayout: SwipeRefreshLayout? = null
     private var mIsNewUserLogin = false
     private var mIsDoublePressToExit = false
-    private var subHeadingTextView: TextView? = null
     private var domainExpiryTextView: TextView? = null
     private var ordersRecyclerView: RecyclerView? = null
     private var completedOrdersRecyclerView: RecyclerView? = null
@@ -160,7 +159,6 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
         searchImageView = mContentView?.findViewById(R.id.searchImageView)
         toolbarSearchImageView = mContentView?.findViewById(R.id.toolbarSearchImageView)
         swipeRefreshLayout = mContentView?.findViewById(R.id.swipeRefreshLayout)
-        subHeadingTextView = mContentView?.findViewById(R.id.ordersSubHeadingTextView)
         domainExpiryTextView = mContentView?.findViewById(R.id.domainExpiryTextView)
         ordersRecyclerView = mContentView?.findViewById(R.id.ordersRecyclerView)
         completedOrdersRecyclerView = mContentView?.findViewById(R.id.completedOrdersRecyclerView)
@@ -403,7 +401,6 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                     mIsAllStepsCompleted = itemsResponse?.completed?.isCompleted ?: false
                 }
                 val nextStepTextView: TextView? = mContentView?.findViewById(R.id.nextStepTextView)
-                val ordersSubHeadingTextView: View? = mContentView?.findViewById(R.id.ordersSubHeadingTextView)
                 val domainExpiryContainer: View? = mContentView?.findViewById(R.id.domainExpiryContainer)
                 if (mIsAllStepsCompleted) {
                     zeroOrderItemsRecyclerView?.visibility = View.GONE
@@ -467,7 +464,6 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                     }
                 }
                 nextStepTextView?.text = if (mIsAllStepsCompleted) sOrderPageInfoStaticData?.text_my_shortcuts else sOrderPageInfoStaticData?.text_next_steps
-                ordersSubHeadingTextView?.visibility = if (mIsAllStepsCompleted) View.GONE else View.VISIBLE
                 domainExpiryContainer?.visibility = if (isEmpty(landingPageCardsResponse?.domainExpiryMessage)) View.GONE else {
                     domainExpiryContainer?.visibility = View.VISIBLE
                     if (isNotEmpty(landingPageCardsResponse.domainExpiryMessage))
@@ -784,7 +780,6 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                 pendingOrderTextView?.text = sOrderPageInfoStaticData?.text_pending
                 completedOrderTextView?.text = sOrderPageInfoStaticData?.text_completed
                 ePosTextView?.text = sOrderPageInfoStaticData?.text_epos
-                subHeadingTextView?.setHtmlData(sOrderPageInfoStaticData?.text_congratulations)
                 myOrdersHeadingTextView?.text = sOrderPageInfoStaticData?.text_my_orders
                 myLeadsHeadingTextView?.text = "Leads"
                 setupSideOptionMenu()

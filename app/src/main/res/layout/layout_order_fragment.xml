@@ -49,30 +49,12 @@
                         android:paddingEnd="@dimen/_20sdp"
                         android:textColor="@color/black"
                         android:textSize="@dimen/_17sdp"
-                        app:layout_constraintBottom_toTopOf="@id/ordersSubHeadingTextView"
+                        app:layout_constraintBottom_toTopOf="@id/domainExpiryContainer"
                         app:layout_constraintEnd_toStartOf="@id/analyticsImageView"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_goneMarginTop="@dimen/_2sdp"
                         tools:text="Studio by Mia! Studio by Mia! Studio by Mia!" />
-
-                    <TextView
-                        android:id="@+id/ordersSubHeadingTextView"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:maxLines="1"
-                        android:paddingStart="@dimen/_1sdp"
-                        android:paddingEnd="@dimen/_5sdp"
-                        android:textColor="@color/black"
-                        android:textSize="@dimen/_11sdp"
-                        android:visibility="gone"
-                        app:layout_constraintBottom_toTopOf="@id/domainExpiryContainer"
-                        app:layout_constraintEnd_toStartOf="@id/analyticsImageView"
-                        app:layout_constraintStart_toStartOf="@id/appTitleTextView"
-                        app:layout_constraintTop_toBottomOf="@id/appTitleTextView"
-                        app:layout_goneMarginBottom="@dimen/_7sdp"
-                        tools:text="Congratulations. You are now Online." />
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/domainExpiryContainer"
@@ -84,10 +66,10 @@
                         android:animateLayoutChanges="true"
                         android:background="@drawable/ripple_curve_pink_background"
                         android:onClick="onClick"
-                        android:visibility="gone"
+                        android:visibility="visible"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@id/ordersSubHeadingTextView">
+                        app:layout_constraintTop_toBottomOf="@id/appTitleTextView">
 
                         <ImageView
                             android:id="@+id/domainExpiryImageView"
