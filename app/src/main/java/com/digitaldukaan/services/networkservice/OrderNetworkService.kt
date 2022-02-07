@@ -248,4 +248,44 @@ class OrderNetworkService {
             serviceInterface.onHomePageException(e)
         }
     }
+
+    suspend fun getCartsByFiltersServerCall(serviceInterface: IHomeServiceInterface) {
+        try {
+            val response = RetrofitApi().getServerCallObject()?.getCartsByFilters()
+            response?.let {
+                if (it.isSuccessful) it.body()?.let { commonApiResponse -> serviceInterface.onGetCartsByFiltersResponse(commonApiResponse) }
+                else {
+                    if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    val responseBody = it.errorBody()
+                    responseBody?.let {
+                        val errorResponse = Gson().fromJson(responseBody.string(), CommonApiResponse::class.java)
+                        serviceInterface.checkStaffInviteResponse(errorResponse)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(OrderNetworkService::class.java.simpleName, "getCartsByFiltersServerCall: ", e)
+            serviceInterface.onHomePageException(e)
+        }
+    }
+
+    suspend fun getCartFilterOptionsServerCall(serviceInterface: IHomeServiceInterface) {
+        try {
+            val response = RetrofitApi().getServerCallObject()?.getCartFilterOptions()
+            response?.let {
+                if (it.isSuccessful) it.body()?.let { commonApiResponse -> serviceInterface.getCartFilterOptionsResponse(commonApiResponse) }
+                else {
+                    if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    val responseBody = it.errorBody()
+                    responseBody?.let {
+                        val errorResponse = Gson().fromJson(responseBody.string(), CommonApiResponse::class.java)
+                        serviceInterface.getCartFilterOptionsResponse(errorResponse)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(OrderNetworkService::class.java.simpleName, "getCartFilterOptionsServerCall: ", e)
+            serviceInterface.onHomePageException(e)
+        }
+    }
 }

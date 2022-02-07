@@ -252,10 +252,11 @@
                             android:id="@+id/myOrdersHeadingTextView"
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
+                            android:background="@drawable/ripple_rect_grey_blue_background"
                             android:fontFamily="@font/roboto_medium"
+                            android:gravity="center"
                             android:onClick="onClick"
                             android:padding="@dimen/_10sdp"
-                            android:gravity="center"
                             android:textColor="@color/white"
                             android:textSize="@dimen/_14sdp"
                             app:layout_constraintBottom_toBottomOf="parent"
@@ -264,17 +265,17 @@
                             app:layout_constraintHorizontal_weight="1"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
-                            android:background="@drawable/ripple_rect_grey_blue_background"
                             tools:text="My Orders" />
 
                         <TextView
                             android:id="@+id/myLeadsHeadingTextView"
                             android:layout_width="0dp"
                             android:layout_height="match_parent"
+                            android:background="@drawable/ripple_rect_grey_white_background"
                             android:fontFamily="@font/roboto_medium"
+                            android:gravity="center"
                             android:onClick="onClick"
                             android:padding="@dimen/_10sdp"
-                            android:gravity="center"
                             android:textColor="@color/black"
                             android:textSize="@dimen/_11sdp"
                             app:layout_constraintBottom_toBottomOf="parent"
@@ -283,8 +284,7 @@
                             app:layout_constraintHorizontal_weight="1"
                             app:layout_constraintStart_toEndOf="@id/myOrdersHeadingTextView"
                             app:layout_constraintTop_toTopOf="parent"
-                            tools:text="Leads"
-                            android:background="@drawable/ripple_rect_grey_white_background"/>
+                            tools:text="Leads" />
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -298,26 +298,93 @@
                         app:layout_constraintStart_toEndOf="@id/appSettingImageView"
                         app:layout_constraintTop_toBottomOf="@id/appSettingTextView" />
 
-                    <ImageView
-                        android:id="@+id/searchImageView"
-                        android:layout_width="@dimen/_30sdp"
-                        android:layout_height="@dimen/_30sdp"
-                        android:layout_gravity="right"
-                        android:layout_marginEnd="@dimen/_10sdp"
-                        android:background="?selectableItemBackground"
-                        android:onClick="onClick"
-                        android:padding="@dimen/_6sdp"
-                        android:src="@drawable/ic_search"
-                        android:visibility="visible"
-                        app:tint="@color/black"
-                        tools:ignore="ContentDescription" />
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:animateLayoutChanges="true"
+                        android:paddingTop="@dimen/_5sdp"
+                        android:paddingBottom="@dimen/_5sdp">
 
+                        <TextView
+                            android:id="@+id/abandonedCartTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_marginStart="@dimen/_15sdp"
+                            android:layout_marginEnd="@dimen/_10sdp"
+                            android:background="@drawable/slight_curve_grey_background_without_padding"
+                            android:gravity="center"
+                            android:paddingStart="@dimen/_8sdp"
+                            android:paddingTop="@dimen/_2sdp"
+                            android:paddingEnd="@dimen/_8sdp"
+                            android:paddingBottom="@dimen/_2sdp"
+                            android:text="Abandoned Carts"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/_10sdp"
+                            android:visibility="gone"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toStartOf="@id/activeCartTextView"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <TextView
+                            android:id="@+id/activeCartTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="match_parent"
+                            android:layout_marginEnd="@dimen/_45sdp"
+                            android:background="@drawable/slight_curve_grey_background_without_padding"
+                            android:gravity="center"
+                            android:paddingStart="@dimen/_8sdp"
+                            android:paddingTop="@dimen/_2sdp"
+                            android:paddingEnd="@dimen/_8sdp"
+                            android:paddingBottom="@dimen/_2sdp"
+                            android:text="Active Carts"
+                            android:textColor="@color/black"
+                            android:textSize="@dimen/_10sdp"
+                            android:visibility="gone"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toStartOf="@id/filterImageView"
+                            app:layout_constraintTop_toTopOf="parent" />
+
+                        <ImageView
+                            android:id="@+id/filterImageView"
+                            android:layout_width="@dimen/_30sdp"
+                            android:layout_height="@dimen/_30sdp"
+                            android:layout_marginEnd="8dp"
+                            android:background="?selectableItemBackground"
+                            android:onClick="onClick"
+                            android:padding="@dimen/_6sdp"
+                            android:src="@drawable/ic_search"
+                            android:visibility="gone"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toStartOf="@id/searchImageView"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:layout_constraintVertical_bias="0.538"
+                            app:tint="@color/black"
+                            android:contentDescription="@string/image_view_content_description" />
+
+                        <ImageView
+                            android:id="@+id/searchImageView"
+                            android:layout_width="@dimen/_30sdp"
+                            android:layout_height="@dimen/_30sdp"
+                            android:layout_marginEnd="@dimen/_12sdp"
+                            android:background="?selectableItemBackground"
+                            android:onClick="onClick"
+                            android:padding="@dimen/_6sdp"
+                            android:src="@drawable/ic_search"
+                            android:visibility="visible"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            app:tint="@color/black"
+                            android:contentDescription="@string/image_view_content_description" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/noOrderLayout"
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/_400sdp"
-                        android:visibility="gone">
+                        android:visibility="visible">
 
                         <ImageView
                             android:id="@+id/noOrderImageView"

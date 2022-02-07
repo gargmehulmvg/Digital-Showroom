@@ -78,4 +78,18 @@ class OrderFragmentService {
         }
     }
 
+    fun getCartsByFilters() {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.getCartsByFiltersServerCall(mServiceInterface)
+        }
+    }
+
+    fun getCartFilterOptions() {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.getCartFilterOptionsServerCall(mServiceInterface)
+        }
+    }
+
+
+
 }

@@ -289,6 +289,9 @@ interface Apis {
     @GET("api/dotk/vm1/orders/getDeliveryTime")
     suspend fun getDeliveryTime(): Response<CommonApiResponse>
 
+    @GET("api/dotk/vm1/orders/getCartFilterOptions")
+    suspend fun getCartFilterOptions(): Response<CommonApiResponse>
+
     @GET("api/dotk/vm1/onboard/getOnboardingPageInfo")
     suspend fun getCustomDomainBottomSheetData(): Response<CommonApiResponse>
 
@@ -300,6 +303,9 @@ interface Apis {
 
     @POST("api/dotk/vm1/orders/shareBill/{order_id}")
     suspend fun shareBill(@Path("order_id") orderId: String): Response<CommonApiResponse>
+
+    @POST("api/dotk/vm1/orders/getCartsByFilters")
+    suspend fun getCartsByFilters(): Response<CommonApiResponse>
 
     /* ----------------------       Payments         ---------------------- */
     @GET("api/dotk/vm1/settings/getOrderBannerDetails/{orderId}")

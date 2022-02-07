@@ -20,6 +20,7 @@ import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.LandingPageCardsAdapter
 import com.digitaldukaan.adapters.LandingPageShortcutsAdapter
+import com.digitaldukaan.adapters.LeadsAdapter
 import com.digitaldukaan.adapters.OrderAdapterV2
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.IAdapterItemClickListener
@@ -69,6 +70,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
     private var ordersRecyclerView: RecyclerView? = null
     private var completedOrdersRecyclerView: RecyclerView? = null
     private var mOrderAdapter: OrderAdapterV2? = null
+    private var mLeadsAdapter: LeadsAdapter? = null
     private var mCompletedOrderAdapter: OrderAdapterV2? = null
     private var mLinearLayoutManager: LinearLayoutManager? = null
     private var mPendingPageCount = 1
@@ -82,6 +84,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
     private var mPaymentLinkBottomSheet: BottomSheetDialog? = null
     private var mPaymentLinkAmountStr: String? = null
     private var mIsCustomDomainTopViewHide: Boolean = false
+    private var mIsLeadsSelected: Boolean = false
 
     companion object {
         var sOrderPageInfoResponse: OrderPageInfoResponse? = null
@@ -93,8 +96,10 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
         private var sOrderIdString = ""
         private var sIsMorePendingOrderAvailable = false
         private var sIsMoreCompletedOrderAvailable = false
+        private var sIsMoreLeadsAvailable = false
         private var sOrderList: ArrayList<OrderItemResponse> = ArrayList()
         private var sCompletedOrderList: ArrayList<OrderItemResponse> = ArrayList()
+        private var sLeadsList: ArrayList<LeadsItemResponse> = ArrayList()
 
         fun newInstance(isNewUserLogin: Boolean = false, isClearOrderPageResponse: Boolean = false): OrderFragment {
             val fragment = OrderFragment()
@@ -173,6 +178,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
         mCompletedPageCount = 1
         sOrderList.clear()
         sCompletedOrderList.clear()
+        sLeadsList.clear()
         ePosTextView?.visibility = View.GONE
         orderLayout?.setOnScrollChangeListener(NestedScrollView.OnScrollChangeListener { v, _, scrollY, _, oldScrollY ->
             if (scrollY > oldScrollY) {
@@ -211,6 +217,16 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                 }
             }
         })
+        setupOrdersRecyclerView()
+        ordersRecyclerView?.addItemDecoration(StickyRecyclerHeadersDecoration(mOrderAdapter))
+        setupCompletedOrdersRecyclerView()
+        completedOrdersRecyclerView?.addItemDecoration(StickyRecyclerHeadersDecoration(mCompletedOrderAdapter))
+        Log.d(TAG, "onViewCreated: OrderFragment called")
+        Log.d(TAG, "onViewCreated: OrderFragment sIsInvitationAvailable :: $sIsInvitationAvailable")
+        if (sIsInvitationAvailable) showStaffInvitationDialog()
+    }
+
+    private fun setupOrdersRecyclerView() {
         ordersRecyclerView?.apply {
             isNestedScrollingEnabled = false
             mActivity?.let { context -> mOrderAdapter = OrderAdapterV2(context, sOrderList) }
@@ -218,20 +234,20 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
             mLinearLayoutManager = LinearLayoutManager(mActivity)
             layoutManager = mLinearLayoutManager
             adapter = mOrderAdapter
-            addItemDecoration(StickyRecyclerHeadersDecoration(mOrderAdapter))
         }
+    }
+
+    private fun setupCompletedOrdersRecyclerView() {
         completedOrdersRecyclerView?.apply {
             isNestedScrollingEnabled = false
-            mActivity?.let { context -> mCompletedOrderAdapter = OrderAdapterV2(context, sCompletedOrderList) }
+            mActivity?.let { context ->
+                mCompletedOrderAdapter = OrderAdapterV2(context, sCompletedOrderList)
+            }
             mCompletedOrderAdapter?.setCheckBoxListener(this@OrderFragment)
             mLinearLayoutManager = LinearLayoutManager(mActivity)
             layoutManager = mLinearLayoutManager
             adapter = mCompletedOrderAdapter
-            addItemDecoration(StickyRecyclerHeadersDecoration(mCompletedOrderAdapter))
         }
-        Log.d(TAG, "onViewCreated: OrderFragment called")
-        Log.d(TAG, "onViewCreated: OrderFragment sIsInvitationAvailable :: $sIsInvitationAvailable")
-        if (sIsInvitationAvailable) showStaffInvitationDialog()
     }
 
     override fun onUserAuthenticationResponse(authenticationUserResponse: ValidateOtpResponse) {
@@ -603,12 +619,55 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                 )
                 showEPosBottomSheet()
             }
-            myOrdersHeadingTextView?.id -> setupUnSelectedTabView(myOrdersHeadingTextView, myLeadsHeadingTextView)
-            myLeadsHeadingTextView?.id -> setupUnSelectedTabView(myLeadsHeadingTextView, myOrdersHeadingTextView)
+            myOrdersHeadingTextView?.id -> {
+                setupTabLayout(myOrdersHeadingTextView, myLeadsHeadingTextView)
+                setupOrdersRecyclerView()
+                setupCompletedOrdersRecyclerView()
+                completedOrdersRecyclerView?.apply {
+                    visibility = View.VISIBLE
+                }
+                val pendingOrderTextView: TextView? = mContentView?.findViewById(R.id.pendingOrderTextView)
+                pendingOrderTextView?.visibility = View.VISIBLE
+                val completedOrderTextView: TextView? = mContentView?.findViewById(R.id.completedOrderTextView)
+                completedOrderTextView?.visibility = View.VISIBLE
+                val abandonedCartTextView: TextView? = mContentView?.findViewById(R.id.abandonedCartTextView)
+                abandonedCartTextView?.visibility = View.GONE
+                val activeCartTextView: TextView? = mContentView?.findViewById(R.id.activeCartTextView)
+                activeCartTextView?.visibility = View.GONE
+                val filterImageView: ImageView? = mContentView?.findViewById(R.id.filterImageView)
+                filterImageView?.visibility = View.GONE
+
+            }
+            myLeadsHeadingTextView?.id -> {
+                setupTabLayout(myLeadsHeadingTextView, myOrdersHeadingTextView)
+                ordersRecyclerView?.apply {
+                    isNestedScrollingEnabled = false
+                    mActivity?.let { context -> mLeadsAdapter = LeadsAdapter(context, sLeadsList) }
+                    mLinearLayoutManager = LinearLayoutManager(mActivity)
+                    layoutManager = mLinearLayoutManager
+                    adapter = null
+                    adapter = mLeadsAdapter
+                }
+                completedOrdersRecyclerView?.apply {
+                    visibility = View.GONE
+                }
+                val pendingOrderTextView: TextView? = mContentView?.findViewById(R.id.pendingOrderTextView)
+                pendingOrderTextView?.visibility = View.GONE
+                val completedOrderTextView: TextView? = mContentView?.findViewById(R.id.completedOrderTextView)
+                completedOrderTextView?.visibility = View.GONE
+                val abandonedCartTextView: TextView? = mContentView?.findViewById(R.id.abandonedCartTextView)
+                abandonedCartTextView?.visibility = View.VISIBLE
+                val activeCartTextView: TextView? = mContentView?.findViewById(R.id.activeCartTextView)
+                activeCartTextView?.visibility = View.VISIBLE
+                val filterImageView: ImageView? = mContentView?.findViewById(R.id.filterImageView)
+                filterImageView?.visibility = View.VISIBLE
+                mService?.getCartsByFilters()
+            }
+
         }
     }
 
-    private fun setupUnSelectedTabView(selectedTextView: TextView?, unSelectedTextView: TextView?) {
+    private fun setupTabLayout(selectedTextView: TextView?, unSelectedTextView: TextView?) {
         mActivity?.let { context ->
             selectedTextView?.apply {
                 textSize = 17f
@@ -1067,4 +1126,25 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
     }
 
     override fun checkStaffInviteResponse(commonResponse: CommonApiResponse) = Unit
+
+    override fun onGetCartsByFiltersResponse(commonResponse: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            if (true == swipeRefreshLayout?.isRefreshing) swipeRefreshLayout?.isRefreshing = false
+            if (commonResponse.mIsSuccessStatus) {
+                val leadsResponse = Gson().fromJson<LeadsResponse>(commonResponse.mCommonDataStr, LeadsResponse::class.java)
+                sIsMoreLeadsAvailable = leadsResponse.mIsNextDataAvailable
+                if (isNotEmpty(leadsResponse.mLeadsList)) {
+                    sLeadsList.addAll(leadsResponse.mLeadsList)
+                } else {
+                    sLeadsList.addAll(ArrayList())
+                }
+                mLeadsAdapter?.setLeadsList(sLeadsList)
+            }
+        }
+    }
+
+    override fun getCartFilterOptionsResponse(commonResponse: CommonApiResponse) {
+        TODO("Not yet implemented")
+    }
 }

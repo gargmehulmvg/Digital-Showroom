@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
+    android:background="@color/white">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/toolBarContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:elevation="@dimen/_10sdp"
+        android:minHeight="?attr/actionBarSize"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/backButtonToolbar"
+            android:layout_width="@dimen/_35sdp"
+            android:layout_height="@dimen/_30sdp"
+            android:onClick="onClick"
+            android:rotation="180"
+            android:src="@drawable/ic_arrow_forward_white"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:layout_marginStart="@dimen/_6sdp"
+            app:tint="@color/black"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:id="@+id/appTitleTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/roboto_medium"
+            android:gravity="center_vertical"
+            android:maxLines="1"
+            android:paddingStart="@dimen/_1sdp"
+            android:paddingEnd="@dimen/_5sdp"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_14sdp"
+            android:layout_marginStart="@dimen/_8sdp"
+            app:layout_constraintStart_toEndOf="@id/backButtonToolbar"
+            app:layout_constraintTop_toTopOf="@id/backButtonToolbar"
+            tools:text="Cart" />
+
+        <TextView
+            android:id="@+id/appSubTitleTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:maxLines="1"
+            android:paddingStart="@dimen/_1sdp"
+            android:paddingEnd="@dimen/_5sdp"
+            android:paddingBottom="@dimen/_8sdp"
+            android:textColor="@color/default_text_light_grey"
+            android:textSize="@dimen/_11sdp"
+            android:layout_marginStart="@dimen/_8sdp"
+            app:layout_constraintStart_toEndOf="@id/backButtonToolbar"
+            app:layout_constraintTop_toBottomOf="@id/appTitleTextView"
+            tools:text="Last updated cart on : Monday at 4:00 pm" />
+
+        <TextView
+            android:id="@+id/deliveryTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:maxLines="1"
+            android:paddingStart="@dimen/_1sdp"
+            android:paddingEnd="@dimen/_5sdp"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_10sdp"
+            android:layout_marginStart="@dimen/_8sdp"
+            app:layout_constraintStart_toEndOf="@id/backButtonToolbar"
+            app:layout_constraintTop_toBottomOf="@id/appSubTitleTextView"
+            tools:text="Delivery order" />
+
+        <TextView
+            android:id="@+id/cartAbandonedTextView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:maxLines="1"
+            android:paddingStart="@dimen/_1sdp"
+            android:paddingEnd="@dimen/_5sdp"
+            android:textColor="@color/leads_cart_abandoned_text_color"
+            android:textSize="@dimen/_8sdp"
+            android:background="@drawable/curve_light_red_background"
+            app:layout_constraintStart_toEndOf="@id/deliveryTextView"
+            app:layout_constraintTop_toBottomOf="@id/appSubTitleTextView"
+            android:layout_marginTop="@dimen/_2sdp"
+            tools:text="Cart Abandoned" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <View
+        android:id="@+id/shadowToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_1sdp"
+        android:alpha="0.1"
+        android:background="@color/cardview_dark_background"
+        app:layout_constraintTop_toBottomOf="@id/toolBarContainer" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
