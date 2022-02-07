@@ -7,7 +7,10 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.digitaldukaan.R
+import com.digitaldukaan.constants.Constants
+import com.digitaldukaan.constants.isEmpty
 import com.digitaldukaan.interfaces.ILeadsListItemListener
 import com.digitaldukaan.models.response.LeadsResponse
 import java.util.*
@@ -44,11 +47,14 @@ class LeadsAdapter(
     override fun onBindViewHolder(holder: LeadsAdapter.LeadsViewHolder, position: Int) {
         val item = mLeadsList?.get(position)
         holder.apply {
-            val str = "${item?.phoneNumber} | ${item?.customerName}"
-            leadDetailTextView.text = str
-            priceTextView.text = "${item?.orderValue}"
+            var displayStr: String = if (isEmpty(item?.customerName)) "${item?.phoneNumber}" else "${item?.phoneNumber} | ${item?.customerName}"
+            leadDetailTextView.text = displayStr
+            displayStr = "₹${item?.orderValue}"
+            priceTextView.text = displayStr
             leadLastUpdatedTextView.text = item?.lastUpdateOn
-            //Glide.with(mContext).load(item?.cartType).into(cartImageView)
+            Glide.with(mContext)
+                .load(if (Constants.CART_TYPE_ABANDONED == item?.cartType) R.drawable.ic_abandoned_cart else R.drawable.ic_active_cart)
+                .into(cartImageView)
         }
     }
 }
