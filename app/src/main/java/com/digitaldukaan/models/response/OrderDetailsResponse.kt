@@ -48,7 +48,7 @@ data class OrderDetailItemResponse(
     @SerializedName("creator_type")             var creatorType: Int?,
     @SerializedName("variant_id")               var variantId: Int,
     @SerializedName("variant_name")             var variantName: String?,
-    @SerializedName("image_url")                var imageUrl: String?,
+    @SerializedName("thumbnail_url")            var imageUrl: String?,
     var isItemEditable: Boolean
 )
 
