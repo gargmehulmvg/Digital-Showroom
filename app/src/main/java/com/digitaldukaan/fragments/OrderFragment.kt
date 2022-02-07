@@ -25,12 +25,10 @@ import com.digitaldukaan.adapters.OrderAdapterV2
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.IAdapterItemClickListener
 import com.digitaldukaan.interfaces.ILandingPageAdapterListener
+import com.digitaldukaan.interfaces.ILeadsListItemListener
 import com.digitaldukaan.interfaces.IOrderListItemListener
 import com.digitaldukaan.models.dto.CleverTapProfile
-import com.digitaldukaan.models.request.CompleteOrderRequest
-import com.digitaldukaan.models.request.OrdersRequest
-import com.digitaldukaan.models.request.SearchOrdersRequest
-import com.digitaldukaan.models.request.UpdateOrderStatusRequest
+import com.digitaldukaan.models.request.*
 import com.digitaldukaan.models.response.*
 import com.digitaldukaan.network.RetrofitApi
 import com.digitaldukaan.services.OrderFragmentService
@@ -51,13 +49,14 @@ import kotlinx.android.synthetic.main.layout_home_fragment.*
 import kotlinx.android.synthetic.main.layout_home_fragment.analyticsContainer
 import kotlinx.android.synthetic.main.layout_home_fragment.analyticsImageView
 import kotlinx.android.synthetic.main.layout_home_fragment.orderLayout
+import kotlinx.android.synthetic.main.layout_more_control_fragment.*
 import kotlinx.android.synthetic.main.layout_order_fragment.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
 
 class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuItemClickListener,
-    SwipeRefreshLayout.OnRefreshListener, IOrderListItemListener {
+    SwipeRefreshLayout.OnRefreshListener, IOrderListItemListener, ILeadsListItemListener {
 
     private var ePosTextView: TextView? = null
     private var searchImageView: ImageView? = null
@@ -99,7 +98,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
         private var sIsMoreLeadsAvailable = false
         private var sOrderList: ArrayList<OrderItemResponse> = ArrayList()
         private var sCompletedOrderList: ArrayList<OrderItemResponse> = ArrayList()
-        private var sLeadsList: ArrayList<LeadsItemResponse> = ArrayList()
+        private var sLeadsList: ArrayList<LeadsResponse> = ArrayList()
 
         fun newInstance(isNewUserLogin: Boolean = false, isClearOrderPageResponse: Boolean = false): OrderFragment {
             val fragment = OrderFragment()
@@ -642,7 +641,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                 setupTabLayout(myLeadsHeadingTextView, myOrdersHeadingTextView)
                 ordersRecyclerView?.apply {
                     isNestedScrollingEnabled = false
-                    mActivity?.let { context -> mLeadsAdapter = LeadsAdapter(context, sLeadsList) }
+                    mActivity?.let { context -> mLeadsAdapter = LeadsAdapter(context, sLeadsList, this@OrderFragment) }
                     mLinearLayoutManager = LinearLayoutManager(mActivity)
                     layoutManager = mLinearLayoutManager
                     adapter = null
@@ -652,18 +651,40 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                     visibility = View.GONE
                 }
                 val pendingOrderTextView: TextView? = mContentView?.findViewById(R.id.pendingOrderTextView)
-                pendingOrderTextView?.visibility = View.GONE
                 val completedOrderTextView: TextView? = mContentView?.findViewById(R.id.completedOrderTextView)
-                completedOrderTextView?.visibility = View.GONE
+                with(View.GONE) {
+                    pendingOrderTextView?.visibility = this
+                    completedOrderTextView?.visibility = this
+                }
                 val abandonedCartTextView: TextView? = mContentView?.findViewById(R.id.abandonedCartTextView)
-                abandonedCartTextView?.visibility = View.VISIBLE
                 val activeCartTextView: TextView? = mContentView?.findViewById(R.id.activeCartTextView)
-                activeCartTextView?.visibility = View.VISIBLE
                 val filterImageView: ImageView? = mContentView?.findViewById(R.id.filterImageView)
-                filterImageView?.visibility = View.VISIBLE
-                mService?.getCartsByFilters()
+                with(View.VISIBLE) {
+                    abandonedCartTextView?.visibility = this
+                    activeCartTextView?.visibility = this
+                    filterImageView?.visibility = this
+                }
+                val request = LeadsListRequest(userPhone = "", sortType = Constants.SORT_TYPE_DESCENDING, cartType = Constants.CART_TYPE_ABANDONED)
+                mService?.getCartsByFilters(request)
             }
-
+            abandonedCartTextView?.id -> {
+                mActivity?.let { context ->
+                    abandonedCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.selected_chip_blue_border_bluish_background)
+                    activeCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_grey_background_without_padding)
+                }
+                startViewAnimation(abandonedCartTextView)
+                val request = LeadsListRequest(userPhone = "", sortType = Constants.SORT_TYPE_DESCENDING, cartType = Constants.CART_TYPE_ABANDONED)
+                mService?.getCartsByFilters(request)
+            }
+            activeCartTextView?.id -> {
+                mActivity?.let { context ->
+                    activeCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.selected_chip_blue_border_bluish_background)
+                    abandonedCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_grey_background_without_padding)
+                }
+                val request = LeadsListRequest(userPhone = "", sortType = Constants.SORT_TYPE_DESCENDING, cartType = Constants.CART_TYPE_ACTIVE)
+                mService?.getCartsByFilters(request)
+                startViewAnimation(activeCartTextView)
+            }
         }
     }
 
@@ -1132,12 +1153,11 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
             stopProgress()
             if (true == swipeRefreshLayout?.isRefreshing) swipeRefreshLayout?.isRefreshing = false
             if (commonResponse.mIsSuccessStatus) {
-                val leadsResponse = Gson().fromJson<LeadsResponse>(commonResponse.mCommonDataStr, LeadsResponse::class.java)
-                sIsMoreLeadsAvailable = leadsResponse.mIsNextDataAvailable
-                if (isNotEmpty(leadsResponse.mLeadsList)) {
-                    sLeadsList.addAll(leadsResponse.mLeadsList)
-                } else {
-                    sLeadsList.addAll(ArrayList())
+                val listType = object : TypeToken<ArrayList<LeadsResponse>>() {}.type
+                sLeadsList = ArrayList()
+                sLeadsList = Gson().fromJson(commonResponse.mCommonDataStr, listType)
+                if (isEmpty(sLeadsList)) {
+                    //TODO do the code for view visibility of the empty Leads container
                 }
                 mLeadsAdapter?.setLeadsList(sLeadsList)
             }
@@ -1146,5 +1166,11 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
 
     override fun getCartFilterOptionsResponse(commonResponse: CommonApiResponse) {
         TODO("Not yet implemented")
+    }
+
+    override fun onLeadsItemCLickChanged(item: LeadsResponse?) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            showToast(item?.customerName)
+        }
     }
 }

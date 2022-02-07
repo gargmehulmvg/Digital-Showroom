@@ -313,6 +313,7 @@
                             android:layout_marginEnd="@dimen/_10sdp"
                             android:background="@drawable/slight_curve_grey_background_without_padding"
                             android:gravity="center"
+                            android:onClick="onClick"
                             android:paddingStart="@dimen/_8sdp"
                             android:paddingTop="@dimen/_2sdp"
                             android:paddingEnd="@dimen/_8sdp"
@@ -333,6 +334,7 @@
                             android:layout_marginEnd="@dimen/_45sdp"
                             android:background="@drawable/slight_curve_grey_background_without_padding"
                             android:gravity="center"
+                            android:onClick="onClick"
                             android:paddingStart="@dimen/_8sdp"
                             android:paddingTop="@dimen/_2sdp"
                             android:paddingEnd="@dimen/_8sdp"
@@ -351,6 +353,7 @@
                             android:layout_height="@dimen/_30sdp"
                             android:layout_marginEnd="8dp"
                             android:background="?selectableItemBackground"
+                            android:contentDescription="@string/image_view_content_description"
                             android:onClick="onClick"
                             android:padding="@dimen/_6sdp"
                             android:src="@drawable/ic_search"
@@ -359,8 +362,7 @@
                             app:layout_constraintEnd_toStartOf="@id/searchImageView"
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintVertical_bias="0.538"
-                            app:tint="@color/black"
-                            android:contentDescription="@string/image_view_content_description" />
+                            app:tint="@color/black" />
 
                         <ImageView
                             android:id="@+id/searchImageView"
@@ -368,6 +370,7 @@
                             android:layout_height="@dimen/_30sdp"
                             android:layout_marginEnd="@dimen/_12sdp"
                             android:background="?selectableItemBackground"
+                            android:contentDescription="@string/image_view_content_description"
                             android:onClick="onClick"
                             android:padding="@dimen/_6sdp"
                             android:src="@drawable/ic_search"
@@ -375,8 +378,7 @@
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
-                            app:tint="@color/black"
-                            android:contentDescription="@string/image_view_content_description" />
+                            app:tint="@color/black" />
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
 

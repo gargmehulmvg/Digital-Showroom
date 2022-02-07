@@ -305,7 +305,7 @@ interface Apis {
     suspend fun shareBill(@Path("order_id") orderId: String): Response<CommonApiResponse>
 
     @POST("api/dotk/vm1/orders/getCartsByFilters")
-    suspend fun getCartsByFilters(): Response<CommonApiResponse>
+    suspend fun getCartsByFilters(@Body request: LeadsListRequest): Response<CommonApiResponse>
 
     /* ----------------------       Payments         ---------------------- */
     @GET("api/dotk/vm1/settings/getOrderBannerDetails/{orderId}")

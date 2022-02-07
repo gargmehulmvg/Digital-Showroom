@@ -1,10 +1,7 @@
 package com.digitaldukaan.services
 
 import com.digitaldukaan.constants.CoroutineScopeUtils
-import com.digitaldukaan.models.request.CompleteOrderRequest
-import com.digitaldukaan.models.request.OrdersRequest
-import com.digitaldukaan.models.request.SearchOrdersRequest
-import com.digitaldukaan.models.request.UpdateOrderStatusRequest
+import com.digitaldukaan.models.request.*
 import com.digitaldukaan.services.networkservice.OrderNetworkService
 import com.digitaldukaan.services.serviceinterface.IHomeServiceInterface
 
@@ -78,9 +75,9 @@ class OrderFragmentService {
         }
     }
 
-    fun getCartsByFilters() {
+    fun getCartsByFilters(request: LeadsListRequest) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.getCartsByFiltersServerCall(mServiceInterface)
+            mNetworkService.getCartsByFiltersServerCall(mServiceInterface, request)
         }
     }
 

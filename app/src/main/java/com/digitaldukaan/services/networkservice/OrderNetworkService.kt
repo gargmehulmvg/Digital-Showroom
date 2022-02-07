@@ -4,10 +4,7 @@ import android.util.Log
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.exceptions.DeprecateAppVersionException
 import com.digitaldukaan.exceptions.UnAuthorizedAccessException
-import com.digitaldukaan.models.request.CompleteOrderRequest
-import com.digitaldukaan.models.request.OrdersRequest
-import com.digitaldukaan.models.request.SearchOrdersRequest
-import com.digitaldukaan.models.request.UpdateOrderStatusRequest
+import com.digitaldukaan.models.request.*
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.ValidateOtpErrorResponse
 import com.digitaldukaan.network.RetrofitApi
@@ -249,9 +246,12 @@ class OrderNetworkService {
         }
     }
 
-    suspend fun getCartsByFiltersServerCall(serviceInterface: IHomeServiceInterface) {
+    suspend fun getCartsByFiltersServerCall(
+        serviceInterface: IHomeServiceInterface,
+        request: LeadsListRequest
+    ) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.getCartsByFilters()
+            val response = RetrofitApi().getServerCallObject()?.getCartsByFilters(request)
             response?.let {
                 if (it.isSuccessful) it.body()?.let { commonApiResponse -> serviceInterface.onGetCartsByFiltersResponse(commonApiResponse) }
                 else {

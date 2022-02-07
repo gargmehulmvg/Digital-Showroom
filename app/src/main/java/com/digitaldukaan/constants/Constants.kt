@@ -259,5 +259,11 @@ class Constants {
         //SOCIAL_MEDIA_SHARE_TYPE
         const val SOCIAL_MEDIA_SHARE_TYPE_SHARE                 = "generic"
         const val SOCIAL_MEDIA_SHARE_TYPE_WHATSAPP              = "whatsapp"
+        //LEADS_SORT_TYPE
+        const val SORT_TYPE_DESCENDING                          = -1
+        const val SORT_TYPE_ASCENDING                           = 1
+        //LEADS_CART_TYPE
+        const val CART_TYPE_ABANDONED                           = 0
+        const val CART_TYPE_ACTIVE                              = 1
     }
 }
