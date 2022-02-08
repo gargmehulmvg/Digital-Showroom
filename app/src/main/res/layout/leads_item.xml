@@ -4,10 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:paddingStart="@dimen/_5sdp"
+    android:paddingStart="@dimen/_10sdp"
     android:paddingTop="@dimen/_10sdp"
     android:paddingEnd="@dimen/_15sdp">
-
 
     <ImageView
         android:id="@+id/cartImageView"

@@ -654,7 +654,14 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                     activeCartTextView?.visibility = this
                     filterImageView?.visibility = this
                 }
-                val request = LeadsListRequest(userPhone = "", sortType = Constants.SORT_TYPE_DESCENDING, cartType = Constants.CART_TYPE_ABANDONED)
+                val request = LeadsListRequest(
+                    userName = "",
+                    startDate = "",
+                    endDate = "",
+                    userPhone = "",
+                    sortType = Constants.SORT_TYPE_DESCENDING,
+                    cartType = Constants.CART_TYPE_ABANDONED
+                )
                 mService?.getCartsByFilters(request)
             }
             abandonedCartTextView?.id -> {
@@ -663,7 +670,14 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                     activeCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_grey_background_without_padding)
                 }
                 startViewAnimation(abandonedCartTextView)
-                val request = LeadsListRequest(userPhone = "", sortType = Constants.SORT_TYPE_DESCENDING, cartType = Constants.CART_TYPE_ABANDONED)
+                val request = LeadsListRequest(
+                    userName = "",
+                    startDate = "",
+                    endDate = "",
+                    userPhone = "",
+                    sortType = Constants.SORT_TYPE_DESCENDING,
+                    cartType = Constants.CART_TYPE_ABANDONED
+                )
                 mService?.getCartsByFilters(request)
             }
             activeCartTextView?.id -> {
@@ -671,7 +685,14 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                     activeCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.selected_chip_blue_border_bluish_background)
                     abandonedCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_grey_background_without_padding)
                 }
-                val request = LeadsListRequest(userPhone = "", sortType = Constants.SORT_TYPE_DESCENDING, cartType = Constants.CART_TYPE_ACTIVE)
+                val request = LeadsListRequest(
+                    userName = "",
+                    startDate = "",
+                    endDate = "",
+                    userPhone = "",
+                    sortType = Constants.SORT_TYPE_DESCENDING,
+                    cartType = Constants.CART_TYPE_ACTIVE
+                )
                 mService?.getCartsByFilters(request)
                 startViewAnimation(activeCartTextView)
             }
@@ -1171,6 +1192,12 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                     if (isNotEmpty(itemResponse.heading))
                         mLeadsFilterList.add(itemResponse)
                 }
+                mLeadsFilterList.forEachIndexed { _, itemResponse ->
+                    if (Constants.LEADS_FILTER_TYPE_SORT == itemResponse.type) {
+                        itemResponse.filterOptionsList[0].isSelected = true
+                        return@forEachIndexed
+                    }
+                }
                 showLeadsFilterBottomSheet()
             }
         }
@@ -1199,15 +1226,16 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                                 doneTextView.text = staticText?.text_done
                                 clearFilterTextView.text = staticText?.text_clear_filter
                             }
+                            clearFilterTextView.setOnClickListener {
+
+                            }
+                            doneTextView.setOnClickListener {
+                                (this@apply).dismiss()
+                            }
                             recyclerView.apply {
                                 isNestedScrollingEnabled = false
                                 layoutManager = LinearLayoutManager(mActivity)
-                                mLeadsFilterList.forEachIndexed { _, itemResponse ->
-                                    if (Constants.LEADS_FILTER_TYPE_SORT == itemResponse.type) {
-                                        itemResponse.filterOptionsList[0].isSelected = true
-                                        return@forEachIndexed
-                                    }
-                                }
+                                Log.d(TAG, "showLeadsFilterBottomSheet: list :: $mLeadsFilterList")
                                 mLeadsFilterAdapter = LeadsFilterBottomSheetAdapter(mActivity, mLeadsFilterList, object : ILeadsFilterItemClickListener {
 
                                         override fun onLeadsFilterItemClickListener(item: LeadsFilterOptionsItemResponse?, filterType:String?) {
