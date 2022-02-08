@@ -80,9 +80,11 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
     private var mPaymentLinkAmountStr: String? = null
     private var mIsCustomDomainTopViewHide: Boolean = false
     private var mLeadsFilterAdapter: LeadsFilterBottomSheetAdapter? = null
-    private val mLeadsFilterList : ArrayList<LeadsFilterListItemResponse> = ArrayList()
+    private var mLeadsFilterList : ArrayList<LeadsFilterListItemResponse> = ArrayList()
     private var mLeadsFilterResponse: LeadsFilterResponse? = null
     private var mLeadsCartTypeSelection = Constants.CART_TYPE_DEFAULT
+    private var mIsLeadsTabSelected = false
+    private var mLeadsFilterRequest: LeadsListRequest = LeadsListRequest("", "", "", "", Constants.SORT_TYPE_DESCENDING, Constants.CART_TYPE_DEFAULT)
 
     companion object {
         var sOrderPageInfoResponse: OrderPageInfoResponse? = null
@@ -195,19 +197,21 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
             }
             if (scrollY == (v.getChildAt(0).measuredHeight - v.measuredHeight)) {
                 Log.d(TAG, "Scroll To Bottom Last")
-                when {
-                    sIsMorePendingOrderAvailable -> {
-                        ++mPendingPageCount
-                        fetchLatestOrders(Constants.MODE_PENDING, "", mPendingPageCount)
-                    }
-                    sIsMoreCompletedOrderAvailable -> {
-                        ++mCompletedPageCount
-                        fetchLatestOrders(Constants.MODE_COMPLETED, "", mCompletedPageCount)
-                    }
-                    !sIsMoreCompletedOrderAvailable -> {
-                        if (isEmpty(sCompletedOrderList)) {
-                            mCompletedPageCount = 1
+                if (!mIsLeadsTabSelected) {
+                    when {
+                        sIsMorePendingOrderAvailable -> {
+                            ++mPendingPageCount
+                            fetchLatestOrders(Constants.MODE_PENDING, "", mPendingPageCount)
+                        }
+                        sIsMoreCompletedOrderAvailable -> {
+                            ++mCompletedPageCount
                             fetchLatestOrders(Constants.MODE_COMPLETED, "", mCompletedPageCount)
+                        }
+                        !sIsMoreCompletedOrderAvailable -> {
+                            if (isEmpty(sCompletedOrderList)) {
+                                mCompletedPageCount = 1
+                                fetchLatestOrders(Constants.MODE_COMPLETED, "", mCompletedPageCount)
+                            }
                         }
                     }
                 }
@@ -612,6 +616,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                 showEPosBottomSheet()
             }
             myOrdersHeadingTextView?.id -> {
+                mIsLeadsTabSelected = false
                 setupTabLayout(myOrdersHeadingTextView, myLeadsHeadingTextView)
                 setupOrdersRecyclerView()
                 setupCompletedOrdersRecyclerView()
@@ -632,6 +637,10 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                 }
             }
             myLeadsHeadingTextView?.id -> {
+                mLeadsCartTypeSelection = Constants.CART_TYPE_DEFAULT
+                mLeadsFilterResponse = null
+                mLeadsFilterList = ArrayList()
+                mIsLeadsTabSelected = true
                 setupTabLayout(myLeadsHeadingTextView, myOrdersHeadingTextView)
                 ordersRecyclerView?.apply {
                     isNestedScrollingEnabled = false
@@ -655,15 +664,19 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                     activeCartTextView?.visibility = this
                     filterImageView?.visibility = this
                 }
-                val request = LeadsListRequest(
+                mLeadsFilterRequest = LeadsListRequest(
                     userName = "",
                     startDate = "",
                     endDate = "",
                     userPhone = "",
                     sortType = Constants.SORT_TYPE_DESCENDING,
-                    cartType = Constants.CART_TYPE_DEFAULT
+                    cartType = mLeadsCartTypeSelection
                 )
-                mService?.getCartsByFilters(request)
+                mService?.getCartsByFilters(mLeadsFilterRequest)
+                mActivity?.let { context ->
+                    abandonedCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_grey_background_without_padding)
+                    activeCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_grey_background_without_padding)
+                }
             }
             abandonedCartTextView?.id -> {
                 mLeadsCartTypeSelection = Constants.CART_TYPE_ABANDONED
@@ -672,15 +685,8 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                     activeCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_grey_background_without_padding)
                 }
                 startViewAnimation(abandonedCartTextView)
-                val request = LeadsListRequest(
-                    userName = "",
-                    startDate = "",
-                    endDate = "",
-                    userPhone = "",
-                    sortType = Constants.SORT_TYPE_DESCENDING,
-                    cartType = Constants.CART_TYPE_ABANDONED
-                )
-                mService?.getCartsByFilters(request)
+                mLeadsFilterRequest.cartType = Constants.CART_TYPE_ABANDONED
+                mService?.getCartsByFilters(mLeadsFilterRequest)
             }
             activeCartTextView?.id -> {
                 mLeadsCartTypeSelection = Constants.CART_TYPE_ACTIVE
@@ -688,15 +694,8 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                     activeCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.selected_chip_blue_border_bluish_background)
                     abandonedCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_grey_background_without_padding)
                 }
-                val request = LeadsListRequest(
-                    userName = "",
-                    startDate = "",
-                    endDate = "",
-                    userPhone = "",
-                    sortType = Constants.SORT_TYPE_DESCENDING,
-                    cartType = Constants.CART_TYPE_ACTIVE
-                )
-                mService?.getCartsByFilters(request)
+                mLeadsFilterRequest.cartType = Constants.CART_TYPE_ACTIVE
+                mService?.getCartsByFilters(mLeadsFilterRequest)
                 startViewAnimation(activeCartTextView)
             }
             filterImageView?.id -> {
@@ -1223,7 +1222,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
 
     override fun onLeadsItemCLickChanged(item: LeadsResponse?) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            showToast(item?.customerName)
+            showToast(item?.phoneNumber)
         }
     }
 
@@ -1265,15 +1264,13 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                                 }
                             }
                             doneTextView.setOnClickListener {
-                                val request = LeadsListRequest(
-                                    userName = "",
-                                    startDate = leadsFilterStartDate,
-                                    endDate = leadsFilterEndDate,
-                                    userPhone = "",
-                                    sortType = leadsFilterSortType,
+                                mLeadsFilterRequest.apply {
+                                    startDate = leadsFilterStartDate
+                                    endDate = leadsFilterEndDate
+                                    sortType = leadsFilterSortType
                                     cartType = mLeadsCartTypeSelection
-                                )
-                                mService?.getCartsByFilters(request)
+                                }
+                                mService?.getCartsByFilters(mLeadsFilterRequest)
                                 (this@apply).dismiss()
                             }
                             recyclerView.apply {
