@@ -263,6 +263,7 @@ class Constants {
         const val SORT_TYPE_DESCENDING                          = -1
         const val SORT_TYPE_ASCENDING                           = 1
         //LEADS_CART_TYPE
+        const val CART_TYPE_DEFAULT                             = -1
         const val CART_TYPE_ABANDONED                           = 0
         const val CART_TYPE_ACTIVE                              = 1
         //LEADS_FILTER_TYPE

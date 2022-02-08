@@ -48,6 +48,8 @@ import kotlinx.android.synthetic.main.layout_order_fragment.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.util.*
+import kotlin.collections.ArrayList
 
 class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuItemClickListener,
     SwipeRefreshLayout.OnRefreshListener, IOrderListItemListener, ILeadsListItemListener {
@@ -78,6 +80,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
     private var mLeadsFilterAdapter: LeadsFilterBottomSheetAdapter? = null
     private val mLeadsFilterList : ArrayList<LeadsFilterListItemResponse> = ArrayList()
     private var mLeadsFilterResponse: LeadsFilterResponse? = null
+    private var mLeadsCartTypeSelection = Constants.CART_TYPE_DEFAULT
 
     companion object {
         var sOrderPageInfoResponse: OrderPageInfoResponse? = null
@@ -660,11 +663,12 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                     endDate = "",
                     userPhone = "",
                     sortType = Constants.SORT_TYPE_DESCENDING,
-                    cartType = Constants.CART_TYPE_ABANDONED
+                    cartType = Constants.CART_TYPE_DEFAULT
                 )
                 mService?.getCartsByFilters(request)
             }
             abandonedCartTextView?.id -> {
+                mLeadsCartTypeSelection = Constants.CART_TYPE_ABANDONED
                 mActivity?.let { context ->
                     abandonedCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.selected_chip_blue_border_bluish_background)
                     activeCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_grey_background_without_padding)
@@ -681,6 +685,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                 mService?.getCartsByFilters(request)
             }
             activeCartTextView?.id -> {
+                mLeadsCartTypeSelection = Constants.CART_TYPE_ACTIVE
                 mActivity?.let { context ->
                     activeCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.selected_chip_blue_border_bluish_background)
                     abandonedCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_grey_background_without_padding)
@@ -1210,6 +1215,9 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
     }
 
     private fun showLeadsFilterBottomSheet() {
+        var leadsFilterStartDate = ""
+        var leadsFilterEndDate = ""
+        var leadsFilterSortType = Constants.SORT_TYPE_DESCENDING
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             try {
                 mActivity?.let {
@@ -1244,6 +1252,16 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                                 }
                             }
                             doneTextView.setOnClickListener {
+                                val request = LeadsListRequest(
+                                    userName = "",
+                                    startDate = "",
+                                    endDate = "",
+                                    userPhone = "",
+                                    sortType = leadsFilterSortType,
+                                    cartType = mLeadsCartTypeSelection
+                                )
+                                mService?.getCartsByFilters(request)
+
                                 (this@apply).dismiss()
                             }
                             recyclerView.apply {
@@ -1260,6 +1278,19 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                                                     recyclerRedrawPosition = position
                                                     return@forEachIndexed
                                                 }
+                                            }
+                                            when(filterType) {
+                                                Constants.LEADS_FILTER_TYPE_DATE -> {
+                                                    if ("0" == item?.id) {
+
+                                                    } else {
+
+                                                        val currentDate = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+                                                        val endDate = "${currentDate.get(Calendar.YEAR)}-${currentDate.get(Calendar.MONTH) + 1}-${currentDate.get(Calendar.DATE)}"
+                                                        Log.d(TAG, "onLeadsFilterItemClickListener: endDate :: $endDate")
+                                                    }
+                                                }
+                                                Constants.LEADS_FILTER_TYPE_SORT -> leadsFilterSortType = item?.id?.toInt() ?: Constants.SORT_TYPE_DESCENDING
                                             }
                                             mLeadsFilterAdapter?.notifyItemChanged(recyclerRedrawPosition)
                                         }
