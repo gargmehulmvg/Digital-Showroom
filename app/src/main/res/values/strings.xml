@@ -146,6 +146,7 @@
     <string name="best_pick_for_you">Best Pick for You</string>
     <string name="only_numeric">0123456789</string>
     <string name="are_you_sure_you_want_to_delete_this_variant">Are you sure you want to delete this variant ?</string>
+    <string name="no_result_found">No result found</string>
     <string-array name="state_array">
         <item >Andhra Pradesh</item>
         <item >Arunachal Pradesh</item>

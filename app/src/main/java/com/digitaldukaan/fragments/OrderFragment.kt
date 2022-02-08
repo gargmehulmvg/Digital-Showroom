@@ -152,6 +152,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
             } else
                 StaticInstances.sCustomDomainBottomSheetResponse?.let { response -> showDomainPurchasedBottomSheet(response, false) }
         }
+        mIsLeadsTabSelected = false
         return mContentView
     }
 
@@ -597,7 +598,9 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                     data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
                 )
-                showSearchDialog(sOrderPageInfoStaticData, sMobileNumberString, sOrderIdString)
+                if (mIsLeadsTabSelected) {
+                    launchFragment(LeadsSearchFragment.newInstance(), true)
+                } else showSearchDialog(sOrderPageInfoStaticData, sMobileNumberString, sOrderIdString)
             }
             toolbarSearchImageView?.id -> {
                 AppEventsManager.pushAppEvents(
@@ -605,7 +608,9 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                     data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
                 )
-                showSearchDialog(sOrderPageInfoStaticData, sMobileNumberString, sOrderIdString)
+                if (mIsLeadsTabSelected) {
+                    launchFragment(LeadsSearchFragment.newInstance(), true)
+                } else showSearchDialog(sOrderPageInfoStaticData, sMobileNumberString, sOrderIdString)
             }
             ePosContainer?.id -> {
                 AppEventsManager.pushAppEvents(

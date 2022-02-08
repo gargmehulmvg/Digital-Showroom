@@ -594,3 +594,17 @@ fun setHtmlData(textView: TextView, string: String?) {
         textView.text = Html.fromHtml(it, Html.FROM_HTML_MODE_COMPACT)
     }
 }
+
+fun isNumeric(string: String?): Boolean {
+    if (isEmpty(string)) {
+        println("String cannot be parsed, it is null or empty.")
+        return false
+    }
+    return try {
+        val intValue = string?.toInt() ?: 0
+        true
+    } catch (e: NumberFormatException) {
+        println("Input String cannot be parsed to Integer.")
+        false
+    }
+}
