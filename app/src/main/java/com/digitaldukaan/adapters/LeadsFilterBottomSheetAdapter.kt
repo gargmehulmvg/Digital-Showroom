@@ -8,12 +8,14 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.digitaldukaan.R
+import com.digitaldukaan.interfaces.ILeadsFilterItemClickListener
 import com.digitaldukaan.models.response.LeadsFilterListItemResponse
 
 class LeadsFilterBottomSheetAdapter(
     private var mContext: Context?,
-    private var mFilterList: ArrayList<LeadsFilterListItemResponse>?
-    ) : RecyclerView.Adapter<LeadsFilterBottomSheetAdapter.LeadsFilterViewHolder>() {
+    private var mFilterList: ArrayList<LeadsFilterListItemResponse>?,
+    private var mListener: ILeadsFilterItemClickListener
+) : RecyclerView.Adapter<LeadsFilterBottomSheetAdapter.LeadsFilterViewHolder>() {
 
     inner class LeadsFilterViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val headingTextView: TextView = itemView.findViewById(R.id.headingTextView)
@@ -35,7 +37,7 @@ class LeadsFilterBottomSheetAdapter(
             recyclerView.apply {
                 val gridLayoutManager = StaggeredGridLayoutManager(2, RecyclerView.HORIZONTAL)
                 layoutManager = gridLayoutManager
-                adapter = LeadsFilterOptionsItemAdapter(filterItem?.filterOptionsList, filterItem?.type)
+                adapter = LeadsFilterOptionsItemAdapter(mContext, filterItem?.filterOptionsList, mListener, filterItem?.type)
             }
         }
     }

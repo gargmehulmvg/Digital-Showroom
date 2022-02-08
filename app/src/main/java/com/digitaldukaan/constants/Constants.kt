@@ -265,5 +265,8 @@ class Constants {
         //LEADS_CART_TYPE
         const val CART_TYPE_ABANDONED                           = 0
         const val CART_TYPE_ACTIVE                              = 1
+        //LEADS_FILTER_TYPE
+        const val LEADS_FILTER_TYPE_SORT                        = "sort"
+        const val LEADS_FILTER_TYPE_DATE                        = "date"
     }
 }

@@ -20,10 +20,7 @@ import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.*
 import com.digitaldukaan.constants.*
-import com.digitaldukaan.interfaces.IAdapterItemClickListener
-import com.digitaldukaan.interfaces.ILandingPageAdapterListener
-import com.digitaldukaan.interfaces.ILeadsListItemListener
-import com.digitaldukaan.interfaces.IOrderListItemListener
+import com.digitaldukaan.interfaces.*
 import com.digitaldukaan.models.dto.CleverTapProfile
 import com.digitaldukaan.models.request.*
 import com.digitaldukaan.models.response.*
@@ -78,7 +75,9 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
     private var mPaymentLinkBottomSheet: BottomSheetDialog? = null
     private var mPaymentLinkAmountStr: String? = null
     private var mIsCustomDomainTopViewHide: Boolean = false
-    private var mIsLeadsSelected: Boolean = false
+    private var mLeadsFilterAdapter: LeadsFilterBottomSheetAdapter? = null
+    private val mLeadsFilterList : ArrayList<LeadsFilterListItemResponse> = ArrayList()
+    private var mLeadsFilterResponse: LeadsFilterResponse? = null
 
     companion object {
         var sOrderPageInfoResponse: OrderPageInfoResponse? = null
@@ -677,8 +676,10 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                 startViewAnimation(activeCartTextView)
             }
             filterImageView?.id -> {
-                val request = LeadsFilterOptionsRequest(cartType = -1, startDate = "", endDate = "", sortType = Constants.SORT_TYPE_DESCENDING)
-                mService?.getCartFilterOptions(request)
+                if (null == mLeadsFilterResponse) {
+                    val request = LeadsFilterOptionsRequest(cartType = -1, startDate = "", endDate = "", sortType = Constants.SORT_TYPE_DESCENDING)
+                    mService?.getCartFilterOptions(request)
+                } else showLeadsFilterBottomSheet()
             }
         }
     }
@@ -1165,8 +1166,12 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             if (commonResponse.mIsSuccessStatus) {
-                val filterResponse = Gson().fromJson(commonResponse.mCommonDataStr, LeadsFilterResponse::class.java)
-                showFilterOptionsBottomSheet(filterResponse)
+                mLeadsFilterResponse = Gson().fromJson(commonResponse.mCommonDataStr, LeadsFilterResponse::class.java)
+                mLeadsFilterResponse?.filterList?.forEachIndexed { _, itemResponse ->
+                    if (isNotEmpty(itemResponse.heading))
+                        mLeadsFilterList.add(itemResponse)
+                }
+                showLeadsFilterBottomSheet()
             }
         }
     }
@@ -1177,7 +1182,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
         }
     }
 
-    private fun showFilterOptionsBottomSheet(filterResponse: LeadsFilterResponse) {
+    private fun showLeadsFilterBottomSheet() {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             try {
                 mActivity?.let {
@@ -1190,19 +1195,35 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                             val clearFilterTextView: TextView = findViewById(R.id.clearFilterTextView)
                             val doneTextView: TextView = findViewById(R.id.doneTextView)
                             val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
-                            filterResponse.staticText.let { staticText ->
-                                doneTextView.text = staticText.text_done
-                                clearFilterTextView.text = staticText.text_clear_filter
-                            }
-                            val newFilterList : ArrayList<LeadsFilterListItemResponse> = arrayListOf()
-                            for(item in filterResponse.filterList){
-                                if(isNotEmpty(item.heading))
-                                    newFilterList.add(item)
+                            mLeadsFilterResponse?.staticText.let { staticText ->
+                                doneTextView.text = staticText?.text_done
+                                clearFilterTextView.text = staticText?.text_clear_filter
                             }
                             recyclerView.apply {
                                 isNestedScrollingEnabled = false
                                 layoutManager = LinearLayoutManager(mActivity)
-                                adapter = LeadsFilterBottomSheetAdapter(mActivity, newFilterList)
+                                mLeadsFilterList.forEachIndexed { _, itemResponse ->
+                                    if (Constants.LEADS_FILTER_TYPE_SORT == itemResponse.type) {
+                                        itemResponse.filterOptionsList[0].isSelected = true
+                                        return@forEachIndexed
+                                    }
+                                }
+                                mLeadsFilterAdapter = LeadsFilterBottomSheetAdapter(mActivity, mLeadsFilterList, object : ILeadsFilterItemClickListener {
+
+                                        override fun onLeadsFilterItemClickListener(item: LeadsFilterOptionsItemResponse?, filterType:String?) {
+                                            Log.d(TAG, "filterType :: $filterType , item :: $item")
+                                            var recyclerRedrawPosition = 0
+                                            mLeadsFilterList.forEachIndexed { position, itemResponse ->
+                                                if (filterType == itemResponse.type) {
+                                                    recyclerRedrawPosition = position
+                                                    return@forEachIndexed
+                                                }
+                                            }
+                                            mLeadsFilterAdapter?.notifyItemChanged(recyclerRedrawPosition)
+                                        }
+
+                                    })
+                                adapter = mLeadsFilterAdapter
                             }
                         }
                     }.show()
