@@ -615,16 +615,19 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                     visibility = View.VISIBLE
                 }
                 val pendingOrderTextView: TextView? = mContentView?.findViewById(R.id.pendingOrderTextView)
-                pendingOrderTextView?.visibility = View.VISIBLE
                 val completedOrderTextView: TextView? = mContentView?.findViewById(R.id.completedOrderTextView)
-                completedOrderTextView?.visibility = View.VISIBLE
+                with(View.VISIBLE) {
+                    pendingOrderTextView?.visibility = this
+                    completedOrderTextView?.visibility = this
+                }
                 val abandonedCartTextView: TextView? = mContentView?.findViewById(R.id.abandonedCartTextView)
-                abandonedCartTextView?.visibility = View.GONE
                 val activeCartTextView: TextView? = mContentView?.findViewById(R.id.activeCartTextView)
-                activeCartTextView?.visibility = View.GONE
                 val filterImageView: ImageView? = mContentView?.findViewById(R.id.filterImageView)
-                filterImageView?.visibility = View.GONE
-
+                with(View.GONE) {
+                    abandonedCartTextView?.visibility = this
+                    activeCartTextView?.visibility = this
+                    filterImageView?.visibility = this
+                }
             }
             myLeadsHeadingTextView?.id -> {
                 setupTabLayout(myLeadsHeadingTextView, myOrdersHeadingTextView)
@@ -1148,7 +1151,10 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                 sLeadsList = ArrayList()
                 sLeadsList = Gson().fromJson(commonResponse.mCommonDataStr, listType)
                 if (isEmpty(sLeadsList)) {
-                    //TODO do the code for view visibility of the empty Leads container
+                    val noLeadsLayout: View? = mContentView?.findViewById(R.id.noLeadsLayout)
+                    noLeadsLayout?.visibility = View.VISIBLE
+                    val noOrderLayout: View? = mContentView?.findViewById(R.id.noOrderLayout)
+                    noOrderLayout?.visibility = View.GONE
                 }
                 mLeadsAdapter?.setLeadsList(sLeadsList)
             }
@@ -1188,12 +1194,16 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                                 doneTextView.text = staticText.text_done
                                 clearFilterTextView.text = staticText.text_clear_filter
                             }
+                            val newFilterList : ArrayList<LeadsFilterListItemResponse> = arrayListOf()
+                            for(item in filterResponse.filterList){
+                                if(isNotEmpty(item.heading))
+                                    newFilterList.add(item)
+                            }
                             recyclerView.apply {
                                 isNestedScrollingEnabled = false
                                 layoutManager = LinearLayoutManager(mActivity)
-                                adapter = LeadsFilterBottomSheetAdapter(mActivity, filterResponse.filterList)
+                                adapter = LeadsFilterBottomSheetAdapter(mActivity, newFilterList)
                             }
-
                         }
                     }.show()
                 }
