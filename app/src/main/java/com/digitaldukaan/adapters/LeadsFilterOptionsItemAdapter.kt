@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.digitaldukaan.R
+import com.digitaldukaan.constants.isNotEmpty
 import com.digitaldukaan.interfaces.ILeadsFilterItemClickListener
 import com.digitaldukaan.models.response.LeadsFilterOptionsItemResponse
 
@@ -39,7 +40,7 @@ class LeadsFilterOptionsItemAdapter(
     override fun onBindViewHolder(holder: LeadsFilterViewHolder, position: Int) {
         holder.apply {
             val item = mFilterItemList?.get(position)
-            textView.text = item?.text
+            textView.text = if (isNotEmpty(item?.customDateRangeStr)) item?.customDateRangeStr else item?.text
             mContext?.let { context ->
                 textView.background = ContextCompat.getDrawable(context, if (true == item?.isSelected) R.drawable.selected_chip_blue_border_bluish_background else R.drawable.ripple_slight_curve_white_background_grey_border)
             }
