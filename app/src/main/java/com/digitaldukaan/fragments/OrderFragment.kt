@@ -50,6 +50,7 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.math.abs
 
 class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuItemClickListener,
     SwipeRefreshLayout.OnRefreshListener, IOrderListItemListener, ILeadsListItemListener {
@@ -1284,10 +1285,11 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                                                     if ("0" == item?.id) {
 
                                                     } else {
-
                                                         val currentDate = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
                                                         val endDate = "${currentDate.get(Calendar.YEAR)}-${currentDate.get(Calendar.MONTH) + 1}-${currentDate.get(Calendar.DATE)}"
-                                                        Log.d(TAG, "onLeadsFilterItemClickListener: endDate :: $endDate")
+                                                        currentDate.add(Calendar.DAY_OF_YEAR, -abs(item?.id?.toInt() ?: 0))
+                                                        val startDate = "${currentDate.get(Calendar.YEAR)}-${currentDate.get(Calendar.MONTH) + 1}-${currentDate.get(Calendar.DATE)}"
+                                                        Log.d(TAG, "onLeadsFilterItemClickListener: startDate :: $startDate endDate :: $endDate")
                                                     }
                                                 }
                                                 Constants.LEADS_FILTER_TYPE_SORT -> leadsFilterSortType = item?.id?.toInt() ?: Constants.SORT_TYPE_DESCENDING
