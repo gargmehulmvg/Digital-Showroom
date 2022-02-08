@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.appsflyer.AppsFlyerLib
-import com.bumptech.glide.Glide
 import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.*
@@ -65,14 +64,9 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
     private var domainExpiryTextView: TextView? = null
     private var ordersRecyclerView: RecyclerView? = null
     private var completedOrdersRecyclerView: RecyclerView? = null
-    private var filterByRecyclerView: RecyclerView? = null
-    private var sortByRecyclerView: RecyclerView? = null
     private var mOrderAdapter: OrderAdapterV2? = null
     private var mLeadsAdapter: LeadsAdapter? = null
     private var mCompletedOrderAdapter: OrderAdapterV2? = null
-    private var mFilterByAdapter: LeadsFilterOptionsBottomSheetAdapter? = null
-    private var mSortByAdapter: LeadsFilterOptionsBottomSheetAdapter? = null
-    private var mLinearLayoutManager: LinearLayoutManager? = null
     private var mPendingPageCount = 1
     private var mCompletedPageCount = 1
     private var mLandingPageAdapterPosition = 1
@@ -99,8 +93,6 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
         private var sOrderList: ArrayList<OrderItemResponse> = ArrayList()
         private var sCompletedOrderList: ArrayList<OrderItemResponse> = ArrayList()
         private var sLeadsList: ArrayList<LeadsResponse> = ArrayList()
-        private var sFilterByList: ArrayList<LeadsFilterResponse> = ArrayList()
-        private var sSortByList: ArrayList<LeadsFilterResponse> = ArrayList()
 
         fun newInstance(isNewUserLogin: Boolean = false, isClearOrderPageResponse: Boolean = false): OrderFragment {
             val fragment = OrderFragment()
@@ -165,8 +157,6 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
         domainExpiryTextView = mContentView?.findViewById(R.id.domainExpiryTextView)
         ordersRecyclerView = mContentView?.findViewById(R.id.ordersRecyclerView)
         completedOrdersRecyclerView = mContentView?.findViewById(R.id.completedOrdersRecyclerView)
-        filterByRecyclerView = mContentView?.findViewById(R.id.filterByRecyclerView)
-        sortByRecyclerView = mContentView?.findViewById(R.id.sortByRecyclerView)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -233,8 +223,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
             isNestedScrollingEnabled = false
             mActivity?.let { context -> mOrderAdapter = OrderAdapterV2(context, sOrderList) }
             mOrderAdapter?.setCheckBoxListener(this@OrderFragment)
-            mLinearLayoutManager = LinearLayoutManager(mActivity)
-            layoutManager = mLinearLayoutManager
+            layoutManager = LinearLayoutManager(mActivity)
             adapter = mOrderAdapter
         }
     }
@@ -246,8 +235,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                 mCompletedOrderAdapter = OrderAdapterV2(context, sCompletedOrderList)
             }
             mCompletedOrderAdapter?.setCheckBoxListener(this@OrderFragment)
-            mLinearLayoutManager = LinearLayoutManager(mActivity)
-            layoutManager = mLinearLayoutManager
+            layoutManager = LinearLayoutManager(mActivity)
             adapter = mCompletedOrderAdapter
         }
     }
@@ -643,8 +631,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                 ordersRecyclerView?.apply {
                     isNestedScrollingEnabled = false
                     mActivity?.let { context -> mLeadsAdapter = LeadsAdapter(context, sLeadsList, this@OrderFragment) }
-                    mLinearLayoutManager = LinearLayoutManager(mActivity)
-                    layoutManager = mLinearLayoutManager
+                    layoutManager = LinearLayoutManager(mActivity)
                     adapter = null
                     adapter = mLeadsAdapter
                 }
@@ -689,7 +676,6 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
             filterImageView?.id -> {
                 val request = LeadsFilterOptionsRequest(cartType = -1, startDate = "", endDate = "", sortType = Constants.SORT_TYPE_DESCENDING)
                 mService?.getCartFilterOptions(request)
-                showFilterOptionsBottomSheet()
             }
         }
     }
@@ -1132,7 +1118,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
             try {
                 val response = RetrofitApi().getServerCallObject()?.getStaffMembersDetails(getStringDataFromSharedPref(Constants.STORE_ID))
                 response?.let { it ->
-                    val staffMemberDetailsResponse = Gson().fromJson<CheckStaffInviteResponse>(it.body()?.mCommonDataStr, CheckStaffInviteResponse::class.java)
+                    val staffMemberDetailsResponse = Gson().fromJson(it.body()?.mCommonDataStr, CheckStaffInviteResponse::class.java)
                     blurBottomNavBarContainer?.visibility = View.INVISIBLE
                     stopProgress()
                     if (null != staffMemberDetailsResponse) {
@@ -1172,9 +1158,9 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
     override fun getCartFilterOptionsResponse(commonResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
-            if (true == swipeRefreshLayout?.isRefreshing) swipeRefreshLayout?.isRefreshing = false
             if (commonResponse.mIsSuccessStatus) {
-                showToast("SUCCESS RESPONSE")
+                val filterResponse = Gson().fromJson(commonResponse.mCommonDataStr, LeadsFilterResponse::class.java)
+                showFilterOptionsBottomSheet(filterResponse)
             }
         }
     }
@@ -1185,33 +1171,27 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
         }
     }
 
-    private fun showFilterOptionsBottomSheet() {
+    private fun showFilterOptionsBottomSheet(filterResponse: LeadsFilterResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             try {
                 mActivity?.let {
                     val bottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
-                    val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_leads_filter_details, it.findViewById(R.id.bottomSheetContainer))
+                    val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_leads_filter, it.findViewById(R.id.bottomSheetContainer))
                     bottomSheetDialog.apply {
                         setContentView(view)
                         setCancelable(true)
                         view.run {
-                            val filterByTextView: TextView = findViewById(R.id.filterByTextView)
-                            val sortByTextView: TextView = findViewById(R.id.sortByTextView)
                             val clearFilterTextView: TextView = findViewById(R.id.clearFilterTextView)
                             val doneTextView: TextView = findViewById(R.id.doneTextView)
-                            filterByRecyclerView?.apply {
-                                isNestedScrollingEnabled = false
-                                mFilterByAdapter = LeadsFilterOptionsBottomSheetAdapter(sFilterByList)
-                                mLinearLayoutManager = LinearLayoutManager(mActivity)
-                                layoutManager = mLinearLayoutManager
-                                adapter = mFilterByAdapter
+                            val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
+                            filterResponse.staticText.let { staticText ->
+                                doneTextView.text = staticText.text_done
+                                clearFilterTextView.text = staticText.text_clear_filter
                             }
-                            sortByRecyclerView?.apply {
+                            recyclerView.apply {
                                 isNestedScrollingEnabled = false
-                                mSortByAdapter = LeadsFilterOptionsBottomSheetAdapter(sSortByList)
-                                mLinearLayoutManager = LinearLayoutManager(mActivity)
-                                layoutManager = mLinearLayoutManager
-                                adapter = mSortByAdapter
+                                layoutManager = LinearLayoutManager(mActivity)
+                                adapter = LeadsFilterBottomSheetAdapter(mActivity, filterResponse.filterList)
                             }
 
                         }

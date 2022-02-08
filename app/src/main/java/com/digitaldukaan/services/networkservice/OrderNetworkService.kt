@@ -271,7 +271,8 @@ class OrderNetworkService {
 
     suspend fun getCartFilterOptionsServerCall(serviceInterface: IHomeServiceInterface, request: LeadsFilterOptionsRequest) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.getCartFilterOptions(request)
+//            val response = RetrofitApi().getServerCallObject()?.getCartFilterOptions(request)
+            val response = RetrofitApi().getServerCallObject()?.getCartFilterOptions()
             response?.let {
                 if (it.isSuccessful) it.body()?.let { commonApiResponse -> serviceInterface.getCartFilterOptionsResponse(commonApiResponse) }
                 else {
