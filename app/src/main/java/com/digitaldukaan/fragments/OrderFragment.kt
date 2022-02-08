@@ -1227,7 +1227,21 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                                 clearFilterTextView.text = staticText?.text_clear_filter
                             }
                             clearFilterTextView.setOnClickListener {
-
+                                mLeadsFilterList.forEachIndexed { position, itemResponse ->
+                                    if (Constants.LEADS_FILTER_TYPE_SORT == itemResponse.type) {
+                                        itemResponse.filterOptionsList.forEachIndexed { pos, filterItem ->
+                                            filterItem.isSelected = (0 == pos)
+                                        }
+                                    } else {
+                                        itemResponse.filterOptionsList.forEachIndexed { _, filterItem ->
+                                            with(filterItem) {
+                                                isSelected = false
+                                                customDateRangeStr = ""
+                                            }
+                                        }
+                                    }
+                                    mLeadsFilterAdapter?.notifyItemChanged(position)
+                                }
                             }
                             doneTextView.setOnClickListener {
                                 (this@apply).dismiss()

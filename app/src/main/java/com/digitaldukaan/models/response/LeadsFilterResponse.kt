@@ -16,6 +16,7 @@ data class LeadsFilterListItemResponse(
 data class LeadsFilterOptionsItemResponse(
     @SerializedName("id")                       var id: String = "",
     @SerializedName("text")                     var text: String = "",
+    var customDateRangeStr: String = "",
     var isSelected: Boolean = false
 )
 
