@@ -290,7 +290,7 @@ interface Apis {
     suspend fun getDeliveryTime(): Response<CommonApiResponse>
 
     @GET("api/dotk/vm1/orders/getCartFilterOptions")
-    suspend fun getCartFilterOptions(): Response<CommonApiResponse>
+    suspend fun getCartFilterOptions(@Body request: LeadsFilterOptionsRequest): Response<CommonApiResponse>
 
     @GET("api/dotk/vm1/onboard/getOnboardingPageInfo")
     suspend fun getCustomDomainBottomSheetData(): Response<CommonApiResponse>

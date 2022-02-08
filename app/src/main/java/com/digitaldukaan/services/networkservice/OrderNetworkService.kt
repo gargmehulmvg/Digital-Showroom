@@ -259,7 +259,7 @@ class OrderNetworkService {
                     val responseBody = it.errorBody()
                     responseBody?.let {
                         val errorResponse = Gson().fromJson(responseBody.string(), CommonApiResponse::class.java)
-                        serviceInterface.checkStaffInviteResponse(errorResponse)
+                        serviceInterface.onGetCartsByFiltersResponse(errorResponse)
                     }
                 }
             }
@@ -269,9 +269,9 @@ class OrderNetworkService {
         }
     }
 
-    suspend fun getCartFilterOptionsServerCall(serviceInterface: IHomeServiceInterface) {
+    suspend fun getCartFilterOptionsServerCall(serviceInterface: IHomeServiceInterface, request: LeadsFilterOptionsRequest) {
         try {
-            val response = RetrofitApi().getServerCallObject()?.getCartFilterOptions()
+            val response = RetrofitApi().getServerCallObject()?.getCartFilterOptions(request)
             response?.let {
                 if (it.isSuccessful) it.body()?.let { commonApiResponse -> serviceInterface.getCartFilterOptionsResponse(commonApiResponse) }
                 else {

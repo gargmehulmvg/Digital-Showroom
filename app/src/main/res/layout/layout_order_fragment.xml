@@ -338,7 +338,7 @@
                             android:contentDescription="@string/image_view_content_description"
                             android:onClick="onClick"
                             android:padding="@dimen/_6sdp"
-                            android:src="@drawable/ic_search"
+                            android:src="@drawable/ic_filter"
                             android:visibility="gone"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toStartOf="@id/searchImageView"

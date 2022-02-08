@@ -81,9 +81,9 @@ class OrderFragmentService {
         }
     }
 
-    fun getCartFilterOptions() {
+    fun getCartFilterOptions(request: LeadsFilterOptionsRequest) {
         CoroutineScopeUtils().runTaskOnCoroutineBackground {
-            mNetworkService.getCartFilterOptionsServerCall(mServiceInterface)
+            mNetworkService.getCartFilterOptionsServerCall(mServiceInterface, request)
         }
     }
 

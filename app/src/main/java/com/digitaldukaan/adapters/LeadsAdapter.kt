@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.digitaldukaan.R
@@ -32,6 +33,7 @@ class LeadsAdapter(
         val leadDetailTextView: TextView = itemView.findViewById(R.id.leadDetailTextView)
         val leadLastUpdatedTextView: TextView = itemView.findViewById(R.id.leadLastUpdatedTextView)
         val priceTextView: TextView = itemView.findViewById(R.id.priceTextView)
+        val cartStatusTextView: TextView = itemView.findViewById(R.id.cartStatusTextView)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LeadsViewHolder {
@@ -55,6 +57,9 @@ class LeadsAdapter(
             Glide.with(mContext)
                 .load(if (Constants.CART_TYPE_ABANDONED == item?.cartType) R.drawable.ic_abandoned_cart else R.drawable.ic_active_cart)
                 .into(cartImageView)
+            cartStatusTextView.text = if (Constants.CART_TYPE_ABANDONED == item?.cartType) "Cart Abandoned" else "Cart Active"
+            cartStatusTextView.background = ContextCompat.getDrawable(mContext, if (Constants.CART_TYPE_ABANDONED == item?.cartType) R.drawable.curve_red_cart_abandoned_background else R.drawable.curve_blue_cart_active_background)
+            cartStatusTextView.setTextColor(ContextCompat.getColor(mContext, if (Constants.CART_TYPE_ABANDONED == item?.cartType) R.color.leads_cart_abandoned_text_color else R.color.leads_cart_active_text_color))
         }
     }
 }

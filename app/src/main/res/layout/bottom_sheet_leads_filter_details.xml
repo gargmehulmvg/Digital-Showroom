@@ -50,72 +50,16 @@
                     app:layout_constraintTop_toTopOf="parent"
                     tools:text="Filter by updated at:" />
 
-                <TextView
-                    android:id="@+id/textView1"
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/filterByRecyclerView"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/roboto_medium"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/_11sdp"
-                    android:background="@drawable/ripple_curve_grey_border_white_background"
-                    android:paddingStart="@dimen/_12sdp"
-                    android:paddingTop="@dimen/_4sdp"
-                    android:paddingEnd="@dimen/_12sdp"
-                    android:paddingBottom="@dimen/_4sdp"
-                    android:layout_marginTop="@dimen/_15sdp"
-                    app:layout_constraintStart_toStartOf="parent"
+                    android:layout_height="match_parent"
+                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                    app:spanCount="2"
+                    tools:itemCount="4"
                     app:layout_constraintTop_toBottomOf="@id/filterByTextView"
-                    tools:text="Last 7 Days" />
-
-                <TextView
-                    android:id="@+id/textView2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/roboto_medium"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/_11sdp"
-                    android:background="@drawable/ripple_curve_grey_border_white_background"
-                    android:paddingStart="@dimen/_12sdp"
-                    android:paddingTop="@dimen/_4sdp"
-                    android:paddingEnd="@dimen/_12sdp"
-                    android:paddingBottom="@dimen/_4sdp"
-                    android:layout_marginStart="@dimen/_14sdp"
-                    app:layout_constraintStart_toEndOf="@id/textView1"
-                    app:layout_constraintTop_toTopOf="@id/textView1"
-                    tools:text="Last 30 Days" />
-                <TextView
-                    android:id="@+id/textView3"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/roboto_medium"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/_11sdp"
-                    android:background="@drawable/ripple_curve_grey_border_white_background"
-                    android:paddingStart="@dimen/_12sdp"
-                    android:paddingTop="@dimen/_4sdp"
-                    android:paddingEnd="@dimen/_12sdp"
-                    android:paddingBottom="@dimen/_4sdp"
-                    android:layout_marginTop="@dimen/_15sdp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/textView1"
-                    tools:text="Last 90 Days" />
-                <TextView
-                    android:id="@+id/textView4"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/roboto_medium"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/_11sdp"
-                    android:background="@drawable/ripple_curve_grey_border_white_background"
-                    android:paddingStart="@dimen/_12sdp"
-                    android:paddingTop="@dimen/_4sdp"
-                    android:paddingEnd="@dimen/_12sdp"
-                    android:paddingBottom="@dimen/_4sdp"
-                    android:layout_marginStart="@dimen/_14sdp"
-                    app:layout_constraintStart_toEndOf="@id/textView3"
-                    app:layout_constraintTop_toTopOf="@id/textView3"
-                    tools:text="Filter by updated at:" />
-
+                    tools:listitem="@layout/filter_options_item" />
 
                 <View
                     android:id="@+id/separator1"
@@ -123,7 +67,7 @@
                     android:layout_height="@dimen/_1sdp"
                     android:layout_marginTop="@dimen/_15sdp"
                     android:background="@color/curve_grey_border"
-                    app:layout_constraintTop_toBottomOf="@id/textView3" />
+                    app:layout_constraintTop_toBottomOf="@id/filterByRecyclerView" />
 
                 <TextView
                     android:id="@+id/sortByTextView"
@@ -137,39 +81,17 @@
                     app:layout_constraintTop_toTopOf="@id/separator1"
                     tools:text="Sort by:" />
 
-                <TextView
-                    android:id="@+id/textViewNewestFirst"
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/sortByRecyclerView"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/roboto_medium"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/_11sdp"
-                    android:background="@drawable/ripple_curve_grey_border_white_background"
-                    android:paddingStart="@dimen/_12sdp"
-                    android:paddingTop="@dimen/_4sdp"
-                    android:paddingEnd="@dimen/_12sdp"
-                    android:paddingBottom="@dimen/_4sdp"
-                    android:layout_marginTop="@dimen/_15sdp"
+                    android:layout_height="match_parent"
+                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                    app:spanCount="1"
+                    tools:itemCount="2"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@id/sortByTextView"
-                    tools:text="Last Updated (Newest First)" />
+                    tools:listitem="@layout/filter_options_item" />
 
-                <TextView
-                    android:id="@+id/textViewOldestFirst"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/roboto_medium"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/_11sdp"
-                    android:background="@drawable/ripple_curve_grey_border_white_background"
-                    android:paddingStart="@dimen/_12sdp"
-                    android:paddingTop="@dimen/_4sdp"
-                    android:paddingEnd="@dimen/_12sdp"
-                    android:paddingBottom="@dimen/_4sdp"
-                    android:layout_marginTop="@dimen/_15sdp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/textViewNewestFirst"
-                    tools:text="Last Updated (Oldest First)" />
 
                 <TextView
                     android:id="@+id/clearFilterTextView"
@@ -190,7 +112,7 @@
                     app:layout_constraintEnd_toStartOf="@+id/doneTextView"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/textViewOldestFirst" />
+                    app:layout_constraintTop_toBottomOf="@id/sortByRecyclerView" />
 
                 <TextView
                     android:id="@+id/doneTextView"

@@ -16,12 +16,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.appsflyer.AppsFlyerLib
+import com.bumptech.glide.Glide
 import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
-import com.digitaldukaan.adapters.LandingPageCardsAdapter
-import com.digitaldukaan.adapters.LandingPageShortcutsAdapter
-import com.digitaldukaan.adapters.LeadsAdapter
-import com.digitaldukaan.adapters.OrderAdapterV2
+import com.digitaldukaan.adapters.*
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.IAdapterItemClickListener
 import com.digitaldukaan.interfaces.ILandingPageAdapterListener
@@ -67,9 +65,13 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
     private var domainExpiryTextView: TextView? = null
     private var ordersRecyclerView: RecyclerView? = null
     private var completedOrdersRecyclerView: RecyclerView? = null
+    private var filterByRecyclerView: RecyclerView? = null
+    private var sortByRecyclerView: RecyclerView? = null
     private var mOrderAdapter: OrderAdapterV2? = null
     private var mLeadsAdapter: LeadsAdapter? = null
     private var mCompletedOrderAdapter: OrderAdapterV2? = null
+    private var mFilterByAdapter: LeadsFilterOptionsBottomSheetAdapter? = null
+    private var mSortByAdapter: LeadsFilterOptionsBottomSheetAdapter? = null
     private var mLinearLayoutManager: LinearLayoutManager? = null
     private var mPendingPageCount = 1
     private var mCompletedPageCount = 1
@@ -94,10 +96,11 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
         private var sOrderIdString = ""
         private var sIsMorePendingOrderAvailable = false
         private var sIsMoreCompletedOrderAvailable = false
-        private var sIsMoreLeadsAvailable = false
         private var sOrderList: ArrayList<OrderItemResponse> = ArrayList()
         private var sCompletedOrderList: ArrayList<OrderItemResponse> = ArrayList()
         private var sLeadsList: ArrayList<LeadsResponse> = ArrayList()
+        private var sFilterByList: ArrayList<LeadsFilterResponse> = ArrayList()
+        private var sSortByList: ArrayList<LeadsFilterResponse> = ArrayList()
 
         fun newInstance(isNewUserLogin: Boolean = false, isClearOrderPageResponse: Boolean = false): OrderFragment {
             val fragment = OrderFragment()
@@ -162,6 +165,8 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
         domainExpiryTextView = mContentView?.findViewById(R.id.domainExpiryTextView)
         ordersRecyclerView = mContentView?.findViewById(R.id.ordersRecyclerView)
         completedOrdersRecyclerView = mContentView?.findViewById(R.id.completedOrdersRecyclerView)
+        filterByRecyclerView = mContentView?.findViewById(R.id.filterByRecyclerView)
+        sortByRecyclerView = mContentView?.findViewById(R.id.sortByRecyclerView)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -681,6 +686,11 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                 mService?.getCartsByFilters(request)
                 startViewAnimation(activeCartTextView)
             }
+            filterImageView?.id -> {
+                val request = LeadsFilterOptionsRequest(cartType = -1, startDate = "", endDate = "", sortType = Constants.SORT_TYPE_DESCENDING)
+                mService?.getCartFilterOptions(request)
+                showFilterOptionsBottomSheet()
+            }
         }
     }
 
@@ -1160,12 +1170,56 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
     }
 
     override fun getCartFilterOptionsResponse(commonResponse: CommonApiResponse) {
-        TODO("Not yet implemented")
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            if (true == swipeRefreshLayout?.isRefreshing) swipeRefreshLayout?.isRefreshing = false
+            if (commonResponse.mIsSuccessStatus) {
+                showToast("SUCCESS RESPONSE")
+            }
+        }
     }
 
     override fun onLeadsItemCLickChanged(item: LeadsResponse?) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             showToast(item?.customerName)
+        }
+    }
+
+    private fun showFilterOptionsBottomSheet() {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            try {
+                mActivity?.let {
+                    val bottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
+                    val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_leads_filter_details, it.findViewById(R.id.bottomSheetContainer))
+                    bottomSheetDialog.apply {
+                        setContentView(view)
+                        setCancelable(true)
+                        view.run {
+                            val filterByTextView: TextView = findViewById(R.id.filterByTextView)
+                            val sortByTextView: TextView = findViewById(R.id.sortByTextView)
+                            val clearFilterTextView: TextView = findViewById(R.id.clearFilterTextView)
+                            val doneTextView: TextView = findViewById(R.id.doneTextView)
+                            filterByRecyclerView?.apply {
+                                isNestedScrollingEnabled = false
+                                mFilterByAdapter = LeadsFilterOptionsBottomSheetAdapter(sFilterByList)
+                                mLinearLayoutManager = LinearLayoutManager(mActivity)
+                                layoutManager = mLinearLayoutManager
+                                adapter = mFilterByAdapter
+                            }
+                            sortByRecyclerView?.apply {
+                                isNestedScrollingEnabled = false
+                                mSortByAdapter = LeadsFilterOptionsBottomSheetAdapter(sSortByList)
+                                mLinearLayoutManager = LinearLayoutManager(mActivity)
+                                layoutManager = mLinearLayoutManager
+                                adapter = mSortByAdapter
+                            }
+
+                        }
+                    }.show()
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "showFilterOptionsBottomSheet: ${e.message}", e)
+            }
         }
     }
 }
