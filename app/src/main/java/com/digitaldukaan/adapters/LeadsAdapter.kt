@@ -11,22 +11,45 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
+import com.digitaldukaan.constants.getStringFromOrderDate
 import com.digitaldukaan.constants.isEmpty
 import com.digitaldukaan.interfaces.ILeadsListItemListener
 import com.digitaldukaan.models.response.LeadsResponse
+import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersAdapter
 import java.util.*
 
 class LeadsAdapter(
     private var mContext: Context,
     private var mLeadsList: ArrayList<LeadsResponse>?,
     private var mListItemListener: ILeadsListItemListener?
-) : RecyclerView.Adapter<LeadsAdapter.LeadsViewHolder>() {
+) : RecyclerView.Adapter<LeadsAdapter.LeadsViewHolder>(), StickyRecyclerHeadersAdapter<LeadsAdapter.HeaderViewHolder> {
 
     fun setLeadsList(leadsList: ArrayList<LeadsResponse>?) {
         this.mLeadsList = leadsList
         this.notifyDataSetChanged()
     }
 
+    inner class HeaderViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        val headerTextView: TextView = itemView.findViewById(R.id.headerTitle)
+    }
+
+    override fun getHeaderId(position: Int): Long {
+        val item = mLeadsList?.get(position)
+        return item?.updatedDate?.time ?: 0
+    }
+
+    override fun onCreateHeaderViewHolder(parent: ViewGroup?): HeaderViewHolder {
+        val view = LayoutInflater.from(parent?.context).inflate(R.layout.order_date_sticky_header_layout, parent, false)
+        return HeaderViewHolder(view)
+    }
+
+    override fun onBindHeaderViewHolder(holder: HeaderViewHolder?, position: Int) {
+        holder?.apply {
+            val item = mLeadsList?.get(position)
+            headerTextView.text = item?.updatedDate?.run { getStringFromOrderDate(this) }
+        }
+    }
+    
     inner class LeadsViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val cartImageView: ImageView = itemView.findViewById(R.id.cartImageView)
         val leadItemContainer: View = itemView.findViewById(R.id.leadItemContainer)

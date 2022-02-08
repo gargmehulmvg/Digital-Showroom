@@ -38,6 +38,7 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration
 import kotlinx.android.synthetic.main.activity_main2.*
+import kotlinx.android.synthetic.main.landing_page_cards_item.*
 import kotlinx.android.synthetic.main.layout_analytics.*
 import kotlinx.android.synthetic.main.layout_home_fragment.*
 import kotlinx.android.synthetic.main.layout_home_fragment.analyticsContainer
@@ -614,12 +615,10 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                 setupTabLayout(myOrdersHeadingTextView, myLeadsHeadingTextView)
                 setupOrdersRecyclerView()
                 setupCompletedOrdersRecyclerView()
-                completedOrdersRecyclerView?.apply {
-                    visibility = View.VISIBLE
-                }
-                val pendingOrderTextView: TextView? = mContentView?.findViewById(R.id.pendingOrderTextView)
-                val completedOrderTextView: TextView? = mContentView?.findViewById(R.id.completedOrderTextView)
+                completedOrdersRecyclerView?.visibility = View.VISIBLE
                 with(View.VISIBLE) {
+                    val pendingOrderTextView: TextView? = mContentView?.findViewById(R.id.pendingOrderTextView)
+                    val completedOrderTextView: TextView? = mContentView?.findViewById(R.id.completedOrderTextView)
                     pendingOrderTextView?.visibility = this
                     completedOrderTextView?.visibility = this
                 }
@@ -641,9 +640,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                     adapter = null
                     adapter = mLeadsAdapter
                 }
-                completedOrdersRecyclerView?.apply {
-                    visibility = View.GONE
-                }
+                completedOrdersRecyclerView?.visibility = View.GONE
                 val pendingOrderTextView: TextView? = mContentView?.findViewById(R.id.pendingOrderTextView)
                 val completedOrderTextView: TextView? = mContentView?.findViewById(R.id.completedOrderTextView)
                 with(View.GONE) {
@@ -1178,12 +1175,27 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                 val listType = object : TypeToken<ArrayList<LeadsResponse>>() {}.type
                 sLeadsList = ArrayList()
                 sLeadsList = Gson().fromJson(commonResponse.mCommonDataStr, listType)
+                val noLeadsLayout: View? = mContentView?.findViewById(R.id.noLeadsLayout)
+                val noOrderLayout: View? = mContentView?.findViewById(R.id.noOrderLayout)
+                val pendingOrderTextView: View? = mContentView?.findViewById(R.id.pendingOrderTextView)
+                val completedOrderTextView: View? = mContentView?.findViewById(R.id.completedOrderTextView)
                 if (isEmpty(sLeadsList)) {
-                    val noLeadsLayout: View? = mContentView?.findViewById(R.id.noLeadsLayout)
                     noLeadsLayout?.visibility = View.VISIBLE
-                    val noOrderLayout: View? = mContentView?.findViewById(R.id.noOrderLayout)
                     noOrderLayout?.visibility = View.GONE
+                } else {
+                    with(View.GONE) {
+                        noLeadsLayout?.visibility = this
+                        noOrderLayout?.visibility = this
+                    }
+                    with(View.VISIBLE) {
+                        ordersRecyclerView?.visibility = this
+                    }
+                    sLeadsList.forEachIndexed { _, itemResponse -> itemResponse.updatedDate = getDateFromOrderString(itemResponse.lastUpdateOn) }
+                    ordersRecyclerView?.removeItemDecorationAt(0)
+                    ordersRecyclerView?.addItemDecoration(StickyRecyclerHeadersDecoration(mLeadsAdapter))
                 }
+                pendingOrderTextView?.visibility = View.GONE
+                completedOrderTextView?.visibility = View.GONE
                 mLeadsAdapter?.setLeadsList(sLeadsList)
             }
         }
@@ -1255,14 +1267,13 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                             doneTextView.setOnClickListener {
                                 val request = LeadsListRequest(
                                     userName = "",
-                                    startDate = "",
-                                    endDate = "",
+                                    startDate = leadsFilterStartDate,
+                                    endDate = leadsFilterEndDate,
                                     userPhone = "",
                                     sortType = leadsFilterSortType,
                                     cartType = mLeadsCartTypeSelection
                                 )
                                 mService?.getCartsByFilters(request)
-
                                 (this@apply).dismiss()
                             }
                             recyclerView.apply {
@@ -1286,10 +1297,10 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
 
                                                     } else {
                                                         val currentDate = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
-                                                        val endDate = "${currentDate.get(Calendar.YEAR)}-${currentDate.get(Calendar.MONTH) + 1}-${currentDate.get(Calendar.DATE)}"
+                                                        leadsFilterEndDate = "${currentDate.get(Calendar.YEAR)}-${currentDate.get(Calendar.MONTH) + 1}-${currentDate.get(Calendar.DATE)}"
                                                         currentDate.add(Calendar.DAY_OF_YEAR, -abs(item?.id?.toInt() ?: 0))
-                                                        val startDate = "${currentDate.get(Calendar.YEAR)}-${currentDate.get(Calendar.MONTH) + 1}-${currentDate.get(Calendar.DATE)}"
-                                                        Log.d(TAG, "onLeadsFilterItemClickListener: startDate :: $startDate endDate :: $endDate")
+                                                        leadsFilterStartDate = "${currentDate.get(Calendar.YEAR)}-${currentDate.get(Calendar.MONTH) + 1}-${currentDate.get(Calendar.DATE)}"
+                                                        Log.d(TAG, "onLeadsFilterItemClickListener: startDate :: $leadsFilterStartDate endDate :: $leadsFilterEndDate")
                                                     }
                                                 }
                                                 Constants.LEADS_FILTER_TYPE_SORT -> leadsFilterSortType = item?.id?.toInt() ?: Constants.SORT_TYPE_DESCENDING
