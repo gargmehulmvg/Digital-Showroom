@@ -31,6 +31,7 @@ import com.digitaldukaan.services.serviceinterface.IHomeServiceInterface
 import com.digitaldukaan.webviews.WebViewBridge
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.ktx.Firebase
@@ -48,6 +49,7 @@ import kotlinx.android.synthetic.main.layout_more_control_fragment.*
 import kotlinx.android.synthetic.main.layout_order_fragment.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import ru.slybeaver.slycalendarview.SlyCalendarDialog
 import java.io.File
 import java.util.*
 import kotlin.collections.ArrayList
@@ -84,6 +86,8 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
     private var mLeadsFilterResponse: LeadsFilterResponse? = null
     private var mLeadsCartTypeSelection = Constants.CART_TYPE_DEFAULT
     private var mIsLeadsTabSelected = false
+    private var mLeadsFilterStartDate = ""
+    private var mLeadsFilterEndDate = ""
     private var mLeadsFilterRequest: LeadsListRequest = LeadsListRequest("", "", "", "", Constants.SORT_TYPE_DESCENDING, Constants.CART_TYPE_DEFAULT)
 
     companion object {
@@ -94,6 +98,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
         private var sFetchingOrdersStr: String? = ""
         private var sMobileNumberString = ""
         private var sOrderIdString = ""
+        private const val LEADS_FILTER_TYPE_CUSTOM_DATE = "0"
         private var sIsMorePendingOrderAvailable = false
         private var sIsMoreCompletedOrderAvailable = false
         private var sOrderList: ArrayList<OrderItemResponse> = ArrayList()
@@ -1232,8 +1237,6 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
     }
 
     private fun showLeadsFilterBottomSheet() {
-        var leadsFilterStartDate = ""
-        var leadsFilterEndDate = ""
         var leadsFilterSortType = Constants.SORT_TYPE_DESCENDING
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             try {
@@ -1270,8 +1273,8 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                             }
                             doneTextView.setOnClickListener {
                                 mLeadsFilterRequest.apply {
-                                    startDate = leadsFilterStartDate
-                                    endDate = leadsFilterEndDate
+                                    startDate = mLeadsFilterStartDate
+                                    endDate = mLeadsFilterEndDate
                                     sortType = leadsFilterSortType
                                     cartType = mLeadsCartTypeSelection
                                 }
@@ -1295,14 +1298,15 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                                             }
                                             when(filterType) {
                                                 Constants.LEADS_FILTER_TYPE_DATE -> {
-                                                    if ("0" == item?.id) {
-
+                                                    resetLeadsDateFilter()
+                                                    if (LEADS_FILTER_TYPE_CUSTOM_DATE == item?.id) {
+                                                        showDatePickerDialog()
                                                     } else {
                                                         val currentDate = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
-                                                        leadsFilterEndDate = "${currentDate.get(Calendar.YEAR)}-${currentDate.get(Calendar.MONTH) + 1}-${currentDate.get(Calendar.DATE)}"
+                                                        mLeadsFilterEndDate = "${currentDate.get(Calendar.YEAR)}-${currentDate.get(Calendar.MONTH) + 1}-${currentDate.get(Calendar.DATE)}"
                                                         currentDate.add(Calendar.DAY_OF_YEAR, -abs(item?.id?.toInt() ?: 0))
-                                                        leadsFilterStartDate = "${currentDate.get(Calendar.YEAR)}-${currentDate.get(Calendar.MONTH) + 1}-${currentDate.get(Calendar.DATE)}"
-                                                        Log.d(TAG, "onLeadsFilterItemClickListener: startDate :: $leadsFilterStartDate endDate :: $leadsFilterEndDate")
+                                                        mLeadsFilterStartDate = "${currentDate.get(Calendar.YEAR)}-${currentDate.get(Calendar.MONTH) + 1}-${currentDate.get(Calendar.DATE)}"
+                                                        Log.d(TAG, "onLeadsFilterItemClickListener: startDate :: $mLeadsFilterStartDate endDate :: $mLeadsFilterEndDate")
                                                     }
                                                 }
                                                 Constants.LEADS_FILTER_TYPE_SORT -> leadsFilterSortType = item?.id?.toInt() ?: Constants.SORT_TYPE_DESCENDING
@@ -1321,4 +1325,70 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
             }
         }
     }
+
+    private fun showDatePickerDialog() {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            mActivity?.let { context ->
+                SlyCalendarDialog()
+                    .setEndDate(Date(MaterialDatePicker.todayInUtcMilliseconds()))
+                    .setSelectedColor(context.getColor(R.color.black))
+                    .setHeaderColor(context.getColor(R.color.black))
+                    .setHeaderTextColor(context.getColor(R.color.white))
+                    .setSelectedTextColor(context.getColor(R.color.white))
+                    .setSingle(false)
+                    .setFirstMonday(true)
+                    .setCallback(object : SlyCalendarDialog.Callback {
+
+                        override fun onCancelled() = resetLeadsDateFilter()
+
+                        override fun onDataSelected(firstDate: Calendar?, secondDate: Calendar?, hours: Int, minutes: Int) {
+                            Log.d(TAG, "onDataSelected: firstDate ${firstDate?.time} :: secondDate :: ${secondDate?.time}")
+                            val secondDateCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+                            secondDateCalendar.timeInMillis = secondDate?.timeInMillis ?: firstDate?.timeInMillis ?: 0
+                            mLeadsFilterEndDate = "${secondDateCalendar.get(Calendar.YEAR)}-${secondDateCalendar.get(Calendar.MONTH) + 1}-${secondDateCalendar.get(Calendar.DATE)}"
+                            val firstDateCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+                            firstDateCalendar.timeInMillis = firstDate?.timeInMillis ?: (secondDate?.timeInMillis ?: 0)
+                            mLeadsFilterStartDate = "${firstDateCalendar.get(Calendar.YEAR)}-${firstDateCalendar.get(Calendar.MONTH) + 1}-${firstDateCalendar.get(Calendar.DATE)}"
+                            val displayDate = "${getDateStringFromLeadsFilter(firstDateCalendar.time)} - ${getDateStringFromLeadsFilter(secondDateCalendar.time)}"
+                            mLeadsFilterList.forEachIndexed { pos, itemResponse ->
+                                if (Constants.LEADS_FILTER_TYPE_DATE == itemResponse.type) {
+                                    itemResponse.filterOptionsList.forEachIndexed { _, filterItemResponse ->
+                                        if ("0" == filterItemResponse.id) {
+                                            filterItemResponse.apply {
+                                                isSelected = true
+                                                customDateRangeStr = displayDate
+                                            }
+                                            mLeadsFilterAdapter?.notifyItemChanged(pos)
+                                            return
+                                        }
+                                    }
+                                    return@forEachIndexed
+                                }
+                            }
+                        }
+                    }).show(context.supportFragmentManager, TAG)
+            }
+        }
+    }
+
+    private fun resetLeadsDateFilter() {
+        mLeadsFilterList.forEachIndexed { pos, itemResponse ->
+            if (Constants.LEADS_FILTER_TYPE_DATE == itemResponse.type) {
+                itemResponse.filterOptionsList.forEachIndexed { _, filterItemResponse ->
+                    if (LEADS_FILTER_TYPE_CUSTOM_DATE == filterItemResponse.id) {
+                        filterItemResponse.apply {
+                            isSelected = false
+                            customDateRangeStr = ""
+                        }
+                        mLeadsFilterAdapter?.notifyItemChanged(pos)
+                        return
+                    }
+                }
+                return@forEachIndexed
+            }
+        }
+        mLeadsFilterEndDate = ""
+        mLeadsFilterStartDate = ""
+    }
+
 }

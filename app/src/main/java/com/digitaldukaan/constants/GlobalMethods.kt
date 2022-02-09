@@ -307,6 +307,12 @@ fun getTxnDateStringFromTxnDate(date: Date): String {
     return string.substring(0, string.length - 7) + "\'" + string.substring(string.length - 7, string.length)
 }
 
+fun getDateStringFromLeadsFilter(date: Date): String {
+    val dateFormat = SimpleDateFormat("d MMM yy", Locale.getDefault())
+    val string = dateFormat.format(date)
+    return string.substring(0, string.length - 2) + "\'" + string.substring(string.length - 2, string.length)
+}
+
 fun getStringDateTimeFromOrderDate(date: Date?): String {
     if (null == date) return ""
     val dateFormat = SimpleDateFormat("dd MMM yy | hh:mm a", Locale.getDefault())
