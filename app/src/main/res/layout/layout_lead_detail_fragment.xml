@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -8,99 +8,359 @@
     android:background="@color/white">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/toolBarContainer"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:elevation="@dimen/_10sdp"
-        android:minHeight="?attr/actionBarSize"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_height="match_parent">
 
-        <ImageView
-            android:id="@+id/backButtonToolbar"
-            android:layout_width="@dimen/_35sdp"
-            android:layout_height="@dimen/_30sdp"
-            android:onClick="onClick"
-            android:rotation="180"
-            android:src="@drawable/ic_arrow_forward_white"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginStart="@dimen/_6sdp"
-            app:tint="@color/black"
-            tools:ignore="ContentDescription" />
-
-        <TextView
-            android:id="@+id/appTitleTextView"
-            android:layout_width="0dp"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/toolBarContainer"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:fontFamily="@font/roboto_medium"
-            android:gravity="center_vertical"
-            android:maxLines="1"
-            android:paddingStart="@dimen/_1sdp"
-            android:paddingEnd="@dimen/_5sdp"
-            android:textColor="@color/black"
-            android:textSize="@dimen/_14sdp"
-            android:layout_marginStart="@dimen/_8sdp"
-            app:layout_constraintStart_toEndOf="@id/backButtonToolbar"
-            app:layout_constraintTop_toTopOf="@id/backButtonToolbar"
-            tools:text="Cart" />
+            android:background="@color/white"
+            android:elevation="@dimen/_10sdp"
+            android:paddingTop="@dimen/_10sdp"
+            android:paddingBottom="@dimen/_10sdp"
+            app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/appSubTitleTextView"
-            android:layout_width="0dp"
+            <ImageView
+                android:id="@+id/backButtonToolbar"
+                android:layout_width="@dimen/_35sdp"
+                android:layout_height="@dimen/_30sdp"
+                android:onClick="onClick"
+                android:padding="@dimen/_3sdp"
+                android:rotation="180"
+                android:src="@drawable/ic_arrow_forward_white"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="@color/black"
+                tools:ignore="ContentDescription" />
+
+            <TextView
+                android:id="@+id/appTitleTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_8sdp"
+                android:fontFamily="@font/roboto_medium"
+                android:gravity="center_vertical"
+                android:maxLines="1"
+                android:paddingStart="@dimen/_1sdp"
+                android:paddingEnd="@dimen/_5sdp"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_14sdp"
+                app:layout_constraintStart_toEndOf="@id/backButtonToolbar"
+                app:layout_constraintTop_toTopOf="@id/backButtonToolbar"
+                tools:text="Cart" />
+
+            <TextView
+                android:id="@+id/appSubTitleTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_8sdp"
+                android:gravity="center_vertical"
+                android:maxLines="1"
+                android:paddingStart="@dimen/_1sdp"
+                android:paddingEnd="@dimen/_5sdp"
+                android:paddingBottom="@dimen/_8sdp"
+                android:textColor="@color/default_text_light_grey"
+                android:textSize="@dimen/_11sdp"
+                app:layout_constraintStart_toEndOf="@id/backButtonToolbar"
+                app:layout_constraintTop_toBottomOf="@id/appTitleTextView"
+                tools:text="Last updated cart on : Monday at 4:00 pm" />
+
+            <TextView
+                android:id="@+id/deliveryTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_8sdp"
+                android:gravity="center_vertical"
+                android:maxLines="1"
+                android:paddingStart="@dimen/_1sdp"
+                android:paddingEnd="@dimen/_5sdp"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_10sdp"
+                app:layout_constraintStart_toEndOf="@id/backButtonToolbar"
+                app:layout_constraintTop_toBottomOf="@id/appSubTitleTextView"
+                tools:text="Delivery order" />
+
+            <TextView
+                android:id="@+id/cartAbandonedTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_2sdp"
+                android:background="@drawable/curve_light_red_background"
+                android:gravity="center_vertical"
+                android:maxLines="1"
+                android:paddingStart="@dimen/_1sdp"
+                android:paddingEnd="@dimen/_5sdp"
+                android:textColor="@color/leads_cart_abandoned_text_color"
+                android:textSize="@dimen/_8sdp"
+                app:layout_constraintStart_toEndOf="@id/deliveryTextView"
+                app:layout_constraintTop_toBottomOf="@id/appSubTitleTextView"
+                tools:text="Cart Abandoned" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <View
+            android:id="@+id/shadowToolbar"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_1sdp"
+            android:alpha="0.1"
+            android:background="@color/cardview_dark_background"
+            app:layout_constraintTop_toBottomOf="@id/toolBarContainer" />
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/nestedScrollView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="@dimen/_1sdp"
+            app:layout_constraintTop_toBottomOf="@id/toolBarContainer">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:animateLayoutChanges="true"
+                android:orientation="vertical">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/notificationContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/_10sdp"
+                    android:background="@drawable/curve_leads_color_bg"
+                    android:paddingStart="@dimen/_10sdp"
+                    android:paddingTop="@dimen/_10sdp"
+                    android:paddingEnd="@dimen/_10sdp"
+                    android:paddingBottom="@dimen/_8sdp"
+                    android:visibility="visible">
+
+                    <ImageView
+                        android:id="@+id/reminderImageView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="15dp"
+                        android:src="@drawable/ic_idea"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/reminderTextView"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/_15sdp"
+                        android:text="Send a reminder to your customer and help them place an order"
+                        android:textColor="@color/white"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/reminderImageView"
+                        app:layout_constraintTop_toTopOf="@id/reminderImageView" />
+
+                    <TextView
+                        android:id="@+id/okayTextView"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_12sdp"
+                        android:layout_marginBottom="@dimen/_18sdp"
+                        android:background="@drawable/curve_white_border"
+                        android:paddingStart="@dimen/_14sdp"
+                        android:paddingTop="@dimen/_4sdp"
+                        android:paddingEnd="@dimen/_14sdp"
+                        android:paddingBottom="@dimen/_4sdp"
+                        android:text="Okay"
+                        android:textColor="@color/white"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="@id/reminderTextView"
+                        app:layout_constraintTop_toBottomOf="@id/reminderTextView" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/_10sdp">
+
+                    <TextView
+                        android:id="@+id/mobileTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="start"
+                        android:textSize="@dimen/_10sdp"
+                        android:fontFamily="@font/roboto"
+                        app:layout_constraintEnd_toStartOf="@id/amountTextView"
+                        app:layout_constraintHorizontal_chainStyle="spread_inside"
+                        app:layout_constraintHorizontal_weight="1"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:text="Mobile number" />
+
+                    <View
+                        android:id="@+id/separator1"
+                        android:layout_width="@dimen/_1sdp"
+                        android:layout_height="0dp"
+                        android:background="@color/light_grey_background"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/amountTextView"
+                        app:layout_constraintStart_toEndOf="@+id/mobileTextView"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <View
+                        android:id="@+id/separator2"
+                        android:layout_width="@dimen/_1sdp"
+                        android:layout_height="0dp"
+                        android:background="@color/light_grey_background"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/totalItemsTextView"
+                        app:layout_constraintStart_toEndOf="@+id/amountTextView"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/amountTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:textSize="@dimen/_10sdp"
+                        android:fontFamily="@font/roboto"
+                        app:layout_constraintEnd_toStartOf="@id/totalItemsTextView"
+                        app:layout_constraintHorizontal_chainStyle="spread_inside"
+                        app:layout_constraintHorizontal_weight="1"
+                        app:layout_constraintStart_toEndOf="@id/mobileTextView"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:text="Total Cart Amount" />
+
+                    <TextView
+                        android:id="@+id/totalItemsTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="end"
+                        android:textSize="@dimen/_10sdp"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:fontFamily="@font/roboto"
+                        app:layout_constraintHorizontal_chainStyle="spread_inside"
+                        app:layout_constraintHorizontal_weight="1"
+                        app:layout_constraintStart_toEndOf="@id/amountTextView"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:text="Total Items in Cart" />
+
+                    <TextView
+                        android:id="@+id/mobileDetailTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        tools:text="9868890605"
+                        android:fontFamily="@font/roboto"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_12sdp"
+                        android:layout_marginTop="@dimen/_3sdp"
+                        app:layout_constraintStart_toStartOf="@id/mobileTextView"
+                        app:layout_constraintTop_toBottomOf="@id/mobileTextView" />
+
+                    <TextView
+                        android:id="@+id/amountDetailTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/roboto"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_12sdp"
+                        app:layout_constraintBaseline_toBaselineOf="@+id/mobileDetailTextView"
+                        app:layout_constraintStart_toStartOf="@id/amountTextView"
+                        tools:text="₹5,320" />
+
+                    <TextView
+                        android:id="@+id/totalItemsDetailTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/roboto"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_12sdp"
+                        app:layout_constraintBaseline_toBaselineOf="@+id/amountDetailTextView"
+                        app:layout_constraintStart_toStartOf="@id/totalItemsTextView"
+                        tools:text="600000" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:animateLayoutChanges="true"
+                    android:background="@drawable/curve_grey_border"
+                    android:layout_margin="@dimen/_10sdp"
+                    android:orientation="vertical">
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:id="@+id/itemTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            android:layout_marginStart="@dimen/_12sdp"
+                            android:layout_marginTop="@dimen/_12sdp"
+                            android:text="Items" />
+
+                        <TextView
+                            android:id="@+id/priceTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            android:layout_marginEnd="@dimen/_12sdp"
+                            android:layout_marginTop="@dimen/_12sdp"
+                            android:text="Price" />
+
+                        <View
+                            android:id="@+id/separator3"
+                            android:layout_width="0dp"
+                            android:layout_height="@dimen/_1sdp"
+                            android:background="@color/light_grey_background"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            android:layout_marginTop="@dimen/_12sdp"
+                            app:layout_constraintTop_toBottomOf="@id/itemTextView"/>
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/cartDetailItemRecyclerView"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_10sdp"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                        tools:itemCount="10"
+                        tools:listitem="@layout/order_detail_item" />
+
+                </LinearLayout>
+
+
+
+            </LinearLayout>
+
+
+        </androidx.core.widget.NestedScrollView>
+
+        <LinearLayout
+            android:id="@+id/shareOfferLayout"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:maxLines="1"
-            android:paddingStart="@dimen/_1sdp"
-            android:paddingEnd="@dimen/_5sdp"
-            android:paddingBottom="@dimen/_8sdp"
-            android:textColor="@color/default_text_light_grey"
-            android:textSize="@dimen/_11sdp"
-            android:layout_marginStart="@dimen/_8sdp"
-            app:layout_constraintStart_toEndOf="@id/backButtonToolbar"
-            app:layout_constraintTop_toBottomOf="@id/appTitleTextView"
-            tools:text="Last updated cart on : Monday at 4:00 pm" />
+            android:elevation="@dimen/_5sdp"
+            android:orientation="vertical"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
 
-        <TextView
-            android:id="@+id/deliveryTextView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:maxLines="1"
-            android:paddingStart="@dimen/_1sdp"
-            android:paddingEnd="@dimen/_5sdp"
-            android:textColor="@color/black"
-            android:textSize="@dimen/_10sdp"
-            android:layout_marginStart="@dimen/_8sdp"
-            app:layout_constraintStart_toEndOf="@id/backButtonToolbar"
-            app:layout_constraintTop_toBottomOf="@id/appSubTitleTextView"
-            tools:text="Delivery order" />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_2sdp"
+                android:alpha="0.2"
+                android:background="@color/cardview_dark_background" />
 
-        <TextView
-            android:id="@+id/cartAbandonedTextView"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:maxLines="1"
-            android:paddingStart="@dimen/_1sdp"
-            android:paddingEnd="@dimen/_5sdp"
-            android:textColor="@color/leads_cart_abandoned_text_color"
-            android:textSize="@dimen/_8sdp"
-            android:background="@drawable/curve_light_red_background"
-            app:layout_constraintStart_toEndOf="@id/deliveryTextView"
-            app:layout_constraintTop_toBottomOf="@id/appSubTitleTextView"
-            android:layout_marginTop="@dimen/_2sdp"
-            tools:text="Cart Abandoned" />
+            <include
+                layout="@layout/bottom_layout_share_offer"
+                app:layout_constraintBottom_toBottomOf="parent" />
 
+        </LinearLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <View
-        android:id="@+id/shadowToolbar"
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/_1sdp"
-        android:alpha="0.1"
-        android:background="@color/cardview_dark_background"
-        app:layout_constraintTop_toBottomOf="@id/toolBarContainer" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

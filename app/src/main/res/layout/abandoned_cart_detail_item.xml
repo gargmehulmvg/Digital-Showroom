@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/_15sdp"
+    android:layout_marginTop="@dimen/_8sdp"
+    android:layout_marginEnd="@dimen/_15sdp"
+    android:layout_marginBottom="@dimen/_3sdp"
+    android:elevation="@dimen/_4sdp"
+    app:cardCornerRadius="@dimen/_4sdp">
+
+    <LinearLayout
+        android:id="@+id/abandonedCartDetailContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@color/white"
+        android:padding="@dimen/_8sdp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/orderDetailImageView"
+                android:layout_width="@dimen/_40sdp"
+                android:layout_height="@dimen/_40sdp"
+                android:contentDescription="@string/image_view_content_description"
+                android:visibility="visible"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:src="@drawable/ic_auto_data_backup" />
+
+            <TextView
+                android:id="@+id/orderDetailNameTextView"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:layout_marginEnd="@dimen/_15sdp"
+                android:minLines="@integer/min_lines_two"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_11sdp"
+                app:layout_constraintEnd_toStartOf="@id/closeImageView"
+                app:layout_constraintStart_toEndOf="@id/orderDetailImageView"
+                app:layout_constraintTop_toTopOf="@id/orderDetailImageView"
+                tools:text="Pink cream cake meringues with smudges" />
+
+            <TextView
+                android:id="@+id/orderDetailVariantNameTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto_light"
+                android:maxLines="1"
+                android:visibility="visible"
+                android:textColor="@color/default_text_light_grey"
+                android:textSize="@dimen/_11sdp"
+                app:layout_constraintStart_toStartOf="@id/orderDetailNameTextView"
+                app:layout_constraintTop_toBottomOf="@id/orderDetailNameTextView"
+                tools:text="Pink" />
+
+            <ImageView
+                android:id="@+id/closeImageView"
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_20sdp"
+                android:contentDescription="@string/image_view_content_description"
+                android:padding="@dimen/_2sdp"
+                android:src="@drawable/ic_close_red"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

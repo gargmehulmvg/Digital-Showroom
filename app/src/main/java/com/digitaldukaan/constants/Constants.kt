@@ -242,6 +242,7 @@ class Constants {
         const val PREMIUM_USER                                  = "premium_user"
         const val MANAGE_INVENTORY                              = "managed_inventory"
         const val E_COMM_PACK                                   = "e_comm_pack"
+        const val ABANDONED_CART                                = "abandoned_cart"
         //BILL_TYPE
         const val BILL_TYPE_PDF                                 = "pdf"
         //STAFF_INVITATION_CODE

@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:background="@color/white"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/_15sdp">
+
+    <TextView
+        android:id="@+id/shareOfferHeadingTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textColor="@color/default_text_light_grey"
+        android:textSize="@dimen/_10sdp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Connect with customer now &amp; send reminder" />
+
+    <TextView
+        android:id="@+id/shareOfferTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_10sdp"
+        app:layout_constraintStart_toStartOf="parent"
+        android:paddingTop="@dimen/_8sdp"
+        android:paddingBottom="@dimen/_8sdp"
+        android:paddingStart="@dimen/_34sdp"
+        android:paddingEnd="@dimen/_34sdp"
+        android:layout_marginTop="@dimen/_6sdp"
+        android:drawablePadding="@dimen/_4sdp"
+        android:background="@drawable/curve_blue_border"
+        app:layout_constraintTop_toBottomOf="@id/shareOfferHeadingTextView"
+        tools:text="Share Offer"
+        app:drawableLeftCompat="@drawable/ic_discount_white_percentage_blue_start_bg" />
+
+    <ImageView
+        android:id="@+id/messageImageView"
+        android:layout_width="@dimen/_26sdp"
+        android:layout_height="@dimen/_26sdp"
+        android:contentDescription="@string/image_view_content_description"
+        app:layout_constraintStart_toEndOf="@id/shareOfferTextView"
+        app:layout_constraintTop_toTopOf="@id/shareOfferTextView"
+        android:layout_marginStart="@dimen/_14sdp"
+        app:layout_constraintBottom_toBottomOf="@id/shareOfferTextView"
+        tools:src="@drawable/ic_white_message_blue_bg" />
+
+    <ImageView
+        android:id="@+id/whatsAppImageView"
+        android:layout_width="@dimen/_26sdp"
+        android:layout_height="@dimen/_26sdp"
+        android:contentDescription="@string/image_view_content_description"
+        app:layout_constraintStart_toEndOf="@id/messageImageView"
+        app:layout_constraintTop_toTopOf="@id/shareOfferTextView"
+        android:layout_marginStart="@dimen/_14sdp"
+        app:layout_constraintBottom_toBottomOf="@id/shareOfferTextView"
+        tools:src="@drawable/ic_whatsapp" />
+
+    <ImageView
+        android:id="@+id/phoneImageView"
+        android:layout_width="@dimen/_26sdp"
+        android:layout_height="@dimen/_26sdp"
+        android:contentDescription="@string/image_view_content_description"
+        app:layout_constraintStart_toEndOf="@id/whatsAppImageView"
+        app:layout_constraintTop_toTopOf="@id/shareOfferTextView"
+        android:layout_marginStart="@dimen/_14sdp"
+        app:layout_constraintBottom_toBottomOf="@id/shareOfferTextView"
+        tools:src="@drawable/ic_white_phone_black_bg" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
