@@ -274,7 +274,6 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:animateLayoutChanges="true"
                     android:background="@drawable/curve_grey_border"
                     android:layout_margin="@dimen/_10sdp"
                     android:orientation="vertical">
@@ -289,19 +288,21 @@
                             android:layout_height="wrap_content"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
+                            android:textColor="@color/black"
                             android:layout_marginStart="@dimen/_12sdp"
                             android:layout_marginTop="@dimen/_12sdp"
-                            android:text="Items" />
+                            tools:text="Items" />
 
                         <TextView
                             android:id="@+id/priceTextView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:textColor="@color/black"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
                             android:layout_marginEnd="@dimen/_12sdp"
                             android:layout_marginTop="@dimen/_12sdp"
-                            android:text="Price" />
+                            tools:text="Price" />
 
                         <View
                             android:id="@+id/separator3"
@@ -321,15 +322,106 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/_10sdp"
                         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                        tools:itemCount="10"
-                        tools:listitem="@layout/order_detail_item" />
+                        tools:itemCount="3"
+                        tools:listitem="@layout/abandoned_cart_detail_item" />
+
+                    <androidx.constraintlayout.widget.ConstraintLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:id="@+id/itemTotalHeadingTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            android:textColor="@color/black"
+                            android:layout_marginStart="@dimen/_12sdp"
+                            android:layout_marginTop="@dimen/_12sdp"
+                            tools:text="Item Total:" />
+
+                        <TextView
+                            android:id="@+id/deliveryChargeHeadingTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/black"
+                            app:layout_constraintTop_toBottomOf="@id/itemTotalHeadingTextView"
+                            app:layout_constraintStart_toStartOf="parent"
+                            android:layout_marginEnd="@dimen/_12sdp"
+                            android:layout_marginTop="@dimen/_12sdp"
+                            tools:text="Delivery Charge:" />
+
+                        <TextView
+                            android:id="@+id/promoDiscountHeadingTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/black"
+                            app:layout_constraintTop_toBottomOf="@id/deliveryChargeHeadingTextView"
+                            app:layout_constraintStart_toStartOf="parent"
+                            android:layout_marginEnd="@dimen/_12sdp"
+                            android:layout_marginTop="@dimen/_12sdp"
+                            tools:text="Promo Discount:" />
+
+                        <TextView
+                            android:id="@+id/totalAmountHeadingTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/black"
+                            app:layout_constraintTop_toBottomOf="@id/promoDiscountHeadingTextView"
+                            app:layout_constraintStart_toStartOf="parent"
+                            android:layout_marginEnd="@dimen/_12sdp"
+                            android:layout_marginTop="@dimen/_12sdp"
+                            tools:text="Total Amount:" />
+
+                        <TextView
+                            android:id="@+id/itemTotalHeadingDetailTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
+                            android:textColor="@color/black"
+                            android:layout_marginStart="@dimen/_12sdp"
+                            android:layout_marginTop="@dimen/_12sdp"
+                            tools:text="₹600.00" />
+
+                        <TextView
+                            android:id="@+id/deliveryChargeHeadingDetailTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/black"
+                            app:layout_constraintTop_toBottomOf="@id/itemTotalHeadingDetailTextView"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            android:layout_marginEnd="@dimen/_12sdp"
+                            android:layout_marginTop="@dimen/_12sdp"
+                            tools:text="₹50.00" />
+
+                        <TextView
+                            android:id="@+id/promoDiscountHeadingDetailTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/black"
+                            app:layout_constraintTop_toBottomOf="@id/deliveryChargeHeadingDetailTextView"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            android:layout_marginEnd="@dimen/_12sdp"
+                            android:layout_marginTop="@dimen/_12sdp"
+                            tools:text="-₹50.00" />
+
+                        <TextView
+                            android:id="@+id/totalAmountHeadingDetailTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/black"
+                            app:layout_constraintTop_toBottomOf="@id/promoDiscountHeadingDetailTextView"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            android:layout_marginEnd="@dimen/_12sdp"
+                            android:layout_marginTop="@dimen/_12sdp"
+                            tools:text="₹3,200.00" />
+
+                    </androidx.constraintlayout.widget.ConstraintLayout>
 
                 </LinearLayout>
 
-
-
             </LinearLayout>
-
 
         </androidx.core.widget.NestedScrollView>
 
@@ -339,7 +431,7 @@
             android:layout_height="wrap_content"
             android:elevation="@dimen/_5sdp"
             android:orientation="vertical"
-            android:visibility="visible"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent">

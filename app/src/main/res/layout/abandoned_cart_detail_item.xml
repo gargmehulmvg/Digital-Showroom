@@ -1,30 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginStart="@dimen/_15sdp"
+    android:layout_marginStart="@dimen/_12sdp"
     android:layout_marginTop="@dimen/_8sdp"
-    android:layout_marginEnd="@dimen/_15sdp"
-    android:layout_marginBottom="@dimen/_3sdp"
-    android:elevation="@dimen/_4sdp"
-    app:cardCornerRadius="@dimen/_4sdp">
-
-    <LinearLayout
-        android:id="@+id/abandonedCartDetailContainer"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:background="@color/white"
-        android:padding="@dimen/_8sdp">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+    android:layout_marginEnd="@dimen/_12sdp"
+    android:layout_marginBottom="@dimen/_3sdp">
 
             <ImageView
-                android:id="@+id/orderDetailImageView"
+                android:id="@+id/abandonedCartDetailImageView"
                 android:layout_width="@dimen/_40sdp"
                 android:layout_height="@dimen/_40sdp"
                 android:contentDescription="@string/image_view_content_description"
@@ -34,7 +20,7 @@
                 tools:src="@drawable/ic_auto_data_backup" />
 
             <TextView
-                android:id="@+id/orderDetailNameTextView"
+                android:id="@+id/abandonedCartDetailNameTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_5sdp"
@@ -42,13 +28,14 @@
                 android:minLines="@integer/min_lines_two"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_11sdp"
-                app:layout_constraintEnd_toStartOf="@id/closeImageView"
-                app:layout_constraintStart_toEndOf="@id/orderDetailImageView"
-                app:layout_constraintTop_toTopOf="@id/orderDetailImageView"
+                android:fontFamily="@font/roboto"
+                app:layout_constraintEnd_toStartOf="@id/priceTextView"
+                app:layout_constraintStart_toEndOf="@id/abandonedCartDetailImageView"
+                app:layout_constraintTop_toTopOf="@id/abandonedCartDetailImageView"
                 tools:text="Pink cream cake meringues with smudges" />
 
             <TextView
-                android:id="@+id/orderDetailVariantNameTextView"
+                android:id="@+id/abandonedCartDetailVariantNameTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/roboto_light"
@@ -56,23 +43,36 @@
                 android:visibility="visible"
                 android:textColor="@color/default_text_light_grey"
                 android:textSize="@dimen/_11sdp"
-                app:layout_constraintStart_toStartOf="@id/orderDetailNameTextView"
-                app:layout_constraintTop_toBottomOf="@id/orderDetailNameTextView"
-                tools:text="Pink" />
+                app:layout_constraintStart_toStartOf="@id/abandonedCartDetailNameTextView"
+                app:layout_constraintTop_toBottomOf="@id/abandonedCartDetailNameTextView"
+                tools:text="Variant: Medium" />
 
-            <ImageView
-                android:id="@+id/closeImageView"
-                android:layout_width="@dimen/_20sdp"
-                android:layout_height="@dimen/_20sdp"
-                android:contentDescription="@string/image_view_content_description"
-                android:padding="@dimen/_2sdp"
-                android:src="@drawable/ic_close_red"
+            <TextView
+                android:id="@+id/quantityTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto_light"
+                android:maxLines="1"
+                android:visibility="visible"
+                android:textColor="@color/default_text_light_grey"
+                android:textSize="@dimen/_11sdp"
+                android:layout_marginBottom="@dimen/_10sdp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="@id/abandonedCartDetailNameTextView"
+                app:layout_constraintTop_toBottomOf="@id/abandonedCartDetailVariantNameTextView"
+                tools:text="Qty: 5 pkt" />
+
+            <TextView
+                android:id="@+id/priceTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/roboto"
+                android:maxLines="1"
+                android:visibility="visible"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_11sdp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="₹ 200" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-    </LinearLayout>
-
-</androidx.cardview.widget.CardView>
+</androidx.constraintlayout.widget.ConstraintLayout>
