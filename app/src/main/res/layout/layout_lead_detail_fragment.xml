@@ -338,7 +338,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/_12sdp"
                             android:textColor="@color/black"
-                            android:layout_marginStart="@dimen/_10sdp"
+                            android:layout_marginStart="@dimen/_12sdp"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
                             tools:text="Item Total:" />
@@ -420,6 +420,144 @@
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
                 </LinearLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/addressDetailsLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:background="@drawable/curve_grey_border"
+                    android:layout_margin="@dimen/_10sdp">
+
+                    <TextView
+                        android:id="@+id/addressHeadingTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/roboto_bold"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_12sdp"
+                        android:layout_marginStart="@dimen/_12sdp"
+                        android:layout_marginTop="@dimen/_12sdp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:text="Address Details" />
+
+                    <View
+                        android:id="@+id/separator4"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/_1sdp"
+                        android:layout_marginTop="@dimen/_12sdp"
+                        android:background="@color/light_grey_background"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/addressHeadingTextView" />
+
+                    <TextView
+                        android:id="@+id/nameMobileHeadingTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/roboto"
+                        android:textColor="@color/default_text_light_grey"
+                        android:textSize="@dimen/_12sdp"
+                        android:layout_marginStart="@dimen/_12sdp"
+                        android:layout_marginTop="@dimen/_12sdp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/separator4"
+                        tools:text="Name &amp; Mobile" />
+                    <TextView
+                        android:id="@+id/nameMobileDetailTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/roboto"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_12sdp"
+                        android:layout_marginStart="@dimen/_12sdp"
+                        android:layout_marginTop="@dimen/_3sdp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/nameMobileHeadingTextView"
+                        tools:text="Utkarsh Singhai | 9868890605" />
+
+                    <TextView
+                        android:id="@+id/deliveryAddressHeadingTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/roboto"
+                        android:textColor="@color/default_text_light_grey"
+                        android:textSize="@dimen/_12sdp"
+                        android:layout_marginStart="@dimen/_12sdp"
+                        android:layout_marginTop="@dimen/_12sdp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/nameMobileDetailTextView"
+                        tools:text="Delivery Address" />
+
+                    <TextView
+                        android:id="@+id/deliveryAddressDetailTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/roboto"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_12sdp"
+                        android:layout_marginStart="@dimen/_12sdp"
+                        android:layout_marginTop="@dimen/_3sdp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/deliveryAddressHeadingTextView"
+                        tools:text="32, Second floor, Engineers Estate, IP Extension, patparganj delhi 110092" />
+
+                    <TextView
+                        android:id="@+id/landmarkHeadingTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/roboto"
+                        android:textColor="@color/default_text_light_grey"
+                        android:textSize="@dimen/_12sdp"
+                        android:layout_marginStart="@dimen/_12sdp"
+                        android:layout_marginTop="@dimen/_12sdp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/deliveryAddressDetailTextView"
+                        tools:text="Landmark" />
+
+                    <TextView
+                        android:id="@+id/landmarkDetailTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/roboto"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_12sdp"
+                        android:layout_marginStart="@dimen/_12sdp"
+                        android:layout_marginTop="@dimen/_3sdp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        android:layout_marginBottom="@dimen/_12sdp"
+                        app:layout_constraintTop_toBottomOf="@id/landmarkHeadingTextView"
+                        tools:text="Near Apollo Hospital" />
+
+                    <TextView
+                        android:id="@+id/cityPincodeHeadingTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/roboto"
+                        android:textColor="@color/default_text_light_grey"
+                        android:textSize="@dimen/_12sdp"
+                        android:gravity="end"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@id/landmarkHeadingTextView"
+                        tools:text="City &amp; Pin Code" />
+
+                    <TextView
+                        android:id="@+id/cityPincodeDetailTextView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/roboto"
+                        android:gravity="end"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/_12sdp"
+                        app:layout_constraintBaseline_toBaselineOf="@+id/landmarkDetailTextView"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        tools:text="Delhi 110092" />
+
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
 
             </LinearLayout>
 

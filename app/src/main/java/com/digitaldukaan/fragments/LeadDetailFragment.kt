@@ -84,11 +84,37 @@ class LeadDetailFragment: BaseFragment(), ILeadsDetailServiceInterface {
                 amountTextView?.text = static.textTotalCartAmount
                 totalItemsTextView?.text = static.textTotalCartItems
                 appTitleTextView?.text = static.headingCart
+                itemTotalHeadingTextView?.text = static.textItemTotal
+                deliveryChargeHeadingTextView?.text = static.textDeliveryCharge
+                promoDiscountHeadingTextView?.text = static.textPromoAmount
+                totalAmountHeadingTextView?.text = static.textTotalAmount
                 displayStr = "${static.textCartUpdatedOn} ${getDateStringForLeadsHeader(getDateFromOrderString(mLeadResponse?.lastUpdateOn) ?: Date())}"
                 appSubTitleTextView?.text = displayStr
                 deliveryTextView?.text = if (Constants.ORDER_TYPE_ADDRESS == pageInfoResponse.orderType) static.textDelivery else static.textPickup
                 cartAbandonedTextView?.text = if (Constants.CART_TYPE_ABANDONED == pageInfoResponse.cartType) static.textCartAbandoned else static.textCartActive
                 mActivity?.let { context -> cartAbandonedTextView?.background = ContextCompat.getDrawable(context,if (Constants.CART_TYPE_ABANDONED == pageInfoResponse.cartType) R.drawable.curve_red_cart_abandoned_background else R.drawable.curve_blue_cart_active_background) }
+                if(Constants.ORDER_TYPE_ADDRESS == pageInfoResponse.orderType){
+                    addressDetailsLayout?.visibility = View.VISIBLE
+                    addressHeadingTextView?.text = static.headingAddressDetails
+                    nameMobileHeadingTextView?.text = static.textNameAndMobile
+                    deliveryAddressHeadingTextView?.text = static.textDeliveryAddress
+                    landmarkHeadingTextView?.text = static.textLandmark
+                    if (isEmpty(pageInfoResponse.deliveryInfo?.deliverTo) && isEmpty(pageInfoResponse.userPhone))
+                        displayStr = "-"
+                    else if(isEmpty(pageInfoResponse.deliveryInfo?.deliverTo))
+                        displayStr = "${pageInfoResponse.userPhone}"
+                    else if(isEmpty(pageInfoResponse.userPhone))
+                        displayStr = "${pageInfoResponse.deliveryInfo?.deliverTo}"
+                    else
+                        displayStr = "${pageInfoResponse.deliveryInfo?.deliverTo} | ${pageInfoResponse.userPhone}"
+                    nameMobileDetailTextView?.text = displayStr
+                    displayStr = "${pageInfoResponse.deliveryInfo?.city} ${pageInfoResponse.deliveryInfo?.pincode}"
+                    cityPincodeDetailTextView?.text = displayStr
+                    displayStr = "${pageInfoResponse.deliveryInfo?.address1}, ${pageInfoResponse.deliveryInfo?.address2}, ${pageInfoResponse.deliveryInfo?.city}, ${pageInfoResponse.deliveryInfo?.pincode}"
+                    deliveryAddressDetailTextView?.text = displayStr
+                    displayStr = "${pageInfoResponse.deliveryInfo?.landmark}"
+                    landmarkDetailTextView?.text = displayStr
+                }
             }
             mobileDetailTextView?.text = pageInfoResponse?.userPhone
             displayStr = "₹${pageInfoResponse?.payAmount}"
