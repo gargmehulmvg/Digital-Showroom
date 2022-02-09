@@ -64,6 +64,7 @@
         <entry key="app/src/main/res/drawable/upper_curve_black_background.xml" value="0.165" />
         <entry key="app/src/main/res/drawable/upper_curve_light_red_background.xml" value="0.31851851851851853" />
         <entry key="app/src/main/res/drawable/upper_curve_white_background.xml" value="0.31851851851851853" />
+        <entry key="app/src/main/res/layout/abandoned_cart_detail_item.xml" value="0.23614864864864865" />
         <entry key="app/src/main/res/layout/activity_main2.xml" value="0.22269736842105264" />
         <entry key="app/src/main/res/layout/add_address_field_item.xml" value="0.23614864864864865" />
         <entry key="app/src/main/res/layout/add_bank_bottom_sheet_item.xml" value="0.4027777777777778" />

@@ -313,6 +313,12 @@ fun getDateStringFromLeadsFilter(date: Date): String {
     return string.substring(0, string.length - 2) + "\'" + string.substring(string.length - 2, string.length)
 }
 
+fun getDateStringForLeadsHeader(date: Date): String {
+    val dateFormat = SimpleDateFormat("EEE | hh:mm a", Locale.getDefault())
+    val string = dateFormat.format(date)
+    return string
+}
+
 fun getStringDateTimeFromOrderDate(date: Date?): String {
     if (null == date) return ""
     val dateFormat = SimpleDateFormat("dd MMM yy | hh:mm a", Locale.getDefault())

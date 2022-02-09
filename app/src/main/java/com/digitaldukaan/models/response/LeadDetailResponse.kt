@@ -47,7 +47,7 @@ data class LeadDetailResponse(
 	val userPhone: String? = "",
 	
 	@field:SerializedName("cart_type")
-	val cartType: String? = "",
+	val cartType: Int,
 	
 	@field:SerializedName("items_total")
 	val itemsTotal: String? = "",

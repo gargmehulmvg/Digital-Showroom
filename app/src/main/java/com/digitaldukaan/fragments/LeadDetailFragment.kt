@@ -4,9 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.digitaldukaan.R
-import com.digitaldukaan.constants.CoroutineScopeUtils
-import com.digitaldukaan.constants.ToolBarManager
+import com.digitaldukaan.adapters.LeadsDetailItemAdapter
+import com.digitaldukaan.constants.*
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.LeadDetailResponse
 import com.digitaldukaan.models.response.LeadsResponse
@@ -17,6 +19,7 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_main2.backButtonToolbar
 import kotlinx.android.synthetic.main.layout_lead_detail_fragment.*
+import java.util.*
 
 class LeadDetailFragment: BaseFragment(), ILeadsDetailServiceInterface {
 
@@ -71,17 +74,30 @@ class LeadDetailFragment: BaseFragment(), ILeadsDetailServiceInterface {
 
     private fun setupUIFromResponse(pageInfoResponse: LeadDetailResponse?) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
+            var displayStr: String
             pageInfoResponse?.staticText?.let { static ->
                 reminderTextView?.text = static.headingSendReminder
+                itemTextView?.text = static.headingItems
+                priceTextView?.text = static.headingPrice
                 okayTextView?.text = static.textOkay
                 mobileTextView?.text = static.textMobileNumber
                 amountTextView?.text = static.textTotalCartAmount
                 totalItemsTextView?.text = static.textTotalCartItems
+                appTitleTextView?.text = static.headingCart
+                displayStr = "${static.textCartUpdatedOn} ${getDateStringForLeadsHeader(getDateFromOrderString(mLeadResponse?.lastUpdateOn) ?: Date())}"
+                appSubTitleTextView?.text = displayStr
+                deliveryTextView?.text = if (Constants.ORDER_TYPE_ADDRESS == pageInfoResponse.orderType) static.textDelivery else static.textPickup
+                cartAbandonedTextView?.text = if (Constants.CART_TYPE_ABANDONED == pageInfoResponse.cartType) static.textCartAbandoned else static.textCartActive
+                mActivity?.let { context -> cartAbandonedTextView?.background = ContextCompat.getDrawable(context,if (Constants.CART_TYPE_ABANDONED == pageInfoResponse.cartType) R.drawable.curve_red_cart_abandoned_background else R.drawable.curve_blue_cart_active_background) }
             }
             mobileDetailTextView?.text = pageInfoResponse?.userPhone
-            val displayStr = "₹${pageInfoResponse?.payAmount}"
+            displayStr = "₹${pageInfoResponse?.payAmount}"
             amountDetailTextView?.text = displayStr
             totalItemsDetailTextView?.text = "${pageInfoResponse?.orderDetailsItemsList?.size}"
+            cartDetailItemRecyclerView?.apply {
+                layoutManager = LinearLayoutManager(mActivity)
+                adapter = LeadsDetailItemAdapter(mActivity, pageInfoResponse?.staticText, pageInfoResponse?.orderDetailsItemsList)
+            }
         }
     }
 
