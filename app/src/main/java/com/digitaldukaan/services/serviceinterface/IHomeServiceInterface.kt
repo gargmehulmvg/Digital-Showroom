@@ -36,6 +36,6 @@ interface IHomeServiceInterface {
 
     fun onGetCartsByFiltersResponse(commonResponse: CommonApiResponse)
 
-    fun getCartFilterOptionsResponse(commonResponse: CommonApiResponse)
+    fun onCartFilterOptionsResponse(commonResponse: CommonApiResponse)
 
 }

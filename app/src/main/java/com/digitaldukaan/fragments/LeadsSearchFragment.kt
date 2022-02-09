@@ -52,9 +52,7 @@ class LeadsSearchFragment: BaseFragment(), ILeadsSearchServiceInterface, ILeadsL
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        ToolBarManager.getInstance()?.apply {
-            hideToolBar(mActivity, true)
-        }
+        ToolBarManager.getInstance()?.hideToolBar(mActivity, true)
         hideBottomNavigationView(true)
         searchEditText?.apply {
             requestFocus()
@@ -117,7 +115,7 @@ class LeadsSearchFragment: BaseFragment(), ILeadsSearchServiceInterface, ILeadsL
         }
     }
 
-    override fun onLeadsItemCLickChanged(item: LeadsResponse?) {
+    override fun onLeadsItemCLickedListener(item: LeadsResponse?) {
 
     }
 

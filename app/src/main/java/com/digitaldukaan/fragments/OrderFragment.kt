@@ -1210,7 +1210,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
         }
     }
 
-    override fun getCartFilterOptionsResponse(commonResponse: CommonApiResponse) {
+    override fun onCartFilterOptionsResponse(commonResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             if (commonResponse.mIsSuccessStatus) {
@@ -1230,10 +1230,8 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
         }
     }
 
-    override fun onLeadsItemCLickChanged(item: LeadsResponse?) {
-        CoroutineScopeUtils().runTaskOnCoroutineMain {
-            showToast(item?.phoneNumber)
-        }
+    override fun onLeadsItemCLickedListener(item: LeadsResponse?) {
+        launchFragment(LeadDetailFragment.newInstance(item), true)
     }
 
     private fun showLeadsFilterBottomSheet() {

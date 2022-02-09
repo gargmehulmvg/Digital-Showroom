@@ -271,16 +271,15 @@ class OrderNetworkService {
 
     suspend fun getCartFilterOptionsServerCall(serviceInterface: IHomeServiceInterface, request: LeadsFilterOptionsRequest) {
         try {
-//            val response = RetrofitApi().getServerCallObject()?.getCartFilterOptions(request)
             val response = RetrofitApi().getServerCallObject()?.getCartFilterOptions()
             response?.let {
-                if (it.isSuccessful) it.body()?.let { commonApiResponse -> serviceInterface.getCartFilterOptionsResponse(commonApiResponse) }
+                if (it.isSuccessful) it.body()?.let { commonApiResponse -> serviceInterface.onCartFilterOptionsResponse(commonApiResponse) }
                 else {
                     if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
                     val responseBody = it.errorBody()
                     responseBody?.let {
                         val errorResponse = Gson().fromJson(responseBody.string(), CommonApiResponse::class.java)
-                        serviceInterface.getCartFilterOptionsResponse(errorResponse)
+                        serviceInterface.onCartFilterOptionsResponse(errorResponse)
                     }
                 }
             }
@@ -289,4 +288,5 @@ class OrderNetworkService {
             serviceInterface.onHomePageException(e)
         }
     }
+
 }

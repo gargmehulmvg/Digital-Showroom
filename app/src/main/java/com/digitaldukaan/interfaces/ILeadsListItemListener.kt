@@ -4,6 +4,6 @@ import com.digitaldukaan.models.response.LeadsResponse
 
 interface ILeadsListItemListener {
 
-    fun onLeadsItemCLickChanged(item: LeadsResponse?)
+    fun onLeadsItemCLickedListener(item: LeadsResponse?)
 
 }

@@ -62,7 +62,7 @@ class LeadsAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LeadsViewHolder {
         val view = LeadsViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.leads_item, parent, false))
         view.leadItemContainer.setOnClickListener {
-            mListItemListener?.onLeadsItemCLickChanged(mLeadsList?.get(view.absoluteAdapterPosition))
+            mListItemListener?.onLeadsItemCLickedListener(mLeadsList?.get(view.absoluteAdapterPosition))
         }
         return view
     }
