@@ -115,6 +115,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginTop="@dimen/_1sdp"
+            app:layout_constraintBottom_toTopOf="@+id/shareOfferLayout"
             app:layout_constraintTop_toBottomOf="@id/toolBarContainer">
 
             <LinearLayout
@@ -136,21 +137,21 @@
                         android:id="@+id/reminderImageView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:contentDescription="@string/image_view_content_description"
                         android:src="@drawable/ic_idea"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        android:contentDescription="@string/image_view_content_description" />
+                        app:layout_constraintTop_toTopOf="parent" />
 
                     <TextView
                         android:id="@+id/reminderTextView"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/_15sdp"
-                        tools:text="Send a reminder to your customer and help them place an order"
                         android:textColor="@color/white"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toEndOf="@id/reminderImageView"
-                        app:layout_constraintTop_toTopOf="@id/reminderImageView" />
+                        app:layout_constraintTop_toTopOf="@id/reminderImageView"
+                        tools:text="Send a reminder to your customer and help them place an order" />
 
                     <TextView
                         android:id="@+id/okayTextView"
@@ -162,11 +163,11 @@
                         android:paddingTop="@dimen/_4sdp"
                         android:paddingEnd="@dimen/_14sdp"
                         android:paddingBottom="@dimen/_4sdp"
-                        tools:text="Okay"
                         android:textColor="@color/white"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="@id/reminderTextView"
-                        app:layout_constraintTop_toBottomOf="@id/reminderTextView" />
+                        app:layout_constraintTop_toBottomOf="@id/reminderTextView"
+                        tools:text="Okay" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -179,9 +180,9 @@
                         android:id="@+id/mobileTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:fontFamily="@font/roboto"
                         android:gravity="start"
                         android:textSize="@dimen/_9sdp"
-                        android:fontFamily="@font/roboto"
                         app:layout_constraintEnd_toStartOf="@id/amountTextView"
                         app:layout_constraintHorizontal_chainStyle="spread_inside"
                         app:layout_constraintHorizontal_weight="1"
@@ -213,9 +214,9 @@
                         android:id="@+id/amountTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:fontFamily="@font/roboto"
                         android:gravity="center"
                         android:textSize="@dimen/_9sdp"
-                        android:fontFamily="@font/roboto"
                         app:layout_constraintEnd_toStartOf="@id/totalItemsTextView"
                         app:layout_constraintHorizontal_chainStyle="spread_inside"
                         app:layout_constraintHorizontal_weight="1"
@@ -227,10 +228,10 @@
                         android:id="@+id/totalItemsTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:fontFamily="@font/roboto"
                         android:gravity="end"
                         android:textSize="@dimen/_9sdp"
                         app:layout_constraintEnd_toEndOf="parent"
-                        android:fontFamily="@font/roboto"
                         app:layout_constraintHorizontal_chainStyle="spread_inside"
                         app:layout_constraintHorizontal_weight="1"
                         app:layout_constraintStart_toEndOf="@id/amountTextView"
@@ -241,13 +242,13 @@
                         android:id="@+id/mobileDetailTextView"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        tools:text="9868890605"
+                        android:layout_marginTop="@dimen/_2sdp"
                         android:fontFamily="@font/roboto"
                         android:textColor="@color/black"
                         android:textSize="@dimen/_12sdp"
-                        android:layout_marginTop="@dimen/_2sdp"
                         app:layout_constraintStart_toStartOf="@id/mobileTextView"
-                        app:layout_constraintTop_toBottomOf="@id/mobileTextView" />
+                        app:layout_constraintTop_toBottomOf="@id/mobileTextView"
+                        tools:text="9868890605" />
 
                     <TextView
                         android:id="@+id/amountDetailTextView"
@@ -276,9 +277,9 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:orientation="vertical"
                     android:background="@drawable/curve_grey_border"
-                    android:layout_margin="@dimen/_10sdp"
-                    android:orientation="vertical">
+                    android:layout_margin="@dimen/_10sdp" >
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
@@ -288,33 +289,33 @@
                             android:id="@+id/itemTextView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent"
-                            android:textColor="@color/black"
                             android:layout_marginStart="@dimen/_12sdp"
                             android:layout_marginTop="@dimen/_12sdp"
+                            android:textColor="@color/black"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent"
                             tools:text="Items" />
 
                         <TextView
                             android:id="@+id/priceTextView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_12sdp"
+                            android:layout_marginEnd="@dimen/_12sdp"
                             android:textColor="@color/black"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
-                            android:layout_marginEnd="@dimen/_12sdp"
-                            android:layout_marginTop="@dimen/_12sdp"
                             tools:text="Price" />
 
                         <View
                             android:id="@+id/separator3"
                             android:layout_width="0dp"
                             android:layout_height="@dimen/_1sdp"
-                            android:background="@color/light_grey_background"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
                             android:layout_marginTop="@dimen/_12sdp"
-                            app:layout_constraintTop_toBottomOf="@id/itemTextView"/>
+                            android:background="@color/light_grey_background"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toBottomOf="@id/itemTextView" />
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -324,7 +325,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="@dimen/_10sdp"
                         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                        tools:itemCount="3"
+                        tools:itemCount="1"
                         tools:listitem="@layout/abandoned_cart_detail_item" />
 
                     <androidx.constraintlayout.widget.ConstraintLayout
@@ -335,77 +336,75 @@
                             android:id="@+id/itemTotalHeadingTextView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_12sdp"
+                            android:textColor="@color/black"
+                            android:layout_marginStart="@dimen/_10sdp"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
-                            android:textColor="@color/black"
-                            android:layout_marginStart="@dimen/_12sdp"
-                            android:layout_marginTop="@dimen/_12sdp"
                             tools:text="Item Total:" />
 
                         <TextView
                             android:id="@+id/deliveryChargeHeadingTextView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textColor="@color/black"
-                            app:layout_constraintTop_toBottomOf="@id/itemTotalHeadingTextView"
-                            app:layout_constraintStart_toStartOf="parent"
-                            android:layout_marginEnd="@dimen/_12sdp"
                             android:layout_marginTop="@dimen/_12sdp"
+                            android:textColor="@color/black"
+                            app:layout_constraintStart_toStartOf="@+id/itemTotalHeadingTextView"
+                            app:layout_constraintTop_toBottomOf="@id/itemTotalHeadingTextView"
                             tools:text="Delivery Charge:" />
 
                         <TextView
                             android:id="@+id/promoDiscountHeadingTextView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textColor="@color/black"
-                            app:layout_constraintTop_toBottomOf="@id/deliveryChargeHeadingTextView"
-                            app:layout_constraintStart_toStartOf="parent"
-                            android:layout_marginEnd="@dimen/_12sdp"
                             android:layout_marginTop="@dimen/_12sdp"
+                            android:textColor="@color/black"
+                            app:layout_constraintStart_toStartOf="@+id/deliveryChargeHeadingTextView"
+                            app:layout_constraintTop_toBottomOf="@id/deliveryChargeHeadingTextView"
                             tools:text="Promo Discount:" />
 
                         <TextView
                             android:id="@+id/totalAmountHeadingTextView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:fontFamily="@font/roboto_bold"
                             android:textColor="@color/black"
+                            android:layout_marginBottom="@dimen/_10sdp"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintStart_toStartOf="@+id/promoDiscountHeadingTextView"
                             app:layout_constraintTop_toBottomOf="@id/promoDiscountHeadingTextView"
-                            app:layout_constraintStart_toStartOf="parent"
-                            android:layout_marginEnd="@dimen/_12sdp"
-                            android:layout_marginTop="@dimen/_12sdp"
                             tools:text="Total Amount:" />
 
                         <TextView
                             android:id="@+id/itemTotalHeadingDetailTextView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_12sdp"
+                            android:layout_marginEnd="@dimen/_10sdp"
+                            android:textColor="@color/black"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
-                            android:textColor="@color/black"
-                            android:layout_marginStart="@dimen/_12sdp"
-                            android:layout_marginTop="@dimen/_12sdp"
                             tools:text="₹600.00" />
 
                         <TextView
                             android:id="@+id/deliveryChargeHeadingDetailTextView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textColor="@color/black"
-                            app:layout_constraintTop_toBottomOf="@id/itemTotalHeadingDetailTextView"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            android:layout_marginEnd="@dimen/_12sdp"
                             android:layout_marginTop="@dimen/_12sdp"
+                            android:textColor="@color/black"
+                            app:layout_constraintEnd_toEndOf="@+id/itemTotalHeadingDetailTextView"
+                            app:layout_constraintTop_toBottomOf="@id/itemTotalHeadingDetailTextView"
                             tools:text="₹50.00" />
 
                         <TextView
                             android:id="@+id/promoDiscountHeadingDetailTextView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textColor="@color/black"
-                            app:layout_constraintTop_toBottomOf="@id/deliveryChargeHeadingDetailTextView"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            android:layout_marginEnd="@dimen/_12sdp"
                             android:layout_marginTop="@dimen/_12sdp"
+                            android:textColor="@color/black"
+                            app:layout_constraintEnd_toEndOf="@+id/deliveryChargeHeadingDetailTextView"
+                            app:layout_constraintTop_toBottomOf="@id/deliveryChargeHeadingDetailTextView"
                             tools:text="-₹50.00" />
 
                         <TextView
@@ -413,10 +412,9 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textColor="@color/black"
-                            app:layout_constraintTop_toBottomOf="@id/promoDiscountHeadingDetailTextView"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            android:layout_marginEnd="@dimen/_12sdp"
-                            android:layout_marginTop="@dimen/_12sdp"
+                            android:fontFamily="@font/roboto_bold"
+                            app:layout_constraintBaseline_toBaselineOf="@+id/totalAmountHeadingTextView"
+                            app:layout_constraintEnd_toEndOf="@+id/promoDiscountHeadingDetailTextView"
                             tools:text="₹3,200.00" />
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
