@@ -469,13 +469,15 @@
                         tools:text="Name &amp; Mobile" />
                     <TextView
                         android:id="@+id/nameMobileDetailTextView"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/roboto"
                         android:textColor="@color/black"
                         android:textSize="@dimen/_12sdp"
                         android:layout_marginStart="@dimen/_12sdp"
                         android:layout_marginTop="@dimen/_3sdp"
+                        android:layout_marginEnd="@dimen/_12sdp"
+                        app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/nameMobileHeadingTextView"
                         tools:text="Utkarsh Singhai | 9868890605" />
@@ -495,16 +497,18 @@
 
                     <TextView
                         android:id="@+id/deliveryAddressDetailTextView"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/_12sdp"
+                        android:layout_marginTop="@dimen/_3sdp"
+                        android:layout_marginEnd="@dimen/_12sdp"
                         android:fontFamily="@font/roboto"
                         android:textColor="@color/black"
                         android:textSize="@dimen/_12sdp"
-                        android:layout_marginStart="@dimen/_12sdp"
-                        android:layout_marginTop="@dimen/_3sdp"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/deliveryAddressHeadingTextView"
-                        tools:text="32, Second floor, Engineers Estate, IP Extension, patparganj delhi 110092" />
+                        app:layout_constraintEnd_toEndOf="parent"
+                        tools:text="32, Second floor, Engineers Estate, IP Extension, patparganj delhi 1100921231241352452523423423423432423424234234234234234234" />
 
                     <TextView
                         android:id="@+id/landmarkHeadingTextView"
@@ -521,16 +525,17 @@
 
                     <TextView
                         android:id="@+id/landmarkDetailTextView"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/roboto"
                         android:textColor="@color/black"
                         android:textSize="@dimen/_12sdp"
                         android:layout_marginStart="@dimen/_12sdp"
                         android:layout_marginTop="@dimen/_3sdp"
+                        android:layout_marginEnd="@dimen/_12sdp"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        android:layout_marginBottom="@dimen/_12sdp"
+                        android:paddingBottom="@dimen/_12sdp"
+                        app:layout_constraintEnd_toStartOf="@id/cityPincodeDetailTextView"
                         app:layout_constraintTop_toBottomOf="@id/landmarkHeadingTextView"
                         tools:text="Near Apollo Hospital" />
 
@@ -549,15 +554,17 @@
 
                     <TextView
                         android:id="@+id/cityPincodeDetailTextView"
-                        android:layout_width="wrap_content"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/roboto"
-                        android:gravity="center"
                         android:textColor="@color/black"
                         android:textSize="@dimen/_12sdp"
-                        app:layout_constraintBaseline_toBaselineOf="@+id/landmarkDetailTextView"
+                        android:layout_marginEnd="@dimen/_12sdp"
                         app:layout_constraintStart_toStartOf="@id/cityPincodeHeadingTextView"
-                        tools:text="Delhi 110092" />
+                        app:layout_constraintTop_toTopOf="@id/landmarkDetailTextView"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        android:paddingBottom="@dimen/_12sdp"
+                        tools:text="Lucknow 226016" />
 
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
