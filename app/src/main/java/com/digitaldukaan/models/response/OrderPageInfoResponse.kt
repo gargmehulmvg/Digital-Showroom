@@ -98,5 +98,14 @@ data class OrderPageStaticTextResponse(
     @SerializedName("text_my_shortcuts")                            var text_my_shortcuts: String,
     @SerializedName("text_cart_abandoned")                          var text_cart_abandoned: String,
     @SerializedName("text_cart_active")                             var text_cart_active: String,
-    @SerializedName("text_payment_link")                            var text_payment_link: String
+    @SerializedName("text_payment_link")                            var text_payment_link: String,
+    @SerializedName("text_send_reminder")                           var text_send_reminder: String,
+    @SerializedName("text_notification_sent_on")                    var text_notification_sent_on: String,
+    @SerializedName("text_cart_updated_in_hours")                   var text_cart_updated_in_hours: String,
+    @SerializedName("text_cart_updated_in_minutes")                 var text_cart_updated_in_minutes: String,
+    @SerializedName("text_cart_updated_recently")                   var text_cart_updated_recently: String,
+    @SerializedName("text_cart_updated_on")                         var text_cart_updated_on: String,
+    @SerializedName("text_notification_sent_in_hours")              var text_notification_sent_in_hours: String,
+    @SerializedName("text_notification_sent_in_minutes")            var text_notification_sent_in_minutes: String,
+    @SerializedName("text_notification_sent_recently")              var text_notification_sent_recently: String
 )
