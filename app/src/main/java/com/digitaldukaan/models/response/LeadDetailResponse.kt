@@ -62,5 +62,20 @@ data class LeadDetailResponse(
 	val sendReminderFlag: Boolean,
 	
 	@field:SerializedName("buyer_pay_value")
-	val buyerPayValue: String? = ""
+	val buyerPayValue: String? = "",
+
+	@field:SerializedName("store_offer")
+	val storeOffer: StoreOfferItemResponse?
+)
+
+data class StoreOfferItemResponse(
+
+	@field:SerializedName("promo_id")
+	val promoId: Int = 0,
+
+	@field:SerializedName("promo_code")
+	val promoCode: String? = "",
+
+	@field:SerializedName("promo_discount")
+	val promoDiscount: Double = 0.0
 )

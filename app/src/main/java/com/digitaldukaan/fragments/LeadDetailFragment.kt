@@ -117,10 +117,17 @@ class LeadDetailFragment: BaseFragment(), ILeadsDetailServiceInterface {
                     landmarkDetailTextView?.text = if (isEmpty(displayStr)) "-" else displayStr
                 }
             }
-            mobileDetailTextView?.text = pageInfoResponse?.userPhone
+            displayStr = "₹${pageInfoResponse?.itemsTotal}"
+            itemTotalHeadingDetailTextView?.text = displayStr
+            displayStr = "₹${pageInfoResponse?.deliveryCharge}"
+            deliveryChargeHeadingDetailTextView?.text = displayStr
+            displayStr = "-₹${pageInfoResponse?.storeOffer?.promoDiscount}"
+            promoDiscountHeadingDetailTextView?.text = displayStr
             displayStr = "₹${pageInfoResponse?.payAmount}"
             amountDetailTextView?.text = displayStr
+            totalAmountHeadingDetailTextView?.text = displayStr
             totalItemsDetailTextView?.text = "${pageInfoResponse?.orderDetailsItemsList?.size}"
+            mobileDetailTextView?.text = "${pageInfoResponse?.userPhone}"
             cartDetailItemRecyclerView?.apply {
                 layoutManager = LinearLayoutManager(mActivity)
                 adapter = LeadsDetailItemAdapter(mActivity, pageInfoResponse?.staticText, pageInfoResponse?.orderDetailsItemsList)
