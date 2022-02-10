@@ -8,6 +8,7 @@ data class OrderPageInfoResponse(
     @SerializedName("take_order_image")                         var mTakeOrderImage: String,
     @SerializedName("domain_search_url")                        var mDomainSearchUrl: String,
     @SerializedName("domain_explore_url")                       var mDomainExploreUrl: String,
+    @SerializedName("e_comm_page_url")                          var mAbandonedCartLockedUrl: String,
     @SerializedName("is_subscription_purchased")                var mIsSubscriptionDone: Boolean,
     @SerializedName("is_search_on")                             var mIsSearchOrder: Boolean,
     @SerializedName("help_page")                                var mIsHelpOrder: HelpPageResponse,
@@ -98,5 +99,6 @@ data class OrderPageStaticTextResponse(
     @SerializedName("text_my_shortcuts")                            var text_my_shortcuts: String,
     @SerializedName("text_cart_abandoned")                          var text_cart_abandoned: String,
     @SerializedName("text_cart_active")                             var text_cart_active: String,
+    @SerializedName("heading_leads")                                var heading_leads: String,
     @SerializedName("text_payment_link")                            var text_payment_link: String
 )
