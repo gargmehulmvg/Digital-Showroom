@@ -544,7 +544,7 @@
                 android:background="@drawable/ripple_curve_grey_black_background"
                 android:elevation="@dimen/_5sdp"
                 android:onClick="onClick"
-                android:visibility="invisible"
+                android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
 
