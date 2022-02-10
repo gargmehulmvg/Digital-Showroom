@@ -99,6 +99,7 @@ class LeadDetailFragment: BaseFragment(), ILeadsDetailServiceInterface {
                     nameMobileHeadingTextView?.text = static.textNameAndMobile
                     deliveryAddressHeadingTextView?.text = static.textDeliveryAddress
                     landmarkHeadingTextView?.text = static.textLandmark
+                    cityPincodeHeadingTextView?.text = static.textCityAndPinCode
                     if (isEmpty(pageInfoResponse.deliveryInfo?.deliverTo) && isEmpty(pageInfoResponse.userPhone))
                         displayStr = "-"
                     else if(isEmpty(pageInfoResponse.deliveryInfo?.deliverTo))
@@ -109,11 +110,11 @@ class LeadDetailFragment: BaseFragment(), ILeadsDetailServiceInterface {
                         displayStr = "${pageInfoResponse.deliveryInfo?.deliverTo} | ${pageInfoResponse.userPhone}"
                     nameMobileDetailTextView?.text = displayStr
                     displayStr = "${pageInfoResponse.deliveryInfo?.city} ${pageInfoResponse.deliveryInfo?.pincode}"
-                    cityPincodeDetailTextView?.text = displayStr
+                    cityPincodeDetailTextView?.text = if (isEmpty(pageInfoResponse.deliveryInfo?.city) && isEmpty(pageInfoResponse.deliveryInfo?.pincode)) "-" else displayStr
                     displayStr = "${pageInfoResponse.deliveryInfo?.address1}, ${pageInfoResponse.deliveryInfo?.address2}, ${pageInfoResponse.deliveryInfo?.city}, ${pageInfoResponse.deliveryInfo?.pincode}"
                     deliveryAddressDetailTextView?.text = displayStr
                     displayStr = "${pageInfoResponse.deliveryInfo?.landmark}"
-                    landmarkDetailTextView?.text = displayStr
+                    landmarkDetailTextView?.text = if (isEmpty(displayStr)) "-" else displayStr
                 }
             }
             mobileDetailTextView?.text = pageInfoResponse?.userPhone
