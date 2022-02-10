@@ -195,7 +195,19 @@ class LeadDetailFragment: BaseFragment(), ILeadsDetailServiceInterface {
                     nameMobileDetailTextView?.text = displayStr
                     displayStr = "${pageInfoResponse.deliveryInfo?.city} ${pageInfoResponse.deliveryInfo?.pincode}"
                     cityPincodeDetailTextView?.text = if (isEmpty(pageInfoResponse.deliveryInfo?.city) && isEmpty(pageInfoResponse.deliveryInfo?.pincode)) emptyStr else displayStr
-                    displayStr = "${pageInfoResponse.deliveryInfo?.address1}, ${pageInfoResponse.deliveryInfo?.address2}, ${pageInfoResponse.deliveryInfo?.city}, ${pageInfoResponse.deliveryInfo?.pincode}"
+                    displayStr = ""
+                    if (isNotEmpty(pageInfoResponse.deliveryInfo?.address1))
+                        displayStr =
+                            displayStr + "${pageInfoResponse.deliveryInfo?.address1}" + ", "
+                    if (isNotEmpty(pageInfoResponse.deliveryInfo?.address2))
+                        displayStr =
+                            displayStr + "${pageInfoResponse.deliveryInfo?.address2}" + ", "
+                    if (isNotEmpty(pageInfoResponse.deliveryInfo?.city))
+                        displayStr = displayStr + "${pageInfoResponse.deliveryInfo?.city}" + ", "
+                    if (isNotEmpty(pageInfoResponse.deliveryInfo?.pincode))
+                        displayStr += "${pageInfoResponse.deliveryInfo?.city}"
+                    if (isEmpty(displayStr))
+                        displayStr = "       -"
                     deliveryAddressDetailTextView?.text = displayStr
                     displayStr = "${pageInfoResponse.deliveryInfo?.landmark}"
                     landmarkDetailTextView?.text = if (isEmpty(displayStr)) emptyStr else displayStr
