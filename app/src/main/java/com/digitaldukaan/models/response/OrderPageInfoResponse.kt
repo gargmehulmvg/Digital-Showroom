@@ -96,5 +96,7 @@ data class OrderPageStaticTextResponse(
     @SerializedName("heading_zero_order")                           var heading_zero_order: String,
     @SerializedName("message_zero_order")                           var message_zero_order: String,
     @SerializedName("text_my_shortcuts")                            var text_my_shortcuts: String,
+    @SerializedName("text_cart_abandoned")                          var text_cart_abandoned: String,
+    @SerializedName("text_cart_active")                             var text_cart_active: String,
     @SerializedName("text_payment_link")                            var text_payment_link: String
 )

@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.Constants
+import com.digitaldukaan.constants.StaticInstances
 import com.digitaldukaan.constants.getStringFromOrderDate
 import com.digitaldukaan.constants.isEmpty
 import com.digitaldukaan.interfaces.ILeadsListItemListener
@@ -57,6 +58,7 @@ class LeadsAdapter(
         val leadLastUpdatedTextView: TextView = itemView.findViewById(R.id.leadLastUpdatedTextView)
         val priceTextView: TextView = itemView.findViewById(R.id.priceTextView)
         val cartStatusTextView: TextView = itemView.findViewById(R.id.cartStatusTextView)
+        val sendOfferTextView: TextView = itemView.findViewById(R.id.sendOfferTextView)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LeadsViewHolder {
@@ -80,7 +82,8 @@ class LeadsAdapter(
             Glide.with(mContext)
                 .load(if (Constants.CART_TYPE_ABANDONED == item?.cartType) R.drawable.ic_abandoned_cart else R.drawable.ic_active_cart)
                 .into(cartImageView)
-            cartStatusTextView.text = if (Constants.CART_TYPE_ABANDONED == item?.cartType) "Cart Abandoned" else "Cart Active"
+            cartStatusTextView.text = if (Constants.CART_TYPE_ABANDONED == item?.cartType) StaticInstances.sOrderPageInfoStaticData?.text_cart_abandoned else StaticInstances.sOrderPageInfoStaticData?.text_cart_active
+            sendOfferTextView.text = ""
             cartStatusTextView.background = ContextCompat.getDrawable(mContext, if (Constants.CART_TYPE_ABANDONED == item?.cartType) R.drawable.curve_red_cart_abandoned_background else R.drawable.curve_blue_cart_active_background)
             cartStatusTextView.setTextColor(ContextCompat.getColor(mContext, if (Constants.CART_TYPE_ABANDONED == item?.cartType) R.color.leads_cart_abandoned_text_color else R.color.leads_cart_active_text_color))
         }
