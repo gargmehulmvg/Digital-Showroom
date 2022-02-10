@@ -1,5 +1,7 @@
 package com.digitaldukaan.fragments
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -18,8 +20,10 @@ import com.digitaldukaan.services.serviceinterface.ILeadsDetailServiceInterface
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_main2.backButtonToolbar
+import kotlinx.android.synthetic.main.bottom_layout_share_offer.*
 import kotlinx.android.synthetic.main.layout_lead_detail_fragment.*
 import java.util.*
+
 
 class LeadDetailFragment: BaseFragment(), ILeadsDetailServiceInterface {
 
@@ -57,6 +61,7 @@ class LeadDetailFragment: BaseFragment(), ILeadsDetailServiceInterface {
     override fun onClick(view: View?) {
         when(view?.id) {
             backButtonToolbar?.id -> mActivity?.onBackPressed()
+            phoneImageView?.id -> openDialer()
         }
     }
 
@@ -75,6 +80,7 @@ class LeadDetailFragment: BaseFragment(), ILeadsDetailServiceInterface {
     private fun setupUIFromResponse(pageInfoResponse: LeadDetailResponse?) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             var displayStr: String
+            val emptyStr = "       -"
             pageInfoResponse?.staticText?.let { static ->
                 reminderTextView?.text = static.headingSendReminder
                 itemTextView?.text = static.headingItems
@@ -82,6 +88,8 @@ class LeadDetailFragment: BaseFragment(), ILeadsDetailServiceInterface {
                 okayTextView?.text = static.textOkay
                 mobileTextView?.text = static.textMobileNumber
                 amountTextView?.text = static.textTotalCartAmount
+                shareOfferHeadingTextView?.text = static.textFooterConnectWithCustomer
+                shareOfferTextView?.text = static.textCtaShareOffer
                 totalItemsTextView?.text = static.textTotalCartItems
                 appTitleTextView?.text = static.headingCart
                 itemTotalHeadingTextView?.text = static.textItemTotal
@@ -92,30 +100,31 @@ class LeadDetailFragment: BaseFragment(), ILeadsDetailServiceInterface {
                 appSubTitleTextView?.text = displayStr
                 deliveryTextView?.text = if (Constants.ORDER_TYPE_ADDRESS == pageInfoResponse.orderType) static.textDelivery else static.textPickup
                 cartAbandonedTextView?.text = if (Constants.CART_TYPE_ABANDONED == pageInfoResponse.cartType) static.textCartAbandoned else static.textCartActive
-                mActivity?.let { context -> cartAbandonedTextView?.background = ContextCompat.getDrawable(context,if (Constants.CART_TYPE_ABANDONED == pageInfoResponse.cartType) R.drawable.curve_red_cart_abandoned_background else R.drawable.curve_blue_cart_active_background) }
-                if(Constants.ORDER_TYPE_ADDRESS == pageInfoResponse.orderType){
+                mActivity?.let { context ->
+                    cartAbandonedTextView?.background = ContextCompat.getDrawable(context,if (Constants.CART_TYPE_ABANDONED == pageInfoResponse.cartType) R.drawable.curve_red_cart_abandoned_background else R.drawable.curve_blue_cart_active_background)
+                    cartAbandonedTextView?.setTextColor(ContextCompat.getColor(context,if (Constants.CART_TYPE_ABANDONED == pageInfoResponse.cartType) R.color.leads_cart_abandoned_text_color else R.color.leads_cart_active_text_color))
+                }
+                if (Constants.ORDER_TYPE_ADDRESS == pageInfoResponse.orderType) {
                     addressDetailsLayout?.visibility = View.VISIBLE
                     addressHeadingTextView?.text = static.headingAddressDetails
                     nameMobileHeadingTextView?.text = static.textNameAndMobile
                     deliveryAddressHeadingTextView?.text = static.textDeliveryAddress
                     landmarkHeadingTextView?.text = static.textLandmark
                     cityPincodeHeadingTextView?.text = static.textCityAndPinCode
-                    if (isEmpty(pageInfoResponse.deliveryInfo?.deliverTo) && isEmpty(pageInfoResponse.userPhone))
-                        displayStr = "-"
-                    else if(isEmpty(pageInfoResponse.deliveryInfo?.deliverTo))
-                        displayStr = "${pageInfoResponse.userPhone}"
-                    else if(isEmpty(pageInfoResponse.userPhone))
-                        displayStr = "${pageInfoResponse.deliveryInfo?.deliverTo}"
-                    else
-                        displayStr = "${pageInfoResponse.deliveryInfo?.deliverTo} | ${pageInfoResponse.userPhone}"
+                    displayStr = when {
+                        isEmpty(pageInfoResponse.deliveryInfo?.deliverTo) && isEmpty(pageInfoResponse.userPhone) -> emptyStr
+                        isEmpty(pageInfoResponse.deliveryInfo?.deliverTo) -> "${pageInfoResponse.userPhone}"
+                        isEmpty(pageInfoResponse.userPhone) -> "${pageInfoResponse.deliveryInfo?.deliverTo}"
+                        else -> "${pageInfoResponse.deliveryInfo?.deliverTo} | ${pageInfoResponse.userPhone}"
+                    }
                     nameMobileDetailTextView?.text = displayStr
                     displayStr = "${pageInfoResponse.deliveryInfo?.city} ${pageInfoResponse.deliveryInfo?.pincode}"
-                    cityPincodeDetailTextView?.text = if (isEmpty(pageInfoResponse.deliveryInfo?.city) && isEmpty(pageInfoResponse.deliveryInfo?.pincode)) "-" else displayStr
+                    cityPincodeDetailTextView?.text = if (isEmpty(pageInfoResponse.deliveryInfo?.city) && isEmpty(pageInfoResponse.deliveryInfo?.pincode)) emptyStr else displayStr
                     displayStr = "${pageInfoResponse.deliveryInfo?.address1}, ${pageInfoResponse.deliveryInfo?.address2}, ${pageInfoResponse.deliveryInfo?.city}, ${pageInfoResponse.deliveryInfo?.pincode}"
                     deliveryAddressDetailTextView?.text = displayStr
                     displayStr = "${pageInfoResponse.deliveryInfo?.landmark}"
-                    landmarkDetailTextView?.text = if (isEmpty(displayStr)) "-" else displayStr
-                }
+                    landmarkDetailTextView?.text = if (isEmpty(displayStr)) emptyStr else displayStr
+                } else addressDetailsLayout?.visibility = View.GONE
             }
             displayStr = "₹${pageInfoResponse?.itemsTotal}"
             itemTotalHeadingDetailTextView?.text = displayStr
@@ -133,6 +142,12 @@ class LeadDetailFragment: BaseFragment(), ILeadsDetailServiceInterface {
                 adapter = LeadsDetailItemAdapter(mActivity, pageInfoResponse?.staticText, pageInfoResponse?.orderDetailsItemsList)
             }
         }
+    }
+
+    private fun openDialer() {
+        val intent = Intent(Intent.ACTION_DIAL)
+        intent.data = Uri.parse("tel:${mLeadResponse?.phoneNumber}")
+        startActivity(intent)
     }
 
 }
