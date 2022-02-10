@@ -1,16 +1,21 @@
 package com.digitaldukaan.fragments
 
+import android.app.Dialog
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.LeadsDetailItemAdapter
 import com.digitaldukaan.constants.*
+import com.digitaldukaan.models.request.AbandonedCartReminderRequest
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.LeadDetailResponse
 import com.digitaldukaan.models.response.LeadsResponse
@@ -29,8 +34,15 @@ class LeadDetailFragment: BaseFragment(), ILeadsDetailServiceInterface {
 
     private var mService: LeadsDetailService? = null
     private var mLeadResponse: LeadsResponse? = null
+    private var mSuccessDialogMessage = ""
+    private var mSuccessDialogCtaText = ""
 
     companion object {
+
+        private const val REMINDER_TYPE_SMS = 0
+        private const val REMINDER_TYPE_WA  = 1
+        private const val REMINDER_SENT_TO  = 0
+
         fun newInstance(item: LeadsResponse?): LeadDetailFragment {
             val fragment = LeadDetailFragment()
             fragment.mLeadResponse = item
@@ -62,6 +74,30 @@ class LeadDetailFragment: BaseFragment(), ILeadsDetailServiceInterface {
         when(view?.id) {
             backButtonToolbar?.id -> mActivity?.onBackPressed()
             phoneImageView?.id -> openDialer()
+            okayTextView?.id -> {
+                notificationContainer?.visibility = View.GONE
+                PrefsManager.storeBoolDataInSharedPref(PrefsManager.KEY_ABANDONED_CART_OKAY_CLICKED, true)
+            }
+            whatsAppImageView?.id -> {
+                val request = AbandonedCartReminderRequest(
+                    cartId = mLeadResponse?.cartId,
+                    customerPhone = mLeadResponse?.phoneNumber,
+                    reminderType = REMINDER_TYPE_WA,
+                    reminderSendTo = REMINDER_SENT_TO
+                )
+                showProgressDialog(mActivity)
+                mService?.sendAbandonedCartReminder(request)
+            }
+            messageImageView?.id -> {
+                val request = AbandonedCartReminderRequest(
+                    cartId = mLeadResponse?.cartId,
+                    customerPhone = mLeadResponse?.phoneNumber,
+                    reminderType = REMINDER_TYPE_SMS,
+                    reminderSendTo = REMINDER_SENT_TO
+                )
+                showProgressDialog(mActivity)
+                mService?.sendAbandonedCartReminder(request)
+            }
         }
     }
 
@@ -73,6 +109,43 @@ class LeadDetailFragment: BaseFragment(), ILeadsDetailServiceInterface {
             if (commonResponse.mIsSuccessStatus) {
                 val leadDetailPageInfoResponse = Gson().fromJson(commonResponse.mCommonDataStr, LeadDetailResponse::class.java)
                 setupUIFromResponse(leadDetailPageInfoResponse)
+            }
+        }
+    }
+
+    override fun onSendAbandonedCartReminderResponse(commonResponse: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            if (commonResponse.mIsSuccessStatus) {
+                val reminderResponse = Gson().fromJson(commonResponse.mCommonDataStr, String::class.java)
+                if (isNotEmpty(reminderResponse)) {
+                    shareDataOnWhatsAppByNumber(mLeadResponse?.phoneNumber, reminderResponse)
+                } else {
+                    showSmsSentDialog()
+                }
+            }
+        }
+    }
+
+    private fun showSmsSentDialog() {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            mActivity?.let {
+                val successDialog = Dialog(it)
+                val view = LayoutInflater.from(mActivity).inflate(R.layout.dialog_abandoned_success_reminder, null)
+                successDialog.apply {
+                    setContentView(view)
+                    setCancelable(false)
+                    window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                    view?.run {
+                        val updateTextView: TextView = findViewById(R.id.updateTextView)
+                        val messageTextView: TextView = findViewById(R.id.messageTextView)
+                        messageTextView.text = mSuccessDialogMessage
+                        updateTextView.text = mSuccessDialogCtaText
+                        updateTextView.setOnClickListener {
+                            (this@apply).dismiss()
+                        }
+                    }
+                }.show()
             }
         }
     }
@@ -96,6 +169,8 @@ class LeadDetailFragment: BaseFragment(), ILeadsDetailServiceInterface {
                 deliveryChargeHeadingTextView?.text = static.textDeliveryCharge
                 promoDiscountHeadingTextView?.text = static.textPromoAmount
                 totalAmountHeadingTextView?.text = static.textTotalAmount
+                mSuccessDialogCtaText = static.textOkay ?: ""
+                mSuccessDialogMessage = static.textReminderSent ?: ""
                 displayStr = "${static.textCartUpdatedOn} ${getDateStringForLeadsHeader(getDateFromOrderString(mLeadResponse?.lastUpdateOn) ?: Date())}"
                 appSubTitleTextView?.text = displayStr
                 deliveryTextView?.text = if (Constants.ORDER_TYPE_ADDRESS == pageInfoResponse.orderType) static.textDelivery else static.textPickup
@@ -141,6 +216,7 @@ class LeadDetailFragment: BaseFragment(), ILeadsDetailServiceInterface {
                 layoutManager = LinearLayoutManager(mActivity)
                 adapter = LeadsDetailItemAdapter(mActivity, pageInfoResponse?.staticText, pageInfoResponse?.orderDetailsItemsList)
             }
+            notificationContainer?.visibility = if (!PrefsManager.getBoolDataFromSharedPref(PrefsManager.KEY_ABANDONED_CART_OKAY_CLICKED)) View.VISIBLE else View.GONE
         }
     }
 

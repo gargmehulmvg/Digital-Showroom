@@ -9,6 +9,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
+        android:animateLayoutChanges="true"
         android:layout_height="match_parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -114,6 +115,7 @@
             android:id="@+id/nestedScrollView"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:animateLayoutChanges="true"
             android:layout_marginTop="@dimen/_1sdp"
             app:layout_constraintBottom_toTopOf="@+id/shareOfferLayout"
             app:layout_constraintTop_toBottomOf="@id/toolBarContainer">
@@ -131,7 +133,7 @@
                     android:layout_margin="@dimen/_10sdp"
                     android:background="@drawable/curve_leads_color_bg"
                     android:padding="@dimen/_20sdp"
-                    android:visibility="visible">
+                    android:visibility="gone" >
 
                     <ImageView
                         android:id="@+id/reminderImageView"
@@ -161,6 +163,7 @@
                         android:background="@drawable/curve_white_border"
                         android:paddingStart="@dimen/_14sdp"
                         android:paddingTop="@dimen/_4sdp"
+                        android:onClick="onClick"
                         android:paddingEnd="@dimen/_14sdp"
                         android:paddingBottom="@dimen/_4sdp"
                         android:textColor="@color/white"

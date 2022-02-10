@@ -8,4 +8,6 @@ interface ILeadsDetailServiceInterface {
 
     fun onGetOrderCartByIdResponse(commonResponse: CommonApiResponse)
 
+    fun onSendAbandonedCartReminderResponse(commonResponse: CommonApiResponse)
+
 }

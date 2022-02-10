@@ -647,6 +647,11 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                 }
             }
             myLeadsHeadingTextView?.id -> {
+                if (false == StaticInstances.sPermissionHashMap?.get(Constants.ABANDONED_CART)) {
+                    val url = "${sOrderPageInfoResponse?.mAbandonedCartLockedUrl}?storeid=${PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)}&token=${PrefsManager.getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&${AFInAppEventParameterName.CHANNEL}=${AFInAppEventParameterName.LANDING_PAGE}"
+                    openWebViewFragmentV3(this@OrderFragment, "", url)
+                    return
+                }
                 mLeadsCartTypeSelection = Constants.CART_TYPE_DEFAULT
                 mLeadsFilterResponse = null
                 mLeadsFilterList = ArrayList()
@@ -814,7 +819,11 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                 completedOrderTextView?.text = sOrderPageInfoStaticData?.text_completed
                 ePosTextView?.text = sOrderPageInfoStaticData?.text_epos
                 myOrdersHeadingTextView?.text = sOrderPageInfoStaticData?.text_my_orders
-                myLeadsHeadingTextView?.text = "Leads"
+                myLeadsHeadingTextView?.text = sOrderPageInfoStaticData?.heading_leads
+                myLeadsHeadingTextView?.setCompoundDrawablesRelativeWithIntrinsicBounds(if (true == StaticInstances.sPermissionHashMap?.get(Constants.ABANDONED_CART)) 0 else R.drawable.ic_subscription_locked_black_small, 0, 0, 0)
+                if (true == StaticInstances.sPermissionHashMap?.get(Constants.ABANDONED_CART)) {
+                    myLeadsHeadingTextView?.gravity = Gravity.CENTER
+                }
                 setupSideOptionMenu()
                 swipeRefreshLayout?.isEnabled = true
                 orderLayout?.visibility = View.VISIBLE
@@ -1230,9 +1239,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
         }
     }
 
-    override fun onLeadsItemCLickedListener(item: LeadsResponse?) {
-        launchFragment(LeadDetailFragment.newInstance(item), true)
-    }
+    override fun onLeadsItemCLickedListener(item: LeadsResponse?) = launchFragment(LeadDetailFragment.newInstance(item), true)
 
     private fun showLeadsFilterBottomSheet() {
         var leadsFilterSortType = Constants.SORT_TYPE_DESCENDING
