@@ -298,6 +298,9 @@ interface Apis {
     @GET("api/dotk/vo1/orders/getOrderCartById/{id}")
     suspend fun getOrderCartById(@Path("id") id: String): Response<CommonApiResponse>
 
+    @POST("api/dotk/vm1/orders/sendAbandonedCartReminder")
+    suspend fun sendAbandonedCartReminder(@Body request: AbandonedCartReminderRequest): Response<CommonApiResponse>
+
     @POST("api/dotk/vm1/orders/updateOrderV2")
     suspend fun updateOrder(@Body statusRequest: UpdateOrderRequest): Response<CommonApiResponse>
 
