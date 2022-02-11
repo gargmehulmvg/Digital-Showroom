@@ -384,7 +384,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
         storeControlTextView?.text = infoResponse.mAccountStaticText?.mTextStoreControls
         if (infoResponse.mStoreInfo.storeServices.mStoreFlag == 1) {
             storeValueTextView?.text = infoResponse.mAccountStaticText?.mOpenText
-            mActivity?.let { context -> storeValueTextView?.setTextColor(ContextCompat.getColor(context, R.color.open_green)) }
+            mActivity?.let { context -> storeValueTextView?.setTextColor(ContextCompat.getColor(context, R.color.primary_green)) }
         } else {
             storeValueTextView?.text = infoResponse.mAccountStaticText?.mClosedText
             mActivity?.let { context -> storeValueTextView?.setTextColor(ContextCompat.getColor(context, R.color.red)) }

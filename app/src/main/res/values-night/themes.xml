@@ -73,8 +73,8 @@
     </style>
 
     <style name="CustomAppSwitch" parent="Theme.AppCompat.Light">
-        <item name="colorControlActivated">@color/open_green</item>
-        <item name="colorSwitchThumbNormal">@color/red_switch_off</item>
+        <item name="colorControlActivated">@color/primary_blue</item>
+        <item name="colorSwitchThumbNormal">@color/light_primary_blue</item>
     </style>
 
     <style name="InventoryCustomAppSwitch" parent="Theme.AppCompat.Light">

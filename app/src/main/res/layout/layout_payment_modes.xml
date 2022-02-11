@@ -143,10 +143,10 @@
                         android:layout_height="@dimen/_60sdp"
                         android:layout_margin="@dimen/_10sdp"
                         android:contentDescription="@string/image_view_content_description"
-                        tools:src="@drawable/ic_cash"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:src="@drawable/ic_cash" />
 
                     <TextView
                         android:id="@+id/headingTextView"
@@ -171,11 +171,11 @@
                         android:paddingTop="@dimen/_2sdp"
                         android:paddingEnd="@dimen/_8sdp"
                         android:paddingBottom="@dimen/_2sdp"
-                        tools:text="0% Txn Charge"
                         android:textColor="@color/dark_blackish"
                         android:textSize="@dimen/_8sdp"
                         app:layout_constraintStart_toStartOf="@id/headingTextView"
-                        app:layout_constraintTop_toBottomOf="@id/headingTextView" />
+                        app:layout_constraintTop_toBottomOf="@id/headingTextView"
+                        tools:text="0% Txn Charge" />
 
                     <TextView
                         android:id="@+id/upiInstantSettlementTextView"
@@ -187,16 +187,17 @@
                         android:paddingTop="@dimen/_2sdp"
                         android:paddingEnd="@dimen/_8sdp"
                         android:paddingBottom="@dimen/_2sdp"
-                        tools:text="Instant Settlements"
                         android:textColor="@color/dark_blackish"
                         android:textSize="@dimen/_8sdp"
                         app:layout_constraintStart_toStartOf="@id/upiTxnChargeTextView"
-                        app:layout_constraintTop_toBottomOf="@id/upiTxnChargeTextView" />
+                        app:layout_constraintTop_toBottomOf="@id/upiTxnChargeTextView"
+                        tools:text="Instant Settlements" />
 
                     <com.google.android.material.switchmaterial.SwitchMaterial
                         android:id="@+id/upiSwitch"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:theme="@style/CustomAppSwitch"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
@@ -227,10 +228,10 @@
                         android:layout_marginTop="@dimen/_5sdp"
                         android:layout_marginBottom="@dimen/_5sdp"
                         android:contentDescription="@string/image_view_content_description"
-                        tools:src="@drawable/ic_cash"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toTopOf="parent"
+                        tools:src="@drawable/ic_cash" />
 
                     <TextView
                         android:id="@+id/codTextView"
@@ -250,6 +251,7 @@
                         android:id="@+id/codSwitch"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:theme="@style/CustomAppSwitch"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
@@ -294,6 +296,7 @@
                     android:background="@drawable/slight_curve_black_border_without_padding"
                     android:drawablePadding="@dimen/_5sdp"
                     android:fontFamily="@font/roboto_medium"
+
                     android:onClick="onClick"
                     android:paddingStart="@dimen/_8sdp"
                     android:paddingTop="@dimen/_3sdp"

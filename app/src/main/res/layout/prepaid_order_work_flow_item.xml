@@ -10,7 +10,7 @@
         android:id="@+id/countTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/green_ring"
+        android:background="@drawable/blue_ring"
         tools:text="01"
         android:layout_marginTop="@dimen/_5sdp"
         android:textSize="@dimen/_8sdp"

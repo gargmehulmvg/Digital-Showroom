@@ -22,7 +22,8 @@
     <color name="red">#F4071B</color>
     <color name="light_blue">#0E92F3</color>
     <color name="inventory_blue">#3C82E3</color>
-    <color name="selected_chip_blue_bg">#EBF0FB</color>
+    <color name="primary_blue">#2C6AFF</color>
+    <color name="light_primary_blue">#EBF0FB</color>
     <color name="google_ads_bg">#388BDF</color>
     <color name="my_leads_bg">#3D6AFD</color>
     <color name="red_alpha">#FDA8A8</color>
@@ -31,6 +32,7 @@
     <color name="red_switch_off">#D93716</color>
     <color name="red_text_color_marketing">#FF0000</color>
     <color name="open_green">#000000</color>
+    <color name="primary_green">#47A525</color>
     <color name="open_green_darker">#2BD36D</color>
     <color name="open_green_lighter">#F0F9F3</color>
     <color name="orange">#F69647</color>

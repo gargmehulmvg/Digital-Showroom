@@ -80,7 +80,7 @@
             android:clickable="false"
             android:fontFamily="@font/roboto_medium"
             android:gravity="center_vertical"
-            android:textColor="@color/black"
+            android:textColor="@color/primary_blue"
             android:textSize="@dimen/_14sdp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="@id/settingKeyHeading"

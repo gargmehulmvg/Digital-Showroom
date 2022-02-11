@@ -29,16 +29,13 @@ class OrderNotificationsAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OrderNotificationsViewHolder {
         val view = OrderNotificationsViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.layout_order_notification_item, parent, false))
-        view.container.setOnClickListener { listener?.onAdapterItemClickListener(view.adapterPosition) }
+        view.container.setOnClickListener { listener?.onAdapterItemClickListener(view.absoluteAdapterPosition) }
         return view
     }
 
     override fun getItemCount(): Int = itemList?.size ?: 0
 
-    override fun onBindViewHolder(
-        holder: OrderNotificationsViewHolder,
-        position: Int
-    ) {
+    override fun onBindViewHolder(holder: OrderNotificationsViewHolder, position: Int) {
         holder.apply {
             mContext?.let { context ->
                 val item = itemList?.get(position)
@@ -52,8 +49,8 @@ class OrderNotificationsAdapter(
                 if (item?.isSelected == true) {
                     container.elevation = 1f
                     radioButton.isChecked = true
-                    container.background = ContextCompat.getDrawable(context, R.drawable.ripple_slight_curve_grey_white_background_green_border)
-                    headingTextView.setTextColor(ContextCompat.getColor(context, R.color.open_green))
+                    container.background = ContextCompat.getDrawable(context, R.drawable.ripple_slight_curve_grey_white_background_blue_border)
+                    headingTextView.setTextColor(ContextCompat.getColor(context, R.color.primary_blue))
                 } else {
                     container.elevation = 10f
                     radioButton.isChecked = false

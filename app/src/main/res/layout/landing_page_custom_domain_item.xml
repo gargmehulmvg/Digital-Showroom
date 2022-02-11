@@ -77,7 +77,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_8sdp"
-            android:background="@drawable/slight_curve_green_background_without_padding"
+            android:background="@drawable/slight_curve_black_background_without_padding"
             android:fontFamily="@font/roboto_light"
             android:gravity="center"
             android:onClick="onClick"

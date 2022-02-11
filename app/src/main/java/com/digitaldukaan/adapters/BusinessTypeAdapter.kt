@@ -1,6 +1,5 @@
 package com.digitaldukaan.adapters
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,13 +10,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.BusinessTypeAdapter.BusinessTypeViewHolder
+import com.digitaldukaan.constants.isNotEmpty
 import com.digitaldukaan.fragments.BaseFragment
 import com.digitaldukaan.models.response.BusinessTypeItemResponse
 
 class BusinessTypeAdapter(
     private val mContext: BaseFragment,
-    private var mBusinessList: ArrayList<BusinessTypeItemResponse>
-) :
+    private var mBusinessList: ArrayList<BusinessTypeItemResponse>) :
     RecyclerView.Adapter<BusinessTypeViewHolder>() {
 
     inner class BusinessTypeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -28,12 +27,10 @@ class BusinessTypeAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BusinessTypeViewHolder {
-        val view = BusinessTypeViewHolder(
-            LayoutInflater.from(parent.context).inflate(R.layout.business_type_item, parent, false)
-        )
+        val view = BusinessTypeViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.business_type_item, parent, false))
         view.businessTypeContainer.setOnClickListener {
             if (it.isSelected) {
-                mBusinessList[view.adapterPosition].isBusinessTypeSelected = false
+                mBusinessList[view.absoluteAdapterPosition].isBusinessTypeSelected = false
                 it.isSelected = false
                 view.businessTypeCheckBox.isChecked = false
             } else {
@@ -43,7 +40,7 @@ class BusinessTypeAdapter(
                     mContext.showToast("Only ${mContext.resources.getInteger(R.integer.business_type_count)} selections are allowed")
                     return@setOnClickListener
                 }
-                mBusinessList[view.adapterPosition].isBusinessTypeSelected = true
+                mBusinessList[view.absoluteAdapterPosition].isBusinessTypeSelected = true
                 it.isSelected = true
                 view.businessTypeCheckBox.isChecked = true
             }
@@ -64,13 +61,7 @@ class BusinessTypeAdapter(
                 businessTypeCheckBox.isChecked = true
             }
             businessTypeTextView.text = itemResponse.businessName
-            if (itemResponse.businessImage.isNotEmpty()) businessTypeImageView?.let {
-                try {
-                    mContext?.let { context -> Glide.with(context).load(itemResponse.businessImage).into(it) }
-                } catch (e: Exception) {
-                    Log.e(BusinessTypeAdapter::class.java.simpleName, "picasso image loading issue: ${e.message}", e)
-                }
-            }
+            if (isNotEmpty(itemResponse.businessImage)) Glide.with(mContext).load(itemResponse.businessImage).into(businessTypeImageView)
         }
     }
 

@@ -361,7 +361,7 @@
                             android:id="@+id/discountedPriceTextView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/slight_curve_green_background_without_padding"
+                            android:background="@drawable/slight_curve_black_background_without_padding"
                             android:fontFamily="@font/roboto_bold"
                             android:paddingStart="@dimen/_5sdp"
                             android:paddingEnd="@dimen/_5sdp"
