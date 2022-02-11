@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -167,12 +168,16 @@ class LeadDetailFragment: BaseFragment(), ILeadsDetailServiceInterface,
                         val messageTextView: TextView = findViewById(R.id.messageTextView)
                         yesTextView.text = mLeadDetailPageInfoResponse?.staticText?.textYes
                         noTextView.text = mLeadDetailPageInfoResponse?.staticText?.textCancel
-                        headingTextView.text = mLeadDetailPageInfoResponse?.staticText?.textOfferNotCreated
+                        headingTextView.apply {
+                            text = mLeadDetailPageInfoResponse?.staticText?.textOfferNotCreated
+                            gravity = Gravity.CENTER
+                        }
                         messageTextView.text = null
                         noTextView.setOnClickListener {
                             this.dismiss()
                         }
                         yesTextView.setOnClickListener {
+                            launchFragment(CustomCouponsFragment.newInstance(null), true)
                             this.dismiss()
                         }
                     }.show()
