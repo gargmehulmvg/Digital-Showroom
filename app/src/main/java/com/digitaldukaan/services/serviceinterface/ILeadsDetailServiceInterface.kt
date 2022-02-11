@@ -8,6 +8,10 @@ interface ILeadsDetailServiceInterface {
 
     fun onGetOrderCartByIdResponse(commonResponse: CommonApiResponse)
 
+    fun onGetPromoCodeListResponse(commonResponse: CommonApiResponse)
+
+    fun onPromoCodeShareResponse(commonResponse: CommonApiResponse)
+
     fun onSendAbandonedCartReminderResponse(commonResponse: CommonApiResponse)
 
 }

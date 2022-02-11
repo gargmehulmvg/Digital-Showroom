@@ -407,8 +407,7 @@ class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInter
             }
 
             override fun onPromoCodeShareClickListener(position: Int) {
-                if (position < 0) return
-                if (position >= mPromoCodeList.size) return
+                if (position < 0 || position >= mPromoCodeList.size) return
                 val item = mPromoCodeList[position]
                 showProgressDialog(mActivity)
                 AppEventsManager.pushAppEvents(
