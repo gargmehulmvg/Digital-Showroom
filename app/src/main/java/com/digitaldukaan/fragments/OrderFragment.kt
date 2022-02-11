@@ -51,7 +51,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import ru.slybeaver.slycalendarview.SlyCalendarDialog
 import java.io.File
-import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.abs
@@ -1015,13 +1014,31 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
     }
 
     override fun onRefresh() {
-        sOrderList.clear()
-        sCompletedOrderList.clear()
-        mCompletedPageCount = 1
-        mPendingPageCount = 1
-        fetchLatestOrders(Constants.MODE_PENDING, sFetchingOrdersStr, mPendingPageCount)
-        mService?.getOrderPageInfo()
-        mService?.getAnalyticsData()
+        if (!mIsLeadsTabSelected) {
+            sOrderList.clear()
+            sCompletedOrderList.clear()
+            mCompletedPageCount = 1
+            mPendingPageCount = 1
+            fetchLatestOrders(Constants.MODE_PENDING, sFetchingOrdersStr, mPendingPageCount)
+            mService?.getOrderPageInfo()
+            mService?.getAnalyticsData()
+        } else {
+            mActivity?.let { context ->
+                abandonedCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_grey_background_without_padding)
+                activeCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_grey_background_without_padding)
+            }
+            mLeadsCartTypeSelection = Constants.CART_TYPE_DEFAULT
+            resetLeadsDateFilter()
+            mLeadsFilterRequest = LeadsListRequest(
+                userName = "",
+                startDate = "",
+                endDate = "",
+                userPhone = "",
+                sortType = Constants.SORT_TYPE_DESCENDING,
+                cartType = mLeadsCartTypeSelection
+            )
+            mService?.getCartsByFilters(mLeadsFilterRequest)
+        }
     }
 
     override fun onOrderCheckBoxChanged(isChecked: Boolean, item: OrderItemResponse?) {
@@ -1366,10 +1383,14 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                             Log.d(TAG, "onDataSelected: firstDate ${firstDate?.time} :: secondDate :: ${secondDate?.time}")
                             val secondDateCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
                             secondDateCalendar.timeInMillis = secondDate?.timeInMillis ?: firstDate?.timeInMillis ?: 0
-                            mLeadsFilterEndDate = "${secondDateCalendar.get(Calendar.YEAR)}-${secondDateCalendar.get(Calendar.MONTH) + 1}-${secondDateCalendar.get(Calendar.DATE)}"
+                            var monthStr = "${(secondDateCalendar.get(Calendar.MONTH) + 1)}"
+                            var dateStr = "${(secondDateCalendar.get(Calendar.DATE))}"
+                            mLeadsFilterEndDate = "${secondDateCalendar.get(Calendar.YEAR)}-${if (1 == monthStr.length) "0$monthStr" else monthStr}-${if (1 == dateStr.length) "0$dateStr" else dateStr}"
                             val firstDateCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
                             firstDateCalendar.timeInMillis = firstDate?.timeInMillis ?: (secondDate?.timeInMillis ?: 0)
-                            mLeadsFilterStartDate = "${firstDateCalendar.get(Calendar.YEAR)}-${firstDateCalendar.get(Calendar.MONTH) + 1}-${firstDateCalendar.get(Calendar.DATE)}"
+                            monthStr = "${(firstDateCalendar.get(Calendar.MONTH) + 1)}"
+                            dateStr = "${(firstDateCalendar.get(Calendar.DATE))}"
+                            mLeadsFilterStartDate = "${firstDateCalendar.get(Calendar.YEAR)}-${if (1 == monthStr.length) "0$monthStr" else monthStr}-${if (1 == dateStr.length) "0$dateStr" else dateStr}"
                             val displayDate = "${getDateStringFromLeadsFilter(firstDateCalendar.time)} - ${getDateStringFromLeadsFilter(secondDateCalendar.time)}"
                             mLeadsFilterList.forEachIndexed { pos, itemResponse ->
                                 if (Constants.LEADS_FILTER_TYPE_DATE == itemResponse.type) {
