@@ -22,6 +22,7 @@ import com.digitaldukaan.adapters.LeadsDetailItemAdapter
 import com.digitaldukaan.adapters.LeadsPromoCodeAdapter
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.interfaces.IPromoCodeItemClickListener
+import com.digitaldukaan.models.dto.LeadsDetailItemDTO
 import com.digitaldukaan.models.request.AbandonedCartReminderRequest
 import com.digitaldukaan.models.request.GetPromoCodeRequest
 import com.digitaldukaan.models.response.*
@@ -37,6 +38,7 @@ import kotlinx.android.synthetic.main.bottom_layout_share_offer.*
 import kotlinx.android.synthetic.main.layout_lead_detail_fragment.*
 import kotlinx.android.synthetic.main.layout_promo_code_page_info_fragment.*
 import java.util.*
+import kotlin.collections.ArrayList
 
 class LeadDetailFragment: BaseFragment(), ILeadsDetailServiceInterface,
     IPromoCodeItemClickListener {
@@ -336,12 +338,41 @@ class LeadDetailFragment: BaseFragment(), ILeadsDetailServiceInterface,
             amountDetailTextView?.text = displayStr
             totalAmountHeadingDetailTextView?.text = displayStr
             var totalItemCount = 0
-            pageInfoResponse?.orderDetailsItemsList?.forEachIndexed { _, orderDetailItemResponse -> totalItemCount += orderDetailItemResponse.quantity }
+            pageInfoResponse?.leadsDetailsItemsList?.forEachIndexed { _, orderDetailItemResponse -> totalItemCount += (orderDetailItemResponse.quantity.toInt()) }
             totalItemsDetailTextView?.text = "$totalItemCount"
             mobileDetailTextView?.text = "${pageInfoResponse?.userPhone}"
             cartDetailItemRecyclerView?.apply {
                 layoutManager = LinearLayoutManager(mActivity)
-                adapter = LeadsDetailItemAdapter(mActivity, pageInfoResponse?.staticText, pageInfoResponse?.orderDetailsItemsList)
+                val itemList = ArrayList<LeadsDetailItemDTO>()
+                pageInfoResponse?.leadsDetailsItemsList?.forEachIndexed { _, itemResponse ->
+                    if (isEmpty(itemResponse.leadsVariantList)) {
+                        val item = LeadsDetailItemDTO().apply {
+                            mCartImageUrl = itemResponse.imageUrl
+                            mCartItemName = itemResponse.itemName
+                            mCartVariantName = ""
+                            mCartItemQuantity = itemResponse.quantity
+                            val priceStr = "₹${itemResponse.item_price}"
+                            mCartItemPrice = priceStr
+                        }
+                        itemList.add(item)
+                    } else {
+                        itemResponse.leadsVariantList.forEachIndexed { _, variantItemResponse ->
+                            val item = LeadsDetailItemDTO().apply {
+                                mCartImageUrl = variantItemResponse.imageUrl
+                                mCartItemName = itemResponse.itemName
+                                var displayMessage = ""
+                                displayMessage = "${mLeadDetailPageInfoResponse?.staticText?.textVariant}: ${variantItemResponse.variantName}"
+                                mCartVariantName = displayMessage
+                                mCartItemQuantity = variantItemResponse.quantity
+                                displayMessage = "₹${variantItemResponse.price}"
+                                mCartItemPrice = displayMessage
+                            }
+                            itemList.add(item)
+                        }
+                    }
+                }
+
+                adapter = LeadsDetailItemAdapter(mActivity, pageInfoResponse?.staticText, itemList)
             }
             notificationContainer?.visibility = if (!PrefsManager.getBoolDataFromSharedPref(PrefsManager.KEY_ABANDONED_CART_OKAY_CLICKED)) View.VISIBLE else View.GONE
         }

@@ -25,14 +25,14 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_5sdp"
                 android:layout_marginEnd="@dimen/_15sdp"
-                android:minLines="@integer/min_lines_two"
                 android:textColor="@color/black"
+                android:maxLines="@integer/min_lines_two"
                 android:textSize="@dimen/_11sdp"
                 android:fontFamily="@font/roboto"
                 app:layout_constraintEnd_toStartOf="@id/priceTextView"
                 app:layout_constraintStart_toEndOf="@id/abandonedCartDetailImageView"
                 app:layout_constraintTop_toTopOf="@id/abandonedCartDetailImageView"
-                tools:text="Pink cream cake meringues with smudges" />
+                tools:text="Pink cream cake " />
 
             <TextView
                 android:id="@+id/abandonedCartDetailVariantNameTextView"

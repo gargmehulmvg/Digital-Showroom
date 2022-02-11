@@ -9,15 +9,14 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.digitaldukaan.R
-import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.constants.isNotEmpty
+import com.digitaldukaan.models.dto.LeadsDetailItemDTO
 import com.digitaldukaan.models.response.LeadDetailStaticTextResponse
-import com.digitaldukaan.models.response.OrderDetailItemResponse
 
 class LeadsDetailItemAdapter(
     private var mContext: Context?,
     private var mOrderDetailStaticData: LeadDetailStaticTextResponse?,
-    private var mOrderDetailList: ArrayList<OrderDetailItemResponse>?,
+    private var mOrderDetailList: ArrayList<LeadsDetailItemDTO>?,
 ) : RecyclerView.Adapter<LeadsDetailItemAdapter.OrderDetailViewHolder>() {
 
     inner class OrderDetailViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -42,22 +41,19 @@ class LeadsDetailItemAdapter(
         val item = mOrderDetailList?.get(position)
         holder.apply {
             mContext?.let { context ->
-                if (isNotEmpty(item?.imageUrl)) {
+                if (isNotEmpty(item?.mCartImageUrl)) {
                     orderDetailImageView.visibility = View.VISIBLE
-                    Glide.with(context).load(item?.imageUrl).into(orderDetailImageView)
+                    Glide.with(context).load(item?.mCartImageUrl).into(orderDetailImageView)
                 } else orderDetailImageView.visibility = View.GONE
             }
-            orderDetailNameTextView.text = item?.itemName
-            if (Constants.ITEM_TYPE_LIST == item?.itemType || Constants.ITEM_TYPE_CATALOG == item?.itemType) {
-                val quantityStr = "${mOrderDetailStaticData?.textQty}: ${item.itemQuantity}"
-                quantityTextView.text = quantityStr
-            }
-            val priceStr = "${if (Constants.ITEM_TYPE_DISCOUNT == item?.itemType) "- " else ""}₹ ${item?.amount}"
-            priceTextView.text = priceStr
-            if (isNotEmpty(item?.variantName)) {
+            val quantityStr = "${mOrderDetailStaticData?.textQty}: ${item?.mCartItemQuantity}"
+            quantityTextView.text = quantityStr
+            priceTextView.text = item?.mCartItemPrice
+            if (isNotEmpty(item?.mCartVariantName)) {
                 orderDetailVariantNameTextView.visibility = View.VISIBLE
-                orderDetailVariantNameTextView.text = item?.variantName
+                orderDetailVariantNameTextView.text = item?.mCartVariantName
             } else orderDetailVariantNameTextView.visibility = View.GONE
+            orderDetailNameTextView.text = item?.mCartItemName
         }
     }
 
