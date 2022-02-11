@@ -132,7 +132,7 @@ class LeadsAdapter(
                         displayStr = "${StaticInstances.sOrderPageInfoStaticData?.text_notification_sent_in_hours}"
                         displayNotificationString = displayStr.replace("xxx", "$hours", true)
                     }  else if(minutes!=0L){
-                        displayStr = "${StaticInstances.sOrderPageInfoStaticData?.text_notification_sent_in_minutes} ${minutes}"
+                        displayStr = "${StaticInstances.sOrderPageInfoStaticData?.text_notification_sent_in_minutes}"
                         displayNotificationString = displayStr.replace("xxx", "$minutes", true)
                     }   else{
                         displayNotificationString = "${StaticInstances.sOrderPageInfoStaticData?.text_notification_sent_recently}"
