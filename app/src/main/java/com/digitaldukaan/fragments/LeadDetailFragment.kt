@@ -145,10 +145,40 @@ class LeadDetailFragment: BaseFragment(), ILeadsDetailServiceInterface,
                 if (1 == mPromoCodePageNumber) mPromoCodeList.clear()
                 mPromoCodeList.addAll(promoCodeListResponse?.mPromoCodeList ?: ArrayList())
                 if (isEmpty(mPromoCodeList)) {
-
+                    showNoOffersDialog()
                 } else {
                     showOffersBottomSheet()
                 }
+            }
+        }
+    }
+
+    private fun showNoOffersDialog() {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            try {
+                mActivity?.let { context ->
+                    Dialog(context).apply {
+                        setCancelable(true)
+                        window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+                        setContentView(R.layout.dialog_common_back_pressed)
+                        val noTextView: TextView = findViewById(R.id.noTextView)
+                        val yesTextView: TextView = findViewById(R.id.yesTextView)
+                        val headingTextView: TextView = findViewById(R.id.headingTextView)
+                        val messageTextView: TextView = findViewById(R.id.messageTextView)
+                        yesTextView.text = mLeadDetailPageInfoResponse?.staticText?.textYes
+                        noTextView.text = mLeadDetailPageInfoResponse?.staticText?.textCancel
+                        headingTextView.text = mLeadDetailPageInfoResponse?.staticText?.textOfferNotCreated
+                        messageTextView.text = null
+                        noTextView.setOnClickListener {
+                            this.dismiss()
+                        }
+                        yesTextView.setOnClickListener {
+                            this.dismiss()
+                        }
+                    }.show()
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "showGoBackDialog: ${e.message}", e)
             }
         }
     }
