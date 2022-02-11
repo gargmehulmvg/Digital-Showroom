@@ -576,13 +576,13 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                 }
             }
             if (orderDetailResponse?.deliveryCharge != 0.0 && !(Constants.DS_NEW == deliveryStatus || Constants.DS_SEND_BILL == deliveryStatus)) {
-                list?.add(OrderDetailItemResponse(0, 0, getString(R.string.delivery_charge), 1, "1", orderDetailResponse.deliveryCharge, orderDetailResponse.deliveryCharge, orderDetailResponse.deliveryCharge, orderDetailResponse.deliveryCharge, 1, Constants.ITEM_TYPE_DELIVERY_CHARGE, null, 0, null, "", false))
+                list?.add(OrderDetailItemResponse(0, "0", getString(R.string.delivery_charge), 1, "1", orderDetailResponse.deliveryCharge, orderDetailResponse.deliveryCharge ?: 0.0, orderDetailResponse.deliveryCharge ?: 0.0, orderDetailResponse.deliveryCharge ?: 0.0, 1, Constants.ITEM_TYPE_DELIVERY_CHARGE, null, 0, null, "", false))
             }
             if (orderDetailResponse?.extraCharges != 0.0 && !(Constants.DS_NEW == deliveryStatus || Constants.DS_SEND_BILL == deliveryStatus)) {
-                list?.add(OrderDetailItemResponse(0, 0, orderDetailResponse.extraChargesName, 1, "1", orderDetailResponse.extraCharges, orderDetailResponse.extraCharges, orderDetailResponse.extraCharges, orderDetailResponse.extraCharges, 1, Constants.ITEM_TYPE_CHARGE, null, 0, null, "", false))
+                list?.add(OrderDetailItemResponse(0, "0", orderDetailResponse.extraChargesName, 1, "1", orderDetailResponse.extraCharges, orderDetailResponse.extraCharges ?: 0.0, orderDetailResponse.extraCharges ?: 0.0, orderDetailResponse.extraCharges ?: 0.0, 1, Constants.ITEM_TYPE_CHARGE, null, 0, null, "", false))
             }
             if (orderDetailResponse?.discount != 0.0 && !(Constants.DS_NEW == deliveryStatus || Constants.DS_SEND_BILL == deliveryStatus)) {
-                list?.add(OrderDetailItemResponse(0, 0, getString(R.string.discount), 1, "1", orderDetailResponse.discount, orderDetailResponse.discount, orderDetailResponse.discount, orderDetailResponse.discount, 1, Constants.ITEM_TYPE_DISCOUNT, null, 0, null, "", false))
+                list?.add(OrderDetailItemResponse(0, "0", getString(R.string.discount), 1, "1", orderDetailResponse.discount, orderDetailResponse.discount ?: 0.0, orderDetailResponse.discount ?: 0.0, orderDetailResponse.discount ?: 0.0, 1, Constants.ITEM_TYPE_DISCOUNT, null, 0, null, "", false))
             }
             list?.forEachIndexed { _, itemResponse ->
                 itemResponse.isItemEditable = (((Constants.DS_NEW == deliveryStatus || Constants.DS_SEND_BILL == deliveryStatus)) && 0.0 == itemResponse.amount)
