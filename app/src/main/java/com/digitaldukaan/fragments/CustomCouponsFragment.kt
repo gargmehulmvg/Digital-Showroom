@@ -68,9 +68,9 @@ class CustomCouponsFragment : BaseFragment(), ICustomCouponsServiceInterface {
         TAG = "CustomCouponsFragment"
         FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
         mContentView = inflater.inflate(R.layout.layout_custom_coupons_fragment, container, false)
-        if (null == mStaticText) mService.getPromoCodePageInfo()
-        initializeUI()
         mService.setCustomCouponsServiceListener(this)
+        if (null == mStaticText) mService.getPromoCodePageInfoV2()
+        initializeUI()
         mStoreName = PrefsManager.getStringDataFromSharedPref(Constants.STORE_NAME)
         return mContentView
     }
@@ -147,8 +147,10 @@ class CustomCouponsFragment : BaseFragment(), ICustomCouponsServiceInterface {
                 pdMaxDiscountStr = pdMaxDiscountStr.trim()
                 if (!isEmpty(pdPercentageStr) && !isEmpty(pdMaxDiscountStr)) {
                     pdDiscountPreviewLayout?.visibility = View.VISIBLE
-                    pdDiscountUpToTextView?.text = "${mStaticText?.text_upto_capital} ₹$pdMaxDiscountStr"
-                    pdDiscountOffTextView?.text = "$pdPercentageStr% ${mStaticText?.text_off_all_caps}"
+                    var displayStr = "${mStaticText?.text_upto_capital} ₹$pdMaxDiscountStr"
+                    pdDiscountUpToTextView?.text = displayStr
+                    displayStr = "$pdPercentageStr% ${mStaticText?.text_off_all_caps}"
+                    pdDiscountOffTextView?.text = displayStr
                 } else pdDiscountPreviewLayout?.visibility = View.GONE
             }
 
@@ -163,7 +165,8 @@ class CustomCouponsFragment : BaseFragment(), ICustomCouponsServiceInterface {
                 fdDiscountStr = fdDiscountStr.trim()
                 if (!isEmpty(fdDiscountStr)) {
                     fdDiscountPreviewLayout?.visibility = View.VISIBLE
-                    fdDiscountUpToTextView?.text = "₹$fdDiscountStr ${mStaticText?.text_off_all_caps}"
+                    val displayStr = "₹$fdDiscountStr ${mStaticText?.text_off_all_caps}"
+                    fdDiscountUpToTextView?.text = displayStr
                     fdDiscountOffTextView?.text = mStaticText?.text_flat
                 } else fdDiscountPreviewLayout?.visibility = View.GONE
                 if (!isEmpty(fdDiscountStr)) {
@@ -184,8 +187,10 @@ class CustomCouponsFragment : BaseFragment(), ICustomCouponsServiceInterface {
                 pdPercentageStr = pdPercentageStr.trim()
                 if (!isEmpty(pdPercentageStr) && !isEmpty(pdMaxDiscountStr)) {
                     pdDiscountPreviewLayout?.visibility = View.VISIBLE
-                    pdDiscountOffTextView?.text = "$pdPercentageStr% ${mStaticText?.text_off_all_caps}"
-                    pdDiscountUpToTextView?.text = "${mStaticText?.text_upto_capital} ₹$pdMaxDiscountStr"
+                    var displayStr = "$pdPercentageStr% ${mStaticText?.text_off_all_caps}"
+                    pdDiscountOffTextView?.text = displayStr
+                    displayStr = "${mStaticText?.text_upto_capital} ₹$pdMaxDiscountStr"
+                    pdDiscountUpToTextView?.text = displayStr
                 } else pdDiscountPreviewLayout?.visibility = View.GONE
                 if (!isEmpty(pdPercentageStr)) {
                     val storeNameStr = getCouponStoreName()
