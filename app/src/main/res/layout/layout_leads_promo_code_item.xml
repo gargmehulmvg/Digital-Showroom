@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:paddingTop="@dimen/_5sdp"
+    android:id="@+id/container"
+    android:background="@drawable/curve_grey_dotted_border"
+    android:paddingBottom="@dimen/_5sdp"
+    android:onClick="onClick"
+    android:layout_marginBottom="@dimen/_8sdp"
+    android:paddingStart="@dimen/_15sdp"
+    android:paddingEnd="@dimen/_15sdp"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/offerTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/roboto_medium"
+        android:textColor="@color/black"
+        android:clickable="false"
+        android:textSize="@dimen/_10sdp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="30% OFF" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:clickable="false"
+        android:background="@drawable/slight_curve_light_grey_background"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:paddingStart="@dimen/_5sdp"
+        android:paddingEnd="@dimen/_5sdp"
+        android:paddingTop="@dimen/_2sdp"
+        android:paddingBottom="@dimen/_2sdp"
+        app:layout_constraintEnd_toStartOf="@id/shareTextView"
+        app:layout_constraintHorizontal_bias="0.2"
+        app:layout_constraintStart_toEndOf="@id/offerTextView"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/useCodeTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:textSize="@dimen/_9sdp"
+            tools:text="Use Code:" />
+
+        <TextView
+            android:id="@+id/useCodeValueTextView"
+            android:layout_width="wrap_content"
+            android:padding="@dimen/_2sdp"
+            android:layout_height="match_parent"
+            android:fontFamily="@font/roboto_medium"
+            android:gravity="center"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_9sdp"
+            tools:text="Use Code:" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/shareTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/roboto"
+        android:text="@string/share"
+        android:clickable="false"
+        android:textSize="@dimen/_10sdp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/imageView13" />
+
+    <ImageView
+        android:id="@+id/imageView13"
+        android:layout_width="@dimen/_15sdp"
+        android:layout_height="@dimen/_15sdp"
+        android:clickable="false"
+        android:contentDescription="@string/image_view_content_description"
+        android:src="@drawable/ic_share_forward_arrow"
+        app:layout_constraintBottom_toTopOf="@+id/shareTextView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="@id/shareTextView"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed"
+        app:tint="@color/my_leads_bg" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

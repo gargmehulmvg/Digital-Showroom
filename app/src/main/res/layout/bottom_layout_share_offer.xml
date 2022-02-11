@@ -26,6 +26,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_6sdp"
+        android:onClick="onClick"
         android:background="@drawable/curve_blue_border"
         android:drawablePadding="@dimen/_4sdp"
         android:paddingStart="@dimen/_34sdp"

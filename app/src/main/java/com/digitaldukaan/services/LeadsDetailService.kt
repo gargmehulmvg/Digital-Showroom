@@ -2,6 +2,7 @@ package com.digitaldukaan.services
 
 import com.digitaldukaan.constants.CoroutineScopeUtils
 import com.digitaldukaan.models.request.AbandonedCartReminderRequest
+import com.digitaldukaan.models.request.GetPromoCodeRequest
 import com.digitaldukaan.services.networkservice.LeadsDetailNetworkService
 import com.digitaldukaan.services.serviceinterface.ILeadsDetailServiceInterface
 
@@ -27,4 +28,15 @@ class LeadsDetailService {
         }
     }
 
+    fun getAllMerchantPromoCodes(request: GetPromoCodeRequest) {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.getAllMerchantPromoCodesServerCall(mServiceInterface, request)
+        }
+    }
+
+    fun shareCoupon(promoCode: String?) {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            promoCode?.let { str -> mNetworkService.shareCouponServerCall(str, mServiceInterface) }
+        }
+    }
 }
