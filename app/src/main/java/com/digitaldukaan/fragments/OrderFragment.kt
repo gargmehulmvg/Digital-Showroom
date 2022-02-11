@@ -820,7 +820,12 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                 ePosTextView?.text = sOrderPageInfoStaticData?.text_epos
                 myOrdersHeadingTextView?.text = sOrderPageInfoStaticData?.text_my_orders
                 myLeadsHeadingTextView?.text = sOrderPageInfoStaticData?.heading_leads
-                myLeadsHeadingTextView?.setCompoundDrawablesRelativeWithIntrinsicBounds(if (true == StaticInstances.sPermissionHashMap?.get(Constants.ABANDONED_CART)) 0 else R.drawable.ic_subscription_locked_black_small, 0, 0, 0)
+                myLeadsHeadingTextView?.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                    if (true == StaticInstances.sPermissionHashMap?.get(Constants.ABANDONED_CART)) 0 else R.drawable.ic_subscription_locked_black_small,
+                    0,
+                    R.drawable.ic_red_dot,
+                    0
+                )
                 if (true == StaticInstances.sPermissionHashMap?.get(Constants.ABANDONED_CART)) {
                     myLeadsHeadingTextView?.gravity = Gravity.CENTER
                 }

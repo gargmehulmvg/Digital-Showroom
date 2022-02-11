@@ -34,16 +34,16 @@ data class OrderDetailsResponse (
 )
 
 data class OrderDetailItemResponse(
-    @SerializedName("order_item_id")            var orderItemId: Int?,
-    @SerializedName("item_id")                  var itemId: Int?,
+    @SerializedName("order_item_id")            var orderItemId: Int,
+    @SerializedName("item_id")                  var itemId: String?,
     @SerializedName("item_name")                var itemName: String?,
     @SerializedName("quantity")                 var quantity: Int,
     @SerializedName("item_quantity")            var itemQuantity: String?,
     @SerializedName("item_price")               var itemPrice: Double?,
-    @SerializedName("amount")                   var amount: Double?,
-    @SerializedName("actual_amount")            var actualAmount: Double?,
-    @SerializedName("discounted_price")         var discountedPrice: Double?,
-    @SerializedName("item_status")              var itemStatus: Int?,
+    @SerializedName("amount")                   var amount: Double,
+    @SerializedName("actual_amount")            var actualAmount: Double,
+    @SerializedName("discounted_price")         var discountedPrice: Double,
+    @SerializedName("item_status")              var itemStatus: Int,
     @SerializedName("item_type")                var itemType: String?,
     @SerializedName("creator_type")             var creatorType: Int?,
     @SerializedName("variant_id")               var variantId: Int,

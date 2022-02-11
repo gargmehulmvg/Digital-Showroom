@@ -259,8 +259,8 @@
                             android:onClick="onClick"
                             android:padding="@dimen/_10sdp"
                             android:paddingStart="@dimen/_45sdp"
-                            android:paddingEnd="@dimen/_45sdp"
-                            android:drawablePadding="@dimen/_15sdp"
+                            android:paddingEnd="@dimen/_50sdp"
+                            android:drawablePadding="@dimen/_5sdp"
                             android:textColor="@color/black"
                             android:textSize="@dimen/_11sdp"
                             app:layout_constraintBottom_toBottomOf="parent"
@@ -270,7 +270,8 @@
                             app:layout_constraintStart_toEndOf="@id/myOrdersHeadingTextView"
                             app:layout_constraintTop_toTopOf="parent"
                             tools:text="Leads"
-                            app:drawableStartCompat="@drawable/ic_subscription_locked_black_small" />
+                            app:drawableStartCompat="@drawable/ic_subscription_locked_black_small"
+                            app:drawableEndCompat="@drawable/ic_red_dot" />
 
                     </androidx.constraintlayout.widget.ConstraintLayout>
 

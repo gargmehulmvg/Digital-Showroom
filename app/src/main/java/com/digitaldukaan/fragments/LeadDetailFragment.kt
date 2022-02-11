@@ -299,7 +299,9 @@ class LeadDetailFragment: BaseFragment(), ILeadsDetailServiceInterface,
             displayStr = "₹${pageInfoResponse?.payAmount}"
             amountDetailTextView?.text = displayStr
             totalAmountHeadingDetailTextView?.text = displayStr
-            totalItemsDetailTextView?.text = "${pageInfoResponse?.orderDetailsItemsList?.size}"
+            var totalItemCount = 0
+            pageInfoResponse?.orderDetailsItemsList?.forEachIndexed { _, orderDetailItemResponse -> totalItemCount += orderDetailItemResponse.quantity }
+            totalItemsDetailTextView?.text = "$totalItemCount"
             mobileDetailTextView?.text = "${pageInfoResponse?.userPhone}"
             cartDetailItemRecyclerView?.apply {
                 layoutManager = LinearLayoutManager(mActivity)
