@@ -51,6 +51,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import ru.slybeaver.slycalendarview.SlyCalendarDialog
 import java.io.File
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.abs
@@ -1313,9 +1314,19 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                                                         showDatePickerDialog()
                                                     } else {
                                                         val currentDate = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
-                                                        mLeadsFilterEndDate = "${currentDate.get(Calendar.YEAR)}-${currentDate.get(Calendar.MONTH) + 1}-${currentDate.get(Calendar.DATE)}"
+                                                        var month = currentDate.get(Calendar.MONTH) + 1
+                                                        var monthStr = ""
+                                                        monthStr = if (month <= 9) "0$month" else "$month"
+                                                        var day = currentDate.get(Calendar.DATE)
+                                                        var dayStr = ""
+                                                        dayStr = if (day <= 9) "0$day" else "$day"
+                                                        mLeadsFilterEndDate = "${currentDate.get(Calendar.YEAR)}-$monthStr-$dayStr"
                                                         currentDate.add(Calendar.DAY_OF_YEAR, -abs(item?.id?.toInt() ?: 0))
-                                                        mLeadsFilterStartDate = "${currentDate.get(Calendar.YEAR)}-${currentDate.get(Calendar.MONTH) + 1}-${currentDate.get(Calendar.DATE)}"
+                                                        month = currentDate.get(Calendar.MONTH) + 1
+                                                        monthStr = if (month <= 9) "0$month" else "$month"
+                                                        day = currentDate.get(Calendar.DATE)
+                                                        dayStr = if (day <= 9) "0$day" else "$day"
+                                                        mLeadsFilterStartDate = "${currentDate.get(Calendar.YEAR)}-$monthStr-$dayStr"
                                                         Log.d(TAG, "onLeadsFilterItemClickListener: startDate :: $mLeadsFilterStartDate endDate :: $mLeadsFilterEndDate")
                                                     }
                                                 }
