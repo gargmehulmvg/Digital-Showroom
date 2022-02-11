@@ -17,6 +17,11 @@ class LeadsPromoCodeAdapter(
     private var mListener: IPromoCodeItemClickListener?
 ) : RecyclerView.Adapter<LeadsPromoCodeAdapter.PromoCodeViewHolder>() {
 
+    fun setList(list: ArrayList<PromoCodeListItemResponse>?) {
+        this.mPromoCodeList = list
+        notifyDataSetChanged()
+    }
+
     inner class PromoCodeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val container: View = itemView.findViewById(R.id.container)
         val offerTextView: TextView = itemView.findViewById(R.id.offerTextView)

@@ -375,7 +375,7 @@ class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInter
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             if (response.mIsSuccessStatus) {
-                val promoCodeListResponse = Gson().fromJson<PromoCodeListResponse>(response.mCommonDataStr, PromoCodeListResponse::class.java)
+                val promoCodeListResponse = Gson().fromJson(response.mCommonDataStr, PromoCodeListResponse::class.java)
                 mIsNextPage = promoCodeListResponse?.mIsNextPage ?: false
                 if (1 == mPromoCodePageNumber)
                     mPromoCodeList.clear()

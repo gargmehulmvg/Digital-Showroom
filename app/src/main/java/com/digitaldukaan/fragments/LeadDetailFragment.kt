@@ -49,6 +49,7 @@ class LeadDetailFragment: BaseFragment(), ILeadsDetailServiceInterface,
     private var mIsNextPage = false
     private var mShareText = ""
     private var mShareCdn = ""
+    private var mLeadsPromoAdapter: LeadsPromoCodeAdapter? = null
     private var mLeadsOfferBottomSheetDialog: BottomSheetDialog? = null
     private var mLeadDetailPageInfoResponse: LeadDetailResponse? = null
     private var mPromoCodeList: ArrayList<PromoCodeListItemResponse> = ArrayList()
@@ -119,8 +120,7 @@ class LeadDetailFragment: BaseFragment(), ILeadsDetailServiceInterface,
                     showNoInternetConnectionDialog()
                     return
                 }
-                showProgressDialog(mActivity)
-                mService?.getAllMerchantPromoCodes(GetPromoCodeRequest(Constants.MODE_ACTIVE, mPromoCodePageNumber))
+                onReloadPage()
             }
         }
     }
@@ -145,6 +145,7 @@ class LeadDetailFragment: BaseFragment(), ILeadsDetailServiceInterface,
                 mIsNextPage = promoCodeListResponse?.mIsNextPage ?: false
                 if (1 == mPromoCodePageNumber) mPromoCodeList.clear()
                 mPromoCodeList.addAll(promoCodeListResponse?.mPromoCodeList ?: ArrayList())
+                mLeadsPromoAdapter?.setList(mPromoCodeList)
                 if (isEmpty(mPromoCodeList)) {
                     showNoOffersDialog()
                 } else {
@@ -374,7 +375,21 @@ class LeadDetailFragment: BaseFragment(), ILeadsDetailServiceInterface,
                         }
                         recyclerView.apply {
                             layoutManager = LinearLayoutManager(mActivity)
-                            adapter = LeadsPromoCodeAdapter(mLeadDetailPageInfoResponse?.staticText, mPromoCodeList, this@LeadDetailFragment)
+                            mLeadsPromoAdapter = LeadsPromoCodeAdapter(mLeadDetailPageInfoResponse?.staticText, mPromoCodeList, this@LeadDetailFragment)
+                            addOnScrollListener(object : RecyclerView.OnScrollListener() {
+
+                                override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                                    super.onScrollStateChanged(recyclerView, newState)
+                                    if (!recyclerView.canScrollVertically(1) && RecyclerView.SCROLL_STATE_IDLE == newState) {
+                                        if (mIsNextPage) {
+                                            mPromoCodePageNumber++
+                                            onReloadPage()
+                                        }
+                                    }
+                                }
+
+                            })
+                            adapter = mLeadsPromoAdapter
                         }
                     }
                 }?.show()
@@ -382,6 +397,11 @@ class LeadDetailFragment: BaseFragment(), ILeadsDetailServiceInterface,
         } catch (e: Exception) {
             Log.e(TAG, "showOffersBottomSheet: ${e.message}", e)
         }
+    }
+
+    private fun onReloadPage() {
+        showProgressDialog(mActivity)
+        mService?.getAllMerchantPromoCodes(GetPromoCodeRequest(Constants.MODE_ACTIVE, mPromoCodePageNumber))
     }
 
     override fun onPromoCodeDetailClickListener(position: Int) = Unit
