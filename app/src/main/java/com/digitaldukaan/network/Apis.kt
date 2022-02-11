@@ -155,7 +155,7 @@ interface Apis {
     suspend fun setStoreLogo(@Body request: StoreLogoRequest) : Response<CommonApiResponse>
 
     @Multipart
-    @POST("api/dotk/vm1/media/uploadMediaToS3")
+    @POST("api/dotk/vm1/settings/uploadMediaToS3")
     suspend fun getImageUploadCdnLink(@Part("media_type") imageType: RequestBody, @Part file: MultipartBody.Part?): Response<CommonApiResponse>
 
     @GET("api/dotk/merchant/searchImages")
