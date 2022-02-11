@@ -135,4 +135,5 @@ data class LeadDetailStaticTextResponse(
 
 	@field:SerializedName("text_cart_updated_recently")
 	val textCartUpdatedRecently: String? = null
+
 )
