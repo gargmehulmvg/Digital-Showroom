@@ -101,7 +101,7 @@ class LeadsAdapter(
                 displayStr = "${StaticInstances.sOrderPageInfoStaticData?.text_cart_updated_in_hours}"
                 displayStrNew = displayStr.replace("xxx", "$hours", true)
             }  else if(minutes!=0L){
-                displayStr = "${StaticInstances.sOrderPageInfoStaticData?.text_cart_updated_in_minutes} ${minutes}"
+                displayStr = "${StaticInstances.sOrderPageInfoStaticData?.text_cart_updated_in_minutes}"
                 displayStrNew = displayStr.replace("xxx", "$minutes", true)
             }   else{
                 displayStrNew = "${StaticInstances.sOrderPageInfoStaticData?.text_cart_updated_recently}"
