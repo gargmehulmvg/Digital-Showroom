@@ -355,24 +355,24 @@ class LeadDetailFragment: BaseFragment(), ILeadsDetailServiceInterface,
                 pageInfoResponse?.leadsDetailsItemsList?.forEachIndexed { _, itemResponse ->
                     if (isEmpty(itemResponse.leadsVariantList)) {
                         val item = LeadsDetailItemDTO().apply {
-                            mCartImageUrl = itemResponse.imageUrl
+                            mCartImageUrl = itemResponse.thumbnail_url
                             mCartItemName = itemResponse.itemName
                             mCartVariantName = ""
                             mCartItemQuantity = itemResponse.quantity
-                            val priceStr = "₹${itemResponse.item_price}"
+                            val priceStr = "₹${itemResponse.amount}"
                             mCartItemPrice = priceStr
                         }
                         itemList.add(item)
                     } else {
                         itemResponse.leadsVariantList.forEachIndexed { _, variantItemResponse ->
                             val item = LeadsDetailItemDTO().apply {
-                                mCartImageUrl = variantItemResponse.imageUrl
+                                mCartImageUrl = variantItemResponse.thumbnailUrl
                                 mCartItemName = itemResponse.itemName
                                 var displayMessage = ""
                                 displayMessage = "${mLeadDetailPageInfoResponse?.staticText?.textVariant}: ${variantItemResponse.variantName}"
                                 mCartVariantName = displayMessage
                                 mCartItemQuantity = variantItemResponse.quantity
-                                displayMessage = "₹${variantItemResponse.price}"
+                                displayMessage = "₹${variantItemResponse.amount}"
                                 mCartItemPrice = displayMessage
                             }
                             itemList.add(item)
