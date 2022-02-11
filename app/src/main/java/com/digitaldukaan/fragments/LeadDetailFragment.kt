@@ -330,8 +330,16 @@ class LeadDetailFragment: BaseFragment(), ILeadsDetailServiceInterface,
             }
             displayStr = "₹${pageInfoResponse?.itemsTotal}"
             itemTotalHeadingDetailTextView?.text = displayStr
+            if (0.0 == pageInfoResponse?.deliveryCharge) {
+                deliveryChargeHeadingDetailTextView?.visibility = View.GONE
+                deliveryChargeHeadingTextView?.visibility = View.GONE
+            }
             displayStr = "₹${pageInfoResponse?.deliveryCharge}"
             deliveryChargeHeadingDetailTextView?.text = displayStr
+            if (0.0 == pageInfoResponse?.storeOffer?.promoDiscount) {
+                promoDiscountHeadingDetailTextView?.visibility = View.GONE
+                promoDiscountHeadingTextView?.visibility = View.GONE
+            }
             displayStr = "-₹${pageInfoResponse?.storeOffer?.promoDiscount}"
             promoDiscountHeadingDetailTextView?.text = displayStr
             displayStr = "₹${pageInfoResponse?.payAmount}"
