@@ -15,6 +15,7 @@ import com.digitaldukaan.R
 import com.digitaldukaan.constants.*
 import com.digitaldukaan.models.request.CreateCouponsRequest
 import com.digitaldukaan.models.response.CommonApiResponse
+import com.digitaldukaan.models.response.PromoCodePageInfoResponse
 import com.digitaldukaan.models.response.PromoCodePageStaticTextResponse
 import com.digitaldukaan.services.CustomCouponsService
 import com.digitaldukaan.services.isInternetConnectionAvailable
@@ -23,6 +24,7 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.google.gson.Gson
 import java.util.*
 
 class CustomCouponsFragment : BaseFragment(), ICustomCouponsServiceInterface {
@@ -66,6 +68,7 @@ class CustomCouponsFragment : BaseFragment(), ICustomCouponsServiceInterface {
         TAG = "CustomCouponsFragment"
         FirebaseCrashlytics.getInstance().apply { setCustomKey("screen_tag", TAG) }
         mContentView = inflater.inflate(R.layout.layout_custom_coupons_fragment, container, false)
+        if (null == mStaticText) mService.getPromoCodePageInfo()
         initializeUI()
         mService.setCustomCouponsServiceListener(this)
         mStoreName = PrefsManager.getStringDataFromSharedPref(Constants.STORE_NAME)
@@ -198,7 +201,7 @@ class CustomCouponsFragment : BaseFragment(), ICustomCouponsServiceInterface {
         })
     }
 
-    private fun getCouponStoreName(): String? {
+    private fun getCouponStoreName(): String {
         return when {
             isEmpty(mStoreName) -> ""
             mStoreName.length <= 3 -> mStoreName
@@ -457,6 +460,17 @@ class CustomCouponsFragment : BaseFragment(), ICustomCouponsServiceInterface {
             stopProgress()
             showShortSnackBar(response.mMessage, true, if (response.mIsSuccessStatus) R.drawable.ic_check_circle else R.drawable.ic_close_red)
             if (response.mIsSuccessStatus) mActivity?.onBackPressed()
+        }
+    }
+
+    override fun onPromoCodePageInfoResponse(response: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            if (response.mIsSuccessStatus) {
+                val pageInfoResponse = Gson().fromJson(response.mCommonDataStr, PromoCodePageInfoResponse::class.java)
+                mStaticText = pageInfoResponse?.mStaticText
+                initializeUI()
+            }
         }
     }
 

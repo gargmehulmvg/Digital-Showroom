@@ -330,9 +330,7 @@ class LeadDetailFragment: BaseFragment(), ILeadsDetailServiceInterface,
                         offersTextView.text = mLeadDetailPageInfoResponse?.staticText?.headingBottomSheetOffers
                         ctaTextView.apply {
                             text = mLeadDetailPageInfoResponse?.staticText?.textCtaBottomSheetCreateOffers
-                            setOnClickListener {
-
-                            }
+                            setOnClickListener { launchFragment(CustomCouponsFragment.newInstance(null), true) }
                         }
                         recyclerView.apply {
                             layoutManager = LinearLayoutManager(mActivity)
