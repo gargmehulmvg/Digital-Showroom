@@ -295,6 +295,7 @@
                             android:layout_marginStart="@dimen/_12sdp"
                             android:layout_marginTop="@dimen/_12sdp"
                             android:textColor="@color/black"
+                            android:textStyle="bold"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
                             tools:text="Items" />
@@ -306,6 +307,7 @@
                             android:layout_marginTop="@dimen/_12sdp"
                             android:layout_marginEnd="@dimen/_12sdp"
                             android:textColor="@color/black"
+                            android:textStyle="bold"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
                             tools:text="Price" />
@@ -370,7 +372,7 @@
                             android:id="@+id/totalAmountHeadingTextView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
+                            android:layout_marginTop="12dp"
                             android:fontFamily="@font/roboto_bold"
                             android:textColor="@color/black"
                             android:layout_marginBottom="@dimen/_10sdp"
