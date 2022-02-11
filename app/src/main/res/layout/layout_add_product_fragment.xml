@@ -26,7 +26,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:animateLayoutChanges="true"
-                android:background="@color/add_product_banner_background"
+                android:background="@color/primary_blue"
                 android:padding="@dimen/_12sdp">
 
                 <TextView
@@ -350,7 +350,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:fontFamily="sans-serif-medium"
-                            android:textColor="@color/open_green"
+                            android:textColor="@color/primary_green"
                             android:textSize="@dimen/_11sdp"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
@@ -361,7 +361,7 @@
                             android:id="@+id/discountedPriceTextView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:background="@drawable/slight_curve_black_background_without_padding"
+                            android:background="@drawable/slight_curve_green_background_without_padding"
                             android:fontFamily="@font/roboto_bold"
                             android:paddingStart="@dimen/_5sdp"
                             android:paddingEnd="@dimen/_5sdp"
@@ -655,7 +655,7 @@
                             android:id="@+id/manageInventorySwitch"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:theme="@style/InventoryCustomAppSwitch"
+                            android:theme="@style/CustomAppSwitch"
                             app:layout_constraintBottom_toBottomOf="@id/manageInventoryMessageTextView"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintTop_toTopOf="@id/manageInventoryMessageTextView" />
