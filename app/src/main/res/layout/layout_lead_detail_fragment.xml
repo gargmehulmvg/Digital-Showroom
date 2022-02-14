@@ -24,11 +24,11 @@
 
             <ImageView
                 android:id="@+id/backButtonToolbar"
-                android:layout_width="@dimen/_35sdp"
-                android:layout_height="@dimen/_30sdp"
+                android:layout_width="@dimen/_25sdp"
+                android:layout_height="@dimen/_25sdp"
                 android:onClick="onClick"
-                android:padding="@dimen/_3sdp"
                 android:rotation="180"
+                android:layout_marginStart="@dimen/_5sdp"
                 android:src="@drawable/ic_arrow_forward_white"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
