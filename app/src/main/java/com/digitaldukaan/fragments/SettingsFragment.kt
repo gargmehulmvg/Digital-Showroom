@@ -594,7 +594,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
                 }
             }
         }
-        else if (Constants.STORAGE_REQUEST_CODE == requestCode) {
+        else if (Constants.REQUEST_CODE_STORAGE == requestCode) {
             when {
                 grantResults.isEmpty() -> Log.d(TAG, "User interaction was cancelled.")
                 PackageManager.PERMISSION_GRANTED == grantResults[0] -> {

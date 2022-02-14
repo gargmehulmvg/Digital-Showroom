@@ -268,9 +268,7 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
     fun launchFragmentWithAnimation(fragment: Fragment?, addBackStack: Boolean, animationView: View) = runOnUiThread { doSwitchToScreen(fragment, addBackStack, animationView) }
 
     private fun doSwitchToScreen(fragment: Fragment?, addToBackStack: Boolean, animationView: View) {
-        if (null == fragment) {
-            return
-        }
+        if (null == fragment) return
         val manager = supportFragmentManager
         val fragmentTransaction = manager.beginTransaction()
         val fragmentTag = fragment.javaClass.canonicalName
