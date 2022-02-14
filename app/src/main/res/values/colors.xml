@@ -49,9 +49,9 @@
     <color name="premium_text_color">#C39230</color>
     <color name="premium_light_color">#FCDDC8</color>
     <color name="non_premium_icons_color">#797979</color>
-    <color name="ucrop_color_toolbar">@color/open_green</color>
-    <color name="ucrop_color_statusbar">@color/open_green</color>
-    <color name="ucrop_color_widget_active">@color/open_green</color>
+    <color name="ucrop_color_toolbar">@color/primary_blue</color>
+    <color name="ucrop_color_statusbar">@color/primary_blue</color>
+    <color name="ucrop_color_widget_active">@color/primary_blue</color>
     <color name="gmail_color">#F44336</color>
     <color name="tooltip_background">#FFE9CB</color>
     <color name="pink">#FF4D4D</color>
