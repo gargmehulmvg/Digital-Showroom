@@ -275,6 +275,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             }
             setupYoutubeUI()
             setupManageInventoryUI()
+            setupOptionsMenu()
         }
         return mContentView
     }
@@ -841,6 +842,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     override fun onResume() {
         super.onResume()
         stopProgress()
+        setupOptionsMenu()
     }
 
     override fun onImageSelectionResultFile(file: File?, mode: String) {
@@ -1221,7 +1223,10 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
 
     private fun setupOptionsMenu() {
         mOptionsMenuResponse = mAddProductResponse?.addProductStoreOptionsMenu
-        if (isEmpty(mOptionsMenuResponse)) ToolBarManager.getInstance()?.setSideIconVisibility(false)
+        ToolBarManager.getInstance()?.apply {
+            if (isEmpty(mOptionsMenuResponse)) setSideIconVisibilityV2(false)
+            setSecondSideIconVisibility(0 != mItemId)
+        }
     }
 
     private fun setupCategoryChipRecyclerView() {

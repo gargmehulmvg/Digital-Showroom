@@ -67,7 +67,6 @@ class PrepaidOrderUnlockOptionsAdapter(
                 mContext?.let {
                     completeImageView.background = ContextCompat.getDrawable(it, R.drawable.ic_order_detail_blue_tick)
                     headingTextView.setTextColor(ContextCompat.getColor(it, R.color.primary_blue))
-                    subHeadingTextView.setTextColor(ContextCompat.getColor(it, R.color.dark_blackish))
                 }
             }
         }

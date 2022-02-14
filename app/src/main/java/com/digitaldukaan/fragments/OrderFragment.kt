@@ -874,7 +874,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
             optionsMenuImageView?.visibility = if (isEmpty(sOrderPageInfoResponse?.optionMenuList)) View.GONE else View.VISIBLE
             optionsMenuImageView?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_options_menu))
             optionsMenuImageView?.setOnClickListener {
-                val wrapper = ContextThemeWrapper(mActivity, R.style.popupMenuStyle)
+                val wrapper = ContextThemeWrapper(mActivity, R.style.PopupMenuStyle)
                 val optionsMenu = PopupMenu(wrapper, optionsMenuImageView)
                 optionsMenu.inflate(R.menu.menu_product_fragment)
                 sOrderPageInfoResponse?.optionMenuList?.forEachIndexed { position, response ->
