@@ -699,7 +699,6 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                     abandonedCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.selected_chip_blue_border_bluish_background)
                     activeCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_grey_background_without_padding)
                 }
-                startViewAnimation(abandonedCartTextView)
                 mLeadsFilterRequest.cartType = Constants.CART_TYPE_ABANDONED
                 mService?.getCartsByFilters(mLeadsFilterRequest)
             }
@@ -711,7 +710,6 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                 }
                 mLeadsFilterRequest.cartType = Constants.CART_TYPE_ACTIVE
                 mService?.getCartsByFilters(mLeadsFilterRequest)
-                startViewAnimation(activeCartTextView)
             }
             filterImageView?.id -> {
                 if (null == mLeadsFilterResponse) {
@@ -725,13 +723,11 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
     private fun setupTabLayout(selectedTextView: TextView?, unSelectedTextView: TextView?) {
         mActivity?.let { context ->
             selectedTextView?.apply {
-                textSize = 17f
                 typeface = Typeface.DEFAULT_BOLD
                 setTextColor(Color.WHITE)
                 background = ContextCompat.getDrawable(context, R.drawable.ripple_rect_grey_blue_background)
             }
             unSelectedTextView?.apply {
-                textSize = 13f
                 typeface = Typeface.DEFAULT
                 setTextColor(Color.BLACK)
                 setBackgroundColor(Color.WHITE)
