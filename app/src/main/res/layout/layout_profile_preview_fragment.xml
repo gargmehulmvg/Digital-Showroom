@@ -126,7 +126,7 @@
                     android:id="@+id/storePhotoLayout"
                     android:layout_width="@dimen/_65sdp"
                     android:layout_height="@dimen/_65sdp"
-                    android:background="@drawable/curve_blue_dotted_border"
+                    android:background="@drawable/curve_black_dotted_border"
                     android:gravity="center_horizontal"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
@@ -150,7 +150,7 @@
                         android:maxLines="1"
                         android:paddingTop="@dimen/_2sdp"
                         tools:text="@string/add_logo"
-                        android:textColor="@color/primary_blue"
+                        android:textColor="@color/black"
                         android:textSize="@dimen/_9sdp"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
