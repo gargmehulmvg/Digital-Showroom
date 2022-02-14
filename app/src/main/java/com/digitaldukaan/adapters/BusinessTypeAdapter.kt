@@ -13,10 +13,12 @@ import com.digitaldukaan.adapters.BusinessTypeAdapter.BusinessTypeViewHolder
 import com.digitaldukaan.constants.isNotEmpty
 import com.digitaldukaan.fragments.BaseFragment
 import com.digitaldukaan.models.response.BusinessTypeItemResponse
+import java.util.*
 
 class BusinessTypeAdapter(
     private val mContext: BaseFragment,
-    private var mBusinessList: ArrayList<BusinessTypeItemResponse>) :
+    private var mBusinessList: ArrayList<BusinessTypeItemResponse>
+) :
     RecyclerView.Adapter<BusinessTypeViewHolder>() {
 
     inner class BusinessTypeViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -30,7 +32,7 @@ class BusinessTypeAdapter(
         val view = BusinessTypeViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.business_type_item, parent, false))
         view.businessTypeContainer.setOnClickListener {
             if (it.isSelected) {
-                mBusinessList[view.absoluteAdapterPosition].isBusinessTypeSelected = false
+                mBusinessList[view.adapterPosition].isBusinessTypeSelected = false
                 it.isSelected = false
                 view.businessTypeCheckBox.isChecked = false
             } else {
@@ -40,7 +42,7 @@ class BusinessTypeAdapter(
                     mContext.showToast("Only ${mContext.resources.getInteger(R.integer.business_type_count)} selections are allowed")
                     return@setOnClickListener
                 }
-                mBusinessList[view.absoluteAdapterPosition].isBusinessTypeSelected = true
+                mBusinessList[view.adapterPosition].isBusinessTypeSelected = true
                 it.isSelected = true
                 view.businessTypeCheckBox.isChecked = true
             }

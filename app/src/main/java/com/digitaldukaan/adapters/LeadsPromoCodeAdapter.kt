@@ -32,7 +32,7 @@ class LeadsPromoCodeAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PromoCodeViewHolder {
         val view = PromoCodeViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.layout_leads_promo_code_item, parent, false))
-        view.container.setOnClickListener { mListener?.onPromoCodeShareClickListener(view.absoluteAdapterPosition) }
+        view.container.setOnClickListener { mListener?.onPromoCodeShareClickListener(view.adapterPosition) }
         return view
     }
 

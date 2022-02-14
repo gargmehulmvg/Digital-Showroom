@@ -26,11 +26,11 @@ class LeadsFilterOptionsItemAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LeadsFilterViewHolder {
         val view = LeadsFilterViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.bototm_sheet_filter_options_item, parent, false))
         view.textView.setOnClickListener {
-            if (view.absoluteAdapterPosition < 0 || view.absoluteAdapterPosition >= (mFilterItemList?.size ?: 0)) return@setOnClickListener
+            if (view.adapterPosition < 0 || view.adapterPosition >= (mFilterItemList?.size ?: 0)) return@setOnClickListener
             mFilterItemList?.forEachIndexed { position, itemResponse ->
-                itemResponse.isSelected = (view.absoluteAdapterPosition == position)
+                itemResponse.isSelected = (view.adapterPosition == position)
             }
-            mListener.onLeadsFilterItemClickListener(mFilterItemList?.get(view.absoluteAdapterPosition), mFilterType)
+            mListener.onLeadsFilterItemClickListener(mFilterItemList?.get(view.adapterPosition), mFilterType)
         }
         return view
     }

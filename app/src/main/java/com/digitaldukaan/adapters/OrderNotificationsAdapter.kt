@@ -29,7 +29,7 @@ class OrderNotificationsAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): OrderNotificationsViewHolder {
         val view = OrderNotificationsViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.layout_order_notification_item, parent, false))
-        view.container.setOnClickListener { listener?.onAdapterItemClickListener(view.absoluteAdapterPosition) }
+        view.container.setOnClickListener { listener?.onAdapterItemClickListener(view.adapterPosition) }
         return view
     }
 

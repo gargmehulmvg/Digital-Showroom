@@ -1,7 +1,6 @@
 package com.digitaldukaan.adapters
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,15 +9,11 @@ import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.digitaldukaan.NetworkChangeListener
 import com.digitaldukaan.R
 import com.digitaldukaan.constants.*
-import com.digitaldukaan.constants.isEmpty
 import com.digitaldukaan.interfaces.ILeadsListItemListener
 import com.digitaldukaan.models.response.LeadsResponse
 import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersAdapter
-import java.text.DateFormat
-import java.text.SimpleDateFormat
 import java.util.*
 
 class LeadsAdapter(
@@ -67,7 +62,7 @@ class LeadsAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LeadsViewHolder {
         val view = LeadsViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.leads_item, parent, false))
         view.leadItemContainer.setOnClickListener {
-            mListItemListener?.onLeadsItemCLickedListener(mLeadsList?.get(view.absoluteAdapterPosition))
+            mListItemListener?.onLeadsItemCLickedListener(mLeadsList?.get(view.adapterPosition))
         }
         return view
     }
