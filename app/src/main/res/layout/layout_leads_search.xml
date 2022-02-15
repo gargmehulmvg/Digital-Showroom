@@ -36,13 +36,13 @@
             android:fontFamily="@font/roboto"
             android:importantForAutofill="no"
             android:inputType="textPersonName"
+            android:hint="@string/leads_search_toolbar_hint"
             android:paddingStart="@dimen/_10sdp"
             android:paddingEnd="@dimen/_10sdp"
             android:textColor="@color/black"
             android:textSize="@dimen/_13sdp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/backButtonToolbar"
-            tools:text="@string/app_name" />
+            app:layout_constraintStart_toEndOf="@id/backButtonToolbar" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

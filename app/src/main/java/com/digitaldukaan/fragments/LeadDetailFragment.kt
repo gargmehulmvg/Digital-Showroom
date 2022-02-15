@@ -268,7 +268,7 @@ class LeadDetailFragment: BaseFragment(), ILeadsDetailServiceInterface,
     private fun setupUIFromResponse(pageInfoResponse: LeadDetailResponse?) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             var displayStr: String
-            val emptyStr = "       -"
+            val emptyStr = "-"
             pageInfoResponse?.staticText?.let { static ->
                 reminderTextView?.text = static.headingSendReminder
                 itemTextView?.text = static.headingItems

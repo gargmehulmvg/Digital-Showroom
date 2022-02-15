@@ -65,4 +65,9 @@
     <color name="leads_cart_active_text_color">#1968D5</color>
     <color name="leads_cart_active_bg_color">#EBF0FB</color>
     <color name="light_blue_bg">#F2F6FF</color>
+    <color name="curve_light_grey_bg">#F2F2F2</color>
+    <color name="very_light_grey_lead_detail_variant_text">#868686</color>
+    <color name="light_grey_lead_detail_item_charges_text">#5D5656</color>
+    <color name="light_grey_lead_filter_button_border">#BEBEBE</color>
+
 </resources>

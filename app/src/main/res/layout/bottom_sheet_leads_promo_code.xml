@@ -27,8 +27,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_10sdp"
         android:background="@drawable/upper_curve_white_background"
-        android:orientation="vertical"
-        android:padding="@dimen/_15sdp">
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/offersTextView"
@@ -36,7 +35,10 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/roboto_bold"
             android:textColor="@color/black"
+            android:layout_marginTop="@dimen/_15sdp"
             android:textSize="@dimen/_16sdp"
+            android:layout_marginStart="@dimen/_15sdp"
+            android:layout_marginEnd="@dimen/_15sdp"
             tools:text="Offers" />
 
         <androidx.recyclerview.widget.RecyclerView
@@ -45,19 +47,31 @@
             android:layout_height="@dimen/_200sdp"
             android:layout_marginTop="@dimen/_15sdp"
             tools:itemCount="100"
+            android:layout_marginStart="@dimen/_15sdp"
+            android:layout_marginEnd="@dimen/_15sdp"
             tools:listitem="@layout/layout_leads_promo_code_item" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_1sdp"
+            android:alpha="0.1"
+            android:background="@color/cardview_dark_background" />
 
         <TextView
             android:id="@+id/ctaTextView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/_45sdp"
             android:layout_marginTop="@dimen/_15sdp"
-            android:background="@drawable/ripple_slight_curve_white_background_black_border"
+            android:fontFamily="@font/roboto_bold"
+            android:background="@drawable/ripple_round_curve_white_background_black_border"
             android:gravity="center"
             android:paddingTop="@dimen/_5sdp"
             android:paddingBottom="@dimen/_5sdp"
+            android:layout_marginStart="@dimen/_15sdp"
+            android:layout_marginEnd="@dimen/_15sdp"
+            android:layout_marginBottom="@dimen/_15sdp"
             android:textColor="@color/black"
-            android:textSize="@dimen/_13sdp"
+            android:textSize="@dimen/_14sdp"
             tools:text="Create New Offer" />
 
     </LinearLayout>

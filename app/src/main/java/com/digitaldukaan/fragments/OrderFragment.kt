@@ -689,15 +689,15 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                 )
                 mService?.getCartsByFilters(mLeadsFilterRequest)
                 mActivity?.let { context ->
-                    abandonedCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_grey_background_without_padding)
-                    activeCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_grey_background_without_padding)
+                    abandonedCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_light_grey_background_without_padding)
+                    activeCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_light_grey_background_without_padding)
                 }
             }
             abandonedCartTextView?.id -> {
                 mLeadsCartTypeSelection = Constants.CART_TYPE_ABANDONED
                 mActivity?.let { context ->
                     abandonedCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.selected_chip_blue_border_bluish_background)
-                    activeCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_grey_background_without_padding)
+                    activeCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_light_grey_background_without_padding)
                 }
                 mLeadsFilterRequest.cartType = Constants.CART_TYPE_ABANDONED
                 mService?.getCartsByFilters(mLeadsFilterRequest)
@@ -706,7 +706,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                 mLeadsCartTypeSelection = Constants.CART_TYPE_ACTIVE
                 mActivity?.let { context ->
                     activeCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.selected_chip_blue_border_bluish_background)
-                    abandonedCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_grey_background_without_padding)
+                    abandonedCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_light_grey_background_without_padding)
                 }
                 mLeadsFilterRequest.cartType = Constants.CART_TYPE_ACTIVE
                 mService?.getCartsByFilters(mLeadsFilterRequest)

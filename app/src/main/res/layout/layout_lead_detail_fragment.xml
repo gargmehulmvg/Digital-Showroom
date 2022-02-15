@@ -89,7 +89,7 @@
                 android:background="@drawable/curve_light_red_background"
                 android:gravity="center_vertical"
                 android:maxLines="1"
-                android:fontFamily="@font/roboto_medium"
+                android:fontFamily="@font/roboto_bold"
                 android:paddingStart="@dimen/_5sdp"
                 android:paddingTop="@dimen/_2sdp"
                 android:paddingEnd="@dimen/_5sdp"
@@ -102,14 +102,6 @@
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <View
-            android:id="@+id/shadowToolbar"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/_1sdp"
-            android:alpha="0.1"
-            android:background="@color/cardview_dark_background"
-            app:layout_constraintTop_toBottomOf="@id/toolBarContainer" />
 
         <androidx.core.widget.NestedScrollView
             android:id="@+id/nestedScrollView"
@@ -130,7 +122,9 @@
                     android:id="@+id/notificationContainer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/_10sdp"
+                    android:layout_marginTop="@dimen/_15sdp"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_marginEnd="@dimen/_15sdp"
                     android:background="@drawable/curve_leads_color_bg"
                     android:padding="@dimen/_20sdp"
                     android:visibility="gone" >
@@ -177,7 +171,9 @@
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_margin="@dimen/_10sdp">
+                    android:layout_marginTop="@dimen/_15sdp"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_marginEnd="@dimen/_15sdp">
 
                     <TextView
                         android:id="@+id/mobileTextView"
@@ -282,7 +278,9 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:background="@drawable/curve_grey_border"
-                    android:layout_margin="@dimen/_10sdp" >
+                    android:layout_marginTop="@dimen/_15sdp"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_marginEnd="@dimen/_15sdp" >
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
@@ -342,7 +340,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/_12sdp"
-                            android:textColor="@color/black"
+                            android:textColor="@color/light_grey_lead_detail_item_charges_text"
                             android:layout_marginStart="@dimen/_12sdp"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toTopOf="parent"
@@ -352,8 +350,8 @@
                             android:id="@+id/deliveryChargeHeadingTextView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/_12sdp"
-                            android:textColor="@color/black"
+                            android:layout_marginTop="@dimen/_7sdp"
+                            android:textColor="@color/light_grey_lead_detail_item_charges_text"
                             app:layout_constraintStart_toStartOf="@+id/itemTotalHeadingTextView"
                             app:layout_constraintTop_toBottomOf="@id/itemTotalHeadingTextView"
                             tools:text="Delivery Charge:" />
@@ -362,8 +360,8 @@
                             android:id="@+id/promoDiscountHeadingTextView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/_12sdp"
-                            android:textColor="@color/black"
+                            android:layout_marginTop="@dimen/_7sdp"
+                            android:textColor="@color/light_grey_lead_detail_item_charges_text"
                             app:layout_constraintStart_toStartOf="@+id/deliveryChargeHeadingTextView"
                             app:layout_constraintTop_toBottomOf="@id/deliveryChargeHeadingTextView"
                             tools:text="Promo Discount:" />
@@ -372,10 +370,11 @@
                             android:id="@+id/totalAmountHeadingTextView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
+                            android:layout_marginTop="@dimen/_9sdp"
                             android:fontFamily="@font/roboto_bold"
                             android:textColor="@color/black"
-                            android:layout_marginBottom="@dimen/_10sdp"
+                            android:textSize="@dimen/_12sdp"
+                            android:layout_marginBottom="@dimen/_15sdp"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintStart_toStartOf="@+id/promoDiscountHeadingTextView"
                             app:layout_constraintTop_toBottomOf="@id/promoDiscountHeadingTextView"
@@ -396,7 +395,7 @@
                             android:id="@+id/deliveryChargeHeadingDetailTextView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/_12sdp"
+                            android:layout_marginTop="@dimen/_7sdp"
                             android:textColor="@color/black"
                             app:layout_constraintEnd_toEndOf="@+id/itemTotalHeadingDetailTextView"
                             app:layout_constraintTop_toBottomOf="@id/itemTotalHeadingDetailTextView"
@@ -406,7 +405,7 @@
                             android:id="@+id/promoDiscountHeadingDetailTextView"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/_12sdp"
+                            android:layout_marginTop="@dimen/_7sdp"
                             android:textColor="@color/black"
                             app:layout_constraintEnd_toEndOf="@+id/deliveryChargeHeadingDetailTextView"
                             app:layout_constraintTop_toBottomOf="@id/deliveryChargeHeadingDetailTextView"
@@ -418,6 +417,7 @@
                             android:layout_height="wrap_content"
                             android:textColor="@color/black"
                             android:fontFamily="@font/roboto_bold"
+                            android:textSize="@dimen/_12sdp"
                             app:layout_constraintBaseline_toBaselineOf="@+id/totalAmountHeadingTextView"
                             app:layout_constraintEnd_toEndOf="@+id/promoDiscountHeadingDetailTextView"
                             tools:text="₹3,200.00" />
@@ -430,9 +430,12 @@
                     android:id="@+id/addressDetailsLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:visibility="gone"
+                    android:visibility="visible"
                     android:background="@drawable/curve_grey_border"
-                    android:layout_margin="@dimen/_10sdp">
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_marginTop="@dimen/_15sdp"
+                    android:layout_marginEnd="@dimen/_15sdp"
+                    android:layout_marginBottom="@dimen/_25sdp">
 
                     <TextView
                         android:id="@+id/addressHeadingTextView"
@@ -576,11 +579,12 @@
 
         </androidx.core.widget.NestedScrollView>
 
+
         <LinearLayout
             android:id="@+id/shareOfferLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:elevation="@dimen/_5sdp"
+            android:elevation="@dimen/_10sdp"
             android:orientation="vertical"
             android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -589,8 +593,8 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_2sdp"
-                android:alpha="0.2"
+                android:layout_height="@dimen/_1sdp"
+                android:alpha="0.1"
                 android:background="@color/cardview_dark_background" />
 
             <include

@@ -8,19 +8,20 @@
     android:background="@drawable/curve_grey_dotted_border"
     android:paddingBottom="@dimen/_5sdp"
     android:onClick="onClick"
-    android:layout_marginBottom="@dimen/_8sdp"
-    android:paddingStart="@dimen/_15sdp"
+    android:elevation="@dimen/_20sdp"
+    android:layout_marginBottom="@dimen/_12sdp"
+    android:paddingStart="@dimen/_12sdp"
     android:paddingEnd="@dimen/_15sdp"
-    android:layout_height="wrap_content">
+    android:layout_height="@dimen/_50sdp">
 
     <TextView
         android:id="@+id/offerTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/roboto_medium"
+        android:fontFamily="@font/roboto_bold"
         android:textColor="@color/black"
         android:clickable="false"
-        android:textSize="@dimen/_10sdp"
+        android:textSize="@dimen/_12sdp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -32,15 +33,16 @@
         android:orientation="horizontal"
         android:clickable="false"
         android:background="@drawable/slight_curve_light_grey_background"
-        app:layout_constraintBottom_toBottomOf="parent"
         android:paddingStart="@dimen/_5sdp"
         android:paddingEnd="@dimen/_5sdp"
         android:paddingTop="@dimen/_2sdp"
         android:paddingBottom="@dimen/_2sdp"
+        android:layout_marginStart="@dimen/_5sdp"
+        app:layout_constraintHorizontal_bias="0.07"
+        app:layout_constraintBottom_toBottomOf="@id/offerTextView"
         app:layout_constraintEnd_toStartOf="@id/shareTextView"
-        app:layout_constraintHorizontal_bias="0.2"
         app:layout_constraintStart_toEndOf="@id/offerTextView"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="@id/offerTextView">
 
         <TextView
             android:id="@+id/useCodeTextView"
@@ -55,7 +57,7 @@
             android:layout_width="wrap_content"
             android:padding="@dimen/_2sdp"
             android:layout_height="match_parent"
-            android:fontFamily="@font/roboto_medium"
+            android:fontFamily="@font/roboto_bold"
             android:gravity="center"
             android:textColor="@color/black"
             android:textSize="@dimen/_9sdp"

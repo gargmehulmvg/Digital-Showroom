@@ -42,7 +42,7 @@ class LeadsFilterOptionsItemAdapter(
             val item = mFilterItemList?.get(position)
             textView.text = if (isNotEmpty(item?.customDateRangeStr)) item?.customDateRangeStr else item?.text
             mContext?.let { context ->
-                textView.background = ContextCompat.getDrawable(context, if (true == item?.isSelected) R.drawable.selected_chip_blue_border_bluish_background else R.drawable.ripple_slight_curve_white_background_grey_border)
+                textView.background = ContextCompat.getDrawable(context, if (true == item?.isSelected) R.drawable.selected_chip_blue_border_bluish_background else R.drawable.ripple_full_curve_white_background_grey_border)
             }
         }
     }

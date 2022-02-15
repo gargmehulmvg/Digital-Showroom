@@ -46,7 +46,7 @@ class LeadsPromoCodeAdapter(
             } else {
                 "${item?.discount?.toInt()}% ${mStaticText?.textOff} Upto ₹${item?.maxDiscount?.toInt()}"
             }
-            useCodeTextView.text = mStaticText?.textUseCode
+            useCodeTextView.text = "${mStaticText?.textUseCode}:"
             shareTextView.text = mStaticText?.textShare
             useCodeValueTextView.text = item?.promoCode
         }

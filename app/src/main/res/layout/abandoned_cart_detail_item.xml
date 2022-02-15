@@ -23,7 +23,7 @@
                 android:id="@+id/abandonedCartDetailNameTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_5sdp"
+                android:layout_marginStart="@dimen/_10sdp"
                 android:layout_marginEnd="@dimen/_15sdp"
                 android:textColor="@color/black"
                 android:maxLines="@integer/min_lines_two"
@@ -41,7 +41,7 @@
                 android:fontFamily="@font/roboto_light"
                 android:maxLines="1"
                 android:visibility="visible"
-                android:textColor="@color/default_text_light_grey"
+                android:textColor="@color/very_light_grey_lead_detail_variant_text"
                 android:textSize="@dimen/_11sdp"
                 app:layout_constraintStart_toStartOf="@id/abandonedCartDetailNameTextView"
                 app:layout_constraintTop_toBottomOf="@id/abandonedCartDetailNameTextView"
@@ -54,7 +54,7 @@
                 android:fontFamily="@font/roboto_light"
                 android:maxLines="1"
                 android:visibility="visible"
-                android:textColor="@color/default_text_light_grey"
+                android:textColor="@color/very_light_grey_lead_detail_variant_text"
                 android:textSize="@dimen/_11sdp"
                 android:layout_marginBottom="@dimen/_10sdp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -73,6 +73,6 @@
                 android:textSize="@dimen/_11sdp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:text="₹ 200" />
+                tools:text="₹200" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

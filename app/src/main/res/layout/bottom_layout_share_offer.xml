@@ -63,7 +63,7 @@
         android:contentDescription="@string/image_view_content_description"
         android:onClick="onClick"
         android:padding="@dimen/_2sdp"
-        android:src="@drawable/ic_whatsapp"
+        android:src="@drawable/ic_whatsapp_grey_border"
         app:layout_constraintBottom_toBottomOf="@id/shareOfferTextView"
         app:layout_constraintStart_toEndOf="@id/messageImageView"
         app:layout_constraintTop_toTopOf="@id/shareOfferTextView" />
