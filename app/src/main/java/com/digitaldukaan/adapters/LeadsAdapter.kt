@@ -72,7 +72,8 @@ class LeadsAdapter(
     override fun onBindViewHolder(holder: LeadsAdapter.LeadsViewHolder, position: Int) {
         val item = mLeadsList?.get(position)
         holder.apply {
-            var displayStr: String = if (isEmpty(item?.customerName)) "${item?.phoneNumber}" else "${item?.phoneNumber} | ${item?.customerName}"
+            var displayStr: String =
+                if (isEmpty(item?.customerName)) "${item?.phoneNumber}" else "${item?.phoneNumber} | ${item?.customerName}"
             leadDetailTextView.text = displayStr
             displayStr = "₹${item?.orderValue}"
             priceTextView.text = displayStr
@@ -90,25 +91,33 @@ class LeadsAdapter(
             var minutes: Long = diff / minutesInMilli
             diff %= minutesInMilli
             var displayStrNew = ""
-            if(days!=0L || hours>12){
-                displayStrNew = "${StaticInstances.sOrderPageInfoStaticData?.text_cart_updated_on} ${getDateStringForLeadsHeader(getDateFromOrderString(item?.lastUpdateOn) ?: Date())}"
-            }   else if(hours!=0L){
-                displayStr = "${StaticInstances.sOrderPageInfoStaticData?.text_cart_updated_in_hours}"
+            if (days != 0L || hours > 12) {
+                displayStrNew =
+                    "${StaticInstances.sOrderPageInfoStaticData?.text_cart_updated_on} ${
+                        getDateStringForLeadsHeader(getDateFromOrderString(item?.lastUpdateOn) ?: Date())
+                    }"
+            } else if (hours != 0L) {
+                displayStr =
+                    "${StaticInstances.sOrderPageInfoStaticData?.text_cart_updated_in_hours}"
                 displayStrNew = displayStr.replace("xxx", "$hours", true)
-            }  else if(minutes!=0L){
-                displayStr = "${StaticInstances.sOrderPageInfoStaticData?.text_cart_updated_in_minutes}"
+            } else if (minutes != 0L) {
+                displayStr =
+                    "${StaticInstances.sOrderPageInfoStaticData?.text_cart_updated_in_minutes}"
                 displayStrNew = displayStr.replace("xxx", "$minutes", true)
-            }   else{
-                displayStrNew = "${StaticInstances.sOrderPageInfoStaticData?.text_cart_updated_recently}"
+            } else {
+                displayStrNew =
+                    "${StaticInstances.sOrderPageInfoStaticData?.text_cart_updated_recently}"
             }
             leadLastUpdatedTextView.text = displayStrNew
             Glide.with(mContext)
                 .load(if (Constants.CART_TYPE_ABANDONED == item?.cartType) R.drawable.ic_abandoned_cart else R.drawable.ic_active_cart)
                 .into(cartImageView)
-            cartStatusTextView.text = if (Constants.CART_TYPE_ABANDONED == item?.cartType) StaticInstances.sOrderPageInfoStaticData?.text_cart_abandoned else StaticInstances.sOrderPageInfoStaticData?.text_cart_active
+            cartStatusTextView.text =
+                if (Constants.CART_TYPE_ABANDONED == item?.cartType) StaticInstances.sOrderPageInfoStaticData?.text_cart_abandoned else StaticInstances.sOrderPageInfoStaticData?.text_cart_active
             when {
                 isNotEmpty(item?.notificationSentOn) -> {
-                    val notificationOldTime = getCompleteDateFromOrderString(item?.notificationSentOn)
+                    val notificationOldTime =
+                        getCompleteDateFromOrderString(item?.notificationSentOn)
                     diff = currentDate.time - (notificationOldTime?.time ?: 0)
                     secondsInMilli = 1000
                     minutesInMilli = secondsInMilli * 60
@@ -121,23 +130,30 @@ class LeadsAdapter(
                     minutes = diff / minutesInMilli
                     diff %= minutesInMilli
                     var displayNotificationString = ""
-                    if(days!=0L || hours>12){
-                        displayNotificationString = "${StaticInstances.sOrderPageInfoStaticData?.text_notification_sent_on} ${getDateStringForLeadsHeader(getDateFromOrderString(item?.notificationSentOn) ?: Date())}"
-                    }   else if(hours!=0L){
-                        displayStr = "${StaticInstances.sOrderPageInfoStaticData?.text_notification_sent_in_hours}"
+                    if (days != 0L || hours > 12) {
+                        displayNotificationString =
+                            "${StaticInstances.sOrderPageInfoStaticData?.text_notification_sent_on} ${
+                                getDateStringForLeadsHeader(getDateFromOrderString(item?.notificationSentOn) ?: Date())
+                            }"
+                    } else if (hours != 0L) {
+                        displayStr =
+                            "${StaticInstances.sOrderPageInfoStaticData?.text_notification_sent_in_hours}"
                         displayNotificationString = displayStr.replace("xxx", "$hours", true)
-                    }  else if(minutes!=0L){
-                        displayStr = "${StaticInstances.sOrderPageInfoStaticData?.text_notification_sent_in_minutes}"
+                    } else if (minutes != 0L) {
+                        displayStr =
+                            "${StaticInstances.sOrderPageInfoStaticData?.text_notification_sent_in_minutes}"
                         displayNotificationString = displayStr.replace("xxx", "$minutes", true)
-                    }   else{
-                        displayNotificationString = "${StaticInstances.sOrderPageInfoStaticData?.text_notification_sent_recently}"
+                    } else {
+                        displayNotificationString =
+                            "${StaticInstances.sOrderPageInfoStaticData?.text_notification_sent_recently}"
                     }
                     notificationSentTextView.visibility = View.VISIBLE
                     notificationSentTextView.text = displayNotificationString
                     sendOfferTextView.visibility = View.GONE
                 }
                 Constants.CART_TYPE_ABANDONED == item?.cartType -> {
-                    sendOfferTextView.text = StaticInstances.sOrderPageInfoStaticData?.text_send_reminder
+                    sendOfferTextView.text =
+                        StaticInstances.sOrderPageInfoStaticData?.text_send_reminder
                     sendOfferTextView.visibility = View.VISIBLE
                     notificationSentTextView.visibility = View.GONE
                 }
@@ -146,8 +162,16 @@ class LeadsAdapter(
                     notificationSentTextView.visibility = View.GONE
                 }
             }
-            cartStatusTextView.background = ContextCompat.getDrawable(mContext, if (Constants.CART_TYPE_ABANDONED == item?.cartType) R.drawable.curve_red_cart_abandoned_background else R.drawable.curve_blue_cart_active_background)
-            cartStatusTextView.setTextColor(ContextCompat.getColor(mContext, if (Constants.CART_TYPE_ABANDONED == item?.cartType) R.color.leads_cart_abandoned_text_color else R.color.leads_cart_active_text_color))
+            cartStatusTextView.background = ContextCompat.getDrawable(
+                mContext,
+                if (Constants.CART_TYPE_ABANDONED == item?.cartType) R.drawable.curve_red_cart_abandoned_background else R.drawable.curve_blue_cart_active_background
+            )
+            cartStatusTextView.setTextColor(
+                ContextCompat.getColor(
+                    mContext,
+                    if (Constants.CART_TYPE_ABANDONED == item?.cartType) R.color.leads_cart_abandoned_text_color else R.color.leads_cart_active_text_color
+                )
+            )
         }
     }
 }

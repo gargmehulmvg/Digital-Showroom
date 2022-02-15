@@ -57,11 +57,9 @@ class LeadDetailFragment: BaseFragment(), ILeadsDetailServiceInterface,
     private var mPromoCodeList: ArrayList<PromoCodeListItemResponse> = ArrayList()
 
     companion object {
-
         private const val REMINDER_TYPE_SMS = 0
         private const val REMINDER_TYPE_WA  = 1
         private const val REMINDER_SENT_TO  = 0
-
         fun newInstance(item: LeadsResponse?): LeadDetailFragment {
             val fragment = LeadDetailFragment()
             fragment.mLeadResponse = item
@@ -379,7 +377,6 @@ class LeadDetailFragment: BaseFragment(), ILeadsDetailServiceInterface,
                         }
                     }
                 }
-
                 adapter = LeadsDetailItemAdapter(mActivity, pageInfoResponse?.staticText, itemList)
             }
             notificationContainer?.visibility = if (!PrefsManager.getBoolDataFromSharedPref(PrefsManager.KEY_ABANDONED_CART_OKAY_CLICKED)) View.VISIBLE else View.GONE
@@ -426,7 +423,6 @@ class LeadDetailFragment: BaseFragment(), ILeadsDetailServiceInterface,
                                         }
                                     }
                                 }
-
                             })
                             adapter = mLeadsPromoAdapter
                         }
