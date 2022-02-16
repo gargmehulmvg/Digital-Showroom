@@ -34,4 +34,8 @@ interface IHomeServiceInterface {
 
     fun checkStaffInviteResponse(commonResponse: CommonApiResponse)
 
+    fun onGetCartsByFiltersResponse(commonResponse: CommonApiResponse)
+
+    fun onCartFilterOptionsResponse(commonResponse: CommonApiResponse)
+
 }

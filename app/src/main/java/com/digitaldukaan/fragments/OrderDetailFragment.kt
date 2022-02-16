@@ -25,6 +25,7 @@ import com.digitaldukaan.adapters.CustomerDeliveryAddressAdapter
 import com.digitaldukaan.adapters.DeliveryTimeAdapter
 import com.digitaldukaan.adapters.OrderDetailsAdapter
 import com.digitaldukaan.constants.*
+import com.digitaldukaan.interfaces.IAdapterItemClickListener
 import com.digitaldukaan.interfaces.IChipItemClickListener
 import com.digitaldukaan.interfaces.IOrderDetailListener
 import com.digitaldukaan.models.dto.CustomerDeliveryAddressDTO
@@ -48,6 +49,7 @@ import kotlinx.android.synthetic.main.bottom_layout_send_bill.*
 import kotlinx.android.synthetic.main.layout_order_detail_fragment.*
 import java.io.File
 import java.util.*
+import kotlin.collections.ArrayList
 
 class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupMenu.OnMenuItemClickListener {
 
@@ -207,7 +209,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
             }
             val orderDetailList = orderDetailsItemsList?.toMutableList()
             if (isNotEmpty(orderDetailList)) {
-                orderDetailList?.forEachIndexed { _, itemResponse -> if (Constants.ITEM_TYPE_DELIVERY_CHARGE == itemResponse.item_type || Constants.ITEM_TYPE_CHARGE == itemResponse.item_type) orderDetailsItemsList?.remove(itemResponse) }
+                orderDetailList?.forEachIndexed { _, itemResponse -> if (Constants.ITEM_TYPE_DELIVERY_CHARGE == itemResponse.itemType || Constants.ITEM_TYPE_CHARGE == itemResponse.itemType) orderDetailsItemsList?.remove(itemResponse) }
             }
             val request = UpdateOrderRequest(
                 orderId = orderId,
@@ -540,22 +542,32 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                     layoutManager = LinearLayoutManager(mActivity)
                     val customerDetailsList = ArrayList<CustomerDeliveryAddressDTO>()
                     orderDetailResponse?.deliveryInfo?.run {
-                        customerDetailsList.add(CustomerDeliveryAddressDTO("${mOrderDetailStaticData?.text_name}:", deliverTo))
-                        customerDetailsList.add(CustomerDeliveryAddressDTO("${mOrderDetailStaticData?.text_address}:", "$address1,$address2"))
+                        customerDetailsList.add(CustomerDeliveryAddressDTO("${mOrderDetailStaticData?.text_name}:", deliverTo, ""))
+                        customerDetailsList.add(CustomerDeliveryAddressDTO("${mOrderDetailStaticData?.text_address}:", "$address1,$address2", ""))
                         customerDetailsList.add(
                             CustomerDeliveryAddressDTO("${mOrderDetailStaticData?.text_city_and_pincode}:",
-                                if (null == city) {
-                                    if (null == pincode) "" else "$pincode"
-                                } else if (null == pincode) {
+                                if (isEmpty(city)) {
+                                    if (isEmpty(pincode)) "" else "$pincode"
+                                } else if (isEmpty(pincode)) {
                                     "$city"
                                 } else {
                                     "$city, $pincode"
-                                }
+                                }, ""
                             )
                         )
-                        customerDetailsList.add(CustomerDeliveryAddressDTO("${mOrderDetailStaticData?.text_landmark}:", landmark))
+                        if (isNotEmpty(landmark)) customerDetailsList.add(CustomerDeliveryAddressDTO("${mOrderDetailStaticData?.text_landmark}:", landmark, ""))
+                        if (isNotEmpty(alternatePhone)) customerDetailsList.add(CustomerDeliveryAddressDTO("${mOrderDetailStaticData?.text_alternate_phone}:", alternatePhone, ""))
+                        if (isNotEmpty(emailId)) customerDetailsList.add(CustomerDeliveryAddressDTO("${mOrderDetailStaticData?.text_email_id}:", emailId, Constants.ACTION_EMAIL))
                     }
-                    adapter = CustomerDeliveryAddressAdapter(customerDetailsList)
+                    adapter = CustomerDeliveryAddressAdapter(mActivity, customerDetailsList, object : IAdapterItemClickListener {
+
+                        override fun onAdapterItemClickListener(position: Int) {
+                            val item = customerDetailsList[position]
+                            if (Constants.ACTION_EMAIL == item.customerDeliveryAddressAction) {
+                                openEmailIntent(item.customerDeliveryAddressValue ?: "")
+                            }
+                        }
+                    })
                 }
             }
         }
@@ -571,18 +583,18 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
             val deliveryStatus = orderDetailResponse?.displayStatus
             val listCopy = list?.toMutableList()
             listCopy?.forEachIndexed { _, itemResponse ->
-                if (Constants.ITEM_TYPE_DELIVERY_CHARGE == itemResponse.item_type || Constants.ITEM_TYPE_CHARGE == itemResponse.item_type || Constants.ITEM_TYPE_CHARGE == itemResponse.item_type) {
+                if (Constants.ITEM_TYPE_DELIVERY_CHARGE == itemResponse.itemType || Constants.ITEM_TYPE_CHARGE == itemResponse.itemType || Constants.ITEM_TYPE_CHARGE == itemResponse.itemType) {
                     list.remove(itemResponse)
                 }
             }
             if (orderDetailResponse?.deliveryCharge != 0.0 && !(Constants.DS_NEW == deliveryStatus || Constants.DS_SEND_BILL == deliveryStatus)) {
-                list?.add(OrderDetailItemResponse(0, 0, getString(R.string.delivery_charge), 1, "1", orderDetailResponse.deliveryCharge, orderDetailResponse.deliveryCharge, orderDetailResponse.deliveryCharge, orderDetailResponse.deliveryCharge, 1, Constants.ITEM_TYPE_DELIVERY_CHARGE, null, 0, null, false))
+                list?.add(OrderDetailItemResponse(0, "0", getString(R.string.delivery_charge), 1, "1", orderDetailResponse.deliveryCharge, orderDetailResponse.deliveryCharge ?: 0.0, orderDetailResponse.deliveryCharge ?: 0.0, orderDetailResponse.deliveryCharge ?: 0.0, 1, Constants.ITEM_TYPE_DELIVERY_CHARGE, null, 0, null, "", false))
             }
             if (orderDetailResponse?.extraCharges != 0.0 && !(Constants.DS_NEW == deliveryStatus || Constants.DS_SEND_BILL == deliveryStatus)) {
-                list?.add(OrderDetailItemResponse(0, 0, orderDetailResponse.extraChargesName, 1, "1", orderDetailResponse.extraCharges, orderDetailResponse.extraCharges, orderDetailResponse.extraCharges, orderDetailResponse.extraCharges, 1, Constants.ITEM_TYPE_CHARGE, null, 0, null, false))
+                list?.add(OrderDetailItemResponse(0, "0", orderDetailResponse.extraChargesName, 1, "1", orderDetailResponse.extraCharges, orderDetailResponse.extraCharges ?: 0.0, orderDetailResponse.extraCharges ?: 0.0, orderDetailResponse.extraCharges ?: 0.0, 1, Constants.ITEM_TYPE_CHARGE, null, 0, null, "", false))
             }
             if (orderDetailResponse?.discount != 0.0 && !(Constants.DS_NEW == deliveryStatus || Constants.DS_SEND_BILL == deliveryStatus)) {
-                list?.add(OrderDetailItemResponse(0, 0, getString(R.string.discount), 1, "1", orderDetailResponse.discount, orderDetailResponse.discount, orderDetailResponse.discount, orderDetailResponse.discount, 1, Constants.ITEM_TYPE_DISCOUNT, null, 0, null, false))
+                list?.add(OrderDetailItemResponse(0, "0", getString(R.string.discount), 1, "1", orderDetailResponse.discount, orderDetailResponse.discount ?: 0.0, orderDetailResponse.discount ?: 0.0, orderDetailResponse.discount ?: 0.0, 1, Constants.ITEM_TYPE_DISCOUNT, null, 0, null, "", false))
             }
             list?.forEachIndexed { _, itemResponse ->
                 itemResponse.isItemEditable = (((Constants.DS_NEW == deliveryStatus || Constants.DS_SEND_BILL == deliveryStatus)) && 0.0 == itemResponse.amount)
@@ -591,18 +603,18 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                 mTotalActualAmount += ((itemResponse.actualAmount ?: 0.0) * itemResponse.quantity)
             }
             var orderDetailAdapter: OrderDetailsAdapter? = null
-            orderDetailAdapter = OrderDetailsAdapter(list, orderDetailResponse, displayStatus, mOrderDetailStaticData, object : IOrderDetailListener {
+            orderDetailAdapter = OrderDetailsAdapter(mActivity, list, orderDetailResponse, displayStatus, mOrderDetailStaticData, object : IOrderDetailListener {
 
                     override fun onOrderDetailItemClickListener(position: Int) {
                         if (position < 0) return
                         val item = list?.get(position)
-                        item?.item_status = if (2 == list?.get(position)?.item_status) 1 else 2
-                        if (2 == item?.item_status) mTotalPayAmount -= item.amount ?: 0.0 else mTotalPayAmount += item?.amount ?: 0.0
-                        if (2 == item?.item_status) mTotalActualAmount -= ((item.actualAmount ?: 0.0) * item.quantity) else mTotalActualAmount += ((item?.actualAmount ?: 0.0) * item?.quantity!!)
+                        item?.itemStatus = if (2 == list?.get(position)?.itemStatus) 1 else 2
+                        if (2 == item?.itemStatus) mTotalPayAmount -= item.amount ?: 0.0 else mTotalPayAmount += item?.amount ?: 0.0
+                        if (2 == item?.itemStatus) mTotalActualAmount -= ((item.actualAmount ?: 0.0) * item.quantity) else mTotalActualAmount += ((item?.actualAmount ?: 0.0) * item?.quantity!!)
                         orderDetailAdapter?.setOrderDetailList(list)
                         setAmountToEditText()
                         var isValidOrderAvailable = false
-                        list?.forEachIndexed { _, itemResponse -> if (2 != itemResponse.item_status) isValidOrderAvailable = true }
+                        list?.forEachIndexed { _, itemResponse -> if (2 != itemResponse.itemStatus) isValidOrderAvailable = true }
                         sendBillTextView.isEnabled = isValidOrderAvailable
                     }
 
@@ -1085,7 +1097,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
     private fun askStoragePermission(): Boolean {
         mActivity?.run {
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE), Constants.EXTERNAL_STORAGE_REQUEST_CODE)
+                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE), Constants.REQUEST_CODE_EXTERNAL_STORAGE)
                 return true
             }
         }
@@ -1094,7 +1106,7 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         Log.i(TAG, "onRequestPermissionResult")
-        if (Constants.EXTERNAL_STORAGE_REQUEST_CODE == requestCode) {
+        if (Constants.REQUEST_CODE_EXTERNAL_STORAGE == requestCode) {
             when {
                 grantResults.isEmpty() -> Log.i(TAG, "User interaction was cancelled.")
                 PackageManager.PERMISSION_GRANTED == grantResults[0] -> startDownloadBill(orderDetailMainResponse?.orders?.digitalReceipt)

@@ -375,7 +375,7 @@ class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInter
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             if (response.mIsSuccessStatus) {
-                val promoCodeListResponse = Gson().fromJson<PromoCodeListResponse>(response.mCommonDataStr, PromoCodeListResponse::class.java)
+                val promoCodeListResponse = Gson().fromJson(response.mCommonDataStr, PromoCodeListResponse::class.java)
                 mIsNextPage = promoCodeListResponse?.mIsNextPage ?: false
                 if (1 == mPromoCodePageNumber)
                     mPromoCodeList.clear()
@@ -407,8 +407,7 @@ class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInter
             }
 
             override fun onPromoCodeShareClickListener(position: Int) {
-                if (position < 0) return
-                if (position >= mPromoCodeList.size) return
+                if (position < 0 || position >= mPromoCodeList.size) return
                 val item = mPromoCodeList[position]
                 showProgressDialog(mActivity)
                 AppEventsManager.pushAppEvents(
@@ -445,7 +444,7 @@ class PromoCodePageInfoFragment : BaseFragment(), IPromoCodePageInfoServiceInter
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         Log.i(TAG, "onRequestPermissionResult")
-        if (requestCode == Constants.STORAGE_REQUEST_CODE) {
+        if (requestCode == Constants.REQUEST_CODE_STORAGE) {
             when {
                 grantResults.isEmpty() -> Log.d(TAG, "User interaction was cancelled.")
                 grantResults[0] == PackageManager.PERMISSION_GRANTED -> shareCouponsWithImage(mShareText, mShareCdn)

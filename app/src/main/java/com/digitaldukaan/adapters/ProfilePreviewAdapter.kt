@@ -60,7 +60,7 @@ class ProfilePreviewAdapter(
                     profilePreviewDefaultScreenGroup.visibility = View.VISIBLE
                     addSettingKeyDataTextView.visibility = View.GONE
                     addSettingKeyHeading.text = responseItem.mDefaultText
-                    addSettingKeyHeading.setTextColor(ContextCompat.getColor(mActivity, R.color.open_green))
+                    addSettingKeyHeading.setTextColor(ContextCompat.getColor(mActivity, R.color.primary_blue))
                 } else {
                     profilePreviewDefaultScreenGroup.visibility = View.GONE
                     addSettingKeyDataTextView.visibility = View.VISIBLE

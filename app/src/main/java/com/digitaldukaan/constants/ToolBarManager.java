@@ -58,6 +58,10 @@ public class ToolBarManager {
     }
 
     public void setSideIconVisibility(boolean isVisible) {
+        mToolbar.findViewById(R.id.sideIconToolbar).setVisibility(isVisible ? View.VISIBLE : View.INVISIBLE);
+    }
+
+    public void setSideIconVisibilityV2(boolean isVisible) {
         mToolbar.findViewById(R.id.sideIconToolbar).setVisibility(isVisible ? View.VISIBLE : View.GONE);
     }
 

@@ -6,7 +6,7 @@
 
     <stroke
         android:width="@dimen/_1sdp"
-        android:color="@color/open_green"
+        android:color="@color/primary_blue"
         android:dashWidth="@dimen/_1sdp"
         android:dashGap="@dimen/_1sdp" />
 </shape>

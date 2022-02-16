@@ -20,9 +20,10 @@ class Constants {
         const val IMAGE_PICK_REQUEST_CODE                       = 1002
         const val CONTACT_REQUEST_CODE                          = 1003
         const val CROP_IMAGE_REQUEST_CODE                       = 1004
-        const val EXTERNAL_STORAGE_REQUEST_CODE                 = 1005
-        const val STORAGE_REQUEST_CODE                          = 1006
-        const val EMAIL_REQUEST_CODE                            = 1007
+        const val REQUEST_CODE_EXTERNAL_STORAGE                 = 1005
+        const val REQUEST_CODE_STORAGE                          = 1006
+        const val REQUEST_CODE_EMAIL                            = 1007
+        const val REQUEST_CODE_MULTI_IMAGE                      = 1008
         //ERROR_CODE
         const val ERROR_CODE_UN_AUTHORIZED_ACCESS               = 401
         const val ERROR_CODE_FORBIDDEN_ACCESS                   = 403
@@ -82,6 +83,7 @@ class Constants {
         const val ACTION_BOTTOM_SHEET                           = "bottom-sheet"
         const val ACTION_PROMO_CODE                             = "promo-code"
         const val ACTION_EMAIL_AUTHENTICATION                   = "email-authentication"
+        const val ACTION_EMAIL                                  = "email"
         const val ACTION_MARK_OUT_FOR_DELIVERY                  = "mark-out-for-delivery"
         const val ACTION_HOW_TO_SHIP                            = "how-to-ship"
         const val ACTION_PRODUCT_DISCOUNT                       = "product-discount"
@@ -242,6 +244,7 @@ class Constants {
         const val PREMIUM_USER                                  = "premium_user"
         const val MANAGE_INVENTORY                              = "managed_inventory"
         const val E_COMM_PACK                                   = "e_comm_pack"
+        const val ABANDONED_CART                                = "abandoned_cart"
         //BILL_TYPE
         const val BILL_TYPE_PDF                                 = "pdf"
         //STAFF_INVITATION_CODE
@@ -259,5 +262,15 @@ class Constants {
         //SOCIAL_MEDIA_SHARE_TYPE
         const val SOCIAL_MEDIA_SHARE_TYPE_SHARE                 = "generic"
         const val SOCIAL_MEDIA_SHARE_TYPE_WHATSAPP              = "whatsapp"
+        //LEADS_SORT_TYPE
+        const val SORT_TYPE_DESCENDING                          = -1
+        const val SORT_TYPE_ASCENDING                           = 1
+        //LEADS_CART_TYPE
+        const val CART_TYPE_DEFAULT                             = -1
+        const val CART_TYPE_ABANDONED                           = 0
+        const val CART_TYPE_ACTIVE                              = 1
+        //LEADS_FILTER_TYPE
+        const val LEADS_FILTER_TYPE_SORT                        = "sort"
+        const val LEADS_FILTER_TYPE_DATE                        = "date"
     }
 }

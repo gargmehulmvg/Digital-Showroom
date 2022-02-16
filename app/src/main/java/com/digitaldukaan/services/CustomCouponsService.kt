@@ -52,4 +52,10 @@ class CustomCouponsService {
         }
     }
 
+    fun getPromoCodePageInfoV2() {
+        CoroutineScopeUtils().runTaskOnCoroutineBackground {
+            mNetworkService.getPromoCodePageInfoServerCallV2(mServiceInterface)
+        }
+    }
+
 }

@@ -54,6 +54,7 @@ import com.digitaldukaan.models.request.UpdateInvitationRequest
 import com.digitaldukaan.models.request.UpdatePaymentMethodRequest
 import com.digitaldukaan.models.response.*
 import com.digitaldukaan.network.RetrofitApi
+import com.esafirm.imagepicker.features.ImagePicker
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -77,6 +78,11 @@ import java.io.IOException
 import java.net.UnknownHostException
 import java.util.*
 import kotlin.collections.ArrayList
+
+
+
+
+
 
 
 open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener {
@@ -116,6 +122,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             context?.let { context ->
                 try {
+                    if (null != mProgressDialog && true == mProgressDialog?.isShowing) return@runTaskOnCoroutineMain
                     mProgressDialog = Dialog(context)
                     mProgressDialog?.apply {
                         val view = LayoutInflater.from(context).inflate(R.layout.progress_dialog, null)
@@ -139,6 +146,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             context?.let { context ->
                 try {
+                    if (null != mProgressDialog && true == mProgressDialog?.isShowing) return@runTaskOnCoroutineMain
                     mProgressDialog = Dialog(context)
                     val inflate = LayoutInflater.from(context).inflate(R.layout.progress_dialog, null)
                     val view: View = inflate.findViewById(R.id.container)
@@ -408,7 +416,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         if (null != imageBitmap) {
             mActivity?.let {
                 if (ActivityCompat.checkSelfPermission(it, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(it, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                    ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE), Constants.STORAGE_REQUEST_CODE)
+                    ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE), Constants.REQUEST_CODE_STORAGE)
                     return
                 }
             }
@@ -477,7 +485,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     open fun shareData(sharingData: String?, image: Bitmap?) {
         if (null == image) {
             mActivity?.let {
-                if (ActivityCompat.checkSelfPermission(it, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(it, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) { ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE), Constants.STORAGE_REQUEST_CODE)
+                if (ActivityCompat.checkSelfPermission(it, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(it, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) { ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE), Constants.REQUEST_CODE_STORAGE)
                     return
                 }
             }
@@ -776,8 +784,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         }
     }
 
-    private var cameraGalleryWithCropIntentResult =
-        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+    private var cameraGalleryWithCropIntentResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             Log.d(TAG, "onActivityResult: ")
             if (result.resultCode == Activity.RESULT_OK) {
                 CoroutineScopeUtils().runTaskOnCoroutineMain {
@@ -863,7 +870,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         }
     }
 
-    private fun startCropping(bitmap: Bitmap?) {
+    open fun startCropping(bitmap: Bitmap?) {
         try {
             mActivity?.let {
                 val originalImgFile = File(it.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "${System.currentTimeMillis()}_originalImgFile.jpg")
@@ -878,6 +885,18 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         } catch (e: Exception) {
             Log.e(TAG, "startCropping: ${e.message}", e)
         }
+    }
+
+    open fun openMobileGalleryWithCropMultipleImages(quantity: Int) {
+        ImagePicker.create(mActivity)
+            .folderMode(true)
+            .single()
+            .multi()
+            .includeVideo(false)
+            .limit(quantity)
+            .showCamera(false)
+            .imageDirectory("Camera")
+            .start(Constants.REQUEST_CODE_MULTI_IMAGE)
     }
 
     private fun convertBitmapToFile(destinationFile: File, bitmap: Bitmap) {
@@ -926,9 +945,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                             var file = getImageFileFromBitmap(it, mActivity)
                             file?.let { f ->
                                 Log.d(TAG, "ORIGINAL :: ${f.length() / (1024)} KB")
-                                mActivity?.let { context ->
-                                    file = Compressor.compress(context, f) {
-                                        quality(if (false == StaticInstances.sPermissionHashMap?.get(Constants.PREMIUM_USER)) (mActivity?.resources?.getInteger(R.integer.premium_compression_value) ?: 80) else 100) } }
+                                mActivity?.let { context -> file = Compressor.compress(context, f) { quality(if (false == StaticInstances.sPermissionHashMap?.get(Constants.PREMIUM_USER)) (mActivity?.resources?.getInteger(R.integer.premium_compression_value) ?: 80) else 100) } }
                                 Log.d(TAG, "COMPRESSED :: ${f.length() / (1024)} KB")
                                 if (f.length() / (1024 * 1024) >= mActivity?.resources?.getInteger(R.integer.image_mb_size) ?: 0) {
                                     showToast("Images more than ${mActivity?.resources?.getInteger(R.integer.image_mb_size)} are not allowed")
@@ -2425,6 +2442,11 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                 }
             })
         }
+    }
+
+    open fun openEmailIntent(address: String) {
+        val emailIntent = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:$address"))
+        startActivity(Intent.createChooser(emailIntent, "Chooser Title"))
     }
 
 }

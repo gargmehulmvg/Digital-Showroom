@@ -319,7 +319,7 @@ class ProductFragment : BaseFragment(), IProductServiceInterface, IOnToolbarIcon
     }
 
     override fun onToolbarSideIconClicked() {
-        val wrapper = ContextThemeWrapper(mActivity, R.style.popupMenuStyle)
+        val wrapper = ContextThemeWrapper(mActivity, R.style.PopupMenuStyle)
         val sideView:View? = mActivity?.findViewById(R.id.sideIconToolbar)
         val optionsMenu = PopupMenu(wrapper, sideView)
         optionsMenu.inflate(R.menu.menu_product_fragment)

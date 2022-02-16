@@ -1,7 +1,9 @@
 package com.digitaldukaan.fragments
 
 import android.Manifest
+import android.app.Activity
 import android.app.Dialog
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
@@ -30,12 +32,15 @@ import com.digitaldukaan.network.RetrofitApi
 import com.digitaldukaan.services.AddProductService
 import com.digitaldukaan.services.isInternetConnectionAvailable
 import com.digitaldukaan.services.serviceinterface.IAddProductServiceInterface
+import com.esafirm.imagepicker.features.ImagePicker
+import com.esafirm.imagepicker.model.Image
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import com.theartofdev.edmodo.cropper.CropImageView
+import com.yalantis.ucrop.UCrop
 import kotlinx.android.synthetic.main.layout_add_product_fragment.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -107,6 +112,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
 
         private var sIsVariantImageClicked = false
         private var sVariantImageClickedPosition = 0
+        private const val MAXIMUM_IMAGE_SELECTION = 5
 
         fun newInstance(itemId:Int, isAddNewProduct: Boolean): AddProductFragment {
             val fragment = AddProductFragment()
@@ -269,6 +275,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
             }
             setupYoutubeUI()
             setupManageInventoryUI()
+            setupOptionsMenu()
         }
         return mContentView
     }
@@ -775,7 +782,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
                     }
                     bottomSheetUploadImageGalleryTextView.setOnClickListener {
                         imagePickBottomSheet?.dismiss()
-                        openMobileGalleryWithCrop()
+                        if (isVariantImageClicked || MAXIMUM_IMAGE_SELECTION == (mImagesStrList.size)) openMobileGalleryWithCrop() else openMobileGalleryWithCropMultipleImages(quantity = (MAXIMUM_IMAGE_SELECTION - mImagesStrList.size))
                     }
                     bottomSheetUploadImageRemovePhotoTextView.setOnClickListener {
                         imagePickBottomSheet?.dismiss()
@@ -835,6 +842,7 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
     override fun onResume() {
         super.onResume()
         stopProgress()
+        setupOptionsMenu()
     }
 
     override fun onImageSelectionResultFile(file: File?, mode: String) {
@@ -1215,7 +1223,10 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
 
     private fun setupOptionsMenu() {
         mOptionsMenuResponse = mAddProductResponse?.addProductStoreOptionsMenu
-        if (isEmpty(mOptionsMenuResponse)) ToolBarManager.getInstance()?.setSideIconVisibility(false)
+        ToolBarManager.getInstance()?.apply {
+            if (isEmpty(mOptionsMenuResponse)) setSideIconVisibilityV2(false)
+            setSecondSideIconVisibility(0 != mItemId)
+        }
     }
 
     private fun setupCategoryChipRecyclerView() {
@@ -1545,4 +1556,31 @@ class AddProductFragment : BaseFragment(), IAddProductServiceInterface, IAdapter
         val manageInventorySwitch: SwitchMaterial? = mContentView?.findViewById(R.id.manageInventorySwitch)
         manageInventorySwitch?.isChecked = false
     }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        stopProgress()
+        if (resultCode == Activity.RESULT_OK) {
+            when (requestCode) {
+                UCrop.REQUEST_CROP -> {
+                    Log.d(TAG, "onActivityResult: UCrop.REQUEST_CROP ")
+                    data?.let {
+                        val resultUri = UCrop.getOutput(data)
+                        val croppedBitmap = getBitmapFromUri(resultUri, mActivity)
+                        val croppedFile = getImageFileFromBitmap(croppedBitmap, mActivity)
+                        onImageSelectionResultFile(croppedFile)
+                    }
+                }
+                Constants.REQUEST_CODE_MULTI_IMAGE -> {
+                    Log.d(TAG, "onActivityResult: REQUEST_CODE_MULTI_IMAGE ")
+                    data?.let { intentData ->
+                        CoroutineScopeUtils().runTaskOnCoroutineMain {
+                            val imagesList = ImagePicker.getImages(intentData) as ArrayList<Image>?
+                            imagesList?.forEachIndexed { _, image -> getBitmapFromUri(image.uri, mActivity)?.let { b -> startCropping(b) } }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 }

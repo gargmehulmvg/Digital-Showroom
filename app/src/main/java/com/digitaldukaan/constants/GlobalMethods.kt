@@ -307,6 +307,18 @@ fun getTxnDateStringFromTxnDate(date: Date): String {
     return string.substring(0, string.length - 7) + "\'" + string.substring(string.length - 7, string.length)
 }
 
+fun getDateStringFromLeadsFilter(date: Date): String {
+    val dateFormat = SimpleDateFormat("d MMM yy", Locale.getDefault())
+    val string = dateFormat.format(date)
+    return string.substring(0, string.length - 2) + "\'" + string.substring(string.length - 2, string.length)
+}
+
+fun getDateStringForLeadsHeader(date: Date): String {
+    val dateFormat = SimpleDateFormat("EEE | hh:mm a", Locale.getDefault())
+    val string = dateFormat.format(date)
+    return string
+}
+
 fun getStringDateTimeFromOrderDate(date: Date?): String {
     if (null == date) return ""
     val dateFormat = SimpleDateFormat("dd MMM yy | hh:mm a", Locale.getDefault())
@@ -592,5 +604,19 @@ fun getSharedPreferenceName(): String = if (BuildConfig.DEBUG) Constants.SHARED_
 fun setHtmlData(textView: TextView, string: String?) {
     string?.let { it ->
         textView.text = Html.fromHtml(it, Html.FROM_HTML_MODE_COMPACT)
+    }
+}
+
+fun isNumeric(string: String?): Boolean {
+    if (isEmpty(string)) {
+        println("String cannot be parsed, it is null or empty.")
+        return false
+    }
+    return try {
+        val intValue = string?.toInt() ?: 0
+        true
+    } catch (e: NumberFormatException) {
+        println("Input String cannot be parsed to Integer.")
+        false
     }
 }

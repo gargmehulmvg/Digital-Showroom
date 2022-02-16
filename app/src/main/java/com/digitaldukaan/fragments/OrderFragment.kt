@@ -1,6 +1,8 @@
 package com.digitaldukaan.fragments
 
 import android.content.pm.PackageManager
+import android.graphics.Color
+import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -16,18 +18,11 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.appsflyer.AppsFlyerLib
 import com.digitaldukaan.BuildConfig
 import com.digitaldukaan.R
-import com.digitaldukaan.adapters.LandingPageCardsAdapter
-import com.digitaldukaan.adapters.LandingPageShortcutsAdapter
-import com.digitaldukaan.adapters.OrderAdapterV2
+import com.digitaldukaan.adapters.*
 import com.digitaldukaan.constants.*
-import com.digitaldukaan.interfaces.IAdapterItemClickListener
-import com.digitaldukaan.interfaces.ILandingPageAdapterListener
-import com.digitaldukaan.interfaces.IOrderListItemListener
+import com.digitaldukaan.interfaces.*
 import com.digitaldukaan.models.dto.CleverTapProfile
-import com.digitaldukaan.models.request.CompleteOrderRequest
-import com.digitaldukaan.models.request.OrdersRequest
-import com.digitaldukaan.models.request.SearchOrdersRequest
-import com.digitaldukaan.models.request.UpdateOrderStatusRequest
+import com.digitaldukaan.models.request.*
 import com.digitaldukaan.models.response.*
 import com.digitaldukaan.network.RetrofitApi
 import com.digitaldukaan.services.OrderFragmentService
@@ -36,6 +31,7 @@ import com.digitaldukaan.services.serviceinterface.IHomeServiceInterface
 import com.digitaldukaan.webviews.WebViewBridge
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.firebase.analytics.ktx.analytics
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.ktx.Firebase
@@ -43,18 +39,24 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration
 import kotlinx.android.synthetic.main.activity_main2.*
+import kotlinx.android.synthetic.main.landing_page_cards_item.*
 import kotlinx.android.synthetic.main.layout_analytics.*
 import kotlinx.android.synthetic.main.layout_home_fragment.*
 import kotlinx.android.synthetic.main.layout_home_fragment.analyticsContainer
 import kotlinx.android.synthetic.main.layout_home_fragment.analyticsImageView
 import kotlinx.android.synthetic.main.layout_home_fragment.orderLayout
+import kotlinx.android.synthetic.main.layout_more_control_fragment.*
 import kotlinx.android.synthetic.main.layout_order_fragment.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import ru.slybeaver.slycalendarview.SlyCalendarDialog
 import java.io.File
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.math.abs
 
 class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuItemClickListener,
-    SwipeRefreshLayout.OnRefreshListener, IOrderListItemListener {
+    SwipeRefreshLayout.OnRefreshListener, IOrderListItemListener, ILeadsListItemListener {
 
     private var ePosTextView: TextView? = null
     private var searchImageView: ImageView? = null
@@ -62,13 +64,12 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
     private var swipeRefreshLayout: SwipeRefreshLayout? = null
     private var mIsNewUserLogin = false
     private var mIsDoublePressToExit = false
-    private var subHeadingTextView: TextView? = null
     private var domainExpiryTextView: TextView? = null
     private var ordersRecyclerView: RecyclerView? = null
     private var completedOrdersRecyclerView: RecyclerView? = null
     private var mOrderAdapter: OrderAdapterV2? = null
+    private var mLeadsAdapter: LeadsAdapter? = null
     private var mCompletedOrderAdapter: OrderAdapterV2? = null
-    private var mLinearLayoutManager: LinearLayoutManager? = null
     private var mPendingPageCount = 1
     private var mCompletedPageCount = 1
     private var mLandingPageAdapterPosition = 1
@@ -80,6 +81,15 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
     private var mPaymentLinkBottomSheet: BottomSheetDialog? = null
     private var mPaymentLinkAmountStr: String? = null
     private var mIsCustomDomainTopViewHide: Boolean = false
+    private var mLeadsFilterAdapter: LeadsFilterBottomSheetAdapter? = null
+    private var mLeadsFilterList : ArrayList<LeadsFilterListItemResponse> = ArrayList()
+    private var mLeadsFilterResponse: LeadsFilterResponse? = null
+    private var mLeadsCartTypeSelection = Constants.CART_TYPE_DEFAULT
+    private var mIsLeadsTabSelected = false
+    private var mIsLeadsFilterReset = true
+    private var mLeadsFilterStartDate = ""
+    private var mLeadsFilterEndDate = ""
+    private var mLeadsFilterRequest: LeadsListRequest = LeadsListRequest("", "", "", "", Constants.SORT_TYPE_DESCENDING, Constants.CART_TYPE_DEFAULT)
 
     companion object {
         var sOrderPageInfoResponse: OrderPageInfoResponse? = null
@@ -89,10 +99,12 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
         private var sFetchingOrdersStr: String? = ""
         private var sMobileNumberString = ""
         private var sOrderIdString = ""
+        private const val LEADS_FILTER_TYPE_CUSTOM_DATE = "0"
         private var sIsMorePendingOrderAvailable = false
         private var sIsMoreCompletedOrderAvailable = false
         private var sOrderList: ArrayList<OrderItemResponse> = ArrayList()
         private var sCompletedOrderList: ArrayList<OrderItemResponse> = ArrayList()
+        private var sLeadsList: ArrayList<LeadsResponse> = ArrayList()
 
         fun newInstance(isNewUserLogin: Boolean = false, isClearOrderPageResponse: Boolean = false): OrderFragment {
             val fragment = OrderFragment()
@@ -146,6 +158,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
             } else
                 StaticInstances.sCustomDomainBottomSheetResponse?.let { response -> showDomainPurchasedBottomSheet(response, false) }
         }
+        mIsLeadsTabSelected = false
         return mContentView
     }
 
@@ -154,7 +167,6 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
         searchImageView = mContentView?.findViewById(R.id.searchImageView)
         toolbarSearchImageView = mContentView?.findViewById(R.id.toolbarSearchImageView)
         swipeRefreshLayout = mContentView?.findViewById(R.id.swipeRefreshLayout)
-        subHeadingTextView = mContentView?.findViewById(R.id.ordersSubHeadingTextView)
         domainExpiryTextView = mContentView?.findViewById(R.id.domainExpiryTextView)
         ordersRecyclerView = mContentView?.findViewById(R.id.ordersRecyclerView)
         completedOrdersRecyclerView = mContentView?.findViewById(R.id.completedOrdersRecyclerView)
@@ -171,6 +183,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
         mCompletedPageCount = 1
         sOrderList.clear()
         sCompletedOrderList.clear()
+        sLeadsList.clear()
         ePosTextView?.visibility = View.GONE
         orderLayout?.setOnScrollChangeListener(NestedScrollView.OnScrollChangeListener { v, _, scrollY, _, oldScrollY ->
             if (scrollY > oldScrollY) {
@@ -191,45 +204,55 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
             }
             if (scrollY == (v.getChildAt(0).measuredHeight - v.measuredHeight)) {
                 Log.d(TAG, "Scroll To Bottom Last")
-                when {
-                    sIsMorePendingOrderAvailable -> {
-                        ++mPendingPageCount
-                        fetchLatestOrders(Constants.MODE_PENDING, "", mPendingPageCount)
-                    }
-                    sIsMoreCompletedOrderAvailable -> {
-                        ++mCompletedPageCount
-                        fetchLatestOrders(Constants.MODE_COMPLETED, "", mCompletedPageCount)
-                    }
-                    !sIsMoreCompletedOrderAvailable -> {
-                        if (isEmpty(sCompletedOrderList)) {
-                            mCompletedPageCount = 1
+                if (!mIsLeadsTabSelected) {
+                    when {
+                        sIsMorePendingOrderAvailable -> {
+                            ++mPendingPageCount
+                            fetchLatestOrders(Constants.MODE_PENDING, "", mPendingPageCount)
+                        }
+                        sIsMoreCompletedOrderAvailable -> {
+                            ++mCompletedPageCount
                             fetchLatestOrders(Constants.MODE_COMPLETED, "", mCompletedPageCount)
+                        }
+                        !sIsMoreCompletedOrderAvailable -> {
+                            if (isEmpty(sCompletedOrderList)) {
+                                mCompletedPageCount = 1
+                                fetchLatestOrders(Constants.MODE_COMPLETED, "", mCompletedPageCount)
+                            }
                         }
                     }
                 }
             }
         })
+        setupOrdersRecyclerView()
+        ordersRecyclerView?.addItemDecoration(StickyRecyclerHeadersDecoration(mOrderAdapter))
+        setupCompletedOrdersRecyclerView()
+        completedOrdersRecyclerView?.addItemDecoration(StickyRecyclerHeadersDecoration(mCompletedOrderAdapter))
+        Log.d(TAG, "onViewCreated: OrderFragment called")
+        Log.d(TAG, "onViewCreated: OrderFragment sIsInvitationAvailable :: $sIsInvitationAvailable")
+        if (sIsInvitationAvailable) showStaffInvitationDialog()
+    }
+
+    private fun setupOrdersRecyclerView() {
         ordersRecyclerView?.apply {
             isNestedScrollingEnabled = false
             mActivity?.let { context -> mOrderAdapter = OrderAdapterV2(context, sOrderList) }
             mOrderAdapter?.setCheckBoxListener(this@OrderFragment)
-            mLinearLayoutManager = LinearLayoutManager(mActivity)
-            layoutManager = mLinearLayoutManager
+            layoutManager = LinearLayoutManager(mActivity)
             adapter = mOrderAdapter
-            addItemDecoration(StickyRecyclerHeadersDecoration(mOrderAdapter))
         }
+    }
+
+    private fun setupCompletedOrdersRecyclerView() {
         completedOrdersRecyclerView?.apply {
             isNestedScrollingEnabled = false
-            mActivity?.let { context -> mCompletedOrderAdapter = OrderAdapterV2(context, sCompletedOrderList) }
+            mActivity?.let { context ->
+                mCompletedOrderAdapter = OrderAdapterV2(context, sCompletedOrderList)
+            }
             mCompletedOrderAdapter?.setCheckBoxListener(this@OrderFragment)
-            mLinearLayoutManager = LinearLayoutManager(mActivity)
-            layoutManager = mLinearLayoutManager
+            layoutManager = LinearLayoutManager(mActivity)
             adapter = mCompletedOrderAdapter
-            addItemDecoration(StickyRecyclerHeadersDecoration(mCompletedOrderAdapter))
         }
-        Log.d(TAG, "onViewCreated: OrderFragment called")
-        Log.d(TAG, "onViewCreated: OrderFragment sIsInvitationAvailable :: $sIsInvitationAvailable")
-        if (sIsInvitationAvailable) showStaffInvitationDialog()
     }
 
     override fun onUserAuthenticationResponse(authenticationUserResponse: ValidateOtpResponse) {
@@ -386,7 +409,6 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                     mIsAllStepsCompleted = itemsResponse?.completed?.isCompleted ?: false
                 }
                 val nextStepTextView: TextView? = mContentView?.findViewById(R.id.nextStepTextView)
-                val ordersSubHeadingTextView: View? = mContentView?.findViewById(R.id.ordersSubHeadingTextView)
                 val domainExpiryContainer: View? = mContentView?.findViewById(R.id.domainExpiryContainer)
                 if (mIsAllStepsCompleted) {
                     zeroOrderItemsRecyclerView?.visibility = View.GONE
@@ -450,7 +472,6 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                     }
                 }
                 nextStepTextView?.text = if (mIsAllStepsCompleted) sOrderPageInfoStaticData?.text_my_shortcuts else sOrderPageInfoStaticData?.text_next_steps
-                ordersSubHeadingTextView?.visibility = if (mIsAllStepsCompleted) View.GONE else View.VISIBLE
                 domainExpiryContainer?.visibility = if (isEmpty(landingPageCardsResponse?.domainExpiryMessage)) View.GONE else {
                     domainExpiryContainer?.visibility = View.VISIBLE
                     if (isNotEmpty(landingPageCardsResponse.domainExpiryMessage))
@@ -583,7 +604,9 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                     data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
                 )
-                showSearchDialog(sOrderPageInfoStaticData, sMobileNumberString, sOrderIdString)
+                if (mIsLeadsTabSelected) {
+                    launchFragment(LeadsSearchFragment.newInstance(), true)
+                } else showSearchDialog(sOrderPageInfoStaticData, sMobileNumberString, sOrderIdString)
             }
             toolbarSearchImageView?.id -> {
                 AppEventsManager.pushAppEvents(
@@ -591,7 +614,9 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                     isCleverTapEvent = true, isAppFlyerEvent = true, isServerCallEvent = true,
                     data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
                 )
-                showSearchDialog(sOrderPageInfoStaticData, sMobileNumberString, sOrderIdString)
+                if (mIsLeadsTabSelected) {
+                    launchFragment(LeadsSearchFragment.newInstance(), true)
+                } else showSearchDialog(sOrderPageInfoStaticData, sMobileNumberString, sOrderIdString)
             }
             ePosContainer?.id -> {
                 AppEventsManager.pushAppEvents(
@@ -600,6 +625,118 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                     data = mapOf(AFInAppEventParameterName.STORE_ID to PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID))
                 )
                 showEPosBottomSheet()
+            }
+            myOrdersHeadingTextView?.id -> {
+                mIsLeadsTabSelected = false
+                noLeadsLayout?.visibility = View.GONE
+                noOrderLayout?.visibility = View.GONE
+                setupTabLayout(myOrdersHeadingTextView, myLeadsHeadingTextView)
+                setupOrdersRecyclerView()
+                setupCompletedOrdersRecyclerView()
+                completedOrdersRecyclerView?.visibility = View.VISIBLE
+                with(View.VISIBLE) {
+                    val pendingOrderTextView: TextView? = mContentView?.findViewById(R.id.pendingOrderTextView)
+                    val completedOrderTextView: TextView? = mContentView?.findViewById(R.id.completedOrderTextView)
+                    pendingOrderTextView?.visibility = this
+                    completedOrderTextView?.visibility = this
+                }
+                val abandonedCartTextView: TextView? = mContentView?.findViewById(R.id.abandonedCartTextView)
+                val activeCartTextView: TextView? = mContentView?.findViewById(R.id.activeCartTextView)
+                val filterImageView: ImageView? = mContentView?.findViewById(R.id.filterImageView)
+                with(View.GONE) {
+                    abandonedCartTextView?.visibility = this
+                    activeCartTextView?.visibility = this
+                    filterImageView?.visibility = this
+                    filterRedDotImageView?.visibility = this
+                }
+            }
+            myLeadsHeadingTextView?.id -> {
+                if (false == StaticInstances.sPermissionHashMap?.get(Constants.ABANDONED_CART)) {
+                    val url = "${sOrderPageInfoResponse?.mAbandonedCartLockedUrl}?storeid=${PrefsManager.getStringDataFromSharedPref(Constants.STORE_ID)}&token=${PrefsManager.getStringDataFromSharedPref(Constants.USER_AUTH_TOKEN)}&${AFInAppEventParameterName.CHANNEL}=${AFInAppEventParameterName.LANDING_PAGE}"
+                    openWebViewFragmentV3(this@OrderFragment, "", url)
+                    return
+                }
+                noLeadsLayout?.visibility = View.GONE
+                noOrderLayout?.visibility = View.GONE
+                mLeadsCartTypeSelection = Constants.CART_TYPE_DEFAULT
+                mLeadsFilterResponse = null
+                mLeadsFilterList = ArrayList()
+                mIsLeadsTabSelected = true
+                setupTabLayout(myLeadsHeadingTextView, myOrdersHeadingTextView)
+                ordersRecyclerView?.apply {
+                    isNestedScrollingEnabled = false
+                    mActivity?.let { context -> mLeadsAdapter = LeadsAdapter(context, sLeadsList, this@OrderFragment) }
+                    layoutManager = LinearLayoutManager(mActivity)
+                    adapter = null
+                    adapter = mLeadsAdapter
+                }
+                completedOrdersRecyclerView?.visibility = View.GONE
+                val pendingOrderTextView: TextView? = mContentView?.findViewById(R.id.pendingOrderTextView)
+                val completedOrderTextView: TextView? = mContentView?.findViewById(R.id.completedOrderTextView)
+                with(View.GONE) {
+                    pendingOrderTextView?.visibility = this
+                    completedOrderTextView?.visibility = this
+                }
+                val abandonedCartTextView: TextView? = mContentView?.findViewById(R.id.abandonedCartTextView)
+                val activeCartTextView: TextView? = mContentView?.findViewById(R.id.activeCartTextView)
+                val filterImageView: ImageView? = mContentView?.findViewById(R.id.filterImageView)
+                with(View.VISIBLE) {
+                    abandonedCartTextView?.visibility = this
+                    activeCartTextView?.visibility = this
+                    filterImageView?.visibility = this
+                }
+                mLeadsFilterRequest = LeadsListRequest(
+                    userName = "",
+                    startDate = "",
+                    endDate = "",
+                    userPhone = "",
+                    sortType = Constants.SORT_TYPE_DESCENDING,
+                    cartType = mLeadsCartTypeSelection
+                )
+                mService?.getCartsByFilters(mLeadsFilterRequest)
+                mActivity?.let { context ->
+                    abandonedCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_light_grey_background_without_padding)
+                    activeCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_light_grey_background_without_padding)
+                }
+            }
+            abandonedCartTextView?.id -> {
+                mLeadsCartTypeSelection = Constants.CART_TYPE_ABANDONED
+                mActivity?.let { context ->
+                    abandonedCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.selected_chip_blue_border_bluish_background)
+                    activeCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_light_grey_background_without_padding)
+                }
+                mLeadsFilterRequest.cartType = Constants.CART_TYPE_ABANDONED
+                mService?.getCartsByFilters(mLeadsFilterRequest)
+            }
+            activeCartTextView?.id -> {
+                mLeadsCartTypeSelection = Constants.CART_TYPE_ACTIVE
+                mActivity?.let { context ->
+                    activeCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.selected_chip_blue_border_bluish_background)
+                    abandonedCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_light_grey_background_without_padding)
+                }
+                mLeadsFilterRequest.cartType = Constants.CART_TYPE_ACTIVE
+                mService?.getCartsByFilters(mLeadsFilterRequest)
+            }
+            filterImageView?.id -> {
+                if (null == mLeadsFilterResponse) {
+                    val request = LeadsFilterOptionsRequest(cartType = -1, startDate = "", endDate = "", sortType = Constants.SORT_TYPE_DESCENDING)
+                    mService?.getCartFilterOptions(request)
+                } else showLeadsFilterBottomSheet()
+            }
+        }
+    }
+
+    private fun setupTabLayout(selectedTextView: TextView?, unSelectedTextView: TextView?) {
+        mActivity?.let { context ->
+            selectedTextView?.apply {
+                typeface = Typeface.DEFAULT_BOLD
+                setTextColor(Color.WHITE)
+                background = ContextCompat.getDrawable(context, R.drawable.ripple_rect_grey_blue_background)
+            }
+            unSelectedTextView?.apply {
+                typeface = Typeface.DEFAULT
+                setTextColor(Color.BLACK)
+                setBackgroundColor(Color.WHITE)
             }
         }
     }
@@ -673,6 +810,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                 val completedOrderTextView: TextView? = mContentView?.findViewById(R.id.completedOrderTextView)
                 val takeOrderTextView: TextView? = mContentView?.findViewById(R.id.takeOrderTextView)
                 val myOrdersHeadingTextView: TextView? = mContentView?.findViewById(R.id.myOrdersHeadingTextView)
+                val myLeadsHeadingTextView: TextView? = mContentView?.findViewById(R.id.myLeadsHeadingTextView)
                 val noOrderLayout: View? = mContentView?.findViewById(R.id.noOrderLayout)
                 val ordersLayout: View? = mContentView?.findViewById(R.id.ordersLayout)
                 val orderLayout: View? = mContentView?.findViewById(R.id.orderLayout)
@@ -682,8 +820,17 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                 pendingOrderTextView?.text = sOrderPageInfoStaticData?.text_pending
                 completedOrderTextView?.text = sOrderPageInfoStaticData?.text_completed
                 ePosTextView?.text = sOrderPageInfoStaticData?.text_epos
-                subHeadingTextView?.setHtmlData(sOrderPageInfoStaticData?.text_congratulations)
                 myOrdersHeadingTextView?.text = sOrderPageInfoStaticData?.text_my_orders
+                myLeadsHeadingTextView?.text = sOrderPageInfoStaticData?.heading_leads
+                myLeadsHeadingTextView?.setCompoundDrawablesRelativeWithIntrinsicBounds(
+                    if (true == StaticInstances.sPermissionHashMap?.get(Constants.ABANDONED_CART)) 0 else R.drawable.ic_subscription_locked_black_small,
+                    0,
+                    R.drawable.ic_red_dot,
+                    0
+                )
+                if (true == StaticInstances.sPermissionHashMap?.get(Constants.ABANDONED_CART)) {
+                    myLeadsHeadingTextView?.gravity = Gravity.CENTER
+                }
                 setupSideOptionMenu()
                 swipeRefreshLayout?.isEnabled = true
                 orderLayout?.visibility = View.VISIBLE
@@ -729,7 +876,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
             optionsMenuImageView?.visibility = if (isEmpty(sOrderPageInfoResponse?.optionMenuList)) View.GONE else View.VISIBLE
             optionsMenuImageView?.setImageDrawable(ContextCompat.getDrawable(context, R.drawable.ic_options_menu))
             optionsMenuImageView?.setOnClickListener {
-                val wrapper = ContextThemeWrapper(mActivity, R.style.popupMenuStyle)
+                val wrapper = ContextThemeWrapper(mActivity, R.style.PopupMenuStyle)
                 val optionsMenu = PopupMenu(wrapper, optionsMenuImageView)
                 optionsMenu.inflate(R.menu.menu_product_fragment)
                 sOrderPageInfoResponse?.optionMenuList?.forEachIndexed { position, response ->
@@ -869,13 +1016,31 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
     }
 
     override fun onRefresh() {
-        sOrderList.clear()
-        sCompletedOrderList.clear()
-        mCompletedPageCount = 1
-        mPendingPageCount = 1
-        fetchLatestOrders(Constants.MODE_PENDING, sFetchingOrdersStr, mPendingPageCount)
-        mService?.getOrderPageInfo()
-        mService?.getAnalyticsData()
+        if (!mIsLeadsTabSelected) {
+            sOrderList.clear()
+            sCompletedOrderList.clear()
+            mCompletedPageCount = 1
+            mPendingPageCount = 1
+            fetchLatestOrders(Constants.MODE_PENDING, sFetchingOrdersStr, mPendingPageCount)
+            mService?.getOrderPageInfo()
+            mService?.getAnalyticsData()
+        } else {
+            mActivity?.let { context ->
+                abandonedCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_grey_background_without_padding)
+                activeCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_grey_background_without_padding)
+            }
+            mLeadsCartTypeSelection = Constants.CART_TYPE_DEFAULT
+            resetLeadsDateFilter()
+            mLeadsFilterRequest = LeadsListRequest(
+                userName = "",
+                startDate = "",
+                endDate = "",
+                userPhone = "",
+                sortType = Constants.SORT_TYPE_DESCENDING,
+                cartType = mLeadsCartTypeSelection
+            )
+            mService?.getCartsByFilters(mLeadsFilterRequest)
+        }
     }
 
     override fun onOrderCheckBoxChanged(isChecked: Boolean, item: OrderItemResponse?) {
@@ -1024,7 +1189,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
             try {
                 val response = RetrofitApi().getServerCallObject()?.getStaffMembersDetails(getStringDataFromSharedPref(Constants.STORE_ID))
                 response?.let { it ->
-                    val staffMemberDetailsResponse = Gson().fromJson<CheckStaffInviteResponse>(it.body()?.mCommonDataStr, CheckStaffInviteResponse::class.java)
+                    val staffMemberDetailsResponse = Gson().fromJson(it.body()?.mCommonDataStr, CheckStaffInviteResponse::class.java)
                     blurBottomNavBarContainer?.visibility = View.INVISIBLE
                     stopProgress()
                     if (null != staffMemberDetailsResponse) {
@@ -1044,4 +1209,258 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
     }
 
     override fun checkStaffInviteResponse(commonResponse: CommonApiResponse) = Unit
+
+    override fun onGetCartsByFiltersResponse(commonResponse: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            if (true == swipeRefreshLayout?.isRefreshing) swipeRefreshLayout?.isRefreshing = false
+            if (commonResponse.mIsSuccessStatus) {
+                val listType = object : TypeToken<ArrayList<LeadsResponse>>() {}.type
+                sLeadsList = ArrayList()
+                sLeadsList = Gson().fromJson(commonResponse.mCommonDataStr, listType)
+                val noLeadsLayout: View? = mContentView?.findViewById(R.id.noLeadsLayout)
+                val noOrderLayout: View? = mContentView?.findViewById(R.id.noOrderLayout)
+                val pendingOrderTextView: View? = mContentView?.findViewById(R.id.pendingOrderTextView)
+                val completedOrderTextView: View? = mContentView?.findViewById(R.id.completedOrderTextView)
+                if (isEmpty(sLeadsList)) {
+                    noLeadsLayout?.visibility = View.VISIBLE
+                    noOrderLayout?.visibility = View.GONE
+                } else {
+                    with(View.GONE) {
+                        noLeadsLayout?.visibility = this
+                        noOrderLayout?.visibility = this
+                    }
+                    with(View.VISIBLE) {
+                        ordersRecyclerView?.visibility = this
+                    }
+                    sLeadsList.forEachIndexed { _, itemResponse -> itemResponse.updatedDate = getDateFromOrderString(itemResponse.lastUpdateOn) }
+                    ordersRecyclerView?.removeItemDecorationAt(0)
+                    ordersRecyclerView?.addItemDecoration(StickyRecyclerHeadersDecoration(mLeadsAdapter))
+                }
+                pendingOrderTextView?.visibility = View.GONE
+                completedOrderTextView?.visibility = View.GONE
+                mLeadsAdapter?.setLeadsList(sLeadsList)
+            }
+        }
+    }
+
+    override fun onCartFilterOptionsResponse(commonResponse: CommonApiResponse) {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
+            if (commonResponse.mIsSuccessStatus) {
+                mLeadsFilterResponse = Gson().fromJson(commonResponse.mCommonDataStr, LeadsFilterResponse::class.java)
+                mLeadsFilterResponse?.filterList?.forEachIndexed { _, itemResponse ->
+                    if (isNotEmpty(itemResponse.heading))
+                        mLeadsFilterList.add(itemResponse)
+                }
+                mLeadsFilterList.forEachIndexed { _, itemResponse ->
+                    if (Constants.LEADS_FILTER_TYPE_SORT == itemResponse.type) {
+                        itemResponse.filterOptionsList[0].isSelected = true
+                        return@forEachIndexed
+                    }
+                }
+                mIsLeadsFilterReset = true
+                showLeadsFilterBottomSheet()
+            }
+        }
+    }
+
+    override fun onLeadsItemCLickedListener(item: LeadsResponse?) = launchFragment(LeadDetailFragment.newInstance(item), true)
+
+    private fun showLeadsFilterBottomSheet() {
+        var leadsFilterSortType = Constants.SORT_TYPE_DESCENDING
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            try {
+                mActivity?.let {
+                    val bottomSheetDialog = BottomSheetDialog(it, R.style.BottomSheetDialogTheme)
+                    val view = LayoutInflater.from(it).inflate(R.layout.bottom_sheet_leads_filter, it.findViewById(R.id.bottomSheetContainer))
+                    bottomSheetDialog.apply {
+                        setContentView(view)
+                        setCancelable(true)
+                        view.run {
+                            val clearFilterTextView: TextView = findViewById(R.id.clearFilterTextView)
+                            val doneTextView: TextView = findViewById(R.id.doneTextView)
+                            val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
+                            mLeadsFilterResponse?.staticText.let { staticText ->
+                                doneTextView.text = staticText?.text_done
+                                clearFilterTextView.apply {
+                                    text = staticText?.text_clear_filter
+                                    if (mIsLeadsFilterReset) {
+                                        alpha = 0.5f
+                                        isEnabled = false
+                                    } else {
+                                        alpha = 1f
+                                        isEnabled = true
+                                    }
+                                }
+                            }
+                            clearFilterTextView.setOnClickListener {
+                                clearFilterTextView.apply {
+                                    mIsLeadsFilterReset = true
+                                    alpha = 0.5f
+                                    isEnabled = false
+                                }
+                                mLeadsFilterList.forEachIndexed { position, itemResponse ->
+                                    if (Constants.LEADS_FILTER_TYPE_SORT == itemResponse.type) {
+                                        itemResponse.filterOptionsList.forEachIndexed { pos, filterItem ->
+                                            filterItem.isSelected = (0 == pos)
+                                        }
+                                    } else {
+                                        itemResponse.filterOptionsList.forEachIndexed { _, filterItem ->
+                                            with(filterItem) {
+                                                isSelected = false
+                                                customDateRangeStr = ""
+                                            }
+                                        }
+                                    }
+                                    mLeadsFilterAdapter?.notifyItemChanged(position)
+                                }
+                                mLeadsCartTypeSelection = Constants.CART_TYPE_DEFAULT
+                                mLeadsFilterEndDate = ""
+                                mLeadsFilterStartDate = ""
+                            }
+                            doneTextView.setOnClickListener {
+                                val filterRedDotImageView: View? = mContentView?.findViewById(R.id.filterRedDotImageView)
+                                filterRedDotImageView?.visibility = if (mIsLeadsFilterReset) View.GONE else View.VISIBLE
+                                mLeadsFilterRequest.apply {
+                                    startDate = mLeadsFilterStartDate
+                                    endDate = mLeadsFilterEndDate
+                                    sortType = leadsFilterSortType
+                                    cartType = mLeadsCartTypeSelection
+                                }
+                                mService?.getCartsByFilters(mLeadsFilterRequest)
+                                (this@apply).dismiss()
+                            }
+                            recyclerView.apply {
+                                isNestedScrollingEnabled = false
+                                layoutManager = LinearLayoutManager(mActivity)
+                                Log.d(TAG, "showLeadsFilterBottomSheet: list :: $mLeadsFilterList")
+                                mLeadsFilterAdapter = LeadsFilterBottomSheetAdapter(mActivity, mLeadsFilterList, object : ILeadsFilterItemClickListener {
+
+                                        override fun onLeadsFilterItemClickListener(item: LeadsFilterOptionsItemResponse?, filterType:String?) {
+                                            Log.d(TAG, "filterType :: $filterType , item :: $item")
+                                            var recyclerRedrawPosition = 0
+                                            mIsLeadsFilterReset = false
+                                            clearFilterTextView.apply {
+                                                alpha = 1f
+                                                isEnabled = true
+                                            }
+                                            mLeadsFilterList.forEachIndexed { position, itemResponse ->
+                                                if (filterType == itemResponse.type) {
+                                                    recyclerRedrawPosition = position
+                                                    return@forEachIndexed
+                                                }
+                                            }
+                                            when(filterType) {
+                                                Constants.LEADS_FILTER_TYPE_DATE -> {
+                                                    resetLeadsDateFilter()
+                                                    if (LEADS_FILTER_TYPE_CUSTOM_DATE == item?.id) {
+                                                        showDatePickerDialog()
+                                                    } else {
+                                                        val currentDate = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+                                                        var month = currentDate.get(Calendar.MONTH) + 1
+                                                        var monthStr = ""
+                                                        monthStr = if (month <= 9) "0$month" else "$month"
+                                                        var day = currentDate.get(Calendar.DATE)
+                                                        var dayStr = ""
+                                                        dayStr = if (day <= 9) "0$day" else "$day"
+                                                        mLeadsFilterEndDate = "${currentDate.get(Calendar.YEAR)}-$monthStr-$dayStr"
+                                                        currentDate.add(Calendar.DAY_OF_YEAR, -abs(item?.id?.toInt() ?: 0))
+                                                        month = currentDate.get(Calendar.MONTH) + 1
+                                                        monthStr = if (month <= 9) "0$month" else "$month"
+                                                        day = currentDate.get(Calendar.DATE)
+                                                        dayStr = if (day <= 9) "0$day" else "$day"
+                                                        mLeadsFilterStartDate = "${currentDate.get(Calendar.YEAR)}-$monthStr-$dayStr"
+                                                        Log.d(TAG, "onLeadsFilterItemClickListener: startDate :: $mLeadsFilterStartDate endDate :: $mLeadsFilterEndDate")
+                                                    }
+                                                }
+                                                Constants.LEADS_FILTER_TYPE_SORT -> leadsFilterSortType = item?.id?.toInt() ?: Constants.SORT_TYPE_DESCENDING
+                                            }
+                                            mLeadsFilterAdapter?.notifyItemChanged(recyclerRedrawPosition)
+                                        }
+
+                                    })
+                                adapter = mLeadsFilterAdapter
+                            }
+                        }
+                    }.show()
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "showFilterOptionsBottomSheet: ${e.message}", e)
+            }
+        }
+    }
+
+    private fun showDatePickerDialog() {
+        CoroutineScopeUtils().runTaskOnCoroutineMain {
+            mActivity?.let { context ->
+                SlyCalendarDialog()
+                    .setEndDate(Date(MaterialDatePicker.todayInUtcMilliseconds()))
+                    .setSelectedColor(context.getColor(R.color.black))
+                    .setHeaderColor(context.getColor(R.color.black))
+                    .setHeaderTextColor(context.getColor(R.color.white))
+                    .setSelectedTextColor(context.getColor(R.color.white))
+                    .setSingle(false)
+                    .setFirstMonday(true)
+                    .setCallback(object : SlyCalendarDialog.Callback {
+
+                        override fun onCancelled() = resetLeadsDateFilter()
+
+                        override fun onDataSelected(firstDate: Calendar?, secondDate: Calendar?, hours: Int, minutes: Int) {
+                            Log.d(TAG, "onDataSelected: firstDate ${firstDate?.time} :: secondDate :: ${secondDate?.time}")
+                            val secondDateCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+                            secondDateCalendar.timeInMillis = secondDate?.timeInMillis ?: firstDate?.timeInMillis ?: 0
+                            var monthStr = "${(secondDateCalendar.get(Calendar.MONTH) + 1)}"
+                            var dateStr = "${(secondDateCalendar.get(Calendar.DATE))}"
+                            mLeadsFilterEndDate = "${secondDateCalendar.get(Calendar.YEAR)}-${if (1 == monthStr.length) "0$monthStr" else monthStr}-${if (1 == dateStr.length) "0$dateStr" else dateStr}"
+                            val firstDateCalendar = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+                            firstDateCalendar.timeInMillis = firstDate?.timeInMillis ?: (secondDate?.timeInMillis ?: 0)
+                            monthStr = "${(firstDateCalendar.get(Calendar.MONTH) + 1)}"
+                            dateStr = "${(firstDateCalendar.get(Calendar.DATE))}"
+                            mLeadsFilterStartDate = "${firstDateCalendar.get(Calendar.YEAR)}-${if (1 == monthStr.length) "0$monthStr" else monthStr}-${if (1 == dateStr.length) "0$dateStr" else dateStr}"
+                            val displayDate = "${getDateStringFromLeadsFilter(firstDateCalendar.time)} - ${getDateStringFromLeadsFilter(secondDateCalendar.time)}"
+                            mLeadsFilterList.forEachIndexed { pos, itemResponse ->
+                                if (Constants.LEADS_FILTER_TYPE_DATE == itemResponse.type) {
+                                    itemResponse.filterOptionsList.forEachIndexed { _, filterItemResponse ->
+                                        if ("0" == filterItemResponse.id) {
+                                            filterItemResponse.apply {
+                                                isSelected = true
+                                                customDateRangeStr = displayDate
+                                            }
+                                            mLeadsFilterAdapter?.notifyItemChanged(pos)
+                                            return
+                                        }
+                                    }
+                                    return@forEachIndexed
+                                }
+                            }
+                        }
+                    }).show(context.supportFragmentManager, TAG)
+            }
+        }
+    }
+
+    private fun resetLeadsDateFilter() {
+        mLeadsFilterList.forEachIndexed { pos, itemResponse ->
+            if (Constants.LEADS_FILTER_TYPE_DATE == itemResponse.type) {
+                itemResponse.filterOptionsList.forEachIndexed { _, filterItemResponse ->
+                    if (LEADS_FILTER_TYPE_CUSTOM_DATE == filterItemResponse.id) {
+                        filterItemResponse.apply {
+                            isSelected = false
+                            customDateRangeStr = ""
+                        }
+                        mLeadsFilterAdapter?.notifyItemChanged(pos)
+                        return
+                    }
+                }
+                return@forEachIndexed
+            }
+        }
+        mLeadsFilterEndDate = ""
+        mLeadsFilterStartDate = ""
+        mIsLeadsFilterReset = true
+        val filterRedDotImageView: View? = mContentView?.findViewById(R.id.filterRedDotImageView)
+        filterRedDotImageView?.visibility = View.GONE
+    }
+
 }

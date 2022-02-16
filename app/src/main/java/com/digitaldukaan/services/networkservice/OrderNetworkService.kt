@@ -4,10 +4,7 @@ import android.util.Log
 import com.digitaldukaan.constants.Constants
 import com.digitaldukaan.exceptions.DeprecateAppVersionException
 import com.digitaldukaan.exceptions.UnAuthorizedAccessException
-import com.digitaldukaan.models.request.CompleteOrderRequest
-import com.digitaldukaan.models.request.OrdersRequest
-import com.digitaldukaan.models.request.SearchOrdersRequest
-import com.digitaldukaan.models.request.UpdateOrderStatusRequest
+import com.digitaldukaan.models.request.*
 import com.digitaldukaan.models.response.CommonApiResponse
 import com.digitaldukaan.models.response.ValidateOtpErrorResponse
 import com.digitaldukaan.network.RetrofitApi
@@ -248,4 +245,48 @@ class OrderNetworkService {
             serviceInterface.onHomePageException(e)
         }
     }
+
+    suspend fun getCartsByFiltersServerCall(
+        serviceInterface: IHomeServiceInterface,
+        request: LeadsListRequest
+    ) {
+        try {
+            val response = RetrofitApi().getServerCallObject()?.getCartsByFilters(request)
+            response?.let {
+                if (it.isSuccessful) it.body()?.let { commonApiResponse -> serviceInterface.onGetCartsByFiltersResponse(commonApiResponse) }
+                else {
+                    if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    val responseBody = it.errorBody()
+                    responseBody?.let {
+                        val errorResponse = Gson().fromJson(responseBody.string(), CommonApiResponse::class.java)
+                        serviceInterface.onGetCartsByFiltersResponse(errorResponse)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(OrderNetworkService::class.java.simpleName, "getCartsByFiltersServerCall: ", e)
+            serviceInterface.onHomePageException(e)
+        }
+    }
+
+    suspend fun getCartFilterOptionsServerCall(serviceInterface: IHomeServiceInterface, request: LeadsFilterOptionsRequest) {
+        try {
+            val response = RetrofitApi().getServerCallObject()?.getCartFilterOptions()
+            response?.let {
+                if (it.isSuccessful) it.body()?.let { commonApiResponse -> serviceInterface.onCartFilterOptionsResponse(commonApiResponse) }
+                else {
+                    if (Constants.ERROR_CODE_UN_AUTHORIZED_ACCESS == it.code() || Constants.ERROR_CODE_FORBIDDEN_ACCESS == it.code()) throw UnAuthorizedAccessException(Constants.ERROR_MESSAGE_UN_AUTHORIZED_ACCESS)
+                    val responseBody = it.errorBody()
+                    responseBody?.let {
+                        val errorResponse = Gson().fromJson(responseBody.string(), CommonApiResponse::class.java)
+                        serviceInterface.onCartFilterOptionsResponse(errorResponse)
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.e(OrderNetworkService::class.java.simpleName, "getCartFilterOptionsServerCall: ", e)
+            serviceInterface.onHomePageException(e)
+        }
+    }
+
 }

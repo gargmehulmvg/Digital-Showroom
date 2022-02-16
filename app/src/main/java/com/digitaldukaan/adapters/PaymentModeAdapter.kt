@@ -33,7 +33,7 @@ class PaymentModeAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PaymentModeViewHolder {
         val view = PaymentModeViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.layout_payment_mode_item, parent, false))
         view.paymentModeSwitch?.setOnClickListener {
-            val item = mPaymentOptionsList?.get(view.absoluteAdapterPosition)
+            val item = mPaymentOptionsList?.get(view.adapterPosition)
             mListener?.onSwitchCheckChangeListener(view.paymentModeSwitch, view.paymentModeSwitch.isChecked, item?.value?.get(0)?.paymentType)
         }
         return view

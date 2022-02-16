@@ -34,20 +34,21 @@ data class OrderDetailsResponse (
 )
 
 data class OrderDetailItemResponse(
-    @SerializedName("order_item_id")            var order_item_id: Int?,
-    @SerializedName("item_id")                  var item_id: Int?,
-    @SerializedName("item_name")                var item_name: String?,
+    @SerializedName("order_item_id")            var orderItemId: Int,
+    @SerializedName("item_id")                  var itemId: String?,
+    @SerializedName("item_name")                var itemName: String?,
     @SerializedName("quantity")                 var quantity: Int,
-    @SerializedName("item_quantity")            var item_quantity: String?,
-    @SerializedName("item_price")               var item_price: Double?,
-    @SerializedName("amount")                   var amount: Double?,
-    @SerializedName("actual_amount")            var actualAmount: Double?,
-    @SerializedName("discounted_price")         var discountedPrice: Double?,
-    @SerializedName("item_status")              var item_status: Int?,
-    @SerializedName("item_type")                var item_type: String?,
-    @SerializedName("creator_type")             var creator_type: Int?,
+    @SerializedName("item_quantity")            var itemQuantity: String?,
+    @SerializedName("item_price")               var itemPrice: Double?,
+    @SerializedName("amount")                   var amount: Double,
+    @SerializedName("actual_amount")            var actualAmount: Double,
+    @SerializedName("discounted_price")         var discountedPrice: Double,
+    @SerializedName("item_status")              var itemStatus: Int,
+    @SerializedName("item_type")                var itemType: String?,
+    @SerializedName("creator_type")             var creatorType: Int?,
     @SerializedName("variant_id")               var variantId: Int,
     @SerializedName("variant_name")             var variantName: String?,
+    @SerializedName("thumbnail_url")            var imageUrl: String?,
     var isItemEditable: Boolean
 )
 
@@ -141,5 +142,7 @@ data class OrderDetailsStaticTextResponse(
     @SerializedName("bottom_sheet_sub_message1_select_this")    var bottom_sheet_sub_message1_select_this: String,
     @SerializedName("bottom_sheet_sub_message2_select_this")    var bottom_sheet_sub_message2_select_this: String,
     @SerializedName("bottom_sheet_message1_ship_using_partners")var bottom_sheet_message1_ship_using_partners: String,
-    @SerializedName("text_okay")                                var text_okay: String
+    @SerializedName("text_okay")                                var text_okay: String,
+    @SerializedName("text_email_id")                            var text_email_id: String,
+    @SerializedName("text_alternate_phone")                     var text_alternate_phone: String
 )
