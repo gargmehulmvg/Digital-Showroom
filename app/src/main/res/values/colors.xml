@@ -53,10 +53,8 @@
     <color name="ucrop_color_statusbar">@color/primary_blue</color>
     <color name="ucrop_color_widget_active">@color/white</color>
     <color name="ucrop_color_widget_text">@color/white</color>
-
     <color name="ucrop_color_widget_background">@color/black</color>
     <color name="ucrop_color_active_controls_color">#ffff5722</color>
-
     <color name="gmail_color">#F44336</color>
     <color name="tooltip_background">#FFE9CB</color>
     <color name="pink">#FF4D4D</color>
@@ -74,5 +72,6 @@
     <color name="very_light_grey_lead_detail_variant_text">#868686</color>
     <color name="light_grey_lead_detail_item_charges_text">#5D5656</color>
     <color name="light_grey_lead_filter_button_border">#BEBEBE</color>
+    <color name="sticky_header_bg">#E1E1E1</color>
 
 </resources>
