@@ -79,6 +79,12 @@ import java.net.UnknownHostException
 import java.util.*
 import kotlin.collections.ArrayList
 
+
+
+
+
+
+
 open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener {
 
     protected var mContentView: View? = null
@@ -2436,6 +2442,11 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
                 }
             })
         }
+    }
+
+    open fun openEmailIntent(address: String) {
+        val emailIntent = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:$address"))
+        startActivity(Intent.createChooser(emailIntent, "Chooser Title"))
     }
 
 }

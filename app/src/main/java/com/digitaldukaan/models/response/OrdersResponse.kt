@@ -66,5 +66,7 @@ data class DeliveryInfoItemResponse(
     @SerializedName("custom_delivery_time") var customDeliveryTime: String?,
     @SerializedName("slot_start")           var slotStart: String?,
     @SerializedName("shipment_id")          var shipmentId: String?,
+    @SerializedName("alternate_phone")      var alternatePhone: String?,
+    @SerializedName("email_id")             var emailId: String?,
     @SerializedName("slot_end")             var slotEnd: String?
 )

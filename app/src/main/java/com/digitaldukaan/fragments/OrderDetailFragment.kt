@@ -25,6 +25,7 @@ import com.digitaldukaan.adapters.CustomerDeliveryAddressAdapter
 import com.digitaldukaan.adapters.DeliveryTimeAdapter
 import com.digitaldukaan.adapters.OrderDetailsAdapter
 import com.digitaldukaan.constants.*
+import com.digitaldukaan.interfaces.IAdapterItemClickListener
 import com.digitaldukaan.interfaces.IChipItemClickListener
 import com.digitaldukaan.interfaces.IOrderDetailListener
 import com.digitaldukaan.models.dto.CustomerDeliveryAddressDTO
@@ -48,6 +49,7 @@ import kotlinx.android.synthetic.main.bottom_layout_send_bill.*
 import kotlinx.android.synthetic.main.layout_order_detail_fragment.*
 import java.io.File
 import java.util.*
+import kotlin.collections.ArrayList
 
 class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupMenu.OnMenuItemClickListener {
 
@@ -540,22 +542,33 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                     layoutManager = LinearLayoutManager(mActivity)
                     val customerDetailsList = ArrayList<CustomerDeliveryAddressDTO>()
                     orderDetailResponse?.deliveryInfo?.run {
-                        customerDetailsList.add(CustomerDeliveryAddressDTO("${mOrderDetailStaticData?.text_name}:", deliverTo))
-                        customerDetailsList.add(CustomerDeliveryAddressDTO("${mOrderDetailStaticData?.text_address}:", "$address1,$address2"))
+                        customerDetailsList.add(CustomerDeliveryAddressDTO("${mOrderDetailStaticData?.text_name}:", deliverTo, ""))
+                        customerDetailsList.add(CustomerDeliveryAddressDTO("${mOrderDetailStaticData?.text_address}:", "$address1,$address2", ""))
                         customerDetailsList.add(
                             CustomerDeliveryAddressDTO("${mOrderDetailStaticData?.text_city_and_pincode}:",
-                                if (null == city) {
-                                    if (null == pincode) "" else "$pincode"
-                                } else if (null == pincode) {
+                                if (isEmpty(city)) {
+                                    if (isEmpty(pincode)) "" else "$pincode"
+                                } else if (isEmpty(pincode)) {
                                     "$city"
                                 } else {
                                     "$city, $pincode"
-                                }
+                                }, ""
                             )
                         )
-                        customerDetailsList.add(CustomerDeliveryAddressDTO("${mOrderDetailStaticData?.text_landmark}:", landmark))
+                        if (isNotEmpty(landmark)) customerDetailsList.add(CustomerDeliveryAddressDTO("${mOrderDetailStaticData?.text_landmark}:", landmark, ""))
+                        if (isNotEmpty(alternatePhone)) customerDetailsList.add(CustomerDeliveryAddressDTO("${mOrderDetailStaticData?.text_alternate_phone}:", alternatePhone, ""))
+                        if (isNotEmpty(emailId)) customerDetailsList.add(CustomerDeliveryAddressDTO("${mOrderDetailStaticData?.text_email_id}:", emailId, Constants.ACTION_EMAIL))
                     }
-                    adapter = CustomerDeliveryAddressAdapter(customerDetailsList)
+                    adapter = CustomerDeliveryAddressAdapter(mActivity, customerDetailsList, object : IAdapterItemClickListener {
+
+                        override fun onAdapterItemClickListener(position: Int) {
+                            val item = customerDetailsList[position]
+                            if (Constants.ACTION_EMAIL == item.customerDeliveryAddressAction) {
+                                openEmailIntent(item.customerDeliveryAddressAction ?: "")
+                            }
+                        }
+
+                    })
                 }
             }
         }

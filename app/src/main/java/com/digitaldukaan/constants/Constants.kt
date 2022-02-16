@@ -83,6 +83,7 @@ class Constants {
         const val ACTION_BOTTOM_SHEET                           = "bottom-sheet"
         const val ACTION_PROMO_CODE                             = "promo-code"
         const val ACTION_EMAIL_AUTHENTICATION                   = "email-authentication"
+        const val ACTION_EMAIL                                  = "email"
         const val ACTION_MARK_OUT_FOR_DELIVERY                  = "mark-out-for-delivery"
         const val ACTION_HOW_TO_SHIP                            = "how-to-ship"
         const val ACTION_PRODUCT_DISCOUNT                       = "product-discount"

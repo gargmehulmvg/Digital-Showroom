@@ -142,5 +142,7 @@ data class OrderDetailsStaticTextResponse(
     @SerializedName("bottom_sheet_sub_message1_select_this")    var bottom_sheet_sub_message1_select_this: String,
     @SerializedName("bottom_sheet_sub_message2_select_this")    var bottom_sheet_sub_message2_select_this: String,
     @SerializedName("bottom_sheet_message1_ship_using_partners")var bottom_sheet_message1_ship_using_partners: String,
-    @SerializedName("text_okay")                                var text_okay: String
+    @SerializedName("text_okay")                                var text_okay: String,
+    @SerializedName("text_email_id")                            var text_email_id: String,
+    @SerializedName("text_alternate_phone")                     var text_alternate_phone: String
 )
