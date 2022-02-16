@@ -32,7 +32,7 @@ class ProfileStatusAdapter(private val mTotalSteps: Int?, private val mCompleted
             mContext?.let {
                 if (mTotalSteps?.minus(this) == 1) {
                     holder.mProfileStatusItemView.background = ContextCompat.getDrawable(it, R.drawable.profile_status_selector_green)
-                } else holder.mProfileStatusItemView.background = ContextCompat.getDrawable(it, R.drawable.profile_status_selector_yellow)
+                } else holder.mProfileStatusItemView.background = ContextCompat.getDrawable(it, R.drawable.profile_status_selector_blue)
                 holder.mProfileStatusItemView.isEnabled = ((position + 1) <= this)
             }
         }

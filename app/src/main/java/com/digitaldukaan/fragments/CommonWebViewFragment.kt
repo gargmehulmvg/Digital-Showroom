@@ -393,7 +393,7 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
             val account = GoogleSignIn.getLastSignedInAccount(context)
             if (null == account) {
                 val signInIntent: Intent = googleSignInClient.signInIntent
-                startActivityForResult(signInIntent, Constants.EMAIL_REQUEST_CODE)
+                startActivityForResult(signInIntent, Constants.REQUEST_CODE_EMAIL)
             } else {
                 updateUserAccountInfo(account)
                 Log.d(TAG, "showUserEmailDialog: $account")
@@ -447,7 +447,7 @@ class CommonWebViewFragment : BaseFragment(), IOnToolbarIconClick,
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when (requestCode) {
-            Constants.EMAIL_REQUEST_CODE -> {
+            Constants.REQUEST_CODE_EMAIL -> {
                 val task = GoogleSignIn.getSignedInAccountFromIntent(data)
                 handleSignInResult(task)
             }

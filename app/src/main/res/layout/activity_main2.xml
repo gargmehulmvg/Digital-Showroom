@@ -48,7 +48,7 @@
                 android:id="@+id/appTitleTextView"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:gravity="center_vertical"
+                android:gravity="center"
                 android:maxLines="1"
                 android:minHeight="@dimen/_30sdp"
                 android:paddingStart="@dimen/_1sdp"

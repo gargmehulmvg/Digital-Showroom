@@ -48,19 +48,19 @@ class MasterCatalogItemsAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MarketingCardViewHolder {
         val view = MarketingCardViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.master_catalog_item, parent, false))
-        view.imageView.setOnClickListener { mCategoryItemClickListener.onCategoryItemsImageClick(mCategoryItemList?.get(view.absoluteAdapterPosition)) }
+        view.imageView.setOnClickListener { mCategoryItemClickListener.onCategoryItemsImageClick(mCategoryItemList?.get(view.adapterPosition)) }
         view.setPriceTextView.setOnClickListener {
-            val item = mCategoryItemList?.get(view.absoluteAdapterPosition)
+            val item = mCategoryItemList?.get(view.adapterPosition)
             if (isSubCategoryItemSelectionExceeded(view.checkBox.isChecked)) return@setOnClickListener
             if (mActivity.resources.getInteger(R.integer.max_selection_item_catalog) == mSelectedProductsHashMap?.size && !view.checkBox.isChecked) {
                 mActivity.showToast(mStaticText?.text_error_cart_limit)
                 return@setOnClickListener
             }
             if (true == item?.isAdded) return@setOnClickListener
-            mCategoryItemClickListener.onCategoryItemsSetPriceClick(view.absoluteAdapterPosition, mCategoryItemList?.get(view.absoluteAdapterPosition))
+            mCategoryItemClickListener.onCategoryItemsSetPriceClick(view.adapterPosition, mCategoryItemList?.get(view.adapterPosition))
         }
         view.priceTextView.setOnClickListener {
-            val item = mCategoryItemList?.get(view.absoluteAdapterPosition)
+            val item = mCategoryItemList?.get(view.adapterPosition)
             if (isSubCategoryItemSelectionExceeded(view.checkBox.isChecked)) return@setOnClickListener
             if (mActivity.resources.getInteger(R.integer.max_selection_item_catalog) == mSelectedProductsHashMap?.size && !view.checkBox.isChecked) {
                 mActivity.showToast(mStaticText?.text_error_cart_limit)
@@ -68,10 +68,10 @@ class MasterCatalogItemsAdapter(
             }
             if (0.0 != item?.price) return@setOnClickListener
             if (item.isAdded) return@setOnClickListener
-            mCategoryItemClickListener.onCategoryItemsSetPriceClick(view.absoluteAdapterPosition, item)
+            mCategoryItemClickListener.onCategoryItemsSetPriceClick(view.adapterPosition, item)
         }
         view.checkBox.setOnClickListener {
-            val item = mCategoryItemList?.get(view.absoluteAdapterPosition)
+            val item = mCategoryItemList?.get(view.adapterPosition)
             if (isSubCategoryItemSelectionExceeded(!view.checkBox.isChecked)) {
                 view.checkBox.isChecked = false
                 return@setOnClickListener
@@ -86,18 +86,18 @@ class MasterCatalogItemsAdapter(
                     view.checkBox.isSelected = false
                     return@setOnClickListener
                 }
-                mCategoryItemClickListener.onCategoryCheckBoxClick(view.absoluteAdapterPosition, item, view.checkBox.isChecked)
+                mCategoryItemClickListener.onCategoryCheckBoxClick(view.adapterPosition, item, view.checkBox.isChecked)
             }
         }
         view.titleTextView.setOnClickListener {
-            val item = mCategoryItemList?.get(view.absoluteAdapterPosition)
+            val item = mCategoryItemList?.get(view.adapterPosition)
             if (isSubCategoryItemSelectionExceeded(view.checkBox.isChecked)) return@setOnClickListener
             if (mActivity.resources.getInteger(R.integer.max_selection_item_catalog) == mSelectedProductsHashMap?.size && !view.checkBox.isChecked) {
                 mActivity.showToast(mStaticText?.text_error_cart_limit)
                 view.checkBox.isChecked = false
                 view.checkBox.isSelected = false
             } else {
-                mCategoryItemClickListener.onCategoryCheckBoxClick(view.absoluteAdapterPosition, item, !view.checkBox.isChecked)
+                mCategoryItemClickListener.onCategoryCheckBoxClick(view.adapterPosition, item, !view.checkBox.isChecked)
                 view.checkBox.isChecked = !view.checkBox.isChecked
             }
         }

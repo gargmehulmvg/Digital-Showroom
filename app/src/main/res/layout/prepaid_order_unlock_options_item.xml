@@ -22,7 +22,7 @@
             android:layout_height="@dimen/_25sdp"
             android:background="@drawable/blue_ring"
             android:clickable="false"
-            android:textColor="@color/light_blue"
+            android:textColor="@color/primary_blue"
             tools:text="2"
             android:fontFamily="@font/roboto_medium"
             android:textSize="@dimen/_14sdp"

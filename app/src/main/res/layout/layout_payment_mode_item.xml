@@ -26,16 +26,17 @@
             android:layout_marginTop="@dimen/_5sdp"
             android:clickable="false"
             android:fontFamily="@font/roboto_medium"
-            tools:text="Credit And Debit Cards"
             android:textColor="@color/black"
             android:textSize="@dimen/_14sdp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Credit And Debit Cards" />
 
         <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/paymentModeSwitch"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:theme="@style/CustomAppSwitch"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 

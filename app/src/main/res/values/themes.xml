@@ -73,8 +73,8 @@
     </style>
 
     <style name="CustomAppSwitch" parent="Theme.AppCompat.Light">
-        <item name="colorControlActivated">@color/open_green</item>
-        <item name="colorSwitchThumbNormal">@color/red_switch_off</item>
+        <item name="colorControlActivated">@color/primary_blue</item>
+        <item name="colorSwitchThumbNormal">@color/light_primary_blue</item>
     </style>
 
     <style name="InventoryCustomAppSwitch" parent="Theme.AppCompat.Light">
@@ -88,11 +88,16 @@
         <item name="android:fontFamily">@font/roboto_medium</item>
     </style>
 
-    <style name="popupMenuStyle" >
+    <style name="PopupMenuStyle" >
         <item name="android:textColor">@color/black</item>
         <item name="android:itemBackground">@color/white</item>
         <item name="android:divider">@color/black</item>
         <item name="android:dividerHeight">@dimen/_1sdp</item>
+    </style>
+
+    <style name="MyRadioButton" parent="Theme.AppCompat.Light">
+        <item name="colorControlNormal">@color/black</item>
+        <item name="colorControlActivated">@color/primary_blue</item>
     </style>
 
 </resources>

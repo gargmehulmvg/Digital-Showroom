@@ -155,7 +155,7 @@ interface Apis {
     suspend fun setStoreLogo(@Body request: StoreLogoRequest) : Response<CommonApiResponse>
 
     @Multipart
-    @POST("api/dotk/vm1/media/uploadMediaToS3")
+    @POST("api/dotk/vm1/settings/uploadMediaToS3")
     suspend fun getImageUploadCdnLink(@Part("media_type") imageType: RequestBody, @Part file: MultipartBody.Part?): Response<CommonApiResponse>
 
     @GET("api/dotk/merchant/searchImages")
@@ -289,8 +289,17 @@ interface Apis {
     @GET("api/dotk/vm1/orders/getDeliveryTime")
     suspend fun getDeliveryTime(): Response<CommonApiResponse>
 
+    @GET("api/dotk/vm1/orders/getCartFilterOptions")
+    suspend fun getCartFilterOptions(): Response<CommonApiResponse>
+
     @GET("api/dotk/vm1/onboard/getOnboardingPageInfo")
     suspend fun getCustomDomainBottomSheetData(): Response<CommonApiResponse>
+
+    @GET("api/dotk/vo1/orders/getOrderCartById/{id}")
+    suspend fun getOrderCartById(@Path("id") id: String): Response<CommonApiResponse>
+
+    @POST("api/dotk/vm1/orders/sendAbandonedCartReminder")
+    suspend fun sendAbandonedCartReminder(@Body request: AbandonedCartReminderRequest): Response<CommonApiResponse>
 
     @POST("api/dotk/vm1/orders/updateOrderV2")
     suspend fun updateOrder(@Body statusRequest: UpdateOrderRequest): Response<CommonApiResponse>
@@ -300,6 +309,9 @@ interface Apis {
 
     @POST("api/dotk/vm1/orders/shareBill/{order_id}")
     suspend fun shareBill(@Path("order_id") orderId: String): Response<CommonApiResponse>
+
+    @POST("api/dotk/vm1/orders/getCartsByFilters")
+    suspend fun getCartsByFilters(@Body request: LeadsListRequest): Response<CommonApiResponse>
 
     /* ----------------------       Payments         ---------------------- */
     @GET("api/dotk/vm1/settings/getOrderBannerDetails/{orderId}")

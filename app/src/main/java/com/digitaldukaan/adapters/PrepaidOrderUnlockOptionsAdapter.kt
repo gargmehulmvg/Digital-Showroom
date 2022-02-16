@@ -65,9 +65,8 @@ class PrepaidOrderUnlockOptionsAdapter(
                 completeImageView.text = null
                 forwardImageView.visibility = View.INVISIBLE
                 mContext?.let {
-                    completeImageView.background = ContextCompat.getDrawable(it, R.drawable.ic_order_detail_green_tick)
-                    headingTextView.setTextColor(ContextCompat.getColor(it, R.color.open_green))
-                    subHeadingTextView.setTextColor(ContextCompat.getColor(it, R.color.open_green))
+                    completeImageView.background = ContextCompat.getDrawable(it, R.drawable.ic_order_detail_blue_tick)
+                    headingTextView.setTextColor(ContextCompat.getColor(it, R.color.primary_blue))
                 }
             }
         }

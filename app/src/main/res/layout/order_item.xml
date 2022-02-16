@@ -12,7 +12,7 @@
         android:id="@+id/orderCheckBox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:buttonTint="@color/black"
+        android:buttonTint="@color/primary_blue"
         android:scaleX="0.85"
         android:scaleY="0.85"
         app:layout_constraintBottom_toBottomOf="parent"

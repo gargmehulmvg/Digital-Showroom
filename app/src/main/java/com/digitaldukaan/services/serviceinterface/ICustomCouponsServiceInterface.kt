@@ -8,4 +8,6 @@ interface ICustomCouponsServiceInterface {
 
     fun onCustomCouponsResponse(response: CommonApiResponse)
 
+    fun onPromoCodePageInfoResponse(response: CommonApiResponse)
+
 }

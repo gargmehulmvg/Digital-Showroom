@@ -1,6 +1,5 @@
 package com.digitaldukaan.adapters
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,8 +10,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.digitaldukaan.R
 import com.digitaldukaan.adapters.BusinessTypeAdapter.BusinessTypeViewHolder
+import com.digitaldukaan.constants.isNotEmpty
 import com.digitaldukaan.fragments.BaseFragment
 import com.digitaldukaan.models.response.BusinessTypeItemResponse
+import java.util.*
 
 class BusinessTypeAdapter(
     private val mContext: BaseFragment,
@@ -28,9 +29,7 @@ class BusinessTypeAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BusinessTypeViewHolder {
-        val view = BusinessTypeViewHolder(
-            LayoutInflater.from(parent.context).inflate(R.layout.business_type_item, parent, false)
-        )
+        val view = BusinessTypeViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.business_type_item, parent, false))
         view.businessTypeContainer.setOnClickListener {
             if (it.isSelected) {
                 mBusinessList[view.adapterPosition].isBusinessTypeSelected = false
@@ -64,13 +63,7 @@ class BusinessTypeAdapter(
                 businessTypeCheckBox.isChecked = true
             }
             businessTypeTextView.text = itemResponse.businessName
-            if (itemResponse.businessImage.isNotEmpty()) businessTypeImageView?.let {
-                try {
-                    mContext?.let { context -> Glide.with(context).load(itemResponse.businessImage).into(it) }
-                } catch (e: Exception) {
-                    Log.e(BusinessTypeAdapter::class.java.simpleName, "picasso image loading issue: ${e.message}", e)
-                }
-            }
+            if (isNotEmpty(itemResponse.businessImage)) Glide.with(mContext).load(itemResponse.businessImage).into(businessTypeImageView)
         }
     }
 
