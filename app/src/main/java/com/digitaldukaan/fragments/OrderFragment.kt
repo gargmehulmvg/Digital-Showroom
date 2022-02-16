@@ -645,6 +645,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                     abandonedCartTextView?.visibility = this
                     activeCartTextView?.visibility = this
                     filterImageView?.visibility = this
+                    filterRedDotImageView?.visibility = this
                 }
             }
             myLeadsHeadingTextView?.id -> {
