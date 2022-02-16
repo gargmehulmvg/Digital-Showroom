@@ -8,7 +8,8 @@ data class PaymentLinkResponse(
 )
 
 data class SMSItemResponse(
-    @SerializedName("date")             var date: String?,
+    @SerializedName("date")             var
+    date: String?,
     @SerializedName("time")             var time: String?,
     @SerializedName("amount")           var amount: String?,
     @SerializedName("order_id")         var orderId: String?,
