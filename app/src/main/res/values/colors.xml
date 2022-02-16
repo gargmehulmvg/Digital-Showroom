@@ -51,7 +51,12 @@
     <color name="non_premium_icons_color">#797979</color>
     <color name="ucrop_color_toolbar">@color/primary_blue</color>
     <color name="ucrop_color_statusbar">@color/primary_blue</color>
-    <color name="ucrop_color_widget_active">@color/primary_blue</color>
+    <color name="ucrop_color_widget_active">@color/white</color>
+    <color name="ucrop_color_widget_text">@color/white</color>
+
+    <color name="ucrop_color_widget_background">@color/black</color>
+    <color name="ucrop_color_active_controls_color">#ffff5722</color>
+
     <color name="gmail_color">#F44336</color>
     <color name="tooltip_background">#FFE9CB</color>
     <color name="pink">#FF4D4D</color>
