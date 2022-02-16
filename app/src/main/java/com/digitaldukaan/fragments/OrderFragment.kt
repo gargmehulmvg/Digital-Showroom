@@ -628,6 +628,8 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
             }
             myOrdersHeadingTextView?.id -> {
                 mIsLeadsTabSelected = false
+                noLeadsLayout?.visibility = View.GONE
+                noOrderLayout?.visibility = View.GONE
                 setupTabLayout(myOrdersHeadingTextView, myLeadsHeadingTextView)
                 setupOrdersRecyclerView()
                 setupCompletedOrdersRecyclerView()
@@ -654,6 +656,8 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                     openWebViewFragmentV3(this@OrderFragment, "", url)
                     return
                 }
+                noLeadsLayout?.visibility = View.GONE
+                noOrderLayout?.visibility = View.GONE
                 mLeadsCartTypeSelection = Constants.CART_TYPE_DEFAULT
                 mLeadsFilterResponse = null
                 mLeadsFilterList = ArrayList()
