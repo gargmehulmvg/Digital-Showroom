@@ -86,6 +86,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
     private var mLeadsFilterResponse: LeadsFilterResponse? = null
     private var mLeadsCartTypeSelection = Constants.CART_TYPE_DEFAULT
     private var mIsLeadsTabSelected = false
+    private var mIsLeadsFilterReset = true
     private var mLeadsFilterStartDate = ""
     private var mLeadsFilterEndDate = ""
     private var mLeadsFilterRequest: LeadsListRequest = LeadsListRequest("", "", "", "", Constants.SORT_TYPE_DESCENDING, Constants.CART_TYPE_DEFAULT)
@@ -1253,6 +1254,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                         return@forEachIndexed
                     }
                 }
+                mIsLeadsFilterReset = true
                 showLeadsFilterBottomSheet()
             }
         }
@@ -1276,9 +1278,23 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                             val recyclerView: RecyclerView = findViewById(R.id.recyclerView)
                             mLeadsFilterResponse?.staticText.let { staticText ->
                                 doneTextView.text = staticText?.text_done
-                                clearFilterTextView.text = staticText?.text_clear_filter
+                                clearFilterTextView.apply {
+                                    text = staticText?.text_clear_filter
+                                    if (mIsLeadsFilterReset) {
+                                        alpha = 0.5f
+                                        isEnabled = false
+                                    } else {
+                                        alpha = 1f
+                                        isEnabled = true
+                                    }
+                                }
                             }
                             clearFilterTextView.setOnClickListener {
+                                clearFilterTextView.apply {
+                                    mIsLeadsFilterReset = true
+                                    alpha = 0.5f
+                                    isEnabled = false
+                                }
                                 mLeadsFilterList.forEachIndexed { position, itemResponse ->
                                     if (Constants.LEADS_FILTER_TYPE_SORT == itemResponse.type) {
                                         itemResponse.filterOptionsList.forEachIndexed { pos, filterItem ->
@@ -1317,6 +1333,11 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                                         override fun onLeadsFilterItemClickListener(item: LeadsFilterOptionsItemResponse?, filterType:String?) {
                                             Log.d(TAG, "filterType :: $filterType , item :: $item")
                                             var recyclerRedrawPosition = 0
+                                            mIsLeadsFilterReset = false
+                                            clearFilterTextView.apply {
+                                                alpha = 1f
+                                                isEnabled = true
+                                            }
                                             mLeadsFilterList.forEachIndexed { position, itemResponse ->
                                                 if (filterType == itemResponse.type) {
                                                     recyclerRedrawPosition = position
@@ -1430,6 +1451,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
         }
         mLeadsFilterEndDate = ""
         mLeadsFilterStartDate = ""
+        mIsLeadsFilterReset = true
     }
 
 }

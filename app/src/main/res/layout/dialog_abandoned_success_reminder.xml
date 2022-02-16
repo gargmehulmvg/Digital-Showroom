@@ -12,9 +12,10 @@
         android:id="@+id/imageview"
         android:layout_width="@dimen/_50sdp"
         android:layout_height="@dimen/_50sdp"
+        android:layout_marginTop="@dimen/_15sdp"
         android:contentDescription="@string/image_view_content_description"
         android:gravity="center"
-        android:src="@drawable/ic_kyc_verified_green_tick" />
+        android:src="@drawable/ic_leads_reminder_green_check" />
 
     <TextView
         android:id="@+id/messageTextView"
@@ -32,13 +33,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_18sdp"
+        android:layout_marginBottom="@dimen/_15sdp"
         android:background="@drawable/ripple_curve_grey_border_white_background"
         android:fontFamily="@font/roboto_medium"
         android:gravity="center"
+        android:textSize="@dimen/_12sdp"
         android:onClick="onClick"
-        android:paddingStart="@dimen/_15sdp"
+        android:paddingStart="@dimen/_18sdp"
         android:paddingTop="@dimen/_5sdp"
-        android:paddingEnd="@dimen/_15sdp"
+        android:paddingEnd="@dimen/_18sdp"
         android:paddingBottom="@dimen/_5sdp"
         android:text="@string/ok"
         android:textColor="@color/black" />

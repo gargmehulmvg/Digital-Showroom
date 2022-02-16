@@ -30,7 +30,7 @@
         app:layout_constraintTop_toBottomOf="@id/headingTextView"
         app:spanCount="2"
         tools:itemCount="4"
-        tools:listitem="@layout/bototm_sheet_filter_options_item" />
+        tools:listitem="@layout/bottom_sheet_filter_options_item" />
 
     <View
         android:id="@+id/separator"

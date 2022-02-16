@@ -24,7 +24,7 @@ class LeadsFilterOptionsItemAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LeadsFilterViewHolder {
-        val view = LeadsFilterViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.bototm_sheet_filter_options_item, parent, false))
+        val view = LeadsFilterViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.bottom_sheet_filter_options_item, parent, false))
         view.textView.setOnClickListener {
             if (view.adapterPosition < 0 || view.adapterPosition >= (mFilterItemList?.size ?: 0)) return@setOnClickListener
             mFilterItemList?.forEachIndexed { position, itemResponse ->
@@ -40,7 +40,13 @@ class LeadsFilterOptionsItemAdapter(
     override fun onBindViewHolder(holder: LeadsFilterViewHolder, position: Int) {
         holder.apply {
             val item = mFilterItemList?.get(position)
-            textView.text = if (isNotEmpty(item?.customDateRangeStr)) item?.customDateRangeStr else item?.text
+            textView.text = if (isNotEmpty(item?.customDateRangeStr)) {
+                textView.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_pencil, 0)
+                item?.customDateRangeStr
+            } else {
+                textView.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0)
+                item?.text
+            }
             mContext?.let { context ->
                 textView.background = ContextCompat.getDrawable(context, if (true == item?.isSelected) R.drawable.selected_chip_blue_border_bluish_background else R.drawable.ripple_full_curve_white_background_grey_border)
             }

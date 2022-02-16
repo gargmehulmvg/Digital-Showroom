@@ -11,6 +11,7 @@
         android:layout_height="wrap_content"
         android:background="@drawable/ripple_full_curve_white_background_grey_border"
         android:onClick="onClick"
+        android:drawablePadding="@dimen/_5sdp"
         android:layout_marginBottom="@dimen/_5sdp"
         android:layout_marginTop="@dimen/_5sdp"
         android:layout_marginEnd="@dimen/_10sdp"
