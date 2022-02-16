@@ -564,10 +564,9 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
                         override fun onAdapterItemClickListener(position: Int) {
                             val item = customerDetailsList[position]
                             if (Constants.ACTION_EMAIL == item.customerDeliveryAddressAction) {
-                                openEmailIntent(item.customerDeliveryAddressAction ?: "")
+                                openEmailIntent(item.customerDeliveryAddressValue ?: "")
                             }
                         }
-
                     })
                 }
             }

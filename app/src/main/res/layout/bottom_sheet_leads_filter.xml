@@ -56,7 +56,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/_10sdp"
-                    android:layout_marginBottom="@dimen/_10sdp"
+                    android:layout_marginBottom="@dimen/_20sdp"
                     android:layout_marginEnd="@dimen/_5sdp"
                     android:background="@drawable/ripple_full_curve_grey_border_white_background"
                     android:gravity="center"
