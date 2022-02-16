@@ -1315,6 +1315,8 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                                 mLeadsFilterStartDate = ""
                             }
                             doneTextView.setOnClickListener {
+                                val filterRedDotImageView: View? = mContentView?.findViewById(R.id.filterRedDotImageView)
+                                filterRedDotImageView?.visibility = if (mIsLeadsFilterReset) View.GONE else View.VISIBLE
                                 mLeadsFilterRequest.apply {
                                     startDate = mLeadsFilterStartDate
                                     endDate = mLeadsFilterEndDate
@@ -1452,6 +1454,8 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
         mLeadsFilterEndDate = ""
         mLeadsFilterStartDate = ""
         mIsLeadsFilterReset = true
+        val filterRedDotImageView: View? = mContentView?.findViewById(R.id.filterRedDotImageView)
+        filterRedDotImageView?.visibility = View.GONE
     }
 
 }

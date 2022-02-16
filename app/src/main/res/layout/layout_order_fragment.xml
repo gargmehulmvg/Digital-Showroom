@@ -353,6 +353,18 @@
                             app:tint="@color/black" />
 
                         <ImageView
+                            android:id="@+id/filterRedDotImageView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@drawable/ic_red_dot"
+                            android:visibility="gone"
+                            android:layout_marginEnd="@dimen/_2sdp"
+                            android:layout_marginTop="@dimen/_2sdp"
+                            app:layout_constraintEnd_toEndOf="@id/filterImageView"
+                            app:layout_constraintTop_toTopOf="@id/filterImageView"
+                            android:contentDescription="@string/image_view_content_description" />
+
+                        <ImageView
                             android:id="@+id/searchImageView"
                             android:layout_width="@dimen/_30sdp"
                             android:layout_height="@dimen/_30sdp"
