@@ -1332,7 +1332,6 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                                     }
                                     mLeadsFilterAdapter?.notifyItemChanged(position)
                                 }
-//                                mLeadsCartTypeSelection = Constants.CART_TYPE_DEFAULT
                                 mLeadsFilterEndDate = ""
                                 mLeadsFilterStartDate = ""
                             }
