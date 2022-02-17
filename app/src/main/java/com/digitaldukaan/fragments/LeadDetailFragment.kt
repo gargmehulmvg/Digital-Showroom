@@ -60,6 +60,7 @@ class LeadDetailFragment: BaseFragment(), ILeadsDetailServiceInterface,
         private const val REMINDER_TYPE_SMS = 0
         private const val REMINDER_TYPE_WA  = 1
         private const val REMINDER_SENT_TO  = 0
+
         fun newInstance(item: LeadsResponse?): LeadDetailFragment {
             val fragment = LeadDetailFragment()
             fragment.mLeadResponse = item

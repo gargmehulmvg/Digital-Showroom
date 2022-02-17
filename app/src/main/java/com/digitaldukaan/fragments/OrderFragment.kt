@@ -45,7 +45,6 @@ import kotlinx.android.synthetic.main.layout_home_fragment.*
 import kotlinx.android.synthetic.main.layout_home_fragment.analyticsContainer
 import kotlinx.android.synthetic.main.layout_home_fragment.analyticsImageView
 import kotlinx.android.synthetic.main.layout_home_fragment.orderLayout
-import kotlinx.android.synthetic.main.layout_more_control_fragment.*
 import kotlinx.android.synthetic.main.layout_order_fragment.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -1265,7 +1264,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
         }
     }
 
-    override fun onLeadsItemCLickedListener(item: LeadsResponse?) = launchFragment(LeadDetailFragment.newInstance(item), true)
+    override fun onLeadsItemCLickedListener(item: LeadsResponse?) = launchFragment(LeadDetailFragment.newInstance(item), addBackStack = true, isFragmentAdd = true)
 
     private fun showLeadsFilterBottomSheet() {
         var leadsFilterSortType = Constants.SORT_TYPE_DESCENDING

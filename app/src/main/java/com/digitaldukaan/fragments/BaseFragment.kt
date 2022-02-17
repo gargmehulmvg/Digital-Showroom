@@ -286,9 +286,9 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         }
     }
 
-    open fun launchFragment(fragment: Fragment?, addBackStack: Boolean) {
+    open fun launchFragment(fragment: Fragment?, addBackStack: Boolean, isFragmentAdd:Boolean = false) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            mActivity?.launchFragment(fragment, addBackStack)
+            mActivity?.launchFragment(fragment, addBackStack, isFragmentAdd)
         }
     }
 

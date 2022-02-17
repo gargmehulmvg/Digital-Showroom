@@ -25,8 +25,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
-import kotlinx.android.synthetic.main.layout_more_control_fragment.*
-
+import kotlinx.android.synthetic.main.layout_more_control_fragment_v2.*
 
 class MoreControlsFragment : BaseFragment(), IMoreControlsServiceInterface, IMoreControlsItemClickListener,
     SwipeRefreshLayout.OnRefreshListener {
