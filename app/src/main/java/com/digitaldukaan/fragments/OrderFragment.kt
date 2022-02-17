@@ -699,21 +699,39 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                 }
             }
             abandonedCartTextView?.id -> {
-                mLeadsCartTypeSelection = Constants.CART_TYPE_ABANDONED
-                mActivity?.let { context ->
-                    abandonedCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.selected_chip_blue_border_bluish_background)
-                    activeCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_light_grey_background_without_padding)
+                if (Constants.CART_TYPE_ABANDONED == mLeadsCartTypeSelection) {
+                    mActivity?.let { context ->
+                        abandonedCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_light_grey_background_without_padding)
+                        activeCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_light_grey_background_without_padding)
+                    }
+                    mLeadsCartTypeSelection = Constants.CART_TYPE_DEFAULT
+                    mLeadsFilterRequest.cartType = Constants.CART_TYPE_DEFAULT
+                } else {
+                    mActivity?.let { context ->
+                        abandonedCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.selected_chip_blue_border_bluish_background)
+                        activeCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_light_grey_background_without_padding)
+                    }
+                    mLeadsCartTypeSelection = Constants.CART_TYPE_ABANDONED
+                    mLeadsFilterRequest.cartType = Constants.CART_TYPE_ABANDONED
                 }
-                mLeadsFilterRequest.cartType = Constants.CART_TYPE_ABANDONED
                 mService?.getCartsByFilters(mLeadsFilterRequest)
             }
             activeCartTextView?.id -> {
-                mLeadsCartTypeSelection = Constants.CART_TYPE_ACTIVE
-                mActivity?.let { context ->
-                    activeCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.selected_chip_blue_border_bluish_background)
-                    abandonedCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_light_grey_background_without_padding)
+                if(Constants.CART_TYPE_ACTIVE == mLeadsCartTypeSelection){
+                    mActivity?.let { context ->
+                        abandonedCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_light_grey_background_without_padding)
+                        activeCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_light_grey_background_without_padding)
+                    }
+                    mLeadsCartTypeSelection = Constants.CART_TYPE_DEFAULT
+                    mLeadsFilterRequest.cartType = Constants.CART_TYPE_DEFAULT
+                } else {
+                    mActivity?.let { context ->
+                        abandonedCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_light_grey_background_without_padding)
+                        activeCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.selected_chip_blue_border_bluish_background)
+                    }
+                    mLeadsCartTypeSelection = Constants.CART_TYPE_ACTIVE
+                    mLeadsFilterRequest.cartType = Constants.CART_TYPE_ACTIVE
                 }
-                mLeadsFilterRequest.cartType = Constants.CART_TYPE_ACTIVE
                 mService?.getCartsByFilters(mLeadsFilterRequest)
             }
             filterImageView?.id -> {
@@ -1314,7 +1332,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                                     }
                                     mLeadsFilterAdapter?.notifyItemChanged(position)
                                 }
-                                mLeadsCartTypeSelection = Constants.CART_TYPE_DEFAULT
+//                                mLeadsCartTypeSelection = Constants.CART_TYPE_DEFAULT
                                 mLeadsFilterEndDate = ""
                                 mLeadsFilterStartDate = ""
                             }
