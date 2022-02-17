@@ -450,4 +450,12 @@ class LeadDetailFragment: BaseFragment(), ILeadsDetailServiceInterface,
         mService?.shareCoupon(item.promoCode)
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        val fragmentManager = mActivity?.supportFragmentManager
+        if (fragmentManager?.getBackStackEntryAt(fragmentManager.backStackEntryCount - 1)?.name == OrderFragment::class.qualifiedName) {
+            hideBottomNavigationView(false)
+        }
+    }
+
 }

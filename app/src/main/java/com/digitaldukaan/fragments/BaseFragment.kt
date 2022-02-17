@@ -79,12 +79,6 @@ import java.net.UnknownHostException
 import java.util.*
 import kotlin.collections.ArrayList
 
-
-
-
-
-
-
 open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener {
 
     protected var mContentView: View? = null

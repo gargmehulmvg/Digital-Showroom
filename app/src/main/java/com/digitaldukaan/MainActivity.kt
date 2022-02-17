@@ -171,10 +171,12 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
     override fun onBackPressed() {
         try {
-            val current: BaseFragment? = getCurrentFragment()
-            if (true == current?.onBackPressed()) return
+            val currentFragment: BaseFragment? = getCurrentFragment()
+            if (true == currentFragment?.onBackPressed()) return
             val manager = supportFragmentManager
-            if (manager.backStackEntryCount > 0) super.onBackPressed()
+            if (manager.backStackEntryCount > 0) {
+                super.onBackPressed()
+            }
         } catch (e: Exception) {
             Log.e("MainActivity", "onBackPressed: ${e.message}", e)
         }

@@ -277,7 +277,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
             stopProgress()
             if (true == swipeRefreshLayout?.isRefreshing) swipeRefreshLayout?.isRefreshing = false
             if (getOrderResponse.mIsSuccessStatus) {
-                val ordersResponse = Gson().fromJson<OrdersResponse>(getOrderResponse.mCommonDataStr, OrdersResponse::class.java)
+                val ordersResponse = Gson().fromJson(getOrderResponse.mCommonDataStr, OrdersResponse::class.java)
                 sIsMorePendingOrderAvailable = ordersResponse.mIsNextDataAvailable
                 if (1 == mPendingPageCount) sOrderList.clear()
                 val pendingOrderTextView: TextView? = mContentView?.findViewById(R.id.pendingOrderTextView)
@@ -304,7 +304,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
             stopProgress()
             if (swipeRefreshLayout?.isRefreshing == true) swipeRefreshLayout?.isRefreshing = false
             if (getOrderResponse.mIsSuccessStatus) {
-                val ordersResponse = Gson().fromJson<OrdersResponse>(getOrderResponse.mCommonDataStr, OrdersResponse::class.java)
+                val ordersResponse = Gson().fromJson(getOrderResponse.mCommonDataStr, OrdersResponse::class.java)
                 sIsMoreCompletedOrderAvailable = ordersResponse.mIsNextDataAvailable
                 val completedOrderTextView: TextView? = mContentView?.findViewById(R.id.completedOrderTextView)
                 if (mCompletedPageCount == 1) sCompletedOrderList.clear()
@@ -326,7 +326,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             if (commonResponse.mIsSuccessStatus) {
-                sAnalyticsResponse = Gson().fromJson<AnalyticsResponse>(commonResponse.mCommonDataStr, AnalyticsResponse::class.java)
+                sAnalyticsResponse = Gson().fromJson(commonResponse.mCommonDataStr, AnalyticsResponse::class.java)
                 setupAnalyticsUI()
             }
         }
@@ -336,7 +336,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             if (commonResponse.mIsSuccessStatus) {
-                sOrderPageInfoResponse = Gson().fromJson<OrderPageInfoResponse>(commonResponse.mCommonDataStr, OrderPageInfoResponse::class.java)
+                sOrderPageInfoResponse = Gson().fromJson(commonResponse.mCommonDataStr, OrderPageInfoResponse::class.java)
                 setupOrderPageInfoUI()
                 pushProfileToCleverTap()
             }
@@ -348,7 +348,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
             stopProgress()
             if (true == swipeRefreshLayout?.isRefreshing) swipeRefreshLayout?.isRefreshing = false
             if (commonResponse.mIsSuccessStatus) {
-                val ordersResponse = Gson().fromJson<OrdersResponse>(commonResponse.mCommonDataStr, OrdersResponse::class.java)
+                val ordersResponse = Gson().fromJson(commonResponse.mCommonDataStr, OrdersResponse::class.java)
                 if (isNotEmpty(ordersResponse?.mOrdersList))
                     launchFragment(SearchOrdersFragment.newInstance(
                         sOrderIdString,
@@ -390,7 +390,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             if (commonResponse.mIsSuccessStatus) {
-                val customDomainBottomSheetResponse = Gson().fromJson<CustomDomainBottomSheetResponse>(commonResponse.mCommonDataStr, CustomDomainBottomSheetResponse::class.java)
+                val customDomainBottomSheetResponse = Gson().fromJson(commonResponse.mCommonDataStr, CustomDomainBottomSheetResponse::class.java)
                 StaticInstances.sCustomDomainBottomSheetResponse = customDomainBottomSheetResponse
                 showDomainPurchasedBottomSheet(customDomainBottomSheetResponse, isNoDomainFoundLayout = false, hideTopView = mIsCustomDomainTopViewHide)
             }
@@ -400,7 +400,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
     override fun onLandingPageCardsResponse(commonResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (commonResponse.mIsSuccessStatus) {
-                val landingPageCardsResponse = Gson().fromJson<LandingPageCardsResponse>(commonResponse.mCommonDataStr, LandingPageCardsResponse::class.java)
+                val landingPageCardsResponse = Gson().fromJson(commonResponse.mCommonDataStr, LandingPageCardsResponse::class.java)
                 Log.d(TAG, "onLandingPageCardsResponse: $landingPageCardsResponse")
                 mIsAllStepsCompleted = false
                 StaticInstances.sIsShareStoreLocked = landingPageCardsResponse?.isShareStoreLocked ?: false
@@ -444,7 +444,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                                                         withContext(Dispatchers.Main) {
                                                             stopProgress()
                                                             if (it.mIsSuccessStatus) {
-                                                                val accountInfoResponse = Gson().fromJson<AccountInfoResponse>(it.mCommonDataStr, AccountInfoResponse::class.java)
+                                                                val accountInfoResponse = Gson().fromJson(it.mCommonDataStr, AccountInfoResponse::class.java)
                                                                 StaticInstances.sAccountPageSettingsStaticData = accountInfoResponse?.mAccountStaticText
                                                                 StaticInstances.sAppStoreServicesResponse = accountInfoResponse?.mStoreInfo?.storeServices
                                                                 launchFragment(MoreControlsFragment.newInstance(accountInfoResponse?.mAccountStaticText), true)
@@ -1082,7 +1082,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
             mService?.updateOrderStatus(request)
             isNewOrder = true
         }
-        launchFragment(OrderDetailFragment.newInstance(item?.orderHash.toString(), isNewOrder), true)
+        launchFragment(OrderDetailFragment.newInstance(item?.orderHash.toString(), isNewOrder), addBackStack = true, isFragmentAdd = true)
     }
 
     override fun onDestroy() {
@@ -1358,11 +1358,9 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                                                     } else {
                                                         val currentDate = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
                                                         var month = currentDate.get(Calendar.MONTH) + 1
-                                                        var monthStr = ""
-                                                        monthStr = if (month <= 9) "0$month" else "$month"
+                                                        var monthStr: String = if (month <= 9) "0$month" else "$month"
                                                         var day = currentDate.get(Calendar.DATE)
-                                                        var dayStr = ""
-                                                        dayStr = if (day <= 9) "0$day" else "$day"
+                                                        var dayStr: String = if (day <= 9) "0$day" else "$day"
                                                         mLeadsFilterEndDate = "${currentDate.get(Calendar.YEAR)}-$monthStr-$dayStr"
                                                         currentDate.add(Calendar.DAY_OF_YEAR, -abs(item?.id?.toInt() ?: 0))
                                                         month = currentDate.get(Calendar.MONTH) + 1
