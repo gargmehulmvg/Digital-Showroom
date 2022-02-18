@@ -88,6 +88,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
     private var mIsLeadsFilterReset = true
     private var mLeadsFilterStartDate = ""
     private var mLeadsFilterEndDate = ""
+    private var leadsFilterSortType = Constants.SORT_TYPE_DESCENDING
     private var mLeadsFilterRequest: LeadsListRequest = LeadsListRequest("", "", "", "", Constants.SORT_TYPE_DESCENDING, Constants.CART_TYPE_DEFAULT)
 
     companion object {
@@ -1285,7 +1286,6 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
     override fun onLeadsItemCLickedListener(item: LeadsResponse?) = launchFragment(LeadDetailFragment.newInstance(item), addBackStack = true, isFragmentAdd = true)
 
     private fun showLeadsFilterBottomSheet() {
-        var leadsFilterSortType = Constants.SORT_TYPE_DESCENDING
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             try {
                 mActivity?.let {
@@ -1388,7 +1388,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                                                         Log.d(TAG, "onLeadsFilterItemClickListener: startDate :: $mLeadsFilterStartDate endDate :: $mLeadsFilterEndDate")
                                                     }
                                                 }
-                                                Constants.LEADS_FILTER_TYPE_SORT -> leadsFilterSortType = item?.id?.toInt() ?: Constants.SORT_TYPE_DESCENDING
+                                                Constants.LEADS_FILTER_TYPE_SORT -> leadsFilterSortType = item?.id?.toInt() ?: leadsFilterSortType
                                             }
                                             mLeadsFilterAdapter?.notifyItemChanged(recyclerRedrawPosition)
                                         }
