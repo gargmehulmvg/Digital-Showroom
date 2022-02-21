@@ -60,6 +60,7 @@ class LeadDetailFragment: BaseFragment(), ILeadsDetailServiceInterface,
         private const val REMINDER_TYPE_SMS = 0
         private const val REMINDER_TYPE_WA  = 1
         private const val REMINDER_SENT_TO  = 0
+
         fun newInstance(item: LeadsResponse?): LeadDetailFragment {
             val fragment = LeadDetailFragment()
             fragment.mLeadResponse = item
@@ -447,6 +448,14 @@ class LeadDetailFragment: BaseFragment(), ILeadsDetailServiceInterface,
         showProgressDialog(mActivity)
         mLeadsOfferBottomSheetDialog?.dismiss()
         mService?.shareCoupon(item.promoCode)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        val fragmentManager = mActivity?.supportFragmentManager
+        if (fragmentManager?.getBackStackEntryAt(fragmentManager.backStackEntryCount - 1)?.name == OrderFragment::class.qualifiedName) {
+            hideBottomNavigationView(false)
+        }
     }
 
 }

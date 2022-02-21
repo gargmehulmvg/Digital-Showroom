@@ -45,7 +45,6 @@ import kotlinx.android.synthetic.main.layout_home_fragment.*
 import kotlinx.android.synthetic.main.layout_home_fragment.analyticsContainer
 import kotlinx.android.synthetic.main.layout_home_fragment.analyticsImageView
 import kotlinx.android.synthetic.main.layout_home_fragment.orderLayout
-import kotlinx.android.synthetic.main.layout_more_control_fragment.*
 import kotlinx.android.synthetic.main.layout_order_fragment.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -89,6 +88,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
     private var mIsLeadsFilterReset = true
     private var mLeadsFilterStartDate = ""
     private var mLeadsFilterEndDate = ""
+    private var leadsFilterSortType = Constants.SORT_TYPE_DESCENDING
     private var mLeadsFilterRequest: LeadsListRequest = LeadsListRequest("", "", "", "", Constants.SORT_TYPE_DESCENDING, Constants.CART_TYPE_DEFAULT)
 
     companion object {
@@ -278,7 +278,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
             stopProgress()
             if (true == swipeRefreshLayout?.isRefreshing) swipeRefreshLayout?.isRefreshing = false
             if (getOrderResponse.mIsSuccessStatus) {
-                val ordersResponse = Gson().fromJson<OrdersResponse>(getOrderResponse.mCommonDataStr, OrdersResponse::class.java)
+                val ordersResponse = Gson().fromJson(getOrderResponse.mCommonDataStr, OrdersResponse::class.java)
                 sIsMorePendingOrderAvailable = ordersResponse.mIsNextDataAvailable
                 if (1 == mPendingPageCount) sOrderList.clear()
                 val pendingOrderTextView: TextView? = mContentView?.findViewById(R.id.pendingOrderTextView)
@@ -305,7 +305,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
             stopProgress()
             if (swipeRefreshLayout?.isRefreshing == true) swipeRefreshLayout?.isRefreshing = false
             if (getOrderResponse.mIsSuccessStatus) {
-                val ordersResponse = Gson().fromJson<OrdersResponse>(getOrderResponse.mCommonDataStr, OrdersResponse::class.java)
+                val ordersResponse = Gson().fromJson(getOrderResponse.mCommonDataStr, OrdersResponse::class.java)
                 sIsMoreCompletedOrderAvailable = ordersResponse.mIsNextDataAvailable
                 val completedOrderTextView: TextView? = mContentView?.findViewById(R.id.completedOrderTextView)
                 if (mCompletedPageCount == 1) sCompletedOrderList.clear()
@@ -327,7 +327,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             if (commonResponse.mIsSuccessStatus) {
-                sAnalyticsResponse = Gson().fromJson<AnalyticsResponse>(commonResponse.mCommonDataStr, AnalyticsResponse::class.java)
+                sAnalyticsResponse = Gson().fromJson(commonResponse.mCommonDataStr, AnalyticsResponse::class.java)
                 setupAnalyticsUI()
             }
         }
@@ -337,7 +337,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             if (commonResponse.mIsSuccessStatus) {
-                sOrderPageInfoResponse = Gson().fromJson<OrderPageInfoResponse>(commonResponse.mCommonDataStr, OrderPageInfoResponse::class.java)
+                sOrderPageInfoResponse = Gson().fromJson(commonResponse.mCommonDataStr, OrderPageInfoResponse::class.java)
                 setupOrderPageInfoUI()
                 pushProfileToCleverTap()
             }
@@ -349,7 +349,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
             stopProgress()
             if (true == swipeRefreshLayout?.isRefreshing) swipeRefreshLayout?.isRefreshing = false
             if (commonResponse.mIsSuccessStatus) {
-                val ordersResponse = Gson().fromJson<OrdersResponse>(commonResponse.mCommonDataStr, OrdersResponse::class.java)
+                val ordersResponse = Gson().fromJson(commonResponse.mCommonDataStr, OrdersResponse::class.java)
                 if (isNotEmpty(ordersResponse?.mOrdersList))
                     launchFragment(SearchOrdersFragment.newInstance(
                         sOrderIdString,
@@ -391,7 +391,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             stopProgress()
             if (commonResponse.mIsSuccessStatus) {
-                val customDomainBottomSheetResponse = Gson().fromJson<CustomDomainBottomSheetResponse>(commonResponse.mCommonDataStr, CustomDomainBottomSheetResponse::class.java)
+                val customDomainBottomSheetResponse = Gson().fromJson(commonResponse.mCommonDataStr, CustomDomainBottomSheetResponse::class.java)
                 StaticInstances.sCustomDomainBottomSheetResponse = customDomainBottomSheetResponse
                 showDomainPurchasedBottomSheet(customDomainBottomSheetResponse, isNoDomainFoundLayout = false, hideTopView = mIsCustomDomainTopViewHide)
             }
@@ -401,7 +401,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
     override fun onLandingPageCardsResponse(commonResponse: CommonApiResponse) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             if (commonResponse.mIsSuccessStatus) {
-                val landingPageCardsResponse = Gson().fromJson<LandingPageCardsResponse>(commonResponse.mCommonDataStr, LandingPageCardsResponse::class.java)
+                val landingPageCardsResponse = Gson().fromJson(commonResponse.mCommonDataStr, LandingPageCardsResponse::class.java)
                 Log.d(TAG, "onLandingPageCardsResponse: $landingPageCardsResponse")
                 mIsAllStepsCompleted = false
                 StaticInstances.sIsShareStoreLocked = landingPageCardsResponse?.isShareStoreLocked ?: false
@@ -445,7 +445,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                                                         withContext(Dispatchers.Main) {
                                                             stopProgress()
                                                             if (it.mIsSuccessStatus) {
-                                                                val accountInfoResponse = Gson().fromJson<AccountInfoResponse>(it.mCommonDataStr, AccountInfoResponse::class.java)
+                                                                val accountInfoResponse = Gson().fromJson(it.mCommonDataStr, AccountInfoResponse::class.java)
                                                                 StaticInstances.sAccountPageSettingsStaticData = accountInfoResponse?.mAccountStaticText
                                                                 StaticInstances.sAppStoreServicesResponse = accountInfoResponse?.mStoreInfo?.storeServices
                                                                 launchFragment(MoreControlsFragment.newInstance(accountInfoResponse?.mAccountStaticText), true)
@@ -700,21 +700,39 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                 }
             }
             abandonedCartTextView?.id -> {
-                mLeadsCartTypeSelection = Constants.CART_TYPE_ABANDONED
-                mActivity?.let { context ->
-                    abandonedCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.selected_chip_blue_border_bluish_background)
-                    activeCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_light_grey_background_without_padding)
+                if (Constants.CART_TYPE_ABANDONED == mLeadsCartTypeSelection) {
+                    mActivity?.let { context ->
+                        abandonedCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_light_grey_background_without_padding)
+                        activeCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_light_grey_background_without_padding)
+                    }
+                    mLeadsCartTypeSelection = Constants.CART_TYPE_DEFAULT
+                    mLeadsFilterRequest.cartType = Constants.CART_TYPE_DEFAULT
+                } else {
+                    mActivity?.let { context ->
+                        abandonedCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.selected_chip_blue_border_bluish_background)
+                        activeCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_light_grey_background_without_padding)
+                    }
+                    mLeadsCartTypeSelection = Constants.CART_TYPE_ABANDONED
+                    mLeadsFilterRequest.cartType = Constants.CART_TYPE_ABANDONED
                 }
-                mLeadsFilterRequest.cartType = Constants.CART_TYPE_ABANDONED
                 mService?.getCartsByFilters(mLeadsFilterRequest)
             }
             activeCartTextView?.id -> {
-                mLeadsCartTypeSelection = Constants.CART_TYPE_ACTIVE
-                mActivity?.let { context ->
-                    activeCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.selected_chip_blue_border_bluish_background)
-                    abandonedCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_light_grey_background_without_padding)
+                if (Constants.CART_TYPE_ACTIVE == mLeadsCartTypeSelection) {
+                    mActivity?.let { context ->
+                        abandonedCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_light_grey_background_without_padding)
+                        activeCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_light_grey_background_without_padding)
+                    }
+                    mLeadsCartTypeSelection = Constants.CART_TYPE_DEFAULT
+                    mLeadsFilterRequest.cartType = Constants.CART_TYPE_DEFAULT
+                } else {
+                    mActivity?.let { context ->
+                        abandonedCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_light_grey_background_without_padding)
+                        activeCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.selected_chip_blue_border_bluish_background)
+                    }
+                    mLeadsCartTypeSelection = Constants.CART_TYPE_ACTIVE
+                    mLeadsFilterRequest.cartType = Constants.CART_TYPE_ACTIVE
                 }
-                mLeadsFilterRequest.cartType = Constants.CART_TYPE_ACTIVE
                 mService?.getCartsByFilters(mLeadsFilterRequest)
             }
             filterImageView?.id -> {
@@ -771,7 +789,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         Log.d(TAG, "$TAG onRequestPermissionResult")
         when (requestCode) {
-            Constants.CONTACT_REQUEST_CODE -> {
+            Constants.REQUEST_CODE_CONTACT -> {
                 when {
                     grantResults.isEmpty() -> Log.d(TAG, "CONTACT_REQUEST_CODE :: User interaction was cancelled.")
                     grantResults[0] == PackageManager.PERMISSION_GRANTED -> {
@@ -1083,7 +1101,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
             mService?.updateOrderStatus(request)
             isNewOrder = true
         }
-        launchFragment(OrderDetailFragment.newInstance(item?.orderHash.toString(), isNewOrder), true)
+        launchFragment(OrderDetailFragment.newInstance(item?.orderHash.toString(), isNewOrder), addBackStack = true, isFragmentAdd = true)
     }
 
     override fun onDestroy() {
@@ -1265,10 +1283,9 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
         }
     }
 
-    override fun onLeadsItemCLickedListener(item: LeadsResponse?) = launchFragment(LeadDetailFragment.newInstance(item), true)
+    override fun onLeadsItemCLickedListener(item: LeadsResponse?) = launchFragment(LeadDetailFragment.newInstance(item), addBackStack = true, isFragmentAdd = true)
 
     private fun showLeadsFilterBottomSheet() {
-        var leadsFilterSortType = Constants.SORT_TYPE_DESCENDING
         CoroutineScopeUtils().runTaskOnCoroutineMain {
             try {
                 mActivity?.let {
@@ -1315,7 +1332,6 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                                     }
                                     mLeadsFilterAdapter?.notifyItemChanged(position)
                                 }
-                                mLeadsCartTypeSelection = Constants.CART_TYPE_DEFAULT
                                 mLeadsFilterEndDate = ""
                                 mLeadsFilterStartDate = ""
                             }
@@ -1359,11 +1375,9 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                                                     } else {
                                                         val currentDate = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
                                                         var month = currentDate.get(Calendar.MONTH) + 1
-                                                        var monthStr = ""
-                                                        monthStr = if (month <= 9) "0$month" else "$month"
+                                                        var monthStr: String = if (month <= 9) "0$month" else "$month"
                                                         var day = currentDate.get(Calendar.DATE)
-                                                        var dayStr = ""
-                                                        dayStr = if (day <= 9) "0$day" else "$day"
+                                                        var dayStr: String = if (day <= 9) "0$day" else "$day"
                                                         mLeadsFilterEndDate = "${currentDate.get(Calendar.YEAR)}-$monthStr-$dayStr"
                                                         currentDate.add(Calendar.DAY_OF_YEAR, -abs(item?.id?.toInt() ?: 0))
                                                         month = currentDate.get(Calendar.MONTH) + 1
@@ -1374,7 +1388,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                                                         Log.d(TAG, "onLeadsFilterItemClickListener: startDate :: $mLeadsFilterStartDate endDate :: $mLeadsFilterEndDate")
                                                     }
                                                 }
-                                                Constants.LEADS_FILTER_TYPE_SORT -> leadsFilterSortType = item?.id?.toInt() ?: Constants.SORT_TYPE_DESCENDING
+                                                Constants.LEADS_FILTER_TYPE_SORT -> leadsFilterSortType = item?.id?.toInt() ?: leadsFilterSortType
                                             }
                                             mLeadsFilterAdapter?.notifyItemChanged(recyclerRedrawPosition)
                                         }

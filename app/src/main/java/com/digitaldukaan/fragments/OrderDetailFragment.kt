@@ -1215,4 +1215,13 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
     override fun onShipmentCtaClicked(initiateServerCall: Boolean) = if (initiateServerCall) initiateSendBillServerCall() else handleDeliveryTimeBottomSheet(isCallSendBillServerCall = true, isPrepaidOrder = false)
 
     override fun onLockedStoreShareSuccessResponse(lockedShareResponse: LockedStoreShareResponse) = showLockedStoreShareBottomSheet(lockedShareResponse)
+
+    override fun onDestroy() {
+        super.onDestroy()
+        val fragmentManager = mActivity?.supportFragmentManager
+        when (fragmentManager?.getBackStackEntryAt(fragmentManager.backStackEntryCount - 1)?.name) {
+            OrderFragment::class.qualifiedName -> { hideBottomNavigationView(false) }
+            SearchOrdersFragment::class.qualifiedName -> { ToolBarManager.getInstance().hideToolBar(mActivity, false) }
+        }
+    }
 }

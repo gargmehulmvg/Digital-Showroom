@@ -280,9 +280,9 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
         }
     }
 
-    open fun launchFragment(fragment: Fragment?, addBackStack: Boolean) {
+    open fun launchFragment(fragment: Fragment?, addBackStack: Boolean, isFragmentAdd:Boolean = false) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
-            mActivity?.launchFragment(fragment, addBackStack)
+            mActivity?.launchFragment(fragment, addBackStack, isFragmentAdd)
         }
     }
 
@@ -564,7 +564,7 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
     open fun askContactPermission(): Boolean {
         mActivity?.let {
             if (ActivityCompat.checkSelfPermission(it, Manifest.permission.READ_CONTACTS) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.READ_CONTACTS), Constants.CONTACT_REQUEST_CODE)
+                ActivityCompat.requestPermissions(it, arrayOf(Manifest.permission.READ_CONTACTS), Constants.REQUEST_CODE_CONTACT)
                 return true
             }
         }

@@ -154,7 +154,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
     override fun onImageSelectionResultFile(file: File?, mode: String) {
         if (mode == Constants.MODE_CROP) {
             val fragment = CropPhotoFragment.newInstance(file?.toUri())
-            fragment.setTargetFragment(this, Constants.CROP_IMAGE_REQUEST_CODE)
+            fragment.setTargetFragment(this, Constants.REQUEST_CODE_CROP_IMAGE)
             launchFragment(fragment, true)
             return
         }
@@ -545,7 +545,7 @@ class SettingsFragment : BaseFragment(), IOnToolbarIconClick, IProfileServiceInt
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == Constants.CROP_IMAGE_REQUEST_CODE) {
+        if (requestCode == Constants.REQUEST_CODE_CROP_IMAGE) {
             CoroutineScopeUtils().runTaskOnCoroutineMain {
                 val file = data?.getSerializableExtra(Constants.MODE_CROP) as File
                 onImageSelectionResultFile(file, "")
