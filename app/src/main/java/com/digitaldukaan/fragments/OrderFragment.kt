@@ -789,7 +789,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         Log.d(TAG, "$TAG onRequestPermissionResult")
         when (requestCode) {
-            Constants.CONTACT_REQUEST_CODE -> {
+            Constants.REQUEST_CODE_CONTACT -> {
                 when {
                     grantResults.isEmpty() -> Log.d(TAG, "CONTACT_REQUEST_CODE :: User interaction was cancelled.")
                     grantResults[0] == PackageManager.PERMISSION_GRANTED -> {

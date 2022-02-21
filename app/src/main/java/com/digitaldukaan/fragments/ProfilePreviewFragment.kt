@@ -736,7 +736,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
     override fun onImageSelectionResultFile(file: File?, mode: String) {
         if (Constants.MODE_CROP == mode) {
             val fragment = CropPhotoFragment.newInstance(file?.toUri())
-            fragment.setTargetFragment(this, Constants.CROP_IMAGE_REQUEST_CODE)
+            fragment.setTargetFragment(this, Constants.REQUEST_CODE_CROP_IMAGE)
             launchFragment(fragment, true)
             return
         }
@@ -810,7 +810,7 @@ class ProfilePreviewFragment : BaseFragment(), IProfilePreviewServiceInterface,
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when (requestCode) {
-            Constants.CROP_IMAGE_REQUEST_CODE -> {
+            Constants.REQUEST_CODE_CROP_IMAGE -> {
                 val file = data?.getSerializableExtra(Constants.MODE_CROP) as File
                 CoroutineScopeUtils().runTaskOnCoroutineMain {
                     onImageSelectionResultFile(file, "")
