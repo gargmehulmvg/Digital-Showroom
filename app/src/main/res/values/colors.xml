@@ -50,7 +50,7 @@
     <color name="premium_light_color">#FCDDC8</color>
     <color name="non_premium_icons_color">#797979</color>
     <color name="ucrop_color_toolbar">@color/white</color>
-    <color name="ucrop_color_statusbar">@color/white</color>
+    <color name="ucrop_color_statusbar">@color/black</color>
     <color name="ucrop_color_widget_active">@color/white</color>
     <color name="ucrop_color_widget_text">@color/white</color>
     <color name="ucrop_color_widget_background">@color/black</color>
