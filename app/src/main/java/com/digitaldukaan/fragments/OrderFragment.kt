@@ -718,7 +718,7 @@ class OrderFragment : BaseFragment(), IHomeServiceInterface, PopupMenu.OnMenuIte
                 mService?.getCartsByFilters(mLeadsFilterRequest)
             }
             activeCartTextView?.id -> {
-                if(Constants.CART_TYPE_ACTIVE == mLeadsCartTypeSelection){
+                if (Constants.CART_TYPE_ACTIVE == mLeadsCartTypeSelection) {
                     mActivity?.let { context ->
                         abandonedCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_light_grey_background_without_padding)
                         activeCartTextView?.background = ContextCompat.getDrawable(context, R.drawable.slight_curve_light_grey_background_without_padding)
