@@ -276,14 +276,14 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         val fragmentTag = fragment.javaClass.canonicalName
         try {
             fragmentTransaction.setCustomAnimations(R.anim.slide_in, R.anim.fade_out, R.anim.fade_in, R.anim.slide_out)
-            fragmentTransaction.add(R.id.homeFrame, fragment, fragmentTag)
+            fragmentTransaction.replace(R.id.homeFrame, fragment, fragmentTag)
             if (addToBackStack) fragmentTransaction.addToBackStack(fragmentTag)
             fragmentTransaction.addSharedElement(animationView, getString(R.string.transition_name))
             fragmentTransaction.commitAllowingStateLoss()
         } catch (e: Exception) {
             Log.e("doSwitchToScreen ", e.message, e)
             try {
-                fragmentTransaction.add(R.id.homeFrame, fragment, fragmentTag)
+                fragmentTransaction.replace(R.id.homeFrame, fragment, fragmentTag)
                 if (addToBackStack) fragmentTransaction.addToBackStack(fragmentTag)
                 fragmentTransaction.addSharedElement(animationView, getString(R.string.transition_name))
                 fragmentTransaction.commitAllowingStateLoss()

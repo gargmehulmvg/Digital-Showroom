@@ -27,13 +27,11 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.File
 
-
 class ProfilePhotoFragment : BaseFragment(), View.OnClickListener, IProfilePhotoServiceInterface {
 
     private var mStoreLogoLinkStr: String? = ""
 
     companion object {
-
         private val service: ProfilePhotoService = ProfilePhotoService()
 
         fun newInstance(storeLinkStr: String?): ProfilePhotoFragment {
