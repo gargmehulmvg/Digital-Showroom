@@ -50,7 +50,7 @@ class CropPhotoFragment: BaseFragment() {
                 val croppedImage = cropImageView.croppedImage
                 val croppedImageFile = getImageFileFromBitmap(croppedImage, mActivity)
                 croppedImageFile?.let {
-                    fragment.onActivityResult(Constants.CROP_IMAGE_REQUEST_CODE, Constants.CROP_IMAGE_REQUEST_CODE, Intent().putExtra(Constants.MODE_CROP, it))
+                    fragment.onActivityResult(Constants.REQUEST_CODE_CROP_IMAGE, Constants.REQUEST_CODE_CROP_IMAGE, Intent().putExtra(Constants.MODE_CROP, it))
                     fragmentManager?.popBackStack()
                 }
             } catch (e: Exception) {

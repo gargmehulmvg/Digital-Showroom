@@ -115,8 +115,6 @@ class LeadsSearchFragment: BaseFragment(), ILeadsSearchServiceInterface, ILeadsL
         }
     }
 
-    override fun onLeadsItemCLickedListener(item: LeadsResponse?) {
-        launchFragment(LeadDetailFragment.newInstance(item), true)
-    }
+    override fun onLeadsItemCLickedListener(item: LeadsResponse?) = launchFragment(LeadDetailFragment.newInstance(item), addBackStack = true, isFragmentAdd = true)
 
 }

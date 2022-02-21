@@ -171,10 +171,12 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
 
     override fun onBackPressed() {
         try {
-            val current: BaseFragment? = getCurrentFragment()
-            if (true == current?.onBackPressed()) return
+            val currentFragment: BaseFragment? = getCurrentFragment()
+            if (true == currentFragment?.onBackPressed()) return
             val manager = supportFragmentManager
-            if (manager.backStackEntryCount > 0) super.onBackPressed()
+            if (manager.backStackEntryCount > 0) {
+                super.onBackPressed()
+            }
         } catch (e: Exception) {
             Log.e("MainActivity", "onBackPressed: ${e.message}", e)
         }
@@ -231,14 +233,14 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         }
     }
 
-    fun launchFragment(fragment: Fragment?, addBackStack: Boolean) = runOnUiThread { doSwitchToScreen(fragment, addBackStack) }
+    fun launchFragment(fragment: Fragment?, addBackStack: Boolean, isFragmentAdd:Boolean = false) = runOnUiThread { doSwitchToScreen(fragment, addBackStack, isFragmentAdd) }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         getCurrentFragment()?.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-    private fun doSwitchToScreen(fragment: Fragment?, addToBackStack: Boolean) {
+    private fun doSwitchToScreen(fragment: Fragment?, addToBackStack: Boolean, isFragmentAdd:Boolean = false) {
         if (null == fragment) return
         val manager = supportFragmentManager
         val fragmentTransaction = manager.beginTransaction()
@@ -250,13 +252,13 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
                 android.R.anim.slide_in_left,
                 android.R.anim.slide_out_right
             )
-            fragmentTransaction.replace(R.id.homeFrame, fragment, fragmentTag)
+            if (isFragmentAdd) fragmentTransaction.add(R.id.homeFrame, fragment, fragmentTag) else fragmentTransaction.replace(R.id.homeFrame, fragment, fragmentTag)
             if (addToBackStack) fragmentTransaction.addToBackStack(fragmentTag)
             fragmentTransaction.commitAllowingStateLoss()
         } catch (e: Exception) {
             Log.e("doSwitchToScreen ", e.message, e)
             try {
-                fragmentTransaction.replace(R.id.homeFrame, fragment, fragmentTag)
+                if (isFragmentAdd) fragmentTransaction.add(R.id.homeFrame, fragment, fragmentTag) else fragmentTransaction.replace(R.id.homeFrame, fragment, fragmentTag)
                 if (addToBackStack) fragmentTransaction.addToBackStack(fragmentTag)
                 fragmentTransaction.commitAllowingStateLoss()
             } catch (e2: Exception) {

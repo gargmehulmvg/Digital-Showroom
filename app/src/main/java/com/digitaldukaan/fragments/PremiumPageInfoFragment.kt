@@ -137,6 +137,9 @@ class PremiumPageInfoFragment : BaseFragment(), IPremiumPageInfoServiceInterface
             jsonData.optBoolean("refreshToken") -> {
                 //mService.getPremiumPageInfo()
             }
+            jsonData.optBoolean("redirectHomePage") -> {
+                launchFragment(OrderFragment.newInstance(), true)
+            }
             jsonData.optBoolean("openDomainPurchaseBottomSheet") -> {
                 openDomainPurchaseBottomSheetServerCall()
             }

@@ -18,8 +18,8 @@ class Constants {
         //REQUEST_CODE
         const val CREDENTIAL_PICKER_REQUEST                     = 1001
         const val IMAGE_PICK_REQUEST_CODE                       = 1002
-        const val CONTACT_REQUEST_CODE                          = 1003
-        const val CROP_IMAGE_REQUEST_CODE                       = 1004
+        const val REQUEST_CODE_CONTACT                          = 1003
+        const val REQUEST_CODE_CROP_IMAGE                       = 1004
         const val REQUEST_CODE_EXTERNAL_STORAGE                 = 1005
         const val REQUEST_CODE_STORAGE                          = 1006
         const val REQUEST_CODE_EMAIL                            = 1007
