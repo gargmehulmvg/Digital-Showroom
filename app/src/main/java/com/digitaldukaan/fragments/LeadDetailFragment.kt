@@ -452,9 +452,12 @@ class LeadDetailFragment: BaseFragment(), ILeadsDetailServiceInterface,
 
     override fun onDestroy() {
         super.onDestroy()
-        val fragmentManager = mActivity?.supportFragmentManager
-        if (fragmentManager?.getBackStackEntryAt(fragmentManager.backStackEntryCount - 1)?.name == OrderFragment::class.qualifiedName) {
-            hideBottomNavigationView(false)
+        try {
+            val fragmentManager = mActivity?.supportFragmentManager
+            val count = (fragmentManager?.backStackEntryCount ?: 0) - 1
+            if (OrderFragment::class.qualifiedName == fragmentManager?.getBackStackEntryAt(if (count <= 0) 0 else count)?.name) hideBottomNavigationView(false)
+        } catch (e: Exception) {
+            Log.e(TAG, "onDestroy: ", e)
         }
     }
 

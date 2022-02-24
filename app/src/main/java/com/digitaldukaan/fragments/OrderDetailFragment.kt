@@ -1218,10 +1218,15 @@ class OrderDetailFragment : BaseFragment(), IOrderDetailServiceInterface, PopupM
 
     override fun onDestroy() {
         super.onDestroy()
-        val fragmentManager = mActivity?.supportFragmentManager
-        when (fragmentManager?.getBackStackEntryAt(fragmentManager.backStackEntryCount - 1)?.name) {
-            OrderFragment::class.qualifiedName -> { hideBottomNavigationView(false) }
-            SearchOrdersFragment::class.qualifiedName -> { ToolBarManager.getInstance().hideToolBar(mActivity, false) }
+        try {
+            val fragmentManager = mActivity?.supportFragmentManager
+            val count = (fragmentManager?.backStackEntryCount ?: 0) - 1
+            when (fragmentManager?.getBackStackEntryAt(if (count <= 0) 0 else count)?.name) {
+                OrderFragment::class.qualifiedName -> hideBottomNavigationView(false)
+                SearchOrdersFragment::class.qualifiedName -> ToolBarManager.getInstance().hideToolBar(mActivity, false)
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "onDestroy: ", e)
         }
     }
 }
