@@ -282,12 +282,14 @@ open class BaseFragment : ParentFragment(), ISearchItemClicked, LocationListener
 
     open fun launchFragment(fragment: Fragment?, addBackStack: Boolean, isFragmentAdd:Boolean = false) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
             mActivity?.launchFragment(fragment, addBackStack, isFragmentAdd)
         }
     }
 
     open fun launchFragment(fragment: Fragment?, addBackStack: Boolean, animationView: View) {
         CoroutineScopeUtils().runTaskOnCoroutineMain {
+            stopProgress()
             mActivity?.launchFragmentWithAnimation(fragment, addBackStack, animationView)
         }
     }
